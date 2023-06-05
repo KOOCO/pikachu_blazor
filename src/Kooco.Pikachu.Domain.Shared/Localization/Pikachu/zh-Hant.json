@@ -1,0 +1,24 @@
+{
+    "culture": "zh-Hant",
+    "texts": {
+        "Menu:Home": "首頁",
+        "Welcome": "歡迎",
+        "LongWelcomeMessage": "歡迎來到此應用程式. 這是一個基於ABP框架的起始專案. 有關更多訊息, 請瀏覽 abp.io.",
+        "Permission:BookStore": "Book Store",
+        "Permission:GroupBuyList": "團購列表",
+        "Permission:GroupBuyReport": "團購報表",
+        "Permission:ProductList": "商品列表",
+        "Permission:ProductGroupingSetting": "商品組合設定",
+        "Permission:StockReport": "庫存報表",
+        "Permission:FreebieSetting": "贈品設定",
+        "Permission:OrderList": "訂單列表",
+        "Permission:ProductReturningList": "退換貨列表",
+        "Permission:RefundReviewingList": "退款審核列表",
+        "Permission:PaymentSetting": "金流商設定",
+        "Permission:E-InvoiceSetting": "電子發票設定",
+        "Permission:LogisticsSetting": "物流商設定",
+        "Permission:TenentList": "商戶列表",
+        "Permission:TenentBillReport": "商戶帳單報表",
+        "Permission:PermissionSetting": "權限管理"
+    }
+  }

@@ -1,0 +1,23 @@
+{
+  "culture": "en",
+  "texts": {
+    "Menu:Home": "Home",
+    "Welcome": "Welcome",
+    "LongWelcomeMessage": "Welcome to the application. This is a startup project based on the ABP framework. For more information, visit abp.io.",
+    "Permission:GroupBuyList": "Group Buy List",
+    "Permission:GroupBuyReport": "Group Buy Report",
+    "Permission:GoodsList": "Goods List",
+    "Permission:GoodsGroupingSetting": "Goods Grouping Setting",
+    "Permission:StockReport": "Stock Report",
+    "Permission:FreebieSetting": "Freebie Setting",
+    "Permission:POList": "PO List",
+    "Permission:POReturningList": "PO Return List",
+    "Permission:RefundAuditList": "Refund Audit List",
+    "Permission:PaymentGatewaySetting": "Payment Gateway Setting",
+    "Permission:InvoiceSetting": "Invoice Setting",
+    "Permission:LogisticsSetting": "Logistics Setting",
+    "Permission:TenentList": "Tenent List",
+    "Permission:TenentBillReport": "Tenent List Billing",
+    "Permission:PermissionSetting": "Permission Setting"
+  }
+}
