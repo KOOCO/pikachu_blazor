@@ -41,8 +41,16 @@ public class PikachuMenuContributor : IMenuContributor
                 PikachuMenus.GroupBuyManagement,
                 "團購管理",
                 url: "/GroupBuyManagement",
-                icon: "fas fa-store",
+                icon: "fa-solid fa-store",
                 order: 1
+            ).AddItem(new ApplicationMenuItem(
+            name: "TenantManagement",
+            displayName: "團購列表",
+            url: "/GroupBuyManagement/GroupBuyList")
+            ).AddItem(new ApplicationMenuItem(
+            name: "TenantManagementBillList",
+            displayName: "團購報表",
+            url: "/GroupBuyManagement/GroupBuyReport")
             )
         );
 
@@ -97,22 +105,30 @@ public class PikachuMenuContributor : IMenuContributor
                 "多商戶管理",
                 url: "/LogisticsManagement",
                 icon: "fas fa-users-cog",
-                order: 7
+                order: 6
+            ).AddItem(new ApplicationMenuItem(
+            name: "TenantManagement",
+            displayName: "商務列表",
+            url: "/TenantManagement/Tenants")
+            ).AddItem(new ApplicationMenuItem(
+            name: "TenantManagementBillList",
+            displayName: "商戶帳單列表",
+            url: "/TenantManagement/TenantBillList")
             )
         );
 
         context.Menu.Items.Insert(
-            6,
+            7,
             new ApplicationMenuItem(
                 PikachuMenus.SystemManagement,
                 "系統管理",
                 url: "/SystemManagement",
                 icon: "fas fa-cogs",
-                order: 6
+                order: 7
             ).AddItem(new ApplicationMenuItem(
                 name: "Permission",
                 displayName: "權限管理",
-                url: "/SystemManagement/Permission")
+                url: "/Identify/Users")
             //.RequirePermissions("MyProject.Crm.Orders")
             )
         );
@@ -128,6 +144,9 @@ public class PikachuMenuContributor : IMenuContributor
 
         administration.SetSubItemOrder(IdentityMenuNames.GroupName, 2);
         administration.SetSubItemOrder(SettingManagementMenus.GroupName, 3);
+
+        //remove administration item from menu
+        //context.Menu.Items.Remove( administration );
 
         return Task.CompletedTask;
     }
