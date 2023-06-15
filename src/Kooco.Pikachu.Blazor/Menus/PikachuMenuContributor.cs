@@ -41,7 +41,7 @@ public class PikachuMenuContributor : IMenuContributor
                 PikachuMenus.GroupBuyManagement,
                 "團購管理",
                 url: "/GroupBuyManagement",
-                icon: "fa-solid fa-store",
+                icon: "fas fa-store",
                 order: 1
             ).AddItem(new ApplicationMenuItem(
             name: "TenantManagement",
