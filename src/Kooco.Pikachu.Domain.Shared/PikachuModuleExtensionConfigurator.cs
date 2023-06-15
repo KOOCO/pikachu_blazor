@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Data;
 using Volo.Abp.Identity;
 using Volo.Abp.ObjectExtending;
 using Volo.Abp.Threading;
@@ -69,5 +70,32 @@ public static class PikachuModuleExtensionConfigurator
          * See the documentation for more:
          * https://docs.abp.io/en/abp/latest/Module-Entity-Extensions
          */
+        ObjectExtensionManager.Instance.Modules()
+           .ConfigureTenantManagement(tenantConfig =>
+           {
+               tenantConfig.ConfigureTenant(tenant =>
+               {
+                   tenant.AddOrUpdateProperty<string>( //property type: string
+                       Constant.ParentTenant, //property name
+                       property =>
+                       {
+                           //validation rules
+                           //property.Attributes.Add(new RequiredAttribute());
+                           //property.Attributes.Add(new StringLengthAttribute(64) { MinimumLength = 4 });
+                           property.Configuration[IdentityModuleExtensionConsts.ConfigurationNames.AllowUserToEdit] = true;
+                       }
+                   );
+                   tenant.AddOrUpdateProperty<int>(
+                       Constant.ShareProfitPercent, //property name
+                       property =>
+                       {
+                           //validation rules
+                           //property.Attributes.Add(new RequiredAttribute());
+                           //to do: need to make sure number is between 0 and 100
+                           property.Configuration[IdentityModuleExtensionConsts.ConfigurationNames.AllowUserToEdit] = true;
+                       }
+                   );
+               });
+           });
     }
 }

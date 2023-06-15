@@ -1,0 +1,35 @@
+﻿@page "/TenantManagement/Tenants"
+@using Volo.Abp.MultiTenancy
+@inherits PikachuComponentBase
+@inject AuthenticationStateProvider AuthenticationStateProvider
+<h3>多商戶管理/商戶列表</h3>
+
+<table class="table table-bordered table-striped table-dark">
+    <thead>
+        <tr>
+            <td>
+                商戶名稱
+            </td>
+            <td>
+                聯絡用Email
+            </td>
+            <td>
+                帳號狀態
+            </td>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var viewModel in TenantList)
+        {
+            <tr>
+                <td>@viewModel.Name</td>
+                <td>@viewModel.Email</td>
+                <td>@viewModel.IsActive</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+
+}
