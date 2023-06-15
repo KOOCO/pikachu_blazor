@@ -261,5 +261,4 @@ src/Kooco.Pikachu.DbMigrator/Logs/*
 src/Kooco.Pikachu.Blazor/Logs/*
 src/Kooco.Pikachu.Blazor.Tiered/Logs/*
 
-# Use abp install-libs to restore.
-**/wwwroot/libs/*
+
