@@ -108,7 +108,7 @@ public class PikachuMenuContributor : IMenuContributor
                 order: 6
             ).AddItem(new ApplicationMenuItem(
             name: "TenantManagement",
-            displayName: "商務列表",
+            displayName: "商戶列表",
             url: "/TenantManagement/Tenants")
             ).AddItem(new ApplicationMenuItem(
             name: "TenantManagementBillList",
