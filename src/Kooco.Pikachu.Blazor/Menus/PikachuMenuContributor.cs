@@ -43,13 +43,23 @@ public class PikachuMenuContributor : IMenuContributor
                 url: "/GroupBuyManagement",
                 icon: "fas fa-store",
                 order: 1
-            ).AddItem(new ApplicationMenuItem(
-            name: "TenantManagement",
+            )
+            .AddItem(new ApplicationMenuItem(
+            name: "GroupBuyListView",
             displayName: "團購列表",
+            icon: "fas fa-list",
             url: "/GroupBuyManagement/GroupBuyList")
-            ).AddItem(new ApplicationMenuItem(
-            name: "TenantManagementBillList",
+            )
+            .AddItem(new ApplicationMenuItem(
+            name: "GroupBuyReports",
+            icon: "fas fa-newspaper",
             displayName: "團購報表",
+            url: "/GroupBuyManagement/GroupBuyReport")
+            )
+            .AddItem(new ApplicationMenuItem(
+            name: "GroupBuyPageConfig",
+            icon: "fas fa-chalkboard-teacher",
+            displayName: "團購頁面設定",
             url: "/GroupBuyManagement/GroupBuyReport")
             )
         );
@@ -63,6 +73,31 @@ public class PikachuMenuContributor : IMenuContributor
                 icon: "fas fa-tags",
                 order: 2
             )
+            .AddItem(new ApplicationMenuItem(
+            name: "GoodsList",
+            icon: "fas fa-list",
+            displayName: "商品列表",
+            url: "/GroupBuyManagement/GroupBuyReport")
+            )
+            .AddItem(new ApplicationMenuItem(
+            name: "GroupGoodsManagement",
+            icon: "fas fa-object-group",
+            displayName: "組合商品設定",
+            url: "/GroupBuyManagement/GroupBuyReport")
+            )
+            .AddItem(new ApplicationMenuItem(
+            name: "InventoryReport",
+            icon: "fas fa-newspaper",
+            displayName: "庫存報表",
+            url: "/GroupBuyManagement/GroupBuyReport")
+            )
+            .AddItem(new ApplicationMenuItem(
+            name: "FreebieManagement",
+            icon: "fas fa-gifts",
+            displayName: "贈品設定",
+            url: "/GroupBuyManagement/GroupBuyReport")
+            )
+
         );
 
         context.Menu.Items.Insert(
@@ -73,6 +108,24 @@ public class PikachuMenuContributor : IMenuContributor
                 url: "/OrderManagement",
                 icon: "fas fa-cart-plus",
                 order: 3
+            )
+            .AddItem(new ApplicationMenuItem(
+            name: "FreebieManagement",
+            icon: "fas fa-list",
+            displayName: "訂單列表",
+            url: "/GroupBuyManagement/GroupBuyReport")
+            )
+            .AddItem(new ApplicationMenuItem(
+            name: "FreebieManagement",
+            icon: "fas fa-truck-loading",
+            displayName: "退換貨列表",
+            url: "/GroupBuyManagement/GroupBuyReport")
+            )
+            .AddItem(new ApplicationMenuItem(
+            name: "FreebieManagement",
+            icon: "fas fa-stamp",
+            displayName: "退款審核列表",
+            url: "/GroupBuyManagement/GroupBuyReport")
             )
         );
 
@@ -85,6 +138,24 @@ public class PikachuMenuContributor : IMenuContributor
                 icon: "fas fa-funnel-dollar",
                 order: 4
             )
+                  .AddItem(new ApplicationMenuItem(
+            name: "FreebieManagement",
+            icon: "fas fa-hand-holding-usd",
+            displayName: "金流商設定",
+            url: "/GroupBuyManagement/GroupBuyReport")
+            )
+                        .AddItem(new ApplicationMenuItem(
+            name: "FreebieManagement",
+            icon: "fas fa-receipt",
+            displayName: "電子發票設定",
+            url: "/GroupBuyManagement/GroupBuyReport")
+            )
+                              .AddItem(new ApplicationMenuItem(
+            name: "FreebieManagement",
+            icon: "fas fa-file-invoice",
+            displayName: "金流對帳表",
+            url: "/GroupBuyManagement/GroupBuyReport")
+            )
         );
 
         context.Menu.Items.Insert(
@@ -95,6 +166,12 @@ public class PikachuMenuContributor : IMenuContributor
                 url: "/LogisticsManagement",
                 icon: "fas fa-truck",
                 order: 5
+            )
+            .AddItem(new ApplicationMenuItem(
+            name: "FreebieManagement",
+            icon: "fas fa-shipping-fast",
+            displayName: "物流商設定",
+            url: "/GroupBuyManagement/GroupBuyReport")
             )
         );
 
@@ -109,10 +186,12 @@ public class PikachuMenuContributor : IMenuContributor
             ).AddItem(new ApplicationMenuItem(
             name: "TenantManagement",
             displayName: "商戶列表",
+            icon: "fas fa-list",
             url: "/TenantManagement/Tenants")
             ).AddItem(new ApplicationMenuItem(
             name: "TenantManagementBillList",
             displayName: "商戶帳單列表",
+            icon: "fas fa-file-invoice",
             url: "/TenantManagement/TenantBillList")
             )
         );
@@ -128,9 +207,23 @@ public class PikachuMenuContributor : IMenuContributor
             ).AddItem(new ApplicationMenuItem(
                 name: "Permission",
                 displayName: "權限管理",
+                icon: "fas fa-user-lock",
                 url: "/Identify/Users")
             //.RequirePermissions("MyProject.Crm.Orders")
             )
+            .AddItem(new ApplicationMenuItem(
+            name: "FreebieManagement",
+            icon: "fas fa-mail-bulk",
+            displayName: "寄送信設定",
+            url: "/GroupBuyManagement/GroupBuyReport")
+            )
+            .AddItem(new ApplicationMenuItem(
+            name: "FreebieManagement",
+            icon: "fas fa-envelope-open-text",
+            displayName: "自動發送報表",
+            url: "/GroupBuyManagement/GroupBuyReport")
+            )
+
         );
 
         if (MultiTenancyConsts.IsEnabled)
