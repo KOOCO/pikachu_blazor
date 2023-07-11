@@ -60,4 +60,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Pages\GroupBuy\" />
+  </ItemGroup>
+
 </Project>
