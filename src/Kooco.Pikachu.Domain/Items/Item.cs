@@ -8,13 +8,15 @@ using Volo.Abp.MultiTenancy;
 
 namespace Kooco.Pikachu.Items
 {
-    internal class Items : AggregateRoot<Guid>, IMultiTenant
+    public class Item : AggregateRoot<Guid>, IMultiTenant
     {
         public Guid? TenantId { get; set; }
-
-        public Guid ItemId { get; set; }
         /// <summary>
         /// 商品ID
+        /// </summary>
+        public Guid ItemId { get; set; }
+        /// <summary>
+        /// 商品編號
         /// </summary>
         public ulong? ItemNo { get; set; }
 
@@ -73,13 +75,12 @@ namespace Kooco.Pikachu.Items
         /// 度量單位
         /// Dimension Unit
         /// </summary>
-        public string? DimensionUnit { get; set; }
+        public Diemensions? DiemensionsUnit { get; set; }
         /// <summary>
         /// 重量單位
         /// Weight Unit
         /// </summary>
-        public string? WeightUnit { get; set; }
-
+        public Weight? WeightUnit { get; set; }
         /// <summary>
         /// 稅率名稱
         /// Tax Name
@@ -134,7 +135,7 @@ namespace Kooco.Pikachu.Items
         /// 商品單位
         /// Unit
         /// </summary>
-        public string? Unit { get; set; }
+        public Quantity Unit { get; set; }
         /// <summary>
         /// SKU
         /// </summary>

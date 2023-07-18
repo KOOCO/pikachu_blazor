@@ -12,6 +12,8 @@ using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
+using Kooco.Pikachu.Items;
+using Volo.Abp.EntityFrameworkCore.Modeling;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -24,6 +26,7 @@ public class PikachuDbContext :
     ITenantManagementDbContext
 {
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
+    public DbSet<Item> Items { get; set; }
 
     #region Entities from the modules
 
@@ -76,6 +79,28 @@ public class PikachuDbContext :
 
         /* Configure your own tables/entities inside here */
 
+
+        builder.Entity<Item>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "Items",
+                PikachuConsts.DbSchema);
+            b.ConfigureByConvention(); //auto configure for the base class props
+            b.Property(x => x.TenantId);
+            b.Property(x => x.ItemId).IsRequired();
+            b.Property(x => x.ItemNo);
+            b.Property(x => x.ItemName);
+            b.Property(x => x.ItemDescription);
+            b.Property(x => x.SellingPrice);
+            b.Property(x => x.SalesAccount);
+            b.Property(x => x.Returnable);
+            b.Property(x => x.BrandName);
+            b.Property(x => x.ManufactorName);
+            b.Property(x => x.PackageWeight);
+            b.Property(x => x.ItemNo);
+            b.Property(x => x.ItemNo);
+
+        });
+
         //builder.Entity<YourEntity>(b =>
         //{
         //    b.ToTable(PikachuConsts.DbTablePrefix + "YourEntities", PikachuConsts.DbSchema);
@@ -83,4 +108,6 @@ public class PikachuDbContext :
         //    //...
         //});
     }
+
+
 }
