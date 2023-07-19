@@ -1,4 +1,4 @@
-﻿namespace Kooco.Pikachu.Permissions;
+namespace Kooco.Pikachu.Permissions;
 
 public static class PikachuPermissions
 {
@@ -21,4 +21,14 @@ public static class PikachuPermissions
     public const string TenentList = "商戶列表";
     public const string TenentBillReport = "商戶帳單報表";
     public const string PermissionSetting = "權限管理";
+    /// <summary>
+    /// 
+    /// </summary>
+    public class Item
+    {
+        public const string Default = GroupName + ".Item";
+        public const string Update = Default + ".Update";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
 }

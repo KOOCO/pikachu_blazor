@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,10 +12,7 @@ namespace Kooco.Pikachu.Items
     public class Item : FullAuditedAggregateRoot<Guid>, IMultiTenant
     {
         public Guid? TenantId { get; set; }
-        /// <summary>
-        /// 商品ID
-        /// </summary>
-        public Guid ItemId { get; set; }
+
         /// <summary>
         /// 商品編號
         /// </summary>

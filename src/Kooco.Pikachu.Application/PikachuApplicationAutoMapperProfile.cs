@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+using Kooco.Pikachu.Items;
+using Kooco.Pikachu.Items.Dtos;
+using AutoMapper;
 
 namespace Kooco.Pikachu;
 
@@ -9,5 +11,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
         /* You can configure your AutoMapper mapping configuration here.
          * Alternatively, you can split your mapping configurations
          * into multiple profile classes for a better organization. */
+        CreateMap<Item, ItemDto>();
+        CreateMap<CreateUpdateItemDto, Item>(MemberList.Source);
     }
 }

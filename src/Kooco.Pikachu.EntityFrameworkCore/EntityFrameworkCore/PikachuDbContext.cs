@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
 using Volo.Abp.Data;
@@ -56,6 +56,7 @@ public class PikachuDbContext :
 
     #endregion
 
+
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
     {
@@ -82,22 +83,19 @@ public class PikachuDbContext :
 
         builder.Entity<Item>(b =>
         {
-            b.ToTable(PikachuConsts.DbTablePrefix + "Items",
-                PikachuConsts.DbSchema);
+            b.ToTable(PikachuConsts.DbTablePrefix + "Items", PikachuConsts.DbSchema);
             b.ConfigureByConvention(); //auto configure for the base class props
-            b.Property(x => x.TenantId);
-            b.Property(x => x.ItemId).IsRequired();
-            b.Property(x => x.ItemNo);
-            b.Property(x => x.ItemName);
-            b.Property(x => x.ItemDescription);
-            b.Property(x => x.SellingPrice);
-            b.Property(x => x.SalesAccount);
-            b.Property(x => x.Returnable);
-            b.Property(x => x.BrandName);
-            b.Property(x => x.ManufactorName);
-            b.Property(x => x.PackageWeight);
-            b.Property(x => x.ItemNo);
-            b.Property(x => x.ItemNo);
+            b.HasIndex(x => x.ItemNo);
+            b.Property(x => x.ItemName)
+               .IsRequired();
+            b.Property(x => x.Returnable)
+                .IsRequired();
+            b.Property(x => x.SKU)
+                .IsRequired();
+            b.Property(x => x.SellingPrice)
+                .IsRequired();
+
+
 
         });
 
@@ -107,6 +105,9 @@ public class PikachuDbContext :
         //    b.ConfigureByConvention(); //auto configure for the base class props
         //    //...
         //});
+
+
+
     }
 
 
