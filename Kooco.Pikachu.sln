@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29020.237
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33801.468
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kooco.Pikachu.Domain", "src\Kooco.Pikachu.Domain\Kooco.Pikachu.Domain.csproj", "{554AD327-6DBA-4F8F-96F8-81CE7A0C863F}"
 EndProject
@@ -33,7 +33,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kooco.Pikachu.HttpApi.Clien
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kooco.Pikachu.DbMigrator", "src\Kooco.Pikachu.DbMigrator\Kooco.Pikachu.DbMigrator.csproj", "{AA94D832-1CCC-4715-95A9-A483F23A1A5D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kooco.Pikachu.Blazor", "src\Kooco.Pikachu.Blazor\Kooco.Pikachu.Blazor.csproj", "{16F0BF4E-7D73-4278-8D9A-7CDE37105C6B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kooco.Pikachu.Blazor", "src\Kooco.Pikachu.Blazor\Kooco.Pikachu.Blazor.csproj", "{16F0BF4E-7D73-4278-8D9A-7CDE37105C6B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kooco.Pikachu.Blazor.Store", "src\Kooco.Pikachu.Blazor.Store\Kooco.Pikachu.Blazor.Store.csproj", "{5E16930F-4999-465E-A4F8-513180A190B8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -97,6 +99,10 @@ Global
 		{16F0BF4E-7D73-4278-8D9A-7CDE37105C6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{16F0BF4E-7D73-4278-8D9A-7CDE37105C6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{16F0BF4E-7D73-4278-8D9A-7CDE37105C6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E16930F-4999-465E-A4F8-513180A190B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E16930F-4999-465E-A4F8-513180A190B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E16930F-4999-465E-A4F8-513180A190B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E16930F-4999-465E-A4F8-513180A190B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -116,6 +122,7 @@ Global
 		{EF480016-9127-4916-8735-D2466BDBC582} = {04DBDB01-70F4-4E06-B468-8F87850B22BE}
 		{AA94D832-1CCC-4715-95A9-A483F23A1A5D} = {CA9AC87F-097E-4F15-8393-4BC07735A5B0}
 		{16F0BF4E-7D73-4278-8D9A-7CDE37105C6B} = {CA9AC87F-097E-4F15-8393-4BC07735A5B0}
+		{5E16930F-4999-465E-A4F8-513180A190B8} = {CA9AC87F-097E-4F15-8393-4BC07735A5B0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {28315BFD-90E7-4E14-A2EA-F3D23AF4126F}
