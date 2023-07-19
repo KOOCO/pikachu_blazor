@@ -9,25 +9,25 @@ public class CreateUpdateItemDto
     /// <summary>
     /// 商品ID
     /// </summary>
-    [DisplayName("ItemItemId")]
+    [DisplayName("ItemId")]
     public Guid ItemId { get; set; }
 
     /// <summary>
     /// 商品編號
     /// </summary>
-    [DisplayName("ItemItemNo")]
-    public ulong ItemNo { get; set; }
+    [DisplayName("ItemNo")]
+    public long ItemNo { get; set; }
 
     /// <summary>
     /// 商品名稱        ItemName
     /// </summary>
-    [DisplayName("ItemItemName")]
+    [DisplayName("ItemName")]
     public string ItemName { get; set; }
 
     /// <summary>
     /// 商品描述        ItemDescription
     /// </summary>
-    [DisplayName("ItemItemDescription")]
+    [DisplayName("ItemDescription")]
     public string ItemDescription { get; set; }
 
     /// <summary>
@@ -255,13 +255,13 @@ public class CreateUpdateItemDto
     /// <summary>
     /// 商品歸戶        Item Type
     /// </summary>
-    [DisplayName("ItemItemType")]
+    [DisplayName("ItemType")]
     public string ItemType { get; set; }
 
     /// <summary>
     /// 商品類別        Item Category
     /// </summary>
-    [DisplayName("ItemItemCategory")]
+    [DisplayName("ItemCategory")]
     public string ItemCategory { get; set; }
 
     /// <summary>

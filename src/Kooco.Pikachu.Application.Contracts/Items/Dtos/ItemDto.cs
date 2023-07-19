@@ -17,7 +17,7 @@ public class ItemDto : FullAuditedEntityDto<Guid>
     /// <summary>
     /// 商品編號
     /// </summary>
-    public ulong ItemNo { get; set; }
+    public long ItemNo { get; set; }
 
     /// <summary>
     /// 商品名稱        ItemName
