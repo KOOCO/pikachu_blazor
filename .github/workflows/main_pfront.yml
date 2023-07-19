@@ -7,51 +7,51 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
+env:
+  AZURE_WEBAPP_NAME: pfront
+  AZURE_WEBAPP_PACKAGE_PATH: src\Kooco.Pikachu.Blazor.Store\published
+  CONFIGURATION: Release
+  DOTNET_CORE_VERSION: 7.0.x
+  WORKING_DIRECTORY: src\Kooco.Pikachu.Blazor.Store
 
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v2
-
+      - uses: actions/checkout@v3
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '7.x'
-          include-prerelease: true
-
+          dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
+      - name: Restore
+        run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
       - name: Build with dotnet
-        run: dotnet build --configuration Release
+        run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
 
-      - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
-
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v2
+      - name: Publish
+        run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
+      - name: Publish Artifacts
+        uses: actions/upload-artifact@v3
         with:
-          name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          name: webapp
+          path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
   deploy:
     runs-on: windows-latest
     needs: build
-    environment:
-      name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
       - name: Download artifact from build job
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
-          name: .net-app
+          name: webapp
+          path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'pfront'
-          slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_7DE8E56688DB4F64B6A0E89707D6CA61 }}
-          package: .
+          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
