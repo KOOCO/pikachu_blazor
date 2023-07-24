@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Kooco.Pikachu.Items.Dtos;
 
@@ -21,6 +22,7 @@ public class CreateUpdateItemDto
     /// <summary>
     /// 商品名稱        ItemName
     /// </summary>
+    [Required]
     [DisplayName("ItemName")]
     public string ItemName { get; set; }
 
@@ -33,6 +35,7 @@ public class CreateUpdateItemDto
     /// <summary>
     /// 商品售價        ItemSellingPrice
     /// </summary>
+    [Required]
     [DisplayName("ItemSellingPrice")]
     public int SellingPrice { get; set; }
 
@@ -45,6 +48,7 @@ public class CreateUpdateItemDto
     /// <summary>
     /// 可否退貨        Returnable
     /// </summary>
+    [Required]
     [DisplayName("ItemReturnable")]
     public Boolean Returnable { get; set; }
 
@@ -159,6 +163,7 @@ public class CreateUpdateItemDto
     /// <summary>
     /// SKU
     /// </summary>
+    [Required]
     [DisplayName("ItemSKU")]
     public string SKU { get; set; }
 
@@ -231,6 +236,7 @@ public class CreateUpdateItemDto
     /// <summary>
     /// 初始庫存        Opening Stock
     /// </summary>
+    [Required]
     [DisplayName("ItemOpeningStock")]
     public int OpeningStock { get; set; }
 

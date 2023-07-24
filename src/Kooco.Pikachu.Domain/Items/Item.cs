@@ -198,11 +198,11 @@ namespace Kooco.Pikachu.Items
         /// 初始庫存金額
         /// Opening Stock Value
         /// </summary>
-        public int? OpeningStockValue { get; set; }
+        public int OpeningStockValue { get; set; }
         /// <summary>
         /// Stock On Hand
         /// </summary>
-        public int StockOnHand { get; set; } = 0;
+        public int? StockOnHand { get; set; } = 0;
         /// <summary>
         /// 是組合商品
         /// Is Combo Product

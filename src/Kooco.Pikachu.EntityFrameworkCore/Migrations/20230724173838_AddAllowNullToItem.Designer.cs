@@ -4,6 +4,7 @@ using Kooco.Pikachu.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    partial class PikachuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230724173838_AddAllowNullToItem")]
+    partial class AddAllowNullToItem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -175,7 +178,7 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<int?>("OpeningStock")
                         .HasColumnType("int");
 
-                    b.Property<int>("OpeningStockValue")
+                    b.Property<int?>("OpeningStockValue")
                         .HasColumnType("int");
 
                     b.Property<short?>("PackageHeight")
@@ -236,7 +239,7 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("StockOnHand")
+                    b.Property<int>("StockOnHand")
                         .HasColumnType("int");
 
                     b.Property<string>("TaxName")

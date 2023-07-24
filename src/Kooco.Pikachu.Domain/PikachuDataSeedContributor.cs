@@ -29,10 +29,24 @@ namespace Kooco.Pikachu
                         ItemName = "SunShine Umbrella",
                         ItemDescription = "This is a simple description of demo item",
                         SellingPrice = 10,
+                        Returnable = false,
+                        OpeningStockValue = 100,
                         SKU = "APCJ-Blue-001"
 
                     },
                 autoSave: true);
+                await _appItemRepository.InsertAsync(
+                   new Item
+                   {
+                       ItemName = "Lovely Pillow",
+                       ItemDescription = "This is a simple description of demo item",
+                       SellingPrice = 100,
+                       Returnable = false,
+                       OpeningStockValue = 2,
+                       SKU = "APCJ-Blue-001"
+
+                   },
+               autoSave: true);
             }
         }
     }
