@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.Items.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Application.Dtos;
 
 namespace Kooco.Pikachu.Items;
 
@@ -11,7 +12,7 @@ namespace Kooco.Pikachu.Items;
 /// <summary>
 /// 
 /// </summary>
-public class ItemAppService : CrudAppService<Item, ItemDto, Guid, ItemGetListInput, CreateUpdateItemDto, CreateUpdateItemDto>,
+public class ItemAppService : CrudAppService<Item, ItemDto, Guid, ItemGetListInput, PagedAndSortedResultRequestDto, CreateUpdateItemDto>,
     IItemAppService
 {
     protected override string GetPolicyName { get; set; } = PikachuPermissions.Item.Default;

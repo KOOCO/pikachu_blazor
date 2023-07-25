@@ -1,5 +1,6 @@
 using System;
 using Kooco.Pikachu.Items.Dtos;
+using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 
 namespace Kooco.Pikachu.Items;
@@ -13,7 +14,7 @@ public interface IItemAppService :
         ItemDto, 
         Guid, 
         ItemGetListInput,
-        CreateUpdateItemDto,
+        PagedAndSortedResultRequestDto,
         CreateUpdateItemDto>
 {
 
