@@ -49,6 +49,7 @@
     <Content Include="signing-certificate.pfx">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Remove="Pages\ItemManagement\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -60,4 +61,7 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Pages\ItemManagement\" />
+  </ItemGroup>
 </Project>

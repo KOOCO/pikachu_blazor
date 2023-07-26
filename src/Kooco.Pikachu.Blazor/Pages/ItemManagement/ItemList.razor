@@ -1,0 +1,56 @@
+﻿@page "/ItemList"
+
+@using Volo.Abp.Application.Dtos
+@using Kooco.Pikachu.Items.Dtos
+@using Kooco.Pikachu.Localization
+@using Microsoft.Extensions.Localization
+@using Kooco.Pikachu.Items
+@inject IStringLocalizer<PikachuResource> L
+
+
+@inherits AbpCrudPageBase<ItemAppService,
+                ItemDto,
+                Guid,
+                ItemGetListInput,
+                PagedAndSortedResultRequestDto,
+                CreateUpdateItemDto>
+
+
+<Card>
+    <CardHeader>
+        <h2>Item List</h2>
+    </CardHeader>
+    <CardBody>
+        <DataGrid TItem="ItemDto"
+                  Data="Entities"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  PageSize="PageSize">
+            <DataGridColumns>
+                <DataGridColumn TItem="ItemDto"
+                                Field="@nameof(ItemDto.ItemName)"
+                                Caption="@L["Name"]"></DataGridColumn>
+                <DataGridColumn TItem="ItemDto"
+                                Field="@nameof(ItemDto.ItemDescription)"
+                                Caption="@L["Description"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="ItemDto"
+                                Field="@nameof(ItemDto.SellingPrice)"
+                                Caption="@L["SellingPrice"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="ItemDto"
+                                Field="@nameof(ItemDto.SKU)"
+                                Caption="@L["SKU"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="ItemDto"
+                                Field="@nameof(ItemDto.CreationTime)"
+                                Caption="@L["CreationTime"]">
+                    <DisplayTemplate>
+                        @context.CreationTime.ToLongDateString()
+                    </DisplayTemplate>
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
