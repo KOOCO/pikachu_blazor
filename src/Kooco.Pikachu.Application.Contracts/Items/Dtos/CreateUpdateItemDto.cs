@@ -10,13 +10,14 @@ public class CreateUpdateItemDto
     /// <summary>
     /// 商品ID
     /// </summary>
-    [DisplayName("ItemId")]
-    public Guid ItemId { get; set; }
+    //[DisplayName("ItemId")]
+    //public Guid? Id { get; set; }
 
     /// <summary>
     /// 商品編號
     /// </summary>
     [DisplayName("ItemNo")]
+    [Required]
     public long ItemNo { get; set; }
 
     /// <summary>

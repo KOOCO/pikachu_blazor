@@ -1,0 +1,142 @@
+﻿@page "/Items/New"
+
+@using Pikachu.Items;
+@using Pikachu.Localization;
+@using Microsoft.Extensions.Localization;
+@using Volo.Abp.AspNetCore.Components.Web;
+@inject IItemAppService AppService
+@inject NavigationManager NavigationManager
+
+@inject IStringLocalizer<PikachuResource> L
+@inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
+
+<Card>
+    <CardHeader>
+        <HeadContent>
+            <ModalTitle>@L["NewItem"]</ModalTitle>
+        </HeadContent>
+    </CardHeader>
+    <CardBody>
+        <Validations @ref="@CreateValidationsRef" Model="@NewEntity" ValidateOnLoad="false">
+            <Div Class="col-12 row">
+                <Div Class="col-6">
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["Name"]</FieldLabel>
+                            <TextEdit @bind-Text="@NewEntity.ItemName">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+                </Div>
+                <Div Class="col-6">
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["SKU"]</FieldLabel>
+                            <TextEdit @bind-Text="@NewEntity.SKU" />
+                        </Field>
+                    </Validation>
+                </Div>
+            </Div>
+            <Div Class="col-12 row">
+                <Div Class="col-6">
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["Price"]</FieldLabel>
+                            <TextEdit @bind-value="@NewEntity.SellingPrice">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+                </Div>
+                <Div Class="col-6">
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["ItemNo"]</FieldLabel>
+                            <TextEdit @bind-value="@NewEntity.ItemNo" />
+                        </Field>
+                    </Validation>
+                </Div>
+            </Div>
+            <Div Class="col-12 row">
+                <Div Class="col-6">
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["OpeningStock"]</FieldLabel>
+                            <TextEdit @bind-value="@NewEntity.OpeningStock">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+                </Div>
+                <Div Class="col-6">
+                    <Field>
+                        <FieldLabel>@L["Description"]</FieldLabel>
+                        <TextEdit @bind-value="@NewEntity.ItemDescription" />
+                    </Field>
+                </Div>
+            </Div>
+            <Div Class="col-12 row">
+                <Div Class="col-6">
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["Returnable"]</FieldLabel>
+                            <Check @bind-Checked="@NewEntity.Returnable" />
+                        </Field>
+                    </Validation>
+                </Div>
+                <Div Class="col-6">
+                </Div>
+            </Div>
+        </Validations>
+    </CardBody>
+    <CardFooter>
+        <Button Color="Color.Secondary" Type="ButtonType.Link" To="ItemList" Class="mr-3">
+            @L["Cancel"]
+        </Button>
+        <Button Color="Color.Primary" Type="@ButtonType.Submit" PreventDefaultOnSubmit="true" Clicked="CreateEntityAsync">
+            @L["Save"]
+        </Button>
+    </CardFooter>
+</Card>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@code {
+
+}

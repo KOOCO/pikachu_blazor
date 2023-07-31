@@ -18,6 +18,7 @@
     "Permission:LogisticsSetting": "Logistics Setting",
     "Permission:TenentList": "Tenent List",
     "Permission:TenentBillReport": "Tenent List Billing",
-    "Permission:PermissionSetting": "Permission Setting"
+    "Permission:PermissionSetting": "Permission Setting",
+    "NewItem": "New Item"
   }
 }

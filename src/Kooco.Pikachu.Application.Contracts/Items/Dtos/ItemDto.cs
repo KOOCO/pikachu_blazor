@@ -14,7 +14,7 @@ public class ItemDto : FullAuditedEntityDto<Guid>
     /// <summary>
     /// 商品ID
     /// </summary>
-    public Guid ItemId { get; set; }
+    //public Guid ItemId { get; set; }
 
     /// <summary>
     /// 商品編號
