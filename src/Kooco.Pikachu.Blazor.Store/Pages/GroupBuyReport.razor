@@ -1,0 +1,279 @@
+@page "/groupbuyreport"
+
+
+
+<PageTitle>Index</PageTitle>
+<div class="container">
+    <div class="my-5">
+        <div>
+            <p class="text-center">團購名稱限制60字元團購名
+                稱限制60字元團購名稱限制60字元團購名稱限制60字元團購名稱限制60字元團購名稱限制60字元團購名稱限制60字元團購名稱限制60字元</p>
+        </div>
+    </div>
+    <div style="background-color:#97b2e7; width:60%;" class="p-md-3">
+        <div class="row">
+            <div class="col-5">訂單數量(已付款)/總訂單數量</div>
+            <div class="col-7" style="position:absolute; right:0px;">990/999</div>
+        </div>
+        <div class="row">
+            <div class="col-5">銷售金額/銷售金額(扣除運費)</div>
+            <div class="col-7" style="position:absolute; right:0px;">999999/992799</div>
+        </div>
+        <div class="row">
+            <div class="col-5">以收款金額/以收款金額(扣除運費)</div>
+            <div class="col-7" style="position:absolute; right:0px;">999999/992799</div>
+        </div>
+        <div class="row">
+            <div class="col-5">銷售金額(扣除運費)</div>
+            <div class="col-7" style="position:absolute; right:0px;">992799</div>
+        </div>
+        <div class="row">
+            <div class="col-5">部落客分論潤</div>
+            <div class="col-7" style="position:absolute; right:0px;">99279</div>
+        </div>
+
+    </div>
+  
+
+    <div class="my-5">
+        <button type="button" class="btn btn-primary my-1" style="float:right">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cloud-download-fill" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M8 0a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 4.095 0 5.555 0 7.318 0 9.366 1.708 11 3.781 11H7.5V5.5a.5.5 0 0 1 1 0V11h4.188C14.502 11 16 9.57 16 7.773c0-1.636-1.242-2.969-2.834-3.194C12.923 1.999 10.69 0 8 0zm-.354 15.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 14.293V11h-1v3.293l-2.146-2.147a.5.5 0 0 0-.708.708l3 3z" />
+            </svg>
+        </button>
+        <table id="myTable" class="display table table-hover">
+            <thead style="background-color:#ce85e0">
+                <tr>
+                    <th style="background-color:#ce85e0">訂單編號</th>
+                    <th style="background-color:#ce85e0">
+                        訂單日期
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
+                            <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+                        </svg>
+                    </th>
+                    <th style="background-color:#ce85e0">顧客姓名</th>
+                    <th style="background-color:#ce85e0">email</th>
+                    <th style="background-color:#ce85e0">
+                        訂單狀態
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
+                            <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+                        </svg>
+                    </th>
+                    <th style="background-color:#ce85e0">
+                        出貨狀態
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
+                            <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+                        </svg>
+                    </th>
+                    <th style="background-color:#ce85e0">
+                        付款方式
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
+                            <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+                        </svg>
+                    </th>
+                    <th style="background-color:#ce85e0">
+                        結帳金額
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
+                            <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+                        </svg>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>999999999999</td>
+                    <td>2023/04/01</td>
+                    <td>顧客A</td>
+                    <td>abc123@gmail.com</td>
+                    <td>已創立</td>
+                    <td>未付款</td>
+                    <td>信用卡</td>
+                    <td>$99999</td>
+                </tr>
+                <tr>
+                    <td>999999999999</td>
+                    <td>2023/04/01</td>
+                    <td>顧客A</td>
+                    <td>abc123@gmail.com</td>
+                    <td>已創立</td>
+                    <td>未付款</td>
+                    <td>信用卡</td>
+                    <td>$99999</td>
+                </tr>
+                <tr>
+                    <td>999999999999</td>
+                    <td>2023/04/01</td>
+                    <td>顧客A</td>
+                    <td>abc123@gmail.com</td>
+                    <td>已創立</td>
+                    <td>未付款</td>
+                    <td>信用卡</td>
+                    <td>$99999</td>
+                </tr>
+                <tr>
+                    <td>999999999999</td>
+                    <td>2023/04/01</td>
+                    <td>顧客A</td>
+                    <td>abc123@gmail.com</td>
+                    <td>已創立</td>
+                    <td>未付款</td>
+                    <td>信用卡</td>
+                    <td>$99999</td>
+                </tr>
+                <tr>
+                    <td>999999999999</td>
+                    <td>2023/04/01</td>
+                    <td>顧客A</td>
+                    <td>abc123@gmail.com</td>
+                    <td>已創立</td>
+                    <td>未付款</td>
+                    <td>信用卡</td>
+                    <td>$99999</td>
+                </tr>
+                <tr>
+                    <td>999999999999</td>
+                    <td>2023/04/01</td>
+                    <td>顧客A</td>
+                    <td>abc123@gmail.com</td>
+                    <td>已創立</td>
+                    <td>未付款</td>
+                    <td>信用卡</td>
+                    <td>$99999</td>
+                </tr>
+                <tr>
+                    <td>999999999999</td>
+                    <td>2023/04/01</td>
+                    <td>顧客A</td>
+                    <td>abc123@gmail.com</td>
+                    <td>已創立</td>
+                    <td>未付款</td>
+                    <td>信用卡</td>
+                    <td>$99999</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@*<div>
+    <div style="display: flex; align-items: center; margin-bottom: 16px">
+        <div style="white-space:nowrap; margin-right: 16px">ExpandMode:</div>
+        <RadzenSelectBar @bind-Value="@expandMode" TextProperty="Text" ValueProperty="Value" style="margin-right: 16px"
+                         Data="@(Enum.GetValues(typeof(DataGridExpandMode)).Cast<DataGridExpandMode>().Select(t => new { Text = $"{t}", Value = t }))" Size="ButtonSize.Small" />
+        <RadzenButton Text="Expand all rows" Click="@(args => ToggleRowsExpand(true))" style="margin-right: 16px"
+                      Disabled=@(allRowsExpanded == true || expandMode == DataGridExpandMode.Single) />
+        <RadzenButton Text="Collapse all rows" Click="@(args => ToggleRowsExpand(false))"
+                      Disabled=@(allRowsExpanded == false || expandMode == DataGridExpandMode.Single) />
+    </div>
+    <RadzenDataGrid @ref="grid" AllowFiltering="true" AllowPaging="true" PageSize="3" AllowSorting="true" RowRender="@RowRender" ExpandMode="@expandMode"
+                    Data="@orders" TItem="Order">
+        <Template Context="order">
+            <RadzenCard Style="margin-bottom:20px">
+                Company:
+                <b>@order.Customer?.CompanyName</b>
+            </RadzenCard>
+            <RadzenTabs>
+                <Tabs>
+                    <RadzenTabsItem Text="Order Details">
+                        <RadzenDataGrid AllowFiltering="true" AllowPaging="true" AllowSorting="true" Data="@order.OrderDetails" TItem="OrderDetail">
+                            <Columns>
+                                <RadzenDataGridColumn TItem="OrderDetail" Property="Order.CustomerID" Title="Order" />
+                                <RadzenDataGridColumn TItem="OrderDetail" Property="Product.ProductName" Title="Product" />
+                                <RadzenDataGridColumn TItem="OrderDetail" Property="UnitPrice" Title="Unit Price">
+                                    <Template Context="detail">
+                                        @String.Format(new System.Globalization.CultureInfo("en-US"), "{0:C}", detail.UnitPrice)
+                                    </Template>
+                                </RadzenDataGridColumn>
+                                <RadzenDataGridColumn TItem="OrderDetail" Property="Quantity" Title="Quantity" />
+                                <RadzenDataGridColumn TItem="OrderDetail" Property="Discount" Title="Discount">
+                                    <Template Context="detail">
+                                        @String.Format("{0}%", detail.Discount * 100)
+                                    </Template>
+                                </RadzenDataGridColumn>
+                            </Columns>
+                        </RadzenDataGrid>
+                    </RadzenTabsItem>
+                    <RadzenTabsItem Text="Products">
+                        <RadzenDataList WrapItems="true" AllowPaging="true" Data="@order.OrderDetails" TItem="OrderDetail" PageSize="10">
+                            <Template Context="detail">
+                                <RadzenCard Style="width:100px; height:100px">
+                                    <h4 class="text-thin">Product</h4>
+                                    <b>@detail?.Product?.ProductName</b>
+                                </RadzenCard>
+                            </Template>
+                        </RadzenDataList>
+                    </RadzenTabsItem>
+                </Tabs>
+            </RadzenTabs>
+        </Template>
+        <Columns>
+            <RadzenDataGridColumn TItem="Order" Property="OrderID" Title="Order ID" Width="120px" />
+            <RadzenDataGridColumn TItem="Order" Property="Customer.CompanyName" Title="Customer" Width="200px" />
+            <RadzenDataGridColumn TItem="Order" Property="Employee.LastName" Title="Employee" Width="200px">
+                <Template Context="order">
+                    <RadzenImage Path="@order.Employee?.Photo" style="width: 32px; height: 32px; border-radius: 16px; margin-right: 6px;" />
+                    @order.Employee?.FirstName @order.Employee?.LastName
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="Order" Property="OrderDate" Title="Order Date" FormatString="{0:d}" Width="140px" />
+            <RadzenDataGridColumn TItem="Order" Property="RequiredDate" Title="Required Date" FormatString="{0:d}" Width="140px" />
+            <RadzenDataGridColumn TItem="Order" Property="ShippedDate" Title="Shipped Date" FormatString="{0:d}" Width="140px" />
+            <RadzenDataGridColumn TItem="Order" Property="ShipName" Title="Ship Name" />
+            <RadzenDataGridColumn TItem="Order" Property="ShipCountry" Title="Ship Country" />
+        </Columns>
+    </RadzenDataGrid>
+
+</div>
+
+@code {
+    DataGridExpandMode expandMode = DataGridExpandMode.Single;
+    bool? allRowsExpanded;
+
+    async Task ToggleRowsExpand(bool? value)
+    {
+        allRowsExpanded = value;
+
+        if (value == true)
+        {
+            await grid.ExpandRows(grid.PagedView);
+        }
+        else if (value == false)
+        {
+            await grid.CollapseRows(grid.PagedView);
+        }
+    }
+
+    IEnumerable<Order> orders;
+    RadzenDataGrid<Order> grid;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        orders = dbContext.Orders.Include("Customer").Include("Employee").Include("OrderDetails").Include("OrderDetails.Product").ToList();
+    }
+
+    void RowRender(RowRenderEventArgs<Order> args)
+    {
+        args.Expandable = args.Data.ShipCountry == "France" || args.Data.ShipCountry == "Brazil";
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+
+        if (firstRender)
+        {
+            await grid.ExpandRow(orders.FirstOrDefault());
+        }
+    }
+}
+*@
+<style>
+   
+
+</style>
+
+
+
+

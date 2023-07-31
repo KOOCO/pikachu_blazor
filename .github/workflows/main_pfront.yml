@@ -1,0 +1,57 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Build and deploy ASP.Net Core app to Azure Web App - pfront
+
+on:
+  push:
+    branches:
+      - main
+env:
+  AZURE_WEBAPP_NAME: pfront
+  AZURE_WEBAPP_PACKAGE_PATH: src\Kooco.Pikachu.Blazor.Store\published
+  CONFIGURATION: Release
+  DOTNET_CORE_VERSION: 7.0.x
+  WORKING_DIRECTORY: src\Kooco.Pikachu.Blazor.Store
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
+      - name: Restore
+        run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
+      - name: Build with dotnet
+        run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
+
+      - name: Publish
+        run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
+      - name: Publish Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: webapp
+          path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+
+  deploy:
+    runs-on: windows-latest
+    needs: build
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: webapp
+          path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'pfront'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_7DE8E56688DB4F64B6A0E89707D6CA61 }}
+          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
