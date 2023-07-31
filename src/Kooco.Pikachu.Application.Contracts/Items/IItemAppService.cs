@@ -13,7 +13,6 @@ public interface IItemAppService :
     ICrudAppService< 
         ItemDto, 
         Guid, 
-        ItemGetListInput,
         PagedAndSortedResultRequestDto,
         CreateUpdateItemDto>
 {

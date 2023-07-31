@@ -2,23 +2,37 @@
 
 @using Volo.Abp.Application.Dtos
 @using Kooco.Pikachu.Items.Dtos
+@using Kooco.Pikachu.Items
 @using Kooco.Pikachu.Localization
 @using Microsoft.Extensions.Localization
 @using Kooco.Pikachu.Items
+@using Volo.Abp
+@using Volo.Abp.AspNetCore.Components.Web
+
 @inject IStringLocalizer<PikachuResource> L
 
+@inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
 
-@inherits AbpCrudPageBase<ItemAppService,
-                ItemDto,
-                Guid,
-                ItemGetListInput,
-                PagedAndSortedResultRequestDto,
-                CreateUpdateItemDto>
+@inherits AbpCrudPageBase<IItemAppService,
+                            ItemDto,
+                            Guid,
+                            PagedAndSortedResultRequestDto,
+                            CreateUpdateItemDto>
 
 
 <Card>
     <CardHeader>
-        <h2>Item List</h2>
+        <Row Class="justify-content-between">
+            <Column ColumnSize="ColumnSize.IsAuto">
+                <h2>@L["Items"]</h2>
+            </Column>
+            <Column ColumnSize="ColumnSize.IsAuto">
+                <Button Color="Color.Primary"
+                        Clicked="OpenCreateModalAsync">
+                    @L["New Item"]
+                </Button>
+            </Column>
+        </Row>
     </CardHeader>
     <CardBody>
         <DataGrid TItem="ItemDto"
@@ -54,3 +68,49 @@
         </DataGrid>
     </CardBody>
 </Card>
+
+<Modal @ref="@CreateModal">
+    <ModalBackdrop />
+    <ModalContent IsCentered="true">
+        <Form>
+            <ModalHeader>
+                <ModalTitle>@L["NewBook"]</ModalTitle>
+                <CloseButton Clicked="CloseCreateModalAsync" />
+            </ModalHeader>
+            <ModalBody>
+                <Validations @ref="@CreateValidationsRef" Model="@NewEntity" ValidateOnLoad="false">
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["Name"]</FieldLabel>
+                            <TextEdit @bind-Text="@NewEntity.ItemName">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>           
+                    <Field>
+                        <FieldLabel>@L["SKU"]</FieldLabel>
+                        <TextEdit @bind-Date="@NewEntity.SKU" />
+                    </Field>
+                    <Field>
+                        <FieldLabel>@L["Price"]</FieldLabel>
+                        <NumericEdit TValue="int" @bind-Value="@NewEntity.SellingPrice" />
+                    </Field>
+                </Validations>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary"
+                        Clicked="CloseCreateModalAsync">
+                    @L["Cancel"]
+                </Button>
+                <Button Color="Color.Primary"
+                        Type="@ButtonType.Submit"
+                        PreventDefaultOnSubmit="true"
+                        Clicked="CreateEntityAsync">
+                    @L["Save"]
+                </Button>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
