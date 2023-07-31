@@ -12,6 +12,9 @@ using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
+using Kooco.Pikachu.Items;
+using Volo.Abp.EntityFrameworkCore.Modeling;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -24,6 +27,7 @@ public class PikachuDbContext :
     ITenantManagementDbContext
 {
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
+    public DbSet<Item> Items { get; set; }
 
     #region Entities from the modules
 
@@ -53,6 +57,7 @@ public class PikachuDbContext :
 
     #endregion
 
+
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
     {
@@ -76,11 +81,41 @@ public class PikachuDbContext :
 
         /* Configure your own tables/entities inside here */
 
+
+        builder.Entity<Item>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "Items", PikachuConsts.DbSchema);
+            b.ConfigureByConvention(); //auto configure for the base class props
+            b.HasKey(x => x.Id).HasName("PK_AppItems").IsClustered(false);  // 移除默认的聚集索引
+            b.HasIndex(x => x.ItemNo).IsUnique().IsClustered();// 添加 ItemNo 的聚集索引
+            b.HasIndex(x => x.ItemNo);
+            b.Property(x => x.ItemNo)
+               .IsRequired()
+               .ValueGeneratedOnAdd();
+            b.Property(x => x.ItemName)
+               .IsRequired();
+            b.Property(x => x.Returnable)
+                .IsRequired();
+            b.Property(x => x.SKU)
+                .IsRequired();
+            b.Property(x => x.SellingPrice)
+                .IsRequired();
+    
+
+
+
+        });
+
         //builder.Entity<YourEntity>(b =>
         //{
         //    b.ToTable(PikachuConsts.DbTablePrefix + "YourEntities", PikachuConsts.DbSchema);
         //    b.ConfigureByConvention(); //auto configure for the base class props
         //    //...
         //});
+
+
+
     }
+
+
 }

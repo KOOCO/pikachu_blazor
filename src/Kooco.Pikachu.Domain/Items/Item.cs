@@ -1,28 +1,28 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Entities;
+using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
 
 namespace Kooco.Pikachu.Items
 {
-    internal class Items : AggregateRoot<Guid>, IMultiTenant
+    public class Item : FullAuditedAggregateRoot<Guid>, IMultiTenant
     {
         public Guid? TenantId { get; set; }
 
-        public Guid ItemId { get; set; }
         /// <summary>
-        /// 商品ID
+        /// 商品編號
         /// </summary>
-        public ulong? ItemNo { get; set; }
+        public long ItemNo { get; set; }
 
         /// <summary>
         /// 商品名稱
         /// ItemName
         /// </summary>
-        public string? ItemName { get; set; }
+        public string ItemName { get; set; }
         /// <summary>
         /// 商品描述
         /// ItemDescription
@@ -32,7 +32,7 @@ namespace Kooco.Pikachu.Items
         /// 商品售價
         /// ItemSellingPrice
         /// </summary>
-        public int? SellingPrice { get; set; }
+        public int SellingPrice { get; set; }
 
         /// <summary>
         /// 銷售帳戶
@@ -43,7 +43,7 @@ namespace Kooco.Pikachu.Items
         /// 可否退貨
         /// Returnable
         /// </summary>
-        public Boolean Returnable { get; set; }
+        public Boolean Returnable { get; set; } = false;
         /// <summary>
         /// 商品品牌名稱
         /// Item Brand Name
@@ -73,13 +73,12 @@ namespace Kooco.Pikachu.Items
         /// 度量單位
         /// Dimension Unit
         /// </summary>
-        public string? DimensionUnit { get; set; }
+        public Diemensions? DiemensionsUnit { get; set; }
         /// <summary>
         /// 重量單位
         /// Weight Unit
         /// </summary>
-        public string? WeightUnit { get; set; }
-
+        public Weight? WeightUnit { get; set; }
         /// <summary>
         /// 稅率名稱
         /// Tax Name
@@ -134,7 +133,7 @@ namespace Kooco.Pikachu.Items
         /// 商品單位
         /// Unit
         /// </summary>
-        public string? Unit { get; set; }
+        public Quantity? Unit { get; set; }
         /// <summary>
         /// SKU
         /// </summary>
@@ -199,16 +198,16 @@ namespace Kooco.Pikachu.Items
         /// 初始庫存金額
         /// Opening Stock Value
         /// </summary>
-        public int? OpeningStockValue { get; set; }
+        public int OpeningStockValue { get; set; }
         /// <summary>
         /// Stock On Hand
         /// </summary>
-        public int? StockOnHand { get; set; }
+        public int? StockOnHand { get; set; } = 0;
         /// <summary>
         /// 是組合商品
         /// Is Combo Product
         /// </summary>
-        public bool IsComboProduct { get; set; }
+        public bool? IsComboProduct { get; set; }
         /// <summary>
         /// 商品歸戶
         /// Item Type

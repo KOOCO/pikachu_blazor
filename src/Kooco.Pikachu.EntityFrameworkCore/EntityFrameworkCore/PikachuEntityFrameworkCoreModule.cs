@@ -1,4 +1,5 @@
-﻿using System;
+using Kooco.Pikachu.Items;
+using System;
 using Microsoft.Extensions.DependencyInjection;
 using Volo.Abp.Uow;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
@@ -41,6 +42,7 @@ public class PikachuEntityFrameworkCoreModule : AbpModule
                 /* Remove "includeAllEntities: true" to create
                  * default repositories only for aggregate roots */
             options.AddDefaultRepositories(includeAllEntities: true);
+            options.AddRepository<Item, ItemRepository>();
         });
 
         Configure<AbpDbContextOptions>(options =>

@@ -4,6 +4,7 @@ using Kooco.Pikachu.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    partial class PikachuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230719183501_ChangeItemNoToLong")]
+    partial class ChangeItemNoToLong
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,6 +33,7 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("BrandName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -47,63 +51,83 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnName("CreatorId");
 
                     b.Property<string>("CustomeField10Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomeField10Value")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomeField1Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomeField1Value")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomeField2Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomeField2Value")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomeField3Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomeField3Value")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomeField4Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomeField4Value")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomeField5Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomeField5Value")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomeField6Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomeField6Value")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomeField7Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomeField7Value")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomeField8Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomeField8Value")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomeField9Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CustomeField9Value")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("DeleterId")
@@ -114,10 +138,11 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("DeletionTime");
 
-                    b.Property<int?>("DiemensionsUnit")
+                    b.Property<int>("DiemensionsUnit")
                         .HasColumnType("int");
 
                     b.Property<string>("EAN")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ExtraProperties")
@@ -125,12 +150,14 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnName("ExtraProperties");
 
                     b.Property<string>("ISBN")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("InventoryAccount")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("IsComboProduct")
+                    b.Property<bool>("IsComboProduct")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
@@ -140,9 +167,11 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnName("IsDeleted");
 
                     b.Property<string>("ItemCategory")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ItemDescription")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ItemName")
@@ -150,12 +179,10 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<long>("ItemNo")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ItemNo"));
-
                     b.Property<string>("ItemType")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("LastModificationTime")
@@ -166,55 +193,62 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("LastModifierId");
 
-                    b.Property<DateTime?>("LastSyncTime")
+                    b.Property<DateTime>("LastSyncTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ManufactorName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("OpeningStock")
+                    b.Property<int>("OpeningStock")
                         .HasColumnType("int");
 
                     b.Property<int>("OpeningStockValue")
                         .HasColumnType("int");
 
-                    b.Property<short?>("PackageHeight")
+                    b.Property<short>("PackageHeight")
                         .HasColumnType("smallint");
 
-                    b.Property<short?>("PackageLength")
+                    b.Property<short>("PackageLength")
                         .HasColumnType("smallint");
 
-                    b.Property<short?>("PackageWeight")
+                    b.Property<short>("PackageWeight")
                         .HasColumnType("smallint");
 
                     b.Property<string>("PartNumber")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PreferredVendor")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProductType")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PurchaseAccount")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PurchaseDescription")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PurchasePrice")
+                    b.Property<int>("PurchasePrice")
                         .HasColumnType("int");
 
                     b.Property<string>("PurchaseTaxName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PurchaseTaxPercentage")
+                    b.Property<int>("PurchaseTaxPercentage")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ReferenceID")
+                    b.Property<int>("ReferenceID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ReorderLevel")
+                    b.Property<int>("ReorderLevel")
                         .HasColumnType("int");
 
                     b.Property<bool>("Returnable")
@@ -225,27 +259,31 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SalesAccount")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("SellingPrice")
                         .HasColumnType("int");
 
-                    b.Property<int?>("Source")
+                    b.Property<int>("Source")
                         .HasColumnType("int");
 
                     b.Property<string>("Status")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("StockOnHand")
+                    b.Property<int>("StockOnHand")
                         .HasColumnType("int");
 
                     b.Property<string>("TaxName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("TaxPercentage")
+                    b.Property<int>("TaxPercentage")
                         .HasColumnType("int");
 
                     b.Property<string>("TaxType")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("TenantId")
@@ -253,26 +291,22 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnName("TenantId");
 
                     b.Property<string>("UPC")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("Unit")
+                    b.Property<int>("Unit")
                         .HasColumnType("int");
 
                     b.Property<string>("WarehouseName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("WeightUnit")
+                    b.Property<int>("WeightUnit")
                         .HasColumnType("int");
 
-                    b.HasKey("Id")
-                        .HasName("PK_AppItems");
+                    b.HasKey("Id");
 
-                    SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Id"), false);
-
-                    b.HasIndex("ItemNo")
-                        .IsUnique();
-
-                    SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("ItemNo"));
+                    b.HasIndex("ItemNo");
 
                     b.ToTable("AppItems", (string)null);
                 });

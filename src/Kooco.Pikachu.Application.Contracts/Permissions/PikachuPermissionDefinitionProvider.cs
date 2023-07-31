@@ -1,4 +1,4 @@
-﻿using Kooco.Pikachu.Localization;
+using Kooco.Pikachu.Localization;
 using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Localization;
 
@@ -26,6 +26,11 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
         myGroup.AddPermission(PikachuPermissions.TenentList, L("Permission:TenentList"));
         myGroup.AddPermission(PikachuPermissions.TenentBillReport, L("Permission:TenentBillReport"));
         myGroup.AddPermission(PikachuPermissions.PermissionSetting, L("Permission:PermissionSetting"));
+
+        var itemPermission = myGroup.AddPermission(PikachuPermissions.Item.Default, L("Permission:Item"));
+        itemPermission.AddChild(PikachuPermissions.Item.Create, L("Permission:Create"));
+        itemPermission.AddChild(PikachuPermissions.Item.Update, L("Permission:Update"));
+        itemPermission.AddChild(PikachuPermissions.Item.Delete, L("Permission:Delete"));
     }
 
     private static LocalizableString L(string name)
