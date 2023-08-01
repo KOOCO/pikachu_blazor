@@ -13,6 +13,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
          * into multiple profile classes for a better organization. */
         CreateMap<Item, ItemDto>();
         CreateMap<CreateUpdateItemDto, Item>(MemberList.Source);
-        CreateMap<ItemDto, CreateUpdateItemDto>();
+        CreateMap<ItemDto, UpdateItemDto>();
+        CreateMap<UpdateItemDto, Item>();
     }
 }

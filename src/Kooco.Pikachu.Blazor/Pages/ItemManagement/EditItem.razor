@@ -45,41 +45,19 @@
                     <Validation MessageLocalizer="@LH.Localize">
                         <Field>
                             <FieldLabel>@L["Price"]</FieldLabel>
-                            <TextEdit @bind-value="@EditingEntity.SellingPrice">
-                                <Feedback>
-                                    <ValidationError />
-                                </Feedback>
-                            </TextEdit>
+                            <input @bind="EditingEntity.SellingPrice" type="number" class="form-control" />
+                            <ValidationError />
                         </Field>
                     </Validation>
                 </Div>
-                <Div Class="col-6">
-                    <Validation MessageLocalizer="@LH.Localize">
-                        <Field>
-                            <FieldLabel>@L["ItemNo"]</FieldLabel>
-                            <TextEdit @bind-value="@EditingEntity.ItemNo" />
-                        </Field>
-                    </Validation>
-                </Div>
-            </Div>
-            <Div Class="col-12 row">
                 <Div Class="col-6">
                     <Validation MessageLocalizer="@LH.Localize">
                         <Field>
                             <FieldLabel>@L["OpeningStock"]</FieldLabel>
-                            <TextEdit @bind-value="@EditingEntity.OpeningStock">
-                                <Feedback>
-                                    <ValidationError />
-                                </Feedback>
-                            </TextEdit>
+                            <input @bind="EditingEntity.OpeningStockValue" type="number" class="form-control" />
+                            <ValidationError />
                         </Field>
                     </Validation>
-                </Div>
-                <Div Class="col-6">
-                    <Field>
-                        <FieldLabel>@L["Description"]</FieldLabel>
-                        <TextEdit @bind-value="@EditingEntity.ItemDescription" />
-                    </Field>
                 </Div>
             </Div>
             <Div Class="col-12 row">
@@ -92,7 +70,10 @@
                     </Validation>
                 </Div>
                 <Div Class="col-6">
-                  
+                    <Field>
+                        <FieldLabel>@L["Description"]</FieldLabel>
+                        <TextEdit @bind-value="@EditingEntity.ItemDescription" />
+                    </Field>
                 </Div>
             </Div>
         </Validations>

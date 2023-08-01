@@ -233,13 +233,14 @@ public class CreateUpdateItemDto
     /// <summary>
     /// 初始庫存        Opening Stock
     /// </summary>
-    [Required]
+    
     [DisplayName("ItemOpeningStock")]
     public int OpeningStock { get; set; }
 
     /// <summary>
     /// 初始庫存金額        Opening Stock Value
     /// </summary>
+    [Required]
     [DisplayName("ItemOpeningStockValue")]
     public int OpeningStockValue { get; set; }
 

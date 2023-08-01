@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Volo.Abp;
 
 namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 {
@@ -24,21 +25,13 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         {
             try
             {
-                //var validate = true;
-                //if (CreateValidationsRef != null)
-                //{
-                //    validate = await CreateValidationsRef.ValidateAll();
-                //}
-                //if (validate)
-                //{
                     await AppService.CreateAsync(NewEntity);
                     NavigationManager.NavigateTo("Items");
-                //}
             }
             catch(Exception ex)
             {
+                throw new UserFriendlyException("Unable to Save");
             }
-
         }
     }
 }

@@ -16,7 +16,7 @@
                             ItemDto,
                             Guid,
                             PagedAndSortedResultRequestDto,
-                            CreateUpdateItemDto>
+                            CreateUpdateItemDto, UpdateItemDto>
 <Card>
     <CardHeader>
         <Row Class="justify-content-between">
@@ -25,10 +25,6 @@
             </Column>
             <Column ColumnSize="ColumnSize.IsAuto">
                 <Button Color="Color.Primary" Type="ButtonType.Link" To="Items/New">@L["NewItem"]</Button>
-                @*<Button Color="Color.Primary"
-                Clicked="OpenCreateModalAsync">
-                @L["New Item"]
-                </Button>*@
             </Column>
         </Row>
     </CardHeader>
@@ -46,6 +42,10 @@
                             <EntityAction TItem="ItemDto"
                                           Text="@L["Edit"]"
                                           Clicked="() => GoToEditPage(context)" />
+                            <EntityAction TItem="ItemDto"
+                                          Text="@L["Delete"]"
+                                          Clicked="() => DeleteEntityAsync(context)"
+                                          ConfirmationMessage="() => GetDeleteConfirmationMessage(context)" />
                         </EntityActions>
                     </DisplayTemplate>
                 </DataGridEntityActionsColumn>
@@ -83,49 +83,3 @@
         NavigationManager.NavigateTo($"Items/{item.Id}");
     }
 }
-
-@*<Modal @ref="@CreateModal">
-    <ModalBackdrop />
-    <ModalContent IsCentered="true">
-        <Form>
-            <ModalHeader>
-                <ModalTitle>@L["NewBook"]</ModalTitle>
-                <CloseButton Clicked="CloseCreateModalAsync" />
-            </ModalHeader>
-            <ModalBody>
-                <Validations @ref="@CreateValidationsRef" Model="@NewEntity" ValidateOnLoad="false">
-                    <Validation MessageLocalizer="@LH.Localize">
-                        <Field>
-                            <FieldLabel>@L["Name"]</FieldLabel>
-                            <TextEdit @bind-Text="@NewEntity.ItemName">
-                                <Feedback>
-                                    <ValidationError />
-                                </Feedback>
-                            </TextEdit>
-                        </Field>
-                    </Validation>
-                    <Field>
-                        <FieldLabel>@L["SKU"]</FieldLabel>
-                        <TextEdit @bind-Date="@NewEntity.SKU" />
-                    </Field>
-                    <Field>
-                        <FieldLabel>@L["Price"]</FieldLabel>
-                        <NumericEdit TValue="int" @bind-Value="@NewEntity.SellingPrice" />
-                    </Field>
-                </Validations>
-            </ModalBody>
-            <ModalFooter>
-                <Button Color="Color.Secondary"
-                        Clicked="CloseCreateModalAsync">
-                    @L["Cancel"]
-                </Button>
-                <Button Color="Color.Primary"
-                        Type="@ButtonType.Submit"
-                        PreventDefaultOnSubmit="true"
-                        Clicked="CreateEntityAsync">
-                    @L["Save"]
-                </Button>
-            </ModalFooter>
-        </Form>
-    </ModalContent>
-</Modal>*@
