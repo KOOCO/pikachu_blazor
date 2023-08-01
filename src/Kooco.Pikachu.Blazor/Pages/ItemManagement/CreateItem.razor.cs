@@ -32,7 +32,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 //if (validate)
                 //{
                     await AppService.CreateAsync(NewEntity);
-                    NavigationManager.NavigateTo("ItemList");
+                    NavigationManager.NavigateTo("Items");
                 //}
             }
             catch(Exception ex)

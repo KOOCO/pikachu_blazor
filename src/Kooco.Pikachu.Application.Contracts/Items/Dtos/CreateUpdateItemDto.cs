@@ -7,11 +7,7 @@ namespace Kooco.Pikachu.Items.Dtos;
 [Serializable]
 public class CreateUpdateItemDto
 {
-    /// <summary>
-    /// 商品ID
-    /// </summary>
-    //[DisplayName("ItemId")]
-    //public Guid? Id { get; set; }
+
 
     /// <summary>
     /// 商品編號

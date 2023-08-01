@@ -77,7 +77,7 @@ public class PikachuMenuContributor : IMenuContributor
             name: "GoodsList",
             icon: "fas fa-list",
             displayName: "商品列表",
-            url: "/ItemList")
+            url: "/Items")
             )
             .AddItem(new ApplicationMenuItem(
             name: "GroupGoodsManagement",
