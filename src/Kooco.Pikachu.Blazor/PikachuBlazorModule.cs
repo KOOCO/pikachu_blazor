@@ -44,6 +44,8 @@ using Volo.Abp.VirtualFileSystem;
 using Volo.Abp.OpenIddict;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using Kooco.Pikachu.Blazor.Pages;
+using Volo.Abp.Ui.Branding;
 
 namespace Kooco.Pikachu.Blazor;
 
@@ -120,6 +122,9 @@ public class PikachuBlazorModule : AbpModule
             builder.AddSigningCertificate(
                 GetSigningCertificate(hostingEnvironment, context.Services.GetConfiguration()));
         });
+
+
+
     }
 
     private X509Certificate2 GetEncryptionCertificate(IWebHostEnvironment environment, IConfiguration config)

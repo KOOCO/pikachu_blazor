@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp;
 
-namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
+namespace Kooco.Pikachu.Blazor.Pages.ItemManagement 
 {
     public partial class CreateItem
     {
@@ -30,7 +30,14 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             }
             catch(Exception ex)
             {
-                throw new UserFriendlyException("Unable to Save");
+                //if the environment is debug then throw the exception
+                if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+                    throw new UserFriendlyException("Unable to Save", ex.Source, ex.Message);
+                else
+                    throw new UserFriendlyException("Unable to Save");
+
+
+
             }
         }
     }
