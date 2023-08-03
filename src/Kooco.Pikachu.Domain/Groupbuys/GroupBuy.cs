@@ -8,7 +8,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 
 namespace Kooco.Pikachu.GroupBuys
 {
-    public class GroupBuys : FullAuditedAggregateRoot<Guid>, IMultiTenant
+    public class GroupBuy : FullAuditedAggregateRoot<Guid>, IMultiTenant
     {
         public Guid? TenantId { get; set; }
 

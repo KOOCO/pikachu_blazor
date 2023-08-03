@@ -16,10 +16,28 @@ namespace Kooco.Pikachu.Items.Dtos
         public string ItemName { get; set; }
 
         /// <summary>
+        /// 商品敘述抬頭        ItemDescriptionTitle
+        /// </summary>
+       [DisplayName("ItemDescriptionTitle")]
+        public string ItemDescriptionTitle { get; set; }
+
+        /// <summary>
         /// 商品描述        ItemDescription
         /// </summary>
         [DisplayName("ItemDescription")]
         public string ItemDescription { get; set; }
+
+        /// <summary>
+        /// 商品分類1 ItemProperty1
+        /// </summary>
+        [DisplayName("Property")]
+        public string Property1 { get; set; }
+
+        /// <summary>
+        /// 商品分類2 ItemProperty2
+        /// </summary>
+        [DisplayName("Property")]
+        public string Property2 { get; set; }
 
         /// <summary>
         /// 商品售價        ItemSellingPrice
@@ -27,6 +45,13 @@ namespace Kooco.Pikachu.Items.Dtos
         [Required]
         [DisplayName("ItemSellingPrice")]
         public int SellingPrice { get; set; }
+
+              /// <summary>
+        /// 商品團購價 Group Buy Price
+        /// </summary>
+         [DisplayName("GroupBuyPrice")]
+          public int GroupBuyPrice { get; set; }
+
 
         /// <summary>
         /// 銷售帳戶        Sales Account
@@ -40,6 +65,43 @@ namespace Kooco.Pikachu.Items.Dtos
         [Required]
         [DisplayName("ItemReturnable")]
         public Boolean Returnable { get; set; }
+
+                  /// <summary>
+        /// 限時販售開始時間 Ｌimit Avaliable Time Start
+        /// </summary>
+        [DisplayName("LimitAvaliableTimeStart")]
+        public DateTime LimitAvaliableTimeStart { get; set; }
+
+        /// <summary>
+        /// 限時販售結束時間 Ｌimit Avaliable Time End
+        /// </summary>
+        [DisplayName("LimitAvaliableTimeEnd")]
+        public DateTime LimitAvaliableTimeEnd { get; set; }
+
+        /// <summary>
+        /// 販售數量限制
+        /// </summary>
+        [DisplayName("QuantityLimit")]
+        public int QuantityLimit { get; set; }
+
+        /// <summary>
+        /// 分潤 Share Profit
+        /// </summary>
+        [DisplayName("ShareProfit")]
+        public int ShareProfit { get; set; }
+
+        /// <summary>
+        /// 是否免運 Is Free Shipping
+        /// </summary>
+        [DisplayName("isFreeShipping")]
+        public bool isFreeShipping { get; set; } = false;
+
+        /// <summary>
+        /// 排除運送方式 Exclude Shipping Method
+        /// </summary>
+        [DisplayName("ExclueShippingMethod")]
+        public Array ExclueShippingMethod { get; set; }
+
 
         /// <summary>
         /// 商品品牌名稱        Item Brand Name

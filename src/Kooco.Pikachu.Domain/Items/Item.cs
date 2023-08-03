@@ -24,15 +24,34 @@ namespace Kooco.Pikachu.Items
         /// </summary>
         public string ItemName { get; set; }
         /// <summary>
+        /// 商品敘述抬頭 ItemDescriptionTitle
+        /// </summary>
+        public string? ItemDescriptionTitle { get; set; }
+        /// <summary>
         /// 商品描述
         /// ItemDescription
         /// </summary>
         public string? ItemDescription { get; set; }
+
+        /// <summary>
+        /// 商品分類1 ItemProperty1
+        /// </summary>
+        public string? Property1 { get; set; }
+
+        /// <summary>
+        /// 商品分類2 ItemProperty2
+        /// </summary>
+        public string? Property2 { get; set; }
         /// <summary>
         /// 商品售價
         /// ItemSellingPrice
         /// </summary>
         public int SellingPrice { get; set; }
+
+        /// <summary>
+        /// 商品團購價 Group Buy Price
+        /// </summary>
+        public int? GroupBuyPrice { get; set; }
 
         /// <summary>
         /// 銷售帳戶
@@ -44,6 +63,37 @@ namespace Kooco.Pikachu.Items
         /// Returnable
         /// </summary>
         public Boolean Returnable { get; set; } = false;
+
+        /// <summary>
+        /// 限時販售開始時間 Ｌimit Avaliable Time Start
+        /// </summary>
+        public DateTime LimitAvaliableTimeStart { get; set; }
+
+        /// <summary>
+        /// 限時販售結束時間 Ｌimit Avaliable Time End
+        /// </summary>
+        public DateTime LimitAvaliableTimeEnd { get; set; }
+
+        /// <summary>
+        /// 販售數量限制
+        /// </summary>
+        public int QuantityLimit { get; set; }
+
+        /// <summary>
+        /// 分潤 Share Profit
+        /// </summary>
+        public int ShareProfit { get; set; }
+
+        /// <summary>
+        /// 是否免運 Is Free Shipping
+        /// </summary>
+        public bool isFreeShipping { get; set; } = false;
+
+        /// <summary>
+        /// 排除運送方式 Exclude Shipping Method
+        /// </summary>
+        public Array ExclueShippingMethod { get; set; }
+
         /// <summary>
         /// 商品品牌名稱
         /// Item Brand Name
@@ -90,7 +140,7 @@ namespace Kooco.Pikachu.Items
         /// </summary>
         public int? TaxPercentage { get; set; }
         /// <summary>
-        /// 稅率類型
+        /// 商品稅別
         /// Tax Type
         /// </summary>
         public string? TaxType { get; set; }
