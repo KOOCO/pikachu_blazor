@@ -157,7 +157,7 @@ namespace Kooco.Pikachu.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsComboProduct")
+                    b.Property<bool>("IsGroupProduct")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")

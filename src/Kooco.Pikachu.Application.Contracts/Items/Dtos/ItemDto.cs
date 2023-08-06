@@ -263,9 +263,9 @@ public class ItemDto : FullAuditedEntityDto<Guid>
     public int StockOnHand { get; set; }
 
     /// <summary>
-    /// 是組合商品        Is Combo Product
+    /// 是組合商品        Is Group Product
     /// </summary>
-    public bool IsComboProduct { get; set; }
+    public bool IsGroupProduct { get; set; }
 
     /// <summary>
     /// 商品歸戶        Item Type

@@ -49,7 +49,7 @@
     "ItemOpeningStock": "ItemOpeningStock",
     "ItemOpeningStockValue": "ItemOpeningStockValue",
     "ItemStockOnHand": "ItemStockOnHand",
-    "ItemIsComboProduct": "ItemIsComboProduct",
+    "ItemIsGroupProduct": "ItemIsComboProduct",
     "ItemType": "ItemType",
     "ItemCategory": "ItemCategory",
     "ItemCustomeField1Name": "ItemCustomeField1Name",

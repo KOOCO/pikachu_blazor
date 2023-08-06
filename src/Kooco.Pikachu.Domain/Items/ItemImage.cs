@@ -10,14 +10,19 @@ using Kooco.Pikachu.Items;
 
 namespace Kooco.Pikachu.CommonServices.ItemImages
 {
-    internal class ItemImage : FullAuditedAggregateRoot<Guid>, IMultiTenant
+    public class ItemImage : FullAuditedAggregateRoot<Guid>, IMultiTenant
     {
         public Guid? TenantId { get; set; }
 
         /// <summary>
         /// 商品編號 Item Id
         /// </summary>
-        public Item Item { get; set; }
+        public Item? Item { get; set; }
+
+        /// <summary>
+        /// 商品群組編號 Group Item Id
+        /// </summary>
+        public GroupItem? GroupItem { get; set; }
 
         /// <summary>
         /// 圖片網址 Image URL

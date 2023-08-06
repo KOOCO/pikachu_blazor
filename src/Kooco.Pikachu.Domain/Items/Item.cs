@@ -250,14 +250,15 @@ namespace Kooco.Pikachu.Items
         /// </summary>
         public int OpeningStockValue { get; set; }
         /// <summary>
-        /// Stock On Hand
+        /// 現有庫存 - 這是統計全部倉庫的庫存
+        /// Stock On Hand - This is the total stock of all warehouses
         /// </summary>
         public int? StockOnHand { get; set; } = 0;
         /// <summary>
         /// 是組合商品
-        /// Is Combo Product
+        /// Is Group Product
         /// </summary>
-        public bool? IsComboProduct { get; set; }
+        public bool? IsGroupProduct { get; set; }
         /// <summary>
         /// 商品歸戶
         /// Item Type

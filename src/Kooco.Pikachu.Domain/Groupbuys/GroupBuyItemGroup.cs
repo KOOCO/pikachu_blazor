@@ -5,12 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Domain.Entities.Auditing;
-using Volo.Abp.Domain.Entities;
 using Kooco.Pikachu.Items;
 
 namespace Kooco.Pikachu.GroupBuys
-{
-    internal class GroupBuyItemGroup : AggregateRoot<Guid>, IMultiTenant
+{ 
+    internal class GroupBuyItemGroup : FullAuditedAggregateRoot<Guid>, IMultiTenant
     {
         public Guid? TenantId { get; set; }
 

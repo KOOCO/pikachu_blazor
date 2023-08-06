@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Domain.Entities.Auditing;
+using Kooco.Pikachu.Items;
 
 namespace Kooco.Pikachu.GroupBuys
 {
@@ -189,6 +190,11 @@ namespace Kooco.Pikachu.GroupBuys
         /// 通知信件文案 NotifyMessage
         /// </summary>
         public string? NotifyMessage { get; set; }
+
+        /// <summary>
+        /// 預設使用的發貨倉庫 Default Warehouse used for shipping
+        /// </summary>
+        public Warehouse DefaultWarehouse { get; set; }
 
 
     }
