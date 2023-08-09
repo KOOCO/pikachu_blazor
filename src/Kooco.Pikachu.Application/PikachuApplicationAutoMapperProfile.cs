@@ -15,5 +15,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<CreateUpdateItemDto, Item>(MemberList.Source);
         CreateMap<ItemDto, UpdateItemDto>();
         CreateMap<UpdateItemDto, Item>();
+        CreateMap<ItemDetails, ItemDetailsDto>();
+        CreateMap<CreateUpdateItemDetailsDto, ItemDetails>(MemberList.Source);
     }
 }

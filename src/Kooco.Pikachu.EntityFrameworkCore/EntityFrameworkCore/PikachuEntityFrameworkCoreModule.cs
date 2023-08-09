@@ -43,6 +43,7 @@ public class PikachuEntityFrameworkCoreModule : AbpModule
                  * default repositories only for aggregate roots */
             options.AddDefaultRepositories(includeAllEntities: true);
             options.AddRepository<Item, ItemRepository>();
+            options.AddRepository<ItemDetails, ItemDetailsRepository>();
         });
 
         Configure<AbpDbContextOptions>(options =>

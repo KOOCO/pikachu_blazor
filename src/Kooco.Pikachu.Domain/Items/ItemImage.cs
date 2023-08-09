@@ -19,11 +19,7 @@ namespace Kooco.Pikachu.CommonServices.ItemImages
         /// </summary>
         public Item? Item { get; set; }
 
-        /// <summary>
-        /// 商品群組編號 Group Item Id
-        /// </summary>
-        public GroupItem? GroupItem { get; set; }
-
+        public SetItem? SetItem { get; set; }
         /// <summary>
         /// 圖片網址 Image URL
         /// </summary>

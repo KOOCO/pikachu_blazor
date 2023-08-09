@@ -13,6 +13,7 @@ namespace Kooco.Pikachu
     internal class PikachuDataSeedContributor : IDataSeedContributor, ITransientDependency
     {
         private readonly IRepository<Item, Guid> _appItemRepository;
+        private readonly IRepository<ItemDetails, Guid> _appItemDetailsRepository;
 
         public PikachuDataSeedContributor(IRepository<Item, Guid> appItemRepository)
         {
@@ -20,6 +21,7 @@ namespace Kooco.Pikachu
         }
 
         public async Task SeedAsync(DataSeedContext context)
+        
         {
             if (await _appItemRepository.GetCountAsync() <= 0)
             {
@@ -47,6 +49,12 @@ namespace Kooco.Pikachu
 
                    },
                autoSave: true);
+                await _appItemDetailsRepository.InsertAsync(
+                    new ItemDetails
+                    {
+
+                    },
+                    autoSave: true);
             }
         }
     }
