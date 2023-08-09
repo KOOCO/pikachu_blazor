@@ -14,15 +14,15 @@ namespace Kooco.Pikachu.Items
         public Guid? TenantId { get; set; }
 
         /// <summary>
-        /// 商品編號
+        /// 商品編號 ItemNo
         /// </summary>
-        public long ItemNo { get; set; }
-
+        public long ItemNo { get; set; }       
         /// <summary>
         /// 商品名稱
         /// ItemName
         /// </summary>
         public string ItemName { get; set; }
+        public String? ItemMainImageURL { get; set; }
         /// <summary>
         /// 商品敘述抬頭 ItemDescriptionTitle
         /// </summary>
@@ -33,26 +33,37 @@ namespace Kooco.Pikachu.Items
         /// </summary>
         public string? ItemDescription { get; set; }
 
+        public Array ItemTags { get; set; }
+
         /// <summary>
         /// 商品分類1 ItemProperty1
         /// </summary>
-        public string? Property1 { get; set; }
+        public string? PropertyName1 { get; set; }
+
+        /// <summary>
+        /// 商品分類標籤1 ItemPropertyTags1
+        /// </summary>
+        public Array? PropertyTags1 { get; set; }
 
         /// <summary>
         /// 商品分類2 ItemProperty2
         /// </summary>
-        public string? Property2 { get; set; }
-        /// <summary>
-        /// 商品售價
-        /// ItemSellingPrice
-        /// </summary>
-        public int SellingPrice { get; set; }
+        public string? PropertyName2 { get; set; }
 
         /// <summary>
-        /// 商品團購價 Group Buy Price
+        /// 商品分類標籤2 ItemPropertyTags2
         /// </summary>
-        public int? GroupBuyPrice { get; set; }
+        public Array? PropertyTags2 { get; set; }
 
+        /// <summary>
+        /// 商品分類3 ItemProperty3
+        /// </summary>
+        public string? PropertyName3 { get; set; }
+
+        /// <summary>
+        /// 商品分類標籤3 ItemPropertyTags3
+        /// </summary>
+        public Array? PropertyTags3 { get; set; }   
         /// <summary>
         /// 銷售帳戶
         /// Sales Account
@@ -74,10 +85,6 @@ namespace Kooco.Pikachu.Items
         /// </summary>
         public DateTime LimitAvaliableTimeEnd { get; set; }
 
-        /// <summary>
-        /// 販售數量限制
-        /// </summary>
-        public int QuantityLimit { get; set; }
 
         /// <summary>
         /// 分潤 Share Profit
@@ -184,10 +191,7 @@ namespace Kooco.Pikachu.Items
         /// Unit
         /// </summary>
         public Quantity? Unit { get; set; }
-        /// <summary>
-        /// SKU
-        /// </summary>
-        public string SKU { get; set; }
+     
         /// <summary>
         /// UPC
         /// </summary>
@@ -200,75 +204,14 @@ namespace Kooco.Pikachu.Items
         /// ISBN
         /// </summary>
         public string? ISBN { get; set; }
-        /// <summary>
-        /// 部件編號
-        /// Part Number
-        /// </summary>
-        public string? PartNumber { get; set; }
-        /// <summary>
-        /// 採購金額
-        /// Purchase Price
-        /// </summary>
-        public int? PurchasePrice { get; set; }
-        /// <summary>
-        /// 採購帳戶
-        /// Purchase Account
-        /// </summary>
-        public string? PurchaseAccount { get; set; }
-        /// <summary>
-        /// 採購描述
-        /// Purchase Description
-        /// </summary>
-        public string? PurchaseDescription { get; set; }
-        /// <summary>
-        /// 庫存帳戶
-        /// Inventory Account
-        /// </summary>
-        public string? InventoryAccount { get; set; }
-        /// <summary>
-        /// Reorder Level
-        /// </summary>
-        public int? ReorderLevel { get; set; }
-        /// <summary>
-        /// 預設採購商
-        /// Preferred Vendor
-        /// </summary>
-        public string? PreferredVendor { get; set; }
-        /// <summary>
-        /// 倉庫名稱
-        /// Warehouse Name
-        /// </summary>
-        public string? WarehouseName { get; set; }
-        /// <summary>
-        /// 初始庫存
-        /// Opening Stock
-        /// </summary>
-        public int? OpeningStock { get; set; }
-        /// <summary>
-        /// 初始庫存金額
-        /// Opening Stock Value
-        /// </summary>
-        public int OpeningStockValue { get; set; }
-        /// <summary>
-        /// 現有庫存 - 這是統計全部倉庫的庫存
-        /// Stock On Hand - This is the total stock of all warehouses
-        /// </summary>
-        public int? StockOnHand { get; set; } = 0;
-        /// <summary>
-        /// 是組合商品
-        /// Is Group Product
-        /// </summary>
-        public bool? IsGroupProduct { get; set; }
-        /// <summary>
-        /// 商品歸戶
-        /// Item Type
-        /// </summary>
-        public string? ItemType { get; set; }
+     
         /// <summary>
         /// 商品類別
         /// Item Category
         /// </summary>
         public string? ItemCategory { get; set; }
+
+
         public string? CustomeField1Name { get; set; }
         public string? CustomeField1Value { get; set; }
         public string? CustomeField2Name { get; set; }
