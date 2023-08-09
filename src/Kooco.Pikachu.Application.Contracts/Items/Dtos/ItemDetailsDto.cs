@@ -12,7 +12,7 @@ public class ItemDetailsDto : FullAuditedEntityDto<Guid>
     /// <summary>
     /// 
     /// </summary>
-    public Item Item { get; set; }
+    public ItemDto Item { get; set; }
 
     /// <summary>
     /// 
@@ -82,67 +82,67 @@ public class ItemDetailsDto : FullAuditedEntityDto<Guid>
 
     /// <summary>
     /// 倉庫名稱
-        Warehouse Name
+    ///  Warehouse Name
     /// </summary>
     public string? WarehouseName { get; set; }
 
     /// <summary>
     /// 庫存帳戶
-        Inventory Account
+    ///  Inventory Account
     /// </summary>
     public string? InventoryAccount { get; set; }
 
     /// <summary>
     /// 初始庫存
-        Opening Stock
+    ///  Opening Stock
     /// </summary>
     public int? OpeningStock { get; set; }
 
     /// <summary>
     /// 初始庫存金額
-        Opening Stock Value
+    /// Opening Stock Value
     /// </summary>
     public int OpeningStockValue { get; set; }
 
     /// <summary>
     /// 採購金額
-        Purchase Price
+    ///  Purchase Price
     /// </summary>
     public int? PurchasePrice { get; set; }
 
     /// <summary>
     /// 採購帳戶
-        Purchase Account
+    /// Purchase Account
     /// </summary>
     public string? PurchaseAccount { get; set; }
 
     /// <summary>
     /// 採購描述
-        Purchase Description
+    /// Purchase Description
     /// </summary>
     public string? PurchaseDescription { get; set; }
 
     /// <summary>
     /// 預設採購商
-        Preferred Vendor
+    /// Preferred Vendor
     /// </summary>
     public string? PreferredVendor { get; set; }
 
     /// <summary>
     /// 現有庫存 - 這是統計全部倉庫的庫存
-        Stock On Hand - This is the total stock of all warehouses
+    /// Stock On Hand - This is the total stock of all warehouses
     /// </summary>
     public int? StockOnHand { get; set; }
 
     /// <summary>
     /// 部件編號
-        Part Number
+    ///  Part Number
     /// </summary>
     public string? PartNumber { get; set; }
 
     /// <summary>
     /// 商品歸戶
-        Item Type
+    /// Item Type
     /// </summary>
     public string? ItemType { get; set; }
 }

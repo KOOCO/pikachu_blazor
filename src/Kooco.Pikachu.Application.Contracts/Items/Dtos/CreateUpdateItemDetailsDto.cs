@@ -10,7 +10,7 @@ public class CreateUpdateItemDetailsDto
     /// 
     /// </summary>
     [DisplayName("ItemDetailsItem")]
-    public Item Item { get; set; }
+    public ItemDto Item { get; set; }
 
     /// <summary>
     /// 
@@ -50,7 +50,7 @@ public class CreateUpdateItemDetailsDto
 
     /// <summary>
     /// 商品售價
-        ItemSellingPrice
+    /// ItemSellingPrice
     /// </summary>
     [DisplayName("ItemDetailsSellingPrice")]
     public int SellingPrice { get; set; }
@@ -93,77 +93,77 @@ public class CreateUpdateItemDetailsDto
 
     /// <summary>
     /// 倉庫名稱
-        Warehouse Name
+    /// Warehouse Name
     /// </summary>
     [DisplayName("ItemDetailsWarehouseName")]
     public string? WarehouseName { get; set; }
 
     /// <summary>
     /// 庫存帳戶
-        Inventory Account
+    /// Inventory Account
     /// </summary>
     [DisplayName("ItemDetailsInventoryAccount")]
     public string? InventoryAccount { get; set; }
 
     /// <summary>
     /// 初始庫存
-        Opening Stock
+    /// Opening Stock
     /// </summary>
     [DisplayName("ItemDetailsOpeningStock")]
     public int? OpeningStock { get; set; }
 
     /// <summary>
     /// 初始庫存金額
-        Opening Stock Value
+    /// Opening Stock Value
     /// </summary>
     [DisplayName("ItemDetailsOpeningStockValue")]
     public int OpeningStockValue { get; set; }
 
     /// <summary>
     /// 採購金額
-        Purchase Price
+    /// Purchase Price
     /// </summary>
     [DisplayName("ItemDetailsPurchasePrice")]
     public int? PurchasePrice { get; set; }
 
     /// <summary>
     /// 採購帳戶
-        Purchase Account
+    ///  Purchase Account
     /// </summary>
     [DisplayName("ItemDetailsPurchaseAccount")]
     public string? PurchaseAccount { get; set; }
 
     /// <summary>
     /// 採購描述
-        Purchase Description
+    /// Purchase Description
     /// </summary>
     [DisplayName("ItemDetailsPurchaseDescription")]
     public string? PurchaseDescription { get; set; }
 
     /// <summary>
     /// 預設採購商
-        Preferred Vendor
+    /// Preferred Vendor
     /// </summary>
     [DisplayName("ItemDetailsPreferredVendor")]
     public string? PreferredVendor { get; set; }
 
     /// <summary>
     /// 現有庫存 - 這是統計全部倉庫的庫存
-        Stock On Hand - This is the total stock of all warehouses
+    /// Stock On Hand - This is the total stock of all warehouses
     /// </summary>
     [DisplayName("ItemDetailsStockOnHand")]
     public int? StockOnHand { get; set; }
 
     /// <summary>
     /// 部件編號
-        Part Number
+    ///  Part Number
     /// </summary>
     [DisplayName("ItemDetailsPartNumber")]
     public string? PartNumber { get; set; }
 
     /// <summary>
     /// 商品歸戶
-        Item Type
+    ///  Item Type
     /// </summary>
     [DisplayName("ItemDetailsItemType")]
     public string? ItemType { get; set; }
