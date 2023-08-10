@@ -31,6 +31,16 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
         itemPermission.AddChild(PikachuPermissions.Item.Create, L("Permission:Create"));
         itemPermission.AddChild(PikachuPermissions.Item.Update, L("Permission:Update"));
         itemPermission.AddChild(PikachuPermissions.Item.Delete, L("Permission:Delete"));
+
+        var setItemPermission = myGroup.AddPermission(PikachuPermissions.SetItem.Default, L("Permission:SetItem"));
+        setItemPermission.AddChild(PikachuPermissions.SetItem.Create, L("Permission:Create"));
+        setItemPermission.AddChild(PikachuPermissions.SetItem.Update, L("Permission:Update"));
+        setItemPermission.AddChild(PikachuPermissions.SetItem.Delete, L("Permission:Delete"));
+
+        var setItemDetailsPermission = myGroup.AddPermission(PikachuPermissions.SetItemDetails.Default, L("Permission:SetItemDetails"));
+        setItemDetailsPermission.AddChild(PikachuPermissions.SetItemDetails.Create, L("Permission:Create"));
+        setItemDetailsPermission.AddChild(PikachuPermissions.SetItemDetails.Update, L("Permission:Update"));
+        setItemDetailsPermission.AddChild(PikachuPermissions.SetItemDetails.Delete, L("Permission:Delete"));
     }
 
     private static LocalizableString L(string name)

@@ -62,6 +62,14 @@ public class PikachuDbContext :
     /// 
     /// </summary>
     public DbSet<ItemDetails> ItemDetails { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public DbSet<SetItem> SetItems { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public DbSet<SetItemDetails> SetItemDetails { get; set; }
 
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
@@ -104,6 +112,26 @@ public class PikachuDbContext :
         builder.Entity<ItemDetails>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "ItemDetails", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention(); 
+            
+
+            /* Configure more properties here */
+        });
+
+
+        builder.Entity<SetItem>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "SetItems", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention(); 
+            
+
+            /* Configure more properties here */
+        });
+
+
+        builder.Entity<SetItemDetails>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "SetItemDetails", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention(); 
             
 
