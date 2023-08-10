@@ -26,6 +26,8 @@ public class ItemDto : FullAuditedEntityDto<Guid>
     /// 商品名稱        ItemName
     /// </summary>
     public string ItemName { get; set; }
+    public ICollection<ItemDetailsDto> ItemDetails { get; set; }
+    public String? ItemMainImageURL { get; set; }
 
     /// <summary>
     /// 商品敘述抬頭        ItemDescriptionTitle
@@ -37,25 +39,16 @@ public class ItemDto : FullAuditedEntityDto<Guid>
     /// </summary>
     public string ItemDescription { get; set; }
 
-     /// <summary>
-        /// 商品分類1 ItemProperty1
-        /// </summary>
-    public string Property1 { get; set; }
-
-     /// <summary>
-     /// 商品分類2 ItemProperty2
-     /// </summary>
-    public string Property2 { get; set; }
+    /// <summary>
+    /// 商品分類1 ItemProperty1
+    /// </summary>
+    public string? PropertyName1 { get; set; }
 
     /// <summary>
-    /// 商品售價        ItemSellingPrice
+    /// 商品分類2 ItemProperty2
     /// </summary>
-    public int SellingPrice { get; set; }
-    
-        /// <summary>
-        /// 商品團購價 Group Buy Price
-        /// </summary>
-    public int GroupBuyPrice { get; set; }
+    public string PropertyName2 { get; set; }
+    public string PropertyName3 { get; set; }
 
     /// <summary>
     /// 銷售帳戶        Sales Account
@@ -67,30 +60,30 @@ public class ItemDto : FullAuditedEntityDto<Guid>
     /// </summary>
     public Boolean Returnable { get; set; }
 
-            /// <summary>
-        /// 限時販售開始時間 Ｌimit Avaliable Time Start
-        /// </summary>
-        public DateTime LimitAvaliableTimeStart { get; set; }
+    /// <summary>
+    /// 限時販售開始時間 Ｌimit Avaliable Time Start
+    /// </summary>
+    public DateTime LimitAvaliableTimeStart { get; set; }
 
-        /// <summary>
-        /// 限時販售結束時間 Ｌimit Avaliable Time End
-        /// </summary>
-        public DateTime LimitAvaliableTimeEnd { get; set; }
+    /// <summary>
+    /// 限時販售結束時間 Ｌimit Avaliable Time End
+    /// </summary>
+    public DateTime LimitAvaliableTimeEnd { get; set; }
 
-        /// <summary>
-        /// 販售數量限制
-        /// </summary>
-        public int QuantityLimit { get; set; }
+    /// <summary>
+    /// 販售數量限制
+    /// </summary>
+    public int QuantityLimit { get; set; }
 
-        /// <summary>
-        /// 分潤 Share Profit
-        /// </summary>
-        public int ShareProfit { get; set; }
+    /// <summary>
+    /// 分潤 Share Profit
+    /// </summary>
+    public int ShareProfit { get; set; }
 
-        /// <summary>
-        /// 是否免運 Is Free Shipping
-        /// </summary>
-        public bool isFreeShipping { get; set; } = false;
+    /// <summary>
+    /// 是否免運 Is Free Shipping
+    /// </summary>
+    public bool isFreeShipping { get; set; } = false;
 
     //todo add shipping method
     /// <summary>
@@ -190,11 +183,6 @@ public class ItemDto : FullAuditedEntityDto<Guid>
     public Quantity Unit { get; set; }
 
     /// <summary>
-    /// SKU
-    /// </summary>
-    public string SKU { get; set; }
-
-    /// <summary>
     /// UPC
     /// </summary>
     public string UPC { get; set; }
@@ -208,67 +196,6 @@ public class ItemDto : FullAuditedEntityDto<Guid>
     /// ISBN
     /// </summary>
     public string ISBN { get; set; }
-
-    /// <summary>
-    /// 部件編號        Part Number
-    /// </summary>
-    public string PartNumber { get; set; }
-
-    /// <summary>
-    /// 採購金額        Purchase Price
-    /// </summary>
-    public int PurchasePrice { get; set; }
-
-    /// <summary>
-    /// 採購帳戶        Purchase Account
-    /// </summary>
-    public string PurchaseAccount { get; set; }
-
-    /// <summary>
-    /// 採購描述        Purchase Description
-    /// </summary>
-    public string PurchaseDescription { get; set; }
-
-    /// <summary>
-    /// 庫存帳戶        Inventory Account
-    /// </summary>
-    public string InventoryAccount { get; set; }
-
-    /// <summary>
-    /// Reorder Level
-    /// </summary>
-    public int ReorderLevel { get; set; }
-
-    /// <summary>
-    /// 預設採購商        Preferred Vendor
-    /// </summary>
-    public string PreferredVendor { get; set; }
-
-    /// <summary>
-    /// 倉庫名稱        Warehouse Name
-    /// </summary>
-    public string WarehouseName { get; set; }
-
-    /// <summary>
-    /// 初始庫存        Opening Stock
-    /// </summary>
-    public int OpeningStock { get; set; }
-
-    /// <summary>
-    /// 初始庫存金額        Opening Stock Value
-    /// </summary>
-    public int OpeningStockValue { get; set; }
-
-    /// <summary>
-    /// Stock On Hand
-    /// </summary>
-    public int StockOnHand { get; set; }
-
-
-    /// <summary>
-    /// 商品歸戶        Item Type
-    /// </summary>
-    public string ItemType { get; set; }
 
     /// <summary>
     /// 商品類別        Item Category

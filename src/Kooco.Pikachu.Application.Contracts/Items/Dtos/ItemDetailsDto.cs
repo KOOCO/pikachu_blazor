@@ -1,5 +1,6 @@
 using System;
 using Volo.Abp.Application.Dtos;
+using static Kooco.Pikachu.Permissions.PikachuPermissions;
 
 namespace Kooco.Pikachu.Items.Dtos;
 
@@ -9,39 +10,13 @@ namespace Kooco.Pikachu.Items.Dtos;
 [Serializable]
 public class ItemDetailsDto : FullAuditedEntityDto<Guid>
 {
-    /// <summary>
-    /// 
-    /// </summary>
+    public Guid ItemId { get; set; }
     public ItemDto Item { get; set; }
-
-    /// <summary>
-    /// 
-    /// </summary>
     public string? ItemDetailTitle { get; set; }
-
-    /// <summary>
-    /// 
-    /// </summary>
     public string? ItemDetailStatus { get; set; }
-
-    /// <summary>
-    /// 
-    /// </summary>
     public string? ItemDetailDescription { get; set; }
-
-    /// <summary>
-    /// 
-    /// </summary>
     public string? Property1 { get; set; }
-
-    /// <summary>
-    /// 
-    /// </summary>
     public string? Property2 { get; set; }
-
-    /// <summary>
-    /// 
-    /// </summary>
     public string? Property3 { get; set; }
 
     /// <summary>

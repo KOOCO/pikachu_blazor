@@ -30,10 +30,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             EditingEntity = new UpdateItemDto
             {
                 ItemName = entityDto.ItemName,
-                SKU = entityDto.SKU,
-                SellingPrice = entityDto.SellingPrice,
                 Returnable = entityDto.Returnable,
-                OpeningStockValue = entityDto.OpeningStockValue,
                 ItemDescription = entityDto.ItemDescription
             };
         }
