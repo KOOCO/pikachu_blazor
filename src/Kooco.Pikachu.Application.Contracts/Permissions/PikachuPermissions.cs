@@ -31,4 +31,24 @@ public static class PikachuPermissions
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
     }
+    /// <summary>
+    /// 
+    /// </summary>
+    public class SetItem
+    {
+        public const string Default = GroupName + ".SetItem";
+        public const string Update = Default + ".Update";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    public class SetItemDetails
+    {
+        public const string Default = GroupName + ".SetItemDetails";
+        public const string Update = Default + ".Update";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
 }

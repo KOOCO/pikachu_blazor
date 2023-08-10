@@ -14,7 +14,7 @@ public class Index_Tests : PikachuWebTestBase
         // Arrange
 
         // Act
-        var response = await GetResponseAsStringAsync("/ItemDetails");
+        var response = await GetResponseAsStringAsync("/SetItemDetails");
 
         // Assert
         response.ShouldNotBeNull();

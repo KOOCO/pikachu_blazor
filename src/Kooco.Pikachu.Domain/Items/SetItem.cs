@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +11,7 @@ namespace Kooco.Pikachu.Items
     public class SetItem : FullAuditedAggregateRoot<Guid> , IMultiTenant
     {
      public Guid? TenantId { get; set; }
-
+        public List<SetItemDetails> SetItemDetails { get; set; }
         public string SetItemName { get; set; }
         public string? SetItemNo { get; set; }
         public string? SetItemDescriptionTitle { get; set; }
@@ -95,6 +95,116 @@ namespace Kooco.Pikachu.Items
         /// </summary>
         public string? ItemCategory { get; set; }
 
+
+    protected SetItem()
+    {
+    }
+
+    public SetItem(
+        Guid id,
+        Guid? tenantId,
+        string setItemName,
+        string? setItemNo,
+        string? setItemDescriptionTitle,
+        string? description,
+        string? setItemMainImageURL,
+        string setItemStatus,
+        int? setItemSaleableQuantity,
+        int sellingPrice,
+        int? groupBuyPrice,
+        int? saleableQuantity,
+        int? preOrderableQuantity,
+        int? saleablePreOrderQuantity,
+        string? salesAccount,
+        Boolean returnable,
+        DateTime limitAvaliableTimeStart,
+        DateTime limitAvaliableTimeEnd,
+        int shareProfit,
+        bool isFreeShipping,
+        string? taxName,
+        int? taxPercentage,
+        string? taxType,
+        string? itemCategory
+    ) : base(id)
+    {
+        TenantId = tenantId;
+        SetItemName = setItemName;
+        SetItemNo = setItemNo;
+        SetItemDescriptionTitle = setItemDescriptionTitle;
+        Description = description;
+        SetItemMainImageURL = setItemMainImageURL;
+        SetItemStatus = setItemStatus;
+        SetItemSaleableQuantity = setItemSaleableQuantity;
+        SellingPrice = sellingPrice;
+        GroupBuyPrice = groupBuyPrice;
+        SaleableQuantity = saleableQuantity;
+        PreOrderableQuantity = preOrderableQuantity;
+        SaleablePreOrderQuantity = saleablePreOrderQuantity;
+        SalesAccount = salesAccount;
+        Returnable = returnable;
+        LimitAvaliableTimeStart = limitAvaliableTimeStart;
+        LimitAvaliableTimeEnd = limitAvaliableTimeEnd;
+        ShareProfit = shareProfit;
+        isFreeShipping = isFreeShipping;
+        TaxName = taxName;
+        TaxPercentage = taxPercentage;
+        TaxType = taxType;
+        ItemCategory = itemCategory;
+    }
+
+    public SetItem(
+        Guid id,
+        Guid? tenantId,
+        List<SetItemDetails> setItemDetails,
+        string setItemName,
+        string? setItemNo,
+        string? setItemDescriptionTitle,
+        string? description,
+        string? setItemMainImageURL,
+        string setItemStatus,
+        int? setItemSaleableQuantity,
+        int sellingPrice,
+        int? groupBuyPrice,
+        int? saleableQuantity,
+        int? preOrderableQuantity,
+        int? saleablePreOrderQuantity,
+        string? salesAccount,
+        Boolean returnable,
+        DateTime limitAvaliableTimeStart,
+        DateTime limitAvaliableTimeEnd,
+        int shareProfit,
+        bool isFreeShipping,
+        string? taxName,
+        int? taxPercentage,
+        string? taxType,
+        string? itemCategory
+    ) : base(id)
+    {
+        TenantId = tenantId;
+        SetItemDetails = setItemDetails;
+        SetItemName = setItemName;
+        SetItemNo = setItemNo;
+        SetItemDescriptionTitle = setItemDescriptionTitle;
+        Description = description;
+        SetItemMainImageURL = setItemMainImageURL;
+        SetItemStatus = setItemStatus;
+        SetItemSaleableQuantity = setItemSaleableQuantity;
+        SellingPrice = sellingPrice;
+        GroupBuyPrice = groupBuyPrice;
+        SaleableQuantity = saleableQuantity;
+        PreOrderableQuantity = preOrderableQuantity;
+        SaleablePreOrderQuantity = saleablePreOrderQuantity;
+        SalesAccount = salesAccount;
+        Returnable = returnable;
+        LimitAvaliableTimeStart = limitAvaliableTimeStart;
+        LimitAvaliableTimeEnd = limitAvaliableTimeEnd;
+        ShareProfit = shareProfit;
+        isFreeShipping = isFreeShipping;
+        TaxName = taxName;
+        TaxPercentage = taxPercentage;
+        TaxType = taxType;
+        ItemCategory = itemCategory;
+    }
     }
 
 }

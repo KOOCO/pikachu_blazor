@@ -44,6 +44,8 @@ public class PikachuEntityFrameworkCoreModule : AbpModule
             options.AddDefaultRepositories(includeAllEntities: true);
             options.AddRepository<Item, ItemRepository>();
             options.AddRepository<ItemDetails, ItemDetailsRepository>();
+            options.AddRepository<SetItem, SetItemRepository>();
+            options.AddRepository<SetItemDetails, SetItemDetailsRepository>();
         });
 
         Configure<AbpDbContextOptions>(options =>

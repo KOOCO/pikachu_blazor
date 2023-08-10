@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +12,26 @@ namespace Kooco.Pikachu.Items
     {
         public Guid? TenantId { get; set; }
 
+        public Guid SetItemId { get; set; }
         public SetItem SetItem { get; set; }
         public Item Item { get; set; }
+
+    protected SetItemDetails()
+    {
+    }
+
+    public SetItemDetails(
+        Guid id,
+        Guid? tenantId,
+        Guid setItemId,
+        SetItem setItem,
+        Item item
+    ) : base(id)
+    {
+        TenantId = tenantId;
+        SetItemId = setItemId;
+        SetItem = setItem;
+        Item = item;
+    }
     }
 }
