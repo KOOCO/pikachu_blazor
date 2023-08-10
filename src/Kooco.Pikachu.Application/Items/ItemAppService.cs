@@ -69,7 +69,7 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
     //        .WhereIf(input.OpeningStock != null, x => x.OpeningStock == input.OpeningStock)
     //        .WhereIf(input.OpeningStockValue != null, x => x.OpeningStockValue == input.OpeningStockValue)
     //        .WhereIf(input.StockOnHand != null, x => x.StockOnHand == input.StockOnHand)
-    //        .WhereIf(input.IsComboProduct != null, x => x.IsComboProduct == input.IsComboProduct)
+    //        .WhereIf(input.IsGroupProduct != null, x => x.IsGroupProduct == input.IsGroupProduct)
     //        .WhereIf(!input.ItemType.IsNullOrWhiteSpace(), x => x.ItemType.Contains(input.ItemType))
     //        .WhereIf(!input.ItemCategory.IsNullOrWhiteSpace(), x => x.ItemCategory.Contains(input.ItemCategory))
     //        .WhereIf(!input.CustomeField1Name.IsNullOrWhiteSpace(), x => x.CustomeField1Name.Contains(input.CustomeField1Name))

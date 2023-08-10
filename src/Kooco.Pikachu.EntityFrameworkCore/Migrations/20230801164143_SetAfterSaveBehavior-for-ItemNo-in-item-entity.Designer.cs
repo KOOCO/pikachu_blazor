@@ -133,7 +133,7 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<string>("InventoryAccount")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("IsComboProduct")
+                    b.Property<bool?>("IsGroupProduct")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")

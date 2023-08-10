@@ -252,7 +252,7 @@ namespace Kooco.Pikachu.Migrations
                 oldType: "nvarchar(max)");
 
             migrationBuilder.AlterColumn<bool>(
-                name: "IsComboProduct",
+                name: "IsGroupProduct",
                 table: "AppItems",
                 type: "bit",
                 nullable: true,
@@ -756,7 +756,7 @@ namespace Kooco.Pikachu.Migrations
                 oldNullable: true);
 
             migrationBuilder.AlterColumn<bool>(
-                name: "IsComboProduct",
+                name: "IsGroupProduct",
                 table: "AppItems",
                 type: "bit",
                 nullable: false,

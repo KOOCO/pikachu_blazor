@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
 using Volo.Abp.Data;
@@ -58,6 +58,10 @@ public class PikachuDbContext :
 
     #endregion
 
+    /// <summary>
+    /// 
+    /// </summary>
+    public DbSet<ItemDetails> ItemDetails { get; set; }
 
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
@@ -92,8 +96,18 @@ public class PikachuDbContext :
             b.Property(x => x.ItemNo).IsRequired().ValueGeneratedOnAdd().Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
             b.Property(x => x.ItemName).IsRequired();
             b.Property(x => x.Returnable).IsRequired();
-            b.Property(x => x.SKU).IsRequired();
-            b.Property(x => x.SellingPrice).IsRequired();
+            //b.Property(x => x.SKU).IsRequired();
+            //b.Property(x => x.SellingPrice).IsRequired();
+        });
+
+
+        builder.Entity<ItemDetails>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "ItemDetails", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention(); 
+            
+
+            /* Configure more properties here */
         });
     }
 }

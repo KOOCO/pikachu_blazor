@@ -14,25 +14,63 @@ namespace Kooco.Pikachu.Items
         public Guid? TenantId { get; set; }
 
         /// <summary>
-        /// 商品編號
+        /// 商品編號 ItemNo
         /// </summary>
         public long ItemNo { get; set; }
-
+        public ICollection<ItemDetails> ItemDetails { get; set; }
         /// <summary>
         /// 商品名稱
         /// ItemName
         /// </summary>
         public string ItemName { get; set; }
+        public String? ItemMainImageURL { get; set; }
+        /// <summary>
+        /// 商品敘述抬頭 ItemDescriptionTitle
+        /// </summary>
+        public string? ItemDescriptionTitle { get; set; }
         /// <summary>
         /// 商品描述
         /// ItemDescription
         /// </summary>
         public string? ItemDescription { get; set; }
+
+        //todo add item tags
+        //public Array ItemTags { get; set; }
+
         /// <summary>
-        /// 商品售價
-        /// ItemSellingPrice
+        /// 商品分類1 ItemProperty1
         /// </summary>
-        public int SellingPrice { get; set; }
+        public string? PropertyName1 { get; set; }
+        
+        //Todo Add Item PropertyTag1
+        /// <summary>
+        /// 商品分類標籤1 ItemPropertyTags1
+        /// </summary>
+        //public Array? PropertyTags1 { get; set; }
+
+        //Todo Add Item PropertyTag2
+        /// <summary>
+        /// 商品分類2 ItemProperty2
+        /// </summary>
+        public string? PropertyName2 { get; set; }
+
+
+        /// <summary>
+        /// 商品分類標籤2 ItemPropertyTags2
+        /// </summary>
+        //public Array? PropertyTags2 { get; set; }
+
+        
+        /// <summary>
+        /// 商品分類3 ItemProperty3
+        /// </summary>
+        public string? PropertyName3 { get; set; }
+
+        //Todo Add Item PropertyTag3
+        /// <summary>
+        /// 商品分類標籤3 ItemPropertyTags3
+        /// </summary>
+        //public Array? PropertyTags3 { get; set; }
 
         /// <summary>
         /// 銷售帳戶
@@ -44,6 +82,34 @@ namespace Kooco.Pikachu.Items
         /// Returnable
         /// </summary>
         public Boolean Returnable { get; set; } = false;
+
+        /// <summary>
+        /// 限時販售開始時間 Ｌimit Avaliable Time Start
+        /// </summary>
+        public DateTime LimitAvaliableTimeStart { get; set; }
+
+        /// <summary>
+        /// 限時販售結束時間 Ｌimit Avaliable Time End
+        /// </summary>
+        public DateTime LimitAvaliableTimeEnd { get; set; }
+
+
+        /// <summary>
+        /// 分潤 Share Profit
+        /// </summary>
+        public int ShareProfit { get; set; }
+
+        /// <summary>
+        /// 是否免運 Is Free Shipping
+        /// </summary>
+        public bool isFreeShipping { get; set; } = false;
+
+        //todo: 這裡要改成運送方式的物件
+        /// <summary>
+        /// 排除運送方式 Exclude Shipping Method
+        /// </summary>
+        //public ICollection<string> ExclueShippingMethod { get; set; }
+
         /// <summary>
         /// 商品品牌名稱
         /// Item Brand Name
@@ -90,7 +156,7 @@ namespace Kooco.Pikachu.Items
         /// </summary>
         public int? TaxPercentage { get; set; }
         /// <summary>
-        /// 稅率類型
+        /// 商品稅別
         /// Tax Type
         /// </summary>
         public string? TaxType { get; set; }
@@ -134,10 +200,7 @@ namespace Kooco.Pikachu.Items
         /// Unit
         /// </summary>
         public Quantity? Unit { get; set; }
-        /// <summary>
-        /// SKU
-        /// </summary>
-        public string SKU { get; set; }
+     
         /// <summary>
         /// UPC
         /// </summary>
@@ -150,74 +213,14 @@ namespace Kooco.Pikachu.Items
         /// ISBN
         /// </summary>
         public string? ISBN { get; set; }
-        /// <summary>
-        /// 部件編號
-        /// Part Number
-        /// </summary>
-        public string? PartNumber { get; set; }
-        /// <summary>
-        /// 採購金額
-        /// Purchase Price
-        /// </summary>
-        public int? PurchasePrice { get; set; }
-        /// <summary>
-        /// 採購帳戶
-        /// Purchase Account
-        /// </summary>
-        public string? PurchaseAccount { get; set; }
-        /// <summary>
-        /// 採購描述
-        /// Purchase Description
-        /// </summary>
-        public string? PurchaseDescription { get; set; }
-        /// <summary>
-        /// 庫存帳戶
-        /// Inventory Account
-        /// </summary>
-        public string? InventoryAccount { get; set; }
-        /// <summary>
-        /// Reorder Level
-        /// </summary>
-        public int? ReorderLevel { get; set; }
-        /// <summary>
-        /// 預設採購商
-        /// Preferred Vendor
-        /// </summary>
-        public string? PreferredVendor { get; set; }
-        /// <summary>
-        /// 倉庫名稱
-        /// Warehouse Name
-        /// </summary>
-        public string? WarehouseName { get; set; }
-        /// <summary>
-        /// 初始庫存
-        /// Opening Stock
-        /// </summary>
-        public int? OpeningStock { get; set; }
-        /// <summary>
-        /// 初始庫存金額
-        /// Opening Stock Value
-        /// </summary>
-        public int OpeningStockValue { get; set; }
-        /// <summary>
-        /// Stock On Hand
-        /// </summary>
-        public int? StockOnHand { get; set; } = 0;
-        /// <summary>
-        /// 是組合商品
-        /// Is Combo Product
-        /// </summary>
-        public bool? IsComboProduct { get; set; }
-        /// <summary>
-        /// 商品歸戶
-        /// Item Type
-        /// </summary>
-        public string? ItemType { get; set; }
+     
         /// <summary>
         /// 商品類別
         /// Item Category
         /// </summary>
         public string? ItemCategory { get; set; }
+
+
         public string? CustomeField1Name { get; set; }
         public string? CustomeField1Value { get; set; }
         public string? CustomeField2Name { get; set; }

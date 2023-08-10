@@ -127,12 +127,6 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<string>("ISBN")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("InventoryAccount")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool?>("IsComboProduct")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -145,6 +139,12 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<string>("ItemDescription")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ItemDescriptionTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ItemMainImageURL")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ItemName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -154,9 +154,6 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnType("bigint");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ItemNo"));
-
-                    b.Property<string>("ItemType")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnType("datetime2")
@@ -169,14 +166,14 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<DateTime?>("LastSyncTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime>("LimitAvaliableTimeEnd")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("LimitAvaliableTimeStart")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("ManufactorName")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("OpeningStock")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OpeningStockValue")
-                        .HasColumnType("int");
 
                     b.Property<short?>("PackageHeight")
                         .HasColumnType("smallint");
@@ -187,23 +184,17 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<short?>("PackageWeight")
                         .HasColumnType("smallint");
 
-                    b.Property<string>("PartNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PreferredVendor")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ProductType")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PurchaseAccount")
+                    b.Property<string>("PropertyName1")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PurchaseDescription")
+                    b.Property<string>("PropertyName2")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PurchasePrice")
-                        .HasColumnType("int");
+                    b.Property<string>("PropertyName3")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PurchaseTaxName")
                         .HasColumnType("nvarchar(max)");
@@ -214,20 +205,13 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<int?>("ReferenceID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ReorderLevel")
-                        .HasColumnType("int");
-
                     b.Property<bool>("Returnable")
                         .HasColumnType("bit");
-
-                    b.Property<string>("SKU")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SalesAccount")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SellingPrice")
+                    b.Property<int>("ShareProfit")
                         .HasColumnType("int");
 
                     b.Property<int?>("Source")
@@ -235,9 +219,6 @@ namespace Kooco.Pikachu.Migrations
 
                     b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("StockOnHand")
-                        .HasColumnType("int");
 
                     b.Property<string>("TaxName")
                         .HasColumnType("nvarchar(max)");
@@ -258,11 +239,11 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<int?>("Unit")
                         .HasColumnType("int");
 
-                    b.Property<string>("WarehouseName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("WeightUnit")
                         .HasColumnType("int");
+
+                    b.Property<bool>("isFreeShipping")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id")
                         .HasName("PK_AppItems");
@@ -275,6 +256,141 @@ namespace Kooco.Pikachu.Migrations
                     SqlServerIndexBuilderExtensions.IsClustered(b.HasIndex("ItemNo"));
 
                     b.ToTable("AppItems", (string)null);
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.Items.ItemDetails", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)")
+                        .HasColumnName("ConcurrencyStamp");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ExtraProperties");
+
+                    b.Property<int?>("GroupBuyPrice")
+                        .HasColumnType("int");
+
+                    b.Property<string>("InventoryAccount")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<string>("ItemDetailDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ItemDetailStatus")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ItemDetailTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ItemType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<int?>("OpeningStock")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OpeningStockValue")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PartNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PreOrderableQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PreferredVendor")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Property1")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Property2")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Property3")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PurchaseAccount")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PurchaseDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PurchasePrice")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ReorderLevel")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SKU")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("SaleablePreOrderQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SaleableQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SellingPrice")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StockOnHand")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("TenantId");
+
+                    b.Property<string>("WarehouseName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("AppItemDetails", null, t =>
+                        {
+                            t.HasComment("");
+                        });
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>
@@ -1933,6 +2049,17 @@ namespace Kooco.Pikachu.Migrations
                     b.ToTable("AbpTenantConnectionStrings", (string)null);
                 });
 
+            modelBuilder.Entity("Kooco.Pikachu.Items.ItemDetails", b =>
+                {
+                    b.HasOne("Kooco.Pikachu.Items.Item", "Item")
+                        .WithMany("ItemDetails")
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+                });
+
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLogAction", b =>
                 {
                     b.HasOne("Volo.Abp.AuditLogging.AuditLog", null)
@@ -2073,6 +2200,11 @@ namespace Kooco.Pikachu.Migrations
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.Items.Item", b =>
+                {
+                    b.Navigation("ItemDetails");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>

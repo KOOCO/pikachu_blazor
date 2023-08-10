@@ -37,15 +37,14 @@
     <None Remove="PurchaseOrders\" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Inventory\" />
     <Folder Include="Tenents\" />
     <Folder Include="Groupbuys\" />
     <Folder Include="Orders\" />
     <Folder Include="Transactions\" />
     <Folder Include="Invoices\" />
     <Folder Include="Invoices\" />
-    <Folder Include="GroupItems\" />
     <Folder Include="SetItems\" />
-    <Folder Include="Warehouses\" />
     <Folder Include="PurchaseOrders\" />
   </ItemGroup>
 </Project>

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using Volo.Abp.Application.Dtos;
 
@@ -26,10 +27,28 @@ public class ItemGetListInput : PagedAndSortedResultRequestDto
     public string ItemName { get; set; }
 
     /// <summary>
+    /// 商品敘述抬頭        ItemDescriptionTitle
+    /// </summary>
+    [DisplayName("ItemDescriptionTitle")]
+    public string ItemDescriptionTitle { get; set; }
+
+    /// <summary>
     /// 商品描述        ItemDescription
     /// </summary>
     [DisplayName("ItemDescription")]
     public string ItemDescription { get; set; }
+
+    /// <summary>
+    /// 商品分類1 ItemProperty1
+    /// </summary>
+    [DisplayName("Property")]
+    public string? Property1 { get; set; }
+
+     /// <summary>
+     /// 商品分類2 ItemProperty2
+     /// </summary>
+     [DisplayName("Property")]
+    public string? Property2 { get; set; }
 
     /// <summary>
     /// 商品售價        ItemSellingPrice
@@ -48,6 +67,44 @@ public class ItemGetListInput : PagedAndSortedResultRequestDto
     /// </summary>
     [DisplayName("ItemReturnable")]
     public Boolean? Returnable { get; set; }
+
+              /// <summary>
+        /// 限時販售開始時間 Ｌimit Avaliable Time Start
+        /// </summary>
+        [DisplayName("LimitAvaliableTimeStart")]
+        public DateTime LimitAvaliableTimeStart { get; set; }
+
+        /// <summary>
+        /// 限時販售結束時間 Ｌimit Avaliable Time End
+        /// </summary>
+        [DisplayName("LimitAvaliableTimeEnd")]
+        public DateTime LimitAvaliableTimeEnd { get; set; }
+
+        /// <summary>
+        /// 販售數量限制
+        /// </summary>
+        [DisplayName("QuantityLimit")]
+        public int QuantityLimit { get; set; }
+
+        /// <summary>
+        /// 分潤 Share Profit
+        /// </summary>
+        [DisplayName("ShareProfit")]
+        public int ShareProfit { get; set; }
+
+        /// <summary>
+        /// 是否免運 Is Free Shipping
+        /// </summary>
+        [DisplayName("isFreeShipping")]
+        public bool isFreeShipping { get; set; } = false;
+
+    //todo add shipping method
+    /// <summary>
+    /// 排除運送方式 Exclude Shipping Method
+    /// </summary>
+    //[DisplayName("ExclueShippingMethod")]
+    //public ICollection<string> ExclueShippingMethod { get; set; }
+
 
     /// <summary>
     /// 商品品牌名稱        Item Brand Name
@@ -247,11 +304,6 @@ public class ItemGetListInput : PagedAndSortedResultRequestDto
     [DisplayName("ItemStockOnHand")]
     public int? StockOnHand { get; set; }
 
-    /// <summary>
-    /// 是組合商品        Is Combo Product
-    /// </summary>
-    [DisplayName("ItemIsComboProduct")]
-    public bool? IsComboProduct { get; set; }
 
     /// <summary>
     /// 商品歸戶        Item Type
