@@ -104,8 +104,6 @@ public class PikachuDbContext :
             b.Property(x => x.ItemNo).IsRequired().ValueGeneratedOnAdd().Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
             b.Property(x => x.ItemName).IsRequired();
             b.Property(x => x.Returnable).IsRequired();
-            //b.Property(x => x.SKU).IsRequired();
-            //b.Property(x => x.SellingPrice).IsRequired();
         });
 
 

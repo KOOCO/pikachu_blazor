@@ -9,6 +9,30 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Inventory\**" />
+    <Compile Remove="Invoices\**" />
+    <Compile Remove="Orders\**" />
+    <Compile Remove="PurchaseOrders\**" />
+    <Compile Remove="SetItems\**" />
+    <Compile Remove="Tenents\**" />
+    <Compile Remove="Transactions\**" />
+    <EmbeddedResource Remove="Inventory\**" />
+    <EmbeddedResource Remove="Invoices\**" />
+    <EmbeddedResource Remove="Orders\**" />
+    <EmbeddedResource Remove="PurchaseOrders\**" />
+    <EmbeddedResource Remove="SetItems\**" />
+    <EmbeddedResource Remove="Tenents\**" />
+    <EmbeddedResource Remove="Transactions\**" />
+    <None Remove="Inventory\**" />
+    <None Remove="Invoices\**" />
+    <None Remove="Orders\**" />
+    <None Remove="PurchaseOrders\**" />
+    <None Remove="SetItems\**" />
+    <None Remove="Tenents\**" />
+    <None Remove="Transactions\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Kooco.Pikachu.Domain.Shared\Kooco.Pikachu.Domain.Shared.csproj" />
   </ItemGroup>
 
@@ -37,14 +61,6 @@
     <None Remove="PurchaseOrders\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Inventory\" />
-    <Folder Include="Tenents\" />
     <Folder Include="Groupbuys\" />
-    <Folder Include="Orders\" />
-    <Folder Include="Transactions\" />
-    <Folder Include="Invoices\" />
-    <Folder Include="Invoices\" />
-    <Folder Include="SetItems\" />
-    <Folder Include="PurchaseOrders\" />
   </ItemGroup>
 </Project>

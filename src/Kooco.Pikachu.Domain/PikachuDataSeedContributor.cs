@@ -21,7 +21,7 @@ namespace Kooco.Pikachu
         }
 
         public async Task SeedAsync(DataSeedContext context)
-        
+
         {
             if (await _appItemRepository.GetCountAsync() <= 0)
             {
@@ -30,11 +30,15 @@ namespace Kooco.Pikachu
                     {
                         ItemName = "SunShine Umbrella",
                         ItemDescription = "This is a simple description of demo item",
-                        //SellingPrice = 10,
                         Returnable = false,
-                        //OpeningStockValue = 100,
-                        //SKU = "APCJ-Blue-001"
-
+                        ItemDetails = new List<ItemDetails>
+                        { new ItemDetails
+                             {
+                                 SellingPrice = 10,
+                                 OpeningStockValue = 100,
+                                 SKU = "APCJ-Blue-001"
+                             }
+                        }
                     },
                 autoSave: true);
                 await _appItemRepository.InsertAsync(
@@ -42,21 +46,19 @@ namespace Kooco.Pikachu
                    {
                        ItemName = "Lovely Pillow",
                        ItemDescription = "This is a simple description of demo item",
-                       //SellingPrice = 100,
                        Returnable = false,
-                       //OpeningStockValue = 2,
-                       //SKU = "APCJ-Blue-001"
-
+                       ItemDetails = new List<ItemDetails>
+                        { new ItemDetails
+                             {
+                                 SellingPrice = 100,
+                                 OpeningStockValue = 2,
+                                 SKU = "APCJ-Blue-001"
+                             }
+                        }
                    },
                autoSave: true);
-                await _appItemDetailsRepository.InsertAsync(
-                    new ItemDetails
-                    {
-
-                    },
-                    autoSave: true);
             }
         }
     }
-  
+
 }
