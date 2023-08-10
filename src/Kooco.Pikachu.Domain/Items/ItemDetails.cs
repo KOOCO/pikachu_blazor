@@ -11,7 +11,7 @@ namespace Kooco.Pikachu.Items
     public class ItemDetails : FullAuditedAggregateRoot<Guid>,IMultiTenant
     {
         public Guid? TenantId { get; set; }
-        public Guid ItemId { get; set; }
+  public Guid ItemId { get; set; }
         public Item Item { get; set; }
         public string? ItemDetailTitle { get; set; }
         public string? ItemDetailStatus { get; set; }

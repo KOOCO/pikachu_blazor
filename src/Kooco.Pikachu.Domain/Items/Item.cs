@@ -16,7 +16,8 @@ namespace Kooco.Pikachu.Items
         /// <summary>
         /// 商品編號 ItemNo
         /// </summary>
-        public long ItemNo { get; set; }       
+        public long ItemNo { get; set; }
+        public ICollection<ItemDetails> ItemDetails { get; set; }
         /// <summary>
         /// 商品名稱
         /// ItemName
