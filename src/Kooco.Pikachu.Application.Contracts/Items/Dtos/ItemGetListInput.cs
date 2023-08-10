@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using Volo.Abp.Application.Dtos;
 
@@ -97,11 +98,12 @@ public class ItemGetListInput : PagedAndSortedResultRequestDto
         [DisplayName("isFreeShipping")]
         public bool isFreeShipping { get; set; } = false;
 
-        /// <summary>
-        /// 排除運送方式 Exclude Shipping Method
-        /// </summary>
-        [DisplayName("ExclueShippingMethod")]
-        public Array ExclueShippingMethod { get; set; }
+    //todo add shipping method
+    /// <summary>
+    /// 排除運送方式 Exclude Shipping Method
+    /// </summary>
+    //[DisplayName("ExclueShippingMethod")]
+    //public ICollection<string> ExclueShippingMethod { get; set; }
 
 
     /// <summary>
@@ -302,11 +304,6 @@ public class ItemGetListInput : PagedAndSortedResultRequestDto
     [DisplayName("ItemStockOnHand")]
     public int? StockOnHand { get; set; }
 
-    /// <summary>
-    /// 是組合商品        Is Group Product
-    /// </summary>
-    [DisplayName("ItemIsGroupProduct")]
-    public bool? IsGroupProduct { get; set; }
 
     /// <summary>
     /// 商品歸戶        Item Type

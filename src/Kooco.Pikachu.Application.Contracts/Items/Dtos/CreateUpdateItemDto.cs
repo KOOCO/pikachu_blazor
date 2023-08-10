@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -98,10 +99,11 @@ public class CreateUpdateItemDto
         /// </summary>
         public bool isFreeShipping { get; set; } = false;
 
+        //todo add shipping method
         /// <summary>
         /// 排除運送方式 Exclude Shipping Method
         /// </summary>
-        public Array ExclueShippingMethod { get; set; }
+        //public ICollection<string> ExclueShippingMethod { get; set; }
 
 
     /// <summary>
@@ -305,11 +307,6 @@ public class CreateUpdateItemDto
     [DisplayName("ItemStockOnHand")]
     public int StockOnHand { get; set; }
 
-    /// <summary>
-    /// 是組合商品        Is Group Product
-    /// </summary>
-    [DisplayName("ItemIsGroupProduct")]
-    public bool IsGroupProduct { get; set; }
 
     /// <summary>
     /// 商品歸戶        Item Type

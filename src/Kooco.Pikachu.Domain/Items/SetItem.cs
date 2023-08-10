@@ -38,7 +38,9 @@ namespace Kooco.Pikachu.Items
         /// 可訂購預購數量
         /// </summary>
         public int? SaleablePreOrderQuantity { get; set; }
-        public Array ItemTags { get; set; }
+        
+        //todo add item tag
+        //public Array ItemTags { get; set; }
         /// <summary>
         /// 銷售帳戶
         /// Sales Account
@@ -66,10 +68,11 @@ namespace Kooco.Pikachu.Items
         /// </summary>
         public bool isFreeShipping { get; set; } = false;
 
+        //todo add shipping method
         /// <summary>
         /// 排除運送方式 Exclude Shipping Method
         /// </summary>
-        public Array ExclueShippingMethod { get; set; }
+        //public ICollection<string> ExclueShippingMethod { get; set; }
         /// <summary>
         /// 稅率名稱
         /// Tax Name

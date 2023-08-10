@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Volo.Abp.Application.Dtos;
 
 
@@ -91,10 +92,11 @@ public class ItemDto : FullAuditedEntityDto<Guid>
         /// </summary>
         public bool isFreeShipping { get; set; } = false;
 
-        /// <summary>
-        /// 排除運送方式 Exclude Shipping Method
-        /// </summary>
-        public Array ExclueShippingMethod { get; set; }
+    //todo add shipping method
+    /// <summary>
+    /// 排除運送方式 Exclude Shipping Method
+    /// </summary>
+    //public ICollection<string> ExclueShippingMethod { get; set; }
 
 
     /// <summary>
@@ -262,10 +264,6 @@ public class ItemDto : FullAuditedEntityDto<Guid>
     /// </summary>
     public int StockOnHand { get; set; }
 
-    /// <summary>
-    /// 是組合商品        Is Group Product
-    /// </summary>
-    public bool IsGroupProduct { get; set; }
 
     /// <summary>
     /// 商品歸戶        Item Type

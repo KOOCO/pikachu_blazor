@@ -74,7 +74,7 @@ namespace Kooco.Pikachu.GroupBuys
         /// <summary>
         /// 不可選用的運送選項 ExcludeShippingMethod
         /// </summary>
-        public Array? ExcludeShippingMethod { get; set; }
+        //public Array? ExcludeShippingMethod { get; set; }
 
         /// <summary>
         /// 允許寄送到外島 AllowShipToOuterTaiwan
@@ -96,10 +96,11 @@ namespace Kooco.Pikachu.GroupBuys
         /// </summary>
         public DateTime? ExpectShippingDateTo { get; set; }
 
+        //todo add payment method
         /// <summary>
         /// 可接受的付款方式 AcceptePaymentMethod
         /// </summary>
-        public Array? AcceptePaymentMethod { get; set; }
+        //public Array? AcceptePaymentMethod { get; set; }
 
         /// <summary>
         /// 匯款有效日期依照 MoneyTransferValidDayBy

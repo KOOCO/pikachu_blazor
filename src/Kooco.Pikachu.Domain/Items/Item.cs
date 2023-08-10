@@ -34,37 +34,44 @@ namespace Kooco.Pikachu.Items
         /// </summary>
         public string? ItemDescription { get; set; }
 
-        public Array ItemTags { get; set; }
+        //todo add item tags
+        //public Array ItemTags { get; set; }
 
         /// <summary>
         /// 商品分類1 ItemProperty1
         /// </summary>
         public string? PropertyName1 { get; set; }
-
+        
+        //Todo Add Item PropertyTag1
         /// <summary>
         /// 商品分類標籤1 ItemPropertyTags1
         /// </summary>
-        public Array? PropertyTags1 { get; set; }
+        //public Array? PropertyTags1 { get; set; }
 
+        //Todo Add Item PropertyTag2
         /// <summary>
         /// 商品分類2 ItemProperty2
         /// </summary>
         public string? PropertyName2 { get; set; }
 
+
         /// <summary>
         /// 商品分類標籤2 ItemPropertyTags2
         /// </summary>
-        public Array? PropertyTags2 { get; set; }
+        //public Array? PropertyTags2 { get; set; }
 
+        
         /// <summary>
         /// 商品分類3 ItemProperty3
         /// </summary>
         public string? PropertyName3 { get; set; }
 
+        //Todo Add Item PropertyTag3
         /// <summary>
         /// 商品分類標籤3 ItemPropertyTags3
         /// </summary>
-        public Array? PropertyTags3 { get; set; }   
+        //public Array? PropertyTags3 { get; set; }
+
         /// <summary>
         /// 銷售帳戶
         /// Sales Account
@@ -97,10 +104,11 @@ namespace Kooco.Pikachu.Items
         /// </summary>
         public bool isFreeShipping { get; set; } = false;
 
+        //todo: 這裡要改成運送方式的物件
         /// <summary>
         /// 排除運送方式 Exclude Shipping Method
         /// </summary>
-        public Array ExclueShippingMethod { get; set; }
+        //public ICollection<string> ExclueShippingMethod { get; set; }
 
         /// <summary>
         /// 商品品牌名稱

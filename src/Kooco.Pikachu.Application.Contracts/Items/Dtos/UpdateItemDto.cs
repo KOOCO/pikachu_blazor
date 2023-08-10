@@ -96,11 +96,12 @@ namespace Kooco.Pikachu.Items.Dtos
         [DisplayName("isFreeShipping")]
         public bool isFreeShipping { get; set; } = false;
 
+        //todo add shipping method
         /// <summary>
         /// 排除運送方式 Exclude Shipping Method
         /// </summary>
-        [DisplayName("ExclueShippingMethod")]
-        public Array ExclueShippingMethod { get; set; }
+        //[DisplayName("ExclueShippingMethod")]
+        //public ICollection<string> ExclueShippingMethod { get; set; }
 
 
         /// <summary>
@@ -303,12 +304,6 @@ namespace Kooco.Pikachu.Items.Dtos
         /// </summary>
         [DisplayName("ItemStockOnHand")]
         public int StockOnHand { get; set; }
-
-        /// <summary>
-        /// 是組合商品        Is Group Product
-        /// </summary>
-        [DisplayName("ItemIsGroupProduct")]
-        public bool IsGroupProduct { get; set; }
 
         /// <summary>
         /// 商品歸戶        Item Type
