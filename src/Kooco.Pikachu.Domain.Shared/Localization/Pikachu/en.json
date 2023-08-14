@@ -32,6 +32,25 @@
     "ItemPriceAndInventory": "Price And Inventory",
     "PreviewPage": "Preview Page",
     "ItemImage": "Item Image",
-    "ItemTags": "Item Tags"
+    "ItemTags": "Item Tags",
+    "ItemStyle": "Item Style",
+    "ItemStyleKey": "Item Style Key",
+    "ItemStyleValue": "Item Style Value",
+    "AddItemStyleButton": "Create New Property Name",
+    "PriceAndInventory": "Price And Inventory",
+    "SKU": "SKU",
+    "SellPrice": "Sell Price",
+    "GroupByPrice": "GroupBy Price",
+    "SellableQuantity": "Sellable Quantity",
+    "SellablePreorderQuantity": "Sellable Preorder Quantityy",
+    "CommodityAttributes": "Commodity Attributes",
+    "TimeLimitPeriod": "Time Limit Period",
+    "StartDate": "Start Date",
+    "EndDate": "End Date",
+    "LimitQuantity": "Limit Quantity",
+    "ShareProfit": "Share Profit",
+    "FreeShipping": "Free Shipping",
+    "ShippingMethod": "Shipping Method",
+    "TaxType": "Tax Type"
   }
 }
