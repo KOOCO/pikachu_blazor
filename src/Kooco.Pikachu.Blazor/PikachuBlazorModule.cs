@@ -23,29 +23,22 @@ using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite.Bundling;
 using Volo.Abp.AspNetCore.Components.Web.Theming.Routing;
 using Volo.Abp.AspNetCore.Mvc;
 using Volo.Abp.AspNetCore.Mvc.Localization;
-using Volo.Abp.AspNetCore.Mvc.UI;
-using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap;
 using Volo.Abp.AspNetCore.Mvc.UI.Bundling;
-using Volo.Abp.AspNetCore.Mvc.UI.MultiTenancy;
-using Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared;
 using Volo.Abp.AspNetCore.Serilog;
 using Volo.Abp.Autofac;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.Identity.Blazor.Server;
-using Volo.Abp.Localization;
 using Volo.Abp.Modularity;
 using Volo.Abp.SettingManagement.Blazor.Server;
 using Volo.Abp.Swashbuckle;
 using Volo.Abp.TenantManagement.Blazor.Server;
-using Volo.Abp.UI;
 using Volo.Abp.UI.Navigation;
 using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.VirtualFileSystem;
 using Volo.Abp.OpenIddict;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using Kooco.Pikachu.Blazor.Pages;
-using Volo.Abp.Ui.Branding;
+using Blazorise.RichTextEdit;
 
 namespace Kooco.Pikachu.Blazor;
 
@@ -78,6 +71,9 @@ public class PikachuBlazorModule : AbpModule
                 typeof(PikachuBlazorModule).Assembly
             );
         });
+
+        context.Services.AddBlazoriseRichTextEdit();
+        context.Services.AddAntDesign();
 
         PreConfigure<OpenIddictBuilder>(builder =>
         {

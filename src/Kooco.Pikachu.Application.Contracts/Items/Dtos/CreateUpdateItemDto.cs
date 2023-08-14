@@ -22,13 +22,13 @@ public class CreateUpdateItemDto
     /// </summary>
     [Required]
     [DisplayName("ItemName")]
-    public string ItemName { get; set; }
+    public string ItemName { get; set; } = "";
 
     /// <summary>
     /// 商品敘述抬頭        ItemDescriptionTitle
     /// </summary>
     [DisplayName("ItemDescriptionTitle")]
-    public string ItemDescriptionTitle { get; set; }
+    public string ItemDescriptionTitle { get; set; } = "";
 
     /// <summary>
     /// 商品描述        ItemDescription

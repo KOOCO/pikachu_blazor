@@ -1,0 +1,10 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "ant-design-blazor@0.4.1",
+      "destination": "wwwroot/libs/ant-design-blazor/"
+    }
+  ]
+}

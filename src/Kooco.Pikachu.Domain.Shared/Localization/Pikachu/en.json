@@ -19,10 +19,19 @@
     "Permission:TenentList": "Tenent List",
     "Permission:TenentBillReport": "Tenent List Billing",
     "Permission:PermissionSetting": "Permission Setting",
+
+    //items
     "NewItem": "New Item",
     "Items": "Item List View",
     "CopyItem": "Copy Item",
     "DeleteItem": "Delete Item",
-    "TurnItemOn": "Turn Item On"
+    "TurnItemOn": "Turn Item On",
+    "ItemName": "Item Name",
+    "ItemDescriptionTitle": "Item Title",
+    "ItemDescription": "Item Description",
+    "ItemPriceAndInventory": "Price And Inventory",
+    "PreviewPage": "Preview Page",
+    "ItemImage": "Item Image",
+    "ItemTags": "Item Tags"
   }
 }
