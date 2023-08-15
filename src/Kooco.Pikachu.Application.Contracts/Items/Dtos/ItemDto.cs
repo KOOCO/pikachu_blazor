@@ -12,78 +12,17 @@ namespace Kooco.Pikachu.Items.Dtos;
 [Serializable]
 public class ItemDto : FullAuditedEntityDto<Guid>
 {
-    /// <summary>
-    /// 商品ID
-    /// </summary>
-    //public Guid ItemId { get; set; }
-
-    /// <summary>
-    /// 商品編號
-    /// </summary>
-    public long ItemNo { get; set; }
-
-    /// <summary>
-    /// 商品名稱        ItemName
-    /// </summary>
-    public string ItemName { get; set; }
+    public string ItemName { get; set; } //商品名稱/ItemName
     public ICollection<ItemDetailsDto> ItemDetails { get; set; }
     public String? ItemMainImageURL { get; set; }
-
-    /// <summary>
-    /// 商品敘述抬頭        ItemDescriptionTitle
-    /// </summary>
-    public string ItemDescriptionTitle { get; set; }
-
-    /// <summary>
-    /// 商品描述        ItemDescription
-    /// </summary>
-    public string ItemDescription { get; set; }
-
-    /// <summary>
-    /// 商品分類1 ItemProperty1
-    /// </summary>
-    public string? PropertyName1 { get; set; }
-
-    /// <summary>
-    /// 商品分類2 ItemProperty2
-    /// </summary>
-    public string PropertyName2 { get; set; }
-    public string PropertyName3 { get; set; }
-
-    /// <summary>
-    /// 銷售帳戶        Sales Account
-    /// </summary>
-    public string SalesAccount { get; set; }
-
-    /// <summary>
-    /// 可否退貨        Returnable
-    /// </summary>
-    public Boolean Returnable { get; set; }
-
-    /// <summary>
-    /// 限時販售開始時間 Ｌimit Avaliable Time Start
-    /// </summary>
-    public DateTime LimitAvaliableTimeStart { get; set; }
-
-    /// <summary>
-    /// 限時販售結束時間 Ｌimit Avaliable Time End
-    /// </summary>
-    public DateTime LimitAvaliableTimeEnd { get; set; }
-
-    /// <summary>
-    /// 販售數量限制
-    /// </summary>
-    public int QuantityLimit { get; set; }
-
-    /// <summary>
-    /// 分潤 Share Profit
-    /// </summary>
-    public int ShareProfit { get; set; }
-
-    /// <summary>
-    /// 是否免運 Is Free Shipping
-    /// </summary>
-    public bool isFreeShipping { get; set; } = false;
+    public string ItemDescriptionTitle { get; set; } //商品敘述抬頭/ItemDescriptionTitle
+    public string ItemDescription { get; set; } //商品描述/ItemDescription
+    public Boolean Returnable { get; set; } //可否退貨/Returnable
+    public DateTime LimitAvaliableTimeStart { get; set; } //限時販售開始時間/Limit Avaliable Time Start
+    public DateTime LimitAvaliableTimeEnd { get; set; } //限時販售結束時間/Limit Avaliable Time End
+    public int QuantityLimit { get; set; } //販售數量限制/QuantityLimit
+    public int ShareProfit { get; set; } // 分潤/Share Profit
+    public bool IsFreeShipping { get; set; } = false; //是否免運/Is Free Shipping
 
     //todo add shipping method
     /// <summary>

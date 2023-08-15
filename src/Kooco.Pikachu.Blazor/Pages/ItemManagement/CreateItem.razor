@@ -23,8 +23,8 @@
         color: #666;
     }
 
-    .flatpickr-calendar.static{
-top:auto !important
+    .flatpickr-calendar.static {
+        top: auto !important
     }
 </style>
 
@@ -53,34 +53,34 @@ top:auto !important
             </Div>
 
             @*<Div Class="col-12 row">
-            <Div Class="col-2">
-            <FieldLabel>@L["ItemImage"]</FieldLabel>
-            </Div>
-            <Div Class="col-10">
-            <AntDesign.Upload Name="@L["ItemImage"]"
-            @bind-FileList="fileList"
-            ShowButton="fileList?.Count < 8"
-            ListType="picture-card"
-            OnPreview="(file)=> {
+                <Div Class="col-2">
+                    <FieldLabel>@L["ItemImage"]</FieldLabel>
+                </Div>
+                <Div Class="col-10">
+                    <AntDesign.Upload Name="@L["ItemImage"]"
+                    @bind-FileList="fileList"
+                                      ShowButton="fileList?.Count < 8"
+                                      ListType="picture-card"
+                                      OnPreview="(file)=> {
             Console.WriteLine(file.FileName);
             Console.WriteLine(file.Url);
             previewVisible = true;
             previewTitle = file.FileName;
             imgUrl = file.Url;
             }"
-            OnChange="HandleChange">
-            <Div>
-            <Icon Type="plus"></Icon>
-            <Div className="ant-upload-text">Upload</Div>
-            </Div>
+                                      OnChange="HandleChange">
+                        <Div>
+                            <Icon Type="plus"></Icon>
+                            <Div className="ant-upload-text">Upload</Div>
+                        </Div>
 
-            </AntDesign.Upload>
-            <Modal Visible="previewVisible"
-            Title="previewTitle"
-            OnCancel="()=> previewVisible=false">
-            <img style="width: 100%" src="@imgUrl" />
-            </Modal>
-            </Div>
+                    </AntDesign.Upload>
+                    <Modal Visible="previewVisible"
+                           Title="previewTitle"
+                           OnCancel="()=> previewVisible=false">
+                        <img style="width: 100%" src="@imgUrl" />
+                    </Modal>
+                </Div>
             </Div>*@
 
             <Div Class=" col-12 row">
@@ -429,15 +429,15 @@ top:auto !important
         </Validations>
     </CardBody>
     <CardFooter Style="text-align: center">
-            <Button Color="Color.Primary" Type="ButtonType.Link" To="Items" Class="mr-3">
-                @L["Cancel"]
-            </Button>
-            <Button Color="Color.Secondary" Type="@ButtonType.Submit" PreventDefaultOnSubmit="true" Clicked="CreateEntityAsync">
-                @L["Save"]
-            </Button>
-            <Button Color="Color.Info" Type="@ButtonType.Submit" PreventDefaultOnSubmit="true">
-                @L["Preview Page"]
-            </Button>
+        <Button Color="Color.Primary" Type="ButtonType.Link" To="Items" Class="mr-3">
+            @L["Cancel"]
+        </Button>
+        <Button Color="Color.Secondary" Type="@ButtonType.Submit" PreventDefaultOnSubmit="true" Clicked="CreateEntityAsync">
+            @L["Save"]
+        </Button>
+        <Button Color="Color.Info" Type="@ButtonType.Submit" PreventDefaultOnSubmit="true">
+            @L["Preview Page"]
+        </Button>
     </CardFooter>
 </Card>
 

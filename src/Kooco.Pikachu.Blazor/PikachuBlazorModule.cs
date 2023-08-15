@@ -71,9 +71,9 @@ public class PikachuBlazorModule : AbpModule
                 typeof(PikachuBlazorModule).Assembly
             );
         });
-
-        context.Services.AddBlazoriseRichTextEdit();
         context.Services.AddAntDesign();
+        context.Services.AddBlazoriseRichTextEdit();
+        
 
         PreConfigure<OpenIddictBuilder>(builder =>
         {

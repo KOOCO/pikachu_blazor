@@ -5,6 +5,14 @@
     {
       "library": "ant-design-blazor@0.4.1",
       "destination": "wwwroot/libs/ant-design-blazor/"
+    },
+    {
+      "provider": "filesystem",
+      "library": "abp.resourcemapping.js",
+      "destination": "wwwroot/libs/abp.resourcemapping/",
+      "files": [
+        "abp.resourcemapping.js"
+      ]
     }
   ]
 }
