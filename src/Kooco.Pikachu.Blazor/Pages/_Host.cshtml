@@ -1,33 +1,24 @@
 ﻿@page "/"
 @namespace Kooco.Pikachu.Blazor.Pages
 @using System.Globalization
-@using Volo.Abp.AspNetCore.Components.Web.LeptonXLiteTheme.Themes.LeptonXLite
-@using Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme.Bundling
+@using Lsw.Abp.AspnetCore.Components.Web.AntDesignTheme.Themes.AntDesignTheme;
+@using Lsw.Abp.AspnetCore.Components.Server.AntDesignTheme.Bundling;
 @using Volo.Abp.Localization
-@{
+@*@{
     Layout = null;
     var rtl = CultureHelper.IsRtl ? "rtl" : string.Empty;
-}
+}*@
 
 <!DOCTYPE html>
-<html lang="@CultureInfo.CurrentCulture.Name" dir="@rtl">
+<html lang="@CultureInfo.CurrentCulture.Name">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>電商3.0</title>
     <base href="~/" />
-
-    <link href="~/libs/blazorise/css/material.css" rel="stylesheet" />
-    <link href="~/libs/blazorise/css/material.min.css" rel="stylesheet" />
-    <link href="~/libs/ant-design-blazor/_content/antdesign/css/ant-design-blazor.min.css" rel="stylesheet" />
-    <link href="~/libs/ant-design-blazor/_content/antdesign/css/ant-design-blazor.css" rel="stylesheet" />
-    <abp-style-bundle name="@BlazorLeptonXLiteThemeBundles.Styles.Global" />
-    <script src="~/libs/blazorise/js/material.min.js"></script>
-    <script src="~/libs/blazorise/js/material.js"></script>
-    <script src="~/libs/ant-design-blazor/_content/antdesign/js/ant-design-blazor.min.js"></script>
-    <script src="~/libs/ant-design-blazor/_content/antdesign/js/ant-design-blazor.js"></script>
+    <abp-style-bundle name="@BlazorAntDesignThemeBundles.Styles.Global" />
 </head>
-<body class="abp-application-layout bg-light @rtl">
+<body class="abp-application-layout bg-light ">
 
     <component type="typeof(App)" render-mode="Server" />
 
@@ -42,6 +33,6 @@
         <a class="dismiss">🗙</a>
     </div>
 
-    <abp-script-bundle name="@BlazorLeptonXLiteThemeBundles.Scripts.Global" />
+    <abp-script-bundle name="@BlazorAntDesignThemeBundles.Scripts.Global" />
 </body>
 </html>

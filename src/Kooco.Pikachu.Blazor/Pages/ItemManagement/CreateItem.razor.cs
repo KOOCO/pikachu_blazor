@@ -1,5 +1,4 @@
 ﻿using Blazorise;
-using Blazorise.RichTextEdit;
 using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -16,7 +15,6 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         protected CreateUpdateItemDto NewEntity = new();
         IReadOnlyList<ItemDto> itemList = Array.Empty<ItemDto>();
         public const int maxtextCount = 60;
-        protected RichTextEdit richTextEditRef;
         protected bool readOnly;
         protected string contentAsHtml;
         protected string contentAsDeltaJson;
@@ -59,19 +57,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 
 
 
-        public async Task OnContentChanged()
-        {
-            contentAsHtml = await richTextEditRef.GetHtmlAsync();
-            contentAsDeltaJson = await richTextEditRef.GetDeltaAsync();
-            contentAsText = await richTextEditRef.GetTextAsync();
-        }
-
-        public async Task OnSave()
-        {
-            savedContent = await richTextEditRef.GetHtmlAsync();
-            await richTextEditRef.ClearAsync();
-        }
-
+        
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();

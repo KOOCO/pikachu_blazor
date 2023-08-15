@@ -1,4 +1,4 @@
-﻿@page "/Items"
+﻿@*@page "/Items"
 
 @using Volo.Abp.Application.Dtos
 @using Kooco.Pikachu.Items.Dtos
@@ -102,7 +102,7 @@
                   ShowPager="true"
                   PageSize="PageSize">
             <DataGridColumns>
-                @*<DataGridEntityActionsColumn TItem="ItemDto" @ref="@EntityActionsColumn">
+                <DataGridEntityActionsColumn TItem="ItemDto" @ref="@EntityActionsColumn">
                 <DisplayTemplate>
                 <EntityActions TItem="ItemDto" EntityActionsColumn="@EntityActionsColumn">
                 <EntityAction TItem="ItemDto"
@@ -114,7 +114,7 @@
                 ConfirmationMessage="() => GetDeleteConfirmationMessage(context)" />
                 </EntityActions>
                 </DisplayTemplate>
-                </DataGridEntityActionsColumn>*@
+                </DataGridEntityActionsColumn>
 
                 <DataGridColumn TItem="ItemDto"
                                 Field="@nameof(ItemDto.Returnable)"
@@ -153,4 +153,4 @@
     {
         NavigationManager.NavigateTo($"Items/{item.Id}");
     }
-}
+}*@

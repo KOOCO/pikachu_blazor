@@ -2,7 +2,6 @@
 @using Pikachu.Items;
 @using Pikachu.Localization;
 @using Microsoft.Extensions.Localization;
-@using Blazorise.RichTextEdit;
 @inject IItemAppService AppService
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<PikachuResource> L
@@ -35,7 +34,54 @@
         </HeadContent>
     </CardHeader>
     <CardBody>
-        <Validations @ref="@CreateValidationsRef" Model="@NewEntity" ValidateOnLoad="false">
+        <div Class=" col-12 row">
+                <div Class="col-2">
+                    <FieldLabel>@L["ItemName"]</FieldLabel>
+                </div>
+                <div Class="col-9">
+                   @* <TextEdit @bind-Text="@NewEntity.ItemName" MaxLength="@maxtextCount">
+                        <Feedback>
+                            <ValidationError />
+                        </Feedback>
+                    </TextEdit>*@
+                </div>
+                <div Class="col-1">
+                    <Span>@(maxtextCount - NewEntity.ItemName.Count())/@maxtextCount</Span>
+                </div>
+            </div>
+            <div Class="col-12 row">
+                <div Class="col-2">
+                    <FieldLabel>@L["ItemImage"]</FieldLabel>
+                </div>
+                <div Class="col-10">
+                    <AntDesign.Upload Name="@L["ItemImage"]"
+                    @bind-FileList="fileList"
+                                      ShowButton="fileList?.Count < 8"
+                                      ListType="picture-card"
+                                      OnPreview="(file)=> {
+            Console.WriteLine(file.FileName);
+            Console.WriteLine(file.Url);
+            previewVisible = true;
+            previewTitle = file.FileName;
+            imgUrl = file.Url;
+            }"
+                                      OnChange="HandleChange">
+                        <div>
+                            <Icon Type="plus"></Icon>
+                            <div className="ant-upload-text">Upload</div>
+                        </div>
+
+                    </AntDesign.Upload>
+                    <Modal Visible="previewVisible"
+                           Title="previewTitle"
+                           OnCancel="()=> previewVisible=false">
+                        <img style="width: 100%" src="@imgUrl" />
+                    </Modal>
+                </div>
+            </div>
+
+
+        @*<Validations @ref="@CreateValidationsRef" Model="@NewEntity" ValidateOnLoad="false">
             <Div Class=" col-12 row">
                 <Div Class="col-2">
                     <FieldLabel>@L["ItemName"]</FieldLabel>
@@ -52,7 +98,7 @@
                 </Div>
             </Div>
 
-            @*<Div Class="col-12 row">
+            <Div Class="col-12 row">
                 <Div Class="col-2">
                     <FieldLabel>@L["ItemImage"]</FieldLabel>
                 </Div>
@@ -81,7 +127,7 @@
                         <img style="width: 100%" src="@imgUrl" />
                     </Modal>
                 </Div>
-            </Div>*@
+            </Div>
 
             <Div Class=" col-12 row">
                 <Div Class="col-2">
@@ -426,18 +472,18 @@
                 </Div>
             </Div>
 
-        </Validations>
+        </Validations>*@
     </CardBody>
     <CardFooter Style="text-align: center">
-        <Button Color="Color.Primary" Type="ButtonType.Link" To="Items" Class="mr-3">
+       @* <Button Color="Color.Blue1" Type="ButtonType.Link" To="Items" Class="mr-3">
             @L["Cancel"]
         </Button>
-        <Button Color="Color.Secondary" Type="@ButtonType.Submit" PreventDefaultOnSubmit="true" Clicked="CreateEntityAsync">
+        <Button Color="Color.Blue1" Type="@ButtonType.Submit" PreventDefaultOnSubmit="true" Clicked="CreateEntityAsync">
             @L["Save"]
         </Button>
-        <Button Color="Color.Info" Type="@ButtonType.Submit" PreventDefaultOnSubmit="true">
+        <Button Color="Color.Gold4" Type="@ButtonType.Submit" PreventDefaultOnSubmit="true">
             @L["Preview Page"]
-        </Button>
+        </Button>*@
     </CardFooter>
 </Card>
 
