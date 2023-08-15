@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <Import Project="..\..\common.props" />
 
@@ -23,6 +23,7 @@
       <PackageReference Include="Lsw.Abp.TenantManagement.Blazor.Server.AntDesignUI" Version="0.8.0" />
       <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
         <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />
+        <PackageReference Include="Volo.Abp.AspNetCore.Mvc.UI.Theme.Basic" Version="7.3.2" />
 
   </ItemGroup>
 

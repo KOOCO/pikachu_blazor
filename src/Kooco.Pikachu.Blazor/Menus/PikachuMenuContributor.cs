@@ -30,7 +30,7 @@ public class PikachuMenuContributor : IMenuContributor
                 PikachuMenus.Home,
                 l["Menu:Home"],
                 "~/",
-                icon: "fas fa-home",
+                icon: "IconType.Outline.Home",
                 order: 0
             )
         );
@@ -202,7 +202,7 @@ public class PikachuMenuContributor : IMenuContributor
                 PikachuMenus.SystemManagement,
                 "系統管理",
                 url: "/SystemManagement",
-                icon: "fas fa-cogs",
+                icon: "IconType.Outline.Setting",
                 order: 7
             ).AddItem(new ApplicationMenuItem(
                 name: "Permission",
