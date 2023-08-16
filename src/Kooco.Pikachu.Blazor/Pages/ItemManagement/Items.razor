@@ -6,84 +6,41 @@
 @using Kooco.Pikachu.Localization
 @using Microsoft.Extensions.Localization
 @using Volo.Abp
-@using Volo.Abp.AspNetCore.Components.Web
+@using System.Text.Json;
+@using System.ComponentModel
+@using AntDesign.TableModels
 
 @inject IStringLocalizer<PikachuResource> L
 @inject NavigationManager NavigationManager
-@inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
 
-@inherits AbpCrudPageBase<IItemAppService,
-                            ItemDto,
-                            Guid,
-                            PagedAndSortedResultRequestDto,
-                            CreateUpdateItemDto, UpdateItemDto>
-
-@* <style>
-    .switch {
-        position: relative;
-        display: inline-block;
-        width: 49px;
-        height: 23px;
-    }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-    .slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #ccc;
-        -webkit-transition: .4s;
-        transition: .4s;
-    }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            -webkit-transition: .4s;
-            transition: .4s;
-        }
-
-    input:checked + .slider {
-        background-color: #2196F3;
-    }
-
-    input:focus + .slider {
-        box-shadow: 0 0 1px #2196F3;
-    }
-
-    input:checked + .slider:before {
-        -webkit-transform: translateX(26px);
-        -ms-transform: translateX(26px);
-        transform: translateX(26px);
-    }
-
-    /* Rounded sliders */
-    .slider.round {
-        border-radius: 34px;
-    }
-
-        .slider.round:before {
-            border-radius: 50%;
-        }
-</style> *@
-
+<div class="col-12 row">
+    <div class="col-6">
+        <h3>@L["Items"]</h3>
+    </div>
+    <div class="col-6" style="display: flex;flex-direction: row-reverse;">
+        <Button Danger Type="@ButtonType.Primary" Style="margin-right:5px">@L["DeleteItem"]</Button>
+        <Button Type="@ButtonType.Primary" Style="margin-right:5px; background-color:skyblue">@L["CopyItem"]</Button>
+        <Button Type="@ButtonType.Primary" Style="margin-right:5px">@L["NewItem"]</Button>
+    </div>
+</div>
+<div>
+    <Table @ref="table"
+           TItem="ItemDto"
+           DataSource="@itemList"
+           Total="_total"
+    @bind-PageIndex="_pageIndex"
+    @bind-PageSize="_pageSize"
+    @bind-SelectedRows="selectedRows"
+           Size="TableSize.Small">
+        <Selection Key="@(context.Id.ToString())" />
+        <PropertyColumn Title="@L["ItemName"]" Property="item=>item.ItemName" />
+        <PropertyColumn Title="@L["CreatedTime"]" Property="item=>item.CreationTime" Format="yyyy-MM-dd" />
+        <PropertyColumn Title="@L["TurnItemOn"]" Property="item=>item.Returnable">
+            <Switch @bind-Value="@context.Returnable"></Switch>
+        </PropertyColumn>
+    </Table>
+</div>
 
 @code {
-    private void GoToEditPage(ItemDto item)
-    {
-        NavigationManager.NavigateTo($"Items/{item.Id}");
-    }
+    ITable table;
 }

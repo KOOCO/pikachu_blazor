@@ -19,6 +19,7 @@
     "Permission:TenentList": "Tenent List",
     "Permission:TenentBillReport": "Tenent List Billing",
     "Permission:PermissionSetting": "Permission Setting",
+    "CreatedTime": "Created  Time",
 
     //items
     "NewItem": "New Item",
