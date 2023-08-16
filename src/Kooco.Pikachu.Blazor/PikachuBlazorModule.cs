@@ -1,7 +1,5 @@
 using System;
 using System.IO;
-using Blazorise.Bootstrap5;
-using Blazorise.Icons.FontAwesome;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
@@ -16,10 +14,6 @@ using Kooco.Pikachu.MultiTenancy;
 using OpenIddict.Validation.AspNetCore;
 using Volo.Abp;
 using Volo.Abp.Account.Web;
-using Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme;
-using Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme.Bundling;
-using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite;
-using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite.Bundling;
 using Volo.Abp.AspNetCore.Components.Web.Theming.Routing;
 using Volo.Abp.AspNetCore.Mvc;
 using Volo.Abp.AspNetCore.Mvc.Localization;
@@ -38,7 +32,13 @@ using Volo.Abp.VirtualFileSystem;
 using Volo.Abp.OpenIddict;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using Blazorise.RichTextEdit;
+using Volo.Abp.AspNetCore.Mvc.UI.Theme.Basic.Bundling;
+using Lsw.Abp.AspnetCore.Components.Server.AntDesignTheme.Bundling;
+using Lsw.Abp.IdentityManagement.Blazor.Server.AntDesignUI;
+using Lsw.Abp.SettingManagement.Blazor.Server.AntDesignUI;
+using Lsw.Abp.TenantManagement.Blazor.Server.AntDesignUI;
+using Lsw.Abp.AspnetCore.Components.Web.AntDesignTheme.Routing;
+using Volo.Abp.AspNetCore.Mvc.UI.Theme.Basic;
 
 namespace Kooco.Pikachu.Blazor;
 
@@ -50,11 +50,10 @@ namespace Kooco.Pikachu.Blazor;
     typeof(AbpSwashbuckleModule),
     typeof(AbpAspNetCoreSerilogModule),
     typeof(AbpAccountWebOpenIddictModule),
-    typeof(AbpAspNetCoreComponentsServerLeptonXLiteThemeModule),    
-    typeof(AbpAspNetCoreMvcUiLeptonXLiteThemeModule),
-    typeof(AbpIdentityBlazorServerModule),
-    typeof(AbpTenantManagementBlazorServerModule),
-    typeof(AbpSettingManagementBlazorServerModule)
+    typeof(AbpIdentityBlazorServerAntDesignModule),
+    typeof(AbpTenantManagementBlazorServerAntDesignModule),
+    typeof(AbpSettingManagementBlazorServerAntDesignModule),
+       typeof(AbpAspNetCoreMvcUiBasicThemeModule)
    )]
 public class PikachuBlazorModule : AbpModule
 {
@@ -71,9 +70,6 @@ public class PikachuBlazorModule : AbpModule
                 typeof(PikachuBlazorModule).Assembly
             );
         });
-
-        context.Services.AddBlazoriseRichTextEdit();
-        context.Services.AddAntDesign();
 
         PreConfigure<OpenIddictBuilder>(builder =>
         {
@@ -200,7 +196,6 @@ public class PikachuBlazorModule : AbpModule
         ConfigureVirtualFileSystem(hostingEnvironment);
         ConfigureSwaggerServices(context.Services);
         ConfigureAutoApiControllers();
-        ConfigureBlazorise(context);
         ConfigureRouter(context);
         ConfigureMenu(context);
     }
@@ -225,7 +220,7 @@ public class PikachuBlazorModule : AbpModule
         {
             // MVC UI
             options.StyleBundles.Configure(
-                LeptonXLiteThemeBundles.Styles.Global,
+                BasicThemeBundles.Styles.Global,
                 bundle =>
                 {
                     bundle.AddFiles("/global-styles.css");
@@ -234,13 +229,13 @@ public class PikachuBlazorModule : AbpModule
 
             //BLAZOR UI
             options.StyleBundles.Configure(
-                BlazorLeptonXLiteThemeBundles.Styles.Global,
-                bundle =>
-                {
-                    bundle.AddFiles("/blazor-global-styles.css");
-                    //You can remove the following line if you don't use Blazor CSS isolation for components
-                    bundle.AddFiles("/Kooco.Pikachu.Blazor.styles.css");
-                }
+            BlazorAntDesignThemeBundles.Styles.Global,
+            bundle =>
+            {
+                bundle.AddFiles("/blazor-global-styles.css");
+                //You can remove the following line if you don't use Blazor CSS isolation for components
+                bundle.AddFiles("/Kooco.Pikachu.Blazor.styles.css");
+            }
             );
         });
     }
@@ -272,12 +267,7 @@ public class PikachuBlazorModule : AbpModule
         );
     }
 
-    private void ConfigureBlazorise(ServiceConfigurationContext context)
-    {
-        context.Services
-            .AddBootstrap5Providers()
-            .AddFontAwesomeIcons();
-    }
+
 
     private void ConfigureMenu(ServiceConfigurationContext context)
     {
@@ -289,7 +279,7 @@ public class PikachuBlazorModule : AbpModule
 
     private void ConfigureRouter(ServiceConfigurationContext context)
     {
-        Configure<AbpRouterOptions>(options =>
+        Configure<Lsw.Abp.AspnetCore.Components.Web.AntDesignTheme.Routing.AbpRouterOptions>(options =>
         {
             options.AppAssembly = typeof(PikachuBlazorModule).Assembly;
         });

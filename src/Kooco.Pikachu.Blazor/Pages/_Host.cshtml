@@ -1,8 +1,10 @@
 ﻿@page "/"
 @namespace Kooco.Pikachu.Blazor.Pages
 @using System.Globalization
-@using Volo.Abp.AspNetCore.Components.Web.LeptonXLiteTheme.Themes.LeptonXLite
-@using Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme.Bundling
+@using Lsw.Abp.AspnetCore.Components.Server.AntDesignTheme.Bundling
+@using Lsw.Abp.AspnetCore.Components.Web.AntDesignTheme.Themes.AntDesignTheme
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Volo.Abp.AspNetCore.Mvc.UI.Bundling.TagHelpers
 @using Volo.Abp.Localization
 @{
     Layout = null;
@@ -16,11 +18,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>電商3.0</title>
     <base href="~/" />
-    
-    <abp-style-bundle name="@BlazorLeptonXLiteThemeBundles.Styles.Global" />
+
+    <abp-style-bundle name="@BlazorAntDesignThemeBundles.Styles.Global" />
 </head>
 <body class="abp-application-layout bg-light @rtl">
-
     <component type="typeof(App)" render-mode="Server" />
 
     <div id="blazor-error-ui">
@@ -34,6 +35,5 @@
         <a class="dismiss">🗙</a>
     </div>
 
-    <abp-script-bundle name="@BlazorLeptonXLiteThemeBundles.Scripts.Global" />
+    <abp-script-bundle name="@BlazorAntDesignThemeBundles.Scripts.Global" />
 </body>
-</html>

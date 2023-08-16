@@ -2,7 +2,6 @@
 @using Pikachu.Items;
 @using Pikachu.Localization;
 @using Microsoft.Extensions.Localization;
-@using Blazorise.RichTextEdit;
 @inject IItemAppService AppService
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<PikachuResource> L
@@ -31,17 +30,17 @@
         </HeadContent>
     </CardHeader>
     <CardBody>
-        <Validations @ref="@CreateValidationsRef" Model="@NewEntity" ValidateOnLoad="false">
+        <Validations  ValidateOnLoad="false">
             <Div Class=" col-12 row">
                 <Div Class="col-2">
                     <FieldLabel>@L["ItemName"]</FieldLabel>
                 </Div>
                 <Div Class="col-9">
-                    <TextEdit @bind-Text="@NewEntity.ItemName" MaxLength="@maxtextCount">
+               @*      <TextEdit @bind-Text="@NewEntity.ItemName" MaxLength="@maxtextCount">
                         <Feedback>
                             <ValidationError />
                         </Feedback>
-                    </TextEdit>
+                    </TextEdit> *@
                 </Div>
                 <Div Class="col-1">
                     <Span>@(maxtextCount - NewEntity.ItemName.Count())/@maxtextCount</Span>
@@ -84,11 +83,11 @@
                     <FieldLabel>@L["ItemDescriptionTitle"]</FieldLabel>
                 </Div>
                 <Div Class="col-9">
-                    <TextEdit @bind-Text="@NewEntity.ItemDescriptionTitle" MaxLength="@maxtextCount">
+         @*            <TextEdit @bind-Text="@NewEntity.ItemDescriptionTitle" MaxLength="@maxtextCount">
                         <Feedback>
                             <ValidationError />
                         </Feedback>
-                    </TextEdit>
+                    </TextEdit> *@
                 </Div>
                 <Div Class="col-1">
                     <Span>
@@ -102,7 +101,7 @@
                     <FieldLabel>@L["ItemDescription"]</FieldLabel>
                 </Div>
                 <Div Class="col-10">
-                    <RichTextEdit @ref="richTextEditRef"
+                @*     <RichTextEdit @ref="richTextEditRef"
                                   Theme="RichTextEditTheme.Snow"
                                   ContentChanged="@OnContentChanged"
                                   PlaceHolder="Type your post here..."
@@ -126,7 +125,7 @@
                                 <RichTextEditToolbarButton Action="RichTextEditAction.Image" Value="Image" />
                             </RichTextEditToolbarGroup>
                         </Toolbar>
-                    </RichTextEdit>
+                    </RichTextEdit> *@
                 </Div>
             </Div>
             <Div Class=" col-12 row">
@@ -134,7 +133,7 @@
                     <FieldLabel>@L["ItemDescription"]</FieldLabel>
                 </Div>
                 <Div Class="col-10">
-                    <RichTextEdit @ref="richTextEditRef"
+                 @*    <RichTextEdit @ref="richTextEditRef"
                                   Theme="RichTextEditTheme.Snow"
                                   ContentChanged="@OnContentChanged"
                                   PlaceHolder="Type your post here..."
@@ -158,7 +157,7 @@
                                 <RichTextEditToolbarButton Action="RichTextEditAction.Image" Value="Image" />
                             </RichTextEditToolbarGroup>
                         </Toolbar>
-                    </RichTextEdit>
+                    </RichTextEdit> *@
                 </Div>
             </Div>
             <Div Class=" col-12 row">
@@ -166,7 +165,7 @@
                     <FieldLabel>@L["ItemDescription"]</FieldLabel>
                 </Div>
                 <Div Class="col-10">
-                    <RichTextEdit @ref="richTextEditRef"
+            @*         <RichTextEdit @ref="richTextEditRef"
                                   Theme="RichTextEditTheme.Snow"
                                   ContentChanged="@OnContentChanged"
                                   PlaceHolder="Type your post here..."
@@ -190,7 +189,7 @@
                                 <RichTextEditToolbarButton Action="RichTextEditAction.Image" Value="Image" />
                             </RichTextEditToolbarGroup>
                         </Toolbar>
-                    </RichTextEdit>
+                    </RichTextEdit> *@
                 </Div>
             </Div>
 
@@ -209,10 +208,10 @@
         </Validations>
     </CardBody>
     <CardFooter>
-        <Button Color="Color.Primary" Type="ButtonType.Link" To="Items" Class="mr-3">
+        <Button  Type="@ButtonType.Link" To="Items" Class="mr-3">
             @L["Cancel"]
         </Button>
-        <Button Color="Color.Secondary" Type="@ButtonType.Submit" PreventDefaultOnSubmit="true" Clicked="CreateEntityAsync">
+        <Button Type="@ButtonType.Primary" HtmlType="submit" PreventDefaultOnSubmit="true" Clicked="CreateEntityAsync">
             @L["Save"]
         </Button>
     </CardFooter>
