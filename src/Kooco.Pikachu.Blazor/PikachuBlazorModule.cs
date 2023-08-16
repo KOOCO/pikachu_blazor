@@ -38,6 +38,7 @@ using Lsw.Abp.IdentityManagement.Blazor.Server.AntDesignUI;
 using Lsw.Abp.SettingManagement.Blazor.Server.AntDesignUI;
 using Lsw.Abp.TenantManagement.Blazor.Server.AntDesignUI;
 using Lsw.Abp.AspnetCore.Components.Web.AntDesignTheme.Routing;
+using Volo.Abp.AspNetCore.Mvc.UI.Theme.Basic;
 
 namespace Kooco.Pikachu.Blazor;
 
@@ -51,7 +52,8 @@ namespace Kooco.Pikachu.Blazor;
     typeof(AbpAccountWebOpenIddictModule),
     typeof(AbpIdentityBlazorServerAntDesignModule),
     typeof(AbpTenantManagementBlazorServerAntDesignModule),
-    typeof(AbpSettingManagementBlazorServerAntDesignModule)
+    typeof(AbpSettingManagementBlazorServerAntDesignModule),
+       typeof(AbpAspNetCoreMvcUiBasicThemeModule)
    )]
 public class PikachuBlazorModule : AbpModule
 {
