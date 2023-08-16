@@ -59,18 +59,12 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 
 
 
-        public async Task OnContentChanged()
-        {
-            //contentAsHtml = await richTextEditRef.GetHtmlAsync();
-            //contentAsDeltaJson = await richTextEditRef.GetDeltaAsync();
-            //contentAsText = await richTextEditRef.GetTextAsync();
-        }
-
-        public async Task OnSave()
-        {
-            //savedContent = await richTextEditRef.GetHtmlAsync();
-            //await richTextEditRef.ClearAsync();
-        }
+        //public async Task OnContentChanged()
+        //{
+        //    contentAsHtml = await richTextEditRef.GetHtmlAsync();
+        //    contentAsDeltaJson = await richTextEditRef.GetDeltaAsync();
+        //    contentAsText = await richTextEditRef.GetTextAsync();
+        //}
 
         protected override async Task OnInitializedAsync()
         {

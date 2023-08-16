@@ -11,105 +11,79 @@
     .row {
         margin-top: 10px;
     }
-    /* you can make up upload button and sample style by using stylesheets */
-    .ant-upload-select-picture-card i {
-        color: #999;
-        font-size: 32px;
-    }
 
-    .ant-upload-select-picture-card .ant-upload-text {
-        margin-top: 8px;
-        color: #666;
+    .site-tag-plus {
+        background: #fff;
+        border-style: dashed;
     }
 </style>
 
-<Card>
-    <CardHeader>
-        <HeadContent>
-            <ModalTitle>@L["NewItem"]</ModalTitle>
-        </HeadContent>
-    </CardHeader>
-    <CardBody>
-        <Validations  ValidateOnLoad="false">
-            <Div Class=" col-12 row">
-                <Div Class="col-2">
-                    <FieldLabel>@L["ItemName"]</FieldLabel>
-                </Div>
-                <Div Class="col-9">
-               @*      <TextEdit @bind-Text="@NewEntity.ItemName" MaxLength="@maxtextCount">
-                        <Feedback>
-                            <ValidationError />
-                        </Feedback>
-                    </TextEdit> *@
-                </Div>
-                <Div Class="col-1">
-                    <Span>@(maxtextCount - NewEntity.ItemName.Count())/@maxtextCount</Span>
-                </Div>
-            </Div>
-
-            <Div Class="col-12 row">
-                <Div Class="col-2">
-                    <FieldLabel>@L["ItemImage"]</FieldLabel>
-                </Div>
-                <Div Class="col-10">
-                    <AntDesign.Upload Name="@L["ItemImage"]"
-                                      @bind-FileList="fileList"
-                                      ShowButton="fileList?.Count < 8"
-                                      ListType="picture-card"
-                                      OnPreview="(file)=> {
+<div class="col-12">
+    <div>
+        <h3>@L["NewItem"]</h3>
+    </div>
+    <div>
+        <div Class=" col-12 row">
+            <div Class="col-2">
+                <fieldLabel>@L["ItemName"]</fieldLabel>
+            </div>
+            <div Class="col-9">
+                <FormItem Label="Username">
+                    <Input @bind-Value="@NewEntity.ItemName" MaxLength="@maxtextCount" />
+                </FormItem>
+            </div>
+            <div Class="col-1">
+                <fpan>@(maxtextCount - NewEntity.ItemName.Count())/@maxtextCount</fpan>
+            </div>
+        </div>
+        <div Class="col-12 row">
+            <div Class="col-2">
+                <fieldLabel>@L["ItemImage"]</fieldLabel>
+            </div>
+            <div Class="col-10">
+                <AntDesign.Upload Name="@L["ItemImage"]"
+                @bind-FileList="fileList"
+                                  ShowButton="fileList?.Count < 8"
+                                  ListType="picture-card"
+                                  OnPreview="(file)=> {
                                                  Console.WriteLine(file.FileName);
                                                  Console.WriteLine(file.Url);
                                                  previewVisible = true;
                                                  previewTitle = file.FileName;
                                                  imgUrl = file.Url;
                                                  }"
-                                      OnChange="HandleChange">
-                        <Div>
-                            <Icon Type="plus"></Icon>
-                            <Div className="ant-upload-text">Upload</Div>
-                        </Div>
+                                  OnChange="HandleChange">
+                    <div>
+                        <Icon Type="plus"></Icon>
+                        <div className="ant-upload-text">Upload</div>
+                    </div>
 
-                    </AntDesign.Upload>
-                    <Modal Visible="previewVisible"
-                           Title="previewTitle"
-                           OnCancel="()=> previewVisible=false">
-                        <img style="width: 100%" src="@imgUrl" />
-                    </Modal>
-                </Div>
-            </Div>
-
-            <Div Class=" col-12 row">
-                <Div Class="col-2">
-                    <FieldLabel>@L["ItemDescriptionTitle"]</FieldLabel>
-                </Div>
-                <Div Class="col-9">
-         @*            <TextEdit @bind-Text="@NewEntity.ItemDescriptionTitle" MaxLength="@maxtextCount">
-                        <Feedback>
-                            <ValidationError />
-                        </Feedback>
-                    </TextEdit> *@
-                </Div>
-                <Div Class="col-1">
-                    <Span>
-                        @(maxtextCount - NewEntity.ItemDescriptionTitle.Count())/@maxtextCount
-                    </Span>
-                </Div>
-            </Div>
-
-            <Div Class=" col-12 row">
-                <Div Class="col-2">
-                    <FieldLabel>@L["ItemDescription"]</FieldLabel>
-                </Div>
-                <Div Class="col-10">
-                @*     <RichTextEdit @ref="richTextEditRef"
+                </AntDesign.Upload>
+                <Modal Visible="previewVisible"
+                       Title="previewTitle"
+                       OnCancel="()=> previewVisible=false">
+                    <img style="width: 100%" src="@imgUrl" />
+                </Modal>
+            </div>
+        </div>
+        <div Class=" col-12 row">
+            <div Class="col-2">
+                <fieldLabel>@L["ItemDescription"]</fieldLabel>
+            </div>
+            <div Class="col-9">
+                <div class="col-12">
+                    <fieldLabel></fieldLabel>
+                    <Input Placeholder="@L["ItemDescription"]" @bind-Value="@NewEntity.ItemDescriptionTitle" />
+                </div>
+                <div Class=" col-12">
+                    @*<RichTextEdit @ref="richTextEditRef"
                                   Theme="RichTextEditTheme.Snow"
                                   ContentChanged="@OnContentChanged"
                                   PlaceHolder="Type your post here..."
                                   ReadOnly="@readOnly"
                                   SubmitOnEnter="false"
-                                  EnterPressed="@OnSave"
                                   ToolbarPosition="Placement.Bottom">
-                        <Editor>My example content</Editor>
+                        <editor>My example content</editor>
                         <Toolbar>
                             <RichTextEditToolbarGroup>
                                 <RichTextEditToolbarButton Action="RichTextEditAction.Bold" />
@@ -124,91 +98,55 @@
                                 <RichTextEditToolbarButton Action="RichTextEditAction.List" Value="bullet" />
                                 <RichTextEditToolbarButton Action="RichTextEditAction.Image" Value="Image" />
                             </RichTextEditToolbarGroup>
-                        </Toolbar>
-                    </RichTextEdit> *@
-                </Div>
-            </Div>
-            <Div Class=" col-12 row">
-                <Div Class="col-2">
-                    <FieldLabel>@L["ItemDescription"]</FieldLabel>
-                </Div>
-                <Div Class="col-10">
-                 @*    <RichTextEdit @ref="richTextEditRef"
-                                  Theme="RichTextEditTheme.Snow"
-                                  ContentChanged="@OnContentChanged"
-                                  PlaceHolder="Type your post here..."
-                                  ReadOnly="@readOnly"
-                                  SubmitOnEnter="false"
-                                  EnterPressed="@OnSave"
-                                  ToolbarPosition="Placement.Bottom">
-                        <Editor>My example content</Editor>
-                        <Toolbar>
-                            <RichTextEditToolbarGroup>
-                                <RichTextEditToolbarButton Action="RichTextEditAction.Bold" />
-                                <RichTextEditToolbarButton Action="RichTextEditAction.Italic" />
-                                <RichTextEditToolbarSelect Action="RichTextEditAction.Size">
-                                    <RichTextEditToolbarSelectItem Value="small" />
-                                    <RichTextEditToolbarSelectItem Selected />
-                                    <RichTextEditToolbarSelectItem Value="large" />
-                                    <RichTextEditToolbarSelectItem Value="huge">Very Big</RichTextEditToolbarSelectItem>
-                                </RichTextEditToolbarSelect>
-                                <RichTextEditToolbarButton Action="RichTextEditAction.List" Value="ordered" />
-                                <RichTextEditToolbarButton Action="RichTextEditAction.List" Value="bullet" />
-                                <RichTextEditToolbarButton Action="RichTextEditAction.Image" Value="Image" />
-                            </RichTextEditToolbarGroup>
-                        </Toolbar>
-                    </RichTextEdit> *@
-                </Div>
-            </Div>
-            <Div Class=" col-12 row">
-                <Div Class="col-2">
-                    <FieldLabel>@L["ItemDescription"]</FieldLabel>
-                </Div>
-                <Div Class="col-10">
-            @*         <RichTextEdit @ref="richTextEditRef"
-                                  Theme="RichTextEditTheme.Snow"
-                                  ContentChanged="@OnContentChanged"
-                                  PlaceHolder="Type your post here..."
-                                  ReadOnly="@readOnly"
-                                  SubmitOnEnter="false"
-                                  EnterPressed="@OnSave"
-                                  ToolbarPosition="Placement.Bottom">
-                        <Editor>My example content</Editor>
-                        <Toolbar>
-                            <RichTextEditToolbarGroup>
-                                <RichTextEditToolbarButton Action="RichTextEditAction.Bold" />
-                                <RichTextEditToolbarButton Action="RichTextEditAction.Italic" />
-                                <RichTextEditToolbarSelect Action="RichTextEditAction.Size">
-                                    <RichTextEditToolbarSelectItem Value="small" />
-                                    <RichTextEditToolbarSelectItem Selected />
-                                    <RichTextEditToolbarSelectItem Value="large" />
-                                    <RichTextEditToolbarSelectItem Value="huge">Very Big</RichTextEditToolbarSelectItem>
-                                </RichTextEditToolbarSelect>
-                                <RichTextEditToolbarButton Action="RichTextEditAction.List" Value="ordered" />
-                                <RichTextEditToolbarButton Action="RichTextEditAction.List" Value="bullet" />
-                                <RichTextEditToolbarButton Action="RichTextEditAction.Image" Value="Image" />
-                            </RichTextEditToolbarGroup>
-                        </Toolbar>
-                    </RichTextEdit> *@
-                </Div>
-            </Div>
+                        </e>
+                    </RichTextEdit>*@
+                </div>
+            </div>
+            <div Class="col-1">
+                <span>
+                    @(maxtextCount - NewEntity.ItemDescriptionTitle.Count())/@maxtextCount
+                </span>
+            </div>
+        </div>
+        <div Class=" col-12 row">
+            <div Class="col-2">
+                <fieldLabel>@L["ItemTags"]</fieldLabel>
+            </div>
+            <div Class="col-10">
+                <div>
+                    <Tag>Unremovable</Tag>
+                    @foreach (var item in lstTags)
+                    {
+                        <Tag @key="item" Closable OnClose="()=>OnClose(item)">@item</Tag>
+                    }
+                    @if (inputVisible)
+                    {
+                        <Input @ref="_inputRef" Style="width: 78px" Size="small" @bind-Value="_inputValue" OnBlur="HandleInputConfirm" OnPressEnter="HandleInputConfirm" AutoFocus />
+                    }
+                    else
+                    {
+                        <Tag Class="site-tag-plus" OnClick="@(() => inputVisible = !inputVisible)">
+                            <Icon Type="plus" />New Tag
+                        </Tag>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-            <Div Class=" col-12 row">
-                <Div Class="col-2">
-                    <FieldLabel>@L["ItemTags"]</FieldLabel>
-                </Div>
-                <Div Class="col-10">
-                    <TextEdit MaxLength="@maxtextCount">
-                        <Feedback>
-                            <ValidationError />
-                        </Feedback>
-                    </TextEdit>
-                </Div>
-            </Div>
+
+
+<Card>
+    <CardBody>
+        <Validations ValidateOnLoad="false">
+
+
+
         </Validations>
     </CardBody>
     <CardFooter>
-        <Button  Type="@ButtonType.Link" To="Items" Class="mr-3">
+        <Button Type="@ButtonType.Link" To="Items" Class="mr-3">
             @L["Cancel"]
         </Button>
         <Button Type="@ButtonType.Primary" HtmlType="submit" PreventDefaultOnSubmit="true" Clicked="CreateEntityAsync">
@@ -218,5 +156,49 @@
 </Card>
 
 @code {
+    private bool inputVisible { get; set; } = false;
+    string _inputValue;
+    Input<string> _inputRef;
+    List<string> lstTags { get; set; } = new List<string>();
+
+    protected override void OnInitialized()
+    {
+        lstTags.Add("Tag 2");
+        lstTags.Add("Tag 3");
+    }
+
+    void ValueChange(ChangeEventArgs value)
+    {
+        lstTags.Add(value.Value.ToString());
+    }
+
+    void OnClose(string item)
+    {
+        lstTags.Remove(item);
+    }
+
+    void HandleInputConfirm()
+    {
+        if (string.IsNullOrEmpty(_inputValue))
+        {
+            CancelInput();
+            return;
+        }
+
+        string res = lstTags.Find(s => s == _inputValue);
+
+        if (string.IsNullOrEmpty(res))
+        {
+            lstTags.Add(_inputValue);
+        }
+
+        CancelInput();
+    }
+
+    void CancelInput()
+    {
+        this._inputValue = "";
+        this.inputVisible = false;
+    }
 
 }
