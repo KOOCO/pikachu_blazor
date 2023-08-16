@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using AntDesign;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.MultiTenancy;
 using Volo.Abp.Authorization.Permissions;
@@ -31,7 +30,7 @@ public class PikachuMenuContributor : IMenuContributor
                 PikachuMenus.Home,
                 l["Menu:Home"],
                 "~/",
-                icon: IconType.Outline.Home,
+                icon: "IconType.Outline.Home",
                 order: 0
             )
         );
@@ -182,7 +181,7 @@ public class PikachuMenuContributor : IMenuContributor
                 PikachuMenus.TenantManagement,
                 "多商戶管理",
                 url: "/LogisticsManagement",
-                icon: IconType.Outline.Setting,
+                icon: "fas fa-users-cog",
                 order: 6
             ).AddItem(new ApplicationMenuItem(
             name: "TenantManagement",
@@ -203,7 +202,7 @@ public class PikachuMenuContributor : IMenuContributor
                 PikachuMenus.SystemManagement,
                 "系統管理",
                 url: "/SystemManagement",
-                icon: "fas fa-cogs",
+                icon: "IconType.Outline.Setting",
                 order: 7
             ).AddItem(new ApplicationMenuItem(
                 name: "Permission",
