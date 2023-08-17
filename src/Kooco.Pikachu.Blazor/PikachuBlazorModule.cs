@@ -37,7 +37,6 @@ using Lsw.Abp.AspnetCore.Components.Server.AntDesignTheme.Bundling;
 using Lsw.Abp.IdentityManagement.Blazor.Server.AntDesignUI;
 using Lsw.Abp.SettingManagement.Blazor.Server.AntDesignUI;
 using Lsw.Abp.TenantManagement.Blazor.Server.AntDesignUI;
-using Lsw.Abp.AspnetCore.Components.Web.AntDesignTheme.Routing;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.Basic;
 
 namespace Kooco.Pikachu.Blazor;

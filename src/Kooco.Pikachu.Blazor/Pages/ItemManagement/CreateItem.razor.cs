@@ -1,111 +1,147 @@
-﻿using Blazorise;
-//using Blazorise.RichTextEdit;
+﻿using AntDesign;
 using Kooco.Pikachu.Items.Dtos;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Forms;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Volo.Abp; 
 
 namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 {
     public partial class CreateItem
     {
-        protected Validations CreateValidationsRef;
-        protected CreateUpdateItemDto NewEntity = new();
-        IReadOnlyList<ItemDto> itemList = Array.Empty<ItemDto>();
-        public const int maxtextCount = 60;
-        //protected RichTextEdit richTextEditRef;
-        protected bool readOnly;
-        protected string contentAsHtml;
-        protected string contentAsDeltaJson;
-        protected string contentAsText;
-        protected string savedContent;
-        bool previewVisible = false;
-        string previewTitle = string.Empty;
-        string imgUrl = string.Empty;
+        private const int maxtextCount = 60;
+        private bool previewVisible = false;
+        private string previewTitle = string.Empty;
+        private string imgUrl = string.Empty;
+        private string inputTagValue;
+        private Input<string> inputTagRef;
+        private string _selectedValue;
+        private bool loading = false;
+        private bool tagInputVisible { get; set; } = false;
 
-        public List<AntDesign.UploadFileItem> fileList = new List<AntDesign.UploadFileItem>();
+        private CreateUpdateItemDto createItemDto = new();
+        List<UploadFileItem> itemImageList = new List<UploadFileItem>();
+        List<string> itemTags { get; set; } = new List<string>();
+        List<ShippingMethod> shippingMethods { get; set; }
+        List<TaxType> taxTypes { get; set; }
 
-      
 
-        void HandleChange(AntDesign.UploadInfo fileinfo)
+        public CreateItem()
         {
-            if (fileinfo.File.State == AntDesign.UploadState.Success)
+
+        }
+
+        protected override async Task OnInitializedAsync()
+        {
+            await base.OnInitializedAsync();
+            await GetAllTaxTape();
+            await GetAllShippingMethod();
+        }
+
+        /// <summary>
+        /// Show Image in Div After selection
+        /// </summary>
+        /// <param name="fileinfo">Selected File</param>
+        void ItemImageHandleChange(UploadInfo fileinfo)
+        {
+            if (fileinfo.File.State == UploadState.Success)
             {
                 fileinfo.File.Url = fileinfo.File.ObjectURL;
             }
         }
 
-        public class ResponseModel
+        /// <summary>
+        /// On Tag close button remove Tag
+        /// </summary>
+        /// <param name="item">Tag string</param>
+        void OnTagClose(string item)
         {
-            public string name { get; set; }
+            itemTags.Remove(item);
+        }
+        /// <summary>
+        /// On tag confirm
+        /// </summary>
+        void HandleTagInputConfirm()
+        {
+            if (string.IsNullOrEmpty(inputTagValue))
+            {
+                CancelInput();
+                return;
+            }
+            string res = itemTags.Find(s => s == inputTagValue);
 
-            public string status { get; set; }
+            if (string.IsNullOrEmpty(res))
+                itemTags.Add(inputTagValue);
+            CancelInput();
+        }
 
-            public string url { get; set; }
-
-            public string thumbUrl { get; set; }
+        /// <summary>
+        /// On tag cancel
+        /// </summary>
+        void CancelInput()
+        {
+            this.inputTagValue = "";
+            this.tagInputVisible = false;
         }
 
 
-
-
-
-
-
-
-
-
-
-        //public async Task OnContentChanged()
-        //{
-        //    contentAsHtml = await richTextEditRef.GetHtmlAsync();
-        //    contentAsDeltaJson = await richTextEditRef.GetDeltaAsync();
-        //    contentAsText = await richTextEditRef.GetTextAsync();
-        //}
-
-        protected override async Task OnInitializedAsync()
+        /// <summary>
+        /// Get All Type of Tax
+        /// </summary>
+        /// <returns></returns>
+        async Task GetAllTaxTape()
         {
-            await base.OnInitializedAsync();
-            if (CreateValidationsRef != null)
-                await CreateValidationsRef.ClearAll();
+            taxTypes = new List<TaxType>
+            {
+                new TaxType { Value = "jack", Name = "Jack" },
+                new TaxType { Value = "lucy", Name = "Lucy" },
+                new TaxType { Value = "tom" , Name = "Tom" }
+            };
+        }
+
+        /// <summary>
+        /// Get All type of ShippingMethod
+        /// </summary>
+        /// <returns></returns>
+        async Task GetAllShippingMethod()
+        {
+            shippingMethods = new List<ShippingMethod>
+            {
+                new ShippingMethod { Value = "ShippingMethod1", Name = "ShippingMethod1" },
+                new ShippingMethod { Value = "ShippingMethod2", Name = "ShippingMethod2" },
+                new ShippingMethod { Value = "ShippingMethod3" , Name = "ShippingMethod3" }
+            };
         }
 
         protected virtual async Task CreateEntityAsync()
         {
-            try
-            {
-                await AppService.CreateAsync(NewEntity);
-                NavigationManager.NavigateTo("Items");
-            }
-            catch (Exception ex)
-            {
-                //if the environment is debug then throw the exception
-                if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
-                    throw new UserFriendlyException("Unable to Save", ex.Source, ex.Message);
-                else
-                    throw new UserFriendlyException("Unable to Save");
-            }
-        }
-        private async Task OnFileSelection(InputFileChangeEventArgs e)
-        {
-            try
-            {
-                IBrowserFile imgFile = e.File;
-                var buffers = new byte[imgFile.Size];
-                await imgFile.OpenReadStream().ReadAsync(buffers);
-                string imageType = imgFile.ContentType;
-                imgUrl = $"data:{imageType};base64,{Convert.ToBase64String(buffers)}";
-            }
-            catch (Exception ex)
-            {
-
-                throw;
-            }
-
         }
 
+
+    }
+    public class Item
+    {
+        public string Value { get; set; }
+        public string Name { get; set; }
+        public string DisplayName { get; set; }
+    }
+
+    class ShippingMethod
+    {
+        public string Value { get; set; }
+        public string Name { get; set; }
+    }
+    class TaxType
+    {
+        public string Value { get; set; }
+        public string Name { get; set; }
+    }
+    public class ResponseModel
+    {
+        public string name { get; set; }
+
+        public string status { get; set; }
+
+        public string url { get; set; }
+
+        public string thumbUrl { get; set; }
     }
 }
