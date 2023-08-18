@@ -16,6 +16,7 @@ using Kooco.Pikachu.Items;
 using Volo.Abp.EntityFrameworkCore.Modeling;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Kooco.Pikachu.EnumValues;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -29,6 +30,7 @@ public class PikachuDbContext :
 {
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
     public DbSet<Item> Items { get; set; }
+    public DbSet<EnumValue> EnumValues { get; set; }
 
     #region Entities from the modules
 
@@ -104,6 +106,14 @@ public class PikachuDbContext :
             b.Property(x => x.ItemNo).IsRequired().ValueGeneratedOnAdd().Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
             b.Property(x => x.ItemName).IsRequired();
             b.Property(x => x.Returnable).IsRequired();
+        });
+        
+        builder.Entity<EnumValue>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "EnumValues", PikachuConsts.DbSchema);
+            b.ConfigureByConvention(); //auto configure for the base class props
+            b.Property(x => x.EnumType).IsRequired();
+            b.Property(x => x.Text).IsRequired();
         });
 
 
