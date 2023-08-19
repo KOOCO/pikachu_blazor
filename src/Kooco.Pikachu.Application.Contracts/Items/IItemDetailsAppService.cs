@@ -14,8 +14,8 @@ public interface IItemDetailsAppService :
                 ItemDetailsDto, 
         Guid, 
         PagedAndSortedResultRequestDto,
-        CreateUpdateItemDetailsDto,
-        CreateUpdateItemDetailsDto>
+        CreateItemDetailsDto,
+        CreateItemDetailsDto>
 {
 
 }

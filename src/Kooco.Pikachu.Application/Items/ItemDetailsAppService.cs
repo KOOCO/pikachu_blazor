@@ -9,7 +9,7 @@ namespace Kooco.Pikachu.Items;
 /// <summary>
 /// 
 /// </summary>
-public class ItemDetailsAppService : CrudAppService<ItemDetails, ItemDetailsDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateItemDetailsDto, CreateUpdateItemDetailsDto>,
+public class ItemDetailsAppService : CrudAppService<ItemDetails, ItemDetailsDto, Guid, PagedAndSortedResultRequestDto, CreateItemDetailsDto, CreateItemDetailsDto>,
     IItemDetailsAppService
 {
 

@@ -1,15 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Kooco.Pikachu.Items.Dtos;
 
 [Serializable]
-public class CreateUpdateItemDto
+public class CreateItemDto
 {
-
-
     /// <summary>
     /// 商品編號
     /// </summary>

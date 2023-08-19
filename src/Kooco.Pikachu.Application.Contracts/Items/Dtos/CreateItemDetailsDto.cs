@@ -4,7 +4,7 @@ using System.ComponentModel;
 namespace Kooco.Pikachu.Items.Dtos;
 
 [Serializable]
-public class CreateUpdateItemDetailsDto
+public class CreateItemDetailsDto
 {
     /// <summary>
     /// 

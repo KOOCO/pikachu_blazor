@@ -21,6 +21,10 @@
       <PackageReference Include="Lsw.Abp.PermissionManagement.Blazor.Server.AntDesignUI" Version="0.8.0" />
       <PackageReference Include="Lsw.Abp.SettingManagement.Blazor.Server.AntDesignUI" Version="0.8.0" />
       <PackageReference Include="Lsw.Abp.TenantManagement.Blazor.Server.AntDesignUI" Version="0.8.0" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.10">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
       <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.10" />
       <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
         <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />

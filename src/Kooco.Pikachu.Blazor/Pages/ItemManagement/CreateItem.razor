@@ -1,5 +1,6 @@
 ﻿@page "/Items/New"
 
+@using Kooco.Pikachu.EnumValues;
 @using Pikachu.Items;
 @using Pikachu.Localization;
 @using Microsoft.Extensions.Localization;
@@ -29,6 +30,11 @@
         margin-top: 8px;
         color: #666;
     }
+
+    .anticon{
+        vertical-align: 0.1em !important
+    }
+
 </style>
 
 <div class="col-12">
@@ -81,32 +87,6 @@
                            OnCancel="()=> previewVisible=false">
                         <img style="width: 100%" src="@imgUrl" />
                     </Modal>
-                    @*<Upload Action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                            Name="avatar"
-                    @bind-FileList="fileList"
-                            ShowButton="fileList?.Count < 8"
-                            ListType="picture-card"
-                            OnPreview="(file)=> {
-                           Console.WriteLine(file.FileName);
-                           Console.WriteLine(file.Url);
-                           previewVisible = true;
-                           previewTitle = file.FileName;
-                           imgUrl = file.Url;
-                       }"
-                            OnChange="HandleChange">
-                        <div>
-                            <Icon Type="plus"></Icon>
-                            <div className="ant-upload-text">Upload</div>
-                        </div>
-
-                    </Upload>
-                    <Modal Visible="previewVisible"
-                           Title="previewTitle"
-                           OnCancel="()=> previewVisible=false">
-                        <img style="width: 100%" src="@imgUrl" />
-                    </Modal>
-*@
-
                 </div>
             </div>
             <div class=" col-12 row">
@@ -246,14 +226,15 @@
                             <label>@L["ShippingMethod"]</label>
                         </div>
                         <div class="col-3">
-                            <Select TItem="ShippingMethod"
-                                    TItemValue="string"
+                            <Select TItem="EnumValueDto"
                                     DataSource="@shippingMethods"
-                                    @bind-Value="@_selectedValue"
-                                    LabelName="@nameof(ShippingMethod.Name)"
-                                    ValueName="@nameof(ShippingMethod.Value)"
-                                    Placeholder="Select a person"
+                                    @bind-Value="@_selectedShippingMethodValue"
+                                    LabelName="@nameof(EnumValueDto.Text)"
+                                    ValueName="@nameof(EnumValueDto.Id)"
+                                    Placeholder="Select a Shipping Method"
                                     DefaultActiveFirstOption="false"
+                                    TItemValue="int"
+                                    OnSelectedItemChanged="ItemSippingMethodHandleChange"
                                                         EnableSearch>
                             </Select>
                         </div>
@@ -263,14 +244,16 @@
                             <label>@L["TaxType"]</label>
                         </div>
                         <div class="col-3">
-                            <Select TItem="TaxType"
-                                    TItemValue="string"
+                            <Select TItem="EnumValueDto"
                                     DataSource="@taxTypes"
-                            @bind-Value="@_selectedValue"
-                                    LabelName="@nameof(TaxType.Name)"
-                                    ValueName="@nameof(TaxType.Value)"
-                                    Placeholder="Select a person"
-                                    DefaultActiveFirstOption="false">
+                                    @bind-Value="@_selectedTaxTypeValue"
+                                    LabelName="@nameof(EnumValueDto.Text)"
+                                    ValueName="@nameof(EnumValueDto.Id)"
+                                    Placeholder="Select a Tax Types"
+                                    DefaultActiveFirstOption="false"
+                                    TItemValue="int"
+                                    OnSelectedItemChanged="ItemTaxTypeHandleChange"
+                                                        EnableSearch>
                             </Select>
                         </div>
                     </div>

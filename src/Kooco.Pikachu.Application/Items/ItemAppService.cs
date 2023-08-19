@@ -10,7 +10,7 @@ namespace Kooco.Pikachu.Items;
 /// <summary>
 /// 
 /// </summary>
-public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateItemDto, UpdateItemDto>,
+public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSortedResultRequestDto, CreateItemDto, UpdateItemDto>,
     IItemAppService
 {
     protected override string GetPolicyName { get; set; } = PikachuPermissions.Item.Default;

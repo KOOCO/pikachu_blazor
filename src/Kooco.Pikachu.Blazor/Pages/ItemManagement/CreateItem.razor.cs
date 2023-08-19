@@ -1,6 +1,8 @@
 ﻿using AntDesign;
+using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Items.Dtos;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
@@ -13,27 +15,32 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         private string imgUrl = string.Empty;
         private string inputTagValue;
         private Input<string> inputTagRef;
-        private string _selectedValue;
+        private int _selectedShippingMethodValue;
+        private int _selectedTaxTypeValue;
         private bool loading = false;
         private bool tagInputVisible { get; set; } = false;
 
-        private CreateUpdateItemDto createItemDto = new();
-        List<UploadFileItem> itemImageList = new List<UploadFileItem>();
+        private CreateItemDto createItemDto = new();
+        List<UploadFileItem> itemImageList   = new List<UploadFileItem>();
         List<string> itemTags { get; set; } = new List<string>();
-        List<ShippingMethod> shippingMethods { get; set; }
-        List<TaxType> taxTypes { get; set; }
+        List<EnumValueDto> shippingMethods { get; set; }
+        List<EnumValueDto> taxTypes { get; set; }
 
-
-        public CreateItem()
+        private readonly IEnumValueAppService _enumValueService;
+        public CreateItem(IEnumValueAppService enumValueService)
         {
-
+            _enumValueService = enumValueService;
         }
 
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
-            await GetAllTaxTape();
-            await GetAllShippingMethod();
+            var enumValues = (await _enumValueService.GetEnums(new List<EnumType> { 
+                                                             EnumType.ShippingMethod,
+                                                             EnumType.TaxType
+                                                         })).ToList();
+            taxTypes = enumValues.Where(x=>x.EnumType == EnumType.TaxType).ToList();
+            shippingMethods = enumValues.Where(x=>x.EnumType == EnumType.ShippingMethod).ToList();
         }
 
         /// <summary>
@@ -46,6 +53,24 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             {
                 fileinfo.File.Url = fileinfo.File.ObjectURL;
             }
+        }
+        
+        /// <summary>
+        ///bind Shipping method value
+        /// </summary>
+        /// <param name="fileinfo">Selected File</param>
+        void ItemSippingMethodHandleChange(EnumValueDto SippingMethod)
+        {
+            _selectedShippingMethodValue = SippingMethod.Id;
+        }
+        
+        /// <summary>
+        ///bind Tax Type value
+        /// </summary>
+        /// <param name="fileinfo">Selected File</param>
+        void ItemTaxTypeHandleChange(EnumValueDto TaxType)
+        {
+            _selectedTaxTypeValue = TaxType.Id;
         }
 
         /// <summary>
@@ -82,35 +107,6 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             this.tagInputVisible = false;
         }
 
-
-        /// <summary>
-        /// Get All Type of Tax
-        /// </summary>
-        /// <returns></returns>
-        async Task GetAllTaxTape()
-        {
-            taxTypes = new List<TaxType>
-            {
-                new TaxType { Value = "jack", Name = "Jack" },
-                new TaxType { Value = "lucy", Name = "Lucy" },
-                new TaxType { Value = "tom" , Name = "Tom" }
-            };
-        }
-
-        /// <summary>
-        /// Get All type of ShippingMethod
-        /// </summary>
-        /// <returns></returns>
-        async Task GetAllShippingMethod()
-        {
-            shippingMethods = new List<ShippingMethod>
-            {
-                new ShippingMethod { Value = "ShippingMethod1", Name = "ShippingMethod1" },
-                new ShippingMethod { Value = "ShippingMethod2", Name = "ShippingMethod2" },
-                new ShippingMethod { Value = "ShippingMethod3" , Name = "ShippingMethod3" }
-            };
-        }
-
         protected virtual async Task CreateEntityAsync()
         {
         }
@@ -124,16 +120,6 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         public string DisplayName { get; set; }
     }
 
-    class ShippingMethod
-    {
-        public string Value { get; set; }
-        public string Name { get; set; }
-    }
-    class TaxType
-    {
-        public string Value { get; set; }
-        public string Name { get; set; }
-    }
     public class ResponseModel
     {
         public string name { get; set; }
