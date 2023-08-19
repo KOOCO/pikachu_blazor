@@ -15,6 +15,8 @@
 
   <ItemGroup>
 
+      <PackageReference Include="Blazored.TextEditor" Version="1.1.0" />
+
       <PackageReference Include="Lsw.Abp.AspnetCore.Components.Server.AntDesignTheme" Version="0.8.0" />
       <PackageReference Include="Lsw.Abp.FeatureManagement.Blazor.Server.AntDesignUI" Version="0.8.0" />
       <PackageReference Include="Lsw.Abp.IdentityManagement.Blazor.Server.AntDesignUI" Version="0.8.0" />

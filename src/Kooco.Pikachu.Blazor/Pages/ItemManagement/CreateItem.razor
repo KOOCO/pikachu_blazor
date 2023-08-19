@@ -4,6 +4,8 @@
 @using Pikachu.Items;
 @using Pikachu.Localization;
 @using Microsoft.Extensions.Localization;
+@using System.ComponentModel
+@using AntDesign.TableModels
 
 @inject IItemAppService AppService
 @inject NavigationManager NavigationManager
@@ -31,7 +33,7 @@
         color: #666;
     }
 
-    .anticon{
+    .anticon {
         vertical-align: 0.1em !important
     }
 
@@ -65,7 +67,7 @@
                 <div class="col-10 row">
                     <Upload Action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                             Name="avatar"
-                            @bind-FileList="itemImageList"
+                    @bind-FileList="itemImageList"
                             ShowButton="itemImageList?.Count < 20"
                             ListType="picture-card"
                             OnPreview="(image)=> {
@@ -99,31 +101,38 @@
                         <Input Placeholder="@L["ItemDescriptionTitle"]" @bind-Value="@createItemDto.ItemDescriptionTitle" />
                     </div>
                     <div class=" col-12">
-                        <TextArea @bind-Value="@createItemDto.ItemName" MaxLength="@maxtextCount" />
-                        @*<RichTextEdit @ref="richTextEditRef"
-                        Theme="RichTextEditTheme.Snow"
-                        ContentChanged="@OnContentChanged"
-                        PlaceHolder="Type your post here..."
-                        ReadOnly="@readOnly"
-                        SubmitOnEnter="false"
-                        ToolbarPosition="Placement.Bottom">
-                        <editor>My example content</editor>
-                        <Toolbar>
-                        <RichTextEditToolbarGroup>
-                        <RichTextEditToolbarButton Action="RichTextEditAction.Bold" />
-                        <RichTextEditToolbarButton Action="RichTextEditAction.Italic" />
-                        <RichTextEditToolbarSelect Action="RichTextEditAction.Size">
-                        <RichTextEditToolbarSelectItem Value="small" />
-                        <RichTextEditToolbarSelectItem Selected />
-                        <RichTextEditToolbarSelectItem Value="large" />
-                        <RichTextEditToolbarSelectItem Value="huge">Very Big</RichTextEditToolbarSelectItem>
-                        </RichTextEditToolbarSelect>
-                        <RichTextEditToolbarButton Action="RichTextEditAction.List" Value="ordered" />
-                        <RichTextEditToolbarButton Action="RichTextEditAction.List" Value="bullet" />
-                        <RichTextEditToolbarButton Action="RichTextEditAction.Image" Value="Image" />
-                        </RichTextEditToolbarGroup>
-                        </e>
-                        </RichTextEdit>*@
+                        <Blazored.TextEditor.BlazoredTextEditor @ref="@QuillHtml">
+                            <ToolbarContent>
+                                <select class="ql-header">
+                                    <option selected=""></option>
+                                    <option value="1"></option>
+                                    <option value="2"></option>
+                                    <option value="3"></option>
+                                    <option value="4"></option>
+                                    <option value="5"></option>
+                                </select>
+                                <span class="ql-formats">
+                                    <button class="ql-bold"></button>
+                                    <button class="ql-italic"></button>
+                                    <button class="ql-underline"></button>
+                                    <button class="ql-strike"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <select class="ql-color"></select>
+                                    <select class="ql-background"></select>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-list" value="ordered"></button>
+                                    <button class="ql-list" value="bullet"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-link"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-image"></button>
+                                </span>
+                            </ToolbarContent>
+                        </Blazored.TextEditor.BlazoredTextEditor>
                     </div>
                 </div>
                 <div class="col-1">
@@ -172,12 +181,7 @@
                 </div>
                 <div class="col-10">
                     <div>
-                       @* <Table TItem="IData" DataSource="@data">
-                            <PropertyColumn Property="c=>c.Name"></PropertyColumn>
-                            <PropertyColumn Property="c=>c.Age"></PropertyColumn>
-                            <PropertyColumn Property="c=>c.Address"></PropertyColumn>
-                            <PropertyColumn Property="c=>c.Tags"></PropertyColumn>
-                        </Table>*@
+                        
                     </div>
                 </div>
             </div>
@@ -228,7 +232,7 @@
                         <div class="col-3">
                             <Select TItem="EnumValueDto"
                                     DataSource="@shippingMethods"
-                                    @bind-Value="@_selectedShippingMethodValue"
+                            @bind-Value="@_selectedShippingMethodValue"
                                     LabelName="@nameof(EnumValueDto.Text)"
                                     ValueName="@nameof(EnumValueDto.Id)"
                                     Placeholder="Select a Shipping Method"
@@ -269,6 +273,6 @@
     </div>
 </div>
 
-@code {
 
+@code {
 }

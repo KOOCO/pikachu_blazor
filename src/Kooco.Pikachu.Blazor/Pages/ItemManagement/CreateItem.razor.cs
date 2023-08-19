@@ -18,9 +18,12 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         private int _selectedShippingMethodValue;
         private int _selectedTaxTypeValue;
         private bool loading = false;
+        string QuillHTMLContent;
         private bool tagInputVisible { get; set; } = false;
 
+        Blazored.TextEditor.BlazoredTextEditor QuillHtml;
         private CreateItemDto createItemDto = new();
+
         List<UploadFileItem> itemImageList   = new List<UploadFileItem>();
         List<string> itemTags { get; set; } = new List<string>();
         List<EnumValueDto> shippingMethods { get; set; }
