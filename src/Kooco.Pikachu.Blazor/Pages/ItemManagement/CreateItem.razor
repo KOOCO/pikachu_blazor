@@ -1,6 +1,7 @@
 ﻿@page "/Items/New"
 
 @using Kooco.Pikachu.EnumValues;
+@using Kooco.Pikachu.Items.Dtos;
 @using Pikachu.Items;
 @using Pikachu.Localization;
 @using Microsoft.Extensions.Localization;
@@ -44,232 +45,262 @@
         <h3>@L["NewItem"]</h3>
     </div>
     <div>
-        <Form Loading="loading" Model="@createItemDto"
-              LabelColSpan="8"
-              WrapperColSpan="16">
-            <div class=" col-12 row">
-                <div class="col-2">
-                    <label>@L["ItemName"]</label>
-                </div>
-                <div class="col-9">
-                    <Input @bind-Value="@createItemDto.ItemName" MaxLength="@maxtextCount" />
-                </div>
-                <div class="col-1">
-                    <span>
-                        @(string.IsNullOrWhiteSpace(createItemDto.ItemName) ? 60 : (maxtextCount - createItemDto.ItemName.Count()))/@maxtextCount
-                    </span>
-                </div>
+        <div class=" col-12 row">
+            <div class="col-2">
+                <label>@L["ItemName"]</label>
             </div>
-            <div class="col-12 row">
-                <div class="col-2">
-                    <label>@L["ItemImage"]</label>
-                </div>
-                <div class="col-10 row">
-                    <Upload Action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                            Name="avatar"
-                    @bind-FileList="itemImageList"
-                            ShowButton="itemImageList?.Count < 20"
-                            ListType="picture-card"
-                            OnPreview="(image)=> {
+            <div class="col-9">
+                <Input @bind-Value="@createItemDto.ItemName" MaxLength="@maxtextCount" />
+            </div>
+            <div class="col-1">
+                <span>
+                    @(string.IsNullOrWhiteSpace(createItemDto.ItemName) ? 60 : (maxtextCount - createItemDto.ItemName.Count()))/@maxtextCount
+                </span>
+            </div>
+        </div>
+        <div class="col-12 row">
+            <div class="col-2">
+                <label>@L["ItemImage"]</label>
+            </div>
+            <div class="col-10 row">
+                <Upload Action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                        Name="avatar"
+                @bind-FileList="itemImageList"
+                        ShowButton="itemImageList?.Count < 20"
+                        ListType="picture-card"
+                        OnPreview="(image)=> {
                            Console.WriteLine(image.FileName);
                            Console.WriteLine(image.Url);
                            previewVisible = true;
                            previewTitle = image.FileName;
                            imgUrl = image.Url;
                        }"
-                            OnChange="ItemImageHandleChange">
-                        <div>
-                            <Icon Type="plus"></Icon>
-                            <div className="ant-upload-text">@L["Upload"]</div>
-                        </div>
-
-                    </Upload>
-                    <Modal Visible="previewVisible"
-                           Title="previewTitle"
-                           OnCancel="()=> previewVisible=false">
-                        <img style="width: 100%" src="@imgUrl" />
-                    </Modal>
-                </div>
-            </div>
-            <div class=" col-12 row">
-                <div class="col-2">
-                    <fieldLabel>@L["ItemDescription"]</fieldLabel>
-                </div>
-                <div class="col-9">
-                    <div class="col-12">
-                        <fieldLabel></fieldLabel>
-                        <Input Placeholder="@L["ItemDescriptionTitle"]" @bind-Value="@createItemDto.ItemDescriptionTitle" />
-                    </div>
-                    <div class=" col-12">
-                        <Blazored.TextEditor.BlazoredTextEditor @ref="@QuillHtml">
-                            <ToolbarContent>
-                                <select class="ql-header">
-                                    <option selected=""></option>
-                                    <option value="1"></option>
-                                    <option value="2"></option>
-                                    <option value="3"></option>
-                                    <option value="4"></option>
-                                    <option value="5"></option>
-                                </select>
-                                <span class="ql-formats">
-                                    <button class="ql-bold"></button>
-                                    <button class="ql-italic"></button>
-                                    <button class="ql-underline"></button>
-                                    <button class="ql-strike"></button>
-                                </span>
-                                <span class="ql-formats">
-                                    <select class="ql-color"></select>
-                                    <select class="ql-background"></select>
-                                </span>
-                                <span class="ql-formats">
-                                    <button class="ql-list" value="ordered"></button>
-                                    <button class="ql-list" value="bullet"></button>
-                                </span>
-                                <span class="ql-formats">
-                                    <button class="ql-link"></button>
-                                </span>
-                                <span class="ql-formats">
-                                    <button class="ql-image"></button>
-                                </span>
-                            </ToolbarContent>
-                        </Blazored.TextEditor.BlazoredTextEditor>
-                    </div>
-                </div>
-                <div class="col-1">
-                    <span>
-                        @(string.IsNullOrWhiteSpace(createItemDto.ItemDescriptionTitle) ? 60 : (maxtextCount - createItemDto.ItemDescriptionTitle.Count()))/@maxtextCount
-                    </span>
-                </div>
-            </div>
-            <div class="col-12 row">
-                <div class="col-2">
-                    <fieldLabel>@L["ItemTags"]</fieldLabel>
-                </div>
-                <div class="col-10">
-                    @foreach (var tag in itemTags)
-                    {
-                        <Tag @key="tag" Closable OnClose="()=>OnTagClose(tag)">@tag</Tag>
-                    }
-                    @if (tagInputVisible)
-                    {
-                        <Input @ref="inputTagRef" Style="width: 78px" Size="small" @bind-Value="inputTagValue" OnBlur="HandleTagInputConfirm" OnPressEnter="HandleTagInputConfirm" AutoFocus />
-                    }
-                    else
-                    {
-                        <Tag Class="site-tag-plus" OnClick="@(() => tagInputVisible = !tagInputVisible)">
-                            <Icon Type="plus" />@L["NewTag"]
-                        </Tag>
-                    }
-                </div>
-            </div>
-            <div class="col-12 row">
-                <div class="col-2">
-                    <label>@L["ItemStyle"]</label>
-                </div>
-                <div class="col-10">
+                        OnChange="ItemImageHandleChange">
                     <div>
-                        <Input Placeholder="@L["ItemStyleKey"]" @bind-Value="@createItemDto.InventoryAccount" />
+                        <Icon Type="plus"></Icon>
+                        <div className="ant-upload-text">@L["Upload"]</div>
                     </div>
-                    <div style="padding-left:33px">
-                        <Input Placeholder="@L["ItemStyleValue"]" @bind-Value="@createItemDto.InventoryAccount" />
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 row">
-                <div class="col-2">
-                    <label>@L["PriceAndInventory"]</label>
-                </div>
-                <div class="col-10">
-                    <div>
-                        
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 row">
-                <div class="col-2">
-                    <label>@L["CommodityAttributes"]</label>
-                </div>
-                <div class="col-10">
-                    <div class="col-12 row">
-                        <div class="col-3">
-                            <label>@L["TimeLimitPeriod"]</label>
-                        </div>
-                        <div class="col-3">
-                            <DatePicker Style="width:100%" Placeholder="@L["StartDate"].ToString()" TValue="DateTime?" Picker="@DatePickerType.Date" />
-                        </div>
-                        <div class="col-3">
-                            <DatePicker Style="width:100%" Placeholder="@L["EndDate"].ToString()" TValue="DateTime?" Picker="@DatePickerType.Date" />
-                        </div>
-                    </div>
-                    <div class="col-12 row">
-                        <div class="col-3">
-                            <label>@L["LimitQuantity"]</label>
-                        </div>
-                        <div class="col-3">
-                            <Input @bind-Value="@createItemDto.InventoryAccount" />
-                        </div>
-                    </div>
-                    <div class="col-12 row">
-                        <div class="col-3">
-                            <label>@L["ShareProfit"]</label>
-                        </div>
-                        <div class="col-3">
-                            <Input @bind-Value="@createItemDto.InventoryAccount" />
-                        </div>
-                    </div>
-                    <div class="col-12 row">
-                        <div class="col-3">
-                            <label>@L["FreeShipping"]</label>
-                        </div>
-                        <div class="col-3">
-                            <Input @bind-Value="@createItemDto.InventoryAccount" />
-                        </div>
-                    </div>
-                    <div class="col-12 row">
-                        <div class="col-3">
-                            <label>@L["ShippingMethod"]</label>
-                        </div>
-                        <div class="col-3">
-                            <Select TItem="EnumValueDto"
-                                    DataSource="@shippingMethods"
-                            @bind-Value="@_selectedShippingMethodValue"
-                                    LabelName="@nameof(EnumValueDto.Text)"
-                                    ValueName="@nameof(EnumValueDto.Id)"
-                                    Placeholder="Select a Shipping Method"
-                                    DefaultActiveFirstOption="false"
-                                    TItemValue="int"
-                                    OnSelectedItemChanged="ItemSippingMethodHandleChange"
-                                                        EnableSearch>
-                            </Select>
-                        </div>
-                    </div>
-                    <div class="col-12 row">
-                        <div class="col-3">
-                            <label>@L["TaxType"]</label>
-                        </div>
-                        <div class="col-3">
-                            <Select TItem="EnumValueDto"
-                                    DataSource="@taxTypes"
-                                    @bind-Value="@_selectedTaxTypeValue"
-                                    LabelName="@nameof(EnumValueDto.Text)"
-                                    ValueName="@nameof(EnumValueDto.Id)"
-                                    Placeholder="Select a Tax Types"
-                                    DefaultActiveFirstOption="false"
-                                    TItemValue="int"
-                                    OnSelectedItemChanged="ItemTaxTypeHandleChange"
-                                                        EnableSearch>
-                            </Select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div style="text-align: center; margin-top:5px ;">
-                <Button Danger Type="@ButtonType.Primary" Style="margin-right:5px">@L["Cancel"]</Button>
-                <Button Type="@ButtonType.Primary" Style="margin-right:5px">@L["Save"]</Button>
-                <Button Type="@ButtonType.Primary" Style="margin-right:5px; background-color:skyblue">@L["Preview"]</Button>
 
+                </Upload>
+                <Modal Visible="previewVisible"
+                       Title="previewTitle"
+                       OnCancel="()=> previewVisible=false">
+                    <img style="width: 100%" src="@imgUrl" />
+                </Modal>
             </div>
-        </Form>
+        </div>
+        <div class=" col-12 row">
+            <div class="col-2">
+                <fieldLabel>@L["ItemDescription"]</fieldLabel>
+            </div>
+            <div class="col-9">
+                <div class="col-12">
+                    <fieldLabel></fieldLabel>
+                    <Input Placeholder="@L["ItemDescriptionTitle"]" @bind-Value="@createItemDto.ItemDescriptionTitle" />
+                </div>
+                <div class=" col-12">
+                    <Blazored.TextEditor.BlazoredTextEditor @ref="@QuillHtml">
+                        <ToolbarContent>
+                            <select class="ql-header">
+                                <option selected=""></option>
+                                <option value="1"></option>
+                                <option value="2"></option>
+                                <option value="3"></option>
+                                <option value="4"></option>
+                                <option value="5"></option>
+                            </select>
+                            <span class="ql-formats">
+                                <button class="ql-bold"></button>
+                                <button class="ql-italic"></button>
+                                <button class="ql-underline"></button>
+                                <button class="ql-strike"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <select class="ql-color"></select>
+                                <select class="ql-background"></select>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-list" value="ordered"></button>
+                                <button class="ql-list" value="bullet"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-link"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-image"></button>
+                            </span>
+                        </ToolbarContent>
+                    </Blazored.TextEditor.BlazoredTextEditor>
+                </div>
+            </div>
+            <div class="col-1">
+                <span>
+                    @(string.IsNullOrWhiteSpace(createItemDto.ItemDescriptionTitle) ? 60 : (maxtextCount - createItemDto.ItemDescriptionTitle.Count()))/@maxtextCount
+                </span>
+            </div>
+        </div>
+        <div class="col-12 row">
+            <div class="col-2">
+                <fieldLabel>@L["ItemTags"]</fieldLabel>
+            </div>
+            <div class="col-10">
+                @foreach (var tag in itemTags)
+                {
+                    <Tag @key="tag" Closable OnClose="()=>OnTagClose(tag)">@tag</Tag>
+                }
+                @if (tagInputVisible)
+                {
+                    <Input @ref="inputTagRef" Style="width: 78px" Size="small" @bind-Value="inputTagValue" OnBlur="HandleTagInputConfirm" OnPressEnter="HandleTagInputConfirm" AutoFocus />
+                }
+                else
+                {
+                    <Tag Class="site-tag-plus" OnClick="@(() => tagInputVisible = !tagInputVisible)">
+                        <Icon Type="plus" />@L["NewTag"]
+                    </Tag>
+                }
+            </div>
+        </div>
+        <div class="col-12 row">
+            <div class="col-2">
+                <label>@L["ItemStyle"]</label>
+            </div>
+            <div class="col-10">
+                <div>
+                    <Input Placeholder="@L["ItemStyleKey"]" @bind-Value="@createItemDto.LimitQuantity" />
+                </div>
+                <div style="padding-left:33px">
+                    <Input Placeholder="@L["ItemStyleValue"]" @bind-Value="@createItemDto.LimitQuantity" />
+                </div>
+            </div>
+        </div>
+        <div class="col-12 row">
+            <div class="col-2">
+                <label>@L["PriceAndInventory"]</label>
+            </div>
+            <div class="col-10">
+                <div>
+                    <Table TItem="CreateItemDetailsDto"
+                           DataSource="@ItemDetailList"
+                           Size="TableSize.Small"
+                           Bordered=@true
+                           HidePagination="@true">
+                        <PropertyColumn Title="@L["SKU"]" Property="item=>item.Sku">
+                            <Input @bind-Value="@context.Sku"></Input>
+                        </PropertyColumn>
+                        <PropertyColumn Title="@L["CreatedTime"]" Property="item=>item.SalePrice">
+                            <Input @bind-Value="@context.SalePrice"></Input>
+                        </PropertyColumn>
+                        <PropertyColumn Title="@L["GroupBuyPrice"]" Property="item=>item.GroupBuyPrice">
+                            <Input @bind-Value="@context.GroupBuyPrice"></Input>
+                        </PropertyColumn>
+                        <PropertyColumn Title="@L["InventoryAccount"]" Property="item=>item.InventoryAccount">
+                            <Input @bind-Value="@context.GroupBuyPrice"></Input>
+                        </PropertyColumn>
+                        <PropertyColumn Title="@L["SaleableQuantity"]" Property="item=>item.SalableQuantity">
+                            <Input @bind-Value="@context.GroupBuyPrice"></Input>
+                        </PropertyColumn>
+                        <PropertyColumn Title="@L["PreorderQuantity"]" Property="item=>item.PreOrderableQuantity">
+                            <Input @bind-Value="@context.GroupBuyPrice"></Input>
+                        </PropertyColumn>
+                        <PropertyColumn Title="@L["SaleablePreorderQuantity"]" Property="item=>item.SaleablePreOrderQuantity">
+                            <Input @bind-Value="@context.GroupBuyPrice"></Input>
+                        </PropertyColumn>
+                    </Table>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 row">
+            <div class="col-2">
+                <label>@L["CommodityAttributes"]</label>
+            </div>
+            <div class="col-10">
+                <div class="col-12 row">
+                    <div class="col-3">
+                        <label>@L["TimeLimitPeriod"]</label>
+                    </div>
+                    <div class="col-3">
+                        <DatePicker Style="width:100%" Placeholder="@L["StartDate"].ToString()" TValue="DateTime?" Picker="@DatePickerType.Date" />
+                    </div>
+                    <div class="col-3">
+                        <DatePicker Style="width:100%" Placeholder="@L["EndDate"].ToString()" TValue="DateTime?" Picker="@DatePickerType.Date" />
+                    </div>
+                </div>
+                <div class="col-12 row">
+                    <div class="col-3">
+                        <label>@L["LimitQuantity"]</label>
+                    </div>
+                    <div class="col-3">
+                        <Input @bind-Value="@createItemDto.LimitQuantity" />
+                    </div>
+                </div>
+                <div class="col-12 row">
+                    <div class="col-3">
+                        <label>@L["ShareProfit"]</label>
+                    </div>
+                    <div class="col-3">
+                        <Input @bind-Value="@createItemDto.ShareProfit" />
+                    </div>
+                </div>
+                <div class="col-12 row">
+                    <div class="col-3">
+                        <label>@L["FreeShipping"]</label>
+                    </div>
+                    <div class="col-3">
+                        <Switch @bind-Value="@createItemDto.IsFreeShipping"></Switch>
+                    </div>
+                </div>
+                <div class="col-12 row">
+                    <div class="col-3">
+                        <label>@L["Returnable"]</label>
+                    </div>
+                    <div class="col-3">
+                        <Switch @bind-Value="@createItemDto.Returnable"></Switch>
+                    </div>
+                </div>
+                <div class="col-12 row">
+                    <div class="col-3">
+                        <label>@L["ShippingMethod"]</label>
+                    </div>
+                    <div class="col-3">
+                        <Select TItem="EnumValueDto"
+                                DataSource="@shippingMethods"
+                        @bind-Value="@_selectedShippingMethodValue"
+                                LabelName="@nameof(EnumValueDto.Text)"
+                                ValueName="@nameof(EnumValueDto.Id)"
+                                Placeholder="Select a Shipping Method"
+                                DefaultActiveFirstOption="false"
+                                TItemValue="int"
+                                OnSelectedItemChanged="ItemSippingMethodHandleChange"
+                                                    EnableSearch>
+                        </Select>
+                    </div>
+                </div>
+                <div class="col-12 row">
+                    <div class="col-3">
+                        <label>@L["TaxType"]</label>
+                    </div>
+                    <div class="col-3">
+                        <Select TItem="EnumValueDto"
+                                DataSource="@taxTypes"
+                                @bind-Value="@_selectedTaxTypeValue"
+                                LabelName="@nameof(EnumValueDto.Text)"
+                                ValueName="@nameof(EnumValueDto.Id)"
+                                Placeholder="Select a Tax Types"
+                                DefaultActiveFirstOption="false"
+                                TItemValue="int"
+                                OnSelectedItemChanged="ItemTaxTypeHandleChange"
+                                                    EnableSearch>
+                        </Select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top:5px ;">
+            <Button Danger Type="@ButtonType.Primary" Style="margin-right:5px">@L["Cancel"]</Button>
+            <Button Type="@ButtonType.Primary" Style="margin-right:5px" OnClick="CreateEntityAsync">@L["Save"]</Button>
+            <Button Type="@ButtonType.Primary" Style="margin-right:5px; background-color:skyblue">@L["Preview"]</Button>
+
+        </div>
     </div>
 </div>
 

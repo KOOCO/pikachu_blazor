@@ -28,6 +28,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         List<string> itemTags { get; set; } = new List<string>();
         List<EnumValueDto> shippingMethods { get; set; }
         List<EnumValueDto> taxTypes { get; set; }
+        List<CreateItemDetailsDto> ItemDetailList { get; set; }
 
         private readonly IEnumValueAppService _enumValueService;
         public CreateItem(IEnumValueAppService enumValueService)
@@ -44,6 +45,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                                                          })).ToList();
             taxTypes = enumValues.Where(x=>x.EnumType == EnumType.TaxType).ToList();
             shippingMethods = enumValues.Where(x=>x.EnumType == EnumType.ShippingMethod).ToList();
+            ItemDetailList = new List<CreateItemDetailsDto>();
         }
 
         /// <summary>
