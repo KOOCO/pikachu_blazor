@@ -59,6 +59,7 @@
     "FreeShipping": "Free Shipping",
     "Returnable": "Returnable",
     "ShippingMethod": "Shipping Method",
+    "SalePrice": "Sale Price",
     "TaxType": "Tax Type",
     "NewTag": "New Tag"
   }

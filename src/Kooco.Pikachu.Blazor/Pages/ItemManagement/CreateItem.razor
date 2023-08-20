@@ -66,27 +66,14 @@
                 <Upload Action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                         Name="avatar"
                 @bind-FileList="itemImageList"
-                        ShowButton="itemImageList?.Count < 20"
                         ListType="picture-card"
-                        OnPreview="(image)=> {
-                           Console.WriteLine(image.FileName);
-                           Console.WriteLine(image.Url);
-                           previewVisible = true;
-                           previewTitle = image.FileName;
-                           imgUrl = image.Url;
-                       }"
+                        Multiple="true"
                         OnChange="ItemImageHandleChange">
                     <div>
                         <Icon Type="plus"></Icon>
                         <div className="ant-upload-text">@L["Upload"]</div>
                     </div>
-
                 </Upload>
-                <Modal Visible="previewVisible"
-                       Title="previewTitle"
-                       OnCancel="()=> previewVisible=false">
-                    <img style="width: 100%" src="@imgUrl" />
-                </Modal>
             </div>
         </div>
         <div class=" col-12 row">
@@ -99,7 +86,7 @@
                     <Input Placeholder="@L["ItemDescriptionTitle"]" @bind-Value="@createItemDto.ItemDescriptionTitle" />
                 </div>
                 <div class=" col-12">
-                    <Blazored.TextEditor.BlazoredTextEditor @ref="@QuillHtml">
+                    <Blazored.TextEditor.BlazoredTextEditor @ref="@quillHtml">
                         <ToolbarContent>
                             <select class="ql-header">
                                 <option selected=""></option>
@@ -165,11 +152,37 @@
                 <label>@L["ItemStyle"]</label>
             </div>
             <div class="col-10">
-                <div>
-                    <Input Placeholder="@L["ItemStyleKey"]" @bind-Value="@createItemDto.LimitQuantity" />
-                </div>
-                <div style="padding-left:33px">
-                    <Input Placeholder="@L["ItemStyleValue"]" @bind-Value="@createItemDto.LimitQuantity" />
+                @foreach (var customeField in customeFields)
+                {
+                    <div style="margin:7px; border: 1px solid #cccccc;">
+                        <div>
+                            <Input Placeholder="@L["ItemStyleKey"]" @bind-Value="@customeField.Name"/>
+                        </div>
+                        <div style="padding-left:33px" class="row">
+                            <div class="col-11" style="background-color:white">
+                                 @foreach (var tag in customeField.ItemTags)
+                                          {
+                                              <Tag @key="tag" Closable OnClose="()=>OnCustomFieldTagClose(customeField.Id, tag)">@tag</Tag>
+                                          }
+                                          @if (customeField.TagInputVisible)
+                                          {
+                                              <Input Id="@customeField.Id.ToString()" @ref="customeField.InputTagRef" Style="width:78px" Size="small" @bind-Value="customeField.InputTagValue" OnBlur="()=>HandleCustomFieldTagInputConfirm(customeField.Id, customeField.InputTagValue)" OnPressEnter="()=>HandleCustomFieldTagInputConfirm(customeField.Id, customeField.InputTagValue)" AutoFocus />
+                                          }
+                                          else
+                                          {
+                                              <Tag Class="site-tag-plus" OnClick="@(() => customeField.TagInputVisible = !customeField.TagInputVisible)">
+                                                  <Icon Type="plus" />@L["NewTag"]
+                                              </Tag>
+                                          }
+                            </div>
+                            <div class="col-1">
+                                <Button Danger Type="@ButtonType.Primary" Icon="@IconType.Outline.Delete" OnClick="()=>DeleteCustomeField(customeField)"/>
+                            </div>
+                        </div>
+                    </Div>
+                }
+                <div style="padding:0px 3px;">
+                    <Button OnClick="AddCustomeField">@L["AddItemStyleButton"]</Button>
                 </div>
             </div>
         </div>
@@ -180,15 +193,16 @@
             <div class="col-10">
                 <div>
                     <Table TItem="CreateItemDetailsDto"
-                           DataSource="@ItemDetailList"
+                           DataSource="@itemDetailList"
                            Size="TableSize.Small"
                            Bordered=@true
                            HidePagination="@true">
+                        <PropertyColumn Title="@L["ItemName"]" Property="item=>item.ItemName"/>
                         <PropertyColumn Title="@L["SKU"]" Property="item=>item.Sku">
                             <Input @bind-Value="@context.Sku"></Input>
                         </PropertyColumn>
-                        <PropertyColumn Title="@L["CreatedTime"]" Property="item=>item.SalePrice">
-                            <Input @bind-Value="@context.SalePrice"></Input>
+                        <PropertyColumn Title="@L["SellingPrice"]" Property="item=>item.SellingPrice">
+                            <Input @bind-Value="@context.SellingPrice"></Input>
                         </PropertyColumn>
                         <PropertyColumn Title="@L["GroupBuyPrice"]" Property="item=>item.GroupBuyPrice">
                             <Input @bind-Value="@context.GroupBuyPrice"></Input>
@@ -196,7 +210,7 @@
                         <PropertyColumn Title="@L["InventoryAccount"]" Property="item=>item.InventoryAccount">
                             <Input @bind-Value="@context.GroupBuyPrice"></Input>
                         </PropertyColumn>
-                        <PropertyColumn Title="@L["SaleableQuantity"]" Property="item=>item.SalableQuantity">
+                        <PropertyColumn Title="@L["SaleableQuantity"]" Property="item=>item.SaleableQuantity">
                             <Input @bind-Value="@context.GroupBuyPrice"></Input>
                         </PropertyColumn>
                         <PropertyColumn Title="@L["PreorderQuantity"]" Property="item=>item.PreOrderableQuantity">
@@ -254,7 +268,7 @@
                         <label>@L["Returnable"]</label>
                     </div>
                     <div class="col-3">
-                        <Switch @bind-Value="@createItemDto.Returnable"></Switch>
+                        <Switch @bind-Value="@createItemDto.IsReturnable"></Switch>
                     </div>
                 </div>
                 <div class="col-12 row">
@@ -264,7 +278,6 @@
                     <div class="col-3">
                         <Select TItem="EnumValueDto"
                                 DataSource="@shippingMethods"
-                        @bind-Value="@_selectedShippingMethodValue"
                                 LabelName="@nameof(EnumValueDto.Text)"
                                 ValueName="@nameof(EnumValueDto.Id)"
                                 Placeholder="Select a Shipping Method"
@@ -282,7 +295,6 @@
                     <div class="col-3">
                         <Select TItem="EnumValueDto"
                                 DataSource="@taxTypes"
-                                @bind-Value="@_selectedTaxTypeValue"
                                 LabelName="@nameof(EnumValueDto.Text)"
                                 ValueName="@nameof(EnumValueDto.Id)"
                                 Placeholder="Select a Tax Types"
