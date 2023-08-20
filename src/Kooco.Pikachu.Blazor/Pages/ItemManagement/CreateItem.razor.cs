@@ -163,6 +163,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 
         void BindItemDetailList()
         {
+            itemDetailList = new List<CreateItemDetailsDto>();
             var localref = customeFields.ToList();
             foreach (var customeField in localref)
             {
