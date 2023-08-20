@@ -3,9 +3,11 @@ using AntDesign.Locales;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static Kooco.Pikachu.Permissions.PikachuPermissions;
 
 namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 {
@@ -86,7 +88,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         {
             itemTags.Remove(item);
         }
-        
+
         /// <summary>
         /// On Tag close button remove Tag for custom field
         /// </summary>
@@ -95,7 +97,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         {
             customeFields.First(x => x.Id == id).ItemTags.Remove(item);
         }
-    
+
         /// <summary>
         /// On tag confirm
         /// </summary>
@@ -147,7 +149,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 
         void DeleteCustomeField(CustomeField customeField)
         {
-             customeFields.Remove(customeField);
+            customeFields.Remove(customeField);
             BindItemDetailList();
         }
         void AddCustomeField()
@@ -155,7 +157,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             var customeField = customeFields.OrderByDescending(x => x.Id).FirstOrDefault();
             customeFields.Add(new CustomeField
             {
-                Id = customeField == null ? 1 : + customeField.Id + 1,
+                Id = customeField == null ? 1 : +customeField.Id + 1,
                 Name = "",
                 ItemTags = new List<string>()
             });
@@ -164,27 +166,39 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         void BindItemDetailList()
         {
             itemDetailList = new List<CreateItemDetailsDto>();
-            var localref = customeFields.ToList();
-            foreach (var customeField in localref)
+            List<List<string>> permutations = GeneratePermutations(customeFields.Select(x=>x.ItemTags).ToList());
+
+            foreach (List<string> permutation in permutations)
             {
-                foreach (var item in customeField.ItemTags)
+                itemDetailList.Add(new CreateItemDetailsDto
                 {
-                    itemDetailList.Add(new CreateItemDetailsDto
-                    {
-                        ItemName = item
-                    });
-                }
+                    ItemName = string.Join("/", permutation)
+                });
             }
         }
 
-        //void UpdateItemDetail(List<>localref)
-        //{
-        //    itemDetailList.Add(new CreateItemDetailsDto
-        //    {
-        //        ItemName = tag
-        //    });
-        //}
+        static List<List<string>> GeneratePermutations(List<List<string>> sets)
+        {
+            List<List<string>> permutations = new List<List<string>>();
+            GeneratePermutationsRecursive(sets, new List<string>(), 0, permutations);
+            return permutations;
+        }
 
+        static void GeneratePermutationsRecursive(List<List<string>> sets, List<string> currentPermutation, int currentIndex, List<List<string>> permutations)
+        {
+            if (currentIndex == sets.Count)
+            {
+                permutations.Add(new List<string>(currentPermutation));
+                return;
+            }
+
+            foreach (string item in sets[currentIndex])
+            {
+                currentPermutation.Add(item);
+                GeneratePermutationsRecursive(sets, currentPermutation, currentIndex + 1, permutations);
+                currentPermutation.RemoveAt(currentPermutation.Count - 1);
+            }
+        }
 
         protected virtual async Task CreateEntityAsync()
         {
