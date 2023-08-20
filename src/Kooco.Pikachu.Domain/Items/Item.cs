@@ -33,26 +33,26 @@ namespace Kooco.Pikachu.Items
         public EnumValue? ShippingMethod { get; set; } 
         public bool IsReturnable { get; set; }
         public bool IsItemAvaliable { get; set; }
-        public string? CustomeField1Name { get; set; }
-        public string? CustomeField1Value { get; set; }
-        public string? CustomeField2Name { get; set; }
-        public string? CustomeField2Value { get; set; }
-        public string? CustomeField3Name { get; set; }
-        public string? CustomeField3Value { get; set; }
-        public string? CustomeField4Name { get; set; }
-        public string? CustomeField4Value { get; set; }
-        public string? CustomeField5Name { get; set; }
-        public string? CustomeField5Value { get; set; }
-        public string? CustomeField6Name { get; set; }
-        public string? CustomeField6Value { get; set; }
-        public string? CustomeField7Name { get; set; }
-        public string? CustomeField7Value { get; set; }
-        public string? CustomeField8Name { get; set; }
-        public string? CustomeField8Value { get; set; }
-        public string? CustomeField9Name { get; set; }
-        public string? CustomeField9Value { get; set; }
-        public string? CustomeField10Name { get; set; }
-        public string? CustomeField10Value { get; set; }
+        public string? CustomField1Name { get; set; }
+        public string? CustomField1Value { get; set; }
+        public string? CustomField2Name { get; set; }
+        public string? CustomField2Value { get; set; }
+        public string? CustomField3Name { get; set; }
+        public string? CustomField3Value { get; set; }
+        public string? CustomField4Name { get; set; }
+        public string? CustomField4Value { get; set; }
+        public string? CustomField5Name { get; set; }
+        public string? CustomField5Value { get; set; }
+        public string? CustomField6Name { get; set; }
+        public string? CustomField6Value { get; set; }
+        public string? CustomField7Name { get; set; }
+        public string? CustomField7Value { get; set; }
+        public string? CustomField8Name { get; set; }
+        public string? CustomField8Value { get; set; }
+        public string? CustomField9Name { get; set; }
+        public string? CustomField9Value { get; set; }
+        public string? CustomField10Name { get; set; }
+        public string? CustomField10Value { get; set; }
 
 
 

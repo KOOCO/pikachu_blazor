@@ -24,12 +24,14 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         private List<CreateItemDetailsDto> itemDetailList { get; set; } // List of CreateItemDetail dto to store PriceAndInventory
         private CreateItemDto createItemDto = new(); //Item Dto
         private List<UploadFileItem> itemImageList = new List<UploadFileItem>(); //to store Item Images
-        private readonly IEnumValueAppService _enumValueService;
         private List<CustomeField> customeFields = new List<CustomeField>();
+        private readonly IItemAppService _itemAppService;
+        private readonly IEnumValueAppService _enumValueService;
 
-        public CreateItem(IEnumValueAppService enumValueService)
+        public CreateItem(IEnumValueAppService enumValueService, IItemAppService itemAppService)
         {
             _enumValueService = enumValueService;
+            _itemAppService = itemAppService;
         }
 
         protected override async Task OnInitializedAsync()
@@ -202,8 +204,63 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 
         protected virtual async Task CreateEntityAsync()
         {
+            int customeFieldCount = customeFields.Count;
+            var customFields = customeFields.ToArray();
+            if (customeFieldCount>0)
+            {
+                createItemDto.CustomField1Name = customFields[0].Name;
+                createItemDto.CustomField10Value = string.Join(",", customFields[0].ItemTags);
+            }
+            if (customeFieldCount > 1)
+            {
+                createItemDto.CustomField2Name = customFields[1].Name;
+                createItemDto.CustomField1Value = string.Join(",", customFields[1].ItemTags);
+            }
+            if (customeFieldCount > 2)
+            {
+                createItemDto.CustomField3Name = customFields[2].Name;
+                createItemDto.CustomField2Value = string.Join(",", customFields[2].ItemTags);
+            }
+            if (customeFieldCount > 3)
+            {
+                createItemDto.CustomField4Name = customFields[3].Name;
+                createItemDto.CustomField3Value = string.Join(",", customFields[3].ItemTags);
+            }
+            if (customeFieldCount > 4)
+            {
+                createItemDto.CustomField5Name = customFields[4].Name;
+                createItemDto.CustomField4Value = string.Join(",", customFields[4].ItemTags);
+            }
+            if (customeFieldCount > 5)
+            {
+                createItemDto.CustomField6Name = customFields[5].Name;
+                createItemDto.CustomField5Value = string.Join(",", customFields[5].ItemTags);
+            }
+            if (customeFieldCount > 6)
+            {
+                createItemDto.CustomField7Name = customFields[6].Name;
+                createItemDto.CustomField6Value = string.Join(",", customFields[6].ItemTags);
+            }
+            if (customeFieldCount > 7)
+            {
+                createItemDto.CustomField8Name = customFields[7].Name;
+                createItemDto.CustomField7Value = string.Join(",", customFields[7].ItemTags);
+            }
+            if (customeFieldCount > 8)
+            {
+                createItemDto.CustomField9Name = customFields[8].Name;
+                createItemDto.CustomField8Value = string.Join(",", customFields[8].ItemTags);
+            }
+            if (customeFieldCount > 9)
+            {
+                createItemDto.CustomField10Name = customFields[9].Name;
+                createItemDto.CustomField9Value = string.Join(",", customFields[9].ItemTags);
+            }
+
+            createItemDto.ItemDetails = itemDetailList;
             createItemDto.ItemDescription = await quillHtml.GetHTML();
             createItemDto.ItemTags = string.Join(",", inputTagRef);
+            await _itemAppService.CreateAsync(createItemDto);
         }
     }
 
