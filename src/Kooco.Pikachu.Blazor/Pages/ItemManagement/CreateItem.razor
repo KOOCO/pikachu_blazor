@@ -208,16 +208,16 @@
                             <Input @bind-Value="@context.GroupBuyPrice"></Input>
                         </PropertyColumn>
                         <PropertyColumn Title="@L["InventoryAccount"]" Property="item=>item.InventoryAccount">
-                            <Input @bind-Value="@context.GroupBuyPrice"></Input>
+                            <Input @bind-Value="@context.InventoryAccount"></Input>
                         </PropertyColumn>
                         <PropertyColumn Title="@L["SaleableQuantity"]" Property="item=>item.SaleableQuantity">
-                            <Input @bind-Value="@context.GroupBuyPrice"></Input>
+                            <Input @bind-Value="@context.SaleableQuantity"></Input>
                         </PropertyColumn>
-                        <PropertyColumn Title="@L["PreorderQuantity"]" Property="item=>item.PreOrderableQuantity">
-                            <Input @bind-Value="@context.GroupBuyPrice"></Input>
+                        <PropertyColumn Title="@L["PreorderQuantity"]" Property="item=>item.SaleableQuantity">
+                            <Input @bind-Value="@context.SaleableQuantity"></Input>
                         </PropertyColumn>
                         <PropertyColumn Title="@L["SaleablePreorderQuantity"]" Property="item=>item.SaleablePreOrderQuantity">
-                            <Input @bind-Value="@context.GroupBuyPrice"></Input>
+                            <Input @bind-Value="@context.SaleablePreOrderQuantity"></Input>
                         </PropertyColumn>
                     </Table>
                 </div>
