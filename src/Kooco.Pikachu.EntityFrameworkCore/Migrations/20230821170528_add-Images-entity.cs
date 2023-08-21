@@ -1,18 +1,18 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 #nullable disable
 
 namespace Kooco.Pikachu.Migrations
 {
     /// <inheritdoc />
-    public partial class addimageentity : Migration
+    public partial class addImagesentity : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Image",
+                name: "AppImages",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -31,25 +31,19 @@ namespace Kooco.Pikachu.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Image", x => x.Id);
+                    table.PrimaryKey("PK_AppImages", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Image_AppItems_ItemId",
+                        name: "FK_AppImages_AppItems_ItemId",
                         column: x => x.ItemId,
                         principalTable: "AppItems",
                         principalColumn: "Id");
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Image_ItemId",
-                table: "Image",
-                column: "ItemId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Image");
+            
         }
     }
 }

@@ -18,6 +18,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Kooco.Pikachu.EnumValues;
 using Volo.Abp.OpenIddict;
+using Kooco.Pikachu.Images;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -30,8 +31,6 @@ public class PikachuDbContext :
     ITenantManagementDbContext
 {
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
-    public DbSet<Item> Items { get; set; }
-    public DbSet<EnumValue> EnumValues { get; set; }
 
     #region Entities from the modules
 
@@ -61,18 +60,12 @@ public class PikachuDbContext :
 
     #endregion
 
-    /// <summary>
-    /// 
-    /// </summary>
+    public DbSet<Item> Items { get; set; }
+    public DbSet<EnumValue> EnumValues { get; set; }
     public DbSet<ItemDetails> ItemDetails { get; set; }
-    /// <summary>
-    /// 
-    /// </summary>
     public DbSet<SetItem> SetItems { get; set; }
-    /// <summary>
-    /// 
-    /// </summary>
     public DbSet<SetItemDetails> SetItemDetails { get; set; }
+    public DbSet<Image> Images { get; set; }
 
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
@@ -83,9 +76,6 @@ public class PikachuDbContext :
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-
-        /* Include modules to your migration db context */
-
         builder.ConfigurePermissionManagement();
         builder.ConfigureSettingManagement();
         builder.ConfigureBackgroundJobs();
@@ -94,9 +84,6 @@ public class PikachuDbContext :
         builder.ConfigureOpenIddict();
         builder.ConfigureFeatureManagement();
         builder.ConfigureTenantManagement();
-
-        /* Configure your own tables/entities inside here */
-
 
         builder.Entity<Item>(b =>
         {
@@ -117,34 +104,28 @@ public class PikachuDbContext :
             b.Property(x => x.Text).IsRequired();
         });
 
-
         builder.Entity<ItemDetails>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "ItemDetails", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention(); 
-            
-
-            /* Configure more properties here */
         });
-
+        
+        builder.Entity<Image>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "Images", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention(); 
+        });
 
         builder.Entity<SetItem>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "SetItems", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention(); 
-            
-
-            /* Configure more properties here */
         });
-
 
         builder.Entity<SetItemDetails>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "SetItemDetails", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention(); 
-            
-
-            /* Configure more properties here */
         });
     }
 }

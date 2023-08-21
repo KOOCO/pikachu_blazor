@@ -13,8 +13,8 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    [Migration("20230821163009_add-image-entity")]
-    partial class addimageentity
+    [Migration("20230821170528_add-Images-entity")]
+    partial class addImagesentity
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -146,7 +146,10 @@ namespace Kooco.Pikachu.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("Image");
+                    b.ToTable("AppImages", null, t =>
+                        {
+                            t.HasComment("");
+                        });
                 });
 
             modelBuilder.Entity("Kooco.Pikachu.Items.Item", b =>

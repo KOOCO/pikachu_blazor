@@ -143,7 +143,10 @@ namespace Kooco.Pikachu.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("Image");
+                    b.ToTable("AppImages", null, t =>
+                        {
+                            t.HasComment("");
+                        });
                 });
 
             modelBuilder.Entity("Kooco.Pikachu.Items.Item", b =>
