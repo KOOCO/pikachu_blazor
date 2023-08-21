@@ -36,7 +36,7 @@
         <PropertyColumn Title="@L["ItemName"]" Property="item=>item.ItemName" />
         <PropertyColumn Title="@L["CreatedTime"]" Property="item=>item.CreationTime" Format="yyyy-MM-dd" />
         <PropertyColumn Title="@L["TurnItemOn"]" Property="item=>item.IsItemAvaliable">
-            <Switch @bind-Value="@context.IsItemAvaliable"></Switch>
+            <Switch @bind-Value="@context.IsItemAvaliable" OnChange="() => OnItemAvaliablityChange(context.Id)"></Switch>
         </PropertyColumn>
     </Table>
 </div>

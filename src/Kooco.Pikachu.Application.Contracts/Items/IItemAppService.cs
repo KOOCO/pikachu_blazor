@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Kooco.Pikachu.Items.Dtos;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.DependencyInjection;
 
 namespace Kooco.Pikachu.Items;
 

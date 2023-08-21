@@ -165,6 +165,9 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         void BindItemDetailList()
         {
             itemDetailList = new List<CreateItemDetailsDto>();
+            if (!customeFields.Any())
+                return;
+
             List<List<string>> permutations = GeneratePermutations(customeFields.Select(x=>x.ItemTags).ToList());
 
             foreach (List<string> permutation in permutations)
@@ -258,6 +261,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             createItemDto.ItemDescription = await quillHtml.GetHTML();
             createItemDto.ItemTags = string.Join(",", inputTagRef);
             await _itemAppService.CreateAsync(createItemDto);
+            NavigationManager.NavigateTo("Items");
         }
     }
 

@@ -29,9 +29,17 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
 
     public override async Task<ItemDto> CreateAsync(CreateItemDto input)
     {
-        var item = ObjectMapper.Map<CreateItemDto, Item>(input);
-        var res = await _repository.InsertAsync(item, true);
-        return ObjectMapper.Map<Item, ItemDto>(res);
+        try
+        {
+            var item = ObjectMapper.Map<CreateItemDto, Item>(input);
+            var res = await _repository.InsertAsync(item);
+            return ObjectMapper.Map<Item, ItemDto>(res);
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+        
     }
 
     public async Task ChangeItemAvailability(Guid itemId)

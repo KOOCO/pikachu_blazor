@@ -39,6 +39,11 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 
         }
 
+        public async Task OnItemAvaliablityChange(Guid id)
+        {
+           await _itemAppService.ChangeItemAvailability(id);
+        }
+
         public void RemoveSelection(Guid id)
         {
             var selected = selectedRows.Where(x => x.Id != id);
