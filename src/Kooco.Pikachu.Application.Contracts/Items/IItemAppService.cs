@@ -1,14 +1,11 @@
 using System;
+using System.Threading.Tasks;
 using Kooco.Pikachu.Items.Dtos;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 
 namespace Kooco.Pikachu.Items;
 
-
-/// <summary>
-/// 
-/// </summary>
 public interface IItemAppService :
     ICrudAppService< 
         ItemDto, 
@@ -16,5 +13,5 @@ public interface IItemAppService :
         PagedAndSortedResultRequestDto,
         CreateItemDto,UpdateItemDto>
 {
-
+    Task ChangeItemAvailability(Guid itemId);
 }

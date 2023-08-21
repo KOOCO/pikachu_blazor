@@ -26,6 +26,7 @@
     <PackageReference Include="Volo.Abp.TenantManagement.Application" Version="7.3.2" />
     <PackageReference Include="Volo.Abp.FeatureManagement.Application" Version="7.3.2" />
     <PackageReference Include="Volo.Abp.SettingManagement.Application" Version="7.3.2" />
+    <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
   </ItemGroup>
 
 </Project>

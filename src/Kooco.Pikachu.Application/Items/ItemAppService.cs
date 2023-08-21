@@ -4,9 +4,6 @@ using Kooco.Pikachu.Items.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Application.Dtos;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using Volo.Abp.ObjectMapping;
-using Volo.Abp;
 
 namespace Kooco.Pikachu.Items;
 
@@ -32,15 +29,15 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
 
     public override async Task<ItemDto> CreateAsync(CreateItemDto input)
     {
-        try
-        {
-            var item = ObjectMapper.Map<CreateItemDto, Item>(input);
-            var res = await _repository.InsertAsync(item, true);
-            return ObjectMapper.Map<Item, ItemDto>(res);
-        }
-        catch (Exception ex)
-        {
-            throw new UserFriendlyException("");
-        }
+        var item = ObjectMapper.Map<CreateItemDto, Item>(input);
+        var res = await _repository.InsertAsync(item, true);
+        return ObjectMapper.Map<Item, ItemDto>(res);
+    }
+
+    public async Task ChangeItemAvailability(Guid itemId)
+    {
+        var item = await _repository.FindAsync(x => x.Id == itemId);
+        item.IsItemAvaliable = !item.IsItemAvaliable;
+        await _repository.UpdateAsync(item);
     }
 }

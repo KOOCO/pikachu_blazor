@@ -35,8 +35,8 @@
         <Selection Key="@(context.Id.ToString())" />
         <PropertyColumn Title="@L["ItemName"]" Property="item=>item.ItemName" />
         <PropertyColumn Title="@L["CreatedTime"]" Property="item=>item.CreationTime" Format="yyyy-MM-dd" />
-        <PropertyColumn Title="@L["TurnItemOn"]" Property="item=>item.Returnable">
-            <Switch @bind-Value="@context.Returnable"></Switch>
+        <PropertyColumn Title="@L["TurnItemOn"]" Property="item=>item.IsItemAvaliable">
+            <Switch @bind-Value="@context.IsItemAvaliable"></Switch>
         </PropertyColumn>
     </Table>
 </div>

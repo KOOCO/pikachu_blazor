@@ -1,57 +1,72 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
-using Azure.Identity;
-using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
-using Azure.Storage.Blobs.Specialized;
-
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
+using Volo.Abp.Users;
 
 namespace Kooco.Pikachu.ImageBlob
 {
     public class ImageBlobService : IImageBlobService
     {
-        private string _basePath;
-        private string _bucketName;
-        private string _rootPath;
-
-        public ImageBlobService()
+        private string _accessKey = string.Empty;
+        private readonly ICurrentUser _currentUser;
+        private readonly string _pathPrefix = string.Empty;
+        public ImageBlobService(ICurrentUser currentUser)
         {
-                
-        }
-        public Task AddDirectory(string directoryName)
-        {
-            throw new NotImplementedException();
+            this._accessKey = "";
+            _currentUser = currentUser;
+            _pathPrefix = (_currentUser.TenantId != null && _currentUser.TenantId != Guid.Empty) ? _currentUser.TenantId + "/" : "";
         }
 
-        public Task DeleteFileAsync(string directoryName, string fileName)
+        public async Task<string> UploadFileToBlob(string strFileName, byte[] fileData, string fileMimeType, string dirName)
         {
-            throw new NotImplementedException();
+            return await UploadFileToBlobAsync(strFileName, fileData, fileMimeType, dirName);
         }
 
-        public Task DeleteFilesAsync(string directoryName, List<string> fileNames)
+        public async Task DeleteBlobData(string fileUrl)
         {
-            throw new NotImplementedException();
+            Uri uriObj = new Uri(fileUrl);
+            string BlobName = Path.GetFileName(uriObj.LocalPath);
+
+            CloudStorageAccount cloudStorageAccount = CloudStorageAccount.Parse(_accessKey);
+            CloudBlobClient cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
+            string strContainerName = "uploads";
+            CloudBlobContainer cloudBlobContainer = cloudBlobClient.GetContainerReference(strContainerName);
+
+            CloudBlobDirectory blobDirectory = cloudBlobContainer.GetDirectoryReference(_pathPrefix);
+            // get block blob refarence    
+            CloudBlockBlob blockBlob = blobDirectory.GetBlockBlobReference(BlobName);
+
+            // delete blob from container        
+            await blockBlob.DeleteAsync();
         }
 
-        public Task<byte[]> GetAsync(string directory, string fileName)
+        private string GenerateFileName(string fileName, string dirName)
         {
-            throw new NotImplementedException();
+            string[] strName = fileName.Split('.');
+            return _pathPrefix + dirName + "." + strName[strName.Length - 1];
         }
 
-        public Task GetListAsync(string directory, string fileName)
+        private async Task<string> UploadFileToBlobAsync(string strFileName, byte[] fileData, string fileMimeType, string dirName)
         {
-            throw new NotImplementedException();
-        }
+            CloudStorageAccount cloudStorageAccount = CloudStorageAccount.Parse(_accessKey);
+            CloudBlobClient cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
+            string strContainerName = "uploads";
+            CloudBlobContainer cloudBlobContainer = cloudBlobClient.GetContainerReference(strContainerName);
+            string fileName = this.GenerateFileName(strFileName, dirName);
 
-        public Task InsertFileAsync(string directory, string fileName, byte[] file)
-        {
-            throw new NotImplementedException();
-        }
+            if (await cloudBlobContainer.CreateIfNotExistsAsync())
+                await cloudBlobContainer.SetPermissionsAsync(new BlobContainerPermissions { PublicAccess = BlobContainerPublicAccessType.Blob });
 
-        public Task InsertFilesAsync(string directory, string fileName, byte[] file)
-        {
-            throw new NotImplementedException();
+            if (fileName != null && fileData != null)
+            {
+                CloudBlockBlob cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference(fileName);
+                cloudBlockBlob.Properties.ContentType = fileMimeType;
+                await cloudBlockBlob.UploadFromByteArrayAsync(fileData, 0, fileData.Length);
+                return cloudBlockBlob.Uri.AbsoluteUri;
+            }
+            return "";
         }
     }
 }

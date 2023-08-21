@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System;
 using Volo.Abp.Application.Dtos;
 using System.Linq;
-using static Kooco.Pikachu.Permissions.PikachuPermissions;
 
 namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 {
