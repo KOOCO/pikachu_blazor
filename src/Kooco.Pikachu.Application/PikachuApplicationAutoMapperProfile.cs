@@ -2,6 +2,7 @@ using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using AutoMapper;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Images;
 
 namespace Kooco.Pikachu;
 
@@ -12,23 +13,33 @@ public class PikachuApplicationAutoMapperProfile : Profile
         /* You can configure your AutoMapper mapping configuration here.
          * Alternatively, you can split your mapping configurations
          * into multiple profile classes for a better organization. */
+
+        //Item Dto EntityMapping
         CreateMap<Item, ItemDto>();
-      
         CreateMap<ItemDto, UpdateItemDto>();
         CreateMap<UpdateItemDto, Item>();
+        CreateMap<CreateItemDto, Item>();
+
+        // ItemDetailDto EntityMapping
         CreateMap<ItemDetails, ItemDetailsDto>();
         CreateMap<CreateItemDetailsDto, ItemDetails>();
-        CreateMap<CreateItemDto, Item>();
-        CreateMap<EnumValueDto, EnumValue>();
 
-        CreateMap<CreateItemDetailsDto, ItemDetails>();
+        //EnumValue EntityMapping
+        CreateMap<EnumValueDto, EnumValue>();
+        CreateMap<EnumValue, EnumValueDto>(MemberList.Source);
+        CreateMap<CreateUpdateEnumValueDto, EnumValue>(MemberList.Source);
+
+        //Image EntityMapping
+        CreateMap<Image, ImageDto>();
+        CreateMap<CreateImageDto, Image>();
+        CreateMap<UpdateImageDto, Image>();
+
+
         CreateMap<SetItem, SetItemDto>();
         CreateMap<CreateUpdateSetItemDto, SetItem>(MemberList.Source);
         CreateMap<SetItemDetails, SetItemDetailsDto>();
         CreateMap<CreateUpdateSetItemDetailsDto, SetItemDetails>(MemberList.Source);
 
-        //EnumValue EntityMapping
-        CreateMap<EnumValue, EnumValueDto>(MemberList.Source);
-        CreateMap<CreateUpdateEnumValueDto, EnumValue>(MemberList.Source);
+       
     }
 }

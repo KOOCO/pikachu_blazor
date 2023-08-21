@@ -1,5 +1,4 @@
 using Kooco.Pikachu.AntBlazorModels.Upload;
-using Kooco.Pikachu.EnumValues;
 using System;
 using System.Collections.Generic;
 
