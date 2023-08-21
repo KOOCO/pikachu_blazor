@@ -28,9 +28,12 @@ namespace Kooco.Pikachu.Items
         public float? PackageHeight { get; set; } //包裝高度/Package Height
         public Diemensions? DiemensionsUnit { get; set; } //度量單位/Dimension Unit
         public Weight? WeightUnit { get; set; } //重量單位/Weight Unit
-        public EnumValue? TaxType { get; set; } //商品稅別/Tax Type
-        public EnumValue? Unit { get; set; } //商品單位/Unit
-        public EnumValue? ShippingMethod { get; set; } 
+        public virtual EnumValue? TaxType { get; set; } //商品稅別/Tax Type
+        public int? TaxTypeId { get; set; } //商品稅別/Tax Type
+        public virtual EnumValue? Unit { get; set; } //商品單位/Unit
+        public int? UnitId { get; set; } //商品單位/Unit
+        public virtual EnumValue? ShippingMethod { get; set; } 
+        public int? ShippingMethodId { get; set; } 
         public bool IsReturnable { get; set; }
         public bool IsItemAvaliable { get; set; }
         public string? CustomField1Name { get; set; }

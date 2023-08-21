@@ -13,11 +13,15 @@ public class PikachuApplicationAutoMapperProfile : Profile
          * Alternatively, you can split your mapping configurations
          * into multiple profile classes for a better organization. */
         CreateMap<Item, ItemDto>();
-        CreateMap<CreateItemDto, Item>();
+      
         CreateMap<ItemDto, UpdateItemDto>();
         CreateMap<UpdateItemDto, Item>();
         CreateMap<ItemDetails, ItemDetailsDto>();
-        CreateMap<CreateItemDetailsDto, ItemDetails>(MemberList.Source);
+        CreateMap<CreateItemDetailsDto, ItemDetails>();
+        CreateMap<CreateItemDto, Item>();
+        CreateMap<EnumValueDto, EnumValue>();
+
+        CreateMap<CreateItemDetailsDto, ItemDetails>();
         CreateMap<SetItem, SetItemDto>();
         CreateMap<CreateUpdateSetItemDto, SetItem>(MemberList.Source);
         CreateMap<SetItemDetails, SetItemDetailsDto>();

@@ -17,12 +17,12 @@ public class CreateItemDto
     public string ItemTags { get; set; }
     public int LimitQuantity { get; set; }
     public bool IsReturnable { get; set; }
-    public DateTime LimitAvaliableTimeStart { get; set; }
-    public DateTime LimitAvaliableTimeEnd { get; set; }
+    public DateTime LimitAvaliableTimeStart { get; set; } = DateTime.UtcNow;
+    public DateTime LimitAvaliableTimeEnd { get; set; } = DateTime.UtcNow;
     public float ShareProfit { get; set; }
     public bool IsFreeShipping { get; set; } = false;
-    public EnumValueDto ShippingMethod { get; set; }
-    public EnumValueDto TaxType { get; set; }
+    public int ShippingMethodId { get; set; }
+    public int TaxTypeId { get; set; }
     public bool IsItemAvaliable { get; set; }
     public string? CustomField1Name { get; set; }
     public string? CustomField1Value { get; set; }

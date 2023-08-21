@@ -34,9 +34,7 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
     {
         try
         {
-            var itemDetail = ObjectMapper.Map<List<CreateItemDetailsDto>, List<ItemDetails>>(input.ItemDetails);
             var item = ObjectMapper.Map<CreateItemDto, Item>(input);
-            item.ItemDetails = itemDetail;
             var res = await _repository.InsertAsync(item, true);
             return ObjectMapper.Map<Item, ItemDto>(res);
         }
@@ -44,6 +42,5 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
         {
             throw new UserFriendlyException("");
         }
-       
     }
 }

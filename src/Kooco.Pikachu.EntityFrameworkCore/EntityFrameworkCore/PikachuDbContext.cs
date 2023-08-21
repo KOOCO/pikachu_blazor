@@ -17,6 +17,7 @@ using Volo.Abp.EntityFrameworkCore.Modeling;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Kooco.Pikachu.EnumValues;
+using Volo.Abp.OpenIddict;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 

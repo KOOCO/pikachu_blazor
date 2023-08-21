@@ -70,7 +70,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         /// <param name="fileinfo">Selected File</param>
         void ItemSippingMethodHandleChange(EnumValueDto SippingMethod)
         {
-            createItemDto.ShippingMethod = SippingMethod;
+            createItemDto.ShippingMethodId = SippingMethod.Id;
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         /// <param name="fileinfo">Selected File</param>
         void ItemTaxTypeHandleChange(EnumValueDto TaxType)
         {
-            createItemDto.TaxType = TaxType;
+            createItemDto.TaxTypeId = TaxType.Id;
         }
 
         /// <summary>

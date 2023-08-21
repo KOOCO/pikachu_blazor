@@ -213,7 +213,7 @@
                         <PropertyColumn Title="@L["SaleableQuantity"]" Property="item=>item.SaleableQuantity">
                             <Input @bind-Value="@context.SaleableQuantity"></Input>
                         </PropertyColumn>
-                        <PropertyColumn Title="@L["PreorderQuantity"]" Property="item=>item.SaleableQuantity">
+                        <PropertyColumn Title="@L["PreorderQuantity"]" Property="item=>item.PreOrderableQuantity">
                             <Input @bind-Value="@context.SaleableQuantity"></Input>
                         </PropertyColumn>
                         <PropertyColumn Title="@L["SaleablePreorderQuantity"]" Property="item=>item.SaleablePreOrderQuantity">
@@ -233,10 +233,10 @@
                         <label>@L["TimeLimitPeriod"]</label>
                     </div>
                     <div class="col-3">
-                        <DatePicker Style="width:100%" Placeholder="@L["StartDate"].ToString()" TValue="DateTime?" Picker="@DatePickerType.Date" />
+                        <DatePicker  @bind-Value="createItemDto.LimitAvaliableTimeStart" Style="width:100%" Placeholder="@L["StartDate"].ToString()" TValue="DateTime" Picker="@DatePickerType.Date" />
                     </div>
                     <div class="col-3">
-                        <DatePicker Style="width:100%" Placeholder="@L["EndDate"].ToString()" TValue="DateTime?" Picker="@DatePickerType.Date" />
+                        <DatePicker @bind-Value="createItemDto.LimitAvaliableTimeEnd" Style="width:100%" Placeholder="@L["EndDate"].ToString()" TValue="DateTime" Picker="@DatePickerType.Date" />
                     </div>
                 </div>
                 <div class="col-12 row">
