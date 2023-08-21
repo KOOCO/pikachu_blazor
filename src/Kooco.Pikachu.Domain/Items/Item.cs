@@ -1,4 +1,5 @@
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Images;
 using System;
 using System.Collections.Generic;
 using Volo.Abp.Domain.Entities.Auditing;
@@ -12,6 +13,7 @@ namespace Kooco.Pikachu.Items
         public long ItemNo { get; set; } //商品編號/ItemNo
         public string ItemName { get; set; } //商品名稱/ItemName
         public ICollection<ItemDetails> ItemDetails { get; set; } //项目详情/ItemDetails
+        public ICollection<Image> Images { get; set; }
         public string? ItemDescriptionTitle { get; set; } //商品敘述抬頭/ItemDescriptionTitle
         public string? ItemDescription { get; set; }// 商品描述/ItemDescription
         public string ItemTags { get; set; } // 项目标签/ItemTags

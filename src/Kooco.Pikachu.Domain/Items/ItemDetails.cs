@@ -8,7 +8,7 @@ namespace Kooco.Pikachu.Items
     {
         public Guid? TenantId { get; set; }
         public Guid ItemId { get; set; }
-        public Item Item { get; set; }
+        public virtual Item Item { get; set; }
         public string ItemName { get; set; }
         public string SKU { get; set; }
         public float SellingPrice { get; set; } //商品售價/ItemSellingPrice
