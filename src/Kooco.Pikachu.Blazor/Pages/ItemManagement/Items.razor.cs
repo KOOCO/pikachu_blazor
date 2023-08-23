@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System;
 using Volo.Abp.Application.Dtos;
 using System.Linq;
+using Microsoft.JSInterop;
+using AntDesign;
 
 namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 {
@@ -17,14 +19,22 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         int _pageIndex = 1;
         int _pageSize = 10;
         int _total = 0;
-        public Items(IItemAppService itemAppService)
+        IMessageService _message;
+        public Items(IItemAppService itemAppService, IMessageService messageService)
         {
             _itemAppService = itemAppService;
             itemList = new List<ItemDto>();
+            selectedRows = new List<ItemDto>();
+            _message = messageService;
         }
         protected override async Task OnInitializedAsync()
         {
-            int skipCount =  (_pageIndex - 1)  * _pageSize;
+            await UpdateItemList();
+        }
+
+        private async Task UpdateItemList()
+        {
+            int skipCount = (_pageIndex - 1) * _pageSize;
             var result = await _itemAppService.GetListAsync(new PagedAndSortedResultRequestDto
             {
                 MaxResultCount = _pageSize,
@@ -34,6 +44,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             _total = (int)result.TotalCount;
         }
 
+
         public async Task OnChange(QueryModel<ItemDto> queryModel)
         {
 
@@ -41,7 +52,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 
         public async Task OnItemAvaliablityChange(Guid id)
         {
-           await _itemAppService.ChangeItemAvailability(id);
+            await _itemAppService.ChangeItemAvailability(id);
         }
 
         public void RemoveSelection(Guid id)
@@ -50,9 +61,17 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             selectedRows = selected;
         }
 
-        private void Delete(int id)
+        private async void DeleteSelected()
         {
-            
+            if (selectedRows.Any())
+            {
+                await _itemAppService.DeleteManyItems(selectedRows.Select(x => x.Id).ToList());
+                await UpdateItemList();
+                await _message.Success("successfully deleted selected items");
+                StateHasChanged();
+            }
+            else
+                await _message.Warning("No item selected");
         }
         public void CreateNewItem()
         {

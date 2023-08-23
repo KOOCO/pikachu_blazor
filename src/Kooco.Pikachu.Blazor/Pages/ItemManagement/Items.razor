@@ -18,7 +18,11 @@
         <h3>@L["Items"]</h3>
     </div>
     <div class="col-6" style="display: flex;flex-direction: row-reverse;">
-        <Button Danger Type="@ButtonType.Primary" Style="margin-right:5px">@L["DeleteItem"]</Button>
+        <Button Danger Type="@ButtonType.Primary" Style="margin-right:5px">
+            <Popconfirm Title="Are you sure delete selected items?" OnConfirm="DeleteSelected">
+                @L["DeleteItem"]
+            </Popconfirm>
+        </Button>
         <Button Type="@ButtonType.Primary" Style="margin-right:5px; background-color:skyblue">@L["CopyItem"]</Button>
         <Button Type="@ButtonType.Primary" Style="margin-right:5px" OnClick="CreateNewItem">@L["NewItem"]</Button>
     </div>
