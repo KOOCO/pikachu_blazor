@@ -1,12 +1,14 @@
 ﻿using AntDesign;
 using Kooco.Pikachu.EnumValues;
-using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
+using FileInfo = Kooco.Pikachu.Images.FileInfo;
 
 namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 {
@@ -170,7 +172,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             if (!customeFields.Any())
                 return;
 
-            List<List<string>> permutations = GeneratePermutations(customeFields.Select(x=>x.ItemTags).ToList());
+            List<List<string>> permutations = GeneratePermutations(customeFields.Select(x => x.ItemTags).ToList());
 
             foreach (List<string> permutation in permutations)
             {
@@ -208,7 +210,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         {
             int customeFieldCount = customeFields.Count;
             var customFields = customeFields.ToArray();
-            if (customeFieldCount>0)
+            if (customeFieldCount > 0)
             {
                 createItemDto.CustomField1Name = customFields[0].Name;
                 createItemDto.CustomField10Value = string.Join(",", customFields[0].ItemTags);
@@ -258,22 +260,41 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 createItemDto.CustomField10Name = customFields[9].Name;
                 createItemDto.CustomField9Value = string.Join(",", customFields[9].ItemTags);
             }
-            createItemDto.ItemImages = new List<FileInfo>();
-            using (var webClient = new WebClient())
+            foreach (var item in itemImageList)
             {
-                itemImageList.Select(x => new FileInfo
+                createItemDto.ItemImages.Add(new FileInfo
                 {
-                    FileData = webClient.DownloadData(x.Url),
-                    FileName = x.FileName,
-                    FileMimeType = x.Type
+                    FileData = await DownloadBlobAsByteArrayAsync(item.Url),
+                    FileName = item.FileName,
+                    FileMimeType = item.Type
                 });
             }
+
             createItemDto.ItemDescription = await quillHtml.GetHTML();
-            createItemDto.ItemTags = string.Join(",", inputTagRef);
+            createItemDto.ItemTags = string.Join(",", itemTags);
             await _itemAppService.CreateAsync(createItemDto);
             NavigationManager.NavigateTo("Items");
         }
+        static async Task<byte[]> DownloadBlobAsByteArrayAsync(string blobUrl)
+        {
+            using (HttpClient httpClient = new HttpClient())
+            {
+                string cleanUrl = blobUrl.Replace("blob:", "");
+                HttpResponseMessage response = await httpClient.GetAsync(cleanUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadAsByteArrayAsync();
+                }
+                else
+                {
+                    throw new Exception($"Failed to download blob. Status code: {response.StatusCode}");
+                }
+            }
+        }
     }
+
+
 
     public class CustomeField
     {
