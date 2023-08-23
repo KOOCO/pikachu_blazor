@@ -4,7 +4,7 @@ namespace Kooco.Pikachu.AntBlazorModels.Upload
 {
     public class UploadInfo
     {
-        public UploadFileItem File { get; set; }
-        public List<UploadFileItem> FileList { get; set; }
+        public IFormFile File { get; set; }
+        public List<IFormFile> FileList { get; set; }
     }
 }

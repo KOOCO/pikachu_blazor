@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Volo.Abp.Users;
@@ -9,14 +10,16 @@ namespace Kooco.Pikachu.ImageBlob
 {
     public class ImageBlobService : IImageBlobService
     {
-        private string _accessKey = string.Empty;
+        private string? _accessKey = string.Empty;
         private readonly ICurrentUser _currentUser;
         private readonly string _pathPrefix = string.Empty;
-        public ImageBlobService(ICurrentUser currentUser)
+        private readonly IConfiguration _configuration;
+        public ImageBlobService(ICurrentUser currentUser, IConfiguration configuration)
         {
-            this._accessKey = "";
+            _configuration = configuration;
             _currentUser = currentUser;
             _pathPrefix = (_currentUser.TenantId != null && _currentUser.TenantId != Guid.Empty) ? _currentUser.TenantId + "/" : "";
+           _accessKey = _configuration.GetValue<string>("ConnectionStrings:AzureStorage");
         }
 
         public async Task<string> UploadFileToBlob(string strFileName, byte[] fileData, string fileMimeType, string dirName)

@@ -1,9 +1,11 @@
 ﻿using AntDesign;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
@@ -256,8 +258,16 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 createItemDto.CustomField10Name = customFields[9].Name;
                 createItemDto.CustomField9Value = string.Join(",", customFields[9].ItemTags);
             }
-
-            createItemDto.ItemDetails = itemDetailList;
+            createItemDto.ItemImages = new List<FileInfo>();
+            using (var webClient = new WebClient())
+            {
+                itemImageList.Select(x => new FileInfo
+                {
+                    FileData = webClient.DownloadData(x.Url),
+                    FileName = x.FileName,
+                    FileMimeType = x.Type
+                });
+            }
             createItemDto.ItemDescription = await quillHtml.GetHTML();
             createItemDto.ItemTags = string.Join(",", inputTagRef);
             await _itemAppService.CreateAsync(createItemDto);

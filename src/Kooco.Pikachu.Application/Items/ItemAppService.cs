@@ -4,6 +4,8 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Application.Dtos;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Kooco.Pikachu.Images;
+using System.Linq;
 
 namespace Kooco.Pikachu.Items;
 
@@ -12,11 +14,15 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
 {
     private readonly IItemRepository _repository;
     private readonly IItemDetailsRepository _itemDetailrepository;
+    private readonly IImageAppService _imageAppService;
 
-    public ItemAppService(IItemRepository repository, IItemDetailsRepository itemDetailrepository) : base(repository)
+    public ItemAppService(IItemRepository repository, 
+                          IItemDetailsRepository itemDetailrepository,
+                          IImageAppService imageAppService) : base(repository)
     {
         _repository = repository;
         _itemDetailrepository = itemDetailrepository;
+        _imageAppService = imageAppService;
     }
 
     /// <summary>
@@ -32,6 +38,13 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
         var res = await _repository.InsertAsync(item, true);
         itemDetail.ForEach(x => x.ItemId = res.Id);
         await _itemDetailrepository.InsertManyAsync(itemDetail, true);
+        var imageFiles = input.ItemImages.Select(x => new CreateImageDto
+        {
+            FileInfo = x,
+            FileId = item.Id,
+            ImageType = ImageType.Item
+        }).ToList();
+        await _imageAppService.InsertManyImageAsync(imageFiles);
         return ObjectMapper.Map<Item, ItemDto>(res);
     }
 
