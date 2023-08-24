@@ -36,15 +36,21 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
         var itemDetail = ObjectMapper.Map<List<CreateItemDetailsDto>, List<ItemDetails>>(input.ItemDetails);
         item.ItemDetails = new List<ItemDetails>();
         var res = await _repository.InsertAsync(item, true);
-        itemDetail.ForEach(x => x.ItemId = res.Id);
-        await _itemDetailrepository.InsertManyAsync(itemDetail, true);
-        var imageFiles = input.ItemImages.Select(x => new CreateImageDto
+        if (itemDetail.Any())
         {
-            FileInfo = x,
-            FileId = item.Id,
-            ImageType = ImageType.Item
-        }).ToList();
-        await _imageAppService.InsertManyImageAsync(imageFiles);
+            itemDetail.ForEach(x => x.ItemId = res.Id);
+            await _itemDetailrepository.InsertManyAsync(itemDetail, true);
+        }
+        if (input.ItemImages != null && input.ItemImages.Any() )
+        {
+            var imageFiles = input.ItemImages.Select(x => new CreateImageDto
+            {
+                FileInfo = x,
+                FileId = item.Id,
+                ImageType = ImageType.Item
+            }).ToList();
+            await _imageAppService.InsertManyImageAsync(imageFiles);
+        }
         return ObjectMapper.Map<Item, ItemDto>(res);
     }
 

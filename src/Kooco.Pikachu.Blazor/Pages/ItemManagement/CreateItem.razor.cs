@@ -260,37 +260,11 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 createItemDto.CustomField10Name = customFields[9].Name;
                 createItemDto.CustomField9Value = string.Join(",", customFields[9].ItemTags);
             }
-            foreach (var item in itemImageList)
-            {
-                createItemDto.ItemImages.Add(new FileInfo
-                {
-                    FileData = await DownloadBlobAsByteArrayAsync(item.Url),
-                    FileName = item.FileName,
-                    FileMimeType = item.Type
-                });
-            }
-
+            createItemDto.ItemDetails = itemDetailList;
             createItemDto.ItemDescription = await quillHtml.GetHTML();
             createItemDto.ItemTags = string.Join(",", itemTags);
             await _itemAppService.CreateAsync(createItemDto);
             NavigationManager.NavigateTo("Items");
-        }
-        static async Task<byte[]> DownloadBlobAsByteArrayAsync(string blobUrl)
-        {
-            using (HttpClient httpClient = new HttpClient())
-            {
-                string cleanUrl = blobUrl.Replace("blob:", "");
-                HttpResponseMessage response = await httpClient.GetAsync(cleanUrl);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    return await response.Content.ReadAsByteArrayAsync();
-                }
-                else
-                {
-                    throw new Exception($"Failed to download blob. Status code: {response.StatusCode}");
-                }
-            }
         }
     }
 
