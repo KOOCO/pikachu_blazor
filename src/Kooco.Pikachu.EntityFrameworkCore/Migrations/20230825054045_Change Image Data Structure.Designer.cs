@@ -4,6 +4,7 @@ using Kooco.Pikachu.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    partial class PikachuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230825054045_Change Image Data Structure")]
+    partial class ChangeImageDataStructure
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -82,172 +85,6 @@ namespace Kooco.Pikachu.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("AppEnumValues", (string)null);
-                });
-
-            modelBuilder.Entity("Kooco.Pikachu.GroupBuys.GroupBuy", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("AutoIssueTriplicateInvoice")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("BannerURL")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)")
-                        .HasColumnName("ConcurrencyStamp");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<Guid>("DefaultWarehouseId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
-
-                    b.Property<DateTime>("EndTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("EntryURL")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EntryURL2")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ExchangePolicy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("ExpectShippingDateFrom")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ExpectShippingDateTo")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ExtraProperties")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("ExtraProperties");
-
-                    b.Property<string>("FBID")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("FreeShipping")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("GAID")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("GTM")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("GroupBuyName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("GroupBuyNo")
-                        .HasColumnType("int");
-
-                    b.Property<string>("IGID")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("InviteCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("InvoiceNote")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
-
-                    b.Property<string>("LineID")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LogoURL")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("MetaPixelNo")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MoneyTransferValidDayBy")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("MoneyTransferValidDays")
-                        .HasColumnType("int");
-
-                    b.Property<string>("NotifyMessage")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OrderContactInfo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ProfitShare")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("ProtectPrivacyData")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("ShortName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("StartTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SubjectLine")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("TenantId");
-
-                    b.Property<string>("WarningMessage")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("allowShipOversea")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("allowShipToOuterTaiwan")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("issueInvoice")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DefaultWarehouseId");
-
-                    b.ToTable("AppGroupBuys", null, t =>
-                        {
-                            t.HasComment("");
-                        });
                 });
 
             modelBuilder.Entity("Kooco.Pikachu.Images.Image", b =>
@@ -892,82 +729,6 @@ namespace Kooco.Pikachu.Migrations
                         {
                             t.HasComment("");
                         });
-                });
-
-            modelBuilder.Entity("Kooco.Pikachu.Items.Warehouse", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)")
-                        .HasColumnName("ConcurrencyStamp");
-
-                    b.Property<string>("ContactNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ContactPerson")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
-
-                    b.Property<string>("ExtraProperties")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("ExtraProperties");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("TenantId");
-
-                    b.Property<string>("WarehouseName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("isDefault")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Warehouse");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>
@@ -2624,17 +2385,6 @@ namespace Kooco.Pikachu.Migrations
                     b.HasKey("TenantId", "Name");
 
                     b.ToTable("AbpTenantConnectionStrings", (string)null);
-                });
-
-            modelBuilder.Entity("Kooco.Pikachu.GroupBuys.GroupBuy", b =>
-                {
-                    b.HasOne("Kooco.Pikachu.Items.Warehouse", "DefaultWarehouse")
-                        .WithMany()
-                        .HasForeignKey("DefaultWarehouseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("DefaultWarehouse");
                 });
 
             modelBuilder.Entity("Kooco.Pikachu.Images.Image", b =>

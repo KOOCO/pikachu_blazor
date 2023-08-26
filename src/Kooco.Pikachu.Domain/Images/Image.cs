@@ -6,9 +6,24 @@ namespace Kooco.Pikachu.Images
 {
     public class Image : FullAuditedAggregateRoot<Guid>
     {
+        /// <summary>
+        /// Contain Image's URL on Azure blob
+        /// </summary>
         public string ImagePath { get; set; }
-        public int ImageType { get; set; }
-        public Guid? ItemId { get; set; }
-        public virtual Item Item { get; set; }
+
+        /// <summary>
+        /// Shows this image is using at which part of page
+        /// </summary>
+        public ImageType ImageType { get; set; }
+
+        /// <summary>
+        /// Indicated that which componment's ID own this image
+        /// </summary>
+        public Guid? TargetID { get; set; }
+
+        /// <summary>
+        /// Indicated the poition of this image in the componment
+        /// </summary>
+        public int SortNO { get; set; }
     }
 }

@@ -2,9 +2,13 @@
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
+using FileInfo = Kooco.Pikachu.Images.FileInfo;
 
 namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 {
@@ -168,7 +172,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             if (!customeFields.Any())
                 return;
 
-            List<List<string>> permutations = GeneratePermutations(customeFields.Select(x=>x.ItemTags).ToList());
+            List<List<string>> permutations = GeneratePermutations(customeFields.Select(x => x.ItemTags).ToList());
 
             foreach (List<string> permutation in permutations)
             {
@@ -206,7 +210,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         {
             int customeFieldCount = customeFields.Count;
             var customFields = customeFields.ToArray();
-            if (customeFieldCount>0)
+            if (customeFieldCount > 0)
             {
                 createItemDto.CustomField1Name = customFields[0].Name;
                 createItemDto.CustomField10Value = string.Join(",", customFields[0].ItemTags);
@@ -256,14 +260,15 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 createItemDto.CustomField10Name = customFields[9].Name;
                 createItemDto.CustomField9Value = string.Join(",", customFields[9].ItemTags);
             }
-
             createItemDto.ItemDetails = itemDetailList;
             createItemDto.ItemDescription = await quillHtml.GetHTML();
-            createItemDto.ItemTags = string.Join(",", inputTagRef);
+            createItemDto.ItemTags = string.Join(",", itemTags);
             await _itemAppService.CreateAsync(createItemDto);
             NavigationManager.NavigateTo("Items");
         }
     }
+
+
 
     public class CustomeField
     {

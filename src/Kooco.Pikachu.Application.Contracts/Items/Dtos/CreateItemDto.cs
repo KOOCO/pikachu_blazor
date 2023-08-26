@@ -1,4 +1,4 @@
-using Kooco.Pikachu.AntBlazorModels.Upload;
+using Kooco.Pikachu.Images;
 using System;
 using System.Collections.Generic;
 
@@ -10,7 +10,7 @@ public class CreateItemDto
     public string ItemNo { get; set; }
     public string ItemName { get; set; } = "";
     public List<CreateItemDetailsDto> ItemDetails { get; set; }
-    public List<UploadFileItem> ItemImages { get; set; }
+    public List<FileInfo> ItemImages { get; set; }
     public string ItemDescriptionTitle { get; set; } = "";
     public string ItemDescription { get; set; } = "";
     public string ItemTags { get; set; }
