@@ -60,7 +60,4 @@
     <None Remove="Warehouses\" />
     <None Remove="PurchaseOrders\" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Groupbuys\" />
-  </ItemGroup>
 </Project>

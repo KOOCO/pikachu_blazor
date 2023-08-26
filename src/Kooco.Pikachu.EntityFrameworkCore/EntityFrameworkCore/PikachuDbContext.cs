@@ -19,6 +19,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Kooco.Pikachu.EnumValues;
 using Volo.Abp.OpenIddict;
 using Kooco.Pikachu.Images;
+using Kooco.Pikachu.GroupBuys;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -66,6 +67,7 @@ public class PikachuDbContext :
     public DbSet<SetItem> SetItems { get; set; }
     public DbSet<SetItemDetails> SetItemDetails { get; set; }
     public DbSet<Image> Images { get; set; }
+    public DbSet<GroupBuy> GroupBuys { get; set; }
 
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
@@ -108,7 +110,7 @@ public class PikachuDbContext :
         builder.Entity<ItemDetails>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "ItemDetails", PikachuConsts.DbSchema, table => table.HasComment(""));
-            b.ConfigureByConvention(); 
+            b.ConfigureByConvention();
             b.HasOne(x => x.Item).WithMany(d => d.ItemDetails).HasForeignKey(i => i.Id); ;
         });
         
@@ -128,6 +130,11 @@ public class PikachuDbContext :
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "SetItemDetails", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention(); 
+        });
+        builder.Entity<GroupBuy>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "GroupBuys", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
         });
     }
 }

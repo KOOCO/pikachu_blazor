@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Volo.Abp.MultiTenancy;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Entities.Auditing;
-using Kooco.Pikachu.Items;
 
 namespace Kooco.Pikachu.GroupBuys
 {
-    public class GroupBuy : FullAuditedAggregateRoot<Guid>, IMultiTenant
+    public class GroupBuyDto:FullAuditedAggregateRoot<Guid>,IHasConcurrencyStamp
     {
-        public Guid? TenantId { get; set; }
+       
 
 
         /// <summary>
@@ -160,7 +157,7 @@ namespace Kooco.Pikachu.GroupBuys
         /// <summary>
         /// Line ID
         /// </summary>
-        public string? LineID{ get; set; }
+        public string? LineID { get; set; }
 
         /// <summary>
         /// Google Analytics ID
@@ -195,86 +192,6 @@ namespace Kooco.Pikachu.GroupBuys
         /// <summary>
         /// 預設使用的發貨倉庫 Default Warehouse used for shipping
         /// </summary>
-        public Warehouse DefaultWarehouse { get; set; }
-        public GroupBuy() { 
-        
-        }
-
-        public GroupBuy(Guid id,int groupNo,string status,
-            string groupBuyName,
-            string entryURL,
-            string entryURL2,
-            string subjectLine,
-            string shortName,
-            string logoURL,
-            string bannerURL,
-            DateTime? startTime,
-            DateTime endTime,
-            bool freeShipping,
-            bool allowShipToOuterTaiwan,
-            bool allowShipOversea,
-            DateTime? expectShippingDateFrom,
-            DateTime? expectShippingDateTo,
-            int moneyTransferValidDayBy,
-            int? moneyTransferValidDays,
-            bool issueInvoice,
-            bool autoIssueTriplicateInvoice,
-            string? invoiceNote,
-            bool protectPrivacyData,
-            string? inviteCode,
-            int profitShare,
-            int? metaPixelNo,
-            string? fBID,
-            string? iGID,
-            string? lineID,
-            string? gAID,
-            string? gTM,
-            string? warningMessage,
-            string? orderContactInfo,
-            string? exchangePolicy,
-            string? notifyMessage)
-        { 
-            Id = id;
-            GroupBuyNo = groupNo;
-        Status= status;
-            GroupBuyName= groupBuyName;
-            EntryURL= entryURL;
-            EntryURL2= entryURL2;
-                SubjectLine= subjectLine;
-            ShortName= shortName;
-            LogoURL= logoURL;
-            BannerURL = bannerURL;
-            StartTime= startTime;
-            EndTime = endTime;
-            FreeShipping= freeShipping;
-            this.allowShipOversea= allowShipOversea;
-            this.allowShipToOuterTaiwan= allowShipToOuterTaiwan;
-            ExpectShippingDateFrom= expectShippingDateFrom;
-            ExpectShippingDateTo= expectShippingDateTo;
-            MoneyTransferValidDayBy= moneyTransferValidDayBy;
-            MoneyTransferValidDays = moneyTransferValidDays;
-            this.issueInvoice= issueInvoice;
-            AutoIssueTriplicateInvoice= autoIssueTriplicateInvoice;
-            InvoiceNote= invoiceNote;
-            InviteCode= inviteCode;
-            ProtectPrivacyData= protectPrivacyData;
-            ProfitShare = profitShare;
-            MetaPixelNo = metaPixelNo;
-            FBID= fBID;
-            IGID= iGID;
-            LineID= lineID;
-            GAID = gAID;
-            GTM = gTM;
-            WarningMessage= warningMessage;
-            OrderContactInfo= orderContactInfo;
-            ExchangePolicy = exchangePolicy;
-            NotifyMessage= notifyMessage;
-
-
-
-
-
-        }
-
+     
     }
 }

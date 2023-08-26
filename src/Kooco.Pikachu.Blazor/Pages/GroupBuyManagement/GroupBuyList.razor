@@ -1,11 +1,51 @@
 ﻿@page "/GroupBuyManagement/GroupBuyList"
 @using Volo.Abp.MultiTenancy
-@inherits PikachuComponentBase
-@inject AuthenticationStateProvider AuthenticationStateProvider
-<h3>GroupBuyList</h3>
+
+@using Volo.Abp.Application.Dtos
+@using Kooco.Pikachu.GroupBuys
+
+@using Kooco.Pikachu.Localization
+@using Microsoft.Extensions.Localization
+@using Volo.Abp
+@using System.Text.Json;
+@using System.ComponentModel
+@using AntDesign.TableModels
+
+@inject IStringLocalizer<PikachuResource> L
+@inject NavigationManager NavigationManager
+
+<div class="col-12 row">
+    <div class="col-6">
+        <h3>Group Buy List</h3>
+    </div>
+    <div class="col-6" style="display: flex;flex-direction: row-reverse;">
+       
+      
+        <Button Type="@ButtonType.Primary" Style="margin-right:5px" OnClick="CreateNewItem"  >@L["NewGroupBuy"]</Button>
+    </div>
+</div>
+<div>
+    <Table @ref="table"
+           TItem="GroupBuyDto"
+           DataSource="@GroupBuyListItem.Items"
+           Total="@Convert.ToInt32(GroupBuyListItem.TotalCount)"
+    @bind-PageIndex="_pageIndex"
+    @bind-PageSize="_pageSize"
+    
+           Size="TableSize.Small">
+        <Selection Key="@(context.Id.ToString())" />
+        <PropertyColumn Title="@L["GroupBuyName"]" Property="item=>item.GroupBuyName" />
+       
+@*             <Switch @bind-Value="@context.IsItemAvaliable" OnChange="() => OnItemAvaliablityChange(context.Id)"></Switch> *@
+        
+    </Table>
+</div>
 
 @code {
- 
+    ITable table;
+      public void CreateNewItem()
+        {
+            NavigationManager.NavigateTo("/GroupBuyManagement/GroupBuyList/New");
+        }
 }
-<span>@TestProperty</span>
 

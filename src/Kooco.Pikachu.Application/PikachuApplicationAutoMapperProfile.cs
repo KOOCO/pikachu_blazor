@@ -3,6 +3,7 @@ using Kooco.Pikachu.Items.Dtos;
 using AutoMapper;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Images;
+using Kooco.Pikachu.GroupBuys;
 
 namespace Kooco.Pikachu;
 
@@ -39,7 +40,8 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<CreateUpdateSetItemDto, SetItem>(MemberList.Source);
         CreateMap<SetItemDetails, SetItemDetailsDto>();
         CreateMap<CreateUpdateSetItemDetailsDto, SetItemDetails>(MemberList.Source);
-
+        //
+        CreateMap<GroupBuy, GroupBuyDto>();
        
     }
 }
