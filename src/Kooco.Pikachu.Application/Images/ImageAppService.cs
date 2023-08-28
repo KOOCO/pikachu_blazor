@@ -29,7 +29,7 @@ namespace Kooco.Pikachu.Images
         {
             foreach (var item in images.ToList())
             {
-                string dirName = item.ImageType.ToString() + "/" + item.FileId.ToString();
+                string dirName = item.ImageType.ToString() + "/" + item.TargetID.ToString();
                 var imageString = await _imageblobService.UploadFileToBlob(item.FileInfo.FileName, item.FileInfo.FileData, item.FileInfo.FileMimeType, dirName);
                 item.ImagePath = imageString;
             }

@@ -46,7 +46,7 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
             var imageFiles = input.ItemImages.Select(x => new CreateImageDto
             {
                 FileInfo = x,
-                FileId = item.Id,
+                TargetID = item.Id,
                 ImageType = ImageType.Item
             }).ToList();
             await _imageAppService.InsertManyImageAsync(imageFiles);
