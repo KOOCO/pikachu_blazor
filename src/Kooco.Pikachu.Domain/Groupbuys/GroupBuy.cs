@@ -191,11 +191,15 @@ namespace Kooco.Pikachu.GroupBuys
         /// 通知信件文案 NotifyMessage
         /// </summary>
         public string? NotifyMessage { get; set; }
-
+        public string? ExcludeShippingMethod { get; set; }
+        public bool IsDefaultPaymentGateWay { get; set; }
+        public string? PaymentMethod { get; set; }
+        public string? GroupBuyCondition { get; set; }
+        public string? CustomerInformation { get; set; }
         /// <summary>
         /// 預設使用的發貨倉庫 Default Warehouse used for shipping
         /// </summary>
-        public Warehouse DefaultWarehouse { get; set; }
+        //public Warehouse DefaultWarehouse { get; set; }
         public GroupBuy() { 
         
         }
@@ -232,7 +236,7 @@ namespace Kooco.Pikachu.GroupBuys
             string? warningMessage,
             string? orderContactInfo,
             string? exchangePolicy,
-            string? notifyMessage)
+            string? notifyMessage,string? excludeShippingMethod,bool isDefaultPaymentGateway,string? paymentMethod,string? groupbuyCondition,string? customerInformation)
         { 
             Id = id;
             GroupBuyNo = groupNo;
@@ -269,6 +273,11 @@ namespace Kooco.Pikachu.GroupBuys
             OrderContactInfo= orderContactInfo;
             ExchangePolicy = exchangePolicy;
             NotifyMessage= notifyMessage;
+            ExcludeShippingMethod = excludeShippingMethod;
+            IsDefaultPaymentGateWay = isDefaultPaymentGateway;
+            PaymentMethod = paymentMethod;
+            GroupBuyCondition = groupbuyCondition;
+            CustomerInformation = customerInformation;
 
 
 

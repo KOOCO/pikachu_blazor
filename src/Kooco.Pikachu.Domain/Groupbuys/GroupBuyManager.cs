@@ -55,15 +55,20 @@ namespace Kooco.Pikachu.Groupbuys
             string? warningMessage,
             string? orderContactInfo,
             string? exchangePolicy,
-            string? notifyMessage)
+            string? notifyMessage,
+            string? excludeShippingMethod,
+            bool isDefaultPaymentGateway, 
+            string? paymentMethod,
+            string? groupbuyCondition, 
+            string? customerInformation)
         {
 
             var groupBuy = new GroupBuy(GuidGenerator.Create(),groupBuyNo, status,  groupBuyName,entryURL,entryURL2,subjectLine,shortName,logoURL,bannerURL,startTime,endTime,freeShipping,
                 allowShipToOuterTaiwan,allowShipOversea,expectShippingDateFrom,expectShippingDateTo,moneyTransferValidDayBy,moneyTransferValidDays,
                 issueInvoice,autoIssueTriplicateInvoice,invoiceNote,protectPrivacyData,inviteCode,profitShare,metaPixelNo,fBID,iGID,lineID,gAID,gTM,
-                warningMessage,orderContactInfo,exchangePolicy,notifyMessage);
+                warningMessage,orderContactInfo,exchangePolicy,notifyMessage,  excludeShippingMethod, isDefaultPaymentGateway,  paymentMethod,  groupbuyCondition, customerInformation);
 
-            return await _groupBuyRepositroy.InsertAsync(groupBuy);
+            return await _groupBuyRepositroy.InsertAsync(groupBuy,true);
         }
 
         public async Task<GroupBuy> UpdateAsync(Guid Id,int groupBuyNo,
@@ -100,6 +105,11 @@ namespace Kooco.Pikachu.Groupbuys
               string? orderContactInfo,
               string? exchangePolicy,
               string? notifyMessage,
+              string? excludeShippingMethod,
+            bool isDefaultPaymentGateway,
+            string? paymentMethod,
+            string? groupbuyCondition,
+            string? customerInformation,
               [CanBeNull] string concurrencyStamp=null)
         {
             var groupBuy = await _groupBuyRepositroy.GetAsync(Id);
@@ -137,6 +147,11 @@ namespace Kooco.Pikachu.Groupbuys
             groupBuy.OrderContactInfo= orderContactInfo;
             groupBuy.ExchangePolicy= exchangePolicy;
             groupBuy.NotifyMessage= notifyMessage;
+            groupBuy.ExcludeShippingMethod = excludeShippingMethod;
+            groupBuy.IsDefaultPaymentGateWay = isDefaultPaymentGateway;
+            groupBuy.PaymentMethod = paymentMethod;
+            groupBuy.GroupBuyCondition = groupbuyCondition;
+            groupBuy.CustomerInformation = customerInformation;
 
             return await _groupBuyRepositroy.UpdateAsync(groupBuy);
         }

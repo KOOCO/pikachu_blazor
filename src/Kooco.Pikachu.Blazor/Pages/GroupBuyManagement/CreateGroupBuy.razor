@@ -11,6 +11,7 @@
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<PikachuResource> L
 @inject IMessageService _message
+<script src="interop.js"></script>
 <style>
     .row {
         margin-top: 10px;
@@ -149,6 +150,109 @@
 
             </div>
         </div>
+          <div class="col-12 row ">
+            <div class="col-2">
+                <label>@L["CarouselImages"]</label>
+            </div>
+            <div class="col-10 d-flex flex-row">
+              <Upload Action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+            Name="avatar"
+            Class="avatar-uploader"
+            ListType="picture-card"
+            ShowUploadList="false"
+            
+            OnChange="GroupBuyCarouselImage1HandleChange">
+        @if (!string.IsNullOrWhiteSpace(groupBuyCarousel1.Url))
+        {
+            <img src="@groupBuyCarousel1.Url" alt="avatar" style="width: 100%" />
+        }
+        else
+        {
+            <div>
+                <Icon Spin="loading" Type="@(loading?"Loading":"plus")" ></Icon>
+                <div className="ant-upload-text">Upload</div>
+            </div>
+        }
+    </Upload>
+     <Upload Action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+            Name="avatar"
+            Class="avatar-uploader"
+            ListType="picture-card"
+            ShowUploadList="false"
+            
+            OnChange="GroupBuyCarouselImage2HandleChange">
+        @if (!string.IsNullOrWhiteSpace(groupBuyCarousel2.Url))
+        {
+            <img src="@groupBuyCarousel2.Url" alt="avatar" style="width: 100%" />
+        }
+        else
+        {
+            <div>
+                <Icon Spin="loading" Type="@(loading?"Loading":"plus")" ></Icon>
+                <div className="ant-upload-text">Upload</div>
+            </div>
+        }
+    </Upload>
+    <Upload Action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+            Name="avatar"
+            Class="avatar-uploader"
+            ListType="picture-card"
+            ShowUploadList="false"
+            
+            OnChange="GroupBuyCarouselImage3HandleChange">
+        @if (!string.IsNullOrWhiteSpace(groupBuyCarousel3.Url))
+        {
+            <img src="@groupBuyCarousel3.Url" alt="avatar" style="width: 100%" />
+        }
+        else
+        {
+            <div>
+                <Icon Spin="loading" Type="@(loading?"Loading":"plus")" ></Icon>
+                <div className="ant-upload-text">Upload</div>
+            </div>
+        }
+    </Upload>
+    <Upload Action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+            Name="avatar"
+            Class="avatar-uploader"
+            ListType="picture-card"
+            ShowUploadList="false"
+            
+            OnChange="GroupBuyCarouselImage4HandleChange">
+        @if (!string.IsNullOrWhiteSpace(groupBuyCarousel4.Url))
+        {
+            <img src="@groupBuyCarousel4.Url" alt="avatar" style="width: 100%" />
+        }
+        else
+        {
+            <div>
+                <Icon Spin="loading" Type="@(loading?"Loading":"plus")" ></Icon>
+                <div className="ant-upload-text">Upload</div>
+            </div>
+        }
+    </Upload>
+    <Upload Action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+            Name="avatar"
+            Class="avatar-uploader"
+            ListType="picture-card"
+            ShowUploadList="false"
+           
+            OnChange="GroupBuyCarouselImage5HandleChange">
+        @if (!string.IsNullOrWhiteSpace(groupBuyCarousel5.Url))
+        {
+            <img src="@groupBuyCarousel5.Url" alt="avatar" style="width: 100%" />
+        }
+        else
+        {
+            <div>
+                <Icon Spin="loading" Type="@(loading?"Loading":"plus")" ></Icon>
+                <div className="ant-upload-text">Upload</div>
+            </div>
+        }
+    </Upload>
+            </div>
+        </div>
+
            <Divider></Divider>
             <div class=" col-12 row">
                 <div class="col-2">@L["GroupBuyTime"]</div>
@@ -211,27 +315,29 @@
                 <div class="col-1">@L["GateWay"]</div>
                  <div class="col-2">@L["PaymentMethod"]</div>
             
-                 <div class="col-4"><Radio Value="1">@L["DefaultPaymentGateWay"]</Radio>
+                 <div class="col-4">  <Radio Value="1" CheckedChange="@IsDefaultPaymentChange" @bind-Checked=createGroupBuyDto.IsDefaultPaymentGateWay>
+        @L["DefaultPaymentGateWay"]
+    </Radio>
        </div>
             </div>
                    <div class="col-12 row">
                 <div class="col-1"></div>
                  <div class="col-2"></div>
             
-                 <div class="col-1">   <Radio Value="2"> </Radio></div>
+                 <div class="col-1">    <Radio Value="2" Checked="@paymentMethodCheck" CheckedChange="@PaymentMethodChange"> </Radio></div>
                  <div class="col-7">
                      <div class="col-7 form-control"  style="background-color:white">
-                @foreach (var tag in itemTags)
+                @foreach (var tag in paymentMethodTags)
                 {
-                    <Tag @key="tag" Closable OnClose="()=>OnTagClose(tag)">@tag</Tag>
+                    <Tag @key="tag" Closable OnClose="()=>OnPaymentMethodTagClose(tag)">@tag</Tag>
                 }
-                @if (tagInputVisible)
+                @if (tagInputPaymentMethodVisible)
                 {
-                    <Input @ref="inputTagRef" Style="width: 78px" Size="small"  @bind-Value="inputTagValue" OnBlur="HandleTagInputConfirm" OnPressEnter="HandleTagInputConfirm" AutoFocus />
+                    <Input Disabled="@paymentMethodCheck" @ref="inputPaymentMethodTagRef" Style="width: 78px" Size="small"  @bind-Value="inputPaymentMethodTagValue" OnBlur="HandlePaymentMethodTagInputConfirm" OnPressEnter="HandlePaymentMethodTagInputConfirm" AutoFocus />
                 }
                 else
                 {
-                    <Tag Class="site-tag-plus" OnClick="@(() => tagInputVisible = !tagInputVisible)">
+                    <Tag Class="site-tag-plus" OnClick="@(() => tagInputPaymentMethodVisible = !tagInputPaymentMethodVisible)">
                         <Icon Type="plus" />@L["NewTag"]
                     </Tag>
                 }
@@ -281,7 +387,7 @@
                 <label>@L["ProfitShare"]</label>
             </div>
             <div class="col-5">
-                <Input  @bind-Value="@createGroupBuyDto.SubjectLine" />
+                <Input  @bind-Value="@createGroupBuyDto.ProfitShare" />
             </div>
             </div>
              <div class=" col-12 row">
@@ -308,7 +414,7 @@
                 <label>@L["IGID"]</label>
             </div>
             <div class="col-5">
-                <Input  @bind-Value="@createGroupBuyDto.SubjectLine" />
+                <Input  @bind-Value="@createGroupBuyDto.IGID" />
             </div>
             </div>
              <div class=" col-12 row">
@@ -317,7 +423,7 @@
                 <label>@L["LINEID"]</label>
             </div>
             <div class="col-5">
-                <Input  @bind-Value="@createGroupBuyDto.SubjectLine" />
+                <Input  @bind-Value="@createGroupBuyDto.LineID" />
             </div>
             </div>
              <div class=" col-12 row">
@@ -326,7 +432,7 @@
                 <label>@L["GAID"]</label>
             </div>
             <div class="col-5">
-                <Input  @bind-Value="@createGroupBuyDto.SubjectLine" />
+                <Input  @bind-Value="@createGroupBuyDto.GAID" />
             </div>
             </div>
              <div class=" col-12 row">
@@ -335,7 +441,7 @@
                 <label>@L["GTM"]</label>
             </div>
             <div class="col-5">
-                <Input  @bind-Value="@createGroupBuyDto.SubjectLine" />
+                <Input  @bind-Value="@createGroupBuyDto.GTM" />
             </div>
             </div>
     <Divider></Divider>
@@ -436,7 +542,7 @@
     <div class="col-9">
         <div class="col-12">
             <fieldLabel></fieldLabel>
-            <Input Placeholder="@L["GroupBuyCondition"]" @bind-Value="@groupBuyCondition" MaxLength="60" ShowCount />
+            <Input Placeholder="@L["GroupBuyCondition"]" @bind-Value="createGroupBuyDto.GroupBuyCondition" MaxLength="60" ShowCount />
         </div>
         <div class=" col-12">
             <Blazored.TextEditor.BlazoredTextEditor @ref="@quillHtml">
@@ -490,7 +596,7 @@
      <div class="col-9">
          <div class="col-12">
              <fieldLabel></fieldLabel>
-             <Input Placeholder="@L["CustomerInformation"]" @bind-Value="@customerInformation" MaxLength="60" ShowCount />
+             <Input Placeholder="@L["CustomerInformation"]" @bind-Value="@createGroupBuyDto.CustomerInformation" MaxLength="60" ShowCount />
          </div>
          <div class=" col-12">
              <Blazored.TextEditor.BlazoredTextEditor @ref="@quillHtml">
@@ -648,7 +754,7 @@
 
         <div style="text-align: center; margin-top:5px ;">
             <Button Danger Type="@ButtonType.Primary" Style="margin-right:5px">@L["Cancel"]</Button>
-            <Button Type="@ButtonType.Primary" Style="margin-right:5px" >@L["Save"]</Button>
+            <Button Type="@ButtonType.Primary" Style="margin-right:5px"  OnClick="CreateEntityAsync" >@L["Save"]</Button>
             <Button Type="@ButtonType.Primary" Style="margin-right:5px; background-color:skyblue">@L["Preview"]</Button>
 
         </div>

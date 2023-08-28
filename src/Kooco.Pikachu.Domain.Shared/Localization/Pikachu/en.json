@@ -61,6 +61,29 @@
     "ShippingMethod": "Shipping Method",
     "SalePrice": "Sale Price",
     "TaxType": "Tax Type",
-    "NewTag": "New Tag"
+    "NewTag": "New Tag",
+    //GroupBuy
+    "NewGroupBuy": "New GroupBuy",
+    "SalesURL1": "Sales URL1",
+    "SalesURL2": "Sales URL2",
+    "GroupBuyName": "GroupBuy Name",
+    "Subject": "Subject",
+    "GroupBuyShortName": "Short Name",
+    "GroupBuyLogo": "Logo",
+    "GroupBuyBanner": "Banner Image",
+    "CarouselImages": "Carousel Images",
+    "GroupBuyTime": "GroupBuy Time",
+    "Logistic": "Logistic",
+    "ExcludeShippingMethod": "Exclude Shipping Method",
+    "AllowShipToOuterIsland": "Allow Ship To Outer Island",
+    "AllowShipToOverSea": "Allow ShipTo Oversea",
+    "ExpectDeliveryDate": "Expect Delivery Date",
+    "GateWay": "GateWay",
+    "PaymentMethod": "Payment Method",
+    "DefaultPaymentGateWay": "DefaultPaymentGateWay"
+
+
+
+
   }
 }

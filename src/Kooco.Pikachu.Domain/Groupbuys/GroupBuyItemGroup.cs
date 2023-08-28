@@ -9,14 +9,14 @@ using Kooco.Pikachu.Items;
 
 namespace Kooco.Pikachu.GroupBuys
 { 
-    internal class GroupBuyItemGroup : FullAuditedAggregateRoot<Guid>, IMultiTenant
+    public class GroupBuyItemGroup : FullAuditedAggregateRoot<Guid>, IMultiTenant
     {
         public Guid? TenantId { get; set; }
 
         /// <summary>
         /// 團購編號
         /// </summary>
-        public GroupBuy GroupBuy { get; set; }
+        public Guid GroupBuyId { get; set; }
 
         /// <summary>
         /// 商品組合排序 Sorting Orger of groupbuy item groupf

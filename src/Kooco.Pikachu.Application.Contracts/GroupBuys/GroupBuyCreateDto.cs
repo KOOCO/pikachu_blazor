@@ -185,5 +185,11 @@ namespace Kooco.Pikachu.GroupBuys
         /// 通知信件文案 NotifyMessage
         /// </summary>
         public string? NotifyMessage { get; set; }
+        public string? ExcludeShippingMethod { get; set; }
+        public bool IsDefaultPaymentGateWay { get; set; }
+        public string? PaymentMethod { get; set; }
+        public string? GroupBuyCondition { get; set; }
+        public string? CustomerInformation { get; set; }
+     
     }
 }
