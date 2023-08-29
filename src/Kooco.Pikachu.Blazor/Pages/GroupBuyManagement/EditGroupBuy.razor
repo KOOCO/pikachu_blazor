@@ -1,0 +1,819 @@
+﻿@page "/GroupBuyManagement/GroupBuyList/Edit/{id}"
+
+@using Kooco.Pikachu.EnumValues;
+@using Kooco.Pikachu.GroupBuys;
+@using Pikachu.Items;
+@using Pikachu.Localization;
+@using Microsoft.Extensions.Localization;
+@using Volo.Abp.AspNetCore.Components.Web
+@using System.ComponentModel
+@using AntDesign.TableModels
+
+@inject IGroupBuyAppService AppService
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<PikachuResource> L
+@inject IMessageService _message
+<script src="interop.js"></script>
+<style>
+    .row {
+        margin-top: 10px;
+    }
+
+    .site-tag-plus {
+        background: #fff;
+        border-style: dashed;
+    }
+    /* you can make up upload button and sample style by using stylesheets */
+    .ant-upload-select-picture-card i {
+        color: #999;
+        font-size: 32px;
+    }
+     .ant-upload-select-picture-card i {
+        color: #999;
+        font-size: 32px;
+    }
+
+    .ant-upload-select-picture-card .ant-upload-text {
+        margin-top: 8px;
+        color: #666;
+    }
+
+    .anticon {
+        vertical-align: 0.1em !important
+    }
+
+</style>
+  <h3>@L["EditGroupBuy"]</h3>
+<Card >
+   
+ 
+        <div class="card-body">
+        <div class="col-12"><h4>Sales URL</h4>  </div>
+        <div class=" col-12 row">
+             <div class="col-1"></div>
+            <div class="col-2">
+                <label>@L["SalesURL1"]</label>
+            </div>
+            <div class="col-7">
+                <Input @bind-Value="@updateGroupBuyDto.EntryURL" />
+            </div>
+           
+            
+        </div>
+         <div class=" col-12 row">
+              <div class="col-1"></div>
+          <div class="col-2">
+                <label>@L["SalesURL2"]</label>
+            </div>
+            <div class="col-7">
+                <Input @bind-Value="@updateGroupBuyDto.EntryURL2" />
+            </div>
+            </div>
+            </div>
+        <Divider></Divider>
+         <div class=" col-12 row">
+           
+            <div class="col-2">
+                <label>@L["GroupBuyName"]</label>
+            </div>
+            <div class="col-9">
+                <Input ShowCount MaxLength="@maxtextCount" @bind-Value="@updateGroupBuyDto.GroupBuyName" />
+            </div>
+           
+            
+        </div>
+         <div class=" col-12 row">
+          <div class="col-2">
+                <label>@L["Subject"]</label>
+            </div>
+            <div class="col-9">
+                <Input ShowCount MaxLength="@maxtextCount" @bind-Value="@updateGroupBuyDto.SubjectLine" />
+            </div>
+            </div>
+            <div class=" col-12 row">
+          <div class="col-2">
+                <label>@L["GroupBuyShortName"]</label>
+            </div>
+            <div class="col-9">
+                <Input ShowCount MaxLength="@maxtextCount" @bind-Value="@updateGroupBuyDto.ShortName" />
+            </div>
+            </div>
+             <div class="col-12 row">
+            <div class="col-2">
+                <label>@L["GroupBuyLogo"]*</label>
+            </div>
+            <div class="col-10 row">
+              <Upload Action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+            Name="avatar"
+            Class="avatar-uploader"
+            ListType="picture-card"
+            ShowUploadList="false"
+            
+            OnChange="GroupBuyLogoHandleChange">
+        @if (!string.IsNullOrWhiteSpace(groupBuyLogo.Url))
+        {
+            <img src="@groupBuyLogo.Url" alt="avatar" style="width: 100%" />
+        }
+        else
+        {
+            <div>
+                <Icon Spin="loading" Type="@(loading?"Loading":"plus")" ></Icon>
+                <div className="ant-upload-text">Upload</div>
+            </div>
+        }
+    </Upload>
+
+            </div>
+        </div>
+             <div class="col-12 row">
+            <div class="col-2">
+                <label>@L["GroupBuyBanner"]</label>
+            </div>
+            <div class="col-10 row">
+              <Upload Action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+            Name="avatar"
+            Class="avatar-uploader"
+            ListType="picture-card"
+            ShowUploadList="false"
+            
+            OnChange="GroupBuyBannerHandleChange">
+        @if (!string.IsNullOrWhiteSpace(groupBuyBanner.Url))
+        {
+            <img src="@groupBuyBanner.Url" alt="avatar" style="width: 100%" />
+        }
+        else
+        {
+            <div>
+                <Icon Spin="loading" Type="@(loading?"Loading":"plus")" ></Icon>
+                <div className="ant-upload-text">Upload</div>
+            </div>
+        }
+    </Upload>
+
+            </div>
+        </div>
+          <div class="col-12 row ">
+            <div class="col-2">
+                <label>@L["CarouselImages"]</label>
+            </div>
+            <div class="col-10 d-flex flex-row">
+              <Upload Action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+            Name="avatar"
+            Class="avatar-uploader"
+            ListType="picture-card"
+            ShowUploadList="false"
+            
+            OnChange="GroupBuyCarouselImage1HandleChange">
+        @if (!string.IsNullOrWhiteSpace(groupBuyCarousel1.Url))
+        {
+            <img src="@groupBuyCarousel1.Url" alt="avatar" style="width: 100%" />
+        }
+        else
+        {
+            <div>
+                <Icon Spin="loading" Type="@(loading?"Loading":"plus")" ></Icon>
+                <div className="ant-upload-text">Upload</div>
+            </div>
+        }
+    </Upload>
+     <Upload Action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+            Name="avatar"
+            Class="avatar-uploader"
+            ListType="picture-card"
+            ShowUploadList="false"
+            
+            OnChange="GroupBuyCarouselImage2HandleChange">
+        @if (!string.IsNullOrWhiteSpace(groupBuyCarousel2.Url))
+        {
+            <img src="@groupBuyCarousel2.Url" alt="avatar" style="width: 100%" />
+        }
+        else
+        {
+            <div>
+                <Icon Spin="loading" Type="@(loading?"Loading":"plus")" ></Icon>
+                <div className="ant-upload-text">Upload</div>
+            </div>
+        }
+    </Upload>
+    <Upload Action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+            Name="avatar"
+            Class="avatar-uploader"
+            ListType="picture-card"
+            ShowUploadList="false"
+            
+            OnChange="GroupBuyCarouselImage3HandleChange">
+        @if (!string.IsNullOrWhiteSpace(groupBuyCarousel3.Url))
+        {
+            <img src="@groupBuyCarousel3.Url" alt="avatar" style="width: 100%" />
+        }
+        else
+        {
+            <div>
+                <Icon Spin="loading" Type="@(loading?"Loading":"plus")" ></Icon>
+                <div className="ant-upload-text">Upload</div>
+            </div>
+        }
+    </Upload>
+    <Upload Action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+            Name="avatar"
+            Class="avatar-uploader"
+            ListType="picture-card"
+            ShowUploadList="false"
+            
+            OnChange="GroupBuyCarouselImage4HandleChange">
+        @if (!string.IsNullOrWhiteSpace(groupBuyCarousel4.Url))
+        {
+            <img src="@groupBuyCarousel4.Url" alt="avatar" style="width: 100%" />
+        }
+        else
+        {
+            <div>
+                <Icon Spin="loading" Type="@(loading?"Loading":"plus")" ></Icon>
+                <div className="ant-upload-text">Upload</div>
+            </div>
+        }
+    </Upload>
+    <Upload Action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+            Name="avatar"
+            Class="avatar-uploader"
+            ListType="picture-card"
+            ShowUploadList="false"
+           
+            OnChange="GroupBuyCarouselImage5HandleChange">
+        @if (!string.IsNullOrWhiteSpace(groupBuyCarousel5.Url))
+        {
+            <img src="@groupBuyCarousel5.Url" alt="avatar" style="width: 100%" />
+        }
+        else
+        {
+            <div>
+                <Icon Spin="loading" Type="@(loading?"Loading":"plus")" ></Icon>
+                <div className="ant-upload-text">Upload</div>
+            </div>
+        }
+    </Upload>
+            </div>
+        </div>
+
+           <Divider></Divider>
+            <div class=" col-12 row">
+                <div class="col-2">@L["GroupBuyTime"]</div>
+                <div class="col-4"><DatePicker Class="form-control" @bind-Value=updateGroupBuyDto.StartTime  Placeholder="@L["StartDate"].ToString()" Picker="@DatePickerType.Date"/></div>
+                 <div class="col-4"><DatePicker  Class="form-control" @bind-Value=updateGroupBuyDto.EndTime  Placeholder="@L["EndDate"].ToString()" Picker="@DatePickerType.Date" /></div>
+            </div>
+             <div class=" col-12 row">
+                <div class="col-1">@L["Logistic"]</div>
+                 <div class="col-2">@L["FreeShipping"]</div>
+            
+                 <div class="col-4"> <Switch @bind-Value="@updateGroupBuyDto.FreeShipping"></Switch></div>
+            </div>
+            <div class="col-12 row">
+                <div class="col-1"></div>
+               <div class="col-2">
+                @L["ExcludeShippingMethod"]
+            </div>
+            <div class="col-8">
+               
+                            <div class="col-7 form-control"  style="background-color:white">
+                @foreach (var tag in itemTags)
+                {
+                    <Tag @key="tag" Closable OnClose="()=>OnTagClose(tag)">@tag</Tag>
+                }
+                @if (tagInputVisible)
+                {
+                    <Input @ref="inputTagRef" Style="width: 78px" Size="small"  @bind-Value="inputTagValue" OnBlur="HandleTagInputConfirm" OnPressEnter="HandleTagInputConfirm" AutoFocus />
+                }
+                else
+                {
+                    <Tag Class="site-tag-plus" OnClick="@(() => tagInputVisible = !tagInputVisible)">
+                        <Icon Type="plus" />@L["NewTag"]
+                    </Tag>
+                }
+            </div>
+         
+            </div>
+            
+            </div>
+                <div class=" col-12 row">
+                <div class="col-1"></div>
+                 <div class="col-2">@L["AllowShipToOuterIsland"]</div>
+            
+                 <div class="col-4"> <Switch @bind-Value="@updateGroupBuyDto.allowShipToOuterTaiwan"></Switch></div>
+            </div>
+                <div class=" col-12 row">
+                <div class="col-1"></div>
+                 <div class="col-2">@L["AllowShipToOverSea"]</div>
+            
+                 <div class="col-4"> <Switch @bind-Value="@updateGroupBuyDto.allowShipOversea"></Switch></div>
+            </div>
+               <div class=" col-12 row">
+                   <div class="col-1"></div>
+                <div class="col-2">@L["ExpectDeliveryDate"]</div>
+                <div class="col-4"><DatePicker Class="form-control" @bind-Value=updateGroupBuyDto.ExpectShippingDateTo  Placeholder="@L["StartDate"].ToString()" Picker="@DatePickerType.Date"/></div>
+                 <div class="col-4"><DatePicker  Class="form-control" @bind-Value=updateGroupBuyDto.ExpectShippingDateFrom  Placeholder="@L["EndDate"].ToString()" Picker="@DatePickerType.Date" /></div>
+            </div>
+          
+              <div class="col-12 row">
+                <div class="col-1">@L["GateWay"]</div>
+                 <div class="col-2">@L["PaymentMethod"]</div>
+            
+                 <div class="col-4">  <Radio Value="1" CheckedChange="@IsDefaultPaymentChange" @bind-Checked=updateGroupBuyDto.IsDefaultPaymentGateWay>
+        @L["DefaultPaymentGateWay"]
+    </Radio>
+       </div>
+            </div>
+                   <div class="col-12 row">
+                <div class="col-1"></div>
+                 <div class="col-2"></div>
+            
+                 <div class="col-1">    <Radio Value="2" Checked="@paymentMethodCheck" CheckedChange="@PaymentMethodChange"> </Radio></div>
+                 <div class="col-7">
+                     <div class="col-7 form-control"  style="background-color:white">
+                @foreach (var tag in paymentMethodTags)
+                {
+                    <Tag @key="tag" Closable OnClose="()=>OnPaymentMethodTagClose(tag)">@tag</Tag>
+                }
+                @if (tagInputPaymentMethodVisible)
+                {
+                    <Input Disabled="@paymentMethodCheck" @ref="inputPaymentMethodTagRef" Style="width: 78px" Size="small"  @bind-Value="inputPaymentMethodTagValue" OnBlur="HandlePaymentMethodTagInputConfirm" OnPressEnter="HandlePaymentMethodTagInputConfirm" AutoFocus />
+                }
+                else
+                {
+                    <Tag Class="site-tag-plus" OnClick="@(() => tagInputPaymentMethodVisible = !tagInputPaymentMethodVisible)">
+                        <Icon Type="plus" />@L["NewTag"]
+                    </Tag>
+                }
+            </div>
+                 </div>         
+       
+            </div>
+             <div class=" col-12 row">
+                <div class="col-1">@L["Invoice"]</div>
+                 <div class="col-2">@L["IssueInvoice"]</div>
+            
+                 <div class="col-4"> <Switch @bind-Value="@updateGroupBuyDto.issueInvoice"></Switch></div>
+            </div>
+           <div class=" col-12 row">
+                <div class="col-1"></div>
+                 <div class="col-2 form-label">@L["AutoIssueTriplicateInvoice"]</div>
+            
+                 <div class="col-4"> <Switch @bind-Value="@updateGroupBuyDto.AutoIssueTriplicateInvoice"></Switch></div>
+            </div>
+             <div class=" col-12 row">
+                <div class="col-1"></div>
+                 <div class="col-2 form-label">@L["InvoiceComment"]</div>
+            
+                 <div class="col-8"> <TextArea ShowCount MaxLength="200" @bind-Value="@updateGroupBuyDto.InvoiceNote"></TextArea></div>
+            </div>
+            <Divider></Divider>
+             <div class=" col-12 row">
+                <div class="col-1 mx-1">@L["AdvanceSetting"]</div>
+                 <div class="col-2 form-label">@L["HideCredention"]</div>
+            
+                 <div class="col-4"> <Switch @bind-Value="@updateGroupBuyDto.ProtectPrivacyData"></Switch></div>
+            </div>
+                <div class=" col-12 row">
+           <div class="col-1"></div>
+            <div class="col-2">
+                <label>@L["InviteCode"]</label>
+            </div>
+            <div class="col-5">
+                <Input  @bind-Value="@updateGroupBuyDto.InviteCode" />
+            </div>
+           
+            
+        </div>
+         <div class=" col-12 row">
+              <div class="col-1"></div>
+             <div class="col-2">
+                <label>@L["ProfitShare"]</label>
+            </div>
+            <div class="col-5">
+                <Input  @bind-Value="@updateGroupBuyDto.ProfitShare" />
+            </div>
+            </div>
+             <div class=" col-12 row">
+              <div class="col-1"></div>
+             <div class="col-2">
+                <label>@L["FaceBookPixelID"]</label>
+            </div>
+            <div class="col-5">
+                <Input  @bind-Value="@updateGroupBuyDto.MetaPixelNo" />
+            </div>
+            </div>
+             <div class=" col-12 row">
+              <div class="col-1"></div>
+             <div class="col-2">
+                <label>@L["FaceBookID"]</label>
+            </div>
+            <div class="col-5">
+                <Input  @bind-Value="@updateGroupBuyDto.FBID" />
+            </div>
+            </div>
+             <div class=" col-12 row">
+              <div class="col-1"></div>
+             <div class="col-2">
+                <label>@L["IGID"]</label>
+            </div>
+            <div class="col-5">
+                <Input  @bind-Value="@updateGroupBuyDto.IGID" />
+            </div>
+            </div>
+             <div class=" col-12 row">
+              <div class="col-1"></div>
+             <div class="col-2">
+                <label>@L["LINEID"]</label>
+            </div>
+            <div class="col-5">
+                <Input  @bind-Value="@updateGroupBuyDto.LineID" />
+            </div>
+            </div>
+             <div class=" col-12 row">
+              <div class="col-1"></div>
+             <div class="col-2">
+                <label>@L["GAID"]</label>
+            </div>
+            <div class="col-5">
+                <Input  @bind-Value="@updateGroupBuyDto.GAID" />
+            </div>
+            </div>
+             <div class=" col-12 row">
+              <div class="col-1"></div>
+             <div class="col-2">
+                <label>@L["GTM"]</label>
+            </div>
+            <div class="col-5">
+                <Input  @bind-Value="@updateGroupBuyDto.GTM" />
+            </div>
+            </div>
+    <Divider></Divider>
+          <div class=" col-12 row">
+              <div class="col-2"><label>@L["ChooseModule"]</label></div>
+          
+            <div class="col-3">
+                 <DropdownButton  >
+                    <Overlay>        
+                       <Menu>
+    
+  
+    <MenuItem OnClick='@(()=>addProductItem("Product Image"))'>
+      
+         Product Picture
+       
+    </MenuItem>
+    <MenuItem OnClick='@(()=>addProductItem("Product Description"))'>
+       
+            Product Description
+       
+    </MenuItem>
+  
+</Menu>
+                    </Overlay>    
+                    <Unbound>
+                        Select Module
+                    </Unbound>
+                </DropdownButton>
+            </div>
+            </div>
+            @foreach (var module in collapseItem)
+{<div class=" col-12 row">
+    <div class="col-2"></div>
+    <div class="col-8">
+   <Collapse  >
+    
+    <Panel Header="@module.Title" Key="@module.Index.ToString()">
+           <div class="row">
+               <div class="col-3">
+         <Upload Action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+            Name="avatar"
+            Class="avatar-uploader"
+            ListType="picture-card"
+            ShowUploadList="false"
+            
+            OnChange="ProductPictureHandleChange">
+        @if (!string.IsNullOrWhiteSpace(productPicture.Url))
+        {
+            <img src="@productPicture.Url" alt="avatar" style="width: 100%" />
+        }
+        else
+        {
+            <div>
+                <Icon Spin="loading" Type="@(loading?"Loading":"plus")" ></Icon>
+                <div className="ant-upload-text">Upload</div>
+            </div>
+        }
+    </Upload>
+    </div>
+    <div class="col-8 mt-5">
+        <Input MaxLength="60" ShowCount @bind-Value="@productDescription" />
+    </div>
+    </div>
+      <Divider></Divider>
+      @foreach(var item in module.ItemDetails){
+ <div class="row col-12 ">
+    
+   <div class="col-4">
+           <Image Width="200px" Src="@item.ImageDetail.Url"></Image> 
+        
+   </div>
+   <div class="col-7">
+       <p> @item.ItemDescription</p>
+   </div>
+   <div class="col-1"> <Button  class="close" OnClick="@(()=>RemoveProductItem(@item,@module.Index))"><span aria-hidden="true" >&times;</span></Button></div>
+   </div>
+   <Divider></Divider>
+  
+      }
+       <Divider></Divider>
+   
+        <Button OnClick="@(()=>HandelClick(module.Index))" Type="@ButtonType.Default"><span class="fa fas-plus"></span>Add Item</Button>
+    </Panel>
+    
+
+   
+</Collapse>
+</div>
+</div>
+}
+    <Divider></Divider>
+    <div class=" col-12 row">
+   
+    <div class="col-2">
+        <fieldLabel>@L["GroupBuyPolicy"]</fieldLabel>
+    </div>
+    <div class="col-9">
+        <div class="col-12">
+            <fieldLabel></fieldLabel>
+            <Input Placeholder="@L["GroupBuyCondition"]" @bind-Value="updateGroupBuyDto.GroupBuyCondition" MaxLength="60" ShowCount />
+        </div>
+        <div class=" col-12">
+            <Blazored.TextEditor.BlazoredTextEditor @ref="@quillHtml">
+                <ToolbarContent>
+                    <select class="ql-header">
+                        <option selected=""></option>
+                        <option value="1"></option>
+                        <option value="2"></option>
+                        <option value="3"></option>
+                        <option value="4"></option>
+                        <option value="5"></option>
+                    </select>
+                    <span class="ql-formats">
+                        <button class="ql-bold"></button>
+                        <button class="ql-italic"></button>
+                        <button class="ql-underline"></button>
+                        <button class="ql-strike"></button>
+                    </span>
+                    <span class="ql-formats">
+                        <select class="ql-color"></select>
+                        <select class="ql-background"></select>
+                    </span>
+                    <span class="ql-formats">
+                        <button class="ql-list" value="ordered"></button>
+                        <button class="ql-list" value="bullet"></button>
+                    </span>
+                    <span class="ql-formats">
+                        <button class="ql-link"></button>
+                    </span>
+                    <span class="ql-formats">
+                        <button class="ql-image"></button>
+                    </span>
+                     <span class="ql-formats">
+                        <button class="ql-video"></button>
+                    </span>
+                </ToolbarContent>
+            </Blazored.TextEditor.BlazoredTextEditor>
+        </div>
+    </div>
+    <div class="col-1">
+        <span>
+           
+        </span>
+    </div>
+</div>
+ <div class=" col-12 row">
+    
+     <div class="col-2">
+         <fieldLabel></fieldLabel>
+     </div>
+     <div class="col-9">
+         <div class="col-12">
+             <fieldLabel></fieldLabel>
+             <Input Placeholder="@L["CustomerInformation"]" @bind-Value="@updateGroupBuyDto.CustomerInformation" MaxLength="60" ShowCount />
+         </div>
+         <div class=" col-12">
+             <Blazored.TextEditor.BlazoredTextEditor @ref="@quillHtml">
+                 <ToolbarContent>
+                     <select class="ql-header">
+                         <option selected=""></option>
+                         <option value="1"></option>
+                         <option value="2"></option>
+                         <option value="3"></option>
+                         <option value="4"></option>
+                         <option value="5"></option>
+                     </select>
+                     <span class="ql-formats">
+                         <button class="ql-bold"></button>
+                         <button class="ql-italic"></button>
+                         <button class="ql-underline"></button>
+                         <button class="ql-strike"></button>
+                     </span>
+                     <span class="ql-formats">
+                         <select class="ql-color"></select>
+                         <select class="ql-background"></select>
+                     </span>
+                     <span class="ql-formats">
+                         <button class="ql-list" value="ordered"></button>
+                         <button class="ql-list" value="bullet"></button>
+                     </span>
+                     <span class="ql-formats">
+                         <button class="ql-link"></button>
+                     </span>
+                     <span class="ql-formats">
+                         <button class="ql-image"></button>
+                     </span>
+                      <span class="ql-formats">
+                         <button class="ql-video"></button>
+                     </span>
+                 </ToolbarContent>
+             </Blazored.TextEditor.BlazoredTextEditor>
+         </div>
+     </div>
+     <div class="col-1">
+         <span>
+            
+         </span>
+     </div>
+ </div>
+     <div class=" col-12 row">
+    
+     <div class="col-2">
+         <fieldLabel></fieldLabel>
+     </div>
+     <div class="col-9">
+         <div class="col-12">
+             <fieldLabel></fieldLabel>
+             <Input Placeholder="@L["ExchangePolicy"]" @bind-Value="@updateGroupBuyDto.ExchangePolicy" MaxLength="60" ShowCount />
+         </div>
+         <div class=" col-12">
+             <Blazored.TextEditor.BlazoredTextEditor  @ref="@quillHtml">
+                 <ToolbarContent>
+                     <select class="ql-header">
+                         <option selected=""></option>
+                         <option value="1"></option>
+                         <option value="2"></option>
+                         <option value="3"></option>
+                         <option value="4"></option>
+                         <option value="5"></option>
+                     </select>
+                     <span class="ql-formats">
+                         <button class="ql-bold"></button>
+                         <button class="ql-italic"></button>
+                         <button class="ql-underline"></button>
+                         <button class="ql-strike"></button>
+                     </span>
+                     <span class="ql-formats">
+                         <select class="ql-color"></select>
+                         <select class="ql-background"></select>
+                     </span>
+                     <span class="ql-formats">
+                         <button class="ql-list" value="ordered"></button>
+                         <button class="ql-list" value="bullet"></button>
+                     </span>
+                     <span class="ql-formats">
+                         <button class="ql-link"></button>
+                     </span>
+                     <span class="ql-formats">
+                         <button class="ql-image"></button>
+                     </span>
+                      <span class="ql-formats">
+                         <button class="ql-video"></button>
+                     </span>
+                 </ToolbarContent>
+             </Blazored.TextEditor.BlazoredTextEditor>
+         </div>
+     </div>
+     <div class="col-1">
+         <span>
+            
+         </span>
+     </div>
+ </div>
+     <div class=" col-12 row">
+
+         <div class="col-2">
+             <fieldLabel>@L["NotifyEmail"]</fieldLabel>
+         </div>
+         <div class="col-9">
+             <div class="col-12">
+                 <fieldLabel></fieldLabel>
+
+             </div>
+             <div class=" col-12">
+                 <Blazored.TextEditor.BlazoredTextEditor @ref="@quillHtml" >
+                     <ToolbarContent>
+                         <select class="ql-header">
+                             <option selected=""></option>
+                             <option value="1"></option>
+                             <option value="2"></option>
+                             <option value="3"></option>
+                             <option value="4"></option>
+                             <option value="5"></option>
+                         </select>
+                         <span class="ql-formats">
+                             <button class="ql-bold"></button>
+                             <button class="ql-italic"></button>
+                             <button class="ql-underline"></button>
+                             <button class="ql-strike"></button>
+                         </span>
+                         <span class="ql-formats">
+                             <select class="ql-color"></select>
+                             <select class="ql-background"></select>
+                         </span>
+                         <span class="ql-formats">
+                             <button class="ql-list" value="ordered"></button>
+                             <button class="ql-list" value="bullet"></button>
+                         </span>
+                         <span class="ql-formats">
+                             <button class="ql-link"></button>
+                         </span>
+                         <span class="ql-formats">
+                             <button class="ql-image"></button>
+                         </span>
+                         <span class="ql-formats">
+                             <button class="ql-video"></button>
+                         </span>
+                     </ToolbarContent>
+                    @updateGroupBuyDto.NotifyMessage
+                 </Blazored.TextEditor.BlazoredTextEditor>
+             </div>
+         </div>
+         <div class="col-1">
+             <span>
+
+             </span>
+         </div>
+     </div>
+     <div class="row mb-3"></div>
+
+        <div style="text-align: center; margin-top:5px ;">
+            <Button Danger Type="@ButtonType.Primary" Style="margin-right:5px">@L["Cancel"]</Button>
+            <Button Type="@ButtonType.Primary" Style="margin-right:5px"  OnClick="CreateEntityAsync" >@L["Save"]</Button>
+            <Button Type="@ButtonType.Primary" Style="margin-right:5px; background-color:skyblue">@L["Preview"]</Button>
+
+        </div>
+    
+    </Card>
+    
+    <Modal Title="@title"
+       Visible="@_visible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel">
+          
+</Modal>
+
+
+ @code {
+
+    string title = "BasicModal";
+    string customerInformation;
+     string groupBuyCondition;
+    string productDescription = "";
+    bool _visible = false;
+    int selectedIndex = 0;
+    private void HandelClick(int i)
+    {
+        int selectedIndex = i;
+        if (collapseItem.Where(x => x.Index == i).FirstOrDefault().ItemDetails.Count <= 3)
+        {
+            ProductPictureItem item = new ProductPictureItem();
+            item.ImageDetail = productPicture;
+            item.ItemDescription = productDescription;
+
+            collapseItem.Where(x => x.Index == i).FirstOrDefault().ItemDetails.Add(item);
+            productDescription="";
+            productPicture = new UploadFileItem();
+        }
+    }
+
+    private void HandleOk(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        _visible = false;
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        _visible = false;
+        selectedIndex = 0;
+    }
+       private void RemoveProductItem(ProductPictureItem item,int index)
+    {
+    collapseItem.Where(x=>x.Index==index).FirstOrDefault().ItemDetails.Remove(item);
+    }
+    }
+
+
+
+
+

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.ObjectMapping;
 
 namespace Kooco.Pikachu.Images
 {
@@ -23,6 +24,20 @@ namespace Kooco.Pikachu.Images
                                IImageBlobService imageBlobService) : base(repository)
         {
             _imageblobService = imageBlobService;
+            _repository = repository;
+        }
+
+        public async Task DeleteGroupBuyImagesAsync(Guid GroupBuyId)
+        {
+            await _repository.DeleteAsync(x => x.TargetID == GroupBuyId);
+        }
+
+        public async Task<List<ImageDto>> GetGroupBuyImagesAsync(Guid GroupBuyId)
+        {
+            List<ImageDto> result=new List<ImageDto>();
+            var query = await _repository.GetQueryableAsync();
+            result =ObjectMapper.Map<List<Image>,List<ImageDto>>(query.Where(x => x.TargetID == GroupBuyId).ToList());
+            return result;
         }
 
         public async Task InsertManyImageAsync(List<CreateImageDto> images)

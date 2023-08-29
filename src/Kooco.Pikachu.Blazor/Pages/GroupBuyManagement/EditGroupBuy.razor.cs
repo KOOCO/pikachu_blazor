@@ -1,4 +1,5 @@
 ﻿using AntDesign;
+
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.ImageBlob;
 using Kooco.Pikachu.Images;
@@ -7,20 +8,26 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Volo.Abp.ObjectMapping;
 
+
+
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 {
-    public partial class CreateGroupBuy
+    public partial class EditGroupBuy
     {
+        [Parameter]
+        public string id { get; set; }
+        public Guid Id { get; set; }
+     
         bool paymentMethodCheck = false;
         [Inject] IJSRuntime JSRuntime { get; set; }
         private const int maxtextCount = 60;
-        private GroupBuyCreateDto createGroupBuyDto = new();
+        private GroupBuyUpdateDto updateGroupBuyDto { get; set; }
         private UploadFileItem groupBuyLogo = new UploadFileItem();
         private UploadFileItem productPicture = new UploadFileItem();
         private UploadFileItem groupBuyBanner = new UploadFileItem();
@@ -46,32 +53,70 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         private readonly HttpClient _httpClient;
         private readonly IGroupBuyAppService _groupBuyAppService;
         private readonly IImageAppService _imageAppService;
-        public CreateGroupBuy(IImageBlobService imageBlobService, HttpClient httpClient, IGroupBuyAppService groupBuyAppService, IImageAppService imageAppService)
+        private readonly IObjectMapper _objectMapper;
+        List<ImageDto> Images = new List<ImageDto>();
+        CreateImageDto imageDto = new CreateImageDto();
+        CreateImageDto imageDto2 = new CreateImageDto();
+        CreateImageDto imageDto3 = new CreateImageDto();
+        CreateImageDto imageDto4 = new CreateImageDto();
+        CreateImageDto imageDto5 = new CreateImageDto();
+        public EditGroupBuy(IImageBlobService imageBlobService, HttpClient httpClient, IGroupBuyAppService groupBuyAppService, IImageAppService imageAppService, IObjectMapper objectMapper)
         {
             _imageBlobService = imageBlobService;
             _httpClient = httpClient;
             _groupBuyAppService = groupBuyAppService;
             _imageAppService = imageAppService;
+            _objectMapper = objectMapper;
+            updateGroupBuyDto = new GroupBuyUpdateDto();
+        }
+        protected override async void OnInitialized()
+        {
+            id = id ?? "";
+            Id=Guid.Parse(id);
+          updateGroupBuyDto=  _objectMapper.Map<GroupBuyDto, GroupBuyUpdateDto>(await _groupBuyAppService.GetAsync(Id));
+            Images = await _imageAppService.GetGroupBuyImagesAsync(Id);
+            string[] paymentMethotTagArray  = updateGroupBuyDto.PaymentMethod != null ? updateGroupBuyDto.PaymentMethod.Split(','):null;
+           paymentMethodTags= paymentMethodTags!=null? paymentMethodTags.ToList():new List<string>();
+            string[] excludeShippingMethodArray = updateGroupBuyDto.ExcludeShippingMethod != null ? updateGroupBuyDto.ExcludeShippingMethod.Split(',') : null;
+            itemTags = excludeShippingMethodArray!=null? excludeShippingMethodArray.ToList():new List<string>();
+            groupBuyLogo.Url = updateGroupBuyDto.LogoURL;
+            groupBuyBanner.Url = updateGroupBuyDto.BannerURL;
+            
+
+
+                groupBuyCarousel1.Url = (Images.Count - 1) >= 0 ? Images[0]?.ImagePath : null;
+            groupBuyCarousel2.Url = (Images.Count - 2) >= 0 ? Images[1]?.ImagePath : null;
+            groupBuyCarousel3.Url = (Images.Count - 3) >= 0 ? Images[2]?.ImagePath : null;
+            groupBuyCarousel4.Url = (Images.Count - 4) >= 0 ? Images[3]?.ImagePath : null;
+            groupBuyCarousel5.Url = (Images.Count - 5) >= 0 ? Images[4]?.ImagePath : null;
+
+            imageDto = (Images.Count - 1) >= 0 ?_objectMapper.Map<ImageDto, CreateImageDto>(Images[0]) : new CreateImageDto();
+            imageDto2= (Images.Count - 2) >= 0 ? _objectMapper.Map<ImageDto, CreateImageDto>(Images[1]) : new CreateImageDto();
+            imageDto3 = (Images.Count - 3) >= 0 ? _objectMapper.Map<ImageDto, CreateImageDto>(Images[2]) : new CreateImageDto();
+            imageDto4 = (Images.Count - 4) >= 0 ? _objectMapper.Map<ImageDto, CreateImageDto>(Images[3]) : new CreateImageDto();
+           imageDto5 = (Images.Count - 5) >= 0 ? _objectMapper.Map<ImageDto, CreateImageDto>(Images[4]) : new CreateImageDto();
+
+            StateHasChanged();
         }
         void GroupBuyLogoHandleChange(UploadInfo fileinfo)
         {
-          
-                if (fileinfo.File.State == UploadState.Success)
-                {
-                    fileinfo.File.Url = fileinfo.File.ObjectURL;
-                    
-                   groupBuyLogo.Size = fileinfo.File.Size;
-                    groupBuyLogo.Url = fileinfo.File.Url;
-                    groupBuyLogo.ObjectURL= fileinfo.File.ObjectURL;
-                    groupBuyLogo.Percent = fileinfo.File.Percent;
-                    groupBuyLogo.Response=fileinfo.File.Response;
-                    groupBuyLogo.State = UploadState.Success;
-                    groupBuyLogo.FileName=fileinfo.File.FileName;
-                    groupBuyLogo.Type = fileinfo.File.Type;
-                    groupBuyLogo.Ext=fileinfo.File.Ext;
-                  
-                }
+
+            if (fileinfo.File.State == UploadState.Success)
+            {
+                fileinfo.File.Url = fileinfo.File.ObjectURL;
+
+                groupBuyLogo.Size = fileinfo.File.Size;
+                groupBuyLogo.Url = fileinfo.File.Url;
+                groupBuyLogo.ObjectURL = fileinfo.File.ObjectURL;
+                groupBuyLogo.Percent = fileinfo.File.Percent;
+                groupBuyLogo.Response = fileinfo.File.Response;
+                groupBuyLogo.State = UploadState.Success;
+                groupBuyLogo.FileName = fileinfo.File.FileName;
+                groupBuyLogo.Type = fileinfo.File.Type;
+                groupBuyLogo.Ext = fileinfo.File.Ext;
+
             }
+        }
         void addProductItem(string title)
         {
 
@@ -263,74 +308,90 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         }
         protected virtual async Task CreateEntityAsync()
         {
-            CreateImageDto imageDto = new CreateImageDto();
-            CreateImageDto imageDto2 = new CreateImageDto();
-            CreateImageDto imageDto3 = new CreateImageDto();
-            CreateImageDto imageDto4 = new CreateImageDto();
-            CreateImageDto imageDto5 = new CreateImageDto();
+         
 
-            createGroupBuyDto.GroupBuyNo = 0;
-            createGroupBuyDto.ExcludeShippingMethod = string.Join(",", itemTags);
-            createGroupBuyDto.PaymentMethod=string.Join(",", paymentMethodTags);
-            createGroupBuyDto.NotifyMessage=  await quillHtml.GetHTML();
-            var blobUrl = groupBuyLogo.ObjectURL;
            
-            var base64String = await JSRuntime.InvokeAsync<string>("convertBlobUrlToByteArray", blobUrl);
+            updateGroupBuyDto.ExcludeShippingMethod = string.Join(",", itemTags);
+            updateGroupBuyDto.PaymentMethod = string.Join(",", paymentMethodTags);
+            updateGroupBuyDto.NotifyMessage = await quillHtml.GetHTML();
 
-            // Convert the base64-encoded string to a byte array
-            var byteArray = Convert.FromBase64String(base64String);
-            createGroupBuyDto.LogoURL = await _imageBlobService.UploadFileToBlob(groupBuyLogo.FileName, byteArray, groupBuyLogo.Type, groupBuyLogo.FileName);
-
-             base64String = await JSRuntime.InvokeAsync<string>("convertBlobUrlToByteArray", groupBuyBanner.ObjectURL);
-
-            // Convert the base64-encoded string to a byte array
-            byteArray = Convert.FromBase64String(base64String);
-            createGroupBuyDto.BannerURL = await _imageBlobService.UploadFileToBlob(groupBuyBanner.FileName, byteArray, groupBuyBanner.Type, groupBuyBanner.FileName);
-            createGroupBuyDto.Status = "";
-            if (groupBuyCarousel1 != null)
+            if (groupBuyLogo.ObjectURL != null)
             {
+                await _imageBlobService.DeleteBlobData(updateGroupBuyDto.LogoURL);
+                var blobUrl = groupBuyLogo.ObjectURL;
 
-                base64String = await JSRuntime.InvokeAsync<string>("convertBlobUrlToByteArray", groupBuyCarousel1.ObjectURL);
+                var base64String = await JSRuntime.InvokeAsync<string>("convertBlobUrlToByteArray", blobUrl);
 
                 // Convert the base64-encoded string to a byte array
-                byteArray = Convert.FromBase64String(base64String);
-                
+                var byteArray = Convert.FromBase64String(base64String);
+                updateGroupBuyDto.LogoURL = await _imageBlobService.UploadFileToBlob(groupBuyLogo.FileName, byteArray, groupBuyLogo.Type, groupBuyLogo.FileName);
+            }
+            if (groupBuyBanner.ObjectURL != null)
+            {
+                await _imageBlobService.DeleteBlobData(updateGroupBuyDto.BannerURL);
+                var base64String = await JSRuntime.InvokeAsync<string>("convertBlobUrlToByteArray", groupBuyBanner.ObjectURL);
+
+                // Convert the base64-encoded string to a byte array
+               var byteArray = Convert.FromBase64String(base64String);
+                updateGroupBuyDto.BannerURL = await _imageBlobService.UploadFileToBlob(groupBuyBanner.FileName, byteArray, groupBuyBanner.Type, groupBuyBanner.FileName);
+            }
+               
+            if (groupBuyCarousel1.ObjectURL != null)
+            {
+                if (imageDto?.ImagePath != null)
+                {
+                    await _imageBlobService.DeleteBlobData(imageDto?.ImagePath);
+                }
+                var  base64String = await JSRuntime.InvokeAsync<string>("convertBlobUrlToByteArray", groupBuyCarousel1.ObjectURL);
+
+                // Convert the base64-encoded string to a byte array
+               var byteArray = Convert.FromBase64String(base64String);
+
                 imageDto.ImageType = ImageType.Item;
-                imageDto.ImagePath =await _imageBlobService.UploadFileToBlob(groupBuyCarousel1.FileName, byteArray, groupBuyCarousel1.Type, groupBuyCarousel1.FileName);
+                imageDto.ImagePath = await _imageBlobService.UploadFileToBlob(groupBuyCarousel1.FileName, byteArray, groupBuyCarousel1.Type, groupBuyCarousel1.FileName);
 
             }
-       
-            if (groupBuyCarousel4.Url != null)
-            {
 
-                base64String = await JSRuntime.InvokeAsync<string>("convertBlobUrlToByteArray", groupBuyCarousel4.ObjectURL);
+            if (groupBuyCarousel4.ObjectURL != null)
+            {
+                if (imageDto4?.ImagePath != null)
+                {
+                    await _imageBlobService.DeleteBlobData(imageDto4?.ImagePath);
+                }
+                var  base64String = await JSRuntime.InvokeAsync<string>("convertBlobUrlToByteArray", groupBuyCarousel4.ObjectURL);
 
                 // Convert the base64-encoded string to a byte array
-                byteArray = Convert.FromBase64String(base64String);
+               var byteArray = Convert.FromBase64String(base64String);
 
                 imageDto.ImageType = ImageType.Item;
                 imageDto.ImagePath = await _imageBlobService.UploadFileToBlob(groupBuyCarousel4.FileName, byteArray, groupBuyCarousel4.Type, groupBuyCarousel4.FileName);
 
             }
-            if (groupBuyCarousel2.Url != null)
+            if (groupBuyCarousel2.ObjectURL != null)
             {
-
-                base64String = await JSRuntime.InvokeAsync<string>("convertBlobUrlToByteArray", groupBuyCarousel2.ObjectURL);
+                if (imageDto2?.ImagePath != null)
+                {
+                    await _imageBlobService.DeleteBlobData(imageDto2?.ImagePath);
+                }
+               var base64String = await JSRuntime.InvokeAsync<string>("convertBlobUrlToByteArray", groupBuyCarousel2.ObjectURL);
 
                 // Convert the base64-encoded string to a byte array
-                byteArray = Convert.FromBase64String(base64String);
+               var byteArray = Convert.FromBase64String(base64String);
 
                 imageDto.ImageType = ImageType.Item;
                 imageDto.ImagePath = await _imageBlobService.UploadFileToBlob(groupBuyCarousel2.FileName, byteArray, groupBuyCarousel2.Type, groupBuyCarousel2.FileName);
 
             }
-            if (groupBuyCarousel3.Url != null)
+            if (groupBuyCarousel3.ObjectURL != null)
             {
-
-                base64String = await JSRuntime.InvokeAsync<string>("convertBlobUrlToByteArray", groupBuyCarousel3.ObjectURL);
+                if (imageDto3?.ImagePath != null)
+                {
+                    await _imageBlobService.DeleteBlobData(imageDto3?.ImagePath);
+                }
+                var base64String = await JSRuntime.InvokeAsync<string>("convertBlobUrlToByteArray", groupBuyCarousel3.ObjectURL);
 
                 // Convert the base64-encoded string to a byte array
-                byteArray = Convert.FromBase64String(base64String);
+              var  byteArray = Convert.FromBase64String(base64String);
 
                 imageDto.ImageType = ImageType.Item;
                 imageDto.ImagePath = await _imageBlobService.UploadFileToBlob(groupBuyCarousel3.FileName, byteArray, groupBuyCarousel3.Type, groupBuyCarousel3.FileName);
@@ -338,24 +399,29 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             }
             if (groupBuyCarousel5.Url != null)
             {
+                if (imageDto5?.ImagePath != null)
+                {
+                    await _imageBlobService.DeleteBlobData(imageDto5?.ImagePath);
+                }
 
-                base64String = await JSRuntime.InvokeAsync<string>("convertBlobUrlToByteArray", groupBuyCarousel5.ObjectURL);
+                var base64String = await JSRuntime.InvokeAsync<string>("convertBlobUrlToByteArray", groupBuyCarousel5.ObjectURL);
 
                 // Convert the base64-encoded string to a byte array
-                byteArray = Convert.FromBase64String(base64String);
+               var byteArray = Convert.FromBase64String(base64String);
 
                 imageDto.ImageType = ImageType.Item;
                 imageDto.ImagePath = await _imageBlobService.UploadFileToBlob(groupBuyCarousel5.FileName, byteArray, groupBuyCarousel5.Type, groupBuyCarousel5.FileName);
 
             }
 
-         var result=await _groupBuyAppService.CreateAsync(createGroupBuyDto);
+            var result = await _groupBuyAppService.UpdateAsync(Id,updateGroupBuyDto);
+            await _imageAppService.DeleteGroupBuyImagesAsync(Id);
             if (imageDto.ImagePath != null)
             {
                 imageDto.TargetID = result.Id;
 
                 await _imageAppService.CreateAsync(imageDto);
-            
+
             }
             if (imageDto2.ImagePath != null)
             {
@@ -387,7 +453,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             }
 
             NavigationManager.NavigateTo("GroupBuyManagement/GroupBuyList");
-           
+
 
         }
         private void IsDefaultPaymentChange(bool isChecked)
@@ -402,30 +468,9 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         {
             if (isChecked)
             {
-                createGroupBuyDto.IsDefaultPaymentGateWay = isChecked; // Uncheck the first radio button
+                updateGroupBuyDto.IsDefaultPaymentGateWay = isChecked; // Uncheck the first radio button
             }
         }
-
-    }
-    public class CollapseItem {
-
-        public int Index { get; set; }
-        public string Title { get; set; }
-        public bool IsProductDescription { get; set; }
-       public List<ProductPictureItem> ItemDetails { get; set; }
-        public CollapseItem() {
-
-            ItemDetails = new List<ProductPictureItem>();
-
-
-        }
-
-
-    }
-    public class ProductPictureItem {
-
-        public UploadFileItem ImageDetail { get; set; }
-        public string ItemDescription { get; set; }
 
     }
 }

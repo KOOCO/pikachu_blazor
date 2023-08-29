@@ -13,5 +13,7 @@ namespace Kooco.Pikachu.Images
                                                         UpdateImageDto>
     {
         Task InsertManyImageAsync(List<CreateImageDto> images);
+        Task<List<ImageDto>> GetGroupBuyImagesAsync(Guid GroupBuyId);
+        Task DeleteGroupBuyImagesAsync(Guid GroupBuyId);
     }
 }

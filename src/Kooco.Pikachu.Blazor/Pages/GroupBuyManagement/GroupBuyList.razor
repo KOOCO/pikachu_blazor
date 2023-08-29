@@ -35,17 +35,27 @@
            Size="TableSize.Small">
         <Selection Key="@(context.Id.ToString())" />
         <PropertyColumn Title="@L["GroupBuyName"]" Property="item=>item.GroupBuyName" />
-       
+       <ActionColumn Title="Action">
+       <Space>
+      <SpaceItem><Button  OnClick="()=>startEdit(context.Id)">Edit</Button></SpaceItem>
+    </Space>
+      </ActionColumn>
 @*             <Switch @bind-Value="@context.IsItemAvaliable" OnChange="() => OnItemAvaliablityChange(context.Id)"></Switch> *@
         
     </Table>
 </div>
 
 @code {
+  
     ITable table;
-      public void CreateNewItem()
-        {
-            NavigationManager.NavigateTo("/GroupBuyManagement/GroupBuyList/New");
-        }
+    public void CreateNewItem()
+    {
+        NavigationManager.NavigateTo("/GroupBuyManagement/GroupBuyList/New");
+    }
+    public void startEdit(Guid Id)
+    {
+         NavigationManager.NavigateTo("/GroupBuyManagement/GroupBuyList/Edit/"+Id);
+    
+    }
 }
 
