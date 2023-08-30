@@ -1,4 +1,4 @@
-﻿using AntDesign;
+﻿
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
@@ -16,7 +16,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
     {
         private const int maxtextCount = 60; //input max length
         private string inputTagValue;  //used for item store tag value 
-        private Input<string> inputTagRef; //used for create tag input
+        //private Input<string> inputTagRef; //used for create tag input
         private List<string> itemTags { get; set; } = new List<string>(); //used for store item tags 
         private bool tagInputVisible { get; set; } = false; //For show/hide item add tag input
         private List<EnumValueDto> shippingMethods { get; set; } // for bind all shippingMethods
@@ -24,7 +24,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         private Blazored.TextEditor.BlazoredTextEditor quillHtml; //Item Discription Html
         private List<CreateItemDetailsDto> itemDetailList { get; set; } // List of CreateItemDetail dto to store PriceAndInventory
         private CreateItemDto createItemDto = new(); //Item Dto
-        private List<UploadFileItem> itemImageList = new List<UploadFileItem>(); //to store Item Images
+       /* private List<UploadFileItem> itemImageList = new List<UploadFileItem>();*/ //to store Item Images
         private List<CustomeField> customeFields = new List<CustomeField>();
         private readonly IItemAppService _itemAppService;
         private readonly IEnumValueAppService _enumValueService;
@@ -56,14 +56,14 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         /// <summary>
         /// Show Image in Div After selection
         /// </summary>
-        /// <param name="fileinfo">Selected File</param>
-        void ItemImageHandleChange(UploadInfo fileinfo)
-        {
-            if (fileinfo.File.State == UploadState.Success)
-            {
-                fileinfo.File.Url = fileinfo.File.ObjectURL;
-            }
-        }
+        ///// <param name="fileinfo">Selected File</param>
+        //void ItemImageHandleChange(UploadInfo fileinfo)
+        //{
+        //    if (fileinfo.File.State == UploadState.Success)
+        //    {
+        //        fileinfo.File.Url = fileinfo.File.ObjectURL;
+        //    }
+        //}
 
         /// <summary>
         ///bind Shipping method value
@@ -275,7 +275,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         public int Id { get; set; }
         public string Name { get; set; }
         public List<string> ItemTags { get; set; }
-        public Input<string> InputTagRef { get; set; }
+        //public Input<string> InputTagRef { get; set; }
         public string InputTagValue { get; set; }
         public bool TagInputVisible { get; set; }
     }

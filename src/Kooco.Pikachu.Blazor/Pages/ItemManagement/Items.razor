@@ -8,7 +8,7 @@
 @using Volo.Abp
 @using System.Text.Json;
 @using System.ComponentModel
-@using AntDesign.TableModels
+
 
 @inject IStringLocalizer<PikachuResource> L
 @inject NavigationManager NavigationManager
@@ -18,17 +18,17 @@
         <h3>@L["Items"]</h3>
     </div>
     <div class="col-6" style="display: flex;flex-direction: row-reverse;">
-        <Button Danger Type="@ButtonType.Primary" Style="margin-right:5px">
+        <Button Danger Type="@ButtonType.Button" Style="margin-right:5px">
             <Popconfirm Title="Are you sure delete selected items?" OnConfirm="DeleteSelected">
                 @L["DeleteItem"]
             </Popconfirm>
         </Button>
-        <Button Type="@ButtonType.Primary" Style="margin-right:5px; background-color:skyblue">@L["CopyItem"]</Button>
-        <Button Type="@ButtonType.Primary" Style="margin-right:5px" OnClick="CreateNewItem">@L["NewItem"]</Button>
+        <Button Type="@ButtonType.Button" Style="margin-right:5px; background-color:skyblue">@L["CopyItem"]</Button>
+        <Button Type="@ButtonType.Button" Style="margin-right:5px" OnClick="CreateNewItem">@L["NewItem"]</Button>
     </div>
 </div>
 <div>
-    <Table @ref="table"
+@*     <Table @ref="table"
            TItem="ItemDto"
            DataSource="@itemList"
            Total="_total"
@@ -42,9 +42,9 @@
         <PropertyColumn Title="@L["TurnItemOn"]" Property="item=>item.IsItemAvaliable">
             <Switch @bind-Value="@context.IsItemAvaliable" OnChange="() => OnItemAvaliablityChange(context.Id)"></Switch>
         </PropertyColumn>
-    </Table>
+    </Table> *@
 </div>
 
 @code {
-    ITable table;
+
 }

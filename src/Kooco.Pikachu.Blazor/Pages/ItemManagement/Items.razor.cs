@@ -1,4 +1,4 @@
-﻿using AntDesign.TableModels;
+﻿
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System;
 using Volo.Abp.Application.Dtos;
 using System.Linq;
 using Microsoft.JSInterop;
-using AntDesign;
+using Blazorise;
 
 namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 {
@@ -45,10 +45,10 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         }
 
 
-        public async Task OnChange(QueryModel<ItemDto> queryModel)
-        {
+        //public async Task OnChange(QueryModel<ItemDto> queryModel)
+        //{
 
-        }
+        //}
 
         public async Task OnItemAvaliablityChange(Guid id)
         {

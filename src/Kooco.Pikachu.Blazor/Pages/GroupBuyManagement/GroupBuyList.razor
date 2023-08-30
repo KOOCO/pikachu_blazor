@@ -9,7 +9,7 @@
 @using Volo.Abp
 @using System.Text.Json;
 @using System.ComponentModel
-@using AntDesign.TableModels
+
 
 @inject IStringLocalizer<PikachuResource> L
 @inject NavigationManager NavigationManager
@@ -21,11 +21,11 @@
     <div class="col-6" style="display: flex;flex-direction: row-reverse;">
        
       
-        <Button Type="@ButtonType.Primary" Style="margin-right:5px" OnClick="CreateNewItem"  >@L["NewGroupBuy"]</Button>
+        <Button Type="@ButtonType.Button" Style="margin-right:5px" OnClick="CreateNewItem"  >@L["NewGroupBuy"]</Button>
     </div>
 </div>
 <div>
-    <Table @ref="table"
+@*     <Table @ref="table"
            TItem="GroupBuyDto"
            DataSource="@GroupBuyListItem.Items"
            Total="@Convert.ToInt32(GroupBuyListItem.TotalCount)"
@@ -42,12 +42,12 @@
       </ActionColumn>
 @*             <Switch @bind-Value="@context.IsItemAvaliable" OnChange="() => OnItemAvaliablityChange(context.Id)"></Switch> *@
         
-    </Table>
+    @* </Table>  *@
 </div>
 
 @code {
   
-    ITable table;
+
     public void CreateNewItem()
     {
         NavigationManager.NavigateTo("/GroupBuyManagement/GroupBuyList/New");
