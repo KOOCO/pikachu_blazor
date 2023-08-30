@@ -8,6 +8,7 @@ using Volo.Abp.Application.Dtos;
 using System.Linq;
 using Microsoft.JSInterop;
 using Blazorise;
+using Blazorise.DataGrid;
 
 namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 {
@@ -15,7 +16,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
     {
         private readonly IItemAppService _itemAppService;
         public List<ItemDto> itemList;
-        public IEnumerable<ItemDto> selectedRows;
+        public List<ItemDto> selectedRows;
         int _pageIndex = 1;
         int _pageSize = 10;
         int _total = 0;
@@ -29,14 +30,24 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         }
         protected override async Task OnInitializedAsync()
         {
+            //await UpdateItemList();
+        }
+
+        private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<ItemDto> e)
+        {
+            _pageIndex = e.Page - 1;
+
             await UpdateItemList();
+
+            await InvokeAsync(StateHasChanged);
         }
 
         private async Task UpdateItemList()
         {
-            int skipCount = (_pageIndex - 1) * _pageSize;
+            int skipCount = _pageIndex * _pageSize;
             var result = await _itemAppService.GetListAsync(new PagedAndSortedResultRequestDto
             {
+                Sorting = nameof(ItemDto.ItemName),
                 MaxResultCount = _pageSize,
                 SkipCount = skipCount
             });
@@ -57,7 +68,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 
         public void RemoveSelection(Guid id)
         {
-            var selected = selectedRows.Where(x => x.Id != id);
+            var selected = selectedRows.Where(x => x.Id != id).ToList();
             selectedRows = selected;
         }
 

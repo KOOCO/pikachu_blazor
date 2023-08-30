@@ -6,7 +6,7 @@
 @using Pikachu.Localization;
 @using Microsoft.Extensions.Localization;
 @using System.ComponentModel
-
+@using Blazorise.Components;
 
 @inject IItemAppService AppService
 @inject NavigationManager NavigationManager
@@ -51,7 +51,7 @@
                 <label>@L["ItemName"]</label>
             </div>
             <div class="col-9">
-                <TextEdit @bind-bind-Text="@createItemDto.ItemName" MaxLength="@maxtextCount" />
+                <TextEdit @bind-Text="@createItemDto.ItemName" MaxLength="@maxtextCount" />
             </div>
             <div class="col-1">
                 <span>
@@ -75,6 +75,18 @@
                         <div className="ant-upload-text">@L["Upload"]</div>
                     </div>
                 </Upload> *@
+                <Field>
+                    <FileEdit Changed="@ItemImageChangeEvent" accept=".jpg, .png, .jpeg" Multiple="true" />
+                </Field>
+            </div>
+        </div>
+        <div Class="col-12 row">
+            <div class="col-2"></div>
+            <div class="col-10">
+                @foreach (var image in ItemImageList)
+                {
+                    <Image Source="@image" Text="Item Image" Fluid Style="width:150px;"/>
+                } 
             </div>
         </div>
         <div class=" col-12 row">
@@ -84,7 +96,7 @@
             <div class="col-9">
                 <div class="col-12">
                     <fieldLabel></fieldLabel>
-                    <TextEdit Placeholder="@L["ItemDescriptionTitle"]" @bind-bind-Text="@createItemDto.ItemDescriptionTitle" />
+                    <TextEdit Placeholder="@L["ItemDescriptionTitle"]" @bind-Text="@createItemDto.ItemDescriptionTitle" />
                 </div>
                 <div class=" col-12">
                     <Blazored.TextEditor.BlazoredTextEditor @ref="@quillHtml">
@@ -149,6 +161,12 @@
                         <Icon Type="plus" />@L["NewTag"]
                     </Tag>
                 } *@
+                <div class="input-group">
+                    <TextEdit  />
+                    <Button Type="@ButtonType.Button" Class="btn btn-primary">
+                        <i class="fa fa-plus"></i>
+                    </Button>
+                </div>
             </div>
         </div>
         <div class="col-12 row">
@@ -156,14 +174,20 @@
                 <label>@L["ItemStyle"]</label>
             </div>
             <div class="col-10">
+                <div class="input-group">
+                    <TextEdit  />
+                    <Button Type="@ButtonType.Button" Class="btn btn-primary">
+                        <i class="fa fa-plus"></i>
+                    </Button>
+                </div>
              @*    @foreach (var customeField in customeFields)
                 { *@
-                    <div style="margin:7px; border: 1px solid #cccccc;">
-                        <div>
+                    @* <div style="margin:7px; border: 1px solid #cccccc;"> *@
+                        @* <div> *@
                           @*   <TextEdit Placeholder="@L["ItemStyleKey"]" @bind-Text="@customeField.Name"/> *@
-                        </div>
+                        @* </div>
                         <div style="padding-left:33px" class="row">
-                            <div class="col-11" style="background-color:white">
+                            <div class="col-11" style="background-color:white"> *@
                              @*     @foreach (var tag in customeField.ItemTags)
                                           {
                                               <Tag @key="tag" Closable OnClose="()=>OnCustomFieldTagClose(customeField.Id, tag)">@tag</Tag>
@@ -178,26 +202,32 @@
                                                   <Icon Type="plus" />@L["NewTag"]
                                               </Tag>
                                           } *@
-                            </div>
-                            <div class="col-1">
+                            @* </div>
+                            <div class="col-1"> *@
                                 @* <Button Danger Type="@ButtonType.Primary" Icon="@IconType.Outline.Delete" OnClick="()=>DeleteCustomeField(customeField)"/> *@
-                            </div>
+                        @*     </div>
                         </div>
-                       </div>
+                       </div> *@
                @*  } *@
               
-                <div style="padding:0px 3px;">
+                @* <div style="padding:0px 3px;">
                     <Button OnClick="AddCustomeField">@L["AddItemStyleButton"]</Button>
-                </div>
+                </div> *@
             </div>
         </div>
+            <div class="col-12 row">
+                <div class="col-2"></div>
+                <div class="col-10">
+                    <Button Class="btn btn-outline-primary">@L["AddItemStyleButton"]</Button>
+                </div>
+            </div>
         <div class="col-12 row">
             <div class="col-2">
                 <label>@L["PriceAndInventory"]</label>
             </div>
             <div class="col-10">
                 <div>
-               @*      <Table TItem="CreateItemDetailsDto"
+               @* <Table TItem="CreateItemDetailsDto"
                            DataSource="@itemDetailList"
                            Size="TableSize.Small"
                            Bordered=@true
@@ -224,8 +254,9 @@
                         <PropertyColumn Title="@L["SaleablePreorderQuantity"]" Property="item=>item.SaleablePreOrderQuantity">
                             <Input @bind-Value="@context.SaleablePreOrderQuantity"></Input>
                         </PropertyColumn>
-                    </Table> *@
+                    </Table>  *@
                 </div>
+                
             </div>
         </div>
         <div class="col-12 row">
@@ -249,7 +280,7 @@
                         <label>@L["LimitQuantity"]</label>
                     </div>
                     <div class="col-3">
-                        <InputNumber TValue="int" @bind-Value="@createItemDto.LimitQuantity" />
+                        <InputNumber class="form-control" TValue="int" @bind-Value="@createItemDto.LimitQuantity" />
                     </div>
                 </div>
                 <div class="col-12 row">
@@ -257,7 +288,7 @@
                         <label>@L["ShareProfit"]</label>
                     </div>
                     <div class="col-3">
-                        <InputNumber TValue="float" @bind-Value="@createItemDto.ShareProfit" />
+                        <InputNumber class="form-control" TValue="float" @bind-Value="@createItemDto.ShareProfit" />
                     </div>
                 </div>
                 <div class="col-12 row">
@@ -281,6 +312,13 @@
                         <label>@L["ShippingMethod"]</label>
                     </div>
                     <div class="col-3">
+                        <SelectList TItem="EnumValueDto"
+                                    TValue="int"
+                                    Data="@shippingMethods"
+                                    TextField="@((item)=>item.Text)"
+                                    ValueField="@((item)=>item.Id)"
+                                    @bind-SelectedValue="@createItemDto.ShippingMethodId"
+                                     />
                       @*   <Select TItem="EnumValueDto"
                                 DataSource="@shippingMethods"
                                 LabelName="@nameof(EnumValueDto.Text)"
@@ -298,8 +336,15 @@
                         <label>@L["TaxType"]</label>
                     </div>
                     <div class="col-3">
+                        <SelectList TItem="EnumValueDto"
+                                    TValue="int"
+                                    Data="@taxTypes"
+                                    TextField="@((item)=>item.Text)"
+                                    ValueField="@((item)=>item.Id)"
+                                    @bind-SelectedValue="@createItemDto.TaxTypeId"
+                                     />
                      @*    <Select TItem="EnumValueDto"
-                                DataSource="@taxTypes"
+                                DataSource="@taxTypes"`
                                 LabelName="@nameof(EnumValueDto.Text)"
                                 ValueName="@nameof(EnumValueDto.Id)"
                                 Placeholder="Select a Tax Types"
@@ -314,7 +359,7 @@
         </div>
         <div style="text-align: center; margin-top:5px ;">
             <Button Danger Type="@ButtonType.Button" Style="margin-right:5px">@L["Cancel"]</Button>
-            <Button Type="@ButtonType.Button" Style="margin-right:5px" OnClick="CreateEntityAsync">@L["Save"]</Button>
+            <Button Type="@ButtonType.Button" Style="margin-right:5px" Clicked="CreateEntityAsync">@L["Save"]</Button>
             <Button Type="@ButtonType.Button" Style="margin-right:5px; background-color:skyblue">@L["Preview"]</Button>
 
         </div>

@@ -1,9 +1,12 @@
 ﻿
+using Blazorise;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
+using Microsoft.AspNetCore.Components.Forms;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -24,7 +27,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         private Blazored.TextEditor.BlazoredTextEditor quillHtml; //Item Discription Html
         private List<CreateItemDetailsDto> itemDetailList { get; set; } // List of CreateItemDetail dto to store PriceAndInventory
         private CreateItemDto createItemDto = new(); //Item Dto
-       /* private List<UploadFileItem> itemImageList = new List<UploadFileItem>();*/ //to store Item Images
+        private List<string> ItemImageList = new(); //to store Item Images
         private List<CustomeField> customeFields = new List<CustomeField>();
         private readonly IItemAppService _itemAppService;
         private readonly IEnumValueAppService _enumValueService;
@@ -43,7 +46,11 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                                                              EnumType.TaxType
                                                          })).ToList();
             taxTypes = enumValues.Where(x => x.EnumType == EnumType.TaxType).ToList();
+            createItemDto.TaxTypeId = taxTypes.First().Id;
+
             shippingMethods = enumValues.Where(x => x.EnumType == EnumType.ShippingMethod).ToList();
+            createItemDto.ShippingMethodId = shippingMethods.First().Id;
+
             itemDetailList = new List<CreateItemDetailsDto>();
             customeFields.Add(new CustomeField
             {
@@ -57,13 +64,42 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         /// Show Image in Div After selection
         /// </summary>
         ///// <param name="fileinfo">Selected File</param>
-        //void ItemImageHandleChange(UploadInfo fileinfo)
-        //{
-        //    if (fileinfo.File.State == UploadState.Success)
-        //    {
-        //        fileinfo.File.Url = fileinfo.File.ObjectURL;
-        //    }
-        //}
+        async void ItemImageChangeEvent(FileChangedEventArgs e)
+        {
+            //var imageFiles = e.Files;
+            //var format = "image/png";
+            //foreach (var file in imageFiles)
+            //{
+            //    var buffer = new byte[file.Size];
+            //    await file.OpenReadStream(30 * 1024 * 1024, new TimeSpan(0, 5, 0)).ReadAsync(buffer);
+            //    ItemImageList.Add($"data:{format};base64,{Convert.ToBase64String(buffer)}");
+            //}
+
+            //try
+            //{
+            //    var files = e.Files;
+            //    if (files == null)
+            //    {
+            //        return;
+            //    }
+            //    foreach(var file in files)
+            //    {
+            //        using (MemoryStream result = new MemoryStream())
+            //        {
+            //            await file.OpenReadStream(long.MaxValue).CopyToAsync(result);
+            //            ItemImageList.Add(result);
+            //        }
+            //    }
+            //}
+            //catch (Exception exc)
+            //{
+            //    Console.WriteLine(exc.Message);
+            //}
+            //finally
+            //{
+            //    this.StateHasChanged();
+            //}
+        }
 
         /// <summary>
         ///bind Shipping method value

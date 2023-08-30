@@ -8,7 +8,7 @@
 @using Volo.Abp
 @using System.Text.Json;
 @using System.ComponentModel
-
+@using Blazorise.Components
 
 @inject IStringLocalizer<PikachuResource> L
 @inject NavigationManager NavigationManager
@@ -24,27 +24,82 @@
             </Popconfirm>
         </Button>
         <Button Type="@ButtonType.Button" Style="margin-right:5px; background-color:skyblue">@L["CopyItem"]</Button>
-        <Button Type="@ButtonType.Button" Style="margin-right:5px" OnClick="CreateNewItem">@L["NewItem"]</Button>
+        <Button Type="@ButtonType.Button" Style="margin-right:5px" Clicked="CreateNewItem">@L["NewItem"]</Button>
     </div>
 </div>
 <div>
-@*     <Table @ref="table"
-           TItem="ItemDto"
-           DataSource="@itemList"
-           Total="_total"
+
+    @*     <Table @ref="table"
+    TItem="ItemDto"
+    DataSource="@itemList"
+    Total="_total"
     @bind-PageIndex="_pageIndex"
     @bind-PageSize="_pageSize"
     @bind-SelectedRows="selectedRows"
-           Size="TableSize.Small">
-        <Selection Key="@(context.Id.ToString())" />
-        <PropertyColumn Title="@L["ItemName"]" Property="item=>item.ItemName" />
-        <PropertyColumn Title="@L["CreatedTime"]" Property="item=>item.CreationTime" Format="yyyy-MM-dd" />
-        <PropertyColumn Title="@L["TurnItemOn"]" Property="item=>item.IsItemAvaliable">
-            <Switch @bind-Value="@context.IsItemAvaliable" OnChange="() => OnItemAvaliablityChange(context.Id)"></Switch>
-        </PropertyColumn>
+    Size="TableSize.Small">
+    <Selection Key="@(context.Id.ToString())" />
+    <PropertyColumn Title="@L["ItemName"]" Property="item=>item.ItemName" />
+    <PropertyColumn Title="@L["CreatedTime"]" Property="item=>item.CreationTime" Format="yyyy-MM-dd" />
+    <PropertyColumn Title="@L["TurnItemOn"]" Property="item=>item.IsItemAvaliable">
+    <Switch @bind-Value="@context.IsItemAvaliable" OnChange="() => OnItemAvaliablityChange(context.Id)"></Switch>
+    </PropertyColumn>
     </Table> *@
 </div>
-
+<Card>
+    @* <CardHeader>
+        <h2>@L["Books"]</h2>
+    </CardHeader> *@
+    <CardBody>
+        <DataGrid TItem="ItemDto"
+                  Data="itemList"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="_total"
+                  ShowPager="true"
+                  PageSize="_pageSize">
+            <DataGridColumns>
+                <DataGridColumn TItem="ItemDto"
+                                Field="@nameof(ItemDto.ItemName)"
+                                Caption="@L["ItemName"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="ItemDto"
+                                Field="@nameof(ItemDto.ItemDescriptionTitle)"
+                                Caption="@L["ItemDescription"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="ItemDto"
+                                Caption="@L["TimeLimitPeriod"]">
+                                <DisplayTemplate>
+                                    @context.LimitAvaliableTimeStart.ToShortDateString() - @context.LimitAvaliableTimeEnd.ToShortDateString()
+                                </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="ItemDto"
+                                Field="@nameof(ItemDto.CreationTime)"
+                                Caption="@L["CreatedTime"]">
+                    <DisplayTemplate>
+                        @context.CreationTime.ToShortDateString()
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="ItemDto"
+                                Field="@nameof(ItemDto.IsFreeShipping)"
+                                Caption="@L["FreeShipping"]">
+                    <DisplayTemplate>
+                        @if (context.IsFreeShipping)
+                        {
+                            <i class="fa fa-check bg-success text-light p-1"></i>
+                        }
+                        else
+                        {
+                            <i class="fa fa-times bg-danger text-light p-1"></i>
+                        }
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="ItemDto"
+                                Field="@nameof(ItemDto.ShareProfit)"
+                                Caption="@L["ShareProfit"]">
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
 @code {
 
 }
