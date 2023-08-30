@@ -32,12 +32,13 @@ using Volo.Abp.VirtualFileSystem;
 using Volo.Abp.OpenIddict;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using Volo.Abp.AspNetCore.Mvc.UI.Theme.Basic.Bundling;
-using Lsw.Abp.AspnetCore.Components.Server.AntDesignTheme.Bundling;
-using Lsw.Abp.IdentityManagement.Blazor.Server.AntDesignUI;
-using Lsw.Abp.SettingManagement.Blazor.Server.AntDesignUI;
-using Lsw.Abp.TenantManagement.Blazor.Server.AntDesignUI;
-using Volo.Abp.AspNetCore.Mvc.UI.Theme.Basic;
+using Blazorise.Bootstrap5;
+using Blazorise.Icons.FontAwesome;
+using Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme;
+using Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme.Bundling;
+using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite;
+using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite.Bundling;
+using Blazorise.RichTextEdit;
 
 namespace Kooco.Pikachu.Blazor;
 
@@ -49,10 +50,11 @@ namespace Kooco.Pikachu.Blazor;
     typeof(AbpSwashbuckleModule),
     typeof(AbpAspNetCoreSerilogModule),
     typeof(AbpAccountWebOpenIddictModule),
-    typeof(AbpIdentityBlazorServerAntDesignModule),
-    typeof(AbpTenantManagementBlazorServerAntDesignModule),
-    typeof(AbpSettingManagementBlazorServerAntDesignModule),
-       typeof(AbpAspNetCoreMvcUiBasicThemeModule)
+    typeof(AbpAspNetCoreComponentsServerLeptonXLiteThemeModule),
+    typeof(AbpAspNetCoreMvcUiLeptonXLiteThemeModule),
+    typeof(AbpIdentityBlazorServerModule),
+    typeof(AbpTenantManagementBlazorServerModule),
+    typeof(AbpSettingManagementBlazorServerModule)
    )]
 public class PikachuBlazorModule : AbpModule
 {
@@ -69,6 +71,9 @@ public class PikachuBlazorModule : AbpModule
                 typeof(PikachuBlazorModule).Assembly
             );
         });
+
+        context.Services.AddBlazoriseRichTextEdit();
+
 
         PreConfigure<OpenIddictBuilder>(builder =>
         {
@@ -195,6 +200,7 @@ public class PikachuBlazorModule : AbpModule
         ConfigureVirtualFileSystem(hostingEnvironment);
         ConfigureSwaggerServices(context.Services);
         ConfigureAutoApiControllers();
+        ConfigureBlazorise(context);
         ConfigureRouter(context);
         ConfigureMenu(context);
     }
@@ -219,7 +225,7 @@ public class PikachuBlazorModule : AbpModule
         {
             // MVC UI
             options.StyleBundles.Configure(
-                BasicThemeBundles.Styles.Global,
+                       LeptonXLiteThemeBundles.Styles.Global,
                 bundle =>
                 {
                     bundle.AddFiles("/global-styles.css");
@@ -228,13 +234,13 @@ public class PikachuBlazorModule : AbpModule
 
             //BLAZOR UI
             options.StyleBundles.Configure(
-            BlazorAntDesignThemeBundles.Styles.Global,
-            bundle =>
-            {
-                bundle.AddFiles("/blazor-global-styles.css");
-                //You can remove the following line if you don't use Blazor CSS isolation for components
-                bundle.AddFiles("/Kooco.Pikachu.Blazor.styles.css");
-            }
+               BlazorLeptonXLiteThemeBundles.Styles.Global,
+                bundle =>
+                {
+                    bundle.AddFiles("/blazor-global-styles.css");
+                    //You can remove the following line if you don't use Blazor CSS isolation for components
+                    bundle.AddFiles("/Kooco.Pikachu.Blazor.styles.css");
+                }
             );
         });
     }
@@ -266,6 +272,13 @@ public class PikachuBlazorModule : AbpModule
         );
     }
 
+    private void ConfigureBlazorise(ServiceConfigurationContext context)
+    {
+        context.Services
+            .AddBootstrap5Providers()
+            .AddFontAwesomeIcons();
+    }
+
 
 
     private void ConfigureMenu(ServiceConfigurationContext context)
@@ -278,7 +291,7 @@ public class PikachuBlazorModule : AbpModule
 
     private void ConfigureRouter(ServiceConfigurationContext context)
     {
-        Configure<Lsw.Abp.AspnetCore.Components.Web.AntDesignTheme.Routing.AbpRouterOptions>(options =>
+        Configure<AbpRouterOptions>(options =>
         {
             options.AppAssembly = typeof(PikachuBlazorModule).Assembly;
         });
