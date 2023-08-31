@@ -4,8 +4,10 @@ using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Components.Web;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -31,6 +33,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         private List<CustomeField> customeFields = new List<CustomeField>();
         private readonly IItemAppService _itemAppService;
         private readonly IEnumValueAppService _enumValueService;
+        private string TagInputValue { get; set; }
 
         public CreateItem(IEnumValueAppService enumValueService, IItemAppService itemAppService)
         {
@@ -128,6 +131,26 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             itemTags.Remove(item);
         }
 
+        private void HandleTagInputKeyUp(KeyboardEventArgs e)
+        {
+            if (e.Key == "Enter")
+            {
+                if (TagInputValue.IsNullOrWhiteSpace())
+                {
+                    TagInputValue = string.Empty;
+                    return;
+                }
+
+                itemTags.Add(TagInputValue);
+                TagInputValue = string.Empty;
+            }
+        }
+
+        private void HandleTagDelete(string item)
+        {
+            itemTags.Remove(item);
+        }
+
         /// <summary>
         /// On Tag close button remove Tag for custom field
         /// </summary>
@@ -157,24 +180,27 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         /// <summary>
         /// On custom Fields tag confirm
         /// </summary>
-        void HandleCustomFieldTagInputConfirm(int id, string tag)
+        void HandleCustomFieldTagInputConfirm(int id, string tag, KeyboardEventArgs e)
         {
-            var customeField = customeFields.First(x => x.Id == id);
-            if (string.IsNullOrEmpty(tag))
+            if(e.Key == "Enter")
             {
+                var customeField = customeFields.First(x => x.Id == id);
+                if (string.IsNullOrEmpty(tag))
+                {
+                    customeField.InputTagValue = "";
+                    customeField.TagInputVisible = false;
+                    return;
+                }
+                string? res = customeField.ItemTags.Find(s => s == tag);
+
+                if (string.IsNullOrEmpty(res))
+                {
+                    customeFields.First(x => x.Id == id).ItemTags.Add(tag);
+                    BindItemDetailList();
+                }
                 customeField.InputTagValue = "";
                 customeField.TagInputVisible = false;
-                return;
             }
-            string? res = customeField.ItemTags.Find(s => s == tag);
-
-            if (string.IsNullOrEmpty(res))
-            {
-                customeFields.First(x => x.Id == id).ItemTags.Add(tag);
-                BindItemDetailList();
-            }
-            customeField.InputTagValue = "";
-            customeField.TagInputVisible = false;
         }
 
         /// <summary>

@@ -161,11 +161,18 @@
                         <Icon Type="plus" />@L["NewTag"]
                     </Tag>
                 } *@
-                <div class="input-group">
-                    <TextEdit  />
-                    <Button Type="@ButtonType.Button" Class="btn btn-primary">
-                        <i class="fa fa-plus"></i>
-                    </Button>
+                <div class="form-control">
+                    @foreach(var item in itemTags)
+                    {
+                        <Badge class="item-tags" CloseClicked="@(() => HandleTagDelete(item))">@item</Badge>
+                    }
+                    
+                    <div class="input-container">
+                        <input type="text" id="tag-input" class="tag-input" placeholder="New Tag"
+                        @bind-value="TagInputValue"
+                        @onkeyup="HandleTagInputKeyUp"/>
+                        <i class="tag-input-placeholder-icon fa fa-plus"></i>
+                    </div>
                 </div>
             </div>
         </div>
@@ -174,12 +181,28 @@
                 <label>@L["ItemStyle"]</label>
             </div>
             <div class="col-10">
-                <div class="input-group">
-                    <TextEdit  />
-                    <Button Type="@ButtonType.Button" Class="btn btn-primary">
-                        <i class="fa fa-plus"></i>
-                    </Button>
-                </div>
+
+                @foreach(var customeField in customeFields)
+                {
+                    <div class="input-group">
+                        <TextEdit Placeholder="@L["ItemStyleKey"]" @bind-Text="@customeField.Name"/>
+                        <Button Class="btn btn-danger" @onclick="()=>DeleteCustomeField(customeField)"><i class="fa fa-trash"></i></Button>
+                    </div>
+                    <div class="form-control border-radius-0 mb-2">
+                        @foreach(var item in customeField.ItemTags)
+                        {
+                            <Badge class="item-tags" CloseClicked="@(() => HandleTagDelete(item))">@item</Badge>
+                        }
+
+                        <div class="input-container">
+                            <input type="text" class="tag-input" placeholder="New Tag"
+                            @bind-value="customeField.InputTagValue"
+                            @onkeyup="(e)=>HandleCustomFieldTagInputConfirm(customeField.Id, customeField.InputTagValue, e)"/>
+                            <i class="tag-input-placeholder-icon fa fa-plus"></i>
+                        </div>
+                    </div>
+                }
+                
              @*    @foreach (var customeField in customeFields)
                 { *@
                     @* <div style="margin:7px; border: 1px solid #cccccc;"> *@
@@ -218,7 +241,7 @@
             <div class="col-12 row">
                 <div class="col-2"></div>
                 <div class="col-10">
-                    <Button Class="btn btn-outline-primary">@L["AddItemStyleButton"]</Button>
+                    <Button Class="btn btn-outline-primary" @onclick="AddCustomeField">@L["AddItemStyleButton"]</Button>
                 </div>
             </div>
         <div class="col-12 row">
@@ -319,16 +342,6 @@
                                     ValueField="@((item)=>item.Id)"
                                     @bind-SelectedValue="@createItemDto.ShippingMethodId"
                                      />
-                      @*   <Select TItem="EnumValueDto"
-                                DataSource="@shippingMethods"
-                                LabelName="@nameof(EnumValueDto.Text)"
-                                ValueName="@nameof(EnumValueDto.Id)"
-                                Placeholder="Select a Shipping Method"
-                                DefaultActiveFirstOption="false"
-                                TItemValue="int"
-                                OnSelectedItemChanged="ItemSippingMethodHandleChange"
-                                                    EnableSearch>
-                        </Select> *@
                     </div>
                 </div>
                 <div class="col-12 row">
@@ -343,16 +356,6 @@
                                     ValueField="@((item)=>item.Id)"
                                     @bind-SelectedValue="@createItemDto.TaxTypeId"
                                      />
-                     @*    <Select TItem="EnumValueDto"
-                                DataSource="@taxTypes"`
-                                LabelName="@nameof(EnumValueDto.Text)"
-                                ValueName="@nameof(EnumValueDto.Id)"
-                                Placeholder="Select a Tax Types"
-                                DefaultActiveFirstOption="false"
-                                TItemValue="int"
-                                OnSelectedItemChanged="ItemTaxTypeHandleChange"
-                                                    EnableSearch>
-                        </Select> *@
                     </div>
                 </div>
             </div>
@@ -361,7 +364,6 @@
             <Button Danger Type="@ButtonType.Button" Style="margin-right:5px">@L["Cancel"]</Button>
             <Button Type="@ButtonType.Button" Style="margin-right:5px" Clicked="CreateEntityAsync">@L["Save"]</Button>
             <Button Type="@ButtonType.Button" Style="margin-right:5px; background-color:skyblue">@L["Preview"]</Button>
-
         </div>
     </div>
 </div>
