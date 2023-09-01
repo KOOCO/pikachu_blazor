@@ -230,13 +230,13 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             if (!customeFields.Any())
                 return;
 
-            List<List<string>> permutations = GeneratePermutations(customeFields.Select(x => x.ItemTags).ToList());
+            List<List<string>> permutations = GeneratePermutations(customeFields.Select(x => x.ItemTags.Any() ? x.ItemTags : new List<string> { "" }).ToList());
 
             foreach (List<string> permutation in permutations)
             {
                 itemDetailList.Add(new CreateItemDetailsDto
                 {
-                    ItemName = string.Join("/", permutation)
+                    ItemName = string.Join("/", permutation).TrimEnd('/')
                 });
             }
         }

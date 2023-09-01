@@ -448,19 +448,6 @@
     </Card>
 </div>
 
-<script>
-    window.readImageFileAsBase64 = function(inputElement) {
-    return new Promise((resolve, reject) => {
-        var reader = new FileReader();
-        reader.onload = function(event) {
-            resolve(event.target.result);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(inputElement.files[0]);
-    });
-}
-</script>
-
 @code {
     private FilePicker filePickerCustom;
 }
