@@ -32,26 +32,34 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
     /// <returns>item</returns>
     public override async Task<ItemDto> CreateAsync(CreateItemDto input)
     {
-        var item = ObjectMapper.Map<CreateItemDto, Item>(input);
-        var itemDetail = ObjectMapper.Map<List<CreateItemDetailsDto>, List<ItemDetails>>(input.ItemDetails);
-        item.ItemDetails = new List<ItemDetails>();
-        var res = await _repository.InsertAsync(item, true);
-        if (itemDetail.Any())
+        try
         {
-            itemDetail.ForEach(x => x.ItemId = res.Id);
-            await _itemDetailrepository.InsertManyAsync(itemDetail, true);
-        }
-        if (input.ItemImages != null && input.ItemImages.Any() )
-        {
-            var imageFiles = input.ItemImages.Select(x => new CreateImageDto
+            var item = ObjectMapper.Map<CreateItemDto, Item>(input);
+            var itemDetail = ObjectMapper.Map<List<CreateItemDetailsDto>, List<ItemDetails>>(input.ItemDetails);
+            item.ItemDetails = new List<ItemDetails>();
+            item.ItemDetails = itemDetail;
+            var res = await _repository.InsertAsync(item);
+            //if (itemDetail.Any())
+            //{
+            //    itemDetail.ForEach(x => x.ItemId = res.Id);
+            //    await _itemDetailrepository.InsertManyAsync(itemDetail);
+            //}
+            if (input.ItemImages != null && input.ItemImages.Any())
             {
-                FileInfo = x,
-                TargetID = item.Id,
-                ImageType = ImageType.Item
-            }).ToList();
-            await _imageAppService.InsertManyImageAsync(imageFiles);
+                var imageFiles = input.ItemImages.Select(x => new CreateImageDto
+                {
+                    FileInfo = x,
+                    TargetID = item.Id,
+                    ImageType = ImageType.Item
+                }).ToList();
+                await _imageAppService.InsertManyImageAsync(imageFiles);
+            }
+            return ObjectMapper.Map<Item, ItemDto>(res);
         }
-        return ObjectMapper.Map<Item, ItemDto>(res);
+        catch (Exception ex)
+        {
+            throw;
+        }
     }
 
     /// <summary>
