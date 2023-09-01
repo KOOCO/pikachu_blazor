@@ -62,6 +62,7 @@
     "SalePrice": "Sale Price",
     "TaxType": "Tax Type",
     "NewTag": "New Tag",
+    "SellingPrice": "Selling Price",
     //GroupBuy
     "NewGroupBuy": "New GroupBuy",
     "SalesURL1": "Sales URL1",

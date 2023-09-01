@@ -1,19 +1,21 @@
 ﻿
 using Blazorise;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.ImageBlob;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
+using Microsoft.SqlServer.Server;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Formats.Tar;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
-using FileInfo = Kooco.Pikachu.Images.FileInfo;
 
 namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 {
@@ -34,11 +36,14 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         private readonly IItemAppService _itemAppService;
         private readonly IEnumValueAppService _enumValueService;
         private string TagInputValue { get; set; }
+        private Dictionary<IFileEntry, string> FileDataUrls = new();
+        private readonly IImageBlobService _imageBlobService;
 
-        public CreateItem(IEnumValueAppService enumValueService, IItemAppService itemAppService)
+        public CreateItem(IEnumValueAppService enumValueService, IItemAppService itemAppService, IImageBlobService imageBlobService)
         {
             _enumValueService = enumValueService;
             _itemAppService = itemAppService;
+            _imageBlobService = imageBlobService;
         }
 
         protected override async Task OnInitializedAsync()
@@ -67,41 +72,33 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         /// Show Image in Div After selection
         /// </summary>
         ///// <param name="fileinfo">Selected File</param>
-        async void ItemImageChangeEvent(FileChangedEventArgs e)
+        async void ItemImageChangeEvent(InputFileChangeEventArgs e)
         {
-            //var imageFiles = e.Files;
-            //var format = "image/png";
-            //foreach (var file in imageFiles)
-            //{
-            //    var buffer = new byte[file.Size];
-            //    await file.OpenReadStream(30 * 1024 * 1024, new TimeSpan(0, 5, 0)).ReadAsync(buffer);
-            //    ItemImageList.Add($"data:{format};base64,{Convert.ToBase64String(buffer)}");
-            //}
-
-            //try
-            //{
-            //    var files = e.Files;
-            //    if (files == null)
-            //    {
-            //        return;
-            //    }
-            //    foreach(var file in files)
-            //    {
-            //        using (MemoryStream result = new MemoryStream())
-            //        {
-            //            await file.OpenReadStream(long.MaxValue).CopyToAsync(result);
-            //            ItemImageList.Add(result);
-            //        }
-            //    }
-            //}
-            //catch (Exception exc)
-            //{
-            //    Console.WriteLine(exc.Message);
-            //}
-            //finally
-            //{
-            //    this.StateHasChanged();
-            //}
+            var file = e.GetMultipleFiles(1).FirstOrDefault();
+            var byteArray = new byte[file.Size]; 
+            await file.OpenReadStream().ReadAsync(byteArray); 
+            
+            var savedFile = await _imageBlobService.UploadFileToBlob(file.Name, byteArray, file.ContentType, file.Name);
+            
+            
+            var format = "image/png"; var imageFile = (e.GetMultipleFiles(1)).FirstOrDefault();
+            var resizedImageFile = await imageFile.RequestImageFileAsync(format, 100, 100);
+            var buffer = new byte[resizedImageFile.Size]; await resizedImageFile.OpenReadStream().ReadAsync(buffer);
+            var url = $"data:{format};base64,{Convert.ToBase64String(buffer)}";
+        }
+        async void ItemImageUploadEvent(FileUploadEventArgs e)
+        {
+            var file = e.File;
+            using var stream = file.OpenReadStream(maxAllowedSize: 1024 * 1024);
+            using var ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            var fileBytes = ms.ToArray();
+            var imageBase64 = $"data:image/png;base64,{Convert.ToBase64String(fileBytes)}";
+            FileDataUrls[file] = imageBase64;
+        }
+        void RemoveImage(IFileEntry file)
+        {
+            filePickerCustom.RemoveFile(file);
         }
 
         /// <summary>
@@ -130,7 +127,6 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         {
             itemTags.Remove(item);
         }
-
         private void HandleTagInputKeyUp(KeyboardEventArgs e)
         {
             if (e.Key == "Enter")
@@ -140,7 +136,6 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                     TagInputValue = string.Empty;
                     return;
                 }
-
                 itemTags.Add(TagInputValue);
                 TagInputValue = string.Empty;
             }
@@ -158,6 +153,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         void OnCustomFieldTagClose(int id, string item)
         {
             customeFields.First(x => x.Id == id).ItemTags.Remove(item);
+            BindItemDetailList();
         }
 
         /// <summary>

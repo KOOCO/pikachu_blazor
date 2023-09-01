@@ -59,3 +59,16 @@
 .border-radius-0{
     border-radius: 0px;
 }
+
+.b-file-picker-files {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    flex-basis: 50px;
+}
+.b-file-picker .b-file-picker-file{
+    min-width: 5rem;
+    max-width: 15rem;
+    border: 1px solid lightgray;
+    border-radius: 0px;
+}
