@@ -63,6 +63,10 @@
     "TaxType": "Tax Type",
     "NewTag": "New Tag",
     "SellingPrice": "Selling Price",
+    "Pikachu:00001": "Item Name Can not be null",
+    "Pikachu:00002": "Item with same name '{name}' already exists",
+    "Pikachu:00003": "Item Details can not be empty",
+    "Pikachu:00004": "Item with same '{SKU}' already exists",
     //GroupBuy
     "NewGroupBuy": "New GroupBuy",
     "SalesURL1": "Sales URL1",

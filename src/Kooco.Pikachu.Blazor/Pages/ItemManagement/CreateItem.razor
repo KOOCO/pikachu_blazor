@@ -213,7 +213,7 @@
                     </div>
                     <div class="col-10">
 
-                        @foreach(var customeField in customeFields)
+                        @foreach(var customeField in customFields)
                         {
                             <div class="input-group">
                                 <TextEdit Placeholder="@L["ItemStyleKey"]" @bind-Text="@customeField.Name"/>
@@ -326,7 +326,7 @@
                                 <TableBody>
                                     @foreach(var item in itemDetailList)
                                     {
-                                        <TableRow>
+                                        <TableRow Class="text-center">
                                             <TableRowCell>@item.ItemName</TableRowCell>
                                             <TableRowCell>
                                                 <input class="form-control form-control-sm" style="min-width: 100px;" @bind-value="@item.Sku" />
@@ -442,6 +442,7 @@
                         <i class="fa fa-check"></i>
                         @L["Save"]</Button>
                     <Button Type="@ButtonType.Button" class="btn btn-secondary me-1">@L["Preview"]</Button>
+                    <Button Type="@ButtonType.Button" class="btn btn-danger me-1" Clicked="DeleteAllAsync">@L["DeleteAll"]</Button>
                 </div>
             </div>
         </CardBody>

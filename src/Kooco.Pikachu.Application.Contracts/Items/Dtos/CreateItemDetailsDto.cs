@@ -15,4 +15,10 @@ public class CreateItemDetailsDto
     public float SaleableQuantity { get; set; }
     public float? PreOrderableQuantity { get; set; }
     public float? SaleablePreOrderQuantity { get; set; }
+
+    public int? LimitQuantity { get; set; }
+
+    public string? Attribute1Value { get; set; }
+    public string? Attribute2Value { get; set; }
+    public string? Attribute3Value { get; set; }
 }

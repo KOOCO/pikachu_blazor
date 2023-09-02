@@ -1,10 +1,10 @@
 ﻿using Kooco.Pikachu.Items;
 using System;
-using Volo.Abp.Domain.Entities.Auditing;
+using Volo.Abp.Domain.Entities;
 
 namespace Kooco.Pikachu.Images
 {
-    public class Image : FullAuditedAggregateRoot<Guid>
+    public class Image : Entity<Guid>
     {
         /// <summary>
         /// Contain Image's URL on Azure blob

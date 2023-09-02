@@ -112,7 +112,7 @@ public class PikachuDbContext :
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "ItemDetails", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
-            b.HasOne(x => x.Item).WithMany(d => d.ItemDetails).HasForeignKey(i => i.Id); ;
+            b.HasOne(x => x.Item).WithMany(d => d.ItemDetails).HasForeignKey(i => i.ItemId);
         });
         
         builder.Entity<Image>(b =>

@@ -1,10 +1,12 @@
-﻿using System;
-using Volo.Abp.Domain.Entities.Auditing;
+﻿using JetBrains.Annotations;
+using System;
+using Volo.Abp;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.MultiTenancy;
 
 namespace Kooco.Pikachu.Items
 {
-    public class ItemDetails : FullAuditedAggregateRoot<Guid>,IMultiTenant
+    public class ItemDetails : Entity<Guid>, IMultiTenant
     {
         public Guid? TenantId { get; set; }
         public Guid ItemId { get; set; }
@@ -16,7 +18,7 @@ namespace Kooco.Pikachu.Items
         public float? SaleableQuantity { get; set; } //可販售數量限制/SaleableQuantity
         public float? PreOrderableQuantity { get; set; } //可預購數量/PreOrderableQuantity
         public float? SaleablePreOrderQuantity { get; set; } //可訂購預購數量/SaleablePreOrderQuantity
-
+        public int? LimitQuantity { get; set; }
 
 
 
@@ -38,5 +40,53 @@ namespace Kooco.Pikachu.Items
         public string? Property1 { get; set; }
         public string? Property2 { get; set; }
         public string? Property3 { get; set; }
+
+        public string? Attribute1Value { get; set; }
+        public string? Attribute2Value { get; set; }
+        public string? Attribute3Value { get; set; }
+
+        public ItemDetails() { }
+
+        public ItemDetails(
+            [NotNull] Guid id,
+            [NotNull] string sku,
+            Guid itemId,
+            string itemName,
+            int? limitQuantity,
+            string itemStyleAttribute,
+            string itemStyleOptions,
+            float sellingPrice,
+            float saleableQuantity,
+            float? preOrderableQuantity,
+            float? saleablePreOrderQuantity,
+
+            string? attribute1Value,
+            string? attribute2Value,
+            string? attribute3Value
+            ) : base(id)
+        {
+            SetSKU(sku);
+
+            ItemId = itemId;
+            ItemName = itemName;
+            LimitQuantity = limitQuantity;
+            //ItemStyleAttribute = itemStyleAttribute;
+            //ItemStyleOptions = itemStyleOptions;
+            SellingPrice = sellingPrice;
+            SaleableQuantity = saleableQuantity;
+            PreOrderableQuantity = preOrderableQuantity;
+            SaleablePreOrderQuantity = saleablePreOrderQuantity;
+
+            Attribute1Value = attribute1Value;
+            Attribute2Value = attribute2Value;
+            Attribute3Value = attribute3Value;
+        }
+
+        private void SetSKU(
+            [NotNull] string sku
+            )
+        {
+            SKU = Check.NotNull(sku, nameof(SKU));
+        }
     }
 }

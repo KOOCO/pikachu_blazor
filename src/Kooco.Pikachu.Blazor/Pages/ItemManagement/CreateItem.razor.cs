@@ -6,6 +6,7 @@ using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.Extensions.Localization;
 using Microsoft.JSInterop;
 using Microsoft.SqlServer.Server;
 using System;
@@ -16,6 +17,8 @@ using System.Formats.Tar;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Volo.Abp.AspNetCore.Components.Messages;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 {
@@ -32,18 +35,25 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         private List<CreateItemDetailsDto> itemDetailList { get; set; } // List of CreateItemDetail dto to store PriceAndInventory
         private CreateItemDto createItemDto = new(); //Item Dto
         private List<string> ItemImageList = new(); //to store Item Images
-        private List<CustomeField> customeFields = new List<CustomeField>();
+        private List<CustomFields> customFields = new();
         private readonly IItemAppService _itemAppService;
         private readonly IEnumValueAppService _enumValueService;
         private string TagInputValue { get; set; }
         private Dictionary<IFileEntry, string> FileDataUrls = new();
         private readonly IImageBlobService _imageBlobService;
+        private readonly IUiMessageService _uiMessageService;
 
-        public CreateItem(IEnumValueAppService enumValueService, IItemAppService itemAppService, IImageBlobService imageBlobService)
+        public CreateItem(
+            IEnumValueAppService enumValueService, 
+            IItemAppService itemAppService, 
+            IImageBlobService imageBlobService,
+            IUiMessageService uiMessageService
+            )
         {
             _enumValueService = enumValueService;
             _itemAppService = itemAppService;
             _imageBlobService = imageBlobService;
+            _uiMessageService = uiMessageService;
         }
 
         protected override async Task OnInitializedAsync()
@@ -60,7 +70,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             createItemDto.ShippingMethodId = shippingMethods.First().Id;
 
             itemDetailList = new List<CreateItemDetailsDto>();
-            customeFields.Add(new CustomeField
+            customFields.Add(new CustomFields
             {
                 Id = 1,
                 Name = "",
@@ -75,12 +85,12 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         async void ItemImageChangeEvent(InputFileChangeEventArgs e)
         {
             var file = e.GetMultipleFiles(1).FirstOrDefault();
-            var byteArray = new byte[file.Size]; 
-            await file.OpenReadStream().ReadAsync(byteArray); 
-            
+            var byteArray = new byte[file.Size];
+            await file.OpenReadStream().ReadAsync(byteArray);
+
             var savedFile = await _imageBlobService.UploadFileToBlob(file.Name, byteArray, file.ContentType, file.Name);
-            
-            
+
+
             var format = "image/png"; var imageFile = (e.GetMultipleFiles(1)).FirstOrDefault();
             var resizedImageFile = await imageFile.RequestImageFileAsync(format, 100, 100);
             var buffer = new byte[resizedImageFile.Size]; await resizedImageFile.OpenReadStream().ReadAsync(buffer);
@@ -152,7 +162,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         /// <param name="item">Tag string</param>
         void OnCustomFieldTagClose(int id, string item)
         {
-            customeFields.First(x => x.Id == id).ItemTags.Remove(item);
+            customFields.First(x => x.Id == id).ItemTags.Remove(item);
             BindItemDetailList();
         }
 
@@ -178,9 +188,9 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         /// </summary>
         void HandleCustomFieldTagInputConfirm(int id, string tag, KeyboardEventArgs e)
         {
-            if(e.Key == "Enter")
+            if (e.Key == "Enter")
             {
-                var customeField = customeFields.First(x => x.Id == id);
+                var customeField = customFields.First(x => x.Id == id);
                 if (string.IsNullOrEmpty(tag))
                 {
                     customeField.InputTagValue = "";
@@ -191,7 +201,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 
                 if (string.IsNullOrEmpty(res))
                 {
-                    customeFields.First(x => x.Id == id).ItemTags.Add(tag);
+                    customFields.First(x => x.Id == id).ItemTags.Add(tag);
                     BindItemDetailList();
                 }
                 customeField.InputTagValue = "";
@@ -208,15 +218,15 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             this.tagInputVisible = false;
         }
 
-        void DeleteCustomeField(CustomeField customeField)
+        void DeleteCustomeField(CustomFields customeField)
         {
-            customeFields.Remove(customeField);
+            customFields.Remove(customeField);
             BindItemDetailList();
         }
         void AddCustomeField()
         {
-            var customeField = customeFields.OrderByDescending(x => x.Id).FirstOrDefault();
-            customeFields.Add(new CustomeField
+            var customeField = customFields.OrderByDescending(x => x.Id).FirstOrDefault();
+            customFields.Add(new CustomFields
             {
                 Id = customeField == null ? 1 : +customeField.Id + 1,
                 Name = "",
@@ -227,10 +237,10 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         void BindItemDetailList()
         {
             itemDetailList = new List<CreateItemDetailsDto>();
-            if (!customeFields.Any())
+            if (!customFields.Any())
                 return;
 
-            List<List<string>> permutations = GeneratePermutations(customeFields.Select(x => x.ItemTags.Any() ? x.ItemTags : new List<string> { "" }).ToList());
+            List<List<string>> permutations = GeneratePermutations(customFields.Select(x => x.ItemTags.Any() ? x.ItemTags : new List<string> { "" }).ToList());
 
             foreach (List<string> permutation in permutations)
             {
@@ -243,7 +253,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 
         static List<List<string>> GeneratePermutations(List<List<string>> sets)
         {
-            List<List<string>> permutations = new List<List<string>>();
+            List<List<string>> permutations = new();
             GeneratePermutationsRecursive(sets, new List<string>(), 0, permutations);
             return permutations;
         }
@@ -266,69 +276,86 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 
         protected virtual async Task CreateEntityAsync()
         {
-            int customeFieldCount = customeFields.Count;
-            var customFields = customeFields.ToArray();
-            if (customeFieldCount > 0)
+            try
             {
-                createItemDto.CustomField1Name = customFields[0].Name;
-                createItemDto.CustomField10Value = string.Join(",", customFields[0].ItemTags);
+                int customeFieldCount = this.customFields.Count;
+                var customFields = this.customFields.ToArray();
+                if (customeFieldCount > 0)
+                {
+                    createItemDto.CustomField1Name = customFields[0].Name;
+                    createItemDto.CustomField10Value = string.Join(",", customFields[0].ItemTags);
+                }
+                if (customeFieldCount > 1)
+                {
+                    createItemDto.CustomField2Name = customFields[1].Name;
+                    createItemDto.CustomField1Value = string.Join(",", customFields[1].ItemTags);
+                }
+                if (customeFieldCount > 2)
+                {
+                    createItemDto.CustomField3Name = customFields[2].Name;
+                    createItemDto.CustomField2Value = string.Join(",", customFields[2].ItemTags);
+                }
+                if (customeFieldCount > 3)
+                {
+                    createItemDto.CustomField4Name = customFields[3].Name;
+                    createItemDto.CustomField3Value = string.Join(",", customFields[3].ItemTags);
+                }
+                if (customeFieldCount > 4)
+                {
+                    createItemDto.CustomField5Name = customFields[4].Name;
+                    createItemDto.CustomField4Value = string.Join(",", customFields[4].ItemTags);
+                }
+                if (customeFieldCount > 5)
+                {
+                    createItemDto.CustomField6Name = customFields[5].Name;
+                    createItemDto.CustomField5Value = string.Join(",", customFields[5].ItemTags);
+                }
+                if (customeFieldCount > 6)
+                {
+                    createItemDto.CustomField7Name = customFields[6].Name;
+                    createItemDto.CustomField6Value = string.Join(",", customFields[6].ItemTags);
+                }
+                if (customeFieldCount > 7)
+                {
+                    createItemDto.CustomField8Name = customFields[7].Name;
+                    createItemDto.CustomField7Value = string.Join(",", customFields[7].ItemTags);
+                }
+                if (customeFieldCount > 8)
+                {
+                    createItemDto.CustomField9Name = customFields[8].Name;
+                    createItemDto.CustomField8Value = string.Join(",", customFields[8].ItemTags);
+                }
+                if (customeFieldCount > 9)
+                {
+                    createItemDto.CustomField10Name = customFields[9].Name;
+                    createItemDto.CustomField9Value = string.Join(",", customFields[9].ItemTags);
+                }
+                createItemDto.ItemDetails = itemDetailList;
+                createItemDto.ItemDescription = await quillHtml.GetHTML();
+                createItemDto.ItemTags = string.Join(",", itemTags);
+                await _itemAppService.CreateAsync(createItemDto);
+                NavigationManager.NavigateTo("Items");
             }
-            if (customeFieldCount > 1)
+            catch (Exception ex)
             {
-                createItemDto.CustomField2Name = customFields[1].Name;
-                createItemDto.CustomField1Value = string.Join(",", customFields[1].ItemTags);
+                await _uiMessageService.Error(ex.Message, ex.GetType().ToString());
             }
-            if (customeFieldCount > 2)
+        }
+
+        public async Task DeleteAllAsync()
+        {
+            try
             {
-                createItemDto.CustomField3Name = customFields[2].Name;
-                createItemDto.CustomField2Value = string.Join(",", customFields[2].ItemTags);
+                await _itemAppService.DeleteAllAsync();
             }
-            if (customeFieldCount > 3)
+            catch (Exception ex)
             {
-                createItemDto.CustomField4Name = customFields[3].Name;
-                createItemDto.CustomField3Value = string.Join(",", customFields[3].ItemTags);
+                await _uiMessageService.Error(ex.Message, ex.GetType().ToString());
             }
-            if (customeFieldCount > 4)
-            {
-                createItemDto.CustomField5Name = customFields[4].Name;
-                createItemDto.CustomField4Value = string.Join(",", customFields[4].ItemTags);
-            }
-            if (customeFieldCount > 5)
-            {
-                createItemDto.CustomField6Name = customFields[5].Name;
-                createItemDto.CustomField5Value = string.Join(",", customFields[5].ItemTags);
-            }
-            if (customeFieldCount > 6)
-            {
-                createItemDto.CustomField7Name = customFields[6].Name;
-                createItemDto.CustomField6Value = string.Join(",", customFields[6].ItemTags);
-            }
-            if (customeFieldCount > 7)
-            {
-                createItemDto.CustomField8Name = customFields[7].Name;
-                createItemDto.CustomField7Value = string.Join(",", customFields[7].ItemTags);
-            }
-            if (customeFieldCount > 8)
-            {
-                createItemDto.CustomField9Name = customFields[8].Name;
-                createItemDto.CustomField8Value = string.Join(",", customFields[8].ItemTags);
-            }
-            if (customeFieldCount > 9)
-            {
-                createItemDto.CustomField10Name = customFields[9].Name;
-                createItemDto.CustomField9Value = string.Join(",", customFields[9].ItemTags);
-            }
-            createItemDto.ItemDetails = itemDetailList;
-            createItemDto.ItemDescription = await quillHtml.GetHTML();
-            createItemDto.ItemTags = string.Join(",", itemTags);
-            await _itemAppService.CreateAsync(createItemDto);
-            NavigationManager.NavigateTo("Items");
         }
     }
 
-
-
-    public class CustomeField
+    public class CustomFields
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -337,11 +364,13 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         public string InputTagValue { get; set; }
         public bool TagInputVisible { get; set; }
     }
-    public class ResponseModel
-    {
-        public string name { get; set; }
-        public string status { get; set; }
-        public string url { get; set; }
-        public string thumbUrl { get; set; }
-    }
 }
+
+public class ResponseModel
+{
+    public string name { get; set; }
+    public string status { get; set; }
+    public string url { get; set; }
+    public string thumbUrl { get; set; }
+}
+

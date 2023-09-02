@@ -16,4 +16,6 @@ public interface IItemAppService :
 {
     Task ChangeItemAvailability(Guid itemId);
     Task DeleteManyItems(List<Guid> itemIds);
+
+    Task DeleteAllAsync();
 }

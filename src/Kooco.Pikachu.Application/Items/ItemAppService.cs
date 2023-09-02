@@ -6,23 +6,32 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Kooco.Pikachu.Images;
 using System.Linq;
+using Volo.Abp.Validation.Localization;
+using Volo.Abp.Data;
+using Volo.Abp;
+using Volo.Abp.Domain.Repositories;
 
 namespace Kooco.Pikachu.Items;
 
 public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSortedResultRequestDto, CreateItemDto, UpdateItemDto>,
     IItemAppService
 {
-    private readonly IItemRepository _repository;
-    private readonly IItemDetailsRepository _itemDetailrepository;
+    private readonly IItemRepository _itemRepository;
     private readonly IImageAppService _imageAppService;
+    private readonly ItemManager _itemManager;
+    private readonly IDataFilter _dataFilter;
 
-    public ItemAppService(IItemRepository repository, 
-                          IItemDetailsRepository itemDetailrepository,
-                          IImageAppService imageAppService) : base(repository)
+    public ItemAppService(
+        IItemRepository repository,
+        IImageAppService imageAppService,
+        ItemManager itemManager,
+        IDataFilter dataFilter
+        ) : base(repository)
     {
-        _repository = repository;
-        _itemDetailrepository = itemDetailrepository;
+        _itemRepository = repository;
         _imageAppService = imageAppService;
+        _itemManager = itemManager;
+        _dataFilter = dataFilter;
     }
 
     /// <summary>
@@ -32,35 +41,92 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
     /// <returns>item</returns>
     public override async Task<ItemDto> CreateAsync(CreateItemDto input)
     {
-        try
+        //var item = ObjectMapper.Map<CreateItemDto, Item>(input);
+        //var itemDetail = ObjectMapper.Map<List<CreateItemDetailsDto>, List<ItemDetails>>(input.ItemDetails);
+        //item.ItemDetails = new List<ItemDetails>();
+        //item.ItemDetails = itemDetail;
+        //var res = await _repository.InsertAsync(item);
+        ////if (itemDetail.Any())
+        ////{
+        ////    itemDetail.ForEach(x => x.ItemId = res.Id);
+        ////    await _itemDetailrepository.InsertManyAsync(itemDetail);
+        ////}
+        //if (input.ItemImages != null && input.ItemImages.Any())
+        //{
+        //    var imageFiles = input.ItemImages.Select(x => new CreateImageDto
+        //    {
+        //        FileInfo = x,
+        //        TargetID = item.Id,
+        //        ImageType = ImageType.Item
+        //    }).ToList();
+        //    await _imageAppService.InsertManyImageAsync(imageFiles);
+        //}
+
+        var item = await _itemManager.CreateAsync(
+            input.ItemName,
+            input.ItemDescriptionTitle,
+            input.ItemDescription,
+            input.ItemTags,
+            input.LimitAvaliableTimeStart,
+            input.LimitAvaliableTimeEnd,
+            input.ShareProfit,
+            input.IsFreeShipping,
+            input.IsReturnable,
+            input.ShippingMethodId,
+            input.TaxTypeId,
+
+            input.CustomField1Value,
+            input.CustomField1Name,
+            input.CustomField2Value,
+            input.CustomField2Name,
+            input.CustomField3Value,
+            input.CustomField3Name,
+            input.CustomField4Value,
+            input.CustomField4Name,
+            input.CustomField5Value,
+            input.CustomField5Name,
+            input.CustomField6Value,
+            input.CustomField6Name,
+            input.CustomField7Value,
+            input.CustomField7Name,
+            input.CustomField8Value,
+            input.CustomField8Name,
+            input.CustomField9Value,
+            input.CustomField9Name,
+            input.CustomField10Value,
+            input.CustomField10Name,
+
+            input.Attribute1Name,
+            input.Attribute2Name,
+            input.Attribute3Name
+            );
+
+        if (input.ItemDetails != null && input.ItemDetails.Any())
         {
-            var item = ObjectMapper.Map<CreateItemDto, Item>(input);
-            var itemDetail = ObjectMapper.Map<List<CreateItemDetailsDto>, List<ItemDetails>>(input.ItemDetails);
-            item.ItemDetails = new List<ItemDetails>();
-            item.ItemDetails = itemDetail;
-            var res = await _repository.InsertAsync(item);
-            //if (itemDetail.Any())
-            //{
-            //    itemDetail.ForEach(x => x.ItemId = res.Id);
-            //    await _itemDetailrepository.InsertManyAsync(itemDetail);
-            //}
-            if (input.ItemImages != null && input.ItemImages.Any())
+            foreach (var itemDetail in input.ItemDetails)
             {
-                var imageFiles = input.ItemImages.Select(x => new CreateImageDto
-                {
-                    FileInfo = x,
-                    TargetID = item.Id,
-                    ImageType = ImageType.Item
-                }).ToList();
-                await _imageAppService.InsertManyImageAsync(imageFiles);
+                await _itemManager.AddItemDetailAsync(
+                    item,
+                    itemDetail.Sku,
+                    itemDetail.ItemStyleAttribute,
+                    itemDetail.ItemStyleOptions,
+                    itemDetail.LimitQuantity,
+                    itemDetail.SellingPrice,
+                    itemDetail.SaleableQuantity,
+                    itemDetail.PreOrderableQuantity,
+                    itemDetail.SaleablePreOrderQuantity,
+
+                    itemDetail.Attribute1Value,
+                    itemDetail.Attribute2Value,
+                    itemDetail.Attribute3Value
+                    );
             }
-            return ObjectMapper.Map<Item, ItemDto>(res);
         }
-        catch (Exception ex)
-        {
-            throw;
-        }
+
+        await _itemRepository.InsertAsync(item);
+        return ObjectMapper.Map<Item, ItemDto>(item);
     }
+
 
     /// <summary>
     /// Chnage Item Availability
@@ -68,9 +134,9 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
     /// <param name="itemId">Item Id</param>
     public async Task ChangeItemAvailability(Guid itemId)
     {
-        var item = await _repository.FindAsync(x => x.Id == itemId);
+        var item = await _itemRepository.FindAsync(x => x.Id == itemId);
         item.IsItemAvaliable = !item.IsItemAvaliable;
-        await _repository.UpdateAsync(item);
+        await _itemRepository.UpdateAsync(item);
     }
 
     /// <summary>
@@ -80,6 +146,15 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
     /// <returns></returns>
     public async Task DeleteManyItems(List<Guid> itemIds)
     {
-        await _repository.DeleteManyAsync(itemIds);
+        await _itemRepository.DeleteManyAsync(itemIds);
+    }
+
+    public async Task DeleteAllAsync()
+    {
+        using (_dataFilter.Disable<ISoftDelete>())
+        {
+            var items = await _itemRepository.GetListAsync();
+            //await _itemRepository.HardDeleteAsync(items);
+        }
     }
 }
