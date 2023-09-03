@@ -105,22 +105,19 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             if (e.Key == "Enter")
             {
                 var attribute = Attributes.First(x => x.Id == id);
-                if (attribute.ItemTags == null || attribute.ItemTags.Count < 3)
+                if (string.IsNullOrEmpty(tag))
                 {
-                    if (string.IsNullOrEmpty(tag))
-                    {
-                        attribute.InputTagValue = "";
-                        return;
-                    }
-                    string? res = attribute.ItemTags.Find(s => s == tag);
-
-                    if (string.IsNullOrEmpty(res))
-                    {
-                        Attributes.First(x => x.Id == id).ItemTags.Add(tag);
-                        BindItemDetailList();
-                    }
                     attribute.InputTagValue = "";
+                    return;
                 }
+                string? res = attribute.ItemTags.Find(s => s == tag);
+
+                if (string.IsNullOrEmpty(res))
+                {
+                    Attributes.First(x => x.Id == id).ItemTags.Add(tag);
+                    BindItemDetailList();
+                }
+                attribute.InputTagValue = "";
             }
         }
 
@@ -219,7 +216,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 throw new BusinessException(L[PikachuDomainErrorCodes.SKUForItemDetailsCannotBeNull]);
             }
 
-            if(ItemDetailsList.Any(x => ItemDetailsList.Any(y => y !=  x && y.Sku == x.Sku)))
+            if (ItemDetailsList.Any(x => ItemDetailsList.Any(y => y != x && y.Sku == x.Sku)))
             {
                 throw new BusinessException(L[PikachuDomainErrorCodes.ItemWithSKUAlreadyExists]);
             }

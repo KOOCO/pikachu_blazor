@@ -159,30 +159,27 @@
                     </div>
                     <div class="col-10">
 
-                        @foreach (var customField in Attributes)
+                        @foreach (var item in Attributes)
                         {
                             <div class="input-group">
-                                <TextEdit Placeholder="@L["ItemStyleKey"]" @bind-Text="@customField.Name" />
+                                <TextEdit Placeholder="@L["ItemStyleKey"]" @bind-Text="@item.Name" />
                                 @if (Attributes?.Count > 1)
                                 {
-                                    <Button Class="btn btn-danger" @onclick="()=>DeleteAttribute(customField)"><i class="fa fa-trash"></i></Button>
+                                    <Button Class="btn btn-danger" @onclick="()=>DeleteAttribute(item)"><i class="fa fa-trash"></i></Button>
                                 }
                             </div>
                             <div class="form-control border-radius-0 mb-2">
-                                @foreach (var item in customField.ItemTags)
+                                @foreach (var itemTag in item.ItemTags)
                                 {
-                                    <Badge class="item-tags" CloseClicked="@(() => OnAttributeFieldTagClose(customField.Id, item))">@item</Badge>
+                                    <Badge class="item-tags" CloseClicked="@(() => OnAttributeFieldTagClose(item.Id, itemTag))">@itemTag</Badge>
                                 }
 
-                                @if (customField.ItemTags == null || customField.ItemTags.Count < 3)
-                                {
-                                    <div class="input-container">
-                                        <input type="text" class="tag-input" placeholder="New Tag"
-                                        @bind-value="customField.InputTagValue"
-                                        @onkeyup="(e)=>HandleAttributeTagInputConfirm(customField.Id, customField.InputTagValue, e)" />
-                                        <i class="tag-input-placeholder-icon fa fa-plus"></i>
-                                    </div>
-                                }
+                                <div class="input-container">
+                                    <input type="text" class="tag-input" placeholder="New Tag"
+                                    @bind-value="item.InputTagValue"
+                                    @onkeyup="(e)=>HandleAttributeTagInputConfirm(item.Id, item.InputTagValue, e)" />
+                                    <i class="tag-input-placeholder-icon fa fa-plus"></i>
+                                </div>
                             </div>
                         }
                     </div>
