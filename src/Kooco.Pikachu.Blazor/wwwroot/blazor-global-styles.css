@@ -72,3 +72,7 @@
     border: 1px solid lightgray;
     border-radius: 0px;
 }
+
+.cursor-pointer{
+    cursor: pointer;
+}

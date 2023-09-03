@@ -1,4 +1,4 @@
-﻿
+﻿using Blazored.TextEditor;
 using Blazorise;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.ImageBlob;
@@ -6,46 +6,38 @@ using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
-using Microsoft.Extensions.Localization;
-using Microsoft.JSInterop;
-using Microsoft.SqlServer.Server;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Formats.Tar;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 {
     public partial class CreateItem
     {
-        private const int maxtextCount = 60; //input max length
-        private string inputTagValue;  //used for item store tag value 
-        //private Input<string> inputTagRef; //used for create tag input
-        private List<string> itemTags { get; set; } = new List<string>(); //used for store item tags 
-        private bool tagInputVisible { get; set; } = false; //For show/hide item add tag input
-        private List<EnumValueDto> shippingMethods { get; set; } // for bind all shippingMethods
-        private List<EnumValueDto> taxTypes { get; set; } // for bind all taxTypes
-        private Blazored.TextEditor.BlazoredTextEditor quillHtml; //Item Discription Html
-        private List<CreateItemDetailsDto> itemDetailList { get; set; } // List of CreateItemDetail dto to store PriceAndInventory
-        private CreateItemDto createItemDto = new(); //Item Dto
+        private const int MaxTextCount = 60; //input max length
+        private List<string> ItemTags { get; set; } = new List<string>(); //used for store item tags 
+        private List<EnumValueDto> ShippingMethods { get; set; } // for bind all shippingMethods
+        private List<EnumValueDto> TaxTypes { get; set; } // for bind all taxTypes
+        private BlazoredTextEditor QuillHtml; //Item Discription Html
+        private List<CreateItemDetailsDto> ItemDetailsList { get; set; } // List of CreateItemDetail dto to store PriceAndInventory
+        private CreateItemDto CreateItemDto = new(); //Item Dto
         private List<string> ItemImageList = new(); //to store Item Images
-        private List<CustomFields> customFields = new();
+        private List<Attributes> Attributes = new();
+        private string TagInputValue { get; set; }
+
         private readonly IItemAppService _itemAppService;
         private readonly IEnumValueAppService _enumValueService;
-        private string TagInputValue { get; set; }
         private Dictionary<IFileEntry, string> FileDataUrls = new();
         private readonly IImageBlobService _imageBlobService;
         private readonly IUiMessageService _uiMessageService;
 
         public CreateItem(
-            IEnumValueAppService enumValueService, 
-            IItemAppService itemAppService, 
+            IEnumValueAppService enumValueService,
+            IItemAppService itemAppService,
             IImageBlobService imageBlobService,
             IUiMessageService uiMessageService
             )
@@ -63,14 +55,14 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                                                              EnumType.ShippingMethod,
                                                              EnumType.TaxType
                                                          })).ToList();
-            taxTypes = enumValues.Where(x => x.EnumType == EnumType.TaxType).ToList();
-            createItemDto.TaxTypeId = taxTypes.First().Id;
+            TaxTypes = enumValues.Where(x => x.EnumType == EnumType.TaxType).ToList();
+            CreateItemDto.TaxTypeId = TaxTypes.First().Id;
 
-            shippingMethods = enumValues.Where(x => x.EnumType == EnumType.ShippingMethod).ToList();
-            createItemDto.ShippingMethodId = shippingMethods.First().Id;
+            ShippingMethods = enumValues.Where(x => x.EnumType == EnumType.ShippingMethod).ToList();
+            CreateItemDto.ShippingMethodId = ShippingMethods.First().Id;
 
-            itemDetailList = new List<CreateItemDetailsDto>();
-            customFields.Add(new CustomFields
+            ItemDetailsList = new List<CreateItemDetailsDto>();
+            Attributes.Add(new Attributes
             {
                 Id = 1,
                 Name = "",
@@ -78,173 +70,91 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             });
         }
 
-        /// <summary>
-        /// Show Image in Div After selection
-        /// </summary>
-        ///// <param name="fileinfo">Selected File</param>
-        async void ItemImageChangeEvent(InputFileChangeEventArgs e)
-        {
-            var file = e.GetMultipleFiles(1).FirstOrDefault();
-            var byteArray = new byte[file.Size];
-            await file.OpenReadStream().ReadAsync(byteArray);
-
-            var savedFile = await _imageBlobService.UploadFileToBlob(file.Name, byteArray, file.ContentType, file.Name);
-
-
-            var format = "image/png"; var imageFile = (e.GetMultipleFiles(1)).FirstOrDefault();
-            var resizedImageFile = await imageFile.RequestImageFileAsync(format, 100, 100);
-            var buffer = new byte[resizedImageFile.Size]; await resizedImageFile.OpenReadStream().ReadAsync(buffer);
-            var url = $"data:{format};base64,{Convert.ToBase64String(buffer)}";
-        }
-        async void ItemImageUploadEvent(FileUploadEventArgs e)
-        {
-            var file = e.File;
-            using var stream = file.OpenReadStream(maxAllowedSize: 1024 * 1024);
-            using var ms = new MemoryStream();
-            await stream.CopyToAsync(ms);
-            var fileBytes = ms.ToArray();
-            var imageBase64 = $"data:image/png;base64,{Convert.ToBase64String(fileBytes)}";
-            FileDataUrls[file] = imageBase64;
-        }
-        void RemoveImage(IFileEntry file)
-        {
-            filePickerCustom.RemoveFile(file);
-        }
-
-        /// <summary>
-        ///bind Shipping method value
-        /// </summary>
-        /// <param name="fileinfo">Selected File</param>
-        void ItemSippingMethodHandleChange(EnumValueDto SippingMethod)
-        {
-            createItemDto.ShippingMethodId = SippingMethod.Id;
-        }
-
-        /// <summary>
-        ///bind Tax Type value
-        /// </summary>
-        /// <param name="fileinfo">Selected File</param>
-        void ItemTaxTypeHandleChange(EnumValueDto TaxType)
-        {
-            createItemDto.TaxTypeId = TaxType.Id;
-        }
-
-        /// <summary>
-        /// On Tag close button remove Tag
-        /// </summary>
-        /// <param name="item">Tag string</param>
-        void OnTagClose(string item)
-        {
-            itemTags.Remove(item);
-        }
-        private void HandleTagInputKeyUp(KeyboardEventArgs e)
+        private void HandleItemTagInputKeyUp(KeyboardEventArgs e)
         {
             if (e.Key == "Enter")
             {
-                if (TagInputValue.IsNullOrWhiteSpace())
+                if (!TagInputValue.IsNullOrWhiteSpace() && !ItemTags.Any(x => x == TagInputValue))
                 {
-                    TagInputValue = string.Empty;
-                    return;
+                    ItemTags.Add(TagInputValue);
                 }
-                itemTags.Add(TagInputValue);
                 TagInputValue = string.Empty;
             }
         }
 
-        private void HandleTagDelete(string item)
+        private void HandleItemTagDelete(string item)
         {
-            itemTags.Remove(item);
+            ItemTags.Remove(item);
         }
 
         /// <summary>
         /// On Tag close button remove Tag for custom field
         /// </summary>
         /// <param name="item">Tag string</param>
-        void OnCustomFieldTagClose(int id, string item)
+        void OnAttributeFieldTagClose(int id, string item)
         {
-            customFields.First(x => x.Id == id).ItemTags.Remove(item);
+            Attributes.First(x => x.Id == id).ItemTags.Remove(item);
             BindItemDetailList();
-        }
-
-        /// <summary>
-        /// On tag confirm
-        /// </summary>
-        void HandleTagInputConfirm()
-        {
-            if (string.IsNullOrEmpty(inputTagValue))
-            {
-                CancelInput();
-                return;
-            }
-            string res = itemTags.Find(s => s == inputTagValue);
-
-            if (string.IsNullOrEmpty(res))
-                itemTags.Add(inputTagValue);
-            CancelInput();
         }
 
         /// <summary>
         /// On custom Fields tag confirm
         /// </summary>
-        void HandleCustomFieldTagInputConfirm(int id, string tag, KeyboardEventArgs e)
+        void HandleAttributeTagInputConfirm(int id, string tag, KeyboardEventArgs e)
         {
             if (e.Key == "Enter")
             {
-                var customeField = customFields.First(x => x.Id == id);
-                if (string.IsNullOrEmpty(tag))
+                var attribute = Attributes.First(x => x.Id == id);
+                if (attribute.ItemTags == null || attribute.ItemTags.Count < 3)
                 {
-                    customeField.InputTagValue = "";
-                    customeField.TagInputVisible = false;
-                    return;
-                }
-                string? res = customeField.ItemTags.Find(s => s == tag);
+                    if (string.IsNullOrEmpty(tag))
+                    {
+                        attribute.InputTagValue = "";
+                        return;
+                    }
+                    string? res = attribute.ItemTags.Find(s => s == tag);
 
-                if (string.IsNullOrEmpty(res))
-                {
-                    customFields.First(x => x.Id == id).ItemTags.Add(tag);
-                    BindItemDetailList();
+                    if (string.IsNullOrEmpty(res))
+                    {
+                        Attributes.First(x => x.Id == id).ItemTags.Add(tag);
+                        BindItemDetailList();
+                    }
+                    attribute.InputTagValue = "";
                 }
-                customeField.InputTagValue = "";
-                customeField.TagInputVisible = false;
             }
         }
 
-        /// <summary>
-        /// On tag cancel
-        /// </summary>
-        void CancelInput()
+        void DeleteAttribute(Attributes attribute)
         {
-            this.inputTagValue = "";
-            this.tagInputVisible = false;
-        }
-
-        void DeleteCustomeField(CustomFields customeField)
-        {
-            customFields.Remove(customeField);
+            Attributes.Remove(attribute);
             BindItemDetailList();
         }
-        void AddCustomeField()
+
+        void AddAttribute()
         {
-            var customeField = customFields.OrderByDescending(x => x.Id).FirstOrDefault();
-            customFields.Add(new CustomFields
+            if (Attributes == null || Attributes.Count < 3)
             {
-                Id = customeField == null ? 1 : +customeField.Id + 1,
-                Name = "",
-                ItemTags = new List<string>()
-            });
+                var attribute = Attributes.OrderByDescending(x => x.Id).FirstOrDefault();
+                Attributes.Add(new Attributes
+                {
+                    Id = attribute == null ? 1 : +attribute.Id + 1,
+                    Name = "",
+                    ItemTags = new List<string>()
+                });
+            }
         }
 
         void BindItemDetailList()
         {
-            itemDetailList = new List<CreateItemDetailsDto>();
-            if (!customFields.Any())
+            ItemDetailsList = new List<CreateItemDetailsDto>();
+            if (!Attributes.Any())
                 return;
 
-            List<List<string>> permutations = GeneratePermutations(customFields.Select(x => x.ItemTags.Any() ? x.ItemTags : new List<string> { "" }).ToList());
+            List<List<string>> permutations = GeneratePermutations(Attributes.Select(x => x.ItemTags.Any() ? x.ItemTags : new List<string> { "" }).ToList());
 
             foreach (List<string> permutation in permutations)
             {
-                itemDetailList.Add(new CreateItemDetailsDto
+                ItemDetailsList.Add(new CreateItemDetailsDto
                 {
                     ItemName = string.Join("/", permutation).TrimEnd('/')
                 });
@@ -278,67 +188,129 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         {
             try
             {
-                int customeFieldCount = this.customFields.Count;
-                var customFields = this.customFields.ToArray();
-                if (customeFieldCount > 0)
-                {
-                    createItemDto.CustomField1Name = customFields[0].Name;
-                    createItemDto.CustomField10Value = string.Join(",", customFields[0].ItemTags);
-                }
-                if (customeFieldCount > 1)
-                {
-                    createItemDto.CustomField2Name = customFields[1].Name;
-                    createItemDto.CustomField1Value = string.Join(",", customFields[1].ItemTags);
-                }
-                if (customeFieldCount > 2)
-                {
-                    createItemDto.CustomField3Name = customFields[2].Name;
-                    createItemDto.CustomField2Value = string.Join(",", customFields[2].ItemTags);
-                }
-                if (customeFieldCount > 3)
-                {
-                    createItemDto.CustomField4Name = customFields[3].Name;
-                    createItemDto.CustomField3Value = string.Join(",", customFields[3].ItemTags);
-                }
-                if (customeFieldCount > 4)
-                {
-                    createItemDto.CustomField5Name = customFields[4].Name;
-                    createItemDto.CustomField4Value = string.Join(",", customFields[4].ItemTags);
-                }
-                if (customeFieldCount > 5)
-                {
-                    createItemDto.CustomField6Name = customFields[5].Name;
-                    createItemDto.CustomField5Value = string.Join(",", customFields[5].ItemTags);
-                }
-                if (customeFieldCount > 6)
-                {
-                    createItemDto.CustomField7Name = customFields[6].Name;
-                    createItemDto.CustomField6Value = string.Join(",", customFields[6].ItemTags);
-                }
-                if (customeFieldCount > 7)
-                {
-                    createItemDto.CustomField8Name = customFields[7].Name;
-                    createItemDto.CustomField7Value = string.Join(",", customFields[7].ItemTags);
-                }
-                if (customeFieldCount > 8)
-                {
-                    createItemDto.CustomField9Name = customFields[8].Name;
-                    createItemDto.CustomField8Value = string.Join(",", customFields[8].ItemTags);
-                }
-                if (customeFieldCount > 9)
-                {
-                    createItemDto.CustomField10Name = customFields[9].Name;
-                    createItemDto.CustomField9Value = string.Join(",", customFields[9].ItemTags);
-                }
-                createItemDto.ItemDetails = itemDetailList;
-                createItemDto.ItemDescription = await quillHtml.GetHTML();
-                createItemDto.ItemTags = string.Join(",", itemTags);
-                await _itemAppService.CreateAsync(createItemDto);
+                ValidateForm();
+                GenerateAttributesForItemDetails();
+
+                CreateItemDto.ItemDetails = ItemDetailsList;
+                CreateItemDto.ItemDescription = await QuillHtml.GetHTML();
+                CreateItemDto.ItemTags = string.Join(",", ItemTags);
+                await _itemAppService.CreateAsync(CreateItemDto);
                 NavigationManager.NavigateTo("Items");
+            }
+            catch (BusinessException ex)
+            {
+                await _uiMessageService.Error(ex.Code.ToString());
             }
             catch (Exception ex)
             {
-                await _uiMessageService.Error(ex.Message, ex.GetType().ToString());
+                await _uiMessageService.Error(ex.GetType().ToString());
+            }
+        }
+
+        private void ValidateForm()
+        {
+            if (CreateItemDto.ItemName.IsNullOrWhiteSpace())
+            {
+                throw new BusinessException(L[PikachuDomainErrorCodes.ItemNameCannotBeNull]);
+            }
+
+            if (ItemDetailsList.Any(x => x.Sku.IsNullOrWhiteSpace()))
+            {
+                throw new BusinessException(L[PikachuDomainErrorCodes.SKUForItemDetailsCannotBeNull]);
+            }
+
+            if(ItemDetailsList.Any(x => ItemDetailsList.Any(y => y !=  x && y.Sku == x.Sku)))
+            {
+                throw new BusinessException(L[PikachuDomainErrorCodes.ItemWithSKUAlreadyExists]);
+            }
+
+            if (ItemDetailsList.Any(x => x.SellingPrice <= 0))
+            {
+                throw new BusinessException(L[PikachuDomainErrorCodes.SellingPriceForItemShouldBeGreaterThanZero]);
+            }
+        }
+
+        private void GenerateAttributesForItemDetails()
+        {
+            int attributeCount = Attributes.Count;
+            var customFields = Attributes.ToArray();
+            // Generate all combinations of ItemTags
+            var allCombinations = new List<List<string>>();
+            for (int i = 0; i < attributeCount; i++)
+            {
+                allCombinations.Add(customFields[i].ItemTags);
+            }
+            var combinations = GenerateCombinations(allCombinations);
+
+            for (int i = 0; i < ItemDetailsList.Count; i++)
+            {
+                var combination = combinations[i];
+                ItemDetailsList[i].Attribute1Value = combination.Count > 0 ? combination[0] : null;
+                ItemDetailsList[i].Attribute2Value = combination.Count > 1 ? combination[1] : null;
+                ItemDetailsList[i].Attribute3Value = combination.Count > 2 ? combination[2] : null;
+            }
+
+            // Set AttributeNames in CreateItemDto
+            if (attributeCount > 0)
+            {
+                CreateItemDto.Attribute1Name = customFields[0].Name;
+            }
+            if (attributeCount > 1)
+            {
+                CreateItemDto.Attribute2Name = customFields[1].Name;
+            }
+            if (attributeCount > 2)
+            {
+                CreateItemDto.Attribute3Name = customFields[2].Name;
+            }
+        }
+
+        public List<List<string>> GenerateCombinations(List<List<string>> lists)
+        {
+            var combinations = new List<List<string>>();
+            var combination = new List<string>();
+
+            GenerateCombinationsHelper(lists, combinations, combination, 0);
+
+            return combinations;
+        }
+
+        public void GenerateCombinationsHelper(List<List<string>> lists, List<List<string>> results, List<string> combination, int depth)
+        {
+            if (depth == lists.Count)
+            {
+                results.Add(new List<string>(combination));
+                return;
+            }
+
+            for (int i = 0; i < lists[depth].Count; i++)
+            {
+                combination.Add(lists[depth][i]);
+                GenerateCombinationsHelper(lists, results, combination, depth + 1);
+                combination.RemoveAt(combination.Count - 1);
+            }
+        }
+
+        private void CopyToAll(string propertyName)
+        {
+            try
+            {
+                if (ItemDetailsList != null && ItemDetailsList.Count > 0)
+                {
+                    if (ItemDetailsList != null && ItemDetailsList.Count > 0)
+                    {
+                        var prop = typeof(CreateItemDetailsDto).GetProperty(propertyName);
+                        var firstItemValue = prop.GetValue(ItemDetailsList[0]);
+                        foreach (var item in ItemDetailsList)
+                        {
+                            typeof(CreateItemDetailsDto).GetProperty(propertyName).SetValue(item, firstItemValue, null);
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                _uiMessageService.Error(L["SystemIsUnableToCopyAtTheMoment"]);
             }
         }
 
@@ -355,22 +327,14 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         }
     }
 
-    public class CustomFields
+    public class Attributes
     {
         public int Id { get; set; }
         public string Name { get; set; }
         public List<string> ItemTags { get; set; }
-        //public Input<string> InputTagRef { get; set; }
         public string InputTagValue { get; set; }
         public bool TagInputVisible { get; set; }
     }
 }
 
-public class ResponseModel
-{
-    public string name { get; set; }
-    public string status { get; set; }
-    public string url { get; set; }
-    public string thumbUrl { get; set; }
-}
 

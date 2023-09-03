@@ -53,11 +53,11 @@
                         <label>@L["ItemName"]</label>
                     </div>
                     <div class="col-9">
-                        <TextEdit @bind-Text="@createItemDto.ItemName" MaxLength="@maxtextCount" />
+                        <TextEdit @bind-Text="@CreateItemDto.ItemName" MaxLength="@MaxTextCount" />
                     </div>
                     <div class="col-1">
                         <span>
-                            @(string.IsNullOrWhiteSpace(createItemDto.ItemName) ? 60 : (maxtextCount - createItemDto.ItemName.Count()))/@maxtextCount
+                            @(string.IsNullOrWhiteSpace(CreateItemDto.ItemName) ? 60 : (MaxTextCount - CreateItemDto.ItemName.Count()))/@MaxTextCount
                         </span>
                     </div>
                 </div>
@@ -66,48 +66,8 @@
                         <label>@L["ItemImage"]</label>
                     </div>
                     <div class="col-10 row">
-                      @*   <Upload Action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                                Name="avatar"
-                        @bind-FileList="itemImageList"
-                                ListType="picture-card"
-                                Multiple="true"
-                                OnChange="ItemImageHandleChange">
-                            <div>
-                                <Icon Type="plus"></Icon>
-                                <div className="ant-upload-text">@L["Upload"]</div>
-                            </div>
-                        </Upload> *@
-                        @* <Field>
-                            <FileEdit Changed="@ItemImageChangeEvent" accept=".jpg, .png, .jpeg" Multiple="true" />
-                        </Field> *@
                         <Field>
-                            @* <FilePicker @ref="filePickerCustom"
-                                    Multiple
-                                  
-                                    Changed="ItemImageChangeEvent"
-                                    Upload="ItemImageUploadEvent"
-                                    ShowMode="FilePickerShowMode.List"
-                                    Accept=".jpg, .jpeg, .png"
-                                >
-                                <FileTemplate>
-                                    <Div Flex="Flex.JustifyContent.Between">
-                                        <Div>
-                                            <Heading Size="HeadingSize.Is5">@context.File.Name</Heading>
-                                            <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
-                                            @* <Image src="@FileDataUrls[context.File]" /> 
-                                        </Div>
-                                        <Div>
-                                            <Button Class="btn btn-sm btn-danger" Clicked="() => RemoveImage(context.File)">
-                                                <i class="fa fa-trash"></i>
-                                            </Button>
-                                        </Div>
-                                    </Div>
-                                </FileTemplate>
-                                <ButtonsTemplate>
-                                    <Button Clicked="@context.Upload" Color="Color.Primary"><Icon Name="IconName.FileUpload" /></Button>
-                                </ButtonsTemplate>
-                            </FilePicker> *@
-                            <InputFile OnChange="@ItemImageChangeEvent" />
+                            <InputFile />
                         </Field>
                     </div>
                 </div>
@@ -116,8 +76,8 @@
                     <div class="col-10">
                         @foreach (var image in ItemImageList)
                         {
-                            <Image Source="@image" Text="Item Image" Fluid Style="width:150px;"/>
-                        } 
+                            <Image Source="@image" Text="Item Image" Fluid Style="width:150px;" />
+                        }
                     </div>
                 </div>
                 <div class=" col-12 row">
@@ -127,10 +87,10 @@
                     <div class="col-9">
                         <div class="col-12">
                             <fieldLabel></fieldLabel>
-                            <TextEdit Placeholder="@L["ItemDescriptionTitle"]" @bind-Text="@createItemDto.ItemDescriptionTitle" />
+                            <TextEdit Placeholder="@L["ItemDescriptionTitle"]" @bind-Text="@CreateItemDto.ItemDescriptionTitle" />
                         </div>
                         <div class=" col-12">
-                            <Blazored.TextEditor.BlazoredTextEditor @ref="@quillHtml">
+                            <Blazored.TextEditor.BlazoredTextEditor @ref="@QuillHtml">
                                 <ToolbarContent>
                                     <select class="ql-header">
                                         <option selected=""></option>
@@ -160,7 +120,7 @@
                                     <span class="ql-formats">
                                         <button class="ql-image"></button>
                                     </span>
-                                     <span class="ql-formats">
+                                    <span class="ql-formats">
                                         <button class="ql-video"></button>
                                     </span>
                                 </ToolbarContent>
@@ -169,7 +129,7 @@
                     </div>
                     <div class="col-1">
                         <span>
-                            @(string.IsNullOrWhiteSpace(createItemDto.ItemDescriptionTitle) ? 60 : (maxtextCount - createItemDto.ItemDescriptionTitle.Count()))/@maxtextCount
+                            @(string.IsNullOrWhiteSpace(CreateItemDto.ItemDescriptionTitle) ? 60 : (MaxTextCount - CreateItemDto.ItemDescriptionTitle.Count()))/@MaxTextCount
                         </span>
                     </div>
                 </div>
@@ -178,30 +138,16 @@
                         <fieldLabel>@L["ItemTags"]</fieldLabel>
                     </div>
                     <div class="col-10">
-                   @*      @foreach (var tag in itemTags)
-                        {
-                            <Tag @key="tag" Closable OnClose="()=>OnTagClose(tag)">@tag</Tag>
-                        }
-                        @if (tagInputVisible)
-                        {
-                            <Input @ref="inputTagRef" Style="width: 78px" Size="small" @bind-Value="inputTagValue" OnBlur="HandleTagInputConfirm" OnPressEnter="HandleTagInputConfirm" AutoFocus />
-                        }
-                        else
-                        {
-                            <Tag Class="site-tag-plus" OnClick="@(() => tagInputVisible = !tagInputVisible)">
-                                <Icon Type="plus" />@L["NewTag"]
-                            </Tag>
-                        } *@
                         <div class="form-control">
-                            @foreach(var item in itemTags)
+                            @foreach (var item in ItemTags)
                             {
-                                <Badge class="item-tags" CloseClicked="@(() => HandleTagDelete(item))">@item</Badge>
+                                <Badge class="item-tags" CloseClicked="@(() => HandleItemTagDelete(item))">@item</Badge>
                             }
-                    
+
                             <div class="input-container">
                                 <input type="text" id="tag-input" class="tag-input" placeholder="New Tag"
                                 @bind-value="TagInputValue"
-                                @onkeyup="HandleTagInputKeyUp"/>
+                                @onkeyup="HandleItemTagInputKeyUp" />
                                 <i class="tag-input-placeholder-icon fa fa-plus"></i>
                             </div>
                         </div>
@@ -213,120 +159,109 @@
                     </div>
                     <div class="col-10">
 
-                        @foreach(var customeField in customFields)
+                        @foreach (var customField in Attributes)
                         {
                             <div class="input-group">
-                                <TextEdit Placeholder="@L["ItemStyleKey"]" @bind-Text="@customeField.Name"/>
-                                <Button Class="btn btn-danger" @onclick="()=>DeleteCustomeField(customeField)"><i class="fa fa-trash"></i></Button>
+                                <TextEdit Placeholder="@L["ItemStyleKey"]" @bind-Text="@customField.Name" />
+                                @if (Attributes?.Count > 1)
+                                {
+                                    <Button Class="btn btn-danger" @onclick="()=>DeleteAttribute(customField)"><i class="fa fa-trash"></i></Button>
+                                }
                             </div>
                             <div class="form-control border-radius-0 mb-2">
-                                @foreach(var item in customeField.ItemTags)
+                                @foreach (var item in customField.ItemTags)
                                 {
-                                    <Badge class="item-tags" CloseClicked="@(() => OnCustomFieldTagClose(customeField.Id, item))">@item</Badge>
+                                    <Badge class="item-tags" CloseClicked="@(() => OnAttributeFieldTagClose(customField.Id, item))">@item</Badge>
                                 }
 
-                                <div class="input-container">
-                                    <input type="text" class="tag-input" placeholder="New Tag"
-                                    @bind-value="customeField.InputTagValue"
-                                    @onkeyup="(e)=>HandleCustomFieldTagInputConfirm(customeField.Id, customeField.InputTagValue, e)"/>
-                                    <i class="tag-input-placeholder-icon fa fa-plus"></i>
-                                </div>
+                                @if (customField.ItemTags == null || customField.ItemTags.Count < 3)
+                                {
+                                    <div class="input-container">
+                                        <input type="text" class="tag-input" placeholder="New Tag"
+                                        @bind-value="customField.InputTagValue"
+                                        @onkeyup="(e)=>HandleAttributeTagInputConfirm(customField.Id, customField.InputTagValue, e)" />
+                                        <i class="tag-input-placeholder-icon fa fa-plus"></i>
+                                    </div>
+                                }
                             </div>
                         }
-                
-                     @*    @foreach (var customeField in customeFields)
-                        { *@
-                            @* <div style="margin:7px; border: 1px solid #cccccc;"> *@
-                                @* <div> *@
-                                  @*   <TextEdit Placeholder="@L["ItemStyleKey"]" @bind-Text="@customeField.Name"/> *@
-                                @* </div>
-                                <div style="padding-left:33px" class="row">
-                                    <div class="col-11" style="background-color:white"> *@
-                                     @*     @foreach (var tag in customeField.ItemTags)
-                                                  {
-                                                      <Tag @key="tag" Closable OnClose="()=>OnCustomFieldTagClose(customeField.Id, tag)">@tag</Tag>
-                                                  }
-                                                  @if (customeField.TagInputVisible)
-                                                  {
-                                                      <Input Id="@customeField.Id.ToString()" @ref="customeField.InputTagRef" Style="width:78px" Size="small" @bind-Value="customeField.InputTagValue" OnBlur="()=>HandleCustomFieldTagInputConfirm(customeField.Id, customeField.InputTagValue)" OnPressEnter="()=>HandleCustomFieldTagInputConfirm(customeField.Id, customeField.InputTagValue)" AutoFocus />
-                                                  }
-                                                  else
-                                                  {
-                                                      <Tag Class="site-tag-plus" OnClick="@(() => customeField.TagInputVisible = !customeField.TagInputVisible)">
-                                                          <Icon Type="plus" />@L["NewTag"]
-                                                      </Tag>
-                                                  } *@
-                                    @* </div>
-                                    <div class="col-1"> *@
-                                        @* <Button Danger Type="@ButtonType.Primary" Icon="@IconType.Outline.Delete" OnClick="()=>DeleteCustomeField(customeField)"/> *@
-                                @*     </div>
-                                </div>
-                               </div> *@
-                       @*  } *@
-              
-                        @* <div style="padding:0px 3px;">
-                            <Button OnClick="AddCustomeField">@L["AddItemStyleButton"]</Button>
-                        </div> *@
                     </div>
                 </div>
+                @if (Attributes == null || Attributes.Count < 3)
+                {
                     <div class="col-12 row">
                         <div class="col-2"></div>
                         <div class="col-10">
-                            <Button Class="btn btn-outline-primary" @onclick="AddCustomeField">@L["AddItemStyleButton"]</Button>
+                            <Button Class="btn btn-sm btn-outline-primary w-100" @onclick="AddAttribute">@L["AddItemStyleButton"]</Button>
                         </div>
                     </div>
+                }
                 <div class="col-12 row">
                     <div class="col-2">
                         <label>@L["PriceAndInventory"]</label>
                     </div>
                     <div class="col-10">
                         <div>
-                     @*   <Table TItem="CreateItemDetailsDto"
-                                   DataSource="@itemDetailList"
-                                   Size="TableSize.Small"
-                                   Bordered=@true
-                                   HidePagination="@true">
-                                <PropertyColumn Title="@L["ItemName"]" Property="item=>item.ItemName"/>
-                                <PropertyColumn Title="@L["SKU"]" Property="item=>item.Sku">
-                                    <Input @bind-Value="@context.Sku"></Input>
-                                </PropertyColumn>
-                                <PropertyColumn Title="@L["SellingPrice"]" Property="item=>item.SellingPrice">
-                                    <Input @bind-Value="@context.SellingPrice"></Input>
-                                </PropertyColumn>
-                                <PropertyColumn Title="@L["GroupBuyPrice"]" Property="item=>item.GroupBuyPrice">
-                                    <Input @bind-Value="@context.GroupBuyPrice"></Input>
-                                </PropertyColumn>
-                                <PropertyColumn Title="@L["InventoryAccount"]" Property="item=>item.InventoryAccount">
-                                    <Input @bind-Value="@context.InventoryAccount"></Input>
-                                </PropertyColumn>
-                                <PropertyColumn Title="@L["SaleableQuantity"]" Property="item=>item.SaleableQuantity">
-                                    <Input @bind-Value="@context.SaleableQuantity"></Input>
-                                </PropertyColumn>
-                                <PropertyColumn Title="@L["PreorderQuantity"]" Property="item=>item.PreOrderableQuantity">
-                                    <Input @bind-Value="@context.PreOrderableQuantity"></Input>
-                                </PropertyColumn>
-                                <PropertyColumn Title="@L["SaleablePreorderQuantity"]" Property="item=>item.SaleablePreOrderQuantity">
-                                    <Input @bind-Value="@context.SaleablePreOrderQuantity"></Input>
-                                </PropertyColumn>
-                            </Table> *@
-
                             <Table>
                                 <TableHeader>
                                     <TableRow>
                                         <TableHeaderCell Class="text-center">@L["ItemName"]</TableHeaderCell>
-                                        <TableHeaderCell Class="text-center">@L["SKU"]</TableHeaderCell>
-                                        <TableHeaderCell Class="text-center">@L["SellingPrice"]</TableHeaderCell>
-                                        <TableHeaderCell Class="text-center">@L["GroupBuyPrice"]</TableHeaderCell>
+                                        <TableHeaderCell Class="text-center">
+                                            @L["SKU"]
+                                            <Span Class="d-block pt-1 text-primary cursor-pointer"
+                                            @onclick="() => CopyToAll(nameof(CreateItemDetailsDto.Sku))">
+                                                @L["CopyToAll"]
+                                            </Span>
+                                        </TableHeaderCell>
+                                        <TableHeaderCell Class="text-center">
+                                            @L["SellingPrice"]
+                                            <Span Class="d-block pt-1 text-primary cursor-pointer"
+                                            @onclick="() => CopyToAll(nameof(CreateItemDetailsDto.SellingPrice))">
+                                                @L["CopyToAll"]
+                                            </Span>
+                                        </TableHeaderCell>
+                                        <TableHeaderCell Class="text-center">
+                                            @L["GroupBuyPrice"]
+                                            <Span Class="d-block pt-1 text-primary cursor-pointer"
+                                            @onclick="() => CopyToAll(nameof(CreateItemDetailsDto.GroupBuyPrice))">
+                                                @L["CopyToAll"]
+                                            </Span>
+                                        </TableHeaderCell>
                                         <TableHeaderCell Class="text-center">@L["InventoryAccount"]</TableHeaderCell>
-                                        <TableHeaderCell Class="text-center">@L["SaleableQuantity"]</TableHeaderCell>
-                                        <TableHeaderCell Class="text-center">@L["PreorderQuantity"]</TableHeaderCell>
-                                        <TableHeaderCell Class="text-center">@L["SaleablePreorderQuantity"]</TableHeaderCell>
+                                        <TableHeaderCell Class="text-center">
+                                            @L["SaleableQuantity"]
+                                            <Span Class="d-block pt-1 text-primary cursor-pointer"
+                                            @onclick="() => CopyToAll(nameof(CreateItemDetailsDto.SaleableQuantity))">
+                                                @L["CopyToAll"]
+                                            </Span>
+                                        </TableHeaderCell>
+                                        <TableHeaderCell Class="text-center">
+                                            @L["PreorderQuantity"]
+                                            <Span Class="d-block pt-1 text-primary cursor-pointer"
+                                            @onclick="() => CopyToAll(nameof(CreateItemDetailsDto.PreOrderableQuantity))">
+                                                @L["CopyToAll"]
+                                            </Span>
+                                        </TableHeaderCell>
+                                        <TableHeaderCell Class="text-center">
+                                            @L["SaleablePreorderQuantity"]
+                                            <Span Class="d-block pt-1 text-primary cursor-pointer"
+                                            @onclick="() => CopyToAll(nameof(CreateItemDetailsDto.SaleablePreOrderQuantity))">
+                                                @L["CopyToAll"]
+                                            </Span>
+                                        </TableHeaderCell>
+                                        <TableHeaderCell Class="text-center">
+                                            @L["LimitQuantity"]
+                                            <Span Class="d-block pt-1 text-primary cursor-pointer"
+                                            @onclick="() => CopyToAll(nameof(CreateItemDetailsDto.LimitQuantity))">
+                                                @L["CopyToAll"]
+                                            </Span>
+                                        </TableHeaderCell>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    @foreach(var item in itemDetailList)
+                                    @foreach (var item in ItemDetailsList)
                                     {
-                                        <TableRow Class="text-center">
+                                        <TableRow Class="text-center align-items-center">
                                             <TableRowCell>@item.ItemName</TableRowCell>
                                             <TableRowCell>
                                                 <input class="form-control form-control-sm" style="min-width: 100px;" @bind-value="@item.Sku" />
@@ -338,7 +273,7 @@
                                                 <NumericEdit Class="form-control form-control-sm" @bind-Value="@item.GroupBuyPrice"></NumericEdit>
                                             </TableRowCell>
                                             <TableRowCell>
-                                                <NumericEdit Class="form-control form-control-sm" @bind-Value="@item.InventoryAccount"></NumericEdit>
+                                                <input class="form-control form-control-sm" style="min-width: 100px;" @bind-value="@item.InventoryAccount" />
                                             </TableRowCell>
                                             <TableRowCell>
                                                 <NumericEdit Class="form-control form-control-sm" @bind-Value="@item.SaleableQuantity"></NumericEdit>
@@ -349,13 +284,16 @@
                                             <TableRowCell>
                                                 <NumericEdit Class="form-control form-control-sm" @bind-Value="@item.SaleablePreOrderQuantity"></NumericEdit>
                                             </TableRowCell>
+                                            <TableRowCell>
+                                                <NumericEdit class="form-control form-control-sm" @bind-Value="@item.LimitQuantity"></NumericEdit>
+                                            </TableRowCell>
                                         </TableRow>
                                     }
                                 </TableBody>
                             </Table>
 
                         </div>
-                
+
                     </div>
                 </div>
                 <div class="col-12 row">
@@ -368,18 +306,10 @@
                                 <label>@L["TimeLimitPeriod"]</label>
                             </div>
                             <div class="col-3">
-                                <DateEdit  @bind-Date="createItemDto.LimitAvaliableTimeStart" Style="width:100%" Placeholder="@L["StartDate"].ToString()" TValue="DateTime"  />
+                                <DateEdit @bind-Date="CreateItemDto.LimitAvaliableTimeStart" Style="width:100%" Placeholder="@L["StartDate"].ToString()" TValue="DateTime" />
                             </div>
                             <div class="col-3">
-                                <DateEdit @bind-Date="createItemDto.LimitAvaliableTimeEnd" Style="width:100%" Placeholder="@L["EndDate"].ToString()" TValue="DateTime"  />
-                            </div>
-                        </div>
-                        <div class="col-12 row">
-                            <div class="col-3">
-                                <label>@L["LimitQuantity"]</label>
-                            </div>
-                            <div class="col-3">
-                                <InputNumber class="form-control" TValue="int" @bind-Value="@createItemDto.LimitQuantity" />
+                                <DateEdit @bind-Date="CreateItemDto.LimitAvaliableTimeEnd" Style="width:100%" Placeholder="@L["EndDate"].ToString()" TValue="DateTime" />
                             </div>
                         </div>
                         <div class="col-12 row">
@@ -387,7 +317,7 @@
                                 <label>@L["ShareProfit"]</label>
                             </div>
                             <div class="col-3">
-                                <InputNumber class="form-control" TValue="float" @bind-Value="@createItemDto.ShareProfit" />
+                                <InputNumber class="form-control" TValue="float" @bind-Value="@CreateItemDto.ShareProfit" />
                             </div>
                         </div>
                         <div class="col-12 row">
@@ -395,7 +325,7 @@
                                 <label>@L["FreeShipping"]</label>
                             </div>
                             <div class="col-3">
-                                <Switch TValue="bool" @bind-Checked="@createItemDto.IsFreeShipping"></Switch>
+                                <Switch TValue="bool" @bind-Checked="@CreateItemDto.IsFreeShipping"></Switch>
                             </div>
                         </div>
                         <div class="col-12 row">
@@ -403,7 +333,7 @@
                                 <label>@L["Returnable"]</label>
                             </div>
                             <div class="col-3">
-                                <Switch TValue="bool" @bind-Checked="createItemDto.IsReturnable"></Switch>
+                                <Switch TValue="bool" @bind-Checked="CreateItemDto.IsReturnable"></Switch>
                             </div>
                         </div>
                         <div class="col-12 row">
@@ -413,11 +343,10 @@
                             <div class="col-3">
                                 <SelectList TItem="EnumValueDto"
                                             TValue="int"
-                                            Data="@shippingMethods"
+                                            Data="@ShippingMethods"
                                             TextField="@((item)=>item.Text)"
                                             ValueField="@((item)=>item.Id)"
-                                            @bind-SelectedValue="@createItemDto.ShippingMethodId"
-                                             />
+                                @bind-SelectedValue="@CreateItemDto.ShippingMethodId" />
                             </div>
                         </div>
                         <div class="col-12 row">
@@ -427,11 +356,10 @@
                             <div class="col-3">
                                 <SelectList TItem="EnumValueDto"
                                             TValue="int"
-                                            Data="@taxTypes"
+                                            Data="@TaxTypes"
                                             TextField="@((item)=>item.Text)"
                                             ValueField="@((item)=>item.Id)"
-                                            @bind-SelectedValue="@createItemDto.TaxTypeId"
-                                             />
+                                @bind-SelectedValue="@CreateItemDto.TaxTypeId" />
                             </div>
                         </div>
                     </div>
@@ -440,7 +368,8 @@
                     <Button Type="@ButtonType.Button" class="btn btn-danger me-1">@L["Cancel"]</Button>
                     <Button Type="@ButtonType.Button" class="btn btn-primary me-1" Clicked="CreateEntityAsync">
                         <i class="fa fa-check"></i>
-                        @L["Save"]</Button>
+                        @L["Save"]
+                    </Button>
                     <Button Type="@ButtonType.Button" class="btn btn-secondary me-1">@L["Preview"]</Button>
                     <Button Type="@ButtonType.Button" class="btn btn-danger me-1" Clicked="DeleteAllAsync">@L["DeleteAll"]</Button>
                 </div>
@@ -450,5 +379,4 @@
 </div>
 
 @code {
-    private FilePicker filePickerCustom;
 }

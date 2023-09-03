@@ -41,27 +41,6 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
     /// <returns>item</returns>
     public override async Task<ItemDto> CreateAsync(CreateItemDto input)
     {
-        //var item = ObjectMapper.Map<CreateItemDto, Item>(input);
-        //var itemDetail = ObjectMapper.Map<List<CreateItemDetailsDto>, List<ItemDetails>>(input.ItemDetails);
-        //item.ItemDetails = new List<ItemDetails>();
-        //item.ItemDetails = itemDetail;
-        //var res = await _repository.InsertAsync(item);
-        ////if (itemDetail.Any())
-        ////{
-        ////    itemDetail.ForEach(x => x.ItemId = res.Id);
-        ////    await _itemDetailrepository.InsertManyAsync(itemDetail);
-        ////}
-        //if (input.ItemImages != null && input.ItemImages.Any())
-        //{
-        //    var imageFiles = input.ItemImages.Select(x => new CreateImageDto
-        //    {
-        //        FileInfo = x,
-        //        TargetID = item.Id,
-        //        ImageType = ImageType.Item
-        //    }).ToList();
-        //    await _imageAppService.InsertManyImageAsync(imageFiles);
-        //}
-
         var item = await _itemManager.CreateAsync(
             input.ItemName,
             input.ItemDescriptionTitle,
@@ -107,14 +86,14 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
             {
                 await _itemManager.AddItemDetailAsync(
                     item,
+                    itemDetail.ItemName,
                     itemDetail.Sku,
-                    itemDetail.ItemStyleAttribute,
-                    itemDetail.ItemStyleOptions,
                     itemDetail.LimitQuantity,
                     itemDetail.SellingPrice,
                     itemDetail.SaleableQuantity,
                     itemDetail.PreOrderableQuantity,
                     itemDetail.SaleablePreOrderQuantity,
+                    itemDetail.InventoryAccount,
 
                     itemDetail.Attribute1Value,
                     itemDetail.Attribute2Value,
@@ -154,7 +133,7 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
         using (_dataFilter.Disable<ISoftDelete>())
         {
             var items = await _itemRepository.GetListAsync();
-            //await _itemRepository.HardDeleteAsync(items);
+            await _itemRepository.HardDeleteAsync(items);
         }
     }
 }

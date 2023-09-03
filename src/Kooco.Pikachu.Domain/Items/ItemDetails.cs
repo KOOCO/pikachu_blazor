@@ -49,16 +49,15 @@ namespace Kooco.Pikachu.Items
 
         public ItemDetails(
             [NotNull] Guid id,
+            [NotNull] string itemName,
             [NotNull] string sku,
             Guid itemId,
-            string itemName,
             int? limitQuantity,
-            string itemStyleAttribute,
-            string itemStyleOptions,
             float sellingPrice,
             float saleableQuantity,
             float? preOrderableQuantity,
             float? saleablePreOrderQuantity,
+            string? inventoryAccount,
 
             string? attribute1Value,
             string? attribute2Value,
@@ -66,16 +65,16 @@ namespace Kooco.Pikachu.Items
             ) : base(id)
         {
             SetSKU(sku);
+            SetItemName(itemName);
 
             ItemId = itemId;
             ItemName = itemName;
             LimitQuantity = limitQuantity;
-            //ItemStyleAttribute = itemStyleAttribute;
-            //ItemStyleOptions = itemStyleOptions;
             SellingPrice = sellingPrice;
             SaleableQuantity = saleableQuantity;
             PreOrderableQuantity = preOrderableQuantity;
             SaleablePreOrderQuantity = saleablePreOrderQuantity;
+            InventoryAccount = inventoryAccount;
 
             Attribute1Value = attribute1Value;
             Attribute2Value = attribute2Value;
@@ -87,6 +86,13 @@ namespace Kooco.Pikachu.Items
             )
         {
             SKU = Check.NotNull(sku, nameof(SKU));
+        }
+
+        private void SetItemName(
+            [NotNull] string itemName
+            )
+        {
+            ItemName = Check.NotNull(itemName, nameof(ItemName));
         }
     }
 }

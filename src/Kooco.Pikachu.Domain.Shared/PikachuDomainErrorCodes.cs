@@ -4,8 +4,10 @@ public static class PikachuDomainErrorCodes
 {
     /* You can add your business exception error codes here, as constants */
 
-    public const string ItemNameCannotBeNull = "Pikachu:00001";
-    public const string ItemWithSameNameAlreadyExists = "Pikachu:00002";
-    public const string ItemDetailsCannotBeEmpty = "Pikachu:00003";
-    public const string ItemWithSKUAlreadyExists = "Pikachu:00004";
+    public const string ItemNameCannotBeNull = "Pikachu:ItemNameCannotBeNull";
+    public const string ItemWithSameNameAlreadyExists = "Pikachu:ItemWithSameNameAlreadyExists";
+    public const string ItemDetailsCannotBeEmpty = "Pikachu:ItemDetailsCannotBeEmpty";
+    public const string ItemWithSKUAlreadyExists = "Pikachu:ItemWithSKUAlreadyExists";
+    public const string SKUForItemDetailsCannotBeNull = "Pikachu:SKUForItemDetailsCannotBeNull";
+    public const string SellingPriceForItemShouldBeGreaterThanZero = "Pikachu:SellingPriceForItemShouldBeGreaterThanZero";
 }

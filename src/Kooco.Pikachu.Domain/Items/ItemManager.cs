@@ -1,20 +1,25 @@
-﻿using System;
+﻿using Kooco.Pikachu.Localization;
+using Microsoft.Extensions.Localization;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Domain.Services;
+using Volo.Abp.Json.SystemTextJson.JsonConverters;
 
 namespace Kooco.Pikachu.Items
 {
     public class ItemManager : DomainService
     {
         private readonly IItemRepository _itemRepository;
-
+        private readonly IStringLocalizer<PikachuResource> _l;
         public ItemManager(
-            IItemRepository itemRepository
+            IItemRepository itemRepository,
+            IStringLocalizer<PikachuResource> l
             )
         {
             _itemRepository = itemRepository;
+            _l = l;
         }
 
         public async Task<Item> CreateAsync(
@@ -67,8 +72,7 @@ namespace Kooco.Pikachu.Items
             var existing = await _itemRepository.FindByNameAsync(itemName);
             if (existing is not null)
             {
-                throw new BusinessException(PikachuDomainErrorCodes.ItemWithSameNameAlreadyExists)
-                    .WithData("name", itemName);
+                throw new BusinessException(_l[PikachuDomainErrorCodes.ItemWithSameNameAlreadyExists]);
             }
 
             return new Item(
@@ -114,39 +118,39 @@ namespace Kooco.Pikachu.Items
 
         public async Task AddItemDetailAsync(
             [NotNull] Item @item,
-            string sku,
-            string itemStyleAttribute,
-            string itemStyleOptions,
+            [NotNull] string itemName,
+            [NotNull] string sku,
             int? limitQuantity,
             float sellingPrice,
             float saleableQuantity,
             float? preOrderableQuantity,
             float? saleablePreOrderQuantity,
-            
+            string? inventoryAccount,
+
             string? attribute1Value,
             string? attribute2Value,
             string? attribute3Value
             )
         {
             Check.NotNull(item, nameof(Item));
-            
+            Check.NotNull(itemName, nameof(itemName));
+
             var existing = await _itemRepository.FindBySKUAsync(sku);
             if (existing is not null)
             {
-                throw new BusinessException(PikachuDomainErrorCodes.ItemWithSKUAlreadyExists)
-                    .WithData("SKU", sku);
+                throw new BusinessException(_l[PikachuDomainErrorCodes.ItemWithSKUAlreadyExists]);
             }
 
             item.AddItemDetail(
                 GuidGenerator.Create(),
+                itemName,
                 sku,
                 limitQuantity,
-                itemStyleAttribute,
-                itemStyleOptions,
                 sellingPrice,
                 saleableQuantity,
                 preOrderableQuantity,
                 saleablePreOrderQuantity,
+                inventoryAccount,
 
                 attribute1Value,
                 attribute2Value,

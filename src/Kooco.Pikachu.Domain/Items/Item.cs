@@ -196,14 +196,14 @@ namespace Kooco.Pikachu.Items
 
         internal Item AddItemDetail(
             [NotNull] Guid id,
+            [NotNull] string itemName,
             [NotNull] string sku,
             int? limitQuantity,
-            string itemStyleAttribute,
-            string itemStyleOptions,
             float sellingPrice,
             float saleableQuantity,
             float? preOrderableQuantity,
             float? saleablePreOrderQuantity,
+            string? inventoryAccount,
 
             string? attribute1Value,
             string? attribute2Value,
@@ -219,16 +219,15 @@ namespace Kooco.Pikachu.Items
             ItemDetails.Add(
                 new ItemDetails(
                     id,
+                    itemName,
                     sku,
-                    this.Id,
-                    this.ItemName,
+                    Id,
                     limitQuantity,
-                    itemStyleAttribute,
-                    itemStyleOptions,
                     sellingPrice,
                     saleableQuantity,
                     preOrderableQuantity,
                     saleablePreOrderQuantity,
+                    inventoryAccount,
 
                     attribute1Value,
                     attribute2Value,

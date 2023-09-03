@@ -14,7 +14,6 @@ public class CreateItemDto
     public string ItemDescriptionTitle { get; set; } = "";
     public string ItemDescription { get; set; } = "";
     public string ItemTags { get; set; }
-    public int LimitQuantity { get; set; }
     public bool IsReturnable { get; set; }
     public DateTime LimitAvaliableTimeStart { get; set; } = DateTime.UtcNow;
     public DateTime LimitAvaliableTimeEnd { get; set; } = DateTime.UtcNow;
