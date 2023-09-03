@@ -4,6 +4,7 @@ using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.ImageBlob;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using System;
@@ -13,6 +14,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
+using Volo.Abp.Threading;
 
 namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 {
@@ -28,6 +30,9 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         private List<string> ItemImageList = new(); //to store Item Images
         private List<Attributes> Attributes = new();
         private string TagInputValue { get; set; }
+        private Modal GenerateSKUModal { get; set; }
+        private SKUModel SKUModel { get; set; } = new();
+
 
         private readonly IItemAppService _itemAppService;
         private readonly IEnumValueAppService _enumValueService;
@@ -204,6 +209,11 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             }
         }
 
+        private void GenerateSKU()
+        {
+            SKUModel = new SKUModel();
+        }
+
         private void ValidateForm()
         {
             if (CreateItemDto.ItemName.IsNullOrWhiteSpace())
@@ -322,6 +332,148 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 await _uiMessageService.Error(ex.Message, ex.GetType().ToString());
             }
         }
+
+        private void OpenGenerateSKUModal()
+        {
+            GenerateSKUModal.Show();
+            var options = GetSKUSampleDropdownOptions();
+            var attributes = GetAttributesDictionary();
+            SKUModel = new SKUModel(options, attributes);
+            GeneratePreview();
+
+
+        }
+        private void CloseGenerateSKUModal()
+        {
+            GenerateSKUModal.Hide();
+        }
+
+        private void UpdateSeparatedBy(ChangeEventArgs e)
+        {
+            SKUModel.SeparatedBy = e.Value.ToString();
+            GeneratePreview();
+        }
+
+        private bool IsSeparatedBy(char value)
+        {
+            return SKUModel.SeparatedBy == value.ToString();
+        }
+
+        private void UpdateCaseUsed(ChangeEventArgs e)
+        {
+            SKUModel.CaseUsed = e.Value.ToString();
+            if (SKUModel.CaseUsed == "U")
+            {
+                SKUModel.Preview = SKUModel.Preview.ToUpper();
+            }
+            else
+            {
+                SKUModel.Preview = SKUModel.Preview.ToLower();
+            }
+        }
+
+        private bool IsCaseUsed(char value)
+        {
+            return SKUModel.CaseUsed == value.ToString();
+        }
+
+        private void UpdateDropdownDisplayValue(SKUModelOptions item, char value)
+        {
+            item.CharactersOrder = value.ToString();
+            item.DropdownDisplayValue = item.CharactersOrder == "F" ? "First" : "Last";
+            GeneratePreview();
+        }
+
+        public List<string> GetSKUSampleDropdownOptions()
+        {
+            List<string> options = new() { new("") };
+            Attributes.ForEach(item =>
+            {
+                if (!item.Name.IsNullOrWhiteSpace())
+                {
+                    options.Add(item.Name);
+                }
+            });
+            return options;
+        }
+
+        public IDictionary<string, string?> GetAttributesDictionary()
+        {
+            IDictionary<string, string?> options = new Dictionary<string, string?>();
+            Attributes.ForEach(item =>
+            {
+                if (!item.Name.IsNullOrWhiteSpace())
+                {
+                    options[item.Name] = item.ItemTags.FirstOrDefault();
+                }
+            });
+            return options;
+        }
+
+        private void OnDropdownOptionsChanged(SKUModelOptions item, string value)
+        {
+            item.SelectedSampleValue = value;
+            if (item.SelectedSampleValue.IsNullOrWhiteSpace())
+            {
+                item.SampleDisplayValue = string.Empty;
+                GeneratePreview();
+                return;
+            }
+            item.SampleDisplayValue = SKUModel.AttributesDictionary[item.SelectedSampleValue];
+            GeneratePreview();
+        }
+        private void CharactersLengthInputChange(SKUModelOptions item, ChangeEventArgs e)
+        {
+            var value = e?.Value;
+            if (int.TryParse(value?.ToString(), out int numericValue))
+            {
+                item.CharactersLength = numericValue;
+                GeneratePreview();
+            }
+        }
+
+        private void GeneratePreview()
+        {
+            try
+            {
+                string? preview = "";
+
+                SKUModel.SKUModelOptions.ForEach(item =>
+                {
+                    if (!item.SelectedSampleValue.IsNullOrWhiteSpace())
+                    {
+                        var temp = SKUModel.AttributesDictionary[item.SelectedSampleValue];
+
+                        if (item.CharactersLength != null)
+                        {
+                            if (item.CharactersLength.Value > temp.Length)
+                            {
+                                preview += temp;
+                            }
+                            else if (item.CharactersOrder == "F")
+                            {
+                                preview += temp[..(item.CharactersLength.Value)];
+                            }
+                            else
+                            {
+                                preview += temp[(temp.Length - item.CharactersLength.Value)..];
+                            }
+                        }
+
+                        if (item != SKUModel.SKUModelOptions.LastOrDefault())
+                        {
+                            preview += SKUModel.SeparatedBy;
+                        }
+                    }
+                });
+
+                SKUModel.Preview = SKUModel.CaseUsed == "U" ? preview.ToUpper() : preview.ToLower();
+            }
+            catch
+            {
+                SKUModel.Preview = "Error";
+            }
+        }
     }
 
     public class Attributes
@@ -331,6 +483,41 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         public List<string> ItemTags { get; set; }
         public string InputTagValue { get; set; }
         public bool TagInputVisible { get; set; }
+    }
+
+    public class SKUModel
+    {
+        public SKUModel() { }
+        public SKUModel(
+            List<string> options,
+            IDictionary<string, string?> attributesDictionary
+            )
+        {
+            DropdownOptions = options;
+            AttributesDictionary = attributesDictionary;
+        }
+        public string? Preview { get; set; }
+        public string? SeparatedBy { get; set; } = "/";
+        public string? CaseUsed { get; set; } = "U";
+        public List<SKUModelOptions> SKUModelOptions { get; set; }
+                         = new List<SKUModelOptions>
+                         {
+                             new SKUModelOptions(),
+                             new SKUModelOptions(),
+                             new SKUModelOptions(),
+                             new SKUModelOptions()
+                         };
+        public List<string> DropdownOptions { get; set; } = new();
+        public IDictionary<string, string?> AttributesDictionary { get; set; } = new Dictionary<string, string?>();
+    }
+
+    public class SKUModelOptions
+    {
+        public string? SampleDisplayValue { get; set; }
+        public string? SelectedSampleValue { get; set; }
+        public string? CharactersOrder { get; set; } = "F";
+        public int? CharactersLength { get; set; } = 3;
+        public string? DropdownDisplayValue { get; set; } = "First";
     }
 }
 

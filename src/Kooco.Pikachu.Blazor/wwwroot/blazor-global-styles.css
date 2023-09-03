@@ -10,12 +10,12 @@
     z-index: 1000;
 }
 
-#blazor-error-ui .dismiss {
-    cursor: pointer;
-    position: absolute;
-    right: 0.75rem;
-    top: 0.5rem;
-}
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }
 
 .input-container {
     position: relative;
@@ -56,7 +56,7 @@
     padding-left: 3px;
 }
 
-.border-radius-0{
+.border-radius-0 {
     border-radius: 0px;
 }
 
@@ -66,13 +66,45 @@
     flex-wrap: wrap;
     flex-basis: 50px;
 }
-.b-file-picker .b-file-picker-file{
+
+.b-file-picker .b-file-picker-file {
     min-width: 5rem;
     max-width: 15rem;
     border: 1px solid lightgray;
     border-radius: 0px;
 }
 
-.cursor-pointer{
+.cursor-pointer {
     cursor: pointer;
+}
+
+.sku-preview {
+    position: relative;
+    word-wrap: break-word;
+    padding: 35px;
+    border: 1px dashed #967124;
+    border-radius: 5px;
+    background-color: #fffcea;
+}
+
+.sku-preview-label {
+    font-size: x-large;
+    font-weight: 600;
+    color: #000;
+}
+
+.fs-small {
+    font-size: small;
+}
+
+.card,
+.card-body,
+.modal-content,
+.form-control,
+.form-select {
+    border-radius: 0.15rem;
+}
+
+.btn {
+    border-radius: 0.25rem;
 }

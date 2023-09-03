@@ -205,10 +205,13 @@
                                         <TableHeaderCell Class="text-center">@L["ItemName"]</TableHeaderCell>
                                         <TableHeaderCell Class="text-center">
                                             @L["SKU"]
-                                            <Span Class="d-block pt-1 text-primary cursor-pointer"
-                                            @onclick="() => CopyToAll(nameof(CreateItemDetailsDto.Sku))">
-                                                @L["CopyToAll"]
-                                            </Span>
+                                            @if(ItemDetailsList != null && ItemDetailsList.Count > 0)
+                                            {
+                                                <Span Class="d-block pt-1 text-primary cursor-pointer"
+                                                @onclick="OpenGenerateSKUModal">
+                                                    @L["GenerateSKU"]
+                                                </Span>
+                                            }
                                         </TableHeaderCell>
                                         <TableHeaderCell Class="text-center">
                                             @L["SellingPrice"]
@@ -374,6 +377,123 @@
         </CardBody>
     </Card>
 </div>
+
+<Modal @ref="GenerateSKUModal">
+    <ModalBackdrop />
+    <ModalContent IsCentered="true" Size="ModalSize.ExtraLarge">
+        <Form>
+            <ModalHeader>
+                <ModalTitle>@L["GenerateSKU"]</ModalTitle>
+                <CloseButton Clicked="CloseGenerateSKUModal" />
+            </ModalHeader>
+            <ModalBody Class="ps-4">
+                <div class="row">
+                    <p class="mb-0 text-dark fs-small">@L["SKUPreview"]</p>
+                    <div class="col-md-7 col-sm-12">
+                        <div class="w-100 h-100 sku-preview">
+                            <label class="sku-preview-label">@SKUModel.Preview</label>
+                        </div>
+                    </div>
+                    <div class="col-md-5 col-sm-12 ps-3">
+                        <p class="mb-1">@L["SeparatedBy"]:</p>
+                        <span class="me-2">
+                            <input type="radio" name="separated-by" id="separated-by-slash" value="/" @onchange="UpdateSeparatedBy" checked="@IsSeparatedBy('/')" />
+                            <label for="separated-by-slash" class="form-label">@L["Slash"] (/)</label>
+                        </span>
+
+                        <span class="me-2">
+                            <input type="radio" name="separated-by" id="separated-by-hyphen" value="-" @onchange="UpdateSeparatedBy" checked="@IsSeparatedBy('-')" />
+                            <label for="separated-by-hyphen" class="form-label">@L["Hyphen"] (-)</label>
+                        </span>
+
+                        <p class="mb-1 mt-2">@L["CaseUsed"]:</p>
+                        <span class="me-2">
+                            <input type="radio" name="case-used" id="case-used-upper" value="U" @onchange="UpdateCaseUsed" checked="@IsCaseUsed('U')" />
+                            <label for="case-used-upper" class="form-label">@L["UpperCase"]</label>
+                        </span>
+
+                        <span class="me-2">
+                            <input type="radio" name="case-used" id="case-used-lower" value="L" @onchange="UpdateCaseUsed" checked="@IsCaseUsed('L')" />
+                            <label for="case-used-lower" class="form-label">@L["LowerCase"]</label>
+                        </span>
+                    </div>
+                </div>
+                <hr class="my-2" />
+                <div class="row">
+                    <p class="mb-0 fw-bold text-dark">@L["ConfigureYourSKUPattern"]</p>
+                    <label class="fs-small">@L["ConfigureYourSKUPatternMessage"]</label>
+                </div>
+
+                <div class="row mt-3">
+                    @foreach (var item in SKUModel.SKUModelOptions)
+                    {
+                        <div class="col-lg-3 col-md-3">
+                            <div class="form-group row">
+                                <div class="col-md-10">
+                                    <label class="form-label">@L["SampleValue"]: @item.SampleDisplayValue</label>
+                                </div>
+                                <div class="col-md-10">
+                                    <SelectList TItem="string"
+                                            TValue="string"
+                                            Data="@SKUModel.DropdownOptions"
+                                            TextField="@((item)=>item)"
+                                            ValueField="@((item)=>item)"
+                                            Size="Size.Small"
+                                            SelectedValue="@item.SelectedSampleValue"
+                                            SelectedValueChanged="@((value) => OnDropdownOptionsChanged(item, value))"
+                                            />
+                                </div>
+                                <div class="col-md-2 text-center">
+                                    @if(item != SKUModel.SKUModelOptions.Last())
+                                    {
+                                        <label class="sku-preview-label">@SKUModel.SeparatedBy</label>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-lg-10 col-md-10">
+                                    <label class="form-label">@L["Show"]</label>
+                                </div>
+                                <div class="col-lg-8 col-md-8">
+                                    <div class="input-group mb-3">
+                                        <Dropdown>
+                                            <DropdownToggle Size="Size.Small" Class="btn btn-sm btn-outline-secondary">
+                                                @L[item.DropdownDisplayValue]
+                                            </DropdownToggle>
+                                            <DropdownMenu>
+                                                <DropdownItem @onclick="() => UpdateDropdownDisplayValue(item, 'F')">@L["First"]</DropdownItem>
+                                                <DropdownItem @onclick="() => UpdateDropdownDisplayValue(item, 'L')">@L["Last"]</DropdownItem>
+                                            </DropdownMenu>
+                                        </Dropdown>
+                                        <input type="number" min="0" max="6" class="form-control form-control-sm" 
+                                                   value="@item.CharactersLength" 
+                                                   @oninput="((ChangeEventArgs e) => CharactersLengthInputChange(item, e))" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4">
+                                    <label class="form-label">@L["Letters"]</label>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary"
+                        Clicked="CloseGenerateSKUModal">
+                    @L["Cancel"]
+                </Button>
+                <Button Color="Color.Primary"
+                        Type="@ButtonType.Submit"
+                        PreventDefaultOnSubmit="true"
+                        Clicked="GenerateSKU">
+                    @L["GenerateSKU"]
+                </Button>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>
 
 @code {
 }
