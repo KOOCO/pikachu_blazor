@@ -17,46 +17,35 @@
     <div class="col-6">
         <h3>@L["Items"]</h3>
     </div>
-    <div class="col-6" style="display: flex;flex-direction: row-reverse;">
-        <Button Danger Type="@ButtonType.Button" Style="margin-right:5px">
-            <Popconfirm Title="Are you sure delete selected items?" OnConfirm="DeleteSelected">
+    <div class="col-6 d-flex flex-row-reverse">
+        <Button Danger Type="@ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="DeleteSelectedAsync">
                 @L["DeleteItem"]
-            </Popconfirm>
         </Button>
-        <Button Type="@ButtonType.Button" Style="margin-right:5px; background-color:skyblue">@L["CopyItem"]</Button>
-        <Button Type="@ButtonType.Button" Style="margin-right:5px" Clicked="CreateNewItem">@L["NewItem"]</Button>
+        <Button Type="@ButtonType.Button" Class="btn btn-sm btn-secondary me-1">@L["CopyItem"]</Button>
+        <Button Type="@ButtonType.Button" Class="btn btn-sm btn-primary me-1" Clicked="CreateNewItem">
+            <i class="fa fa-plus"></i>    
+            @L["NewItem"]
+        </Button>
+        <div class="me-2 p-2">
+            <input type="checkbox" class="me-1" style="height: 15px; width: 15px;" checked="@IsAllSelected" @onchange="HandleSelectAllChange"></input>
+            <Label Class="form-label">@L["SelectAll"]</Label>
+        </div>
     </div>
 </div>
-<div>
-
-    @*     <Table @ref="table"
-    TItem="ItemDto"
-    DataSource="@itemList"
-    Total="_total"
-    @bind-PageIndex="_pageIndex"
-    @bind-PageSize="_pageSize"
-    @bind-SelectedRows="selectedRows"
-    Size="TableSize.Small">
-    <Selection Key="@(context.Id.ToString())" />
-    <PropertyColumn Title="@L["ItemName"]" Property="item=>item.ItemName" />
-    <PropertyColumn Title="@L["CreatedTime"]" Property="item=>item.CreationTime" Format="yyyy-MM-dd" />
-    <PropertyColumn Title="@L["TurnItemOn"]" Property="item=>item.IsItemAvaliable">
-    <Switch @bind-Value="@context.IsItemAvaliable" OnChange="() => OnItemAvaliablityChange(context.Id)"></Switch>
-    </PropertyColumn>
-    </Table> *@
-</div>
-<Card>
-    @* <CardHeader>
-        <h2>@L["Books"]</h2>
-    </CardHeader> *@
+<Card Class="mt-2">
     <CardBody>
         <DataGrid TItem="ItemDto"
-                  Data="itemList"
+                  Data="ItemList"
                   ReadData="OnDataGridReadAsync"
-                  TotalItems="_total"
+                  TotalItems="Total"
                   ShowPager="true"
-                  PageSize="_pageSize">
+                  PageSize="PageSize">
             <DataGridColumns>
+                <DataGridColumn TItem="ItemDto" Caption="@L["Select"]">
+                    <DisplayTemplate>
+                        <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
+                    </DisplayTemplate>
+                </DataGridColumn>
                 <DataGridColumn TItem="ItemDto"
                                 Field="@nameof(ItemDto.ItemName)"
                                 Caption="@L["ItemName"]">
@@ -95,6 +84,13 @@
                 <DataGridColumn TItem="ItemDto"
                                 Field="@nameof(ItemDto.ShareProfit)"
                                 Caption="@L["ShareProfit"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="ItemDto"
+                                Field="@nameof(ItemDto.IsItemAvaliable)"
+                                Caption="@L["Availability"]">
+                        <DisplayTemplate>
+                            <Switch TValue="bool" Checked="@context.IsItemAvaliable" CheckedChanged="@(() => OnItemAvaliablityChange(context.Id))"></Switch>
+                        </DisplayTemplate>
                 </DataGridColumn>
             </DataGridColumns>
         </DataGrid>

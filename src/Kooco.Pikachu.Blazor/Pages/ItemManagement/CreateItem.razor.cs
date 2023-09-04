@@ -350,18 +350,6 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             }
         }
 
-        public async Task DeleteAllAsync()
-        {
-            try
-            {
-                await _itemAppService.DeleteAllAsync();
-            }
-            catch (Exception ex)
-            {
-                await _uiMessageService.Error(ex.Message, ex.GetType().ToString());
-            }
-        }
-
         private void OpenGenerateSKUModal()
         {
             GenerateSKUModal.Show();
@@ -553,6 +541,11 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 item.CustomValue = value;
                 GeneratePreview();
             }
+        }
+
+        private void CancelToItemList()
+        {
+            NavigationManager.NavigateTo("Items");
         }
     }
 

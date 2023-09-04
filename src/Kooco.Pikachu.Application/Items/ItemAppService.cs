@@ -128,12 +128,4 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
         await _itemRepository.DeleteManyAsync(itemIds);
     }
 
-    public async Task DeleteAllAsync()
-    {
-        using (_dataFilter.Disable<ISoftDelete>())
-        {
-            var items = await _itemRepository.GetListAsync();
-            await _itemRepository.HardDeleteAsync(items);
-        }
-    }
 }

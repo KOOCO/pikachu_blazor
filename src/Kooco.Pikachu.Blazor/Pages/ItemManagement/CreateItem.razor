@@ -365,13 +365,12 @@
                     </div>
                 </div>
                 <div style="text-align: right; margin-top:5px ;">
-                    <Button Type="@ButtonType.Button" class="btn btn-danger me-1">@L["Cancel"]</Button>
+                    <Button Type="@ButtonType.Button" class="btn btn-danger me-1" Clicked="CancelToItemList">@L["Cancel"]</Button>
                     <Button Type="@ButtonType.Button" class="btn btn-primary me-1" Clicked="CreateEntityAsync">
                         <i class="fa fa-check"></i>
                         @L["Save"]
                     </Button>
                     <Button Type="@ButtonType.Button" class="btn btn-secondary me-1">@L["Preview"]</Button>
-                    <Button Type="@ButtonType.Button" class="btn btn-danger me-1" Clicked="DeleteAllAsync">@L["DeleteAll"]</Button>
                 </div>
             </div>
         </CardBody>
