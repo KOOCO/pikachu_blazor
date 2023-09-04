@@ -456,6 +456,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             if (value == SKUModel.DropdownOptions.LastOrDefault())
             {
                 item.CustomValueEnabled = true;
+                item.SelectedSampleValue = value;
                 GeneratePreview();
             }
             else
