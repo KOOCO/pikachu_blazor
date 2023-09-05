@@ -19,19 +19,16 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
     private readonly IItemRepository _itemRepository;
     private readonly IImageAppService _imageAppService;
     private readonly ItemManager _itemManager;
-    private readonly IDataFilter _dataFilter;
 
     public ItemAppService(
         IItemRepository repository,
         IImageAppService imageAppService,
-        ItemManager itemManager,
-        IDataFilter dataFilter
+        ItemManager itemManager
         ) : base(repository)
     {
         _itemRepository = repository;
         _imageAppService = imageAppService;
         _itemManager = itemManager;
-        _dataFilter = dataFilter;
     }
 
     /// <summary>
@@ -98,6 +95,21 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
                     itemDetail.Attribute1Value,
                     itemDetail.Attribute2Value,
                     itemDetail.Attribute3Value
+                    );
+            }
+        }
+
+        if(input.ItemImages != null && input.ItemImages.Any())
+        {
+            foreach(var image in input.ItemImages)
+            {
+                _itemManager.AddItemImage(
+                    item,
+                    image.Name,
+                    image.BlobImageName,
+                    image.ImageUrl,
+                    image.ImageType,
+                    image.SortNo
                     );
             }
         }

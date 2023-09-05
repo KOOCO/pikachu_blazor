@@ -84,6 +84,13 @@
     "First": "First",
     "Last": "Last",
     "Letters": "Letters",
+    "Pikachu:SystemIsUnableToCopyAtTheMoment": "System Is Unable To Copy At The Moment",
+    "Pikachu:SomethingWentWrongWhileDeletingImage": "Something Went Wrong While Deleting Image",
+    "Pikachu:AreYouSureToDeleteImage": "Are You Sure You Want To Delete This Image?",
+    "Pikachu:SomethingWrongWhileFileUpload": "Something Went Wrong While Uploading File",
+    "Pikachu:FilesAreGreaterThanMaxAllowedFileSize": "Files Are Greater Than Maximum Allowed File Size",
+    "Pikachu:AlreadyUploadMaxAllowedFiles": "You Have Already Uploaded Maximum Number Of Files",
+    "Pikachu:FilesExceedMaxAllowedPerUpload": "Files Exceed Maximum Allowed Files Per Upload",
 
     //GroupBuy
     "NewGroupBuy": "New GroupBuy",

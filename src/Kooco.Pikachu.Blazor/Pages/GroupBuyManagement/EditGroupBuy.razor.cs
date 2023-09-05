@@ -415,37 +415,37 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
             var result = await _groupBuyAppService.UpdateAsync(Id,updateGroupBuyDto);
             await _imageAppService.DeleteGroupBuyImagesAsync(Id);
-            if (imageDto.ImagePath != null)
+            if (imageDto.ImageUrl != null)
             {
-                imageDto.TargetID = result.Id;
+                imageDto.TargetId = result.Id;
 
                 await _imageAppService.CreateAsync(imageDto);
 
             }
-            if (imageDto2.ImagePath != null)
+            if (imageDto2.ImageUrl != null)
             {
-                imageDto2.TargetID = result.Id;
+                imageDto2.TargetId = result.Id;
 
                 await _imageAppService.CreateAsync(imageDto2);
 
             }
-            if (imageDto3.ImagePath != null)
+            if (imageDto3.ImageUrl != null)
             {
-                imageDto3.TargetID = result.Id;
+                imageDto3.TargetId = result.Id;
 
                 await _imageAppService.CreateAsync(imageDto3);
 
             }
-            if (imageDto4.ImagePath != null)
+            if (imageDto4.ImageUrl != null)
             {
-                imageDto2.TargetID = result.Id;
+                imageDto2.TargetId = result.Id;
 
                 await _imageAppService.CreateAsync(imageDto4);
 
             }
-            if (imageDto5.ImagePath != null)
+            if (imageDto5.ImageUrl != null)
             {
-                imageDto5.TargetID = result.Id;
+                imageDto5.TargetId = result.Id;
 
                 await _imageAppService.CreateAsync(imageDto5);
 

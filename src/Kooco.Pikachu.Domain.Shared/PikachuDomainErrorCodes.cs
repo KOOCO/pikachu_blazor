@@ -10,4 +10,11 @@ public static class PikachuDomainErrorCodes
     public const string ItemWithSKUAlreadyExists = "Pikachu:ItemWithSKUAlreadyExists";
     public const string SKUForItemDetailsCannotBeNull = "Pikachu:SKUForItemDetailsCannotBeNull";
     public const string SellingPriceForItemShouldBeGreaterThanZero = "Pikachu:SellingPriceForItemShouldBeGreaterThanZero";
+    public const string SystemIsUnableToCopyAtTheMoment = "Pikachu:SystemIsUnableToCopyAtTheMoment";
+    public const string SomethingWentWrongWhileDeletingImage = "Pikachu:SomethingWentWrongWhileDeletingImage";
+    public const string AreYouSureToDeleteImage = "Pikachu:AreYouSureToDeleteImage";
+    public const string SomethingWrongWhileFileUpload = "Pikachu:SomethingWrongWhileFileUpload";
+    public const string FilesAreGreaterThanMaxAllowedFileSize = "Pikachu:FilesAreGreaterThanMaxAllowedFileSize";
+    public const string AlreadyUploadMaxAllowedFiles = "Pikachu:AlreadyUploadMaxAllowedFiles";
+    public const string FilesExceedMaxAllowedPerUpload = "Pikachu:FilesExceedMaxAllowedPerUpload";
 }

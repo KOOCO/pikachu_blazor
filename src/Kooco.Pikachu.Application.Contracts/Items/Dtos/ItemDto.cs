@@ -1,4 +1,6 @@
+using Kooco.Pikachu.Images;
 using System;
+using System.Collections.Generic;
 using Volo.Abp.Application.Dtos;
 
 namespace Kooco.Pikachu.Items.Dtos;
@@ -16,4 +18,7 @@ public class ItemDto : FullAuditedEntityDto<Guid>
     public bool IsReturnable { get; set; }
     public bool IsItemAvaliable { get; set; }
     public bool IsSelected { get; set; } = false;
+
+    public virtual ICollection<ItemDetailsDto> ItemDetails { get; set; }
+    public virtual ICollection<ImageDto> Images { get; set; }
 }

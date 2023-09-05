@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.Localization;
+﻿using Kooco.Pikachu.Images;
+using Kooco.Pikachu.Localization;
 using Microsoft.Extensions.Localization;
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -132,7 +133,7 @@ namespace Kooco.Pikachu.Items
             string? attribute3Value
             )
         {
-            Check.NotNull(item, nameof(Item));
+            Check.NotNull(@item, nameof(Item));
             Check.NotNull(itemName, nameof(itemName));
 
             var existing = await _itemRepository.FindBySKUAsync(sku);
@@ -141,7 +142,7 @@ namespace Kooco.Pikachu.Items
                 throw new BusinessException(_l[PikachuDomainErrorCodes.ItemWithSKUAlreadyExists]);
             }
 
-            item.AddItemDetail(
+            @item.AddItemDetail(
                 GuidGenerator.Create(),
                 itemName,
                 sku,
@@ -157,6 +158,27 @@ namespace Kooco.Pikachu.Items
                 attribute3Value
                 );
 
+        }
+
+        public void AddItemImage(
+            [NotNull] Item @item,
+            string name,
+            string blobImageName,
+            string imageUrl,
+            ImageType imageType,
+            int sortNo
+            )
+        {
+            Check.NotNull(item, nameof(Item));
+            @item.AddItemImage(
+                GuidGenerator.Create(),
+                name,
+                blobImageName,
+                imageUrl,
+                imageType,
+                @item.Id,
+                sortNo
+                );
         }
     }
 }

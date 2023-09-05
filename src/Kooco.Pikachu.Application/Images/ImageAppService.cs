@@ -29,14 +29,14 @@ namespace Kooco.Pikachu.Images
 
         public async Task DeleteGroupBuyImagesAsync(Guid GroupBuyId)
         {
-            await _repository.DeleteAsync(x => x.TargetID == GroupBuyId);
+            await _repository.DeleteAsync(x => x.TargetId == GroupBuyId);
         }
 
         public async Task<List<ImageDto>> GetGroupBuyImagesAsync(Guid GroupBuyId)
         {
             List<ImageDto> result=new List<ImageDto>();
             var query = await _repository.GetQueryableAsync();
-            result =ObjectMapper.Map<List<Image>,List<ImageDto>>(query.Where(x => x.TargetID == GroupBuyId).ToList());
+            result =ObjectMapper.Map<List<Image>,List<ImageDto>>(query.Where(x => x.TargetId == GroupBuyId).ToList());
             return result;
         }
 
@@ -44,9 +44,9 @@ namespace Kooco.Pikachu.Images
         {
             foreach (var item in images.ToList())
             {
-                string dirName = item.ImageType.ToString() + "/" + item.TargetID.ToString();
-                var imageString = await _imageblobService.UploadFileToBlob(item.FileInfo.FileName, item.FileInfo.FileData, item.FileInfo.FileMimeType, dirName);
-                item.ImagePath = imageString;
+                string dirName = item.ImageType.ToString() + "/" + item.TargetId.ToString();
+                //var imageString = await _imageblobService.UploadFileToBlob(item.FileInfo.FileName, item.FileInfo.FileData, item.FileInfo.FileMimeType, dirName);
+                item.ImageUrl = "";
             }
             var image = ObjectMapper.Map<List<CreateImageDto>, List<Image>>(images);
             await _repository.InsertManyAsync(image, true);

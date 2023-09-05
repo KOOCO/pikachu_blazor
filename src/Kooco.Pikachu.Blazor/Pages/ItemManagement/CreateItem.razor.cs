@@ -63,13 +63,13 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         {
             if(e.Files.Count() > MaxAllowedFilesPerUpload)
             {
-                await _uiMessageService.Error(L["FilesExceedMaxAllowedPerUpload"]);
+                await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesExceedMaxAllowedPerUpload]);
                 await FilePickerCustom.Clear();
                 return;
             }
             if(CreateItemDto.ItemImages.Count > TotalMaxAllowedFiles)
             {
-                await _uiMessageService.Error(L["AlreadyUploadMaxAllowedFiles"]);
+                await _uiMessageService.Error(L[PikachuDomainErrorCodes.AlreadyUploadMaxAllowedFiles]);
                 await FilePickerCustom.Clear();
                 return;
             }
@@ -96,12 +96,15 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                         memoryStream.Position = 0;
                         var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
 
+                        int sortNo = CreateItemDto.ItemImages.LastOrDefault()?.SortNo ?? 0;
+
                         CreateItemDto.ItemImages.Add(new CreateImageDto
                         {
                             Name = file.Name,
                             BlobImageName = newFileName,
-                            ImagePath = url,
-                            ImageType = ImageType.Item
+                            ImageUrl = url,
+                            ImageType = ImageType.Item,
+                            SortNo = sortNo + 1
                         });
 
                         await FilePickerCustom.Clear();
@@ -113,13 +116,13 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 }
                 if(count > 0)
                 {
-                    await _uiMessageService.Error(count + ' ' + L["FilesAreGreaterThanMaxAllowedFileSize"]);
+                    await _uiMessageService.Error(count + ' ' + L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
                 }
             }
             catch (Exception exc)
             {
                 Console.WriteLine(exc.Message);
-                await _uiMessageService.Error("SomethingWrongWhileFileUpload");
+                await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
             }
         }
 
@@ -127,7 +130,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         {
             try
             {
-                var confirmed = await _uiMessageService.Confirm(L["AreYouSureToDeleteImage"]);
+                var confirmed = await _uiMessageService.Confirm(L[PikachuDomainErrorCodes.AreYouSureToDeleteImage]);
                 if (confirmed)
                 {
                     confirmed = await _imageContainerManager.DeleteAsync(blobImageName);
@@ -138,14 +141,14 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                     }
                     else
                     {
-                        throw new BusinessException("CouldNotDelete");
+                        throw new BusinessException(L[PikachuDomainErrorCodes.SomethingWentWrongWhileDeletingImage]);
                     }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                await _uiMessageService.Error("SomethingWentWrongWhileDeletingImage");
+                await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWentWrongWhileDeletingImage]);
             }
         }
 
@@ -442,7 +445,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             }
             catch
             {
-                _uiMessageService.Error(L["SystemIsUnableToCopyAtTheMoment"]);
+                _uiMessageService.Error(L[PikachuDomainErrorCodes.SystemIsUnableToCopyAtTheMoment]);
             }
         }
 

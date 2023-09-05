@@ -105,10 +105,10 @@
                                 </FileTemplate>
                                 <ButtonsTemplate>
                                     <Progress Value="@FilePickerCustom.GetProgressPercentage()" />
-                                    <Buttons Class="mt-2 d-flex justify-content-end">
+                                    @* <Buttons Class="mt-2 d-flex justify-content-end">
                                         <Button Clicked="@context.Clear" Color="Color.Warning"><Icon Name="IconName.Clear" /></Button>
                                         <Button Clicked="@context.Upload" Color="Color.Primary"><Icon Name="IconName.FileUpload" /></Button>
-                                    </Buttons>
+                                    </Buttons> *@
                                 </ButtonsTemplate>
                             </FilePicker>
                         </Field>
@@ -123,7 +123,7 @@
                                 @foreach (var image in CreateItemDto.ItemImages)
                                 {
                                     <div class="image-container">
-                                        <Image class="blur-image" Source="@image.ImagePath" Text="Item Image" Fluid />
+                                        <Image class="blur-image" Source="@image.ImageUrl" Text="Item Image" Fluid />
                                         <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName)">
                                             <i class="fa fa-trash"></i>
                                         </button>

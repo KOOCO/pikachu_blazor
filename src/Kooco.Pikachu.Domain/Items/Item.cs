@@ -235,5 +235,29 @@ namespace Kooco.Pikachu.Items
 
             return this;
         }
+
+        internal Item AddItemImage(
+            [NotNull] Guid id,
+            string name,
+            string blobImageName,
+            string imageUrl,
+            ImageType imageType,
+            Guid? targetId,
+            int sortNo
+            )
+        {
+            Images.Add(
+                new Image(
+                    id,
+                    name,
+                    blobImageName,
+                    imageUrl,
+                    imageType,
+                    targetId,
+                    sortNo
+                    )
+                );
+            return this;
+        }
     }
 }
