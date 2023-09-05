@@ -67,17 +67,24 @@
                     </div>
                     <div class="col-10 row">
                         <Field>
-                            <InputFile />
+                            <FilePicker Multiple Upload="@LoadFilesDragDrop" ShowMode="FilePickerShowMode.List" />
                         </Field>
                     </div>
                 </div>
                 <div Class="col-12 row">
                     <div class="col-2"></div>
                     <div class="col-10">
-                        @foreach (var image in ItemImageList)
-                        {
-                            <Image Source="@image" Text="Item Image" Fluid Style="width:150px;" />
-                        }
+                        <div class="image-list-container">
+                            @foreach (var image in ItemImageList)
+                            {
+                                <div class="image-container">
+                                    <Image class="blur-image" Source="@image" Text="Item Image" Fluid />
+                                    <button class="delete-button">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </div>
+                            }
+                        </div>
                     </div>
                 </div>
                 <div class=" col-12 row">

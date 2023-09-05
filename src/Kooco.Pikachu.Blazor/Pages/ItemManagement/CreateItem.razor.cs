@@ -1,11 +1,13 @@
-﻿using Blazored.TextEditor;
+﻿using Azure.Storage.Blobs.Models;
+using Azure.Storage.Blobs;
+using Blazored.TextEditor;
 using Blazorise;
+using Kooco.Pikachu.AzureStorage.Image;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.ImageBlob;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using System;
 using System.Collections.Generic;
@@ -15,7 +17,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
-using Volo.Abp.Threading;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 {
@@ -40,18 +42,50 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         private Dictionary<IFileEntry, string> FileDataUrls = new();
         private readonly IImageBlobService _imageBlobService;
         private readonly IUiMessageService _uiMessageService;
+        private readonly ImageContainerManager _imageContainerManager;
 
         public CreateItem(
             IEnumValueAppService enumValueService,
             IItemAppService itemAppService,
             IImageBlobService imageBlobService,
-            IUiMessageService uiMessageService
+            IUiMessageService uiMessageService,
+            ImageContainerManager imageContainerManager
             )
         {
             _enumValueService = enumValueService;
             _itemAppService = itemAppService;
             _imageBlobService = imageBlobService;
             _uiMessageService = uiMessageService;
+            _imageContainerManager = imageContainerManager;
+        }
+
+        async Task LoadFilesDragDrop(FileUploadEventArgs e)
+        {
+            string newFileName = Path.ChangeExtension(
+                  Path.GetRandomFileName(),
+                  Path.GetExtension(e.File.Name));
+            try
+            {
+                var stream = e.File.OpenReadStream();
+                try
+                {
+                    var memoryStream = new MemoryStream();
+
+                    await stream.CopyToAsync(memoryStream);
+                    memoryStream.Position = 0;
+                    var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
+                    ItemImageList.Add(url);
+                }
+                finally
+                {
+                    stream.Close();
+                }
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine(exc.Message);
+                await _uiMessageService.Error("SomethingWrongWhileFileUpload");
+            }
         }
 
         protected override async Task OnInitializedAsync()

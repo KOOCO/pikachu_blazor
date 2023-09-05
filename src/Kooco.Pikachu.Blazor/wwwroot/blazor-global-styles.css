@@ -108,3 +108,65 @@
 .btn {
     border-radius: 0.25rem;
 }
+
+.image-list-container {
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    border-radius: 0.5rem;
+    border: 1px dashed rgb(150, 113, 36);
+}
+
+    /*.image-list-container img {
+        height: 100px;
+        width: auto;
+        margin-right: 10px;
+        border-radius: 0.5rem;
+        margin-bottom: 10px;
+    }*/
+.image-container {
+    position: relative;
+    height: 100px;
+    width: auto;
+    margin-right: 10px;
+    border-radius: 0.5rem;
+    margin-bottom: 10px;
+}
+
+.image-container {
+    position: relative;
+    height: 100px;
+    width: auto;
+    margin-right: 10px;
+    border-radius: 0.5rem;
+    margin-bottom: 10px;
+}
+
+    .image-container img.blur-image {
+        height: 100%;
+        width: 100%;
+        border-radius: 0.5rem;
+    }
+
+    .image-container:hover img.blur-image {
+        filter: blur(2px);
+    }
+
+    .image-container .delete-button {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: transparent;
+        border: none;
+        color: red;
+        font-size: 20px;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .image-container:hover .delete-button {
+        opacity: 1;
+    }

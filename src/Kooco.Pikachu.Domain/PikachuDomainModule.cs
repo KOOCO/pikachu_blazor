@@ -14,6 +14,12 @@ using Volo.Abp.PermissionManagement.Identity;
 using Volo.Abp.PermissionManagement.OpenIddict;
 using Volo.Abp.SettingManagement;
 using Volo.Abp.TenantManagement;
+using Microsoft.Extensions.Configuration;
+using Volo.Abp.BlobStoring;
+using Kooco.Pikachu.AzureStorage.Image;
+using Kooco.Pikachu.AzureStorage;
+using Volo.Abp.BlobStoring.Azure;
+using Volo.Abp.BlobStoring.Database;
 
 namespace Kooco.Pikachu;
 
@@ -28,12 +34,17 @@ namespace Kooco.Pikachu;
     typeof(AbpPermissionManagementDomainIdentityModule),
     typeof(AbpSettingManagementDomainModule),
     typeof(AbpTenantManagementDomainModule),
-    typeof(AbpEmailingModule)
+    typeof(AbpEmailingModule),
+    typeof(AbpBlobStoringAzureModule)
 )]
 public class PikachuDomainModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+        var configuration = context.Services.GetConfiguration();
+        ConfigureAzureStorageAccountOptions(context, configuration);
+        ConfigureAbpBlobStoringOptions(configuration);
+
         Configure<AbpLocalizationOptions>(options =>
         {
             options.Languages.Add(new LanguageInfo("ar", "ar", "العربية", "ae"));
@@ -61,8 +72,32 @@ public class PikachuDomainModule : AbpModule
             options.IsEnabled = MultiTenancyConsts.IsEnabled;
         });
 
+
 #if DEBUG
         context.Services.Replace(ServiceDescriptor.Singleton<IEmailSender, NullEmailSender>());
 #endif
+    }
+
+    private void ConfigureAzureStorageAccountOptions(ServiceConfigurationContext context, IConfiguration configuration)
+    {
+        Configure<AzureStorageAccountOptions>(options => {
+            var azureStorageConnectionString = configuration["AzureStorageAccountSettings:ConnectionString"];
+            var azureStorageAccountUrl = configuration["AzureStorageAccountSettings:AccountUrl"];
+            options.ConnectionString = azureStorageConnectionString; options.AccountUrl = azureStorageAccountUrl;
+        });
+    }
+
+    private void ConfigureAbpBlobStoringOptions(IConfiguration configuration)
+    {
+        Configure<AbpBlobStoringOptions>(options => {
+            var azureStorageConnectionString = configuration["AzureStorageAccountSettings:ConnectionString"];
+
+            options.Containers.Configure<ImageContainer>(container => {
+                container.UseAzure(azure => {
+                    azure.ConnectionString = azureStorageConnectionString;
+                    azure.CreateContainerIfNotExists = true;
+                });
+            });
+        });
     }
 }

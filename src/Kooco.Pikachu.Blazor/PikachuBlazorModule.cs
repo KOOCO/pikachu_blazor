@@ -39,6 +39,7 @@ using Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme.Bundling;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite.Bundling;
 using Blazorise.RichTextEdit;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Kooco.Pikachu.Blazor;
 
@@ -216,6 +217,10 @@ public class PikachuBlazorModule : AbpModule
         {
             options.Applications["MVC"].RootUrl = configuration["App:SelfUrl"];
             options.RedirectAllowedUrls.AddRange(configuration["App:RedirectAllowedUrls"]?.Split(',') ?? Array.Empty<string>());
+        });
+        Configure<HubOptions>(options =>
+        {
+            options.DisableImplicitFromServicesParameters = true;
         });
     }
 
