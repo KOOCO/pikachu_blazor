@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Kooco.Pikachu.Images;
 
 namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 {
@@ -35,7 +36,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         private string TagInputValue { get; set; }
         private Modal GenerateSKUModal { get; set; }
         private SKUModel SKUModel { get; set; } = new();
-
+        private FilePicker FilePickerCustom { get; set; }
 
         private readonly IItemAppService _itemAppService;
         private readonly IEnumValueAppService _enumValueService;
@@ -59,7 +60,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             _imageContainerManager = imageContainerManager;
         }
 
-        async Task LoadFilesDragDrop(FileUploadEventArgs e)
+        async Task OnFileUploadAsync(FileUploadEventArgs e)
         {
             string newFileName = Path.ChangeExtension(
                   Path.GetRandomFileName(),
@@ -74,7 +75,14 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                     await stream.CopyToAsync(memoryStream);
                     memoryStream.Position = 0;
                     var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
-                    ItemImageList.Add(url);
+                    
+                    CreateItemDto.ItemImages.Add(new CreateImageDto
+                    {
+                        Name = e.File.Name,
+                        BlobImageName = newFileName,
+                        ImagePath = url,
+                        ImageType = ImageType.Item
+                    });
                 }
                 finally
                 {
@@ -85,6 +93,28 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             {
                 Console.WriteLine(exc.Message);
                 await _uiMessageService.Error("SomethingWrongWhileFileUpload");
+            }
+        }
+
+        async Task DeleteImageAsync(string blobImageName)
+        {
+            try
+            {
+                var confirmed = await _imageContainerManager.DeleteAsync(blobImageName);
+                if (confirmed)
+                {
+                    CreateItemDto.ItemImages = CreateItemDto.ItemImages.Where(x => x.BlobImageName != blobImageName).ToList();
+                    StateHasChanged();
+                }
+                else
+                {
+                    throw new BusinessException("CouldNotDelete");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                await _uiMessageService.Error("SomethingWentWrongWhileDeletingImage");
             }
         }
 
@@ -102,6 +132,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             CreateItemDto.ShippingMethodId = ShippingMethods.First().Id;
 
             ItemDetailsList = new List<CreateItemDetailsDto>();
+            CreateItemDto.ItemImages = new List<CreateImageDto>();
             Attributes.Add(new Attributes
             {
                 Id = 1,

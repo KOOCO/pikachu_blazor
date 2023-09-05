@@ -19,7 +19,6 @@ using Volo.Abp.BlobStoring;
 using Kooco.Pikachu.AzureStorage.Image;
 using Kooco.Pikachu.AzureStorage;
 using Volo.Abp.BlobStoring.Azure;
-using Volo.Abp.BlobStoring.Database;
 
 namespace Kooco.Pikachu;
 

@@ -204,6 +204,7 @@ public class PikachuBlazorModule : AbpModule
         ConfigureBlazorise(context);
         ConfigureRouter(context);
         ConfigureMenu(context);
+        ConfigureSignalRHubOptions();
     }
 
     private void ConfigureAuthentication(ServiceConfigurationContext context)
@@ -217,10 +218,6 @@ public class PikachuBlazorModule : AbpModule
         {
             options.Applications["MVC"].RootUrl = configuration["App:SelfUrl"];
             options.RedirectAllowedUrls.AddRange(configuration["App:RedirectAllowedUrls"]?.Split(',') ?? Array.Empty<string>());
-        });
-        Configure<HubOptions>(options =>
-        {
-            options.DisableImplicitFromServicesParameters = true;
         });
     }
 
@@ -355,5 +352,15 @@ public class PikachuBlazorModule : AbpModule
             options.SwaggerEndpoint("/swagger/v1/swagger.json", "Pikachu API");
         });
         app.UseConfiguredEndpoints();
+    }
+
+    // This method is required for the Image Upload in blazor
+    // To avoid Did not receive data in allotted time
+    private void ConfigureSignalRHubOptions()
+    {
+        Configure<HubOptions>(options =>
+        {
+            options.DisableImplicitFromServicesParameters = true;
+        });
     }
 }
