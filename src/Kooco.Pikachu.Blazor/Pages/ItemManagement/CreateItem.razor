@@ -69,8 +69,9 @@
                         <Field>
                             <FilePicker @ref="FilePickerCustom"
                                         Multiple
-                                        Upload="OnFileUploadAsync"
-                                        ShowMode="FilePickerShowMode.List">
+                                        Changed="OnFileUploadAsync"
+                                        ShowMode="FilePickerShowMode.List"
+                                        Accept=".jpg, .png, .svg">
                                 <FileTemplate>
                                     <Div Flex="Flex.JustifyContent.Between">
                                         <Div>
@@ -78,22 +79,27 @@
                                             <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
                                         </Div>
                                         <Div Class="ps-2">
-                                            @if ( context.File.Status == FileEntryStatus.Ready )
-                                            {
-                                                <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
-                                            }
-                                            else if ( context.File.Status == FileEntryStatus.Uploading )
-                                            {
-                                                <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
-                                            }
-                                            else if ( context.File.Status == FileEntryStatus.Uploaded )
-                                            {
-                                                <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
-                                            }
-                                            else if ( context.File.Status == FileEntryStatus.Error )
-                                            {
-                                                <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
-                                            }
+                                            <Div>
+                                                 @if (context.File.Status == FileEntryStatus.Ready)
+                                                {
+                                                    <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
+                                                }
+                                                else if (context.File.Status == FileEntryStatus.Uploading)
+                                                {
+                                                    <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
+                                                }
+                                                else if (context.File.Status == FileEntryStatus.Uploaded)
+                                                {
+                                                    <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
+                                                }
+                                                else if (context.File.Status == FileEntryStatus.Error)
+                                                {
+                                                    <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
+                                                }
+                                            </Div>
+                                            <Div>
+                                                <Icon TextColor="TextColor.Danger" Name="IconName.Delete" class="cursor-pointer" Clicked="context.RemoveFile" />
+                                            </Div>
                                         </Div>
                                     </Div>
                                 </FileTemplate>

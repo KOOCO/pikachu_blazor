@@ -25,13 +25,16 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
     public partial class CreateItem
     {
         private const int MaxTextCount = 60; //input max length
+        private const int MaxAllowedFilesPerUpload = 10;
+        private const int TotalMaxAllowedFiles = 50;
+        private const int MaxAllowedFileSize = 1024 * 1024 * 10;
+
         private List<string> ItemTags { get; set; } = new List<string>(); //used for store item tags 
         private List<EnumValueDto> ShippingMethods { get; set; } // for bind all shippingMethods
         private List<EnumValueDto> TaxTypes { get; set; } // for bind all taxTypes
         private BlazoredTextEditor QuillHtml; //Item Discription Html
         private List<CreateItemDetailsDto> ItemDetailsList { get; set; } // List of CreateItemDetail dto to store PriceAndInventory
         private CreateItemDto CreateItemDto = new(); //Item Dto
-        private List<string> ItemImageList = new(); //to store Item Images
         private List<Attributes> Attributes = new();
         private string TagInputValue { get; set; }
         private Modal GenerateSKUModal { get; set; }
@@ -40,53 +43,77 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 
         private readonly IItemAppService _itemAppService;
         private readonly IEnumValueAppService _enumValueService;
-        private Dictionary<IFileEntry, string> FileDataUrls = new();
-        private readonly IImageBlobService _imageBlobService;
         private readonly IUiMessageService _uiMessageService;
         private readonly ImageContainerManager _imageContainerManager;
 
         public CreateItem(
             IEnumValueAppService enumValueService,
             IItemAppService itemAppService,
-            IImageBlobService imageBlobService,
             IUiMessageService uiMessageService,
             ImageContainerManager imageContainerManager
             )
         {
             _enumValueService = enumValueService;
             _itemAppService = itemAppService;
-            _imageBlobService = imageBlobService;
             _uiMessageService = uiMessageService;
             _imageContainerManager = imageContainerManager;
         }
 
-        async Task OnFileUploadAsync(FileUploadEventArgs e)
+        async Task OnFileUploadAsync(FileChangedEventArgs e)
         {
-            string newFileName = Path.ChangeExtension(
-                  Path.GetRandomFileName(),
-                  Path.GetExtension(e.File.Name));
+            if(e.Files.Count() > MaxAllowedFilesPerUpload)
+            {
+                await _uiMessageService.Error(L["FilesExceedMaxAllowedPerUpload"]);
+                await FilePickerCustom.Clear();
+                return;
+            }
+            if(CreateItemDto.ItemImages.Count > TotalMaxAllowedFiles)
+            {
+                await _uiMessageService.Error(L["AlreadyUploadMaxAllowedFiles"]);
+                await FilePickerCustom.Clear();
+                return;
+            }
+            var count = 0;
             try
             {
-                var stream = e.File.OpenReadStream();
-                try
+                foreach (var file in e.Files)
                 {
-                    var memoryStream = new MemoryStream();
-
-                    await stream.CopyToAsync(memoryStream);
-                    memoryStream.Position = 0;
-                    var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
-                    
-                    CreateItemDto.ItemImages.Add(new CreateImageDto
+                    if(file.Size > MaxAllowedFileSize)
                     {
-                        Name = e.File.Name,
-                        BlobImageName = newFileName,
-                        ImagePath = url,
-                        ImageType = ImageType.Item
-                    });
+                        count++;
+                        await FilePickerCustom.RemoveFile(file);
+                        return;
+                    }
+                    string newFileName = Path.ChangeExtension(
+                          Path.GetRandomFileName(),
+                          Path.GetExtension(file.Name));
+                    var stream = file.OpenReadStream();
+                    try
+                    {
+                        var memoryStream = new MemoryStream();
+
+                        await stream.CopyToAsync(memoryStream);
+                        memoryStream.Position = 0;
+                        var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
+
+                        CreateItemDto.ItemImages.Add(new CreateImageDto
+                        {
+                            Name = file.Name,
+                            BlobImageName = newFileName,
+                            ImagePath = url,
+                            ImageType = ImageType.Item
+                        });
+
+                        await FilePickerCustom.Clear();
+                    }
+                    finally
+                    {
+                        stream.Close();
+                    }
                 }
-                finally
+                if(count > 0)
                 {
-                    stream.Close();
+                    await _uiMessageService.Error(count + ' ' + L["FilesAreGreaterThanMaxAllowedFileSize"]);
                 }
             }
             catch (Exception exc)
@@ -100,15 +127,19 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         {
             try
             {
-                var confirmed = await _imageContainerManager.DeleteAsync(blobImageName);
+                var confirmed = await _uiMessageService.Confirm(L["AreYouSureToDeleteImage"]);
                 if (confirmed)
                 {
-                    CreateItemDto.ItemImages = CreateItemDto.ItemImages.Where(x => x.BlobImageName != blobImageName).ToList();
-                    StateHasChanged();
-                }
-                else
-                {
-                    throw new BusinessException("CouldNotDelete");
+                    confirmed = await _imageContainerManager.DeleteAsync(blobImageName);
+                    if (confirmed)
+                    {
+                        CreateItemDto.ItemImages = CreateItemDto.ItemImages.Where(x => x.BlobImageName != blobImageName).ToList();
+                        StateHasChanged();
+                    }
+                    else
+                    {
+                        throw new BusinessException("CouldNotDelete");
+                    }
                 }
             }
             catch (Exception ex)
