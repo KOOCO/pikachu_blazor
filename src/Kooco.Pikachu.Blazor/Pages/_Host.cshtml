@@ -1,11 +1,11 @@
 ﻿@page "/"
 @namespace Kooco.Pikachu.Blazor.Pages
 @using System.Globalization
-@using Lsw.Abp.AspnetCore.Components.Server.AntDesignTheme.Bundling
-@using Lsw.Abp.AspnetCore.Components.Web.AntDesignTheme.Themes.AntDesignTheme
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using Volo.Abp.AspNetCore.Mvc.UI.Bundling.TagHelpers
 @using Volo.Abp.Localization
+@using Volo.Abp.AspNetCore.Components.Web.LeptonXLiteTheme.Themes.LeptonXLite
+@using Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme.Bundling
 @{
     Layout = null;
     var rtl = CultureHelper.IsRtl ? "rtl" : string.Empty;
@@ -31,7 +31,7 @@
     <script src="_content/Blazored.TextEditor/quill-blot-formatter.min.js"></script>
     <script src="_content/Blazored.TextEditor/Blazored-BlazorQuill.js"></script>
 
-    <abp-style-bundle name="@BlazorAntDesignThemeBundles.Styles.Global" />
+    <abp-style-bundle name="@BlazorLeptonXLiteThemeBundles.Styles.Global" />
 </head>
 <body class="abp-application-layout bg-light @rtl">
     <component type="typeof(App)" render-mode="Server" />
@@ -47,5 +47,6 @@
         <a class="dismiss">🗙</a>
     </div>
 
-    <abp-script-bundle name="@BlazorAntDesignThemeBundles.Scripts.Global" />
+    <abp-script-bundle name="@BlazorLeptonXLiteThemeBundles.Scripts.Global" />
+
 </body>

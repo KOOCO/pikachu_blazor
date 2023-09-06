@@ -10,9 +10,168 @@
     z-index: 1000;
 }
 
-#blazor-error-ui .dismiss {
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }
+
+.input-container {
+    position: relative;
+    display: inline-block;
+}
+
+    .input-container > .tag-input {
+        background-color: #fff;
+        border: 1px dashed;
+        width: 100px;
+        border-radius: 5px;
+        box-sizing: border-box;
+        padding: 2px 10px 2px 30px;
+        font-size: small;
+    }
+
+    .input-container .tag-input:focus {
+        outline: none;
+    }
+
+    .input-container .tag-input-placeholder-icon {
+        color: gray;
+        position: absolute;
+        left: 10px; /* Adjust as needed */
+        top: 5px; /* Adjust as needed */
+    }
+
+.item-tags {
+    border-radius: 5px;
+    box-sizing: border-box;
+    padding: 6px 10px;
+    margin-right: 5px;
+    font-size: small;
+    background-color: #355dff !important
+}
+
+.form-control .badge-close span {
+    padding-left: 3px;
+}
+
+.border-radius-0 {
+    border-radius: 0px;
+}
+
+.b-file-picker-files {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    flex-basis: 50px;
+}
+
+.b-file-picker .b-file-picker-file {
+    min-width: 5rem;
+    max-width: 15rem;
+    border: 1px solid lightgray;
+    border-radius: 0px;
+}
+
+.cursor-pointer {
     cursor: pointer;
-    position: absolute;
-    right: 0.75rem;
-    top: 0.5rem;
+}
+
+.sku-preview {
+    position: relative;
+    word-wrap: break-word;
+    padding: 35px;
+    border: 1px dashed #967124;
+    border-radius: 5px;
+    background-color: #fffcea;
+}
+
+.sku-preview-label {
+    font-size: x-large;
+    font-weight: 600;
+    color: #000;
+}
+
+.fs-small {
+    font-size: small;
+}
+
+.card,
+.card-body,
+.modal-content,
+.form-control,
+.form-select {
+    border-radius: 0.15rem;
+}
+
+.btn {
+    border-radius: 0.25rem;
+}
+
+.image-list-container {
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    border-radius: 0.5rem;
+    border: 1px dashed rgb(150, 113, 36);
+}
+
+.image-container {
+    position: relative;
+    height: 100px;
+    width: auto;
+    margin-right: 10px;
+    border-radius: 0.5rem;
+    margin-bottom: 10px;
+}
+
+.image-container {
+    position: relative;
+    height: 100px;
+    width: auto;
+    margin-right: 10px;
+    border-radius: 0.5rem;
+    margin-bottom: 10px;
+}
+
+    .image-container img.blur-image {
+        height: 100%;
+        width: 7em;
+        object-fit:contain;
+        border-radius: 0.5rem;
+        border: 1px solid rgb(150, 113, 36);
+        padding:0.5em;
+    }
+
+    .image-container:hover img.blur-image {
+        filter: blur(2px);
+    }
+
+    .image-container .delete-button {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: transparent;
+        border: none;
+        color: red;
+        font-size: 20px;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .image-container:hover .delete-button {
+        opacity: 1;
+    }
+
+.b-file-picker .b-text-drop {
+    padding: 60px !important;
+    text-transform: capitalize;
+    font-size: large;
+    font-weight: bolder;
+    color: #000;
+    background-color: #fffcea;
 }

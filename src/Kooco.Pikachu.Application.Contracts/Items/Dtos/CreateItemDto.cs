@@ -10,11 +10,10 @@ public class CreateItemDto
     public string ItemNo { get; set; }
     public string ItemName { get; set; } = "";
     public List<CreateItemDetailsDto> ItemDetails { get; set; }
-    public List<FileInfo> ItemImages { get; set; }
+    public List<CreateImageDto> ItemImages { get; set; }
     public string ItemDescriptionTitle { get; set; } = "";
     public string ItemDescription { get; set; } = "";
     public string ItemTags { get; set; }
-    public int LimitQuantity { get; set; }
     public bool IsReturnable { get; set; }
     public DateTime LimitAvaliableTimeStart { get; set; } = DateTime.UtcNow;
     public DateTime LimitAvaliableTimeEnd { get; set; } = DateTime.UtcNow;
@@ -43,4 +42,8 @@ public class CreateItemDto
     public string? CustomField9Value { get; set; }
     public string? CustomField10Name { get; set; }
     public string? CustomField10Value { get; set; }
+
+    public string? Attribute1Name { get; set; }
+    public string? Attribute2Name { get; set; }
+    public string? Attribute3Name { get; set; }
 }

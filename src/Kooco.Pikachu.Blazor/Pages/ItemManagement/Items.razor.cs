@@ -1,77 +1,98 @@
-﻿using AntDesign.TableModels;
-using Kooco.Pikachu.Items;
+﻿using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 using Volo.Abp.Application.Dtos;
 using System.Linq;
-using Microsoft.JSInterop;
-using AntDesign;
+using Blazorise.DataGrid;
+using Volo.Abp;
+using Microsoft.AspNetCore.Components;
+using Volo.Abp.AspNetCore.Components.Messages;
 
 namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 {
     public partial class Items
     {
+        public List<ItemDto> ItemList;
+        public bool IsAllSelected = false;
+        int PageIndex = 1;
+        int PageSize = 10;
+        int Total = 0;
+
+        private readonly IUiMessageService _uiMessageService;
         private readonly IItemAppService _itemAppService;
-        public List<ItemDto> itemList;
-        public IEnumerable<ItemDto> selectedRows;
-        int _pageIndex = 1;
-        int _pageSize = 10;
-        int _total = 0;
-        IMessageService _message;
-        public Items(IItemAppService itemAppService, IMessageService messageService)
+
+        public Items(IItemAppService itemAppService, IUiMessageService messageService)
         {
             _itemAppService = itemAppService;
-            itemList = new List<ItemDto>();
-            selectedRows = new List<ItemDto>();
-            _message = messageService;
+            _uiMessageService = messageService;
+
+            ItemList = new List<ItemDto>();
         }
-        protected override async Task OnInitializedAsync()
+
+        protected override async Task OnInitializedAsync() { }
+
+        private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<ItemDto> e)
         {
+            PageIndex = e.Page - 1;
             await UpdateItemList();
+            await InvokeAsync(StateHasChanged);
         }
 
         private async Task UpdateItemList()
         {
-            int skipCount = (_pageIndex - 1) * _pageSize;
+            int skipCount = PageIndex * PageSize;
             var result = await _itemAppService.GetListAsync(new PagedAndSortedResultRequestDto
             {
-                MaxResultCount = _pageSize,
+                Sorting = nameof(ItemDto.ItemName),
+                MaxResultCount = PageSize,
                 SkipCount = skipCount
             });
-            itemList = result.Items.ToList();
-            _total = (int)result.TotalCount;
-        }
-
-
-        public async Task OnChange(QueryModel<ItemDto> queryModel)
-        {
-
+            ItemList = result.Items.ToList();
+            Total = (int)result.TotalCount;
         }
 
         public async Task OnItemAvaliablityChange(Guid id)
         {
-            await _itemAppService.ChangeItemAvailability(id);
-        }
-
-        public void RemoveSelection(Guid id)
-        {
-            var selected = selectedRows.Where(x => x.Id != id);
-            selectedRows = selected;
-        }
-
-        private async void DeleteSelected()
-        {
-            if (selectedRows.Any())
+            try
             {
-                await _itemAppService.DeleteManyItems(selectedRows.Select(x => x.Id).ToList());
+                var item = ItemList.Where(x => x.Id == id).First();
+                item.IsItemAvaliable = !item.IsItemAvaliable;
+                await _itemAppService.ChangeItemAvailability(id);
                 await UpdateItemList();
-                await _message.Success("successfully deleted selected items");
-                StateHasChanged();
+                await InvokeAsync(StateHasChanged);
             }
-            else
-                await _message.Warning("No item selected");
+            catch (BusinessException ex)
+            {
+                await _uiMessageService.Error(ex.Code.ToString());
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
+            }
+        }
+        private void HandleSelectAllChange(ChangeEventArgs e)
+        {
+            IsAllSelected = (bool)e.Value;
+            ItemList.ForEach(item =>
+            {
+                item.IsSelected = IsAllSelected;
+            });
+            StateHasChanged();
+        }
+        private async Task DeleteSelectedAsync()
+        {
+            var itemIds = ItemList.Where(x => x.IsSelected).Select(x => x.Id).ToList();
+            if(itemIds.Count > 0)
+            {
+                var confirmed = await _uiMessageService.Confirm(L["AreYouSureToDeleteSelectedItem"]);
+                if (confirmed)
+                {
+                    await _itemAppService.DeleteManyItems(itemIds);
+                    await UpdateItemList();
+                }
+            }
         }
         public void CreateNewItem()
         {

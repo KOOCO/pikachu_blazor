@@ -1,7 +1,11 @@
+using JetBrains.Annotations;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Images;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
 
@@ -19,8 +23,8 @@ namespace Kooco.Pikachu.Items
         public string ItemTags { get; set; } // 项目标签/ItemTags
         public string? SalesAccount { get; set; } //銷售帳戶/Sales Account
         public bool Returnable { get; set; } = false; // 可否退貨/Returnable
-        public DateTime LimitAvaliableTimeStart { get; set; } //限時販售開始時間/Limit Avaliable Time Start
-        public DateTime LimitAvaliableTimeEnd { get; set; } //限時販售結束時間/Limit Avaliable Time End
+        public DateTime? LimitAvaliableTimeStart { get; set; } //限時販售開始時間/Limit Avaliable Time Start
+        public DateTime? LimitAvaliableTimeEnd { get; set; } //限時販售結束時間/Limit Avaliable Time End
         public float ShareProfit { get; set; } //分潤/Share Profit
         public bool IsFreeShipping { get; set; } = false; //是否免運/Is Free Shipping
         public string? BrandName { get; set; } //商品品牌名稱/Item Brand Name
@@ -34,8 +38,8 @@ namespace Kooco.Pikachu.Items
         public int? TaxTypeId { get; set; } //商品稅別/Tax Type
         public virtual EnumValue? Unit { get; set; } //商品單位/Unit
         public int? UnitId { get; set; } //商品單位/Unit
-        public virtual EnumValue? ShippingMethod { get; set; } 
-        public int? ShippingMethodId { get; set; } 
+        public virtual EnumValue? ShippingMethod { get; set; }
+        public int? ShippingMethodId { get; set; }
         public bool IsReturnable { get; set; }
         public bool IsItemAvaliable { get; set; }
         public string? CustomField1Name { get; set; }
@@ -78,5 +82,182 @@ namespace Kooco.Pikachu.Items
         public string? ISBN { get; set; }
         public string? ItemCategory { get; set; }
         public String? ItemMainImageURL { get; set; } //商品類別/Item Category
+
+        public string? Attribute1Name { get; set; }
+        public string? Attribute2Name { get; set; }
+        public string? Attribute3Name { get; set; }
+
+        public Item() { }
+        public Item(
+            Guid id,
+            [NotNull] string itemName,
+            string? itemDescriptionTitle,
+            string? itemDescription,
+            string? itemTags,
+            DateTime? limitAvailableTimeStart,
+            DateTime? limitAvailableTimeEnd,
+            float shareProfit,
+            bool isFreeShipping,
+            bool isReturnable,
+            int? shippingMethodId,
+            int? taxTypeId,
+
+            string? customField1Value,
+            string? customField1Name,
+
+            string? customField2Value,
+            string? customField2Name,
+            string? customField3Value,
+            string? customField3Name,
+            string? customField4Value,
+            string? customField4Name,
+            string? customField5Value,
+            string? customField5Name,
+            string? customField6Value,
+            string? customField6Name,
+            string? customField7Value,
+            string? customField7Name,
+            string? customField8Value,
+            string? customField8Name,
+            string? customField9Value,
+            string? customField9Name,
+            string? customField10Value,
+            string? customField10Name,
+
+            string? attribute1Name,
+            string? attribute2Name,
+            string? attribute3Name
+            ) : base(id)
+        {
+            SetItemName(itemName);
+            SetItemDescriptionTitle(itemDescriptionTitle);
+            ItemDescription = itemDescription;
+            ItemTags = itemTags;
+            LimitAvaliableTimeStart = limitAvailableTimeStart;
+            LimitAvaliableTimeEnd = limitAvailableTimeEnd;
+            ShareProfit = shareProfit;
+            IsFreeShipping = isFreeShipping;
+            IsReturnable = isReturnable;
+            ShippingMethodId = shippingMethodId;
+            TaxTypeId = taxTypeId;
+
+            CustomField1Value = customField1Value;
+            CustomField1Name = customField1Name;
+            CustomField2Value = customField2Value;
+            CustomField2Name = customField2Name;
+            CustomField3Value = customField3Value;
+            CustomField3Name = customField3Name;
+            CustomField4Value = customField4Value;
+            CustomField4Name = customField4Name;
+            CustomField5Value = customField5Value;
+            CustomField5Name = customField5Name;
+            CustomField6Value = customField6Value;
+            CustomField6Name = customField6Name;
+            CustomField7Value = customField7Value;
+            CustomField7Name = customField7Name;
+            CustomField8Value = customField8Value;
+            CustomField8Name = customField8Name;
+            CustomField9Value = customField9Value;
+            CustomField9Name = customField9Name;
+            CustomField10Value = customField10Value;
+            CustomField10Name = customField10Name;
+
+            Attribute1Name = attribute1Name;
+            Attribute2Name = attribute2Name;
+            Attribute3Name = attribute3Name;
+
+            ItemDetails = new Collection<ItemDetails>();
+            Images = new Collection<Image>();
+        }
+
+        private void SetItemName(
+            [NotNull] string itemName
+            )
+        {
+            ItemName = Check.NotNullOrWhiteSpace(
+                itemName,
+                nameof(ItemName),
+                maxLength: ItemConsts.MaxItemNameLength
+                );
+        }
+
+        private void SetItemDescriptionTitle(
+            [CanBeNull] string? itemDescriptionTitle 
+            )
+        {
+            ItemDescriptionTitle = Check.Length(
+                itemDescriptionTitle, 
+                nameof(ItemDescriptionTitle), 
+                ItemConsts.MaxDescriptionTitleLength
+                );
+        }
+
+        internal Item AddItemDetail(
+            [NotNull] Guid id,
+            [NotNull] string itemName,
+            [NotNull] string sku,
+            int? limitQuantity,
+            float sellingPrice,
+            float saleableQuantity,
+            float? preOrderableQuantity,
+            float? saleablePreOrderQuantity,
+            string? inventoryAccount,
+
+            string? attribute1Value,
+            string? attribute2Value,
+            string? attribute3Value
+            )
+        {
+            if(ItemDetails.Any(x => x.SKU == sku))
+            {
+                throw new BusinessException(PikachuDomainErrorCodes.ItemWithSKUAlreadyExists)
+                    .WithData("SKU", sku);
+            }
+
+            ItemDetails.Add(
+                new ItemDetails(
+                    id,
+                    itemName,
+                    sku,
+                    Id,
+                    limitQuantity,
+                    sellingPrice,
+                    saleableQuantity,
+                    preOrderableQuantity,
+                    saleablePreOrderQuantity,
+                    inventoryAccount,
+
+                    attribute1Value,
+                    attribute2Value,
+                    attribute3Value
+                    )
+                );
+
+            return this;
+        }
+
+        internal Item AddItemImage(
+            [NotNull] Guid id,
+            string name,
+            string blobImageName,
+            string imageUrl,
+            ImageType imageType,
+            Guid? targetId,
+            int sortNo
+            )
+        {
+            Images.Add(
+                new Image(
+                    id,
+                    name,
+                    blobImageName,
+                    imageUrl,
+                    imageType,
+                    targetId,
+                    sortNo
+                    )
+                );
+            return this;
+        }
     }
 }

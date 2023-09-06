@@ -28,38 +28,78 @@ namespace Kooco.Pikachu
         {
             if (await _appItemRepository.GetCountAsync() <= 0)
             {
-                await _appItemRepository.InsertAsync(
-                    new Item
-                    {
-                        ItemName = "SunShine Umbrella",
-                        ItemDescription = "This is a simple description of demo item",
-                        Returnable = false,
-                        ItemDetails = new List<ItemDetails>
-                        { new ItemDetails
-                             {
-                                 SellingPrice = 10,
-                                 OpeningStockValue = 100,
-                                 SKU = "APCJ-Blue-001"
-                             }
-                        }
-                    },
-                autoSave: true);
-                await _appItemRepository.InsertAsync(
-                   new Item
-                   {
-                       ItemName = "Lovely Pillow",
-                       ItemDescription = "This is a simple description of demo item",
-                       Returnable = false,
-                       ItemDetails = new List<ItemDetails>
-                        { new ItemDetails
-                             {
-                                 SellingPrice = 100,
-                                 OpeningStockValue = 2,
-                                 SKU = "APCJ-Blue-001"
-                             }
-                        }
-                   },
-               autoSave: true);
+                var item = new Item()
+                {
+                    ItemName = "SunShine Umbrella",
+                    ItemDescription = "This is a simple description of demo item",
+                    Returnable = false,
+                    ItemTags = "",
+                    ItemDetails = new List<ItemDetails>()
+                };
+                item.AddItemDetail(
+                    Guid.NewGuid(),
+                    item.ItemName,
+                    "APCJ-Blue-001",
+                    0,
+                    10,
+                    0,
+                    0,
+                    0,
+                    "",
+                    "",
+                    "",
+                    ""
+                    );
+
+                await _appItemRepository.InsertAsync(item);
+
+                item = new Item()
+                {
+                    ItemName = "SunShine Computer",
+                    ItemDescription = "This is a simple description of demo item",
+                    Returnable = false,
+                    ItemTags = "",
+                    ItemDetails = new List<ItemDetails>()
+                };
+                item.AddItemDetail(
+                    Guid.NewGuid(),
+                    item.ItemName,
+                    "APCJ-Blue-002",
+                    0,
+                    10,
+                    0,
+                    0,
+                    0,
+                    "",
+                    "",
+                    "",
+                    ""
+                    );
+                await _appItemRepository.InsertAsync(item);
+
+                item = new Item()
+                {
+                    ItemName = "Lovely Pillow",
+                    ItemDescription = "This is a simple description of demo item",
+                    Returnable = false,
+                    ItemTags = "",
+                    ItemDetails = new List<ItemDetails>()
+                };
+                item.AddItemDetail(
+                    Guid.NewGuid(),
+                    item.ItemName,
+                    "APCJ-Blue-003",
+                    0,
+                    100,
+                    0,
+                    0,
+                    0,
+                    "",
+                    "",
+                    "",
+                    ""
+                    );
+                await _appItemRepository.InsertAsync(item);
             }
 
 
