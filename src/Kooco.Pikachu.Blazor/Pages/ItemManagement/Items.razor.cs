@@ -98,5 +98,9 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         {
             NavigationManager.NavigateTo("Items/New");
         }
+        public void OnEditItem(Guid id)
+        {
+            NavigationManager.NavigateTo($"Items/Edit/{id}");
+        }
     }
 }

@@ -92,6 +92,13 @@
                             <Switch TValue="bool" Checked="@context.IsItemAvaliable" CheckedChanged="@(() => OnItemAvaliablityChange(context.Id))"></Switch>
                         </DisplayTemplate>
                 </DataGridColumn>
+                <DataGridColumn TItem="ItemDto"
+                                Field="@nameof(ItemDto.Id)"
+                                Caption="@L["Actions"]">
+                    <DisplayTemplate>
+                        <Button Clicked="() => OnEditItem(context.Id)"><Icon Class="fa fa-edit"></Icon></Button>
+                    </DisplayTemplate>
+                </DataGridColumn>
             </DataGridColumns>
         </DataGrid>
     </CardBody>

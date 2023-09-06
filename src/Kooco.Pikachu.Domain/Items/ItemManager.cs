@@ -2,11 +2,12 @@
 using Kooco.Pikachu.Localization;
 using Microsoft.Extensions.Localization;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Domain.Services;
-using Volo.Abp.Json.SystemTextJson.JsonConverters;
 
 namespace Kooco.Pikachu.Items
 {
@@ -179,6 +180,23 @@ namespace Kooco.Pikachu.Items
                 @item.Id,
                 sortNo
                 );
+        }
+
+        public void RemoveItemDetailsAsync(
+            [NotNull] Item @item,
+            List<Guid?> itemDetailsIds
+            )
+        {
+            if(itemDetailsIds != null && itemDetailsIds.Any())
+            {
+                foreach (var itemDetail in item.ItemDetails)
+                {
+                    if (!itemDetailsIds.Contains(itemDetail.Id))
+                    {
+                        item.ItemDetails.Remove(itemDetail);
+                    }
+                }
+            }
         }
     }
 }
