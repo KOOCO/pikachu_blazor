@@ -39,7 +39,8 @@
                   ReadData="OnDataGridReadAsync"
                   TotalItems="Total"
                   ShowPager="true"
-                  PageSize="PageSize">
+                  PageSize="PageSize"
+                  RowClicked="OnEditItem">
             <DataGridColumns>
                 <DataGridColumn TItem="ItemDto" Caption="@L["Select"]">
                     <DisplayTemplate>
@@ -91,13 +92,6 @@
                         <DisplayTemplate>
                             <Switch TValue="bool" Checked="@context.IsItemAvaliable" CheckedChanged="@(() => OnItemAvaliablityChange(context.Id))"></Switch>
                         </DisplayTemplate>
-                </DataGridColumn>
-                <DataGridColumn TItem="ItemDto"
-                                Field="@nameof(ItemDto.Id)"
-                                Caption="@L["Actions"]">
-                    <DisplayTemplate>
-                        <Button Clicked="() => OnEditItem(context.Id)"><Icon Class="fa fa-edit"></Icon></Button>
-                    </DisplayTemplate>
                 </DataGridColumn>
             </DataGridColumns>
         </DataGrid>

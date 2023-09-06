@@ -37,7 +37,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         private List<EnumValueDto> TaxTypes { get; set; } // for bind all taxTypes
         private BlazoredTextEditor QuillHtml; //Item Discription Html
         private List<CreateItemDetailsDto> ItemDetailsList { get; set; } = new(); // List of CreateItemDetail dto to store PriceAndInventory
-        private UpdateItemDto UpdateItemDto = new(); 
+        private UpdateItemDto UpdateItemDto = new();
         private List<Attributes> Attributes = new();
         private string TagInputValue { get; set; }
         private Modal GenerateSKUModal { get; set; }
@@ -231,15 +231,9 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                     confirmed = await _imageContainerManager.DeleteAsync(blobImageName);
                     await _itemAppService.DeleteSingleImageAsync(EditingId, blobImageName);
 
-                    if (confirmed)
-                    {
-                        UpdateItemDto.Images = UpdateItemDto.Images.Where(x => x.BlobImageName != blobImageName).ToList();
-                        StateHasChanged();
-                    }
-                    else
-                    {
-                        throw new BusinessException(L[PikachuDomainErrorCodes.SomethingWentWrongWhileDeletingImage]);
-                    }
+                    UpdateItemDto.Images = UpdateItemDto.Images.Where(x => x.BlobImageName != blobImageName).ToList();
+                    StateHasChanged();
+
                 }
             }
             catch (Exception ex)

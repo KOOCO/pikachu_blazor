@@ -98,8 +98,9 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         {
             NavigationManager.NavigateTo("Items/New");
         }
-        public void OnEditItem(Guid id)
+        public void OnEditItem(DataGridRowMouseEventArgs<ItemDto> e)
         {
+            var id = e.Item.Id;
             NavigationManager.NavigateTo($"Items/Edit/{id}");
         }
     }
