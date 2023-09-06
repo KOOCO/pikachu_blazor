@@ -138,9 +138,11 @@
 
     .image-container img.blur-image {
         height: 100%;
-        width: 100%;
+        width: 7em;
+        object-fit:contain;
         border-radius: 0.5rem;
         border: 1px solid rgb(150, 113, 36);
+        padding:0.5em;
     }
 
     .image-container:hover img.blur-image {
