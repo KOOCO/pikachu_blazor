@@ -109,7 +109,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                         return;
                     }
                     string newFileName = Path.ChangeExtension(
-                          Path.GetRandomFileName(),
+                          Guid.NewGuid().ToString().Replace("-", ""),
                           Path.GetExtension(file.Name));
                     var stream = file.OpenReadStream();
                     try
@@ -120,7 +120,11 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                         memoryStream.Position = 0;
                         var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
 
-                        int sortNo = CreateItemDto.ItemImages.LastOrDefault()?.SortNo ?? 0;
+                        int sortNo = 0;
+                        if (CreateItemDto.ItemImages.Any())
+                        {
+                            sortNo = CreateItemDto.ItemImages.Max(x => x.SortNo);
+                        }
 
                         CreateItemDto.ItemImages.Add(new CreateImageDto
                         {

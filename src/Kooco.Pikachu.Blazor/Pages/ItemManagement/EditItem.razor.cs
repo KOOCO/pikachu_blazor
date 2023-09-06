@@ -85,6 +85,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 
                 // Map ItemDto to UpdateItemDto
                 UpdateItemDto = mapper.Map<UpdateItemDto>(ExistingItem);
+                UpdateItemDto.Images = UpdateItemDto.Images.OrderBy(x => x.SortNo).ToList();
                 ItemDetailsList = mapper.Map<List<CreateItemDetailsDto>>(ExistingItem.ItemDetails);
                 ItemTags = ExistingItem.ItemTags.Split(',').ToList();
                 await QuillHtml.LoadHTMLContent(ExistingItem.ItemDescription);
@@ -180,7 +181,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                         return;
                     }
                     string newFileName = Path.ChangeExtension(
-                          Path.GetRandomFileName(),
+                          Guid.NewGuid().ToString().Replace("-", ""),
                           Path.GetExtension(file.Name));
                     var stream = file.OpenReadStream();
                     try
@@ -191,7 +192,11 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                         memoryStream.Position = 0;
                         var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
 
-                        int sortNo = UpdateItemDto.Images.LastOrDefault()?.SortNo ?? 0;
+                        int sortNo = 0;
+                        if (UpdateItemDto.Images.Any())
+                        {
+                            sortNo = UpdateItemDto.Images.Max(x => x.SortNo);
+                        }
 
                         UpdateItemDto.Images.Add(new CreateImageDto
                         {
@@ -232,8 +237,6 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                     await _itemAppService.DeleteSingleImageAsync(EditingId, blobImageName);
 
                     UpdateItemDto.Images = UpdateItemDto.Images.Where(x => x.BlobImageName != blobImageName).ToList();
-                    StateHasChanged();
-
                 }
             }
             catch (Exception ex)

@@ -19,7 +19,7 @@ public class ItemDetailsDto : FullAuditedEntityDto<Guid>
     public string? Property1 { get; set; }
     public string? Property2 { get; set; }
     public string? Property3 { get; set; }
-
+    public int? LimitQuantity { get; set; }
     public string? Attribute1Value { get; set; }
     public string? Attribute2Value { get; set; }
     public string? Attribute3Value { get; set; }

@@ -4,12 +4,8 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Application.Dtos;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Kooco.Pikachu.Images;
 using System.Linq;
 using Volo.Abp.Domain.Repositories;
-using Volo.Abp.Data;
-using System.ComponentModel.DataAnnotations;
-using AutoMapper.Configuration.Annotations;
 
 namespace Kooco.Pikachu.Items;
 
@@ -207,7 +203,9 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
         {
             foreach (var image in input.Images)
             {
-                _itemManager.AddItemImage(
+                if (!item.Images.Any(x => x.BlobImageName == image.BlobImageName))
+                {
+                    _itemManager.AddItemImage(
                     item,
                     image.Name,
                     image.BlobImageName,
@@ -215,6 +213,7 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
                     image.ImageType,
                     image.SortNo
                     );
+                }
             }
         }
 
@@ -226,7 +225,7 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
         var item = await _itemRepository.GetAsync(itemId);
         await _itemRepository.EnsureCollectionLoadedAsync(item, x => x.Images);
 
-        item.Images.Remove(item.Images.Where(x => x.BlobImageName == blobImageName).FirstOrDefault());
+        item.Images.RemoveAll(item.Images.Where(x => x.BlobImageName == blobImageName).ToList());
     }
 
     /// <summary>

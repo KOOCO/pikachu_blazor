@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel;
-using System.Text;
 using Kooco.Pikachu.Images;
 
 namespace Kooco.Pikachu.Items.Dtos
