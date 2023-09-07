@@ -17,5 +17,4 @@ public interface ISetItemAppService :
         CreateUpdateSetItemDto,
         CreateUpdateSetItemDto>
 {
-
 }

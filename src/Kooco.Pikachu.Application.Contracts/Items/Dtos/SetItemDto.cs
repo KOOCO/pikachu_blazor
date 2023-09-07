@@ -14,7 +14,7 @@ public class SetItemDto : FullAuditedEntityDto<Guid>
     /// <summary>
     /// 
     /// </summary>
-    public List<SetItemDetails> SetItemDetails { get; set; }
+    public ICollection<SetItemDetailsDto> SetItemDetails { get; set; }
 
     /// <summary>
     /// 
@@ -104,7 +104,7 @@ public class SetItemDto : FullAuditedEntityDto<Guid>
     /// <summary>
     /// 是否免運 Is Free Shipping
     /// </summary>
-    public bool isFreeShipping { get; set; }
+    public bool IsFreeShipping { get; set; }
 
     /// <summary>
     /// 排除運送方式 Exclude Shipping Method;稅率名稱        Tax Name
@@ -125,4 +125,6 @@ public class SetItemDto : FullAuditedEntityDto<Guid>
     /// 商品類別        Item Category
     /// </summary>
     public string? ItemCategory { get; set; }
+
+    public bool IsSelected { get; set; } = false;
 }

@@ -3,6 +3,8 @@ using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.Items.Dtos;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace Kooco.Pikachu.Items;
 
@@ -10,15 +12,8 @@ namespace Kooco.Pikachu.Items;
 /// <summary>
 /// 
 /// </summary>
-public class SetItemAppService : CrudAppService<SetItem, SetItemDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateSetItemDto, CreateUpdateSetItemDto>,
-    ISetItemAppService
+public class SetItemAppService : CrudAppService<SetItem, SetItemDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateSetItemDto>, ISetItemAppService
 {
-    protected override string GetPolicyName { get; set; } = PikachuPermissions.SetItem.Default;
-    protected override string GetListPolicyName { get; set; } = PikachuPermissions.SetItem.Default;
-    protected override string CreatePolicyName { get; set; } = PikachuPermissions.SetItem.Create;
-    protected override string UpdatePolicyName { get; set; } = PikachuPermissions.SetItem.Update;
-    protected override string DeletePolicyName { get; set; } = PikachuPermissions.SetItem.Delete;
-
     private readonly ISetItemRepository _repository;
 
     public SetItemAppService(ISetItemRepository repository) : base(repository)
@@ -26,4 +21,57 @@ public class SetItemAppService : CrudAppService<SetItem, SetItemDto, Guid, Paged
         _repository = repository;
     }
 
+    public override async Task<SetItemDto> CreateAsync(CreateUpdateSetItemDto input)
+    {
+        try
+        {
+            var setItem = new SetItem(
+                GuidGenerator.Create(),
+                CurrentTenant?.Id,
+                input.SetItemName,
+                input.SetItemNo,
+                input.SetItemDescriptionTitle,
+                input.Description,
+                input.SetItemMainImageURL,
+                input.SetItemStatus,
+                input.SetItemSaleableQuantity,
+                input.SellingPrice,
+                input.GroupBuyPrice,
+                input.SaleableQuantity,
+                input.PreOrderableQuantity,
+                input.SaleablePreOrderQuantity,
+                input.SalesAccount,
+                input.Returnable,
+                input.LimitAvaliableTimeStart,
+                input.LimitAvaliableTimeEnd,
+                input.ShareProfit,
+                input.IsFreeShipping,
+                input.TaxName,
+                input.TaxPercentage,
+                input.TaxType,
+                input.ItemCategory
+                );
+
+            if (input.SetItemDetails.Any())
+            {
+                input.SetItemDetails.ForEach(item =>
+                {
+                    setItem.AddSetItemDetails(
+                        GuidGenerator.Create(),
+                        CurrentTenant?.Id,
+                        setItem.Id,
+                        item.ItemId,
+                        item.Quantity
+                        );
+                });
+            }
+
+            await _repository.InsertAsync(setItem);
+            return ObjectMapper.Map<SetItem, SetItemDto>(setItem);
+        }
+        catch (Exception ex)
+        {
+            throw;
+        }
+    }
 }

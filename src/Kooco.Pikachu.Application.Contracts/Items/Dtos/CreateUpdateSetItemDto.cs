@@ -2,7 +2,6 @@ using Kooco.Pikachu.Images;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using static Kooco.Pikachu.Permissions.PikachuPermissions;
 
 namespace Kooco.Pikachu.Items.Dtos;
 
@@ -13,7 +12,7 @@ public class CreateUpdateSetItemDto
     /// 
     /// </summary>
     [DisplayName("SetItemSetItemDetails")]
-    public List<SetItemDetails> SetItemDetails { get; set; }
+    public List<CreateUpdateSetItemDetailsDto> SetItemDetails { get; set; }
 
     /// <summary>
     /// 
@@ -121,7 +120,7 @@ public class CreateUpdateSetItemDto
     /// 分潤 Share Profit
     /// </summary>
     [DisplayName("SetItemShareProfit")]
-    public float? ShareProfit { get; set; }
+    public int ShareProfit { get; set; }
 
     /// <summary>
     /// 是否免運 Is Free Shipping

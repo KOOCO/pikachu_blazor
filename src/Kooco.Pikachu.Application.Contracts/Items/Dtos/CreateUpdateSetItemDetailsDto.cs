@@ -23,5 +23,9 @@ public class CreateUpdateSetItemDetailsDto
     /// 
     /// </summary>
     [DisplayName("SetItemDetailsItem")]
-    public Item Item { get; set; }
+    public Item Item { get; set; } = new();
+
+    public Guid ItemId { get; set; }
+
+    public int Quantity { get; set; }
 }

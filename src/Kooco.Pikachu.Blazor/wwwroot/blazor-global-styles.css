@@ -185,3 +185,8 @@
 .no-spinners {
     -moz-appearance: textfield;
 }
+
+.item-image-thumbnail {
+    height: 100px;
+    width: auto;
+}

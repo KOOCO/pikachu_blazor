@@ -1,8 +1,10 @@
 ﻿@page "/SetItem/Create"
 
+@using Kooco.Pikachu.Items.Dtos;
 @using Kooco.Pikachu.Localization;
 @using Microsoft.Extensions.Localization;
 @using Volo.Abp.AspNetCore.Components.Messages;
+@using Blazorise.Components;
 
 @inject IStringLocalizer<PikachuResource> L;
 
@@ -156,7 +158,21 @@
                     @L["AddItem"]
                 </div>
                 <div class="col-10">
-                    
+                    <Autocomplete TItem="KeyValueDto"
+                                  TValue="Guid?"
+                                  Data="@ItemsList"
+                                  TextField="@(( item ) => item.Name)"
+                                  ValueField="@(( item ) => item.Id)"
+                                  @bind-SelectedText="SelectedAutoCompleteText"
+                                  Placeholder="Search..."
+                                  Filter="AutocompleteFilter.StartsWith"
+                                  CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                                  HighlightSearch
+                                  Immediate="true"
+                                  SelectedValueChanged="OnSelectedValueChanged"
+                                  @ref="AutocompleteField">
+                        <NotFoundContent> @L["NotFound"] </NotFoundContent>
+                    </Autocomplete>
                 </div>
         </div>
 
@@ -173,24 +189,37 @@
                                 <TableHeaderCell>
                                     @L["ItemList"]
                                 </TableHeaderCell>
-                                <TableHeaderCell Class="text-center">
+                                <TableHeaderCell Class="text-center"  Style="width: 150px;">
                                     @L["Quantity"]
                                 </TableHeaderCell>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            @* @foreach (var item in ItemDetailsList)
+                            @foreach (var item in ItemDetails)
                             {
                                 <TableRow Class="text-center align-items-center">
-                                    <TableRowCell>@item.ItemName</TableRowCell>
                                     <TableRowCell>
-                                        <input class="form-control form-control-sm" style="min-width: 100px;" @bind-value="@item.Sku" />
+                                        <input type="checkbox" class="form-check-input" checked="@item.IsSelected" />
+                                    </TableRowCell>
+                                    <TableRowCell Class="text-start">
+                                    <Div Class="d-flex flex-row">
+                                        @if (!item.ImageUrl.IsNullOrWhiteSpace())
+                                        {
+                                            <div>
+                                                <Image src="@item.ImageUrl" Class="item-image-thumbnail" Fluid></Image>
+                                            </div>
+                                        }
+                                        <Div Class="p-2">
+                                            <h4>@item.ItemName</h4>
+                                            <p>@item.ItemDescriptionTitle</p>
+                                        </Div>
+                                    </Div>
                                     </TableRowCell>
                                     <TableRowCell>
-                                        <NumericEdit Class="form-control form-control-sm" @bind-Value="@item.SellingPrice"></NumericEdit>
+                                        <NumericEdit Class="form-control form-control-sm" @bind-Value="item.Quantity" Min="1"></NumericEdit>
                                     </TableRowCell>
                                 </TableRow>
-                            } *@
+                            }
                         </TableBody>
                     </Table>
                 </div>
@@ -234,7 +263,7 @@
                         <label>@L["ShareProfit"]</label>
                     </div>
                     <div class="col-3">
-                        <InputNumber class="form-control" TValue="float?" @bind-Value="@CreateUpdateSetItemDto.ShareProfit" />
+                        <InputNumber class="form-control" TValue="int" @bind-Value="@CreateUpdateSetItemDto.ShareProfit" />
                     </div>
                 </div>
                 <div class="row mt-2">

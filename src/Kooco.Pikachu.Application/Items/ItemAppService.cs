@@ -259,4 +259,16 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
         }
         return ObjectMapper.Map<Item, ItemDto>(item);
     }
+
+    public async Task<string?> GetFirstImageUrlAsync(Guid id)
+    {
+        var item = await _itemRepository.GetAsync(id);
+        await _itemRepository.EnsureCollectionLoadedAsync(item, i => i.Images);
+        return item.Images.FirstOrDefault().ImageUrl;
+    }
+
+    public async Task<List<KeyValueDto>> GetItemsLookupAsync()
+    {
+        return ObjectMapper.Map<List<Item>, List<KeyValueDto>>(await _itemRepository.GetListAsync());
+    }
 }
