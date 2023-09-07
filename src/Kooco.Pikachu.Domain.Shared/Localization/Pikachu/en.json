@@ -111,10 +111,14 @@
     "ExpectDeliveryDate": "Expect Delivery Date",
     "GateWay": "GateWay",
     "PaymentMethod": "Payment Method",
-    "DefaultPaymentGateWay": "DefaultPaymentGateWay"
+    "DefaultPaymentGateWay": "DefaultPaymentGateWay",
 
-
-
+    //SetItem
+    "SetItem": "Set Item",
+    "AddItem": "Add Item",
+    "ChooseItem": "Choose Item",
+    "ItemList": "Item List",
+    "SetItemPrice": "Set Item Price"
 
   }
 }

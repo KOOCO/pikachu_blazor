@@ -1,0 +1,25 @@
+﻿@page "/SetItem"
+@using Kooco.Pikachu.Localization;
+@using Microsoft.Extensions.Localization;
+
+@inject IStringLocalizer<PikachuResource> L;
+@inject NavigationManager _navigationManger;
+
+<div class="row">
+    <div Class="col-6">
+        <h3>@L["SetItem"]</h3>
+    </div>
+    <div Class="col-6 d-flex flex-row-reverse">
+        <button class="btn btn-sm btn-primary" @onclick="NavigateToCreateSetItem">
+            <i class="fa fa-plus"></i>
+            @L["AddNew"]
+        </button>
+    </div>
+</div>
+
+@code {
+    private void NavigateToCreateSetItem()
+    {
+        _navigationManger.NavigateTo("/SetItem/Create");
+    }
+}

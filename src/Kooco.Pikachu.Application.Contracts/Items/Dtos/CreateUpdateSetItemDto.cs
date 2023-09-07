@@ -1,3 +1,4 @@
+using Kooco.Pikachu.Images;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -68,6 +69,12 @@ public class CreateUpdateSetItemDto
     [DisplayName("SetItemGroupBuyPrice")]
     public int? GroupBuyPrice { get; set; }
 
+    [DisplayName("SetItemPrice")]
+    public float SetItemPrice { get; set; }
+
+    [DisplayName("LimitQuantity")]
+    public int? LimitQuantity { get; set; }
+
     /// <summary>
     /// 可販售數量限制
     /// </summary>
@@ -102,25 +109,25 @@ public class CreateUpdateSetItemDto
     /// 限時販售開始時間 Ｌimit Avaliable Time Start
     /// </summary>
     [DisplayName("SetItemLimitAvaliableTimeStart")]
-    public DateTime LimitAvaliableTimeStart { get; set; }
+    public DateTime LimitAvaliableTimeStart { get; set; } = DateTime.Now;
 
     /// <summary>
     /// 限時販售結束時間 Ｌimit Avaliable Time End
     /// </summary>
     [DisplayName("SetItemLimitAvaliableTimeEnd")]
-    public DateTime LimitAvaliableTimeEnd { get; set; }
+    public DateTime LimitAvaliableTimeEnd { get; set; } = DateTime.Now;
 
     /// <summary>
     /// 分潤 Share Profit
     /// </summary>
     [DisplayName("SetItemShareProfit")]
-    public int ShareProfit { get; set; }
+    public float? ShareProfit { get; set; }
 
     /// <summary>
     /// 是否免運 Is Free Shipping
     /// </summary>
     [DisplayName("SetItemisFreeShipping")]
-    public bool isFreeShipping { get; set; }
+    public bool IsFreeShipping { get; set; }
 
     /// <summary>
     /// 排除運送方式 Exclude Shipping Method;稅率名稱        Tax Name
@@ -145,4 +152,6 @@ public class CreateUpdateSetItemDto
     /// </summary>
     [DisplayName("SetItemItemCategory")]
     public string? ItemCategory { get; set; }
+
+    public List<CreateImageDto> Images { get; set; } = new();
 }
