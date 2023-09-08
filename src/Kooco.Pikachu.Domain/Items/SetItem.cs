@@ -1,5 +1,7 @@
+using Kooco.Pikachu.Images;
 using System;
 using System.Collections.Generic;
+using System.Net.Http.Headers;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
 
@@ -9,6 +11,7 @@ namespace Kooco.Pikachu.Items
     {
         public Guid? TenantId { get; set; }
         public ICollection<SetItemDetails> SetItemDetails { get; set; }
+        public ICollection<Image> Images { get; set; }
         public string SetItemName { get; set; }
         public string? SetItemNo { get; set; }
         public string? SetItemDescriptionTitle { get; set; }
@@ -149,6 +152,7 @@ namespace Kooco.Pikachu.Items
             ItemCategory = itemCategory;
 
             SetItemDetails = new List<SetItemDetails>();
+            Images = new List<Image>();
         }
 
         public SetItem(
@@ -203,6 +207,7 @@ namespace Kooco.Pikachu.Items
             TaxPercentage = taxPercentage;
             TaxType = taxType;
             ItemCategory = itemCategory;
+            Images = new List<Image>();
         }
 
         public void AddSetItemDetails(
@@ -222,6 +227,17 @@ namespace Kooco.Pikachu.Items
                     quantity
                     )
                 );
+        }
+
+        public void AddImage(
+            Guid id,
+            string name,
+            string blobImageName,
+            string imageUrl,
+            int sortNo
+            )
+        {
+            Images.Add(new Image(id, name, blobImageName, imageUrl, ImageType.SetItem, this.Id, sortNo));
         }
     }
 }

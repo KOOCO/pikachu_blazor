@@ -1,12 +1,11 @@
 ﻿using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Items;
 using System.Collections.Generic;
-using Volo.Abp.AspNetCore.Components.Messages;
 using Blazorise.DataGrid;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using System.Linq;
-using Microsoft.AspNetCore.Components;
+using Volo.Abp.AspNetCore.Components.Messages;
 
 namespace Kooco.Pikachu.Blazor.Pages.SetItem
 {
@@ -49,10 +48,16 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
             SetItemList = result.Items.ToList();
             Total = (int)result.TotalCount;
         }
+
         public void OnEditItem(DataGridRowMouseEventArgs<SetItemDto> e)
         {
             var id = e.Item.Id;
             //_navigationManger.NavigateTo($"Items/Edit/{id}");
+        }
+
+        private void NavigateToCreateSetItem()
+        {
+            NavigationManager.NavigateTo("/SetItem/Create");
         }
     }
 }

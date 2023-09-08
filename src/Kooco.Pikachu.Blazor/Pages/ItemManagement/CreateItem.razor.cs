@@ -111,7 +111,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                     string newFileName = Path.ChangeExtension(
                           Guid.NewGuid().ToString().Replace("-", ""),
                           Path.GetExtension(file.Name));
-                    var stream = file.OpenReadStream();
+                    var stream = file.OpenReadStream(long.MaxValue);
                     try
                     {
                         var memoryStream = new MemoryStream();
@@ -306,7 +306,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             }
             catch (BusinessException ex)
             {
-                await _uiMessageService.Error(ex.Code.ToString());
+                await _uiMessageService.Error(ex.Code?.ToString());
             }
             catch (Exception ex)
             {

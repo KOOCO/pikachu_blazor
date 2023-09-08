@@ -3,6 +3,7 @@
     public enum ImageType
     {
         Item,
-        ItemDetail
+        ItemDetail,
+        SetItem
     }
 }

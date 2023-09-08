@@ -5,6 +5,8 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using System.Threading.Tasks;
 using System.Linq;
+using static Kooco.Pikachu.Permissions.PikachuPermissions;
+using Volo.Abp;
 
 namespace Kooco.Pikachu.Items;
 
@@ -25,6 +27,12 @@ public class SetItemAppService : CrudAppService<SetItem, SetItemDto, Guid, Paged
     {
         try
         {
+            var existing = await _repository.FindAsync(x => x.SetItemName == input.SetItemName);
+            if(existing != null)
+            {
+                throw new BusinessException(PikachuDomainErrorCodes.ItemWithSameNameAlreadyExists);
+            }
+
             var setItem = new SetItem(
                 GuidGenerator.Create(),
                 CurrentTenant?.Id,
@@ -63,6 +71,20 @@ public class SetItemAppService : CrudAppService<SetItem, SetItemDto, Guid, Paged
                         item.ItemId,
                         item.Quantity
                         );
+                });
+            }
+
+            if (input.Images.Any())
+            {
+                input.Images.ForEach(image =>
+                {
+                    setItem.AddImage(
+                        GuidGenerator.Create(),
+                        image.Name,
+                        image.BlobImageName,
+                        image.ImageUrl,
+                        image.SortNo
+                    );
                 });
             }
 

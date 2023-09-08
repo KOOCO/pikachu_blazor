@@ -31,6 +31,7 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
         private FilePicker FilePicker { get; set; }
         private CreateUpdateSetItemDto CreateUpdateSetItemDto { get; set; } = new();
         private List<ItemDetailsModel> ItemDetails { get; set; } = new();
+        private bool _isInitialized = false;
 
         private readonly IUiMessageService _uiMessageService;
         private readonly ImageContainerManager _imageContainerManager;
@@ -55,8 +56,11 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
 
         protected override async Task OnInitializedAsync()
         {
-            ItemsList = await _itemAppService.GetItemsLookupAsync();
-            await base.OnInitializedAsync();
+            if (!_isInitialized)
+            {
+                ItemsList = await _itemAppService.GetItemsLookupAsync();
+                _isInitialized = true;
+            }
         }
 
         async Task OnFileUploadAsync(FileChangedEventArgs e)
@@ -92,7 +96,7 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
                     string newFileName = Path.ChangeExtension(
                           Guid.NewGuid().ToString().Replace("-", ""),
                           Path.GetExtension(file.Name));
-                    var stream = file.OpenReadStream();
+                    var stream = file.OpenReadStream(long.MaxValue);
                     try
                     {
                         var memoryStream = new MemoryStream();

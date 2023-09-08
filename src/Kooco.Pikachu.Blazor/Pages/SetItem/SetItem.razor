@@ -4,7 +4,7 @@
 @using Microsoft.Extensions.Localization;
 @using Blazorise.Components;
 @inject IStringLocalizer<PikachuResource> L;
-@inject NavigationManager _navigationManger;
+@inject NavigationManager NavigationManager;
 
 <div class="row">
     <div Class="col-6">
@@ -68,8 +68,8 @@
                         }
                     </DisplayTemplate>
                 </DataGridColumn>
-                <DataGridColumn TItem="ItemDto"
-                                Field="@nameof(ItemDto.ShareProfit)"
+                <DataGridColumn TItem="SetItemDto"
+                                Field="@nameof(SetItemDto.ShareProfit)"
                                 Caption="@L["ShareProfit"]">
                 </DataGridColumn>
             </DataGridColumns>
@@ -78,8 +78,5 @@
 </Card>
 
 @code {
-    private void NavigateToCreateSetItem()
-    {
-        _navigationManger.NavigateTo("/SetItem/Create");
-    }
+   
 }

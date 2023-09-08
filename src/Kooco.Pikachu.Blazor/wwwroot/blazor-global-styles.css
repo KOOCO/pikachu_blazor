@@ -190,3 +190,7 @@
     height: 100px;
     width: auto;
 }
+
+.lpx-topbar{
+    border-radius: 0px!important;
+}
