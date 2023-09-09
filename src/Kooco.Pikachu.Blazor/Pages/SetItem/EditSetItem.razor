@@ -1,0 +1,16 @@
+﻿@page "/SetItem/Edit/{id}"
+
+@using Kooco.Pikachu.Localization;
+@using Microsoft.Extensions.Localization;
+
+@inject IStringLocalizer<PikachuResource> L;
+
+<h3>@L["EditSetItem"]</h3>
+
+
+
+@code {
+
+    [Parameter]
+    public string Id { get; set; }
+}

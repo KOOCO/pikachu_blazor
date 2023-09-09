@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using System.Linq;
 using Volo.Abp.AspNetCore.Components.Messages;
+using Microsoft.AspNetCore.Components;
+using System;
 
 namespace Kooco.Pikachu.Blazor.Pages.SetItem
 {
@@ -52,12 +54,44 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
         public void OnEditItem(DataGridRowMouseEventArgs<SetItemDto> e)
         {
             var id = e.Item.Id;
-            //_navigationManger.NavigateTo($"Items/Edit/{id}");
+            NavigationManager.NavigateTo($"SetItem/Edit/{id}");
         }
 
         private void NavigateToCreateSetItem()
         {
             NavigationManager.NavigateTo("/SetItem/Create");
+        }
+
+        private void HandleSelectAllChange(ChangeEventArgs e)
+        {
+            IsAllSelected = (bool)e.Value;
+            SetItemList.ForEach(item =>
+            {
+                item.IsSelected = IsAllSelected;
+            });
+            StateHasChanged();
+        }
+
+        private async Task DeleteSelectedAsync()
+        {
+            try
+            {
+                var itemIds = SetItemList.Where(x => x.IsSelected).Select(x => x.Id).ToList();
+                if (itemIds.Count > 0)
+                {
+                    var confirmed = await _uiMessageService.Confirm(L["AreYouSureToDeleteSelectedItem"]);
+                    if (confirmed)
+                    {
+                        await _setItemAppService.DeleteManyItemsAsync(itemIds);
+                        await UpdateItemList();
+                        IsAllSelected = false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType()?.ToString());
+            }
         }
     }
 }

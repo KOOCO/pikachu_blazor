@@ -92,6 +92,11 @@
     "Pikachu:FilesAreGreaterThanMaxAllowedFileSize": "Files Are Greater Than Maximum Allowed File Size",
     "Pikachu:AlreadyUploadMaxAllowedFiles": "You Have Already Uploaded Maximum Number Of Files",
     "Pikachu:FilesExceedMaxAllowedPerUpload": "Files Exceed Maximum Allowed Files Per Upload",
+    "AreYouSureToDeleteSelectedItem": "Are You Sure To Delete The Selected Items?",
+    "DeleteSelected": "Delete Selected",
+    "NewSetItem": "New Set Item",
+    "NotFound": "Not Found",
+    "EditSetItem": "Edit Set Item",
 
     //GroupBuy
     "NewGroupBuy": "New GroupBuy",

@@ -15,7 +15,7 @@ public interface IItemAppService :
         CreateItemDto,UpdateItemDto>
 {
     Task ChangeItemAvailability(Guid itemId);
-    Task DeleteManyItems(List<Guid> itemIds);
+    Task DeleteManyItemsAsync(List<Guid> itemIds);
     Task<ItemDto> GetAsync(Guid id, bool includeDetails = false);
     Task DeleteSingleImageAsync(Guid itemId, string blobImageName);
     Task<List<KeyValueDto>> GetItemsLookupAsync();

@@ -89,8 +89,9 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 var confirmed = await _uiMessageService.Confirm(L["AreYouSureToDeleteSelectedItem"]);
                 if (confirmed)
                 {
-                    await _itemAppService.DeleteManyItems(itemIds);
+                    await _itemAppService.DeleteManyItemsAsync(itemIds);
                     await UpdateItemList();
+                    IsAllSelected = false;
                 }
             }
         }

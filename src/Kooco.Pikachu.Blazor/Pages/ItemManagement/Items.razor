@@ -19,7 +19,7 @@
     </div>
     <div class="col-6 d-flex flex-row-reverse">
         <Button Danger Type="@ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="DeleteSelectedAsync">
-                @L["DeleteItem"]
+                @L["DeleteSelected"]
         </Button>
         <Button Type="@ButtonType.Button" Class="btn btn-sm btn-secondary me-1">@L["CopyItem"]</Button>
         <Button Type="@ButtonType.Button" Class="btn btn-sm btn-primary me-1" Clicked="CreateNewItem">
@@ -40,7 +40,7 @@
                   TotalItems="Total"
                   ShowPager="true"
                   PageSize="PageSize"
-                  RowClicked="OnEditItem">
+                  RowDoubleClicked="OnEditItem">
             <DataGridColumns>
                 <DataGridColumn TItem="ItemDto" Caption="@L["Select"]">
                     <DisplayTemplate>

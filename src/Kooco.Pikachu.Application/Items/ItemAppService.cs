@@ -244,7 +244,7 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
     /// </summary>
     /// <param name="itemIds"></param>
     /// <returns></returns>
-    public async Task DeleteManyItems(List<Guid> itemIds)
+    public async Task DeleteManyItemsAsync(List<Guid> itemIds)
     {
         await _itemRepository.DeleteManyAsync(itemIds);
     }
