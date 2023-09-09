@@ -56,11 +56,8 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
 
         protected override async Task OnInitializedAsync()
         {
-            if (!_isInitialized)
-            {
-                ItemsList = await _itemAppService.GetItemsLookupAsync();
-                _isInitialized = true;
-            }
+            ItemsList = await _itemAppService.GetItemsLookupAsync();
+            _isInitialized = true;
         }
 
         async Task OnFileUploadAsync(FileChangedEventArgs e)
@@ -197,7 +194,7 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
         {
             try
             {
-                //ValidateForm();
+                ValidateForm();
                 CreateUpdateSetItemDto.SetItemDetails = new();
                 ItemDetails.ForEach(item =>
                 {
@@ -208,7 +205,7 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
                             Quantity = item.Quantity
                         });
                 });
-                
+
                 CreateUpdateSetItemDto.Description = await QuillHtml.GetHTML();
 
                 await _setItemAppService.CreateAsync(CreateUpdateSetItemDto);
@@ -216,7 +213,7 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
             }
             catch (BusinessException ex)
             {
-                await _uiMessageService.Error(ex.Code.ToString());
+                await _uiMessageService.Error(ex.Code?.ToString());
             }
             catch (Exception ex)
             {
@@ -224,9 +221,28 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
             }
         }
 
+        private void ValidateForm()
+        {
+            if (CreateUpdateSetItemDto.SetItemName.IsNullOrWhiteSpace())
+            {
+                throw new BusinessException(L[PikachuDomainErrorCodes.ItemNameCannotBeNull]);
+            }
+        }
+
         private void CancelToSetItem()
         {
             _navigationManager.NavigateTo("/SetItem");
+        }
+
+        private void RemoveSelectedItems()
+        {
+            var selected = ItemDetails.Where(x => x.IsSelected).ToList();
+            selected.ForEach(item =>
+            {
+                ItemDetails.Remove(item);
+                ItemsList.Add(new KeyValueDto(item.ItemId, item.ItemName));
+            });
+            IsAllSelected = false;
         }
 
         private void HandleSelectAllChange(ChangeEventArgs e)

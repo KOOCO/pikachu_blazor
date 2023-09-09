@@ -264,7 +264,7 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
     {
         var item = await _itemRepository.GetAsync(id);
         await _itemRepository.EnsureCollectionLoadedAsync(item, i => i.Images);
-        return item.Images.FirstOrDefault().ImageUrl;
+        return item.Images.OrderBy(x => x.SortNo).FirstOrDefault()?.ImageUrl;
     }
 
     public async Task<List<KeyValueDto>> GetItemsLookupAsync()
