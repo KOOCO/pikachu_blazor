@@ -152,7 +152,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 
         async Task OnFileUploadAsync(FileChangedEventArgs e)
         {
-            if (e.Files.Count() > MaxAllowedFilesPerUpload)
+            if (e.Files.Length > MaxAllowedFilesPerUpload)
             {
                 await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesExceedMaxAllowedPerUpload]);
                 await FilePickerCustom.Clear();
@@ -183,7 +183,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                     string newFileName = Path.ChangeExtension(
                           Guid.NewGuid().ToString().Replace("-", ""),
                           Path.GetExtension(file.Name));
-                    var stream = file.OpenReadStream();
+                    var stream = file.OpenReadStream(long.MaxValue);
                     try
                     {
                         var memoryStream = new MemoryStream();

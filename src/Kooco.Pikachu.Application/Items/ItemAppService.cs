@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp;
 
 namespace Kooco.Pikachu.Items;
 
@@ -117,6 +118,13 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
 
     public override async Task<ItemDto> UpdateAsync(Guid id, UpdateItemDto input)
     {
+        var sameName = await _itemRepository.FindByNameAsync(input.ItemName);
+
+        if(sameName != null && sameName.Id != id)
+        {
+            throw new BusinessException(PikachuDomainErrorCodes.ItemWithSameNameAlreadyExists);
+        }
+
         var item = await _itemRepository.GetAsync(id);
         await _itemRepository.EnsureCollectionLoadedAsync(item, i => i.ItemDetails);
         await _itemRepository.EnsureCollectionLoadedAsync(item, i => i.Images);

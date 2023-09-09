@@ -239,5 +239,10 @@ namespace Kooco.Pikachu.Items
         {
             Images.Add(new Image(id, name, blobImageName, imageUrl, ImageType.SetItem, this.Id, sortNo));
         }
+
+        public void RemoveItemDetailsAsync(List<Guid?> ids)
+        {
+            SetItemDetails.RemoveAll(x => !ids.Contains(x.Id));
+        }
     }
 }

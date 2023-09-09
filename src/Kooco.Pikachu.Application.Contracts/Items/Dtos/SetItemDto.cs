@@ -1,3 +1,4 @@
+using Kooco.Pikachu.Images;
 using System;
 using System.Collections.Generic;
 using Volo.Abp.Application.Dtos;
@@ -127,4 +128,6 @@ public class SetItemDto : FullAuditedEntityDto<Guid>
     public string? ItemCategory { get; set; }
 
     public bool IsSelected { get; set; } = false;
+
+    public ICollection<ImageDto> Images { get; set; }
 }

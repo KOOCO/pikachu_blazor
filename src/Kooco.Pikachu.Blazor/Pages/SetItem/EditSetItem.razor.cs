@@ -1,23 +1,29 @@
-﻿using Blazorise;
+﻿using AutoMapper;
+using Blazored.TextEditor;
+using Blazorise;
+using Blazorise.Components;
 using Kooco.Pikachu.AzureStorage.Image;
 using Kooco.Pikachu.Images;
+using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
+using Microsoft.AspNetCore.Components;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System;
-using Volo.Abp.AspNetCore.Components.Messages;
 using Volo.Abp;
-using System.Collections.Generic;
-using Blazored.TextEditor;
-using Microsoft.AspNetCore.Components;
-using Kooco.Pikachu.Items;
-using Blazorise.Components;
+using Volo.Abp.AspNetCore.Components.Messages;
 
 namespace Kooco.Pikachu.Blazor.Pages.SetItem
 {
-    public partial class CreateSetItem
+    public partial class EditSetItem
     {
+        [Parameter]
+        public string Id { get; set; }
+
+        public Guid EditingId { get; set; }
+        public SetItemDto ExistingItem { get; set; }
         private const int MaxTextCount = 60;
         private const int MaxAllowedFilesPerUpload = 10;
         private const int TotalMaxAllowedFiles = 50;
@@ -32,27 +38,72 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
         private CreateUpdateSetItemDto CreateUpdateSetItemDto { get; set; } = new();
         private List<ItemDetailsModel> ItemDetails { get; set; } = new();
 
+        private readonly ISetItemAppService _setItemAppService;
         private readonly IUiMessageService _uiMessageService;
         private readonly ImageContainerManager _imageContainerManager;
         private readonly IItemAppService _itemAppService;
-        private readonly ISetItemAppService _setItemAppService;
 
-        public CreateSetItem(
+        public EditSetItem(
+            ISetItemAppService setItemAppService,
             IUiMessageService uiMessageService,
-            ImageContainerManager imageConainerManager,
-            IItemAppService itemAppService,
-            ISetItemAppService setItemAppService
+            ImageContainerManager imageContainerManager,
+            IItemAppService itemAppService
             )
         {
-            _uiMessageService = uiMessageService;
-            _imageContainerManager = imageConainerManager;
-            _itemAppService = itemAppService;
             _setItemAppService = setItemAppService;
+            _uiMessageService = uiMessageService;
+            _imageContainerManager = imageContainerManager;
+            _itemAppService = itemAppService;
         }
 
         protected override async Task OnInitializedAsync()
         {
-            ItemsList = await _itemAppService.GetItemsLookupAsync();
+            try
+            {
+                var result = Guid.TryParse(Id, out Guid editingId);
+                if (result)
+                {
+                    EditingId = editingId;
+                    ExistingItem = await _setItemAppService.GetAsync(editingId, true);
+
+                    var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfile>());
+                    // Create a new mapper
+                    var mapper = config.CreateMapper();
+
+                    // Map ItemDto to UpdateItemDto
+                    CreateUpdateSetItemDto = mapper.Map<CreateUpdateSetItemDto>(ExistingItem);
+                    CreateUpdateSetItemDto.Images = CreateUpdateSetItemDto.Images.OrderBy(x => x.SortNo).ToList();
+
+                    var itemDetails = ExistingItem.SetItemDetails.ToList();
+
+                    itemDetails.ForEach(item =>
+                    {
+                        ItemDetails.Add(
+                            new ItemDetailsModel(
+                                item.ItemId, 
+                                item.Item?.ItemName, 
+                                item.Item?.ItemDescription, 
+                                item.Item?.ItemDescriptionTitle, 
+                                item.Quantity, 
+                                false,
+                                item.Item?.Images?.FirstOrDefault()?.ImageUrl
+                                )
+                            );
+                    });
+
+                    await QuillHtml.LoadHTMLContent(ExistingItem.Description);
+                    ItemsList = await _itemAppService.GetItemsLookupAsync();
+
+                }
+                else
+                {
+                    NavigationManager.NavigateTo("/SetItem");
+                }
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType()?.ToString());
+            }
         }
 
         async Task OnFileUploadAsync(FileChangedEventArgs e)
@@ -138,16 +189,15 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
                 var confirmed = await _uiMessageService.Confirm(L[PikachuDomainErrorCodes.AreYouSureToDeleteImage]);
                 if (confirmed)
                 {
-                    confirmed = await _imageContainerManager.DeleteAsync(blobImageName);
-                    if (confirmed)
-                    {
-                        CreateUpdateSetItemDto.Images = CreateUpdateSetItemDto.Images.Where(x => x.BlobImageName != blobImageName).ToList();
-                        StateHasChanged();
-                    }
-                    else
-                    {
-                        throw new BusinessException(L[PikachuDomainErrorCodes.SomethingWentWrongWhileDeletingImage]);
-                    }
+                    await _imageContainerManager.DeleteAsync(blobImageName);
+                    await _setItemAppService.DeleteSingleImageAsync(EditingId, blobImageName);
+
+                    CreateUpdateSetItemDto.Images = CreateUpdateSetItemDto.Images.Where(x => x.BlobImageName != blobImageName).ToList();
+                    StateHasChanged();
+                }
+                else
+                {
+                    throw new BusinessException(L[PikachuDomainErrorCodes.SomethingWentWrongWhileDeletingImage]);
                 }
             }
             catch (Exception ex)
@@ -185,7 +235,7 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
             }
         }
 
-        protected virtual async Task CreateSetItemAsync()
+        protected virtual async Task UpdateSetItemAsync()
         {
             try
             {
@@ -203,7 +253,7 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
 
                 CreateUpdateSetItemDto.Description = await QuillHtml.GetHTML();
 
-                await _setItemAppService.CreateAsync(CreateUpdateSetItemDto);
+                await _setItemAppService.UpdateAsync(EditingId, CreateUpdateSetItemDto);
                 NavigationManager.NavigateTo("/SetItem");
             }
             catch (BusinessException ex)
@@ -248,40 +298,6 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
                 item.IsSelected = IsAllSelected;
             });
             StateHasChanged();
-        }
-    }
-
-    public class ItemDetailsModel
-    {
-        public Guid ItemId { get; set; }
-        public string ItemName { get; set; }
-        public int Quantity { get; set; }
-        public string? ItemDescription { get; set; }
-        public string? ItemDescriptionTitle { get; set; }
-        public bool IsSelected { get; set; } = false;
-        public string ImageUrl { get; set; }
-        public ItemDetailsModel()
-        {
-
-        }
-
-        public ItemDetailsModel(
-            Guid id,
-            string itemName,
-            string? itemDescription = null,
-            string? itemDescriptionTitle = null,
-            int quantity = 1,
-            bool isSelected = false,
-            string? imageUrl = null
-            )
-        {
-            ItemId = id;
-            ItemName = itemName;
-            ItemDescription = itemDescription;
-            ItemDescriptionTitle = itemDescriptionTitle;
-            Quantity = quantity;
-            IsSelected = isSelected;
-            ImageUrl = imageUrl;
         }
     }
 }
