@@ -21,28 +21,49 @@
     <div class="col-6" style="display: flex;flex-direction: row-reverse;">
        
       
-        <Button Type="@ButtonType.Button" Style="margin-right:5px" OnClick="CreateNewItem"  >@L["NewGroupBuy"]</Button>
+        <Button Type="@ButtonType.Button" Style="margin-right:5px" class="btn btn-primary me-1" Clicked="CreateNewItem"  >@L["NewGroupBuy"]</Button>
     </div>
 </div>
 <div>
-@*     <Table @ref="table"
-           TItem="GroupBuyDto"
-           DataSource="@GroupBuyListItem.Items"
-           Total="@Convert.ToInt32(GroupBuyListItem.TotalCount)"
-    @bind-PageIndex="_pageIndex"
-    @bind-PageSize="_pageSize"
-    
-           Size="TableSize.Small">
-        <Selection Key="@(context.Id.ToString())" />
-        <PropertyColumn Title="@L["GroupBuyName"]" Property="item=>item.GroupBuyName" />
-       <ActionColumn Title="Action">
-       <Space>
-      <SpaceItem><Button  OnClick="()=>startEdit(context.Id)">Edit</Button></SpaceItem>
-    </Space>
-      </ActionColumn>
-@*             <Switch @bind-Value="@context.IsItemAvaliable" OnChange="() => OnItemAvaliablityChange(context.Id)"></Switch> *@
-        
-    @* </Table>  *@
+  <DataGrid TItem="GroupBuyDto"
+                  Data="GroupBuyListItem"
+                  ReadData="UpdateGroupBuyList"
+                  TotalItems="Total"
+                  ShowPager="true"
+                  PageSize="_pageSize">
+            <DataGridColumns>
+             @*    <DataGridColumn TItem="GroupBuyDto" Caption="@L["Select"]">
+                    <DisplayTemplate>
+                        <InputCheckbox class="form-check-input" @bind-Value="@context.is"></InputCheckbox>
+                    </DisplayTemplate>
+                </DataGridColumn> *@
+                <DataGridColumn TItem="GroupBuyDto"
+                                Field="@nameof(GroupBuyDto.GroupBuyName)"
+                                Caption="@L["GroupBuyName"]">
+                </DataGridColumn>
+     <DataGridColumn Width="150px"
+                                TItem="GroupBuyDto"
+                                Field="@nameof(GroupBuyDto.Id)"
+                                Sortable="false"
+                                Caption="@L["Actions"]">
+                    <DisplayTemplate>
+                        <Dropdown>
+                            <DropdownToggle Color="Color.Primary">
+                                @L["Actions"]
+                            </DropdownToggle>
+                            <DropdownMenu>
+                              
+                                    <DropdownItem Clicked="() => startEdit(context.Id)">
+                                        @L["Edit"]
+                                    </DropdownItem>
+                              
+                             
+                            </DropdownMenu>
+                        </Dropdown>
+                    </DisplayTemplate>
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
 </div>
 
 @code {

@@ -46,7 +46,7 @@
   <h3>@L["EditGroupBuy"]</h3>
 <Card >
    
- 
+ <CardBody>
         <div class="card-body">
         <div class="col-12"><h4>Sales URL</h4>  </div>
         <div class=" col-12 row">
@@ -55,7 +55,7 @@
                 <label>@L["SalesURL1"]</label>
             </div>
             <div class="col-7">
-                <TextEdit @bind-Text="@updateGroupBuyDto.EntryURL" />
+                <TextEdit @bind-Text="@editGroupBuyDto.EntryURL" />
             </div>
            
             
@@ -66,7 +66,7 @@
                 <label>@L["SalesURL2"]</label>
             </div>
             <div class="col-7">
-                <TextEdit @bind-Text="@updateGroupBuyDto.EntryURL2" />
+                <TextEdit @bind-Text="@editGroupBuyDto.EntryURL2" />
             </div>
             </div>
             </div>
@@ -77,9 +77,13 @@
                 <label>@L["GroupBuyName"]</label>
             </div>
             <div class="col-9">
-                <TextEdit  MaxLength="@maxtextCount" @bind-Text="@updateGroupBuyDto.GroupBuyName" />
+                <TextEdit  MaxLength="@maxtextCount" @bind-Text="@editGroupBuyDto.GroupBuyName" />
             </div>
-           
+            <div class="col-1">
+                        <span>
+                            @(string.IsNullOrWhiteSpace(editGroupBuyDto.GroupBuyName) ? 60 : (maxtextCount - editGroupBuyDto.GroupBuyName.Count()))/@maxtextCount
+                        </span>
+                    </div>
             
         </div>
          <div class=" col-12 row">
@@ -87,16 +91,26 @@
                 <label>@L["Subject"]</label>
             </div>
             <div class="col-9">
-                <TextEdit  MaxLength="@maxtextCount" @bind-Text="@updateGroupBuyDto.SubjectLine" />
+                <TextEdit  MaxLength="@maxtextCount" @bind-Text="@editGroupBuyDto.SubjectLine" />
             </div>
+             <div class="col-1">
+                        <span>
+                            @(string.IsNullOrWhiteSpace(editGroupBuyDto.SubjectLine) ? 60 : (maxtextCount - editGroupBuyDto.SubjectLine.Count()))/@maxtextCount
+                        </span>
+                    </div>
             </div>
             <div class=" col-12 row">
           <div class="col-2">
                 <label>@L["GroupBuyShortName"]</label>
             </div>
             <div class="col-9">
-                <TextEdit  MaxLength="@maxtextCount" @bind-Text="@updateGroupBuyDto.ShortName" />
+                <TextEdit  MaxLength="@maxtextCount" @bind-Text="@editGroupBuyDto.ShortName" />
             </div>
+             <div class="col-1">
+                        <span>
+                            @(string.IsNullOrWhiteSpace(editGroupBuyDto.ShortName) ? 60 : (maxtextCount - editGroupBuyDto.ShortName.Count()))/@maxtextCount
+                        </span>
+                    </div>
             </div>
              <div class="col-12 row">
             <div class="col-2">
@@ -104,156 +118,221 @@
             </div>
             <div class="col-10 row">
                 
-             @*  <Upload Action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-            Name="avatar"
-            Class="avatar-uploader"
-            ListType="picture-card"
-            ShowUploadList="false"
-            
-            OnChange="GroupBuyLogoHandleChange">
-        @if (!string.IsNullOrWhiteSpace(groupBuyLogo.Url))
-        {
-            <img src="@groupBuyLogo.Url" alt="avatar" style="width: 100%" />
-        }
-        else
-        {
-            <div>
-                <Icon Spin="loading" Type="@(loading?"Loading":"plus")" ></Icon>
-                <div className="ant-upload-text">Upload</div>
-            </div>
-        }
-    </Upload> *@
+      <Field>
+                            <FilePicker @ref="LogoPickerCustom"
+                                       
+                                        Changed="OnLogoUploadAsync"
+                                        ShowMode="FilePickerShowMode.List"
+                                        Accept=".jpg, .png, .svg">
+                                <FileTemplate>
+                                    <Div Flex="Flex.JustifyContent.Between">
+                                        <Div>
+                                            <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
+                                            <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                        </Div>
+                                        <Div Class="ps-2">
+                                            <Div>
+                                                 @if (context.File.Status == FileEntryStatus.Ready)
+                                                {
+                                                    <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
+                                                }
+                                                else if (context.File.Status == FileEntryStatus.Uploading)
+                                                {
+                                                    <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
+                                                }
+                                                else if (context.File.Status == FileEntryStatus.Uploaded)
+                                                {
+                                                    <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
+                                                }
+                                                else if (context.File.Status == FileEntryStatus.Error)
+                                                {
+                                                    <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
+                                                }
+                                            </Div>
+                                            <Div>
+                                                <Icon TextColor="TextColor.Danger" Name="IconName.Delete" class="cursor-pointer" Clicked="context.RemoveFile" />
+                                            </Div>
+                                        </Div>
+                                    </Div>
+                                </FileTemplate>
+                                <ButtonsTemplate>
+                                    <Progress Value="@LogoPickerCustom.GetProgressPercentage()" />
+                                    @* <Buttons Class="mt-2 d-flex justify-content-end">
+                                        <Button Clicked="@context.Clear" Color="Color.Warning"><Icon Name="IconName.Clear" /></Button>
+                                        <Button Clicked="@context.Upload" Color="Color.Primary"><Icon Name="IconName.FileUpload" /></Button>
+                                    </Buttons> *@
+                                </ButtonsTemplate>
+                            </FilePicker>
+                        </Field>
 
             </div>
+                @if(editGroupBuyDto.LogoURL!=null)
+                {
+                    <div Class="col-12 row">
+                        <div class="col-2"></div>
+                        <div class="col-10">
+                            <div class="image-list-container">
+                               
+                                    <div class="image-container">
+                                        <Image class="blur-image" Source="@editGroupBuyDto.LogoURL" Text="Logo Image" Fluid />
+                                        <button class="delete-button" @onclick="() => DeleteLogoAsync(editGroupBuyDto.BannerURL)">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </div>
+                             
+                            </div>
+                        </div>
+                    </div>
+                }
         </div>
              <div class="col-12 row">
             <div class="col-2">
                 <label>@L["GroupBuyBanner"]</label>
             </div>
             <div class="col-10 row">
-             @*  <Upload Action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-            Name="avatar"
-            Class="avatar-uploader"
-            ListType="picture-card"
-            ShowUploadList="false"
-            
-            OnChange="GroupBuyBannerHandleChange">
-        @if (!string.IsNullOrWhiteSpace(groupBuyBanner.Url))
-        {
-            <img src="@groupBuyBanner.Url" alt="avatar" style="width: 100%" />
-        }
-        else
-        {
-            <div>
-                <Icon Spin="loading" Type="@(loading?"Loading":"plus")" ></Icon>
-                <div className="ant-upload-text">Upload</div>
-            </div>
-        }
-    </Upload> *@
+    <Field>
+                            <FilePicker @ref="BannerPickerCustom"
+                                       
+                                        Changed="OnBannerUploadAsync"
+                                        ShowMode="FilePickerShowMode.List"
+                                        Accept=".jpg, .png, .svg">
+                                <FileTemplate>
+                                    <Div Flex="Flex.JustifyContent.Between">
+                                        <Div>
+                                            <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
+                                            <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                        </Div>
+                                        <Div Class="ps-2">
+                                            <Div>
+                                                 @if (context.File.Status == FileEntryStatus.Ready)
+                                                {
+                                                    <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
+                                                }
+                                                else if (context.File.Status == FileEntryStatus.Uploading)
+                                                {
+                                                    <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
+                                                }
+                                                else if (context.File.Status == FileEntryStatus.Uploaded)
+                                                {
+                                                    <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
+                                                }
+                                                else if (context.File.Status == FileEntryStatus.Error)
+                                                {
+                                                    <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
+                                                }
+                                            </Div>
+                                            <Div>
+                                                <Icon TextColor="TextColor.Danger" Name="IconName.Delete" class="cursor-pointer" Clicked="context.RemoveFile" />
+                                            </Div>
+                                        </Div>
+                                    </Div>
+                                </FileTemplate>
+                                <ButtonsTemplate>
+                                    <Progress Value="@BannerPickerCustom.GetProgressPercentage()" />
+                                    @* <Buttons Class="mt-2 d-flex justify-content-end">
+                                        <Button Clicked="@context.Clear" Color="Color.Warning"><Icon Name="IconName.Clear" /></Button>
+                                        <Button Clicked="@context.Upload" Color="Color.Primary"><Icon Name="IconName.FileUpload" /></Button>
+                                    </Buttons> *@
+                                </ButtonsTemplate>
+                            </FilePicker>
+                        </Field>
 
             </div>
+                @if(editGroupBuyDto.BannerURL!=null)
+                {
+                    <div Class="col-12 row">
+                        <div class="col-2"></div>
+                        <div class="col-10">
+                            <div class="image-list-container">
+                               
+                                    <div class="image-container">
+                                        <Image class="blur-image" Source="@editGroupBuyDto.BannerURL" Text="Logo Image" Fluid />
+                                        <button class="delete-button" @onclick="() => DeleteBannerAsync(editGroupBuyDto.BannerURL)">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </div>
+                             
+                            </div>
+                        </div>
+                    </div>
+                }
+
+           
         </div>
           <div class="col-12 row ">
             <div class="col-2">
-                <label>@L["CarouselImages"]</label>
+                <label>@L["CarouselImages"]<Span><Tooltip Text="Upload upto 5 images">
+    
+<Icon class="fa-question-circle "></Icon></Tooltip></Span></label>
             </div>
-            <div class="col-10 d-flex flex-row">
-    @*           <Upload Action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-            Name="avatar"
-            Class="avatar-uploader"
-            ListType="picture-card"
-            ShowUploadList="false"
-            
-            OnChange="GroupBuyCarouselImage1HandleChange">
-        @if (!string.IsNullOrWhiteSpace(groupBuyCarousel1.Url))
-        {
-            <img src="@groupBuyCarousel1.Url" alt="avatar" style="width: 100%" />
-        }
-        else
-        {
-            <div>
-                <Icon Spin="loading" Type="@(loading?"Loading":"plus")" ></Icon>
-                <div className="ant-upload-text">Upload</div>
+            <div class="col-10 ">
+     <Field>
+                            <FilePicker @ref="CarouselPickerCustom"
+                                        Multiple
+                                        Changed="OnCarouselUploadAsync"
+                                        ShowMode="FilePickerShowMode.List"
+                                        Accept=".jpg, .png, .svg">
+                                <FileTemplate>
+                                    <Div Flex="Flex.JustifyContent.Between">
+                                        <Div>
+                                            <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
+                                            <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                        </Div>
+                                        <Div Class="ps-2">
+                                            <Div>
+                                                 @if (context.File.Status == FileEntryStatus.Ready)
+                                                {
+                                                    <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
+                                                }
+                                                else if (context.File.Status == FileEntryStatus.Uploading)
+                                                {
+                                                    <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
+                                                }
+                                                else if (context.File.Status == FileEntryStatus.Uploaded)
+                                                {
+                                                    <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
+                                                }
+                                                else if (context.File.Status == FileEntryStatus.Error)
+                                                {
+                                                    <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
+                                                }
+                                            </Div>
+                                            <Div>
+                                                <Icon TextColor="TextColor.Danger" Name="IconName.Delete" class="cursor-pointer" Clicked="context.RemoveFile" />
+                                            </Div>
+                                        </Div>
+                                    </Div>
+                                </FileTemplate>
+                                <ButtonsTemplate>
+                                    <Progress Value="@CarouselPickerCustom.GetProgressPercentage()" />
+                                    @* <Buttons Class="mt-2 d-flex justify-content-end">
+                                        <Button Clicked="@context.Clear" Color="Color.Warning"><Icon Name="IconName.Clear" /></Button>
+                                        <Button Clicked="@context.Upload" Color="Color.Primary"><Icon Name="IconName.FileUpload" /></Button>
+                                    </Buttons> *@
+                                </ButtonsTemplate>
+                            </FilePicker>
+                        </Field>
+
             </div>
-        }
-    </Upload>
-     <Upload Action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-            Name="avatar"
-            Class="avatar-uploader"
-            ListType="picture-card"
-            ShowUploadList="false"
-            
-            OnChange="GroupBuyCarouselImage2HandleChange">
-        @if (!string.IsNullOrWhiteSpace(groupBuyCarousel2.Url))
-        {
-            <img src="@groupBuyCarousel2.Url" alt="avatar" style="width: 100%" />
-        }
-        else
-        {
-            <div>
-                <Icon Spin="loading" Type="@(loading?"Loading":"plus")" ></Icon>
-                <div className="ant-upload-text">Upload</div>
-            </div>
-        }
-    </Upload>
-    <Upload Action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-            Name="avatar"
-            Class="avatar-uploader"
-            ListType="picture-card"
-            ShowUploadList="false"
-            
-            OnChange="GroupBuyCarouselImage3HandleChange">
-        @if (!string.IsNullOrWhiteSpace(groupBuyCarousel3.Url))
-        {
-            <img src="@groupBuyCarousel3.Url" alt="avatar" style="width: 100%" />
-        }
-        else
-        {
-            <div>
-                <Icon Spin="loading" Type="@(loading?"Loading":"plus")" ></Icon>
-                <div className="ant-upload-text">Upload</div>
-            </div>
-        }
-    </Upload>
-    <Upload Action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-            Name="avatar"
-            Class="avatar-uploader"
-            ListType="picture-card"
-            ShowUploadList="false"
-            
-            OnChange="GroupBuyCarouselImage4HandleChange">
-        @if (!string.IsNullOrWhiteSpace(groupBuyCarousel4.Url))
-        {
-            <img src="@groupBuyCarousel4.Url" alt="avatar" style="width: 100%" />
-        }
-        else
-        {
-            <div>
-                <Icon Spin="loading" Type="@(loading?"Loading":"plus")" ></Icon>
-                <div className="ant-upload-text">Upload</div>
-            </div>
-        }
-    </Upload>
-    <Upload Action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-            Name="avatar"
-            Class="avatar-uploader"
-            ListType="picture-card"
-            ShowUploadList="false"
-           
-            OnChange="GroupBuyCarouselImage5HandleChange">
-        @if (!string.IsNullOrWhiteSpace(groupBuyCarousel5.Url))
-        {
-            <img src="@groupBuyCarousel5.Url" alt="avatar" style="width: 100%" />
-        }
-        else
-        {
-            <div>
-                <Icon Spin="loading" Type="@(loading?"Loading":"plus")" ></Icon>
-                <div className="ant-upload-text">Upload</div>
-            </div>
-        }
-    </Upload> *@
-            </div>
+                  @if(CarouselImages.Count > 0)
+                {
+                    <div Class="col-12 row">
+                        <div class="col-2"></div>
+                        <div class="col-10">
+                            <div class="image-list-container">
+                                @foreach (var image in CarouselImages)
+                                {
+                                    <div class="image-container">
+                                        <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image" Fluid />
+                                        <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName)">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
         </div>
 
            <Divider></Divider>
@@ -262,12 +341,12 @@
                 <div class="col-4">
                  
     
-        <DateEdit  Class="form-control" @bind-Date=updateGroupBuyDto.StartTime  Placeholder="@L["StartDate"].ToString()" TValue="DateTime?"/>
+        <DateEdit  Class="form-control" @bind-Date=editGroupBuyDto.StartTime  Placeholder="@L["StartDate"].ToString()" TValue="DateTime?"/>
    
     </div>
                  <div class="col-4">
                  
-                     @* <DateEdit   Class="form-control"  @bind-Date=updateGroupBuyDto.EndTime  Placeholder="@L["EndDate"].ToString()" TValue="DateTime?"  /> *@
+                     <DateEdit   Class="form-control"  @bind-Date=editGroupBuyDto.EndTime  Placeholder="@L["EndDate"].ToString()" TValue="DateTime"  />
   
    
                  </div>
@@ -276,7 +355,7 @@
                 <div class="col-1">@L["Logistic"]</div>
                  <div class="col-2">@L["FreeShipping"]</div>
             
-                 <div class="col-4"> <Switch TValue="bool" @bind-Checked="@updateGroupBuyDto.FreeShipping"></Switch></div>
+                 <div class="col-4"> <Switch TValue="bool" @bind-Checked="@editGroupBuyDto.FreeShipping"></Switch></div>
             </div>
             <div class="col-12 row">
                 <div class="col-1"></div>
@@ -286,20 +365,17 @@
             <div class="col-8">
                
                             <div class="col-7 form-control"  style="background-color:white">
-            @*     @foreach (var tag in itemTags)
-                {
-                    <Tag @key="tag" Closable OnClose="()=>OnTagClose(tag)">@tag</Tag>
-                }
-                @if (tagInputVisible)
-                {
-                    <Input @ref="inputTagRef" Style="width: 78px" Size="small"  @bind-Value="inputTagValue" OnBlur="HandleTagInputConfirm" OnPressEnter="HandleTagInputConfirm" AutoFocus />
-                }
-                else
-                {
-                    <Tag Class="site-tag-plus" OnClick="@(() => tagInputVisible = !tagInputVisible)">
-                        <Icon Type="plus" />@L["NewTag"]
-                    </Tag>
-                } *@
+          @foreach (var item in itemTags)
+                            {
+                                <Badge class="item-tags" CloseClicked="@(() => HandleItemTagDelete(item))">@item</Badge>
+                            }
+
+                            <div class="input-container">
+                                <input type="text" id="tag-input" class="tag-input" placeholder="New Tag"
+                                @bind-value="TagInputValue"
+                                @onkeyup="HandleItemTagInputKeyUp" />
+                                <i class="tag-input-placeholder-icon fa fa-plus"></i>
+                            </div>
             </div>
          
             </div>
@@ -309,26 +385,26 @@
                 <div class="col-1"></div>
                  <div class="col-2">@L["AllowShipToOuterIsland"]</div>
             
-                 <div class="col-4"> <Switch TValue="bool" @bind-Checked="@updateGroupBuyDto.allowShipToOuterTaiwan"></Switch></div>
+                 <div class="col-4"> <Switch TValue="bool" @bind-Checked="@editGroupBuyDto.allowShipToOuterTaiwan"></Switch></div>
             </div>
                 <div class=" col-12 row">
                 <div class="col-1"></div>
                  <div class="col-2">@L["AllowShipToOverSea"]</div>
             
-                 <div class="col-4"> <Switch TValue="bool" @bind-Checked="@updateGroupBuyDto.allowShipOversea"></Switch></div>
+                 <div class="col-4"> <Switch TValue="bool" @bind-Checked="@editGroupBuyDto.allowShipOversea"></Switch></div>
             </div>
                <div class=" col-12 row">
                    <div class="col-1"></div>
                 <div class="col-2">@L["ExpectDeliveryDate"]</div>
-                <div class="col-4"><DateEdit TValue="DateTime?" Class="form-control" @bind-Date=updateGroupBuyDto.ExpectShippingDateTo  Placeholder="@L["StartDate"].ToString()" /></div>
-                 <div class="col-4"><DateEdit TValue="DateTime?"  Class="form-control" @bind-Date=updateGroupBuyDto.ExpectShippingDateFrom  Placeholder="@L["EndDate"].ToString()" /></div>
+                <div class="col-4"><DateEdit TValue="DateTime?" Class="form-control" @bind-Date=editGroupBuyDto.ExpectShippingDateTo  Placeholder="@L["StartDate"].ToString()" /></div>
+                 <div class="col-4"><DateEdit TValue="DateTime?"  Class="form-control" @bind-Date=editGroupBuyDto.ExpectShippingDateFrom  Placeholder="@L["EndDate"].ToString()" /></div>
             </div>
           
               <div class="col-12 row">
                 <div class="col-1">@L["GateWay"]</div>
                  <div class="col-2">@L["PaymentMethod"]</div>
             
-                 <div class="col-4">  <Radio TValue="bool" Group="Payment" Value=updateGroupBuyDto.IsDefaultPaymentGateWay>
+                 <div class="col-4">  <Radio TValue="bool" Group="Payment" Value=editGroupBuyDto.IsDefaultPaymentGateWay>
         @L["DefaultPaymentGateWay"]
     </Radio>
        </div>
@@ -340,20 +416,17 @@
                  <div class="col-1">    <Radio TValue="bool" Group="Payment" Value="@paymentMethodCheck" > </Radio></div>
                  <div class="col-7">
                      <div class="col-7 form-control"  style="background-color:white">
-             @*    @foreach (var tag in paymentMethodTags)
-                {
-                    <Tag @key="tag" Closable OnClose="()=>OnPaymentMethodTagClose(tag)">@tag</Tag>
-                }
-                @if (tagInputPaymentMethodVisible)
-                {
-                    <Input Disabled="@paymentMethodCheck" @ref="inputPaymentMethodTagRef" Style="width: 78px" Size="small"  @bind-Value="inputPaymentMethodTagValue" OnBlur="HandlePaymentMethodTagInputConfirm" OnPressEnter="HandlePaymentMethodTagInputConfirm" AutoFocus />
-                }
-                else
-                {
-                    <Tag Class="site-tag-plus" OnClick="@(() => tagInputPaymentMethodVisible = !tagInputPaymentMethodVisible)">
-                        <Icon Type="plus" />@L["NewTag"]
-                    </Tag>
-                } *@
+               @foreach (var item in paymentMethodTags)
+                            {
+                                <Badge class="item-tags" CloseClicked="@(() => HandlePaymentTagDelete(item))">@item</Badge>
+                            }
+
+                            <div class="input-container">
+                                <input type="text" id="tag-input" class="tag-input" placeholder="New Tag"
+                                @bind-value="PaymentTagInputValue"
+                                @onkeyup="HandlePaymentTagInputKeyUp" />
+                                <i class="tag-input-placeholder-icon fa fa-plus"></i>
+                            </div>
             </div>
                  </div>         
        
@@ -362,26 +435,26 @@
                 <div class="col-1">@L["Invoice"]</div>
                  <div class="col-2">@L["IssueInvoice"]</div>
             
-                 <div class="col-4"> <Switch TValue="bool" @bind-Checked="@updateGroupBuyDto.issueInvoice"></Switch></div>
+                 <div class="col-4"> <Switch TValue="bool" @bind-Checked="@editGroupBuyDto.issueInvoice"></Switch></div>
             </div>
            <div class=" col-12 row">
                 <div class="col-1"></div>
                  <div class="col-2 form-label">@L["AutoIssueTriplicateInvoice"]</div>
             
-                 <div class="col-4"> <Switch TValue="bool" @bind-Checked="@updateGroupBuyDto.AutoIssueTriplicateInvoice"></Switch></div>
+                 <div class="col-4"> <Switch TValue="bool" @bind-Checked="@editGroupBuyDto.AutoIssueTriplicateInvoice"></Switch></div>
             </div>
              <div class=" col-12 row">
                 <div class="col-1"></div>
                  <div class="col-2 form-label">@L["InvoiceComment"]</div>
             
-                 <div class="col-8"> <InputTextArea  maxlength="200" @bind-Value="@updateGroupBuyDto.InvoiceNote"></InputTextArea></div>
+                 <div class="col-8"> <InputTextArea class="form-control"   maxlength="200" @bind-Value="@editGroupBuyDto.InvoiceNote"></InputTextArea></div>
             </div>
             <Divider></Divider>
              <div class=" col-12 row">
                 <div class="col-1 mx-1">@L["AdvanceSetting"]</div>
                  <div class="col-2 form-label">@L["HideCredention"]</div>
             
-                 <div class="col-4"> <Switch TValue="bool" @bind-Checked="@updateGroupBuyDto.ProtectPrivacyData"></Switch></div>
+                 <div class="col-4"> <Switch TValue="bool" @bind-Checked="@editGroupBuyDto.ProtectPrivacyData"></Switch></div>
             </div>
                 <div class=" col-12 row">
            <div class="col-1"></div>
@@ -389,7 +462,7 @@
                 <label>@L["InviteCode"]</label>
             </div>
             <div class="col-5">
-                <TextEdit  @bind-Text="@updateGroupBuyDto.InviteCode" />
+                <TextEdit  @bind-Text="@editGroupBuyDto.InviteCode" />
             </div>
            
             
@@ -400,7 +473,7 @@
                 <label>@L["ProfitShare"]</label>
             </div>
             <div class="col-5">
-                <InputNumber TValue="int"  @bind-Value="@updateGroupBuyDto.ProfitShare" />
+                <InputNumber class="form-control"   @bind-Value="@editGroupBuyDto.ProfitShare" />
             </div>
             </div>
              <div class=" col-12 row">
@@ -409,7 +482,7 @@
                 <label>@L["FaceBookPixelID"]</label>
             </div>
             <div class="col-5">
-                <InputNumber TValue="int"  @bind-bind-Value="@updateGroupBuyDto.MetaPixelNo" />
+                <InputNumber class="form-control"   @bind-Value="@editGroupBuyDto.MetaPixelNo" />
             </div>
             </div>
              <div class=" col-12 row">
@@ -418,7 +491,7 @@
                 <label>@L["FaceBookID"]</label>
             </div>
             <div class="col-5">
-                <TextEdit  @bind-Text="@updateGroupBuyDto.FBID" />
+                <TextEdit    @bind-Text="@editGroupBuyDto.FBID" />
             </div>
             </div>
              <div class=" col-12 row">
@@ -427,7 +500,7 @@
                 <label>@L["IGID"]</label>
             </div>
             <div class="col-5">
-                <TextEdit  @bind-Text="@updateGroupBuyDto.IGID" />
+                <TextEdit  @bind-Text="@editGroupBuyDto.IGID" />
             </div>
             </div>
              <div class=" col-12 row">
@@ -436,7 +509,7 @@
                 <label>@L["LINEID"]</label>
             </div>
             <div class="col-5">
-                <TextEdit  @bind-Text="@updateGroupBuyDto.LineID" />
+                <TextEdit  @bind-Text="@editGroupBuyDto.LineID" />
             </div>
             </div>
              <div class=" col-12 row">
@@ -445,7 +518,7 @@
                 <label>@L["GAID"]</label>
             </div>
             <div class="col-5">
-                <TextEdit  @bind-Text="@updateGroupBuyDto.GAID" />
+                <TextEdit  @bind-Text="@editGroupBuyDto.GAID" />
             </div>
             </div>
              <div class=" col-12 row">
@@ -454,7 +527,7 @@
                 <label>@L["GTM"]</label>
             </div>
             <div class="col-5">
-                <TextEdit  @bind-Text="@updateGroupBuyDto.GTM" />
+                <TextEdit  @bind-Text="@editGroupBuyDto.GTM" />
             </div>
             </div>
     <Divider></Divider>
@@ -493,25 +566,7 @@
 <CollapseBody>
      <div class="row">
                <div class="col-3">
-         @* <Upload Action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-            Name="avatar"
-            Class="avatar-uploader"
-            ListType="picture-card"
-            ShowUploadList="false"
-            
-            OnChange="ProductPictureHandleChange">
-        @if (!string.IsNullOrWhiteSpace(productPicture.Url))
-        {
-            <img src="@productPicture.Url" alt="avatar" style="width: 100%" />
-        }
-        else
-        {
-            <div>
-                <Icon Spin="loading" Type="@(loading?"Loading":"plus")" ></Icon>
-                <div className="ant-upload-text">Upload</div>
-            </div>
-        }
-    </Upload> *@
+                                   
     </div>
     <div class="col-8 mt-5">
         <TextEdit MaxLength="60" ShowCount @bind-Text="@productDescription" />
@@ -555,7 +610,7 @@
     <div class="col-9">
         <div class="col-12">
             <FieldLabel></FieldLabel>
-            <TextEdit Placeholder="@L["GroupBuyCondition"]" @bind-Text="updateGroupBuyDto.GroupBuyCondition" MaxLength="60"  />
+            <TextEdit Placeholder="@L["GroupBuyCondition"]" @bind-Text="editGroupBuyDto.GroupBuyCondition" MaxLength="60"  />
         </div>
         <div class=" col-12">
             <Blazored.TextEditor.BlazoredTextEditor @ref="@quillHtml">
@@ -609,7 +664,7 @@
      <div class="col-9">
          <div class="col-12">
              <fieldLabel></fieldLabel>
-             <TextEdit Placeholder="@L["CustomerInformation"]" @bind-Text="@updateGroupBuyDto.CustomerInformation" MaxLength="60"  />
+             <TextEdit Placeholder="@L["CustomerInformation"]" @bind-Text="@editGroupBuyDto.CustomerInformation" MaxLength="60"  />
          </div>
          <div class=" col-12">
              <Blazored.TextEditor.BlazoredTextEditor @ref="@quillHtml">
@@ -663,7 +718,7 @@
      <div class="col-9">
          <div class="col-12">
              <fieldLabel></fieldLabel>
-             <TextEdit Placeholder="@L["ExchangePolicy"]" @bind-Text="@updateGroupBuyDto.ExchangePolicy" MaxLength="60" ShowCount />
+             <TextEdit Placeholder="@L["ExchangePolicy"]" @bind-Text="@editGroupBuyDto.ExchangePolicy" MaxLength="60" ShowCount />
          </div>
          <div class=" col-12">
              <Blazored.TextEditor.BlazoredTextEditor  @ref="@quillHtml">
@@ -767,11 +822,11 @@
 
         <div style="text-align: center; margin-top:5px ;">
             <Button Danger Type="@ButtonType.Button" Style="margin-right:5px">@L["Cancel"]</Button>
-            <Button Type="@ButtonType.Button" Style="margin-right:5px"  Clicked="CreateEntityAsync" >@L["Save"]</Button>
+            <Button Type="@ButtonType.Button" class="btn btn-primary me-1" Clicked="CreateEntityAsync">@L["Save"]</Button>
             <Button Type="@ButtonType.Button" Style="margin-right:5px; background-color:skyblue">@L["Preview"]</Button>
 
         </div>
-    
+    </CardBody>
     </Card>
     
     <Modal Title="@title"

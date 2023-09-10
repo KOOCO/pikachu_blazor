@@ -1,5 +1,6 @@
 ﻿using Kooco.Pikachu.GroupBuys;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
@@ -12,10 +13,11 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
     {
         public string TestProperty { get; set; } = string.Empty;
         public string TenantNameList { get; set; } = string.Empty;
-        public PagedResultDto<GroupBuyDto> GroupBuyListItem { get; set; }
+        public List<GroupBuyDto> GroupBuyListItem { get; set; }
         private readonly IGroupBuyAppService _groupBuyAppService;
         int _pageIndex = 1;
         int _pageSize = 10;
+        int Total = 0;
         public GroupBuyList(ITenantAppService tenantAppService, IGroupBuyAppService groupBuyAppService) 
         {
             TestProperty = "此為團購清單頁面";
@@ -26,7 +28,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             //var data = tenantAppService.GetListAsync(input).Result;
             //TenantNameList = string.Join(",", data.Items.Select(t => t.Name).ToList());
             _groupBuyAppService = groupBuyAppService;
-            GroupBuyListItem=new PagedResultDto<GroupBuyDto>();
+            GroupBuyListItem=new List<GroupBuyDto>();
         }
         protected override async Task OnInitializedAsync()
         {
@@ -41,7 +43,8 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 MaxResultCount = _pageSize,
                 SkipCount = skipCount
             });
-            GroupBuyListItem = result;
+            GroupBuyListItem = result.Items.ToList();
+            Total = (int)result.TotalCount;
         }
 
     }
