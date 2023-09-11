@@ -4,12 +4,9 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Application.Dtos;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Kooco.Pikachu.Images;
 using System.Linq;
-using Volo.Abp.Validation.Localization;
-using Volo.Abp.Data;
-using Volo.Abp;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp;
 
 namespace Kooco.Pikachu.Items;
 
@@ -17,17 +14,14 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
     IItemAppService
 {
     private readonly IItemRepository _itemRepository;
-    private readonly IImageAppService _imageAppService;
     private readonly ItemManager _itemManager;
 
     public ItemAppService(
         IItemRepository repository,
-        IImageAppService imageAppService,
         ItemManager itemManager
         ) : base(repository)
     {
         _itemRepository = repository;
-        _imageAppService = imageAppService;
         _itemManager = itemManager;
     }
 
@@ -99,10 +93,14 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
             }
         }
 
-        if(input.ItemImages != null && input.ItemImages.Any())
+        if (input.ItemImages != null && input.ItemImages.Any())
         {
-            foreach(var image in input.ItemImages)
+            foreach (var image in input.ItemImages)
             {
+                if(item.Images.Any(x => x.BlobImageName == image.BlobImageName))
+                {
+                    continue;
+                }
                 _itemManager.AddItemImage(
                     item,
                     image.Name,
@@ -118,6 +116,125 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
         return ObjectMapper.Map<Item, ItemDto>(item);
     }
 
+    public override async Task<ItemDto> UpdateAsync(Guid id, UpdateItemDto input)
+    {
+        var sameName = await _itemRepository.FindByNameAsync(input.ItemName);
+
+        if(sameName != null && sameName.Id != id)
+        {
+            throw new BusinessException(PikachuDomainErrorCodes.ItemWithSameNameAlreadyExists);
+        }
+
+        var item = await _itemRepository.GetAsync(id);
+        await _itemRepository.EnsureCollectionLoadedAsync(item, i => i.ItemDetails);
+        await _itemRepository.EnsureCollectionLoadedAsync(item, i => i.Images);
+
+        item.ItemName = input.ItemName;
+        item.ItemDescriptionTitle = input.ItemDescriptionTitle;
+        item.ItemDescription = input.ItemDescription;
+        item.ItemTags = input.ItemTags;
+        item.LimitAvaliableTimeStart = input.LimitAvaliableTimeStart;
+        item.LimitAvaliableTimeEnd = input.LimitAvaliableTimeEnd;
+        item.ShareProfit = input.ShareProfit;
+        item.IsFreeShipping = input.IsFreeShipping;
+        item.IsReturnable = input.IsReturnable;
+        item.ShippingMethodId = input.ShippingMethodId;
+        item.TaxTypeId = input.TaxTypeId;
+
+        item.CustomField1Value = input.CustomField1Value;
+        item.CustomField1Name = input.CustomField1Name;
+        item.CustomField2Value = input.CustomField2Value;
+        item.CustomField2Name = input.CustomField2Name;
+        item.CustomField3Value = input.CustomField3Value;
+        item.CustomField3Name = input.CustomField3Name;
+        item.CustomField4Value = input.CustomField4Value;
+        item.CustomField4Name = input.CustomField4Name;
+        item.CustomField5Value = input.CustomField5Value;
+        item.CustomField5Name = input.CustomField5Name;
+        item.CustomField6Value = input.CustomField6Value;
+        item.CustomField6Name = input.CustomField6Name;
+        item.CustomField7Value = input.CustomField7Value;
+        item.CustomField7Name = input.CustomField7Name;
+        item.CustomField8Value = input.CustomField8Value;
+        item.CustomField8Name = input.CustomField8Name;
+        item.CustomField9Value = input.CustomField9Value;
+        item.CustomField9Name = input.CustomField9Name;
+        item.CustomField10Value = input.CustomField10Value;
+        item.CustomField10Name = input.CustomField10Name;
+
+        item.Attribute1Name = input.Attribute1Name;
+        item.Attribute2Name = input.Attribute2Name;
+        item.Attribute3Name = input.Attribute3Name;
+
+
+        var itemDetailsIds = input.ItemDetails.Select(x => x.Id).ToList();
+        _itemManager.RemoveItemDetailsAsync(item, itemDetailsIds);
+        
+        foreach(var itemDetail in input.ItemDetails)
+        {
+            if (itemDetail.Id.HasValue)
+            {
+                var existing = item.ItemDetails.First(x => x.Id == itemDetail.Id);
+                existing.ItemName = itemDetail.ItemName;
+                existing.SKU = itemDetail.Sku;
+                existing.LimitQuantity = itemDetail.LimitQuantity;
+                existing.SellingPrice = itemDetail.SellingPrice;
+                existing.SaleableQuantity = itemDetail.SaleableQuantity;
+                existing.PreOrderableQuantity = itemDetail.PreOrderableQuantity;
+                existing.SaleablePreOrderQuantity = itemDetail.SaleablePreOrderQuantity;
+                existing.InventoryAccount = itemDetail.InventoryAccount;
+                existing.Attribute1Value = itemDetail.Attribute1Value;
+                existing.Attribute2Value = itemDetail.Attribute2Value;
+                existing.Attribute3Value = itemDetail.Attribute3Value;
+            }
+            else
+            {
+                await _itemManager.AddItemDetailAsync(
+                    item,
+                    itemDetail.ItemName,
+                    itemDetail.Sku,
+                    itemDetail.LimitQuantity,
+                    itemDetail.SellingPrice,
+                    itemDetail.SaleableQuantity,
+                    itemDetail.PreOrderableQuantity,
+                    itemDetail.SaleablePreOrderQuantity,
+                    itemDetail.InventoryAccount,
+
+                    itemDetail.Attribute1Value,
+                    itemDetail.Attribute2Value,
+                    itemDetail.Attribute3Value
+                    );
+            }
+        }
+
+        if (input.Images != null && input.Images.Any())
+        {
+            foreach (var image in input.Images)
+            {
+                if (!item.Images.Any(x => x.BlobImageName == image.BlobImageName))
+                {
+                    _itemManager.AddItemImage(
+                    item,
+                    image.Name,
+                    image.BlobImageName,
+                    image.ImageUrl,
+                    image.ImageType,
+                    image.SortNo
+                    );
+                }
+            }
+        }
+
+        return ObjectMapper.Map<Item, ItemDto>(item);
+    }
+
+    public async Task DeleteSingleImageAsync(Guid itemId, string blobImageName)
+    {
+        var item = await _itemRepository.GetAsync(itemId);
+        await _itemRepository.EnsureCollectionLoadedAsync(item, x => x.Images);
+
+        item.Images.RemoveAll(item.Images.Where(x => x.BlobImageName == blobImageName).ToList());
+    }
 
     /// <summary>
     /// Chnage Item Availability
@@ -135,9 +252,31 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
     /// </summary>
     /// <param name="itemIds"></param>
     /// <returns></returns>
-    public async Task DeleteManyItems(List<Guid> itemIds)
+    public async Task DeleteManyItemsAsync(List<Guid> itemIds)
     {
         await _itemRepository.DeleteManyAsync(itemIds);
     }
 
+    public async Task<ItemDto> GetAsync(Guid id, bool includeDetails = false)
+    {
+        var item = await _itemRepository.GetAsync(id);
+        if (includeDetails)
+        {
+            await _itemRepository.EnsureCollectionLoadedAsync(item, i => i.ItemDetails);
+            await _itemRepository.EnsureCollectionLoadedAsync(item, i => i.Images);
+        }
+        return ObjectMapper.Map<Item, ItemDto>(item);
+    }
+
+    public async Task<string?> GetFirstImageUrlAsync(Guid id)
+    {
+        var item = await _itemRepository.GetAsync(id);
+        await _itemRepository.EnsureCollectionLoadedAsync(item, i => i.Images);
+        return item.Images.OrderBy(x => x.SortNo).FirstOrDefault()?.ImageUrl;
+    }
+
+    public async Task<List<KeyValueDto>> GetItemsLookupAsync()
+    {
+        return ObjectMapper.Map<List<Item>, List<KeyValueDto>>(await _itemRepository.GetListAsync());
+    }
 }

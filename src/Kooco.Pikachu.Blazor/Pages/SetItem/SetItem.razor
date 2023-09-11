@@ -1,0 +1,92 @@
+﻿@page "/SetItem"
+@using Kooco.Pikachu.Items.Dtos;
+@using Kooco.Pikachu.Localization;
+@using Microsoft.Extensions.Localization;
+@using Blazorise.Components;
+@inject IStringLocalizer<PikachuResource> L;
+@inject NavigationManager NavigationManager;
+
+<div class="row">
+    <div Class="col-6">
+        <h3>@L["SetItem"]</h3>
+    </div>
+    <div Class="col-6 d-flex flex-row-reverse">
+        
+        <button class="btn btn-sm btn-danger me-2" @onclick="DeleteSelectedAsync">
+            @L["DeleteSelected"]
+        </button>
+
+        <button class="btn btn-sm btn-primary" @onclick="NavigateToCreateSetItem">
+            <i class="fa fa-plus"></i>
+            @L["NewSetItem"]
+        </button>
+
+        <div class="me-2 p-2">
+            <input type="checkbox" class="me-1" style="height: 15px; width: 15px;" checked="@IsAllSelected" @onchange="HandleSelectAllChange"></input>
+            <Label Class="form-label">@L["SelectAll"]</Label>
+        </div>
+    </div>
+</div>
+
+<Card Class="mt-2">
+    <CardBody>
+        <DataGrid TItem="SetItemDto"
+                  Data="SetItemList"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="Total"
+                  ShowPager="true"
+                  PageSize="PageSize"
+                  RowDoubleClicked="OnEditItem">
+            <DataGridColumns>
+                <DataGridColumn TItem="SetItemDto" Caption="@L["Select"]">
+                    <DisplayTemplate>
+                        <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="SetItemDto"
+                                Field="@nameof(SetItemDto.SetItemName)"
+                                Caption="@L["ItemName"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="SetItemDto"
+                                Field="@nameof(SetItemDto.SetItemDescriptionTitle)"
+                                Caption="@L["ItemDescription"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="SetItemDto"
+                                Caption="@L["TimeLimitPeriod"]">
+                    <DisplayTemplate>
+                        @context.LimitAvaliableTimeStart.ToShortDateString() - @context.LimitAvaliableTimeEnd.ToShortDateString()
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="SetItemDto"
+                                Field="@nameof(SetItemDto.CreationTime)"
+                                Caption="@L["CreatedTime"]">
+                    <DisplayTemplate>
+                        @context.CreationTime.ToShortDateString()
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="SetItemDto"
+                                Field="@nameof(SetItemDto.IsFreeShipping)"
+                                Caption="@L["FreeShipping"]">
+                    <DisplayTemplate>
+                        @if (context.IsFreeShipping)
+                        {
+                            <i class="fa fa-check bg-success text-light p-1"></i>
+                        }
+                        else
+                        {
+                            <i class="fa fa-times bg-danger text-light p-1"></i>
+                        }
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="SetItemDto"
+                                Field="@nameof(SetItemDto.ShareProfit)"
+                                Caption="@L["ShareProfit"]">
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
+
+@code {
+   
+}

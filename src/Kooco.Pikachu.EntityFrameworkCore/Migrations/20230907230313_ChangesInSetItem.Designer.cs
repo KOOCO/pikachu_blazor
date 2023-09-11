@@ -4,6 +4,7 @@ using Kooco.Pikachu.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    partial class PikachuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230907230313_ChangesInSetItem")]
+    partial class ChangesInSetItem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -283,9 +286,6 @@ namespace Kooco.Pikachu.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("SetItemId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("SortNo")
                         .HasColumnType("int");
 
@@ -295,8 +295,6 @@ namespace Kooco.Pikachu.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ItemId");
-
-                    b.HasIndex("SetItemId");
 
                     b.ToTable("AppImages", null, t =>
                         {
@@ -2523,10 +2521,6 @@ namespace Kooco.Pikachu.Migrations
                     b.HasOne("Kooco.Pikachu.Items.Item", null)
                         .WithMany("Images")
                         .HasForeignKey("ItemId");
-
-                    b.HasOne("Kooco.Pikachu.Items.SetItem", null)
-                        .WithMany("Images")
-                        .HasForeignKey("SetItemId");
                 });
 
             modelBuilder.Entity("Kooco.Pikachu.Items.Item", b =>
@@ -2731,8 +2725,6 @@ namespace Kooco.Pikachu.Migrations
 
             modelBuilder.Entity("Kooco.Pikachu.Items.SetItem", b =>
                 {
-                    b.Navigation("Images");
-
                     b.Navigation("SetItemDetails");
                 });
 

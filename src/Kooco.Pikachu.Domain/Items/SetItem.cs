@@ -1,24 +1,24 @@
+using Kooco.Pikachu.Images;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net.Http.Headers;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
 
 namespace Kooco.Pikachu.Items
 {
-    public class SetItem : FullAuditedAggregateRoot<Guid> , IMultiTenant
+    public class SetItem : FullAuditedAggregateRoot<Guid>, IMultiTenant
     {
-     public Guid? TenantId { get; set; }
-        public List<SetItemDetails> SetItemDetails { get; set; }
+        public Guid? TenantId { get; set; }
+        public ICollection<SetItemDetails> SetItemDetails { get; set; }
+        public ICollection<Image> Images { get; set; }
         public string SetItemName { get; set; }
         public string? SetItemNo { get; set; }
         public string? SetItemDescriptionTitle { get; set; }
         public string? Description { get; set; }
         public string? SetItemMainImageURL { get; set; }
 
-        public string SetItemStatus { get; set; }
+        public string? SetItemStatus { get; set; }
         public int? SetItemSaleableQuantity { get; set; }
 
         public int SellingPrice { get; set; }
@@ -38,7 +38,7 @@ namespace Kooco.Pikachu.Items
         /// 可訂購預購數量
         /// </summary>
         public int? SaleablePreOrderQuantity { get; set; }
-        
+
         //todo add item tag
         //public Array ItemTags { get; set; }
         /// <summary>
@@ -66,7 +66,7 @@ namespace Kooco.Pikachu.Items
         /// <summary>
         /// 是否免運 Is Free Shipping
         /// </summary>
-        public bool isFreeShipping { get; set; } = false;
+        public bool IsFreeShipping { get; set; } = false;
 
         //todo add shipping method
         /// <summary>
@@ -96,115 +96,153 @@ namespace Kooco.Pikachu.Items
         public string? ItemCategory { get; set; }
 
 
-    protected SetItem()
-    {
-    }
+        protected SetItem()
+        {
+        }
 
-    public SetItem(
+        public SetItem(
+            Guid id,
+            Guid? tenantId,
+            string setItemName,
+            string? setItemNo,
+            string? setItemDescriptionTitle,
+            string? description,
+            string? setItemMainImageURL,
+            string setItemStatus,
+            int? setItemSaleableQuantity,
+            int sellingPrice,
+            int? groupBuyPrice,
+            int? saleableQuantity,
+            int? preOrderableQuantity,
+            int? saleablePreOrderQuantity,
+            string? salesAccount,
+            Boolean returnable,
+            DateTime limitAvaliableTimeStart,
+            DateTime limitAvaliableTimeEnd,
+            int shareProfit,
+            bool isFreeShipping,
+            string? taxName,
+            int? taxPercentage,
+            string? taxType,
+            string? itemCategory
+        ) : base(id)
+        {
+            TenantId = tenantId;
+            SetItemName = setItemName;
+            SetItemNo = setItemNo;
+            SetItemDescriptionTitle = setItemDescriptionTitle;
+            Description = description;
+            SetItemMainImageURL = setItemMainImageURL;
+            SetItemStatus = setItemStatus;
+            SetItemSaleableQuantity = setItemSaleableQuantity;
+            SellingPrice = sellingPrice;
+            GroupBuyPrice = groupBuyPrice;
+            SaleableQuantity = saleableQuantity;
+            PreOrderableQuantity = preOrderableQuantity;
+            SaleablePreOrderQuantity = saleablePreOrderQuantity;
+            SalesAccount = salesAccount;
+            Returnable = returnable;
+            LimitAvaliableTimeStart = limitAvaliableTimeStart;
+            LimitAvaliableTimeEnd = limitAvaliableTimeEnd;
+            ShareProfit = shareProfit;
+            IsFreeShipping = isFreeShipping;
+            TaxName = taxName;
+            TaxPercentage = taxPercentage;
+            TaxType = taxType;
+            ItemCategory = itemCategory;
+
+            SetItemDetails = new List<SetItemDetails>();
+            Images = new List<Image>();
+        }
+
+        public SetItem(
+            Guid id,
+            Guid? tenantId,
+            List<SetItemDetails> setItemDetails,
+            string setItemName,
+            string? setItemNo,
+            string? setItemDescriptionTitle,
+            string? description,
+            string? setItemMainImageURL,
+            string setItemStatus,
+            int? setItemSaleableQuantity,
+            int sellingPrice,
+            int? groupBuyPrice,
+            int? saleableQuantity,
+            int? preOrderableQuantity,
+            int? saleablePreOrderQuantity,
+            string? salesAccount,
+            Boolean returnable,
+            DateTime limitAvaliableTimeStart,
+            DateTime limitAvaliableTimeEnd,
+            int shareProfit,
+            bool isFreeShipping,
+            string? taxName,
+            int? taxPercentage,
+            string? taxType,
+            string? itemCategory
+        ) : base(id)
+        {
+            TenantId = tenantId;
+            SetItemDetails = setItemDetails;
+            SetItemName = setItemName;
+            SetItemNo = setItemNo;
+            SetItemDescriptionTitle = setItemDescriptionTitle;
+            Description = description;
+            SetItemMainImageURL = setItemMainImageURL;
+            SetItemStatus = setItemStatus;
+            SetItemSaleableQuantity = setItemSaleableQuantity;
+            SellingPrice = sellingPrice;
+            GroupBuyPrice = groupBuyPrice;
+            SaleableQuantity = saleableQuantity;
+            PreOrderableQuantity = preOrderableQuantity;
+            SaleablePreOrderQuantity = saleablePreOrderQuantity;
+            SalesAccount = salesAccount;
+            Returnable = returnable;
+            LimitAvaliableTimeStart = limitAvaliableTimeStart;
+            LimitAvaliableTimeEnd = limitAvaliableTimeEnd;
+            ShareProfit = shareProfit;
+            IsFreeShipping = isFreeShipping;
+            TaxName = taxName;
+            TaxPercentage = taxPercentage;
+            TaxType = taxType;
+            ItemCategory = itemCategory;
+            Images = new List<Image>();
+        }
+
+        public void AddSetItemDetails(
         Guid id,
         Guid? tenantId,
-        string setItemName,
-        string? setItemNo,
-        string? setItemDescriptionTitle,
-        string? description,
-        string? setItemMainImageURL,
-        string setItemStatus,
-        int? setItemSaleableQuantity,
-        int sellingPrice,
-        int? groupBuyPrice,
-        int? saleableQuantity,
-        int? preOrderableQuantity,
-        int? saleablePreOrderQuantity,
-        string? salesAccount,
-        Boolean returnable,
-        DateTime limitAvaliableTimeStart,
-        DateTime limitAvaliableTimeEnd,
-        int shareProfit,
-        bool isFreeShipping,
-        string? taxName,
-        int? taxPercentage,
-        string? taxType,
-        string? itemCategory
-    ) : base(id)
-    {
-        TenantId = tenantId;
-        SetItemName = setItemName;
-        SetItemNo = setItemNo;
-        SetItemDescriptionTitle = setItemDescriptionTitle;
-        Description = description;
-        SetItemMainImageURL = setItemMainImageURL;
-        SetItemStatus = setItemStatus;
-        SetItemSaleableQuantity = setItemSaleableQuantity;
-        SellingPrice = sellingPrice;
-        GroupBuyPrice = groupBuyPrice;
-        SaleableQuantity = saleableQuantity;
-        PreOrderableQuantity = preOrderableQuantity;
-        SaleablePreOrderQuantity = saleablePreOrderQuantity;
-        SalesAccount = salesAccount;
-        Returnable = returnable;
-        LimitAvaliableTimeStart = limitAvaliableTimeStart;
-        LimitAvaliableTimeEnd = limitAvaliableTimeEnd;
-        ShareProfit = shareProfit;
-        isFreeShipping = isFreeShipping;
-        TaxName = taxName;
-        TaxPercentage = taxPercentage;
-        TaxType = taxType;
-        ItemCategory = itemCategory;
-    }
+        Guid setItemId,
+        Guid itemId,
+        int quantity
+        )
+        {
+            SetItemDetails.Add(
+                new SetItemDetails(
+                    id,
+                    tenantId,
+                    setItemId,
+                    itemId,
+                    quantity
+                    )
+                );
+        }
 
-    public SetItem(
-        Guid id,
-        Guid? tenantId,
-        List<SetItemDetails> setItemDetails,
-        string setItemName,
-        string? setItemNo,
-        string? setItemDescriptionTitle,
-        string? description,
-        string? setItemMainImageURL,
-        string setItemStatus,
-        int? setItemSaleableQuantity,
-        int sellingPrice,
-        int? groupBuyPrice,
-        int? saleableQuantity,
-        int? preOrderableQuantity,
-        int? saleablePreOrderQuantity,
-        string? salesAccount,
-        Boolean returnable,
-        DateTime limitAvaliableTimeStart,
-        DateTime limitAvaliableTimeEnd,
-        int shareProfit,
-        bool isFreeShipping,
-        string? taxName,
-        int? taxPercentage,
-        string? taxType,
-        string? itemCategory
-    ) : base(id)
-    {
-        TenantId = tenantId;
-        SetItemDetails = setItemDetails;
-        SetItemName = setItemName;
-        SetItemNo = setItemNo;
-        SetItemDescriptionTitle = setItemDescriptionTitle;
-        Description = description;
-        SetItemMainImageURL = setItemMainImageURL;
-        SetItemStatus = setItemStatus;
-        SetItemSaleableQuantity = setItemSaleableQuantity;
-        SellingPrice = sellingPrice;
-        GroupBuyPrice = groupBuyPrice;
-        SaleableQuantity = saleableQuantity;
-        PreOrderableQuantity = preOrderableQuantity;
-        SaleablePreOrderQuantity = saleablePreOrderQuantity;
-        SalesAccount = salesAccount;
-        Returnable = returnable;
-        LimitAvaliableTimeStart = limitAvaliableTimeStart;
-        LimitAvaliableTimeEnd = limitAvaliableTimeEnd;
-        ShareProfit = shareProfit;
-        isFreeShipping = isFreeShipping;
-        TaxName = taxName;
-        TaxPercentage = taxPercentage;
-        TaxType = taxType;
-        ItemCategory = itemCategory;
-    }
-    }
+        public void AddImage(
+            Guid id,
+            string name,
+            string blobImageName,
+            string imageUrl,
+            int sortNo
+            )
+        {
+            Images.Add(new Image(id, name, blobImageName, imageUrl, ImageType.SetItem, this.Id, sortNo));
+        }
 
+        public void RemoveItemDetailsAsync(List<Guid?> ids)
+        {
+            SetItemDetails.RemoveAll(x => !ids.Contains(x.Id));
+        }
+    }
 }

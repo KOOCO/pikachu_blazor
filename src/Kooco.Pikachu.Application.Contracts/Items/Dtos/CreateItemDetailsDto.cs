@@ -5,6 +5,7 @@ namespace Kooco.Pikachu.Items.Dtos;
 [Serializable]
 public class CreateItemDetailsDto
 {
+    public Guid? Id { get; set; }
     public string ItemName { get; set; }
     public string Sku { get; set; }
     public float SellingPrice { get; set; }

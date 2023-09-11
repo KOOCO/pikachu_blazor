@@ -1,10 +1,7 @@
-﻿using Azure.Storage.Blobs.Models;
-using Azure.Storage.Blobs;
-using Blazored.TextEditor;
+﻿using Blazored.TextEditor;
 using Blazorise;
 using Kooco.Pikachu.AzureStorage.Image;
 using Kooco.Pikachu.EnumValues;
-using Kooco.Pikachu.ImageBlob;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components;
@@ -17,7 +14,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Kooco.Pikachu.Images;
 
 namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
@@ -28,7 +24,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         private const int MaxAllowedFilesPerUpload = 10;
         private const int TotalMaxAllowedFiles = 50;
         private const int MaxAllowedFileSize = 1024 * 1024 * 10;
-
+        private readonly List<string> ValidFileExtensions = new() { ".jpg", ".png", ".svg"};
         private List<string> ItemTags { get; set; } = new List<string>(); //used for store item tags 
         private List<EnumValueDto> ShippingMethods { get; set; } // for bind all shippingMethods
         private List<EnumValueDto> TaxTypes { get; set; } // for bind all taxTypes
@@ -59,15 +55,38 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             _imageContainerManager = imageContainerManager;
         }
 
+        protected override async Task OnInitializedAsync()
+        {
+            await base.OnInitializedAsync();
+            var enumValues = (await _enumValueService.GetEnums(new List<EnumType> {
+                                                             EnumType.ShippingMethod,
+                                                             EnumType.TaxType
+                                                         })).ToList();
+            TaxTypes = enumValues.Where(x => x.EnumType == EnumType.TaxType).ToList();
+            CreateItemDto.TaxTypeId = TaxTypes.First().Id;
+
+            ShippingMethods = enumValues.Where(x => x.EnumType == EnumType.ShippingMethod).ToList();
+            CreateItemDto.ShippingMethodId = ShippingMethods.First().Id;
+
+            ItemDetailsList = new List<CreateItemDetailsDto>();
+            CreateItemDto.ItemImages = new List<CreateImageDto>();
+            Attributes.Add(new Attributes
+            {
+                Id = 1,
+                Name = "",
+                ItemTags = new List<string>()
+            });
+        }
+
         async Task OnFileUploadAsync(FileChangedEventArgs e)
         {
-            if(e.Files.Count() > MaxAllowedFilesPerUpload)
+            if (e.Files.Count() > MaxAllowedFilesPerUpload)
             {
                 await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesExceedMaxAllowedPerUpload]);
                 await FilePickerCustom.Clear();
                 return;
             }
-            if(CreateItemDto.ItemImages.Count > TotalMaxAllowedFiles)
+            if (CreateItemDto.ItemImages.Count > TotalMaxAllowedFiles)
             {
                 await _uiMessageService.Error(L[PikachuDomainErrorCodes.AlreadyUploadMaxAllowedFiles]);
                 await FilePickerCustom.Clear();
@@ -78,16 +97,21 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             {
                 foreach (var file in e.Files)
                 {
-                    if(file.Size > MaxAllowedFileSize)
+                    if (!ValidFileExtensions.Contains(Path.GetExtension(file.Name).ToLower()))
+                    {
+                        await FilePickerCustom.RemoveFile(file);
+                        return;
+                    }
+                    if (file.Size > MaxAllowedFileSize)
                     {
                         count++;
                         await FilePickerCustom.RemoveFile(file);
                         return;
                     }
                     string newFileName = Path.ChangeExtension(
-                          Path.GetRandomFileName(),
+                          Guid.NewGuid().ToString().Replace("-", ""),
                           Path.GetExtension(file.Name));
-                    var stream = file.OpenReadStream();
+                    var stream = file.OpenReadStream(long.MaxValue);
                     try
                     {
                         var memoryStream = new MemoryStream();
@@ -96,7 +120,11 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                         memoryStream.Position = 0;
                         var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
 
-                        int sortNo = CreateItemDto.ItemImages.LastOrDefault()?.SortNo ?? 0;
+                        int sortNo = 0;
+                        if (CreateItemDto.ItemImages.Any())
+                        {
+                            sortNo = CreateItemDto.ItemImages.Max(x => x.SortNo);
+                        }
 
                         CreateItemDto.ItemImages.Add(new CreateImageDto
                         {
@@ -114,7 +142,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                         stream.Close();
                     }
                 }
-                if(count > 0)
+                if (count > 0)
                 {
                     await _uiMessageService.Error(count + ' ' + L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
                 }
@@ -150,29 +178,6 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 Console.WriteLine(ex.Message);
                 await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWentWrongWhileDeletingImage]);
             }
-        }
-
-        protected override async Task OnInitializedAsync()
-        {
-            await base.OnInitializedAsync();
-            var enumValues = (await _enumValueService.GetEnums(new List<EnumType> {
-                                                             EnumType.ShippingMethod,
-                                                             EnumType.TaxType
-                                                         })).ToList();
-            TaxTypes = enumValues.Where(x => x.EnumType == EnumType.TaxType).ToList();
-            CreateItemDto.TaxTypeId = TaxTypes.First().Id;
-
-            ShippingMethods = enumValues.Where(x => x.EnumType == EnumType.ShippingMethod).ToList();
-            CreateItemDto.ShippingMethodId = ShippingMethods.First().Id;
-
-            ItemDetailsList = new List<CreateItemDetailsDto>();
-            CreateItemDto.ItemImages = new List<CreateImageDto>();
-            Attributes.Add(new Attributes
-            {
-                Id = 1,
-                Name = "",
-                ItemTags = new List<string>()
-            });
         }
 
         private void HandleItemTagInputKeyUp(KeyboardEventArgs e)
@@ -301,7 +306,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             }
             catch (BusinessException ex)
             {
-                await _uiMessageService.Error(ex.Code.ToString());
+                await _uiMessageService.Error(ex.Code?.ToString());
             }
             catch (Exception ex)
             {

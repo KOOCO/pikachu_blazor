@@ -24,6 +24,7 @@
     "Preview": "Preview",
     "Save": "Save",
     "Upload": "Upload",
+    "SelectAll": "Select All",
 
     //items
     "NewItem": "New Item",
@@ -91,6 +92,11 @@
     "Pikachu:FilesAreGreaterThanMaxAllowedFileSize": "Files Are Greater Than Maximum Allowed File Size",
     "Pikachu:AlreadyUploadMaxAllowedFiles": "You Have Already Uploaded Maximum Number Of Files",
     "Pikachu:FilesExceedMaxAllowedPerUpload": "Files Exceed Maximum Allowed Files Per Upload",
+    "AreYouSureToDeleteSelectedItem": "Are You Sure To Delete The Selected Items?",
+    "DeleteSelected": "Delete Selected",
+    "NewSetItem": "New Set Item",
+    "NotFound": "Not Found",
+    "EditSetItem": "Edit Set Item",
 
     //GroupBuy
     "NewGroupBuy": "New GroupBuy",
@@ -110,10 +116,14 @@
     "ExpectDeliveryDate": "Expect Delivery Date",
     "GateWay": "GateWay",
     "PaymentMethod": "Payment Method",
-    "DefaultPaymentGateWay": "DefaultPaymentGateWay"
+    "DefaultPaymentGateWay": "DefaultPaymentGateWay",
 
-
-
+    //SetItem
+    "SetItem": "Set Item",
+    "AddItem": "Add Item",
+    "ChooseItem": "Choose Item",
+    "ItemList": "Item List",
+    "SetItemPrice": "Set Item Price"
 
   }
 }

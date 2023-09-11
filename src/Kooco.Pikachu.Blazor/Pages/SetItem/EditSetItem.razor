@@ -1,0 +1,302 @@
+﻿@page "/SetItem/Edit/{id}"
+
+@using Kooco.Pikachu.Items.Dtos;
+@using Kooco.Pikachu.Localization;
+@using Microsoft.Extensions.Localization;
+@using Blazorise.Components;
+
+@inject NavigationManager NavigationManager;
+@inject IStringLocalizer<PikachuResource> L;
+
+<h3>@L["EditSetItem"]</h3>
+
+<Card>
+    <CardBody>
+
+        <div class="row">
+            <div class="col-2">
+                <label>@L["ItemName"]</label>
+            </div>
+            <div class="col-9">
+                <TextEdit @bind-Text="@CreateUpdateSetItemDto.SetItemName" MaxLength="@MaxTextCount" />
+            </div>
+            <div class="col-1">
+                <span>
+                    @(string.IsNullOrWhiteSpace(CreateUpdateSetItemDto.SetItemName) ? 60 : (MaxTextCount - CreateUpdateSetItemDto.SetItemName.Count()))/@MaxTextCount
+                </span>
+            </div>
+        </div>
+
+
+        <div class="row mt-2">
+            <div class="col-2">
+                <label>@L["ItemImage"]</label>
+            </div>
+            <div class="col-10 row">
+                <Field>
+                    <FilePicker @ref="FilePicker"
+                                        Multiple
+                                 Changed="OnFileUploadAsync"
+                                 ShowMode="FilePickerShowMode.List"
+                                 Accept=".jpg, .png, .svg">
+                         <FileTemplate>
+                             <Div Flex="Flex.JustifyContent.Between">
+                                 <Div>
+                                     <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
+                                     <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                 </Div>
+                                 <Div Class="ps-2">
+                                     <Div>
+                                         @if (context.File.Status == FileEntryStatus.Ready)
+                                        {
+                                            <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
+                                        }
+                                        else if (context.File.Status == FileEntryStatus.Uploading)
+                                        {
+                                            <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
+                                        }
+                                        else if (context.File.Status == FileEntryStatus.Uploaded)
+                                        {
+                                            <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
+                                        }
+                                        else if (context.File.Status == FileEntryStatus.Error)
+                                        {
+                                            <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
+                                        }
+                                    </Div>
+                                </Div>
+                            </Div>
+                        </FileTemplate>
+                        <ButtonsTemplate>
+                            <Progress Value="@FilePicker.GetProgressPercentage()" />
+                        </ButtonsTemplate>
+                    </FilePicker>
+                </Field>
+            </div>
+        </div>
+        @if (CreateUpdateSetItemDto.Images.Count > 0)
+        {
+            <div class="col-12 row">
+                <div class="col-2"></div>
+                <div class="col-10">
+                    <div class="image-list-container">
+                        @foreach (var image in CreateUpdateSetItemDto.Images)
+                        {
+                            <div class="image-container">
+                                <Image class="blur-image" Source="@image.ImageUrl" Text="Item Image" Fluid />
+                                 <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName)">
+                                     <i class="fa fa-trash"></i>
+                                 </button>
+                             </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+
+        <div class="row mt-2">
+            <div class="col-2">
+                <fieldLabel>@L["ItemDescription"]</fieldLabel>
+            </div>
+            <div class="col-9">
+                <div class="col-12">
+                    <fieldLabel></fieldLabel>
+                    <TextEdit Placeholder="@L["ItemDescriptionTitle"]" @bind-Text="@CreateUpdateSetItemDto.SetItemDescriptionTitle" />
+                </div>
+                <div class=" col-12">
+                    <Blazored.TextEditor.BlazoredTextEditor @ref="@QuillHtml">
+                        <ToolbarContent>
+                            <select class="ql-header">
+                                <option selected=""></option>
+                                <option value="1"></option>
+                                <option value="2"></option>
+                                <option value="3"></option>
+                                <option value="4"></option>
+                                <option value="5"></option>
+                            </select>
+                            <span class="ql-formats">
+                                <button class="ql-bold"></button>
+                                <button class="ql-italic"></button>
+                                <button class="ql-underline"></button>
+                                <button class="ql-strike"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <select class="ql-color"></select>
+                                <select class="ql-background"></select>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-list" value="ordered"></button>
+                                <button class="ql-list" value="bullet"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-link"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-image"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-video"></button>
+                            </span>
+                        </ToolbarContent>
+                    </Blazored.TextEditor.BlazoredTextEditor>
+                </div>
+            </div>
+            <div class="col-1">
+                <span>
+                    @(string.IsNullOrWhiteSpace(CreateUpdateSetItemDto.SetItemDescriptionTitle) ? 60 : (MaxTextCount - CreateUpdateSetItemDto.SetItemDescriptionTitle.Count()))/@MaxTextCount
+                </span>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <h4>@L["ChooseItem"]</h4>
+        </div>
+
+        <div class="row mt-2">
+                <div class="col-2">
+                    @L["AddItem"]
+                </div>
+                <div class="col-9">
+                    <Autocomplete TItem="KeyValueDto"
+                                  TValue="Guid?"
+                                  Data="@ItemsList"
+                                  TextField="@(( item ) => item.Name)"
+                                  ValueField="@(( item ) => item.Id)"
+                                  @bind-SelectedText="SelectedAutoCompleteText"
+                                  Placeholder="Search..."
+                                  Filter="AutocompleteFilter.StartsWith"
+                                  CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                                  HighlightSearch
+                                  Immediate="true"
+                                  SelectedValueChanged="OnSelectedValueChanged"
+                                  @ref="AutocompleteField">
+                        <NotFoundContent> @L["NotFound"] </NotFoundContent>
+                    </Autocomplete>
+                </div>
+                <div class="col-1">
+                    <Button Color="Color.Danger" Clicked="RemoveSelectedItems">
+                        <i class="fa fa-trash"></i>
+                    </Button>
+                </div>
+        </div>
+
+        <div class="row mt-1">
+                <div class="col-2">
+                </div>
+                <div class="col-10">
+                    <Table Narrow>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHeaderCell Class="text-center" Style="width: 20px;">
+                                    <input type="checkbox" class="form-check-input" checked="@IsAllSelected" @onchange="HandleSelectAllChange"></input>
+                                </TableHeaderCell>
+                                <TableHeaderCell>
+                                    @L["ItemList"]
+                                </TableHeaderCell>
+                                <TableHeaderCell Class="text-center"  Style="width: 150px;">
+                                    @L["Quantity"]
+                                </TableHeaderCell>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            @foreach (var item in ItemDetails)
+                            {
+                                <TableRow Class="text-center align-items-center">
+                                    <TableRowCell>
+                                        <InputCheckbox class="form-check-input" @bind-Value="@item.IsSelected"></InputCheckbox>
+                                    </TableRowCell>
+                                    <TableRowCell Class="text-start">
+                                    <Div Class="d-flex flex-row">
+                                        @if (!item.ImageUrl.IsNullOrWhiteSpace())
+                                        {
+                                            <div>
+                                                <Image src="@item.ImageUrl" Class="item-image-thumbnail" Fluid></Image>
+                                            </div>
+                                        }
+                                        <Div Class="p-2">
+                                            <h4>@item.ItemName</h4>
+                                            <p>@item.ItemDescriptionTitle</p>
+                                        </Div>
+                                    </Div>
+                                    </TableRowCell>
+                                    <TableRowCell>
+                                        <NumericEdit Class="form-control form-control-sm" @bind-Value="item.Quantity" Min="1"></NumericEdit>
+                                    </TableRowCell>
+                                </TableRow>
+                            }
+                        </TableBody>
+                    </Table>
+                </div>
+        </div>
+
+        <div class="row mt-2">
+            <div class="col-2">
+                <label>@L["SetItemPrice"]</label>
+            </div>
+            <div class="col-3">
+                <InputNumber class="form-control no-spinners" TValue="float" @bind-Value="@CreateUpdateSetItemDto.SetItemPrice" />
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-2">
+                <label>@L["CommodityAttributes"]</label>
+            </div>
+            <div class="col-10">
+                <div class="row">
+                    <div class="col-3">
+                        <label>@L["TimeLimitPeriod"]</label>
+                    </div>
+                    <div class="col-3">
+                        <DateEdit @bind-Date="CreateUpdateSetItemDto.LimitAvaliableTimeStart" Style="width:100%" Placeholder="@L["StartDate"].ToString()" TValue="DateTime" />
+                    </div>
+                    <div class="col-3">
+                        <DateEdit @bind-Date="CreateUpdateSetItemDto.LimitAvaliableTimeEnd" Style="width:100%" Placeholder="@L["EndDate"].ToString()" TValue="DateTime" />
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-3">
+                        <label>@L["LimitQuantity"]</label>
+                    </div>
+                    <div class="col-3">
+                        <InputNumber class="form-control" TValue="int?" @bind-Value="@CreateUpdateSetItemDto.LimitQuantity" />
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-3">
+                        <label>@L["ShareProfit"]</label>
+                    </div>
+                    <div class="col-3">
+                        <InputNumber class="form-control" TValue="int" @bind-Value="@CreateUpdateSetItemDto.ShareProfit" />
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-3">
+                        <label>@L["FreeShipping"]</label>
+                    </div>
+                    <div class="col-3">
+                        <Switch TValue="bool" @bind-Checked="@CreateUpdateSetItemDto.IsFreeShipping"></Switch>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </CardBody>
+
+    <CardFooter>
+        <div class="row">
+            <div class="col-12 text-lg-end">
+                <Button Type="@ButtonType.Button" class="btn btn-danger me-1" Clicked="CancelToSetItem">@L["Cancel"]</Button>
+                <Button Type="@ButtonType.Button" class="btn btn-primary me-1" Clicked="UpdateSetItemAsync">
+                    <i class="fa fa-check"></i>
+                    @L["Save"]
+                </Button>
+            </div>
+        </div>
+    </CardFooter>
+</Card>
+
+
+@code {
+}

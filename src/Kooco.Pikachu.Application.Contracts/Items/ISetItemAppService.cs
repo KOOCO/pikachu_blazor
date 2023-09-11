@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Kooco.Pikachu.Items.Dtos;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -17,5 +19,7 @@ public interface ISetItemAppService :
         CreateUpdateSetItemDto,
         CreateUpdateSetItemDto>
 {
-
+    Task DeleteManyItemsAsync(List<Guid> setItemIds);
+    Task<SetItemDto> GetAsync(Guid id, bool includeDetails = false);
+    Task DeleteSingleImageAsync(Guid id, string blobImageName);
 }

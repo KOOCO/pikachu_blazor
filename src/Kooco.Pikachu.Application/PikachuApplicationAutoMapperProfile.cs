@@ -20,6 +20,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<ItemDto, UpdateItemDto>();
         CreateMap<UpdateItemDto, Item>();
         CreateMap<CreateItemDto, Item>();
+        CreateMap<Item, KeyValueDto>().ForMember(dest => dest.Name, src => src.MapFrom(x => x.ItemName));
 
         // ItemDetailDto EntityMapping
         CreateMap<ItemDetails, ItemDetailsDto>();

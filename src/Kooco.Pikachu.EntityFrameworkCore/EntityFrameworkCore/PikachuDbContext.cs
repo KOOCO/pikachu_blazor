@@ -124,7 +124,8 @@ public class PikachuDbContext :
         builder.Entity<SetItem>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "SetItems", PikachuConsts.DbSchema, table => table.HasComment(""));
-            b.ConfigureByConvention(); 
+            b.ConfigureByConvention();
+            b.HasMany(x => x.SetItemDetails).WithOne(d => d.SetItem);
         });
 
         builder.Entity<SetItemDetails>(b =>

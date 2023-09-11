@@ -175,3 +175,22 @@
     color: #000;
     background-color: #fffcea;
 }
+
+.no-spinners::-webkit-inner-spin-button,
+.no-spinners::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.no-spinners {
+    -moz-appearance: textfield;
+}
+
+.item-image-thumbnail {
+    height: 100px;
+    width: auto;
+}
+
+.lpx-topbar{
+    border-radius: 0px!important;
+}

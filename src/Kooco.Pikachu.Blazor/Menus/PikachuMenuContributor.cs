@@ -83,7 +83,7 @@ public class PikachuMenuContributor : IMenuContributor
             name: "GroupGoodsManagement",
             icon: "fas fa-object-group",
             displayName: "組合商品設定",
-            url: "/GroupBuyManagement/GroupBuyReport")
+            url: "/SetItem")
             )
             .AddItem(new ApplicationMenuItem(
             name: "InventoryReport",

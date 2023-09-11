@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using Volo.Abp.Application.Dtos;
 using static Kooco.Pikachu.Permissions.PikachuPermissions;
 
 namespace Kooco.Pikachu.Items.Dtos;
@@ -7,6 +8,7 @@ namespace Kooco.Pikachu.Items.Dtos;
 [Serializable]
 public class CreateUpdateSetItemDetailsDto
 {
+    public Guid? Id { get; set; }
     /// <summary>
     /// 
     /// </summary>
@@ -17,11 +19,15 @@ public class CreateUpdateSetItemDetailsDto
     /// 
     /// </summary>
     [DisplayName("SetItemDetailsSetItem")]
-    public SetItem SetItem { get; set; }
+    public SetItemDto SetItem { get; set; }
 
     /// <summary>
     /// 
     /// </summary>
     [DisplayName("SetItemDetailsItem")]
-    public Item Item { get; set; }
+    public ItemDto Item { get; set; } = new();
+
+    public Guid ItemId { get; set; }
+
+    public int Quantity { get; set; }
 }
