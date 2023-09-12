@@ -68,7 +68,7 @@ public class PikachuDbContext :
     public DbSet<SetItemDetails> SetItemDetails { get; set; }
     public DbSet<Image> Images { get; set; }
     public DbSet<GroupBuy> GroupBuys { get; set; }
-  
+    public DbSet<GroupBuyItemGroup> GroupBuyItemGroups { get; set; }
 
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
@@ -137,7 +137,14 @@ public class PikachuDbContext :
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "GroupBuys", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
+
+            b.HasMany(x => x.ItemGroups).WithOne();
         });
-       
+        builder.Entity<GroupBuyItemGroup>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "GroupBuyItemGroups", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+
+        });
     }
 }

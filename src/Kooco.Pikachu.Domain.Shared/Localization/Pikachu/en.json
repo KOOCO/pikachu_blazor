@@ -117,6 +117,9 @@
     "GateWay": "GateWay",
     "PaymentMethod": "Payment Method",
     "DefaultPaymentGateWay": "DefaultPaymentGateWay",
+    "ProductImage": "Product Image",
+    "SelectItem": "Select Item",
+    "ProductDescription": "Product Description",
 
     //SetItem
     "SetItem": "Set Item",

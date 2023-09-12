@@ -79,12 +79,12 @@ namespace Kooco.Pikachu.GroupBuys
         /// <summary>
         /// 允許寄送到外島 AllowShipToOuterTaiwan
         /// </summary>
-        public bool allowShipToOuterTaiwan { get; set; }
+        public bool AllowShipToOuterTaiwan { get; set; }
 
         /// <summary>
         /// 允許寄送到海外 AllowShipOversea
         /// </summary>
-        public bool allowShipOversea { get; set; }
+        public bool AllowShipOversea { get; set; }
 
         /// <summary>
         /// 預計開始配送日期 ExpectShippingDateFrom
@@ -115,7 +115,7 @@ namespace Kooco.Pikachu.GroupBuys
         /// <summary>
         /// 開立發票 IssueInvoice
         /// </summary>
-        public bool issueInvoice { get; set; }
+        public bool IssueInvoice { get; set; }
 
         /// <summary>
         /// 自動開立三聯單 AutoIssueTriplicateInvoice
@@ -200,6 +200,8 @@ namespace Kooco.Pikachu.GroupBuys
         /// 預設使用的發貨倉庫 Default Warehouse used for shipping
         /// </summary>
         //public Warehouse DefaultWarehouse { get; set; }
+
+        public ICollection<GroupBuyItemGroup> ItemGroups { get; set; }
         public GroupBuy() { 
         
         }
@@ -251,13 +253,13 @@ namespace Kooco.Pikachu.GroupBuys
             StartTime= startTime;
             EndTime = endTime;
             FreeShipping= freeShipping;
-            this.allowShipOversea= allowShipOversea;
-            this.allowShipToOuterTaiwan= allowShipToOuterTaiwan;
+            this.AllowShipOversea= allowShipOversea;
+            this.AllowShipToOuterTaiwan= allowShipToOuterTaiwan;
             ExpectShippingDateFrom= expectShippingDateFrom;
             ExpectShippingDateTo= expectShippingDateTo;
             MoneyTransferValidDayBy= moneyTransferValidDayBy;
             MoneyTransferValidDays = moneyTransferValidDays;
-            this.issueInvoice= issueInvoice;
+            this.IssueInvoice= issueInvoice;
             AutoIssueTriplicateInvoice= autoIssueTriplicateInvoice;
             InvoiceNote= invoiceNote;
             InviteCode= inviteCode;
@@ -279,11 +281,45 @@ namespace Kooco.Pikachu.GroupBuys
             GroupBuyCondition = groupbuyCondition;
             CustomerInformation = customerInformation;
 
-
-
-
-
+            ItemGroups = new List<GroupBuyItemGroup>();
         }
 
+        public void AddItemGroup(
+            Guid id,
+            Guid groupBuyId,
+            int sortOrder,
+            Guid? item1Id,
+            int? item1Order,
+            string? itemDescription1,
+            Guid? item2Id,
+            int? item2Order,
+            string? itemDescription2,
+            Guid? item3Id,
+            int? item3Order,
+            string? itemDescription3,
+            Guid? item4Id,
+            int? item4Order,
+            string? itemDescription4
+
+            )
+        {
+            ItemGroups.Add(new GroupBuyItemGroup(
+                id,
+                groupBuyId,
+                sortOrder,
+                item1Id,
+                item1Order,
+                itemDescription1,
+                item2Id,
+                item2Order,
+                itemDescription2,
+                item3Id,
+                item3Order,
+                itemDescription3,
+                 item4Id,
+                item4Order,
+                itemDescription4
+                ));
+        }
     }
 }

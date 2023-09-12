@@ -28,7 +28,7 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
         private const int MaxAllowedFilesPerUpload = 10;
         private const int TotalMaxAllowedFiles = 50;
         private const int MaxAllowedFileSize = 1024 * 1024 * 10;
-        private readonly List<string> ValidFileExtensions = new() { ".jpg", ".png", ".svg" };
+        private readonly List<string> ValidFileExtensions = new() { ".jpg", ".png", ".svg",".jpeg",".webp" };
         private BlazoredTextEditor QuillHtml;
         private Autocomplete<KeyValueDto, Guid?> AutocompleteField { get; set; }
         private string? SelectedAutoCompleteText { get; set; }
