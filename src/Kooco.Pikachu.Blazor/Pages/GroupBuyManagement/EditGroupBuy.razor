@@ -2,12 +2,13 @@
 
 @using Kooco.Pikachu.EnumValues;
 @using Kooco.Pikachu.GroupBuys;
+@using Kooco.Pikachu.Items.Dtos;
 @using Pikachu.Items;
 @using Pikachu.Localization;
 @using Microsoft.Extensions.Localization;
 @using Volo.Abp.AspNetCore.Components.Web
 @using System.ComponentModel
-
+@using Blazorise.Components
 
 @inject IGroupBuyAppService AppService
 @inject NavigationManager NavigationManager
@@ -346,7 +347,7 @@
     </div>
                  <div class="col-4">
                  
-                     <DateEdit   Class="form-control"  @bind-Date=editGroupBuyDto.EndTime  Placeholder="@L["EndDate"].ToString()" TValue="DateTime"  />
+                     <DateEdit   Class="form-control"  @bind-Date=editGroupBuyDto.EndTime  Placeholder="@L["EndDate"].ToString()" TValue="DateTime?"  />
   
    
                  </div>
@@ -553,50 +554,136 @@
             </div>
             </div>
             @foreach (var module in collapseItem)
-{<div class=" col-12 row">
-    <div class="col-2"></div>
-    <div class="col-8">
-        <Accordion>
-   <Collapse  >
-            <CollapseHeader>
-            <Heading Size="HeadingSize.Is5">
-                  <AccordionToggle>@module.Title</AccordionToggle>
-                </Heading>
-</CollapseHeader>
-<CollapseBody>
-     <div class="row">
-               <div class="col-3">
-                                   
-    </div>
-    <div class="col-8 mt-5">
-        <TextEdit MaxLength="60" ShowCount @bind-Text="@productDescription" />
-    </div>
-    </div>
-     <Divider></Divider>
-      @foreach(var item in module.ItemDetails){
- <div class="row col-12 ">
-    
-   <div class="col-4">
-           <Image  Source=""></Image> 
-        
-   </div>
-   <div class="col-7">
-       <p> @item.ItemDescription</p>
-   </div>
-   <div class="col-1"> <Button  class="close" Clicked="@(()=>RemoveProductItem(@item,@module.Index))"><span aria-hidden="true" >&times;</span></Button></div>
-   </div>
-   <Divider></Divider>
-  
-      }
-       <Divider></Divider>
-   
-        <Button Clicked="@(()=>HandelClick(module.Index))" Type="@ButtonType.Button"><span class="fa fas-plus"></span>Add Item</Button>
-        </CollapseBody>
-  
-    
-
-   
-</Collapse>
+                {<div class=" col-12 row">
+                    <div class="col-2"></div>
+                    <div class="col-8">
+                        <Accordion>
+                  <Collapse>
+                            <CollapseHeader>
+                                <AccordionToggle>@module.Title</AccordionToggle>
+                            </CollapseHeader>
+                            <CollapseBody>
+                                
+                                <div class="row mt-2">
+                                        <div class="col-3 mt-2">
+                                            @L["SelectItem"]
+                                        </div>
+                                        <div class="col-9">
+                                            <Autocomplete TItem="KeyValueDto"
+                                                          TValue="Guid?"
+                                                          Data="@ItemsList"
+                                                          TextField="@(( item ) => item.Name)"
+                                                          ValueField="@(( item ) => item.Id)"
+                                                          @bind-SelectedText="SelectedAutoCompleteText"
+                                                          Placeholder="Search..."
+                                                          Filter="AutocompleteFilter.StartsWith"
+                                                          CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                                                          HighlightSearch
+                                                          Immediate="true"
+                                                          SelectedValueChanged="(id) => OnSelectedValueChanged(id, module)"
+                                                          @ref="AutocompleteField">
+                                                <NotFoundContent> @L["NotFound"] </NotFoundContent>
+                                            </Autocomplete>
+                                        </div>
+                                       @*  <div class="col-1">
+                                            <Button Color="Color.Danger" Clicked="RemoveSelectedItems">
+                                                <i class="fa fa-trash"></i>
+                                            </Button>
+                                        </div> *@
+                                </div>
+                                  
+                                    
+                                <div class="row">
+                                    <div class="col-3 mt-2">
+                                        @L["ProductImage"]
+                                    </div>
+                                    <div class="col-9 mt-2">
+                                        @if(module.SelectedImage == null || module.SelectedImage.ImageUrl.IsNullOrWhiteSpace())
+                                        {
+                                            <Field>
+                                                <FilePicker @ref="FilePicker"
+                                                    Changed="(e) => OnFileUploadAsync(e, module)"
+                                                    ShowMode="FilePickerShowMode.List"
+                                                            Accept=".jpg, .png, .svg ,.jpeg, .webp">
+                                                    <FileTemplate>
+                                                        <Div Flex="Flex.JustifyContent.Between">
+                                                            <Div>
+                                                                <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
+                                                                <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                                            </Div>
+                                                            <Div Class="ps-2">
+                                                                <Div>
+                                                                @if (context.File.Status == FileEntryStatus.Ready)
+                                                                {
+                                                                    <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
+                                                                }
+                                                                else if (context.File.Status == FileEntryStatus.Uploading)
+                                                                {
+                                                                    <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
+                                                                }
+                                                                else if (context.File.Status == FileEntryStatus.Uploaded)
+                                                                {
+                                                                    <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
+                                                                }
+                                                                else if (context.File.Status == FileEntryStatus.Error)
+                                                                {
+                                                                    <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
+                                                                }
+                                                            </Div>
+                                                            </Div>
+                                                        </Div>
+                                                    </FileTemplate>
+                                                    <ButtonsTemplate>
+                                                        <Progress Value="@FilePicker.GetProgressPercentage()" />
+                                                    </ButtonsTemplate>
+                                                </FilePicker>
+                                            </Field>
+                                        }
+                                        else
+                                        {
+                                            <div class="d-flex">
+                                                <div class="image-container">
+                                                    <Image class="blur-image" Source="@module.SelectedImage.ImageUrl" Text="Item Image" Fluid />
+                                                     <button class="delete-button" @onclick="() => DeleteImageAsync(module)">
+                                                         <i class="fa fa-trash"></i>
+                                                     </button>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                                        
+                                <div class="row">
+                                    <div class="col-3 mt-2">
+                                        @L["ProductDescription"]
+                                    </div>
+                                    <div class="col-9 mt-2">
+                                        <TextEdit MaxLength="60" ShowCount @bind-Text="@module.SelectedItemDescription" />
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-row-reverse mt-2">
+                                    <Button class="btn btn-primary" Clicked="@(()=>HandleClick(module.Index))" Type="@ButtonType.Button"><span class="fa fas-plus"></span>Add Item</Button>
+                                </div>
+                               
+                                <Divider></Divider>
+                                @foreach (var item in module.ItemDetails)
+                                {
+                                    <div class="row col-12 ">
+                                        <div class="col-3">
+                                            <Image style="height:50px; width:auto;" Source="@item.Image.ImageUrl"></Image>
+                                        </div>
+                                         <div class="col-2">
+                                            <p> @item.Item.ItemName</p>
+                                        </div>
+                                        <div class="col-6">
+                                            <p> @item.ItemDescription</p>
+                                        </div>
+                                        <div class="col-1"> <Button class="close" Clicked="@(()=>RemoveProductItem(@item,@module.Index))"><span aria-hidden="true">&times;</span></Button></div>
+                                    </div>
+                                    <Divider></Divider>
+                                }
+                            </CollapseBody>
+                        </Collapse>
 </Accordion>
 </div>
 </div>
@@ -845,7 +932,7 @@
     string productDescription = "";
     bool _visible = false;
     int selectedIndex = 0;
-    private void HandelClick(int i)
+    private void HandleClick(int i)
     {
         int selectedIndex = i;
         if (collapseItem.Where(x => x.Index == i).FirstOrDefault().ItemDetails.Count <= 3)

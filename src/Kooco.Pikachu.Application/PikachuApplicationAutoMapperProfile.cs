@@ -43,6 +43,6 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<CreateUpdateSetItemDetailsDto, SetItemDetails>(MemberList.Source);
         //
         CreateMap<GroupBuy, GroupBuyDto>();
-       
+        CreateMap<GroupBuyItemGroup, GroupBuyItemGroupDto>();
     }
 }

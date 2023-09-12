@@ -56,7 +56,7 @@
                     <label>@L["SalesURL1"]</label>
                 </div>
                 <div class="col-7">
-                    <TextEdit @bind-Text="@createGroupBuyDto.EntryURL" />
+                    <TextEdit @bind-Text="@CreateGroupBuyDto.EntryURL" />
                 </div>
 
 
@@ -67,7 +67,7 @@
                     <label>@L["SalesURL2"]</label>
                 </div>
                 <div class="col-7">
-                    <TextEdit @bind-Text="@createGroupBuyDto.EntryURL2" />
+                    <TextEdit @bind-Text="@CreateGroupBuyDto.EntryURL2" />
                 </div>
             </div>
         </div>
@@ -78,11 +78,11 @@
                 <label>@L["GroupBuyName"]</label>
             </div>
             <div class="col-9">
-                <TextEdit MaxLength="@maxtextCount" @bind-Text="@createGroupBuyDto.GroupBuyName" />
+                <TextEdit MaxLength="@maxtextCount" @bind-Text="@CreateGroupBuyDto.GroupBuyName" />
             </div>
             <div class="col-1">
                 <span>
-                    @(string.IsNullOrWhiteSpace(createGroupBuyDto.GroupBuyName) ? 60 : (maxtextCount - createGroupBuyDto.GroupBuyName.Count()))/@maxtextCount
+                    @(string.IsNullOrWhiteSpace(CreateGroupBuyDto.GroupBuyName) ? 60 : (maxtextCount - CreateGroupBuyDto.GroupBuyName.Count()))/@maxtextCount
                 </span>
             </div>
 
@@ -92,11 +92,11 @@
                 <label>@L["Subject"]</label>
             </div>
             <div class="col-9">
-                <TextEdit MaxLength="@maxtextCount" @bind-Text="@createGroupBuyDto.SubjectLine" />
+                <TextEdit MaxLength="@maxtextCount" @bind-Text="@CreateGroupBuyDto.SubjectLine" />
             </div>
             <div class="col-1">
                 <span>
-                    @(string.IsNullOrWhiteSpace(createGroupBuyDto.SubjectLine) ? 60 : (maxtextCount - createGroupBuyDto.SubjectLine.Count()))/@maxtextCount
+                    @(string.IsNullOrWhiteSpace(CreateGroupBuyDto.SubjectLine) ? 60 : (maxtextCount - CreateGroupBuyDto.SubjectLine.Count()))/@maxtextCount
                 </span>
             </div>
         </div>
@@ -105,11 +105,11 @@
                 <label>@L["GroupBuyShortName"]</label>
             </div>
             <div class="col-9">
-                <TextEdit MaxLength="@maxtextCount" @bind-Text="@createGroupBuyDto.ShortName" />
+                <TextEdit MaxLength="@maxtextCount" @bind-Text="@CreateGroupBuyDto.ShortName" />
             </div>
             <div class="col-1">
                 <span>
-                    @(string.IsNullOrWhiteSpace(createGroupBuyDto.ShortName) ? 60 : (maxtextCount - createGroupBuyDto.ShortName.Count()))/@maxtextCount
+                    @(string.IsNullOrWhiteSpace(CreateGroupBuyDto.ShortName) ? 60 : (maxtextCount - CreateGroupBuyDto.ShortName.Count()))/@maxtextCount
                 </span>
             </div>
         </div>
@@ -166,7 +166,7 @@
                 </Field>
 
             </div>
-            @if (createGroupBuyDto.LogoURL != null)
+            @if (CreateGroupBuyDto.LogoURL != null)
             {
                 <div Class="col-12 row">
                     <div class="col-2"></div>
@@ -174,7 +174,7 @@
                         <div class="image-list-container">
 
                             <div class="image-container">
-                                <Image class="blur-image" Source="@createGroupBuyDto.LogoURL" Text="Logo Image" Fluid />
+                                <Image class="blur-image" Source="@CreateGroupBuyDto.LogoURL" Text="Logo Image" Fluid />
                                  <button class="delete-button" @onclick="() => DeleteLogoAsync(logoBlobName)">
                                      <i class="fa fa-trash"></i>
                                  </button>
@@ -237,7 +237,7 @@
                 </Field>
 
             </div>
-            @if (createGroupBuyDto.BannerURL != null)
+            @if (CreateGroupBuyDto.BannerURL != null)
             {
                 <div Class="col-12 row">
                     <div class="col-2"></div>
@@ -245,7 +245,7 @@
                         <div class="image-list-container">
 
                             <div class="image-container">
-                                <Image class="blur-image" Source="@createGroupBuyDto.BannerURL" Text="Logo Image" Fluid />
+                                <Image class="blur-image" Source="@CreateGroupBuyDto.BannerURL" Text="Logo Image" Fluid />
                                  <button class="delete-button" @onclick="() => DeleteBannerAsync(bannerBlobName)">
                                      <i class="fa fa-trash"></i>
                                  </button>
@@ -345,12 +345,12 @@
             <div class="col-4">
 
 
-                <DateEdit Class="form-control" @bind-Date=createGroupBuyDto.StartTime Placeholder="@L["StartDate"].ToString()" TValue="DateTime?" />
+                <DateEdit Class="form-control" @bind-Date=CreateGroupBuyDto.StartTime Placeholder="@L["StartDate"].ToString()" TValue="DateTime?" />
 
             </div>
             <div class="col-4">
 
-                <DateEdit Class="form-control" @bind-Date=createGroupBuyDto.EndTime Placeholder="@L["EndDate"].ToString()" TValue="DateTime" />
+                <DateEdit Class="form-control" @bind-Date=CreateGroupBuyDto.EndTime Placeholder="@L["EndDate"].ToString()" TValue="DateTime?" />
 
 
             </div>
@@ -359,7 +359,7 @@
             <div class="col-1">@L["Logistic"]</div>
             <div class="col-2">@L["FreeShipping"]</div>
 
-            <div class="col-4"> <Switch TValue="bool" @bind-Checked="@createGroupBuyDto.FreeShipping"></Switch></div>
+            <div class="col-4"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.FreeShipping"></Switch></div>
         </div>
         <div class="col-12 row">
             <div class="col-1"></div>
@@ -389,19 +389,19 @@
             <div class="col-1"></div>
             <div class="col-2">@L["AllowShipToOuterIsland"]</div>
 
-            <div class="col-4"> <Switch TValue="bool" @bind-Checked="@createGroupBuyDto.AllowShipToOuterTaiwan"></Switch></div>
+            <div class="col-4"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.AllowShipToOuterTaiwan"></Switch></div>
         </div>
         <div class=" col-12 row">
             <div class="col-1"></div>
             <div class="col-2">@L["AllowShipToOverSea"]</div>
 
-            <div class="col-4"> <Switch TValue="bool" @bind-Checked="@createGroupBuyDto.AllowShipOversea"></Switch></div>
+            <div class="col-4"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.AllowShipOversea"></Switch></div>
         </div>
         <div class=" col-12 row">
             <div class="col-1"></div>
             <div class="col-2">@L["ExpectDeliveryDate"]</div>
-            <div class="col-4"><DateEdit TValue="DateTime?" Class="form-control" @bind-Date=createGroupBuyDto.ExpectShippingDateTo Placeholder="@L["StartDate"].ToString()" /></div>
-            <div class="col-4"><DateEdit TValue="DateTime?" Class="form-control" @bind-Date=createGroupBuyDto.ExpectShippingDateFrom Placeholder="@L["EndDate"].ToString()" /></div>
+            <div class="col-4"><DateEdit TValue="DateTime?" Class="form-control" @bind-Date=CreateGroupBuyDto.ExpectShippingDateTo Placeholder="@L["StartDate"].ToString()" /></div>
+            <div class="col-4"><DateEdit TValue="DateTime?" Class="form-control" @bind-Date=CreateGroupBuyDto.ExpectShippingDateFrom Placeholder="@L["EndDate"].ToString()" /></div>
         </div>
 
         <div class="col-12 row">
@@ -409,7 +409,7 @@
             <div class="col-2">@L["PaymentMethod"]</div>
 
             <div class="col-4">
-                <Radio TValue="bool" Group="Payment" Value=createGroupBuyDto.IsDefaultPaymentGateWay>
+                <Radio TValue="bool" Group="Payment" Value=CreateGroupBuyDto.IsDefaultPaymentGateWay>
                     @L["DefaultPaymentGateWay"]
                 </Radio>
             </div>
@@ -440,26 +440,26 @@
             <div class="col-1">@L["Invoice"]</div>
             <div class="col-2">@L["IssueInvoice"]</div>
 
-            <div class="col-4"> <Switch TValue="bool" @bind-Checked="@createGroupBuyDto.IssueInvoice"></Switch></div>
+            <div class="col-4"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.IssueInvoice"></Switch></div>
         </div>
         <div class=" col-12 row">
             <div class="col-1"></div>
             <div class="col-2 form-label">@L["AutoIssueTriplicateInvoice"]</div>
 
-            <div class="col-4"> <Switch TValue="bool" @bind-Checked="@createGroupBuyDto.AutoIssueTriplicateInvoice"></Switch></div>
+            <div class="col-4"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.AutoIssueTriplicateInvoice"></Switch></div>
         </div>
         <div class=" col-12 row">
             <div class="col-1"></div>
             <div class="col-2 form-label">@L["InvoiceComment"]</div>
 
-            <div class="col-8"> <InputTextArea class="form-control" maxlength="200" @bind-Value="@createGroupBuyDto.InvoiceNote"></InputTextArea></div>
+            <div class="col-8"> <InputTextArea class="form-control" maxlength="200" @bind-Value="@CreateGroupBuyDto.InvoiceNote"></InputTextArea></div>
         </div>
         <Divider></Divider>
         <div class=" col-12 row">
             <div class="col-1 mx-1">@L["AdvanceSetting"]</div>
             <div class="col-2 form-label">@L["HideCredention"]</div>
 
-            <div class="col-4"> <Switch TValue="bool" @bind-Checked="@createGroupBuyDto.ProtectPrivacyData"></Switch></div>
+            <div class="col-4"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.ProtectPrivacyData"></Switch></div>
         </div>
         <div class=" col-12 row">
             <div class="col-1"></div>
@@ -467,7 +467,7 @@
                 <label>@L["InviteCode"]</label>
             </div>
             <div class="col-5">
-                <TextEdit @bind-Text="@createGroupBuyDto.InviteCode" />
+                <TextEdit @bind-Text="@CreateGroupBuyDto.InviteCode" />
             </div>
 
 
@@ -478,7 +478,7 @@
                 <label>@L["ProfitShare"]</label>
             </div>
             <div class="col-5">
-                <InputNumber class="form-control" @bind-Value="@createGroupBuyDto.ProfitShare" />
+                <InputNumber class="form-control" @bind-Value="@CreateGroupBuyDto.ProfitShare" />
             </div>
         </div>
         <div class=" col-12 row">
@@ -487,7 +487,7 @@
                 <label>@L["FaceBookPixelID"]</label>
             </div>
             <div class="col-5">
-                <InputNumber class="form-control" @bind-Value="@createGroupBuyDto.MetaPixelNo" />
+                <InputNumber class="form-control" @bind-Value="@CreateGroupBuyDto.MetaPixelNo" />
             </div>
         </div>
         <div class=" col-12 row">
@@ -496,7 +496,7 @@
                 <label>@L["FaceBookID"]</label>
             </div>
             <div class="col-5">
-                <TextEdit @bind-Text="@createGroupBuyDto.FBID" />
+                <TextEdit @bind-Text="@CreateGroupBuyDto.FBID" />
             </div>
         </div>
         <div class=" col-12 row">
@@ -505,7 +505,7 @@
                 <label>@L["IGID"]</label>
             </div>
             <div class="col-5">
-                <TextEdit @bind-Text="@createGroupBuyDto.IGID" />
+                <TextEdit @bind-Text="@CreateGroupBuyDto.IGID" />
             </div>
         </div>
         <div class=" col-12 row">
@@ -514,7 +514,7 @@
                 <label>@L["LINEID"]</label>
             </div>
             <div class="col-5">
-                <TextEdit @bind-Text="@createGroupBuyDto.LineID" />
+                <TextEdit @bind-Text="@CreateGroupBuyDto.LineID" />
             </div>
         </div>
         <div class=" col-12 row">
@@ -523,7 +523,7 @@
                 <label>@L["GAID"]</label>
             </div>
             <div class="col-5">
-                <TextEdit @bind-Text="@createGroupBuyDto.GAID" />
+                <TextEdit @bind-Text="@CreateGroupBuyDto.GAID" />
             </div>
         </div>
         <div class=" col-12 row">
@@ -532,7 +532,7 @@
                 <label>@L["GTM"]</label>
             </div>
             <div class="col-5">
-                <TextEdit @bind-Text="@createGroupBuyDto.GTM" />
+                <TextEdit @bind-Text="@CreateGroupBuyDto.GTM" />
             </div>
         </div>
         <Divider></Divider>
@@ -677,10 +677,10 @@
                                 {
                                     <div class="row col-12 ">
                                         <div class="col-3">
-                                            <Image style="height:50px; width:auto;" Source="@item.Image.ImageUrl"></Image>
+                                            <Image style="height:50px; width:auto;" Source="@item.Image?.ImageUrl"></Image>
                                         </div>
                                          <div class="col-2">
-                                            <p> @item.Item.ItemName</p>
+                                            <p> @item.Item?.ItemName</p>
                                         </div>
                                         <div class="col-6">
                                             <p> @item.ItemDescription</p>
@@ -704,7 +704,7 @@
             <div class="col-9">
                 <div class="col-12">
                     <FieldLabel></FieldLabel>
-                    <TextEdit Placeholder="@L["GroupBuyCondition"]" @bind-Text="createGroupBuyDto.GroupBuyCondition" MaxLength="60" />
+                    <TextEdit Placeholder="@L["GroupBuyCondition"]" @bind-Text="CreateGroupBuyDto.GroupBuyCondition" MaxLength="60" />
                 </div>
                 <div class=" col-12">
                     <Blazored.TextEditor.BlazoredTextEditor @ref="@quillHtml">
@@ -758,7 +758,7 @@
             <div class="col-9">
                 <div class="col-12">
                     <fieldLabel></fieldLabel>
-                    <TextEdit Placeholder="@L["CustomerInformation"]" @bind-Text="@createGroupBuyDto.CustomerInformation" MaxLength="60" />
+                    <TextEdit Placeholder="@L["CustomerInformation"]" @bind-Text="@CreateGroupBuyDto.CustomerInformation" MaxLength="60" />
                 </div>
                 <div class=" col-12">
                     <Blazored.TextEditor.BlazoredTextEditor @ref="@quillHtml">
@@ -812,7 +812,7 @@
             <div class="col-9">
                 <div class="col-12">
                     <fieldLabel></fieldLabel>
-                    <TextEdit Placeholder="@L["ExchangePolicy"]" @bind-Text="@createGroupBuyDto.ExchangePolicy" MaxLength="60" ShowCount />
+                    <TextEdit Placeholder="@L["ExchangePolicy"]" @bind-Text="@CreateGroupBuyDto.ExchangePolicy" MaxLength="60" ShowCount />
                 </div>
                 <div class=" col-12">
                     <Blazored.TextEditor.BlazoredTextEditor @ref="@quillHtml">
@@ -942,6 +942,23 @@
 
     private void HandleClick(int i)
     {
+        var checkValiate = collapseItem.Where(x => x.Index == i).FirstOrDefault();
+        if(checkValiate is null)
+        {
+            return;
+        }
+        if(checkValiate.SelectedItemId == null)
+        {
+            return;
+        }
+        if(checkValiate.SelectedItemDescription == null)
+        {
+            return;
+        }
+        if(checkValiate.SelectedImage == null || checkValiate.SelectedImage.ImageUrl == null)
+        {
+            return;
+        }
         int selectedIndex = i;
         if (collapseItem.Where(x => x.Index == i).FirstOrDefault().ItemDetails.Count <= 3)
         {

@@ -1,7 +1,6 @@
 ﻿using Blazorise;
 using Blazorise.Components;
 using Kooco.Pikachu.AzureStorage.Image;
-using Kooco.Pikachu.Blazor.Pages.SetItem;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.ImageBlob;
 using Kooco.Pikachu.Images;
@@ -9,8 +8,6 @@ using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
-using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,7 +26,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         private const int MaxAllowedFilesPerUpload = 5;
         private const int TotalMaxAllowedFiles = 5;
         private const int MaxAllowedFileSize = 1024 * 1024 * 10;
-        private GroupBuyCreateDto createGroupBuyDto = new();
+        private GroupBuyCreateDto CreateGroupBuyDto = new();
         public List<CreateImageDto> CarouselImages { get; set; }
         private string TagInputValue { get; set; }
 
@@ -115,7 +112,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     logoBlobName = newFileName;
 
 
-                    createGroupBuyDto.LogoURL = url;
+                    CreateGroupBuyDto.LogoURL = url;
 
                     await LogoPickerCustom.Clear();
                 }
@@ -241,7 +238,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     bannerBlobName = newFileName;
 
 
-                    createGroupBuyDto.BannerURL = url;
+                    CreateGroupBuyDto.BannerURL = url;
 
                     await BannerPickerCustom.Clear();
                 }
@@ -272,7 +269,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     confirmed = await _imageContainerManager.DeleteAsync(blobImageName);
                     if (confirmed)
                     {
-                        createGroupBuyDto.LogoURL = null;
+                        CreateGroupBuyDto.LogoURL = null;
                         StateHasChanged();
                     }
                     else
@@ -297,7 +294,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     confirmed = await _imageContainerManager.DeleteAsync(blobImageName);
                     if (confirmed)
                     {
-                        createGroupBuyDto.BannerURL = null;
+                        CreateGroupBuyDto.BannerURL = null;
                         StateHasChanged();
                     }
                     else
@@ -407,62 +404,59 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
         protected virtual async Task CreateEntityAsync()
         {
-            createGroupBuyDto.GroupBuyNo = 0;
-            createGroupBuyDto.Status = "New";
-            createGroupBuyDto.ExcludeShippingMethod = string.Join(",", itemTags);
-            createGroupBuyDto.PaymentMethod = string.Join(",", paymentMethodTags);
-            createGroupBuyDto.NotifyMessage = await quillHtml.GetHTML();
-            createGroupBuyDto.ItemGroups = new List<GroupBuyItemGroupCreateUpdateDto>();
-
-            int i = 1;
-            foreach(var item in collapseItem)
+            try
             {
-                var cItem = new GroupBuyItemGroupCreateUpdateDto
+                if(CreateGroupBuyDto.GroupBuyName.IsNullOrWhiteSpace())
                 {
-                    SortOrder = i++
-                };
-                if (item.ItemDetails.Any())
+                    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyNameCannotBeNull]);
+                    return;
+                }
+                CreateGroupBuyDto.GroupBuyNo = 0;
+                CreateGroupBuyDto.Status = "New";
+                CreateGroupBuyDto.ExcludeShippingMethod = string.Join(",", itemTags);
+                CreateGroupBuyDto.PaymentMethod = string.Join(",", paymentMethodTags);
+                CreateGroupBuyDto.NotifyMessage = await quillHtml.GetHTML();
+                CreateGroupBuyDto.ItemGroups = new List<GroupBuyItemGroupCreateUpdateDto>();
+
+                int i = 1;
+                foreach (var item in collapseItem)
                 {
-                    if(item.ItemDetails.Count > 0)
+                    int j = 1;
+                    if (item.ItemDetails.Any())
                     {
-                        cItem.ItemDescription1 = item.ItemDetails[0].ItemDescription;
-                        cItem.Item1Id = item.ItemDetails[0].ItemId;
-                        cItem.Item1Order = 1;
+                        var itemGroup = new GroupBuyItemGroupCreateUpdateDto
+                        {
+                            SortOrder = i++,
+                            Title = item.Title
+                        };
+
+                        foreach (var itemDetail in item.ItemDetails)
+                        {
+                            itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
+                            {
+                                SortOrder = j++,
+                                ItemDescription = itemDetail.ItemDescription,
+                                ItemId = itemDetail.ItemId,
+                                Image = new CreateImageDto(itemDetail.Image.ImageName, itemDetail.Image.BlobImageName, itemDetail.Image.ImageUrl, ImageType.GroupBuyItemGroup)
+                            });
+                        }
                     }
 
-                    if (item.ItemDetails.Count > 1)
-                    {
-                        cItem.ItemDescription2 = item.ItemDetails[1].ItemDescription;
-                        cItem.Item2Id = item.ItemDetails[1].ItemId;
-                        cItem.Item1Order = 2;
-                    }
-
-                    if (item.ItemDetails.Count > 2)
-                    {
-                        cItem.ItemDescription3 = item.ItemDetails[2].ItemDescription;
-                        cItem.Item3Id = item.ItemDetails[2].ItemId;
-                        cItem.Item3Order = 3;
-                    }
-
-                    if (item.ItemDetails.Count > 3)
-                    {
-                        cItem.ItemDescription4 = item.ItemDetails[3].ItemDescription;
-                        cItem.Item4Id = item.ItemDetails[3].ItemId;
-                        cItem.Item4Order = 4;
-                    }
                 }
 
-                createGroupBuyDto.ItemGroups.Add(cItem);
-            }
+                var result = await _groupBuyAppService.CreateAsync(CreateGroupBuyDto);
+                foreach (var item in CarouselImages)
+                {
+                    item.TargetId = result.Id;
+                    await _imageAppService.CreateAsync(item);
+                }
 
-            var result = await _groupBuyAppService.CreateAsync(createGroupBuyDto);
-            foreach (var item in CarouselImages)
+                NavigationManager.NavigateTo("GroupBuyManagement/GroupBuyList");
+            }
+            catch (Exception ex)
             {
-                item.TargetId = result.Id;
-                await _imageAppService.CreateAsync(item);
+                await _uiMessageService.Error(ex.Message.GetType()?.ToString());
             }
-
-            NavigationManager.NavigateTo("GroupBuyManagement/GroupBuyList");
         }
         private void IsDefaultPaymentChange(bool isChecked)
         {
@@ -476,7 +470,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         {
             if (isChecked)
             {
-                createGroupBuyDto.IsDefaultPaymentGateWay = isChecked; // Uncheck the first radio button
+                CreateGroupBuyDto.IsDefaultPaymentGateWay = isChecked; // Uncheck the first radio button
             }
         }
 
@@ -566,13 +560,17 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         public string? ItemDescription { get; set; }
         public ProductImage Image { get; set; }
         public ItemDto Item { get; set; }
+        public ProductPictureItem()
+        {
+            Image = new();
+            Item = new();
+        }
     }
 
     public class ProductImage
     {
         public ProductImage()
         {
-
         }
         public ProductImage(
             string name,

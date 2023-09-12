@@ -32,7 +32,7 @@ namespace Kooco.Pikachu.Groupbuys
             string logoURL,
             string bannerURL,
             DateTime? startTime,
-            DateTime endTime,
+            DateTime? endTime,
             bool freeShipping,
             bool allowShipToOuterTaiwan,
             bool allowShipOversea,
@@ -80,7 +80,7 @@ namespace Kooco.Pikachu.Groupbuys
               string logoURL,
               string bannerURL,
               DateTime? startTime,
-              DateTime endTime,
+              DateTime? endTime,
               bool freeShipping,
               bool allowShipToOuterTaiwan,
               bool allowShipOversea,
@@ -155,40 +155,35 @@ namespace Kooco.Pikachu.Groupbuys
             return await _groupBuyRepositroy.UpdateAsync(groupBuy);
         }
 
-        public void AddItemGroup(
+        public void AddItemGroupDetail(
+            GroupBuyItemGroup itemGroup,
+            int sortOrder,
+            string? itemDescription,
+            Guid? itemId,
+            Guid? imageId
+            
+            ) 
+        {
+            itemGroup.GroupBuyItemGroupDetails(
+                GuidGenerator.Create(),
+                itemGroup.Id,
+                sortOrder,
+                itemDescription,
+                itemId,
+                imageId
+                );
+        }
+        public GroupBuyItemGroup AddItemGroup(
             GroupBuy groupBuy,
             int sortOrder,
-            Guid? item1Id,
-            int? item1Order,
-            string? itemDescription1,
-            Guid? item2Id,
-            int? item2Order,
-            string? itemDescription2,
-            Guid? item3Id,
-            int? item3Order,
-            string? itemDescription3,
-               Guid? item4Id,
-            int? item4Order,
-            string? itemDescription4
-
+            string? title
             )
         {
-            groupBuy.AddItemGroup(
+            return groupBuy.AddItemGroup(
                 GuidGenerator.Create(),
                 groupBuy.Id,
                 sortOrder,
-                item1Id,
-                item1Order,
-                itemDescription1,
-                item2Id,
-                item2Order,
-                itemDescription2,
-                item3Id,
-                item3Order,
-                itemDescription3,
-                item4Id,
-                item4Order,
-                itemDescription4
+                title
                 );
         }
     }

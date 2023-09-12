@@ -13,7 +13,6 @@ namespace Kooco.Pikachu.GroupBuys
     {
         public Guid? TenantId { get; set; }
 
-
         /// <summary>
         /// 團購編號  GroupBuysNo
         /// </summary>
@@ -64,7 +63,7 @@ namespace Kooco.Pikachu.GroupBuys
         /// <summary>
         /// 團購結束時間 EndTime
         /// </summary>
-        public DateTime EndTime { get; set; }
+        public DateTime? EndTime { get; set; }
 
         /// <summary>
         /// 免運費 FreeShipping
@@ -202,6 +201,7 @@ namespace Kooco.Pikachu.GroupBuys
         //public Warehouse DefaultWarehouse { get; set; }
 
         public ICollection<GroupBuyItemGroup> ItemGroups { get; set; }
+
         public GroupBuy() { 
         
         }
@@ -215,7 +215,7 @@ namespace Kooco.Pikachu.GroupBuys
             string logoURL,
             string bannerURL,
             DateTime? startTime,
-            DateTime endTime,
+            DateTime? endTime,
             bool freeShipping,
             bool allowShipToOuterTaiwan,
             bool allowShipOversea,
@@ -242,24 +242,24 @@ namespace Kooco.Pikachu.GroupBuys
         { 
             Id = id;
             GroupBuyNo = groupNo;
-        Status= status;
+            Status= status;
             GroupBuyName= groupBuyName;
             EntryURL= entryURL;
             EntryURL2= entryURL2;
-                SubjectLine= subjectLine;
+            SubjectLine= subjectLine;
             ShortName= shortName;
             LogoURL= logoURL;
             BannerURL = bannerURL;
             StartTime= startTime;
             EndTime = endTime;
             FreeShipping= freeShipping;
-            this.AllowShipOversea= allowShipOversea;
-            this.AllowShipToOuterTaiwan= allowShipToOuterTaiwan;
+            AllowShipOversea= allowShipOversea;
+            AllowShipToOuterTaiwan= allowShipToOuterTaiwan;
             ExpectShippingDateFrom= expectShippingDateFrom;
             ExpectShippingDateTo= expectShippingDateTo;
             MoneyTransferValidDayBy= moneyTransferValidDayBy;
             MoneyTransferValidDays = moneyTransferValidDays;
-            this.IssueInvoice= issueInvoice;
+            IssueInvoice = issueInvoice;
             AutoIssueTriplicateInvoice= autoIssueTriplicateInvoice;
             InvoiceNote= invoiceNote;
             InviteCode= inviteCode;
@@ -284,42 +284,24 @@ namespace Kooco.Pikachu.GroupBuys
             ItemGroups = new List<GroupBuyItemGroup>();
         }
 
-        public void AddItemGroup(
+        public GroupBuyItemGroup AddItemGroup(
             Guid id,
             Guid groupBuyId,
             int sortOrder,
-            Guid? item1Id,
-            int? item1Order,
-            string? itemDescription1,
-            Guid? item2Id,
-            int? item2Order,
-            string? itemDescription2,
-            Guid? item3Id,
-            int? item3Order,
-            string? itemDescription3,
-            Guid? item4Id,
-            int? item4Order,
-            string? itemDescription4
+            string? title
 
             )
         {
-            ItemGroups.Add(new GroupBuyItemGroup(
+            var groupBuyItemGroup = new GroupBuyItemGroup(
                 id,
                 groupBuyId,
                 sortOrder,
-                item1Id,
-                item1Order,
-                itemDescription1,
-                item2Id,
-                item2Order,
-                itemDescription2,
-                item3Id,
-                item3Order,
-                itemDescription3,
-                 item4Id,
-                item4Order,
-                itemDescription4
-                ));
+                title
+                );
+            ItemGroups.Add(groupBuyItemGroup);
+            return groupBuyItemGroup;
         }
+
+        
     }
 }

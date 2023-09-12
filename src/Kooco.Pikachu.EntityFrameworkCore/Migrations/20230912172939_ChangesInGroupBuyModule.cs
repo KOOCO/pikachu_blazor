@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Kooco.Pikachu.Migrations
 {
     /// <inheritdoc />
-    public partial class GroupBuyItemGroup : Migration
+    public partial class ChangesInGroupBuyModule : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -26,6 +26,14 @@ namespace Kooco.Pikachu.Migrations
                 table: "AppGroupBuys",
                 newName: "AllowShipOversea");
 
+            migrationBuilder.AlterColumn<DateTime>(
+                name: "EndTime",
+                table: "AppGroupBuys",
+                type: "datetime2",
+                nullable: true,
+                oldClrType: typeof(DateTime),
+                oldType: "datetime2");
+
             migrationBuilder.CreateTable(
                 name: "AppGroupBuyItemGroups",
                 columns: table => new
@@ -34,18 +42,7 @@ namespace Kooco.Pikachu.Migrations
                     TenantId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     GroupBuyId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SortOrder = table.Column<int>(type: "int", nullable: false),
-                    ItemDescription1 = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ItemDescription2 = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ItemDescription3 = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ItemDescription4 = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Item1Id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Item1Order = table.Column<int>(type: "int", nullable: true),
-                    Item2Id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Item2Order = table.Column<int>(type: "int", nullable: true),
-                    Item3Id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Item3Order = table.Column<int>(type: "int", nullable: true),
-                    Item4Id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Item4Order = table.Column<int>(type: "int", nullable: true)
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -56,28 +53,40 @@ namespace Kooco.Pikachu.Migrations
                         principalTable: "AppGroupBuys",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AppGroupBuyItemGroups_AppItems_Item1Id",
-                        column: x => x.Item1Id,
-                        principalTable: "AppItems",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_AppGroupBuyItemGroups_AppItems_Item2Id",
-                        column: x => x.Item2Id,
-                        principalTable: "AppItems",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_AppGroupBuyItemGroups_AppItems_Item3Id",
-                        column: x => x.Item3Id,
-                        principalTable: "AppItems",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_AppGroupBuyItemGroups_AppItems_Item4Id",
-                        column: x => x.Item4Id,
-                        principalTable: "AppItems",
-                        principalColumn: "Id");
                 },
                 comment: "");
+
+            migrationBuilder.CreateTable(
+                name: "GroupBuyItemGroupDetails",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    GroupBuyItemGroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SortOrder = table.Column<int>(type: "int", nullable: false),
+                    ItemDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ImageId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GroupBuyItemGroupDetails", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_GroupBuyItemGroupDetails_AppGroupBuyItemGroups_GroupBuyItemGroupId",
+                        column: x => x.GroupBuyItemGroupId,
+                        principalTable: "AppGroupBuyItemGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GroupBuyItemGroupDetails_AppImages_ImageId",
+                        column: x => x.ImageId,
+                        principalTable: "AppImages",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_GroupBuyItemGroupDetails_AppItems_ItemId",
+                        column: x => x.ItemId,
+                        principalTable: "AppItems",
+                        principalColumn: "Id");
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AppGroupBuyItemGroups_GroupBuyId",
@@ -85,29 +94,27 @@ namespace Kooco.Pikachu.Migrations
                 column: "GroupBuyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AppGroupBuyItemGroups_Item1Id",
-                table: "AppGroupBuyItemGroups",
-                column: "Item1Id");
+                name: "IX_GroupBuyItemGroupDetails_GroupBuyItemGroupId",
+                table: "GroupBuyItemGroupDetails",
+                column: "GroupBuyItemGroupId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AppGroupBuyItemGroups_Item2Id",
-                table: "AppGroupBuyItemGroups",
-                column: "Item2Id");
+                name: "IX_GroupBuyItemGroupDetails_ImageId",
+                table: "GroupBuyItemGroupDetails",
+                column: "ImageId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AppGroupBuyItemGroups_Item3Id",
-                table: "AppGroupBuyItemGroups",
-                column: "Item3Id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AppGroupBuyItemGroups_Item4Id",
-                table: "AppGroupBuyItemGroups",
-                column: "Item4Id");
+                name: "IX_GroupBuyItemGroupDetails_ItemId",
+                table: "GroupBuyItemGroupDetails",
+                column: "ItemId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "GroupBuyItemGroupDetails");
+
             migrationBuilder.DropTable(
                 name: "AppGroupBuyItemGroups");
 
@@ -125,6 +132,16 @@ namespace Kooco.Pikachu.Migrations
                 name: "AllowShipOversea",
                 table: "AppGroupBuys",
                 newName: "allowShipOversea");
+
+            migrationBuilder.AlterColumn<DateTime>(
+                name: "EndTime",
+                table: "AppGroupBuys",
+                type: "datetime2",
+                nullable: false,
+                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                oldClrType: typeof(DateTime),
+                oldType: "datetime2",
+                oldNullable: true);
         }
     }
 }

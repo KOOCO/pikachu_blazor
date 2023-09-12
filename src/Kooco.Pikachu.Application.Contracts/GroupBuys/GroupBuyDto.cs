@@ -1,12 +1,14 @@
-﻿using System;
+﻿using Kooco.Pikachu.Items.Dtos;
+using System;
 using System.Collections.Generic;
 using System.Text;
+using Volo.Abp.Application.Dtos;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Entities.Auditing;
 
 namespace Kooco.Pikachu.GroupBuys
 {
-    public class GroupBuyDto:FullAuditedAggregateRoot<Guid>,IHasConcurrencyStamp
+    public class GroupBuyDto: EntityDto<Guid>,IHasConcurrencyStamp
     {
        
 
@@ -61,7 +63,7 @@ namespace Kooco.Pikachu.GroupBuys
         /// <summary>
         /// 團購結束時間 EndTime
         /// </summary>
-        public DateTime EndTime { get; set; }
+        public DateTime? EndTime { get; set; }
 
         /// <summary>
         /// 免運費 FreeShipping
@@ -192,6 +194,8 @@ namespace Kooco.Pikachu.GroupBuys
         /// <summary>
         /// 預設使用的發貨倉庫 Default Warehouse used for shipping
         /// </summary>
-     
+        public ICollection<GroupBuyItemGroupDto> ItemGroups { get; set; }
+
+        public string? ConcurrencyStamp { get; set; }
     }
 }

@@ -59,7 +59,7 @@ namespace Kooco.Pikachu.GroupBuys
         /// <summary>
         /// 團購結束時間 EndTime
         /// </summary>
-        public DateTime EndTime { get; set; }
+        public DateTime? EndTime { get; set; }
 
         /// <summary>
         /// 免運費 FreeShipping
@@ -191,6 +191,5 @@ namespace Kooco.Pikachu.GroupBuys
         public string? GroupBuyCondition { get; set; }
         public string? CustomerInformation { get; set; }
         public bool HideCredention { get; set; }
-
     }
 }
