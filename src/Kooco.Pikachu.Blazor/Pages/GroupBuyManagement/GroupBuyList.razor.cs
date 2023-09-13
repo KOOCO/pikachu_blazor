@@ -1,4 +1,6 @@
-﻿using Kooco.Pikachu.GroupBuys;
+﻿using Blazorise.DataGrid;
+using Kooco.Pikachu.GroupBuys;
+using Kooco.Pikachu.Items.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,6 +48,6 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             GroupBuyListItem = result.Items.ToList();
             Total = (int)result.TotalCount;
         }
-
+       
     }
 }

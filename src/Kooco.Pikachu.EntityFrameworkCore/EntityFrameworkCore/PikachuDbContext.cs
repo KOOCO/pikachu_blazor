@@ -20,6 +20,7 @@ using Kooco.Pikachu.EnumValues;
 using Volo.Abp.OpenIddict;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.GroupBuys;
+using Kooco.Pikachu.Groupbuys;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -69,6 +70,7 @@ public class PikachuDbContext :
     public DbSet<Image> Images { get; set; }
     public DbSet<GroupBuy> GroupBuys { get; set; }
     public DbSet<GroupBuyItemGroup> GroupBuyItemGroups { get; set; }
+    public DbSet<GroupBuyItemGroupDetails> GroupBuyItemGroupDetails { get; set; }
 
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
@@ -145,6 +147,13 @@ public class PikachuDbContext :
             b.ToTable(PikachuConsts.DbTablePrefix + "GroupBuyItemGroups", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
 
+            b.HasMany(x => x.ItemGroupDetails).WithOne();
+
+        });
+        builder.Entity<GroupBuyItemGroupDetails>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "GroupBuyItemGroupDetails", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
         });
     }
 }

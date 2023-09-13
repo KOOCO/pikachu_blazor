@@ -34,6 +34,24 @@ namespace Kooco.Pikachu.Migrations
                 oldClrType: typeof(DateTime),
                 oldType: "datetime2");
 
+            migrationBuilder.AddColumn<string>(
+                name: "CustomerInformationDescription",
+                table: "AppGroupBuys",
+                type: "nvarchar(max)",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "ExchangePolicyDescription",
+                table: "AppGroupBuys",
+                type: "nvarchar(max)",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "GroupBuyConditionDescription",
+                table: "AppGroupBuys",
+                type: "nvarchar(max)",
+                nullable: true);
+
             migrationBuilder.CreateTable(
                 name: "AppGroupBuyItemGroups",
                 columns: table => new
@@ -57,7 +75,7 @@ namespace Kooco.Pikachu.Migrations
                 comment: "");
 
             migrationBuilder.CreateTable(
-                name: "GroupBuyItemGroupDetails",
+                name: "AppGroupBuyItemGroupDetails",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -69,54 +87,67 @@ namespace Kooco.Pikachu.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GroupBuyItemGroupDetails", x => x.Id);
+                    table.PrimaryKey("PK_AppGroupBuyItemGroupDetails", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_GroupBuyItemGroupDetails_AppGroupBuyItemGroups_GroupBuyItemGroupId",
+                        name: "FK_AppGroupBuyItemGroupDetails_AppGroupBuyItemGroups_GroupBuyItemGroupId",
                         column: x => x.GroupBuyItemGroupId,
                         principalTable: "AppGroupBuyItemGroups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_GroupBuyItemGroupDetails_AppImages_ImageId",
+                        name: "FK_AppGroupBuyItemGroupDetails_AppImages_ImageId",
                         column: x => x.ImageId,
                         principalTable: "AppImages",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_GroupBuyItemGroupDetails_AppItems_ItemId",
+                        name: "FK_AppGroupBuyItemGroupDetails_AppItems_ItemId",
                         column: x => x.ItemId,
                         principalTable: "AppItems",
                         principalColumn: "Id");
-                });
+                },
+                comment: "");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppGroupBuyItemGroupDetails_GroupBuyItemGroupId",
+                table: "AppGroupBuyItemGroupDetails",
+                column: "GroupBuyItemGroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppGroupBuyItemGroupDetails_ImageId",
+                table: "AppGroupBuyItemGroupDetails",
+                column: "ImageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppGroupBuyItemGroupDetails_ItemId",
+                table: "AppGroupBuyItemGroupDetails",
+                column: "ItemId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AppGroupBuyItemGroups_GroupBuyId",
                 table: "AppGroupBuyItemGroups",
                 column: "GroupBuyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_GroupBuyItemGroupDetails_GroupBuyItemGroupId",
-                table: "GroupBuyItemGroupDetails",
-                column: "GroupBuyItemGroupId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_GroupBuyItemGroupDetails_ImageId",
-                table: "GroupBuyItemGroupDetails",
-                column: "ImageId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_GroupBuyItemGroupDetails_ItemId",
-                table: "GroupBuyItemGroupDetails",
-                column: "ItemId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "GroupBuyItemGroupDetails");
+                name: "AppGroupBuyItemGroupDetails");
 
             migrationBuilder.DropTable(
                 name: "AppGroupBuyItemGroups");
+
+            migrationBuilder.DropColumn(
+                name: "CustomerInformationDescription",
+                table: "AppGroupBuys");
+
+            migrationBuilder.DropColumn(
+                name: "ExchangePolicyDescription",
+                table: "AppGroupBuys");
+
+            migrationBuilder.DropColumn(
+                name: "GroupBuyConditionDescription",
+                table: "AppGroupBuys");
 
             migrationBuilder.RenameColumn(
                 name: "IssueInvoice",

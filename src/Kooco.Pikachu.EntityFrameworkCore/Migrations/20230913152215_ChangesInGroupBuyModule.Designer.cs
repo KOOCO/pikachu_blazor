@@ -13,7 +13,7 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    [Migration("20230912172939_ChangesInGroupBuyModule")]
+    [Migration("20230913152215_ChangesInGroupBuyModule")]
     partial class ChangesInGroupBuyModule
     {
         /// <inheritdoc />
@@ -121,6 +121,9 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<string>("CustomerInformation")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("CustomerInformationDescription")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid?>("DeleterId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("DeleterId");
@@ -139,6 +142,9 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ExchangePolicy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ExchangePolicyDescription")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ExcludeShippingMethod")
@@ -167,6 +173,9 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("GroupBuyCondition")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GroupBuyConditionDescription")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("GroupBuyName")
@@ -319,7 +328,10 @@ namespace Kooco.Pikachu.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.ToTable("GroupBuyItemGroupDetails");
+                    b.ToTable("AppGroupBuyItemGroupDetails", null, t =>
+                        {
+                            t.HasComment("");
+                        });
                 });
 
             modelBuilder.Entity("Kooco.Pikachu.Images.Image", b =>
@@ -2592,7 +2604,7 @@ namespace Kooco.Pikachu.Migrations
             modelBuilder.Entity("Kooco.Pikachu.Groupbuys.GroupBuyItemGroupDetails", b =>
                 {
                     b.HasOne("Kooco.Pikachu.GroupBuys.GroupBuyItemGroup", null)
-                        .WithMany("ItemDetails")
+                        .WithMany("ItemGroupDetails")
                         .HasForeignKey("GroupBuyItemGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2821,7 +2833,7 @@ namespace Kooco.Pikachu.Migrations
 
             modelBuilder.Entity("Kooco.Pikachu.GroupBuys.GroupBuyItemGroup", b =>
                 {
-                    b.Navigation("ItemDetails");
+                    b.Navigation("ItemGroupDetails");
                 });
 
             modelBuilder.Entity("Kooco.Pikachu.Items.Item", b =>

@@ -60,13 +60,19 @@ namespace Kooco.Pikachu.Groupbuys
             bool isDefaultPaymentGateway,
             string? paymentMethod,
             string? groupbuyCondition,
-            string? customerInformation)
+            string? customerInformation,
+          string? customerInformationDescription,
+          string? groupBuyConditionDescription,
+          string? exchangePolicyDescription
+
+
+            )
         {
 
             return new GroupBuy(GuidGenerator.Create(), groupBuyNo, status, groupBuyName, entryURL, entryURL2, subjectLine, shortName, logoURL, bannerURL, startTime, endTime, freeShipping,
                 allowShipToOuterTaiwan, allowShipOversea, expectShippingDateFrom, expectShippingDateTo, moneyTransferValidDayBy, moneyTransferValidDays,
                 issueInvoice, autoIssueTriplicateInvoice, invoiceNote, protectPrivacyData, inviteCode, profitShare, metaPixelNo, fBID, iGID, lineID, gAID, gTM,
-                warningMessage, orderContactInfo, exchangePolicy, notifyMessage, excludeShippingMethod, isDefaultPaymentGateway, paymentMethod, groupbuyCondition, customerInformation);
+                warningMessage, orderContactInfo, exchangePolicy, notifyMessage, excludeShippingMethod, isDefaultPaymentGateway, paymentMethod, groupbuyCondition, customerInformation,customerInformationDescription,groupBuyConditionDescription,exchangePolicyDescription);
 
         }
 

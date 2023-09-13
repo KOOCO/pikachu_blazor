@@ -98,6 +98,7 @@
     "NewSetItem": "New Set Item",
     "NotFound": "Not Found",
     "EditSetItem": "Edit Set Item",
+    "Pikachu:EntityWithGivenIdDoesnotExist": "Entity With Given Id Does not Exist",
 
     //GroupBuy
     "NewGroupBuy": "New GroupBuy",

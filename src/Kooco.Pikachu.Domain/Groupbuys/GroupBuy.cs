@@ -159,7 +159,7 @@ namespace Kooco.Pikachu.GroupBuys
         /// <summary>
         /// Line ID
         /// </summary>
-        public string? LineID{ get; set; }
+        public string? LineID { get; set; }
 
         /// <summary>
         /// Google Analytics ID
@@ -185,6 +185,7 @@ namespace Kooco.Pikachu.GroupBuys
         /// 退換貨政策 ExchangePolicy
         /// </summary>
         public string? ExchangePolicy { get; set; }
+        public string? ExchangePolicyDescription { get; set; }
 
         /// <summary>
         /// 通知信件文案 NotifyMessage
@@ -194,7 +195,9 @@ namespace Kooco.Pikachu.GroupBuys
         public bool IsDefaultPaymentGateWay { get; set; }
         public string? PaymentMethod { get; set; }
         public string? GroupBuyCondition { get; set; }
+        public string? GroupBuyConditionDescription { get; set; }
         public string? CustomerInformation { get; set; }
+        public string? CustomerInformationDescription { get; set; }
         /// <summary>
         /// 預設使用的發貨倉庫 Default Warehouse used for shipping
         /// </summary>
@@ -202,11 +205,12 @@ namespace Kooco.Pikachu.GroupBuys
 
         public ICollection<GroupBuyItemGroup> ItemGroups { get; set; }
 
-        public GroupBuy() { 
-        
+        public GroupBuy()
+        {
+
         }
 
-        public GroupBuy(Guid id,int groupNo,string status,
+        public GroupBuy(Guid id, int groupNo, string status,
             string groupBuyName,
             string entryURL,
             string entryURL2,
@@ -238,48 +242,65 @@ namespace Kooco.Pikachu.GroupBuys
             string? warningMessage,
             string? orderContactInfo,
             string? exchangePolicy,
-            string? notifyMessage,string? excludeShippingMethod,bool isDefaultPaymentGateway,string? paymentMethod,string? groupbuyCondition,string? customerInformation)
-        { 
+            string? notifyMessage,
+            string? excludeShippingMethod,
+            bool isDefaultPaymentGateway,
+            string? paymentMethod,
+            string? groupbuyCondition,
+            string? customerInformation,
+          string? customerInformationDescription,
+          string? groupBuyConditionDescription,
+          string? exchangePolicyDescription
+
+
+
+            )
+        {
             Id = id;
             GroupBuyNo = groupNo;
-            Status= status;
-            GroupBuyName= groupBuyName;
-            EntryURL= entryURL;
-            EntryURL2= entryURL2;
-            SubjectLine= subjectLine;
-            ShortName= shortName;
-            LogoURL= logoURL;
+            Status = status;
+            GroupBuyName = groupBuyName;
+            EntryURL = entryURL;
+            EntryURL2 = entryURL2;
+            SubjectLine = subjectLine;
+            ShortName = shortName;
+            LogoURL = logoURL;
             BannerURL = bannerURL;
-            StartTime= startTime;
+            StartTime = startTime;
             EndTime = endTime;
-            FreeShipping= freeShipping;
-            AllowShipOversea= allowShipOversea;
-            AllowShipToOuterTaiwan= allowShipToOuterTaiwan;
-            ExpectShippingDateFrom= expectShippingDateFrom;
-            ExpectShippingDateTo= expectShippingDateTo;
-            MoneyTransferValidDayBy= moneyTransferValidDayBy;
+            FreeShipping = freeShipping;
+            AllowShipOversea = allowShipOversea;
+            AllowShipToOuterTaiwan = allowShipToOuterTaiwan;
+            ExpectShippingDateFrom = expectShippingDateFrom;
+            ExpectShippingDateTo = expectShippingDateTo;
+            MoneyTransferValidDayBy = moneyTransferValidDayBy;
             MoneyTransferValidDays = moneyTransferValidDays;
             IssueInvoice = issueInvoice;
-            AutoIssueTriplicateInvoice= autoIssueTriplicateInvoice;
-            InvoiceNote= invoiceNote;
-            InviteCode= inviteCode;
-            ProtectPrivacyData= protectPrivacyData;
+            AutoIssueTriplicateInvoice = autoIssueTriplicateInvoice;
+            InvoiceNote = invoiceNote;
+            InviteCode = inviteCode;
+            ProtectPrivacyData = protectPrivacyData;
             ProfitShare = profitShare;
             MetaPixelNo = metaPixelNo;
-            FBID= fBID;
-            IGID= iGID;
-            LineID= lineID;
+            FBID = fBID;
+            IGID = iGID;
+            LineID = lineID;
             GAID = gAID;
             GTM = gTM;
-            WarningMessage= warningMessage;
-            OrderContactInfo= orderContactInfo;
+            WarningMessage = warningMessage;
+            OrderContactInfo = orderContactInfo;
             ExchangePolicy = exchangePolicy;
-            NotifyMessage= notifyMessage;
+            NotifyMessage = notifyMessage;
             ExcludeShippingMethod = excludeShippingMethod;
             IsDefaultPaymentGateWay = isDefaultPaymentGateway;
             PaymentMethod = paymentMethod;
             GroupBuyCondition = groupbuyCondition;
             CustomerInformation = customerInformation;
+            CustomerInformationDescription = customerInformationDescription;
+
+            GroupBuyConditionDescription = groupBuyConditionDescription;
+            ExchangePolicyDescription = exchangePolicyDescription;
+
 
             ItemGroups = new List<GroupBuyItemGroup>();
         }
@@ -302,6 +323,6 @@ namespace Kooco.Pikachu.GroupBuys
             return groupBuyItemGroup;
         }
 
-        
+
     }
 }

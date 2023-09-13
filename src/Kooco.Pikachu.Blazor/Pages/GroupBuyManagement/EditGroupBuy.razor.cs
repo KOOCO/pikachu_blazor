@@ -8,9 +8,6 @@ using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.Extensions.Azure;
-using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,24 +26,23 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         public string id { get; set; }
         public Guid Id { get; set; }
 
-        bool paymentMethodCheck = false;
-        [Inject] IJSRuntime JSRuntime { get; set; }
-        private const int maxtextCount = 60;
-        private GroupBuyUpdateDto editGroupBuyDto { get; set; }
+        bool PaymentMethodCheck = false;
+        private const int MaxtextCount = 60;
+        private GroupBuyUpdateDto EditGroupBuyDto { get; set; }
         private List<CreateImageDto> CarouselImages { get; set; }
         private const int MaxAllowedFilesPerUpload = 5;
         private const int TotalMaxAllowedFiles = 5;
         private const int MaxAllowedFileSize = 1024 * 1024 * 10;
-        private string TagInputValue { get; set; }
+        private string? TagInputValue { get; set; }
 
         //private Input<string> inputTagRef; //used for create tag input
-        private List<string> itemTags { get; set; } = new List<string>(); //used for store item tags 
+        private List<string> ItemTags { get; set; } = new List<string>(); //used for store item tags 
 
         //private Input<string> inputPaymentMethodTagRef; //used for create tag input
-        private List<string> paymentMethodTags { get; set; } = new List<string>(); //used for store item tags 
+        private List<string> PaymentMethodTags { get; set; } = new List<string>(); //used for store item tags 
         private string PaymentTagInputValue { get; set; }
         bool loading = false;
-        private List<CollapseItem> collapseItem = new List<CollapseItem>();
+        private List<CollapseItem> CollapseItem = new();
         int _value = 1;
         private Blazored.TextEditor.BlazoredTextEditor quillHtml; //Item Discription Html
         public string _ProductPicture = "Product Picture";
@@ -74,7 +70,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             _groupBuyAppService = groupBuyAppService;
             _imageAppService = imageAppService;
             _objectMapper = objectMapper;
-            editGroupBuyDto = new GroupBuyUpdateDto();
+            EditGroupBuyDto = new GroupBuyUpdateDto();
             CarouselImages = new List<CreateImageDto>();
             _uiMessageService = uiMessageService;
             _imageContainerManager = imageContainerManager;
@@ -87,13 +83,13 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             {
                 id ??= "";
                 Id = Guid.Parse(id);
-                var groupbuy = await _groupBuyAppService.GetAsync(Id, true);
-                editGroupBuyDto = _objectMapper.Map<GroupBuyDto, GroupBuyUpdateDto>(groupbuy);
+                var groupbuy = await _groupBuyAppService.GetWithDetailsAsync(Id);
+                EditGroupBuyDto = _objectMapper.Map<GroupBuyDto, GroupBuyUpdateDto>(groupbuy);
                 var images = await _imageAppService.GetGroupBuyImagesAsync(Id);
-                string[] paymentMethotTagArray = editGroupBuyDto.PaymentMethod != null ? editGroupBuyDto.PaymentMethod.Split(',') : null;
-                paymentMethodTags = paymentMethodTags != null ? paymentMethodTags.ToList() : new List<string>();
-                string[] excludeShippingMethodArray = editGroupBuyDto.ExcludeShippingMethod != null ? editGroupBuyDto.ExcludeShippingMethod.Split(',') : null;
-                itemTags = excludeShippingMethodArray != null ? excludeShippingMethodArray.ToList() : new List<string>();
+                string[] paymentMethotTagArray = EditGroupBuyDto.PaymentMethod != null ? EditGroupBuyDto.PaymentMethod.Split(',') : null;
+                PaymentMethodTags = PaymentMethodTags != null ? PaymentMethodTags.ToList() : new List<string>();
+                string[] excludeShippingMethodArray = EditGroupBuyDto.ExcludeShippingMethod != null ? EditGroupBuyDto.ExcludeShippingMethod.Split(',') : null;
+                ItemTags = excludeShippingMethodArray != null ? excludeShippingMethodArray.ToList() : new List<string>();
                 CarouselImages = _objectMapper.Map<List<ImageDto>, List<CreateImageDto>>(images);
                 ItemsList = await _itemAppService.GetItemsLookupAsync();
 
@@ -105,22 +101,33 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     {
                         var collapseItem = new CollapseItem
                         {
-                            Index = i++
+                            Index = i++,
+                            Title = itemGroup.Title
                         };
-                        if(itemGroup.Item1Id != null)
+                        if (itemGroup.ItemGroupDetails.Any())
                         {
-                            collapseItem.ItemDetails.Add(new ProductPictureItem
-                            {
-                                ItemId = itemGroup.Item1Id,
-                                ItemDescription = itemGroup.ItemDescription1,
-                                //Item = itemGroup.Item1,
 
-                            });
+                            foreach (var item in itemGroup.ItemGroupDetails)
+                            {
+                                collapseItem.ItemDetails.Add(new ProductPictureItem
+                                {
+                                    ItemId = item.ItemId,
+                                    ItemDescription = item.ItemDescription,
+                                    Item = item.Item,
+                                    Image = new ProductImage(item.Image.Name, item.Image.BlobImageName, item.Image.ImageUrl)
+                                });
+                            }
                         }
+
+                        CollapseItem.Add(collapseItem);
                     }
                 }
 
                 StateHasChanged();
+            }
+            catch (BusinessException ex)
+            {
+                await _uiMessageService.Error(L[ex.Code]);
             }
             catch (Exception ex)
             {
@@ -132,8 +139,8 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         {
             CollapseItem item = new CollapseItem();
             item.Title = title;
-            item.Index = collapseItem.Count > 0 ? collapseItem.Count + 1 : 1;
-            collapseItem.Add(item);
+            item.Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1;
+            CollapseItem.Add(item);
         }
 
         async Task OnLogoUploadAsync(FileChangedEventArgs e)
@@ -174,7 +181,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
 
 
-                    editGroupBuyDto.LogoURL = url;
+                    EditGroupBuyDto.LogoURL = url;
 
                     await LogoPickerCustom.Clear();
                 }
@@ -300,7 +307,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
 
 
-                    editGroupBuyDto.BannerURL = url;
+                    EditGroupBuyDto.BannerURL = url;
 
                     await BannerPickerCustom.Clear();
                 }
@@ -332,7 +339,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     confirmed = await _imageContainerManager.DeleteAsync(filename);
                     if (confirmed)
                     {
-                        editGroupBuyDto.LogoURL = null;
+                        EditGroupBuyDto.LogoURL = null;
                         StateHasChanged();
                     }
                     else
@@ -358,7 +365,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     confirmed = await _imageContainerManager.DeleteAsync(filename);
                     if (confirmed)
                     {
-                        editGroupBuyDto.BannerURL = null;
+                        EditGroupBuyDto.BannerURL = null;
                         StateHasChanged();
                     }
                     else
@@ -424,9 +431,9 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         {
             if (e.Key == "Enter")
             {
-                if (!TagInputValue.IsNullOrWhiteSpace() && !itemTags.Any(x => x == TagInputValue))
+                if (!TagInputValue.IsNullOrWhiteSpace() && !ItemTags.Any(x => x == TagInputValue))
                 {
-                    itemTags.Add(TagInputValue);
+                    ItemTags.Add(TagInputValue);
                 }
                 TagInputValue = string.Empty;
             }
@@ -434,15 +441,15 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
         private void HandleItemTagDelete(string item)
         {
-            itemTags.Remove(item);
+            ItemTags.Remove(item);
         }
         private void HandlePaymentTagInputKeyUp(KeyboardEventArgs e)
         {
             if (e.Key == "Enter")
             {
-                if (!PaymentTagInputValue.IsNullOrWhiteSpace() && !paymentMethodTags.Any(x => x == PaymentTagInputValue))
+                if (!PaymentTagInputValue.IsNullOrWhiteSpace() && !PaymentMethodTags.Any(x => x == PaymentTagInputValue))
                 {
-                    paymentMethodTags.Add(PaymentTagInputValue);
+                    PaymentMethodTags.Add(PaymentTagInputValue);
                 }
                 PaymentTagInputValue = string.Empty;
             }
@@ -450,20 +457,20 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
         private void HandlePaymentTagDelete(string item)
         {
-            paymentMethodTags.Remove(item);
+            PaymentMethodTags.Remove(item);
         }
         protected virtual async Task CreateEntityAsync()
         {
 
 
 
-            editGroupBuyDto.ExcludeShippingMethod = string.Join(",", itemTags);
-            editGroupBuyDto.PaymentMethod = string.Join(",", paymentMethodTags);
-            editGroupBuyDto.NotifyMessage = await quillHtml.GetHTML();
+            EditGroupBuyDto.ExcludeShippingMethod = string.Join(",", ItemTags);
+            EditGroupBuyDto.PaymentMethod = string.Join(",", PaymentMethodTags);
+            EditGroupBuyDto.NotifyMessage = await quillHtml.GetHTML();
 
 
 
-            var result = await _groupBuyAppService.UpdateAsync(Id, editGroupBuyDto);
+            var result = await _groupBuyAppService.UpdateAsync(Id, EditGroupBuyDto);
             await _imageAppService.DeleteGroupBuyImagesAsync(Id);
             foreach (var item in CarouselImages)
             {
@@ -496,6 +503,10 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             }
         }
 
+        private void CloseGroupBuyEdit()
+        {
+            NavigationManager.NavigateTo("GroupBuyManagement/GroupBuyList");
+        }
         async Task OnFileUploadAsync(FileChangedEventArgs e, CollapseItem collapseItem)
         {
             try

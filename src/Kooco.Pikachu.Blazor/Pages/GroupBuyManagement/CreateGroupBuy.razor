@@ -369,7 +369,7 @@
             <div class="col-8">
 
                 <div class="col-7 form-control" style="background-color:white">
-                    @foreach (var item in itemTags)
+                    @foreach (var item in ItemTags)
                     {
                         <Badge class="item-tags" CloseClicked="@(() => HandleItemTagDelete(item))">@item</Badge>
                     }
@@ -421,7 +421,7 @@
             <div class="col-1">    <Radio TValue="bool" Group="Payment" Value="@paymentMethodCheck"> </Radio></div>
             <div class="col-7">
                 <div class="col-7 form-control" style="background-color:white">
-                    @foreach (var item in paymentMethodTags)
+                    @foreach (var item in PaymentMethodTags)
                     {
                         <Badge class="item-tags" CloseClicked="@(() => HandlePaymentTagDelete(item))">@item</Badge>
                     }
@@ -559,11 +559,11 @@
 
             </div>
         </div>
-        @foreach (var module in collapseItem)
+        @foreach (var module in CollapseItem)
         {
             <div class=" col-12 row">
                 <div class="col-2"></div>
-                <div class="col-8">
+                <div class="col-7">
                     <Accordion>
                         <Collapse>
                             <CollapseHeader>
@@ -670,6 +670,7 @@
                                 </div>
                                 <div class="d-flex flex-row-reverse mt-2">
                                     <Button class="btn btn-primary" Clicked="@(()=>HandleClick(module.Index))" Type="@ButtonType.Button"><span class="fa fas-plus"></span>Add Item</Button>
+                              
                                 </div>
                                
                                 <Divider></Divider>
@@ -693,6 +694,11 @@
                         </Collapse>
                     </Accordion>
                 </div>
+                <div class="col-1"> 
+                    <Button class="btn btn-danger" Clicked="@(()=>RemoveCollapseItem(@module.Index))">
+                        <i class="fa fa-trash"></i>
+                    </Button>
+                </div>
             </div>
         }
         <Divider></Divider>
@@ -707,7 +713,7 @@
                     <TextEdit Placeholder="@L["GroupBuyCondition"]" @bind-Text="CreateGroupBuyDto.GroupBuyCondition" MaxLength="60" />
                 </div>
                 <div class=" col-12">
-                    <Blazored.TextEditor.BlazoredTextEditor @ref="@quillHtml">
+                    <Blazored.TextEditor.BlazoredTextEditor @ref="@GroupBuyHtml">
                         <ToolbarContent>
                             <select class="ql-header">
                                 <option selected=""></option>
@@ -761,7 +767,7 @@
                     <TextEdit Placeholder="@L["CustomerInformation"]" @bind-Text="@CreateGroupBuyDto.CustomerInformation" MaxLength="60" />
                 </div>
                 <div class=" col-12">
-                    <Blazored.TextEditor.BlazoredTextEditor @ref="@quillHtml">
+                    <Blazored.TextEditor.BlazoredTextEditor @ref="@CustomerInformationHtml">
                         <ToolbarContent>
                             <select class="ql-header">
                                 <option selected=""></option>
@@ -815,7 +821,7 @@
                     <TextEdit Placeholder="@L["ExchangePolicy"]" @bind-Text="@CreateGroupBuyDto.ExchangePolicy" MaxLength="60" ShowCount />
                 </div>
                 <div class=" col-12">
-                    <Blazored.TextEditor.BlazoredTextEditor @ref="@quillHtml">
+                    <Blazored.TextEditor.BlazoredTextEditor @ref="@ExchangePolicyHtml">
                         <ToolbarContent>
                             <select class="ql-header">
                                 <option selected=""></option>
@@ -869,7 +875,7 @@
 
                 </div>
                 <div class=" col-12">
-                    <Blazored.TextEditor.BlazoredTextEditor @ref="@quillHtml">
+                    <Blazored.TextEditor.BlazoredTextEditor @ref="@NotifyEmailHtml">
                         <ToolbarContent>
                             <select class="ql-header">
                                 <option selected=""></option>
@@ -942,7 +948,7 @@
 
     private void HandleClick(int i)
     {
-        var checkValiate = collapseItem.Where(x => x.Index == i).FirstOrDefault();
+        var checkValiate = CollapseItem.Where(x => x.Index == i).FirstOrDefault();
         if(checkValiate is null)
         {
             return;
@@ -951,18 +957,18 @@
         {
             return;
         }
-        if(checkValiate.SelectedItemDescription == null)
+        if(checkValiate.SelectedItemDescription.IsNullOrWhiteSpace())
         {
             return;
         }
-        if(checkValiate.SelectedImage == null || checkValiate.SelectedImage.ImageUrl == null)
+        if(checkValiate.SelectedImage == null || checkValiate.SelectedImage.ImageUrl.IsNullOrWhiteSpace())
         {
             return;
         }
         int selectedIndex = i;
-        if (collapseItem.Where(x => x.Index == i).FirstOrDefault().ItemDetails.Count <= 3)
+        if (CollapseItem.Where(x => x.Index == i).FirstOrDefault().ItemDetails.Count <= 3)
         {
-            var cItem = collapseItem.Where(x => x.Index == i).FirstOrDefault();
+            var cItem = CollapseItem.Where(x => x.Index == i).FirstOrDefault();
 
             ProductPictureItem item = new ProductPictureItem
             {
@@ -975,7 +981,7 @@
             cItem.SelectedItemDescription = null;
             cItem.SelectedImage = new();
 
-            collapseItem.Where(x => x.Index == i).FirstOrDefault().ItemDetails.Add(item);
+            CollapseItem.Where(x => x.Index == i).FirstOrDefault().ItemDetails.Add(item);
         }
     }
 
@@ -993,7 +999,7 @@
     }
     private void RemoveProductItem(ProductPictureItem item, int index)
     {
-        collapseItem.Where(x => x.Index == index).FirstOrDefault().ItemDetails.Remove(item);
+        CollapseItem.Where(x => x.Index == index).FirstOrDefault().ItemDetails.Remove(item);
     }
  }
 

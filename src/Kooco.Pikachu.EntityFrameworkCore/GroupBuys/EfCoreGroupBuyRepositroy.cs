@@ -16,7 +16,7 @@ namespace Kooco.Pikachu.GroupBuys
 {
     public class EfCoreGroupBuyRepositroy : EfCoreRepository<PikachuDbContext, GroupBuy, Guid>, IGroupBuyRepositroy
     {
-        public EfCoreGroupBuyRepositroy(IDbContextProvider<PikachuDbContext> dbContextProvider):base(dbContextProvider) { }
+        public EfCoreGroupBuyRepositroy(IDbContextProvider<PikachuDbContext> dbContextProvider) : base(dbContextProvider) { }
 
 
         public async Task<long> GetGroupBuyCountAsync(string? filterText = null, int? groupBuyNo = null, string? status = null, string? groupBuyName = null, string? entryURL = null, string? entryURL2 = null, string? subjectLine = null, string? shortName = null, string? logoURL = null, string? bannerURL = null, DateTime? startTime = null, DateTime? endTime = null, bool freeShipping = false, bool allowShipToOuterTaiwan = false, bool allowShipOversea = false, DateTime? expectShippingDateFrom = null, DateTime? expectShippingDateTo = null, int? moneyTransferValidDayBy = null, int? moneyTransferValidDays = null, bool issueInvoice = false, bool autoIssueTriplicateInvoice = false, string? invoiceNote = null, bool protectPrivacyData = false, string? inviteCode = null, int? profitShare = null, int? metaPixelNo = null, string? fBID = null, string? iGID = null, string? lineID = null, string? gAID = null, string? gTM = null, string? warningMessage = null, string? orderContactInfo = null, string? exchangePolicy = null, string? notifyMessage = null, CancellationToken cancellationToken = default)
@@ -30,29 +30,43 @@ namespace Kooco.Pikachu.GroupBuys
 
         public async Task<List<GroupBuy>> GetGroupBuyListAsync(string? filterText = null, int? groupBuyNo = null, string? status = null, string? groupBuyName = null, string? entryURL = null, string? entryURL2 = null, string? subjectLine = null, string? shortName = null, string? logoURL = null, string? bannerURL = null, DateTime? startTime = null, DateTime? endTime = null, bool freeShipping = false, bool allowShipToOuterTaiwan = false, bool allowShipOversea = false, DateTime? expectShippingDateFrom = null, DateTime? expectShippingDateTo = null, int? moneyTransferValidDayBy = null, int? moneyTransferValidDays = null, bool issueInvoice = false, bool autoIssueTriplicateInvoice = false, string? invoiceNote = null, bool protectPrivacyData = false, string? inviteCode = null, int? profitShare = null, int? metaPixelNo = null, string? fBID = null, string? iGID = null, string? lineID = null, string? gAID = null, string? gTM = null, string? warningMessage = null, string? orderContactInfo = null, string? exchangePolicy = null, string? notifyMessage = null, string? sorting = null, int maxResultCount = int.MaxValue, int skipCount = 0, CancellationToken cancellationToken = default)
         {
-            
+
 
             var query = ApplyFilter((await GetQueryableAsync()), filterText, groupBuyNo, status, groupBuyName, entryURL, entryURL2, subjectLine, shortName, logoURL, bannerURL, startTime, endTime, freeShipping,
                 allowShipToOuterTaiwan, allowShipOversea, expectShippingDateFrom, expectShippingDateTo, moneyTransferValidDayBy, moneyTransferValidDays,
                 issueInvoice, autoIssueTriplicateInvoice, invoiceNote, protectPrivacyData, inviteCode, profitShare, metaPixelNo, fBID, iGID, lineID, gAID, gTM,
                 warningMessage, orderContactInfo, exchangePolicy, notifyMessage);
-           
+
             query = query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? GroupBuyConsts.GetDefaultSorting(false) : sorting);
             return await query.PageBy(skipCount, maxResultCount).ToListAsync(cancellationToken);
         }
 
-       
+        public async Task<GroupBuy> GetWithDetailsAsync(Guid id)
+        {
+            var dbContext = await GetDbContextAsync();
+
+            return await dbContext.GroupBuys
+                .Where(x => x.Id == id)
+                .Include(x => x.ItemGroups)
+                .ThenInclude(ig => ig.ItemGroupDetails)
+                .ThenInclude(igd => igd.Item)
+                .Include(x => x.ItemGroups)
+                .ThenInclude(ig => ig.ItemGroupDetails)
+                .ThenInclude(igd => igd.Image)
+                .FirstOrDefaultAsync();
+        }
+
         protected virtual System.Linq.IQueryable<GroupBuy> ApplyFilter(
             System.Linq.IQueryable<GroupBuy> query,
             string filterText,
             int? groupBuyNo = null, string? status = null, string? groupBuyName = null, string? entryURL = null, string? entryURL2 = null, string? subjectLine = null, string? shortName = null, string? logoURL = null, string? bannerURL = null, DateTime? startTime = null, DateTime? endTime = null, bool freeShipping = false, bool allowShipToOuterTaiwan = false, bool allowShipOversea = false, DateTime? expectShippingDateFrom = null, DateTime? expectShippingDateTo = null, int? moneyTransferValidDayBy = null, int? moneyTransferValidDays = null, bool issueInvoice = false, bool autoIssueTriplicateInvoice = false, string? invoiceNote = null, bool protectPrivacyData = false, string? inviteCode = null, int? profitShare = null, int? metaPixelNo = null, string? fBID = null, string? iGID = null, string? lineID = null, string? gAID = null, string? gTM = null, string? warningMessage = null, string? orderContactInfo = null, string? exchangePolicy = null, string? notifyMessage = null, CancellationToken cancellationToken = default)
         {
             return query
-                    .WhereIf(!string.IsNullOrWhiteSpace(filterText), e => e.Status.Contains(filterText)||e.GroupBuyName.Contains(filterText)||
-                    e.EntryURL.Contains(filterText)||e.EntryURL2.Contains(filterText)||e.SubjectLine.Contains(filterText)||e.ShortName.Contains(filterText)
-                    ||e.InvoiceNote.Contains(filterText)||e.FBID.Contains(filterText)||e.IGID.Contains(filterText)||e.LineID.Contains(filterText)||e.GAID.Contains(filterText)||
-                    e.GTM.Contains(filterText)||e.WarningMessage.Contains(filterText)||e.OrderContactInfo.Contains(filterText)||e.ExchangePolicy.Contains(filterText)
-                    ||e.NotifyMessage.Contains(filterText))
+                    .WhereIf(!string.IsNullOrWhiteSpace(filterText), e => e.Status.Contains(filterText) || e.GroupBuyName.Contains(filterText) ||
+                    e.EntryURL.Contains(filterText) || e.EntryURL2.Contains(filterText) || e.SubjectLine.Contains(filterText) || e.ShortName.Contains(filterText)
+                    || e.InvoiceNote.Contains(filterText) || e.FBID.Contains(filterText) || e.IGID.Contains(filterText) || e.LineID.Contains(filterText) || e.GAID.Contains(filterText) ||
+                    e.GTM.Contains(filterText) || e.WarningMessage.Contains(filterText) || e.OrderContactInfo.Contains(filterText) || e.ExchangePolicy.Contains(filterText)
+                    || e.NotifyMessage.Contains(filterText))
                     .WhereIf(!string.IsNullOrWhiteSpace(groupBuyName), e => e.GroupBuyName.Contains(groupBuyName))
                     .WhereIf(!string.IsNullOrWhiteSpace(entryURL), e => e.EntryURL.Contains(entryURL))
                     .WhereIf(!string.IsNullOrWhiteSpace(entryURL2), e => e.EntryURL2.Contains(entryURL2))
@@ -68,10 +82,10 @@ namespace Kooco.Pikachu.GroupBuys
                     .WhereIf(!string.IsNullOrWhiteSpace(orderContactInfo), e => e.OrderContactInfo.Contains(orderContactInfo))
                     .WhereIf(!string.IsNullOrWhiteSpace(exchangePolicy), e => e.ExchangePolicy.Contains(exchangePolicy))
                     .WhereIf(!string.IsNullOrWhiteSpace(notifyMessage), e => e.NotifyMessage.Contains(notifyMessage))
-                   
+
                     .WhereIf(groupBuyNo.HasValue, e => e.GroupBuyNo == groupBuyNo);
         }
-      
+
 
 
     }

@@ -22,7 +22,7 @@ namespace Kooco.Pikachu.GroupBuys
 
         public string? Title { get; set; }
 
-        public ICollection<GroupBuyItemGroupDetails> ItemDetails { get; set; }
+        public ICollection<GroupBuyItemGroupDetails> ItemGroupDetails { get; set; }
 
         public GroupBuyItemGroup()
         {
@@ -39,7 +39,7 @@ namespace Kooco.Pikachu.GroupBuys
             GroupBuyId = groupBuyId;
             SortOrder = sortOrder;
             Title = title;
-            ItemDetails = new List<GroupBuyItemGroupDetails>();
+            ItemGroupDetails = new List<GroupBuyItemGroupDetails>();
         }
 
         public void GroupBuyItemGroupDetails(
@@ -52,7 +52,7 @@ namespace Kooco.Pikachu.GroupBuys
             
             )
         {
-            ItemDetails.Add(new GroupBuyItemGroupDetails(
+            ItemGroupDetails.Add(new GroupBuyItemGroupDetails(
                 id,
                 groupBuyItemGroupId,
                 sortOrder,

@@ -78,12 +78,12 @@ namespace Kooco.Pikachu.GroupBuys
         /// <summary>
         /// 允許寄送到外島 AllowShipToOuterTaiwan
         /// </summary>
-        public bool allowShipToOuterTaiwan { get; set; }
+        public bool AllowShipToOuterTaiwan { get; set; }
 
         /// <summary>
         /// 允許寄送到海外 AllowShipOversea
         /// </summary>
-        public bool allowShipOversea { get; set; }
+        public bool AllowShipOversea { get; set; }
 
         /// <summary>
         /// 預計開始配送日期 ExpectShippingDateFrom
@@ -114,7 +114,7 @@ namespace Kooco.Pikachu.GroupBuys
         /// <summary>
         /// 開立發票 IssueInvoice
         /// </summary>
-        public bool issueInvoice { get; set; }
+        public bool IssueInvoice { get; set; }
 
         /// <summary>
         /// 自動開立三聯單 AutoIssueTriplicateInvoice
@@ -197,5 +197,10 @@ namespace Kooco.Pikachu.GroupBuys
         public ICollection<GroupBuyItemGroupDto> ItemGroups { get; set; }
 
         public string? ConcurrencyStamp { get; set; }
+
+        public string? ExcludeShippingMethod { get; set; }
+        public string? GroupBuyConditionDescription { get; set; }
+        public string? CustomerInformationDescription { get; set; }
+        public string? ExchangePolicyDescription { get; set; }
     }
 }
