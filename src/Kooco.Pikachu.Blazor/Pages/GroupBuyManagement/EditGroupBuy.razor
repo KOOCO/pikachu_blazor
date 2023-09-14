@@ -306,10 +306,6 @@
                                 </FileTemplate>
                                 <ButtonsTemplate>
                                     <Progress Value="@CarouselPickerCustom.GetProgressPercentage()" />
-                                    @* <Buttons Class="mt-2 d-flex justify-content-end">
-                                        <Button Clicked="@context.Clear" Color="Color.Warning"><Icon Name="IconName.Clear" /></Button>
-                                        <Button Clicked="@context.Upload" Color="Color.Primary"><Icon Name="IconName.FileUpload" /></Button>
-                                    </Buttons> *@
                                 </ButtonsTemplate>
                             </FilePicker>
                         </Field>
@@ -554,9 +550,11 @@
             </div>
             </div>
             @foreach (var module in CollapseItem)
-                {<div class=" col-12 row">
+                {
+                    <div class=" col-12 row">
                     <div class="col-2"></div>
-                    <div class="col-8">
+                    <div class="col-7">
+
                         <Accordion>
                   <Collapse>
                             <CollapseHeader>
@@ -585,11 +583,6 @@
                                                 <NotFoundContent> @L["NotFound"] </NotFoundContent>
                                             </Autocomplete>
                                         </div>
-                                       @*  <div class="col-1">
-                                            <Button Color="Color.Danger" Clicked="RemoveSelectedItems">
-                                                <i class="fa fa-trash"></i>
-                                            </Button>
-                                        </div> *@
                                 </div>
                                   
                                     
@@ -686,6 +679,11 @@
                         </Collapse>
 </Accordion>
 </div>
+            <div class="col-1"> 
+                    <Button class="btn btn-danger" Clicked="@(()=>RemoveCollapseItem(@module.Index))">
+                        <i class="fa fa-trash"></i>
+                    </Button>
+                </div>
 </div>
 }
     <Divider></Divider>
@@ -700,7 +698,7 @@
             <TextEdit Placeholder="@L["GroupBuyCondition"]" @bind-Text="EditGroupBuyDto.GroupBuyCondition" MaxLength="60"  />
         </div>
         <div class=" col-12">
-            <Blazored.TextEditor.BlazoredTextEditor @ref="@quillHtml">
+            <Blazored.TextEditor.BlazoredTextEditor @ref="@GroupBuyHtml">
                 <ToolbarContent>
                     <select class="ql-header">
                         <option selected=""></option>
@@ -755,7 +753,7 @@
              <TextEdit Placeholder="@L["CustomerInformation"]" @bind-Text="@EditGroupBuyDto.CustomerInformation" MaxLength="60"  />
          </div>
          <div class=" col-12">
-             <Blazored.TextEditor.BlazoredTextEditor @ref="@quillHtml">
+             <Blazored.TextEditor.BlazoredTextEditor @ref="@CustomerInformationHtml">
                  <ToolbarContent>
                      <select class="ql-header">
                          <option selected=""></option>
@@ -809,7 +807,7 @@
              <TextEdit Placeholder="@L["ExchangePolicy"]" @bind-Text="@EditGroupBuyDto.ExchangePolicy" MaxLength="60" ShowCount />
          </div>
          <div class=" col-12">
-             <Blazored.TextEditor.BlazoredTextEditor  @ref="@quillHtml">
+             <Blazored.TextEditor.BlazoredTextEditor @ref="@ExchangePolicyHtml">
                  <ToolbarContent>
                      <select class="ql-header">
                          <option selected=""></option>
@@ -863,7 +861,7 @@
 
              </div>
              <div class=" col-12">
-                 <Blazored.TextEditor.BlazoredTextEditor @ref="@quillHtml">
+                 <Blazored.TextEditor.BlazoredTextEditor @ref="@NotifyEmailHtml">
                      <ToolbarContent>
                          <select class="ql-header">
                              <option selected=""></option>
@@ -910,7 +908,7 @@
 
         <div style="text-align: center; margin-top:5px ;">
             <Button Danger Type="@ButtonType.Button" Style="margin-right:5px" Clicked="CloseGroupBuyEdit">@L["Cancel"]</Button>
-            <Button Type="@ButtonType.Button" class="btn btn-primary me-1" Clicked="CreateEntityAsync">@L["Save"]</Button>
+            <Button Type="@ButtonType.Button" class="btn btn-primary me-1" Clicked="UpdateEntityAsync">@L["Save"]</Button>
             <Button Type="@ButtonType.Button" Style="margin-right:5px; background-color:skyblue">@L["Preview"]</Button>
 
         </div>
@@ -935,16 +933,41 @@
     int selectedIndex = 0;
     private void HandleClick(int i)
     {
+        var checkValiate = CollapseItem.Where(x => x.Index == i).FirstOrDefault();
+        if(checkValiate is null)
+        {
+            return;
+        }
+        if(checkValiate.SelectedItemId == null)
+        {
+            return;
+        }
+        if(checkValiate.SelectedItemDescription.IsNullOrWhiteSpace())
+        {
+            return;
+        }
+        if(checkValiate.SelectedImage == null || checkValiate.SelectedImage.ImageUrl.IsNullOrWhiteSpace())
+        {
+            return;
+        }
+
         int selectedIndex = i;
         if (CollapseItem.Where(x => x.Index == i).FirstOrDefault().ItemDetails.Count <= 3)
         {
-            ProductPictureItem item = new ProductPictureItem();
-            // item.ImageDetail = productPicture;
-            item.ItemDescription = productDescription;
+            var cItem = CollapseItem.Where(x => x.Index == i).FirstOrDefault();
+
+            ProductPictureItem item = new ProductPictureItem
+            {
+                ItemId = cItem.SelectedItemId,
+                ItemDescription = cItem.SelectedItemDescription,
+                Image = cItem.SelectedImage,
+                Item = cItem.SelectedItem
+            };
+
+            cItem.SelectedItemDescription = null;
+            cItem.SelectedImage = new();
 
             CollapseItem.Where(x => x.Index == i).FirstOrDefault().ItemDetails.Add(item);
-            productDescription="";
-            // productPicture = new UploadFileItem();
         }
     }
 

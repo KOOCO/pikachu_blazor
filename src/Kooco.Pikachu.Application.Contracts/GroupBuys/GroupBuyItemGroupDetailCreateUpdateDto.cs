@@ -5,7 +5,7 @@ namespace Kooco.Pikachu.GroupBuys
 {
     public class GroupBuyItemGroupDetailCreateUpdateDto
     {
-        public Guid Id { get; set; }
+        public Guid? Id { get; set; }
         public int SortOrder { get; set; }
         public string? ItemDescription { get; set; }
 

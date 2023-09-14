@@ -44,11 +44,11 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         int _value = 1;
         string logoBlobName;
         string bannerBlobName;
-        private BlazoredTextEditor NotifyEmailHtml { get; set; } 
-        private BlazoredTextEditor GroupBuyHtml { get; set; } 
-        private BlazoredTextEditor CustomerInformationHtml { get; set; } 
+        private BlazoredTextEditor NotifyEmailHtml { get; set; }
+        private BlazoredTextEditor GroupBuyHtml { get; set; }
+        private BlazoredTextEditor CustomerInformationHtml { get; set; }
         private BlazoredTextEditor ExchangePolicyHtml { get; set; }
-        
+
         public string _ProductPicture = "Product Picture";
         private readonly IImageBlobService _imageBlobService;
         private FilePicker LogoPickerCustom { get; set; }
@@ -62,7 +62,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         private readonly IItemAppService _itemAppService;
         private readonly IUiMessageService _uiMessageService;
         private readonly ImageContainerManager _imageContainerManager;
-        private readonly List<string> ValidFileExtensions = new() { ".jpg", ".png", ".svg",".jpeg",".webp" };
+        private readonly List<string> ValidFileExtensions = new() { ".jpg", ".png", ".svg", ".jpeg", ".webp" };
         public CreateGroupBuy(IImageBlobService imageBlobService, HttpClient httpClient, IGroupBuyAppService groupBuyAppService,
             IImageAppService imageAppService, IUiMessageService uiMessageService, ImageContainerManager imageContainerManager, IItemAppService itemAppService)
         {
@@ -104,7 +104,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     return;
                 }
                 string newFileName = Path.ChangeExtension(
-                      Path.GetRandomFileName(),
+                      Guid.NewGuid().ToString().Replace("-", ""),
                       Path.GetExtension(e.Files[0].Name));
                 var stream = e.Files[0].OpenReadStream();
                 try
@@ -164,7 +164,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                         return;
                     }
                     string newFileName = Path.ChangeExtension(
-                          Path.GetRandomFileName(),
+                          Guid.NewGuid().ToString().Replace("-", ""),
                           Path.GetExtension(file.Name));
                     var stream = file.OpenReadStream();
                     try
@@ -182,7 +182,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                             Name = file.Name,
                             BlobImageName = newFileName,
                             ImageUrl = url,
-                            ImageType = ImageType.Item,
+                            ImageType = ImageType.GroupBuyCarouselImage,
                             SortNo = sortNo + 1
                         });
 
@@ -215,9 +215,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             }
             if (e.Files.Count() == 0)
             {
-
                 return;
-
             }
             var count = 0;
             try
@@ -230,7 +228,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     return;
                 }
                 string newFileName = Path.ChangeExtension(
-                      Path.GetRandomFileName(),
+                      Guid.NewGuid().ToString().Replace("-", ""),
                       Path.GetExtension(e.Files[0].Name));
                 var stream = e.Files[0].OpenReadStream();
                 try
@@ -321,16 +319,10 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 var confirmed = await _uiMessageService.Confirm(L[PikachuDomainErrorCodes.AreYouSureToDeleteImage]);
                 if (confirmed)
                 {
-                    confirmed = await _imageContainerManager.DeleteAsync(blobImageName);
-                    if (confirmed)
-                    {
-                        CarouselImages = CarouselImages.Where(x => x.BlobImageName != blobImageName).ToList();
-                        StateHasChanged();
-                    }
-                    else
-                    {
-                        throw new BusinessException(L[PikachuDomainErrorCodes.SomethingWentWrongWhileDeletingImage]);
-                    }
+                    await _imageContainerManager.DeleteAsync(blobImageName);
+
+                    CarouselImages = CarouselImages.Where(x => x.BlobImageName != blobImageName).ToList();
+                    StateHasChanged();
                 }
             }
             catch (Exception ex)
@@ -362,15 +354,14 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             }
         }
 
-        void addProductItem(string title)
+        void AddProductItem(string title)
         {
-
-            CollapseItem item = new CollapseItem();
-            item.Title = title;
-            item.Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1;
+            CollapseItem item = new()
+            {
+                Title = title,
+                Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1
+            };
             CollapseItem.Add(item);
-
-
         }
 
         private void HandleItemTagInputKeyUp(KeyboardEventArgs e)
@@ -411,7 +402,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         {
             try
             {
-                if(CreateGroupBuyDto.GroupBuyName.IsNullOrWhiteSpace())
+                if (CreateGroupBuyDto.GroupBuyName.IsNullOrWhiteSpace())
                 {
                     await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyNameCannotBeNull]);
                     return;
@@ -462,6 +453,10 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 }
 
                 NavigationManager.NavigateTo("GroupBuyManagement/GroupBuyList");
+            }
+            catch (BusinessException ex)
+            {
+                await _uiMessageService.Error(L[ex.Code]);
             }
             catch (Exception ex)
             {

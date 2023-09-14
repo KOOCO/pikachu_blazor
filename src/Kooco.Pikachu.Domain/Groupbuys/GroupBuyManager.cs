@@ -1,5 +1,6 @@
 ﻿using JetBrains.Annotations;
 using Kooco.Pikachu.GroupBuys;
+using Kooco.Pikachu.Items;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,6 +75,24 @@ namespace Kooco.Pikachu.Groupbuys
                 issueInvoice, autoIssueTriplicateInvoice, invoiceNote, protectPrivacyData, inviteCode, profitShare, metaPixelNo, fBID, iGID, lineID, gAID, gTM,
                 warningMessage, orderContactInfo, exchangePolicy, notifyMessage, excludeShippingMethod, isDefaultPaymentGateway, paymentMethod, groupbuyCondition, customerInformation,customerInformationDescription,groupBuyConditionDescription,exchangePolicyDescription);
 
+        }
+
+
+        public void RemoveItemGroups(
+            [NotNull] GroupBuy @groupBuy,
+            List<Guid?> itemGroupsIds
+            )
+        {
+            if (itemGroupsIds != null && itemGroupsIds.Any())
+            {
+                foreach (var itemGroup in @groupBuy.ItemGroups)
+                {
+                    if (!itemGroupsIds.Contains(itemGroup.Id))
+                    {
+                        @groupBuy.ItemGroups.Remove(itemGroup);
+                    }
+                }
+            }
         }
 
         public async Task<GroupBuy> UpdateAsync(Guid Id, int groupBuyNo,

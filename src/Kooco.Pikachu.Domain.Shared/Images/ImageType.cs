@@ -5,6 +5,7 @@
         Item,
         ItemDetail,
         SetItem,
-        GroupBuyItemGroup
+        GroupBuyItemGroup,
+        GroupBuyCarouselImage
     }
 }
