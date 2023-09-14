@@ -21,7 +21,7 @@ namespace Kooco.Pikachu.GroupBuys
         private readonly IGroupBuyRepositroy _groupBuyRepository;
         private readonly GroupBuyManager _groupBuyManager;
         private readonly IImageAppService _imageAppService;
-
+        
         public GroupBuyAppService(IGroupBuyRepositroy groupBuyRepository, GroupBuyManager groupBuyManager, IImageAppService imageAppService)
         {
             _groupBuyManager = groupBuyManager;
@@ -103,7 +103,7 @@ namespace Kooco.Pikachu.GroupBuys
         public async Task<GroupBuyDto> GetWithDetailsAsync(Guid id)
         {
             var item = await _groupBuyRepository.GetWithDetailsAsync(id);
-            if(item is null)
+            if (item is null)
             {
                 throw new BusinessException(PikachuDomainErrorCodes.EntityWithGivenIdDoesnotExist);
             }
@@ -270,6 +270,11 @@ namespace Kooco.Pikachu.GroupBuys
 
 
             return ObjectMapper.Map<GroupBuy, GroupBuyDto>(groupBuy);
+        }
+
+        public async Task DeleteManyGroupBuyItemsAsync(List<Guid> groupBuyIds)
+        {
+            await _groupBuyRepository.DeleteManyAsync(groupBuyIds);
         }
     }
 }
