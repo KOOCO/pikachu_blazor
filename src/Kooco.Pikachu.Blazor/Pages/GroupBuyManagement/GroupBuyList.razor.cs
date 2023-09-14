@@ -1,6 +1,7 @@
 ﻿using Blazorise.DataGrid;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Items.Dtos;
+using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,8 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         public string TestProperty { get; set; } = string.Empty;
         public string TenantNameList { get; set; } = string.Empty;
         public List<GroupBuyDto> GroupBuyListItem { get; set; }
+        public bool IsAllSelected { get; private set; }
+
         private readonly IGroupBuyAppService _groupBuyAppService;
         int _pageIndex = 1;
         int _pageSize = 10;
@@ -35,6 +38,15 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         protected override async Task OnInitializedAsync()
         {
             await UpdateGroupBuyList();
+        }
+        private void HandleSelectAllChange(ChangeEventArgs e)
+        {
+            IsAllSelected = (bool)e.Value;
+            //ItemList.ForEach(item =>
+            //{
+            //    item.IsSelected = IsAllSelected;
+            //});
+            //StateHasChanged();
         }
 
         private async Task UpdateGroupBuyList()

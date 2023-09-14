@@ -906,10 +906,11 @@
      </div>
      <div class="row mb-3"></div>
 
-        <div style="text-align: center; margin-top:5px ;">
-            <Button Danger Type="@ButtonType.Button" Style="margin-right:5px" Clicked="CloseGroupBuyEdit">@L["Cancel"]</Button>
-            <Button Type="@ButtonType.Button" class="btn btn-primary me-1" Clicked="UpdateEntityAsync">@L["Save"]</Button>
-            <Button Type="@ButtonType.Button" Style="margin-right:5px; background-color:skyblue">@L["Preview"]</Button>
+        <div class="d-flex flex-row-reverse">
+            <Button Type="@ButtonType.Button" class="btn btn-primary me-1" Clicked="UpdateEntityAsync"><i class="fa fa-check"></i> @L["Save"]</Button>
+
+            <Button Danger Type="@ButtonType.Button" class="btn btn-danger me-1" Clicked="CloseGroupBuyEdit">@L["Cancel"]</Button>
+             @*  <Button Type="@ButtonType.Button" class="btn btn-secondary me-1">@L["Preview"]</Button> *@
 
         </div>
     </CardBody>

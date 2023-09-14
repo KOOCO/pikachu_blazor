@@ -14,14 +14,23 @@
 @inject IStringLocalizer<PikachuResource> L
 @inject NavigationManager NavigationManager
 
-<div class="col-12 row">
+<div class="col-12 row mb-2">
     <div class="col-6">
         <h3>Group Buy List</h3>
     </div>
-    <div class="col-6" style="display: flex;flex-direction: row-reverse;">
-       
-      
-        <Button Type="@ButtonType.Button" Style="margin-right:5px" class="btn btn-primary me-1" Clicked="CreateNewItem"  >@L["NewGroupBuy"]</Button>
+    <div class="col-6 d-flex flex-row-reverse">
+        <Button Danger Type="@ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="DeleteSelectedAsync">
+            @L["DeleteSelected"]
+        </Button>
+      @*   <Button Type="@ButtonType.Button" Class="btn btn-sm btn-secondary me-1">@L["CopyItem"]</Button> *@
+        <Button Type="@ButtonType.Button" Class="btn btn-sm btn-primary me-1" Clicked="CreateNewItem">
+            <i class="fa fa-plus"></i>
+            @L["NewItem"]
+        </Button>
+        <div class="me-2 p-2">
+            <input type="checkbox" class="me-1" style="height: 15px; width: 15px;" checked="@IsAllSelected" @onchange="HandleSelectAllChange"></input>
+            <Label Class="form-label">@L["SelectAll"]</Label>
+        </div>
     </div>
 </div>
 <div>
@@ -42,7 +51,7 @@
                                 Field="@nameof(GroupBuyDto.GroupBuyName)"
                                 Caption="@L["GroupBuyName"]">
                 </DataGridColumn>
-     <DataGridColumn Width="150px"
+@*      <DataGridColumn Width="150px"
                                 TItem="GroupBuyDto"
                                 Field="@nameof(GroupBuyDto.Id)"
                                 Sortable="false"
@@ -53,16 +62,18 @@
                                 @L["Actions"]
                             </DropdownToggle>
                             <DropdownMenu>
-                              @* 
+                              
                                     <DropdownItem Clicked="() => startEdit(context.Id)">
                                         @L["Edit"]
-                                    </DropdownItem> *@
+                                    </DropdownItem> 
                               
                              
                             </DropdownMenu>
                         </Dropdown>
                     </DisplayTemplate>
-                </DataGridColumn>
+                </DataGridColumn> *@
+          
+            
             </DataGridColumns>
         </DataGrid>
 </div>
@@ -74,8 +85,14 @@
     {
         NavigationManager.NavigateTo("/GroupBuyManagement/GroupBuyList/New");
     }
-     
     
+    
+
+    public void DeleteSelectedAsync()
+    {
+        
+    }
+
      public void OnEditItem(DataGridRowMouseEventArgs<GroupBuyDto> e)
         {
             var id = e.Item.Id;
