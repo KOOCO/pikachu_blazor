@@ -1,9 +1,7 @@
 ﻿using Kooco.Pikachu.Groupbuys;
-using Microsoft.AspNetCore.Authorization;
+using Kooco.Pikachu.Items.Dtos;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -15,6 +13,7 @@ namespace Kooco.Pikachu.GroupBuys
     {
         private readonly IGroupBuyRepositroy _groupBuyRepository;
         private readonly GroupBuyManager _groupBuyManager;
+     
         public GroupBuyAppService(IGroupBuyRepositroy groupBuyRepository, GroupBuyManager groupBuyManager) { 
         
         _groupBuyManager = groupBuyManager;
@@ -74,6 +73,10 @@ namespace Kooco.Pikachu.GroupBuys
                                                        input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy, input.NotifyMessage,
                                                        input.ExcludeShippingMethod, input.IsDefaultPaymentGateWay, input.PaymentMethod, input.GroupBuyCondition, input.CustomerInformation);
             return ObjectMapper.Map<GroupBuy, GroupBuyDto>(result);
+        }
+        public async Task<List<KeyValueDto>> GetGroupBuysAsync()
+        {
+            return ObjectMapper.Map<List<GroupBuy>, List<KeyValueDto>>(await _groupBuyRepository.GetListAsync());
         }
     }
 }

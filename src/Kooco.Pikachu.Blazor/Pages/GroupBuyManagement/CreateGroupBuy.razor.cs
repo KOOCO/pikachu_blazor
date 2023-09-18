@@ -69,6 +69,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             _imageContainerManager = imageContainerManager;
             CarouselImages = new List<CreateImageDto>();
         }
+
         async Task OnLogoUploadAsync(FileChangedEventArgs e)
         {
             if (e.Files.Count() > 1)

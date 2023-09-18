@@ -6,5 +6,7 @@ namespace Kooco.Pikachu.EnumValues
     {
         public EnumType EnumType { get; set; }
         public string Text { get; set; }
+
+      
     }
 }

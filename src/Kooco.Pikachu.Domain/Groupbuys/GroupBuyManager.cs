@@ -18,8 +18,6 @@ namespace Kooco.Pikachu.Groupbuys
         public GroupBuyManager(IGroupBuyRepositroy groupBuyRepositroy)
         {
             _groupBuyRepositroy = groupBuyRepositroy;
-
-
         }
 
         public async Task<GroupBuy> CreateAsync(int groupBuyNo,
