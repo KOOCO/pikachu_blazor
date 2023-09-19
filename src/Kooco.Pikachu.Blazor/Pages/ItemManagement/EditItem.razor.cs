@@ -27,7 +27,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         private const int MaxAllowedFilesPerUpload = 10;
         private const int TotalMaxAllowedFiles = 50;
         private const int MaxAllowedFileSize = 1024 * 1024 * 10;
-        private readonly List<string> ValidFileExtensions = new() { ".jpg", ".png", ".svg" };
+        private readonly List<string> ValidFileExtensions = new() { ".jpg", ".png", ".svg", ".jpeg", ".webp" };
 
         private Guid EditingId { get; set; }
         private ItemDto ExistingItem { get; set; }
@@ -88,7 +88,10 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 UpdateItemDto.Images = UpdateItemDto.Images.OrderBy(x => x.SortNo).ToList();
                 ItemDetailsList = mapper.Map<List<CreateItemDetailsDto>>(ExistingItem.ItemDetails);
                 ItemTags = ExistingItem.ItemTags.Split(',').ToList();
-                await QuillHtml.LoadHTMLContent(ExistingItem.ItemDescription);
+                if (!ExistingItem.ItemDescription.IsNullOrWhiteSpace())
+                {
+                    await QuillHtml.LoadHTMLContent(ExistingItem.ItemDescription);
+                }
 
                 if (!ExistingItem.Attribute1Name.IsNullOrWhiteSpace())
                 {
@@ -421,7 +424,10 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             var allCombinations = new List<List<string>>();
             for (int i = 0; i < attributeCount; i++)
             {
-                allCombinations.Add(customFields[i].ItemTags);
+                if (customFields[i].ItemTags.Any()) // Check if ItemTags is not empty
+                {
+                    allCombinations.Add(customFields[i].ItemTags);
+                }
             }
             var combinations = GenerateCombinations(allCombinations);
 

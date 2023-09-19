@@ -52,6 +52,9 @@ namespace Kooco.Pikachu.Groupbuys
             int skipCount = 0,
             CancellationToken cancellationToken = default);
 
+
+
+
         Task<long> GetGroupBuyCountAsync(
             string? filterText = null,
             int? groupBuyNo = null,
@@ -88,6 +91,10 @@ namespace Kooco.Pikachu.Groupbuys
             string? orderContactInfo = null,
             string? exchangePolicy = null,
             string? notifyMessage = null,
+
+
             CancellationToken cancellationToken = default);
+
+        Task<GroupBuy> GetWithDetailsAsync(Guid id);
     }
 }

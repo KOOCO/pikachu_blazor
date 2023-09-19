@@ -71,7 +71,7 @@
                                         Multiple
                                         Changed="OnFileUploadAsync"
                                         ShowMode="FilePickerShowMode.List"
-                                        Accept=".jpg, .png, .svg">
+                                        Accept=".jpg, .png, .svg,.jpeg,.webp">
                                 <FileTemplate>
                                     <Div Flex="Flex.JustifyContent.Between">
                                         <Div>
@@ -420,7 +420,7 @@
                         <i class="fa fa-check"></i>
                         @L["Save"]
                     </Button>
-                    <Button Type="@ButtonType.Button" class="btn btn-secondary me-1">@L["Preview"]</Button>
+                    @* <Button Type="@ButtonType.Button" class="btn btn-secondary me-1">@L["Preview"]</Button> *@
                 </div>
             </div>
         </CardBody>
@@ -559,4 +559,5 @@
 </Modal>
 
 @code {
+   
 }

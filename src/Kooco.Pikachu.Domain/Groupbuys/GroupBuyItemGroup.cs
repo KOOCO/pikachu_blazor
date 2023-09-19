@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Volo.Abp.MultiTenancy;
-using Volo.Abp.Domain.Entities.Auditing;
-using Kooco.Pikachu.Items;
+using Volo.Abp.Domain.Entities;
+using Kooco.Pikachu.Groupbuys;
+using System.Collections.Generic;
 
 namespace Kooco.Pikachu.GroupBuys
 { 
-    public class GroupBuyItemGroup : FullAuditedAggregateRoot<Guid>, IMultiTenant
+    public class GroupBuyItemGroup : Entity<Guid>, IMultiTenant
     {
         public Guid? TenantId { get; set; }
 
@@ -23,60 +20,46 @@ namespace Kooco.Pikachu.GroupBuys
         /// </summary>
         public int SortOrder { get; set; }
 
-        /// <summary>
-        /// 商品分頁敘述1 TabItemDescription1
-        /// </summary>
-        public string ItemDescription1 { get; set; }
+        public string? Title { get; set; }
 
-        /// <summary>
-        /// 商品分頁敘述2 TabItemDescription2
-        /// </summary>
-        public string ItemDescription2 { get; set; }
+        public ICollection<GroupBuyItemGroupDetails> ItemGroupDetails { get; set; }
 
-        /// <summary>
-        /// 商品分頁敘述3 TabItemDescription3
-        /// </summary>
-        public string ItemDescription3 { get; set; }
+        public GroupBuyItemGroup()
+        {
+            
+        }
 
-        /// <summary>
-        /// 商品1 Item1
-        /// </summary>
-        public Item Item1 { get; set; }
+        public GroupBuyItemGroup(
+            Guid id,
+            Guid groupBuyId,
+            int sortOrder,
+            string? title
+            ) : base(id)
+        {
+            GroupBuyId = groupBuyId;
+            SortOrder = sortOrder;
+            Title = title;
+            ItemGroupDetails = new List<GroupBuyItemGroupDetails>();
+        }
 
-        /// <summary>
-        /// 商品1排序 Item1Order
-        /// </summary>
-        public int Item1Order { get; set; }
-
-        /// <summary>
-        /// 商品2 Item2
-        /// </summary>
-        public Item Item2 { get; set; }
-
-        /// <summary>
-        /// 商品2排序 Item2Order
-        /// </summary>
-        public int Item2Order { get; set; }
-
-        /// <summary>
-        /// 商品3 Item3
-        /// </summary>
-        public Item Item3 { get; set; }
-
-        /// <summary>
-        /// 商品3排序 Item3Order
-        /// </summary>
-        public int Item3Order { get; set; }
-
-        /// <summary>
-        /// 商品4 Item4
-        /// </summary>
-        public Item Item4 { get; set; }
-
-        /// <summary>
-        /// 商品4排序 Item4Order
-        /// </summary>
-        public int Item4Order { get; set; }
-        
+        public void GroupBuyItemGroupDetails(
+            Guid id,
+            Guid groupBuyItemGroupId,
+            int sortOrder,
+            string? itemDescription,
+            Guid? itemId,
+            Guid? imageId
+            
+            )
+        {
+            ItemGroupDetails.Add(new GroupBuyItemGroupDetails(
+                id,
+                groupBuyItemGroupId,
+                sortOrder,
+                itemDescription,
+                itemId,
+                imageId
+                ));
+        }
     }
 }

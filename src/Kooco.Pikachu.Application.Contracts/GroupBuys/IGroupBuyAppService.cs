@@ -12,10 +12,12 @@ namespace Kooco.Pikachu.GroupBuys
     public interface IGroupBuyAppService:IApplicationService
     {
         Task<PagedResultDto<GroupBuyDto>> GetListAsync(GetGroupBuyInput input);
-        Task<GroupBuyDto> GetAsync(Guid id);
+        
+        Task DeleteManyGroupBuyItemsAsync(List<Guid> groupBuyIds);
+        Task<GroupBuyDto> GetAsync(Guid id, bool includeDetails = false);
         Task<GroupBuyDto> CreateAsync(GroupBuyCreateDto input);
         Task DeleteAsync(Guid id);
         Task<GroupBuyDto> UpdateAsync(Guid id,GroupBuyUpdateDto input);
-        Task<List<KeyValueDto>> GetGroupBuysAsync();
+        Task<GroupBuyDto> GetWithDetailsAsync(Guid id);
     }
 }

@@ -169,41 +169,44 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
 
         var itemDetailsIds = input.ItemDetails.Select(x => x.Id).ToList();
         _itemManager.RemoveItemDetailsAsync(item, itemDetailsIds);
-        
-        foreach(var itemDetail in input.ItemDetails)
-        {
-            if (itemDetail.Id.HasValue)
-            {
-                var existing = item.ItemDetails.First(x => x.Id == itemDetail.Id);
-                existing.ItemName = itemDetail.ItemName;
-                existing.SKU = itemDetail.Sku;
-                existing.LimitQuantity = itemDetail.LimitQuantity;
-                existing.SellingPrice = itemDetail.SellingPrice;
-                existing.SaleableQuantity = itemDetail.SaleableQuantity;
-                existing.PreOrderableQuantity = itemDetail.PreOrderableQuantity;
-                existing.SaleablePreOrderQuantity = itemDetail.SaleablePreOrderQuantity;
-                existing.InventoryAccount = itemDetail.InventoryAccount;
-                existing.Attribute1Value = itemDetail.Attribute1Value;
-                existing.Attribute2Value = itemDetail.Attribute2Value;
-                existing.Attribute3Value = itemDetail.Attribute3Value;
-            }
-            else
-            {
-                await _itemManager.AddItemDetailAsync(
-                    item,
-                    itemDetail.ItemName,
-                    itemDetail.Sku,
-                    itemDetail.LimitQuantity,
-                    itemDetail.SellingPrice,
-                    itemDetail.SaleableQuantity,
-                    itemDetail.PreOrderableQuantity,
-                    itemDetail.SaleablePreOrderQuantity,
-                    itemDetail.InventoryAccount,
 
-                    itemDetail.Attribute1Value,
-                    itemDetail.Attribute2Value,
-                    itemDetail.Attribute3Value
-                    );
+        if (input.ItemDetails.Any())
+        {
+            foreach (var itemDetail in input.ItemDetails)
+            {
+                if (itemDetail.Id.HasValue)
+                {
+                    var existing = item.ItemDetails.First(x => x.Id == itemDetail.Id);
+                    existing.ItemName = itemDetail.ItemName;
+                    existing.SKU = itemDetail.Sku;
+                    existing.LimitQuantity = itemDetail.LimitQuantity;
+                    existing.SellingPrice = itemDetail.SellingPrice;
+                    existing.SaleableQuantity = itemDetail.SaleableQuantity;
+                    existing.PreOrderableQuantity = itemDetail.PreOrderableQuantity;
+                    existing.SaleablePreOrderQuantity = itemDetail.SaleablePreOrderQuantity;
+                    existing.InventoryAccount = itemDetail.InventoryAccount;
+                    existing.Attribute1Value = itemDetail.Attribute1Value;
+                    existing.Attribute2Value = itemDetail.Attribute2Value;
+                    existing.Attribute3Value = itemDetail.Attribute3Value;
+                }
+                else
+                {
+                    await _itemManager.AddItemDetailAsync(
+                        item,
+                        itemDetail.ItemName,
+                        itemDetail.Sku,
+                        itemDetail.LimitQuantity,
+                        itemDetail.SellingPrice,
+                        itemDetail.SaleableQuantity,
+                        itemDetail.PreOrderableQuantity,
+                        itemDetail.SaleablePreOrderQuantity,
+                        itemDetail.InventoryAccount,
+
+                        itemDetail.Attribute1Value,
+                        itemDetail.Attribute2Value,
+                        itemDetail.Attribute3Value
+                        );
+                }
             }
         }
 

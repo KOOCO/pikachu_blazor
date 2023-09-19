@@ -65,6 +65,7 @@
     "NewTag": "New Tag",
     "SellingPrice": "Selling Price",
     "Pikachu:ItemNameCannotBeNull": "Item Name Can not be null",
+    "Pikachu:GroupBuyNameCannotBeNull": "Group Buy Name Can not be null",
     "Pikachu:ItemWithSameNameAlreadyExists": "Item with same Name already exists",
     "Pikachu:ItemDetailsCannotBeEmpty": "Item Details can not be empty",
     "Pikachu:ItemWithSKUAlreadyExists": "Item with same SKU already exists",
@@ -97,6 +98,7 @@
     "NewSetItem": "New Set Item",
     "NotFound": "Not Found",
     "EditSetItem": "Edit Set Item",
+    "Pikachu:EntityWithGivenIdDoesnotExist": "Entity With Given Id Does not Exist",
 
     //GroupBuy
     "NewGroupBuy": "New GroupBuy",
@@ -117,6 +119,9 @@
     "GateWay": "GateWay",
     "PaymentMethod": "Payment Method",
     "DefaultPaymentGateWay": "DefaultPaymentGateWay",
+    "ProductImage": "Product Image",
+    "SelectItem": "Select Item",
+    "ProductDescription": "Product Description",
 
     //SetItem
     "SetItem": "Set Item",

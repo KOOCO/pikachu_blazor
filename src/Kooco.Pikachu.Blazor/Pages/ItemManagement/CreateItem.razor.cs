@@ -24,7 +24,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         private const int MaxAllowedFilesPerUpload = 10;
         private const int TotalMaxAllowedFiles = 50;
         private const int MaxAllowedFileSize = 1024 * 1024 * 10;
-        private readonly List<string> ValidFileExtensions = new() { ".jpg", ".png", ".svg"};
+        private readonly List<string> ValidFileExtensions = new() { ".jpg", ".png", ".svg", ".jpeg", ".webp" };
         private List<string> ItemTags { get; set; } = new List<string>(); //used for store item tags 
         private List<EnumValueDto> ShippingMethods { get; set; } // for bind all shippingMethods
         private List<EnumValueDto> TaxTypes { get; set; } // for bind all taxTypes
@@ -378,7 +378,10 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             var allCombinations = new List<List<string>>();
             for (int i = 0; i < attributeCount; i++)
             {
-                allCombinations.Add(customFields[i].ItemTags);
+                if (customFields[i].ItemTags.Any()) // Check if ItemTags is not empty
+                {
+                    allCombinations.Add(customFields[i].ItemTags);
+                }
             }
             var combinations = GenerateCombinations(allCombinations);
 
@@ -612,7 +615,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 {
                     var temp = attributesDictionary[item.SelectedSampleValue];
 
-                    if (item.CharactersLength != null)
+                    if (temp != null && item.CharactersLength != null)
                     {
                         if (item.CharactersLength.Value > temp.Length)
                         {

@@ -13,7 +13,6 @@ namespace Kooco.Pikachu.GroupBuys
     {
         public Guid? TenantId { get; set; }
 
-
         /// <summary>
         /// 團購編號  GroupBuysNo
         /// </summary>
@@ -64,7 +63,7 @@ namespace Kooco.Pikachu.GroupBuys
         /// <summary>
         /// 團購結束時間 EndTime
         /// </summary>
-        public DateTime EndTime { get; set; }
+        public DateTime? EndTime { get; set; }
 
         /// <summary>
         /// 免運費 FreeShipping
@@ -79,12 +78,12 @@ namespace Kooco.Pikachu.GroupBuys
         /// <summary>
         /// 允許寄送到外島 AllowShipToOuterTaiwan
         /// </summary>
-        public bool allowShipToOuterTaiwan { get; set; }
+        public bool AllowShipToOuterTaiwan { get; set; }
 
         /// <summary>
         /// 允許寄送到海外 AllowShipOversea
         /// </summary>
-        public bool allowShipOversea { get; set; }
+        public bool AllowShipOversea { get; set; }
 
         /// <summary>
         /// 預計開始配送日期 ExpectShippingDateFrom
@@ -115,7 +114,7 @@ namespace Kooco.Pikachu.GroupBuys
         /// <summary>
         /// 開立發票 IssueInvoice
         /// </summary>
-        public bool issueInvoice { get; set; }
+        public bool IssueInvoice { get; set; }
 
         /// <summary>
         /// 自動開立三聯單 AutoIssueTriplicateInvoice
@@ -160,7 +159,7 @@ namespace Kooco.Pikachu.GroupBuys
         /// <summary>
         /// Line ID
         /// </summary>
-        public string? LineID{ get; set; }
+        public string? LineID { get; set; }
 
         /// <summary>
         /// Google Analytics ID
@@ -186,6 +185,7 @@ namespace Kooco.Pikachu.GroupBuys
         /// 退換貨政策 ExchangePolicy
         /// </summary>
         public string? ExchangePolicy { get; set; }
+        public string? ExchangePolicyDescription { get; set; }
 
         /// <summary>
         /// 通知信件文案 NotifyMessage
@@ -195,16 +195,22 @@ namespace Kooco.Pikachu.GroupBuys
         public bool IsDefaultPaymentGateWay { get; set; }
         public string? PaymentMethod { get; set; }
         public string? GroupBuyCondition { get; set; }
+        public string? GroupBuyConditionDescription { get; set; }
         public string? CustomerInformation { get; set; }
+        public string? CustomerInformationDescription { get; set; }
         /// <summary>
         /// 預設使用的發貨倉庫 Default Warehouse used for shipping
         /// </summary>
         //public Warehouse DefaultWarehouse { get; set; }
-        public GroupBuy() { 
-        
+
+        public ICollection<GroupBuyItemGroup> ItemGroups { get; set; }
+
+        public GroupBuy()
+        {
+
         }
 
-        public GroupBuy(Guid id,int groupNo,string status,
+        public GroupBuy(Guid id, int groupNo, string status,
             string groupBuyName,
             string entryURL,
             string entryURL2,
@@ -213,7 +219,7 @@ namespace Kooco.Pikachu.GroupBuys
             string logoURL,
             string bannerURL,
             DateTime? startTime,
-            DateTime endTime,
+            DateTime? endTime,
             bool freeShipping,
             bool allowShipToOuterTaiwan,
             bool allowShipOversea,
@@ -236,54 +242,87 @@ namespace Kooco.Pikachu.GroupBuys
             string? warningMessage,
             string? orderContactInfo,
             string? exchangePolicy,
-            string? notifyMessage,string? excludeShippingMethod,bool isDefaultPaymentGateway,string? paymentMethod,string? groupbuyCondition,string? customerInformation)
-        { 
+            string? notifyMessage,
+            string? excludeShippingMethod,
+            bool isDefaultPaymentGateway,
+            string? paymentMethod,
+            string? groupbuyCondition,
+            string? customerInformation,
+          string? customerInformationDescription,
+          string? groupBuyConditionDescription,
+          string? exchangePolicyDescription
+
+
+
+            )
+        {
             Id = id;
             GroupBuyNo = groupNo;
-        Status= status;
-            GroupBuyName= groupBuyName;
-            EntryURL= entryURL;
-            EntryURL2= entryURL2;
-                SubjectLine= subjectLine;
-            ShortName= shortName;
-            LogoURL= logoURL;
+            Status = status;
+            GroupBuyName = groupBuyName;
+            EntryURL = entryURL;
+            EntryURL2 = entryURL2;
+            SubjectLine = subjectLine;
+            ShortName = shortName;
+            LogoURL = logoURL;
             BannerURL = bannerURL;
-            StartTime= startTime;
+            StartTime = startTime;
             EndTime = endTime;
-            FreeShipping= freeShipping;
-            this.allowShipOversea= allowShipOversea;
-            this.allowShipToOuterTaiwan= allowShipToOuterTaiwan;
-            ExpectShippingDateFrom= expectShippingDateFrom;
-            ExpectShippingDateTo= expectShippingDateTo;
-            MoneyTransferValidDayBy= moneyTransferValidDayBy;
+            FreeShipping = freeShipping;
+            AllowShipOversea = allowShipOversea;
+            AllowShipToOuterTaiwan = allowShipToOuterTaiwan;
+            ExpectShippingDateFrom = expectShippingDateFrom;
+            ExpectShippingDateTo = expectShippingDateTo;
+            MoneyTransferValidDayBy = moneyTransferValidDayBy;
             MoneyTransferValidDays = moneyTransferValidDays;
-            this.issueInvoice= issueInvoice;
-            AutoIssueTriplicateInvoice= autoIssueTriplicateInvoice;
-            InvoiceNote= invoiceNote;
-            InviteCode= inviteCode;
-            ProtectPrivacyData= protectPrivacyData;
+            IssueInvoice = issueInvoice;
+            AutoIssueTriplicateInvoice = autoIssueTriplicateInvoice;
+            InvoiceNote = invoiceNote;
+            InviteCode = inviteCode;
+            ProtectPrivacyData = protectPrivacyData;
             ProfitShare = profitShare;
             MetaPixelNo = metaPixelNo;
-            FBID= fBID;
-            IGID= iGID;
-            LineID= lineID;
+            FBID = fBID;
+            IGID = iGID;
+            LineID = lineID;
             GAID = gAID;
             GTM = gTM;
-            WarningMessage= warningMessage;
-            OrderContactInfo= orderContactInfo;
+            WarningMessage = warningMessage;
+            OrderContactInfo = orderContactInfo;
             ExchangePolicy = exchangePolicy;
-            NotifyMessage= notifyMessage;
+            NotifyMessage = notifyMessage;
             ExcludeShippingMethod = excludeShippingMethod;
             IsDefaultPaymentGateWay = isDefaultPaymentGateway;
             PaymentMethod = paymentMethod;
             GroupBuyCondition = groupbuyCondition;
             CustomerInformation = customerInformation;
+            CustomerInformationDescription = customerInformationDescription;
+
+            GroupBuyConditionDescription = groupBuyConditionDescription;
+            ExchangePolicyDescription = exchangePolicyDescription;
 
 
-
-
-
+            ItemGroups = new List<GroupBuyItemGroup>();
         }
+
+        public GroupBuyItemGroup AddItemGroup(
+            Guid id,
+            Guid groupBuyId,
+            int sortOrder,
+            string? title
+
+            )
+        {
+            var groupBuyItemGroup = new GroupBuyItemGroup(
+                id,
+                groupBuyId,
+                sortOrder,
+                title
+                );
+            ItemGroups.Add(groupBuyItemGroup);
+            return groupBuyItemGroup;
+        }
+
 
     }
 }

@@ -5,6 +5,7 @@ public static class PikachuDomainErrorCodes
     /* You can add your business exception error codes here, as constants */
 
     public const string ItemNameCannotBeNull = "Pikachu:ItemNameCannotBeNull";
+    public const string GroupBuyNameCannotBeNull = "Pikachu:GroupBuyNameCannotBeNull";
     public const string ItemWithSameNameAlreadyExists = "Pikachu:ItemWithSameNameAlreadyExists";
     public const string ItemDetailsCannotBeEmpty = "Pikachu:ItemDetailsCannotBeEmpty";
     public const string ItemWithSKUAlreadyExists = "Pikachu:ItemWithSKUAlreadyExists";
@@ -17,4 +18,5 @@ public static class PikachuDomainErrorCodes
     public const string FilesAreGreaterThanMaxAllowedFileSize = "Pikachu:FilesAreGreaterThanMaxAllowedFileSize";
     public const string AlreadyUploadMaxAllowedFiles = "Pikachu:AlreadyUploadMaxAllowedFiles";
     public const string FilesExceedMaxAllowedPerUpload = "Pikachu:FilesExceedMaxAllowedPerUpload";
+    public const string EntityWithGivenIdDoesnotExist = "Pikachu:EntityWithGivenIdDoesnotExist";
 }

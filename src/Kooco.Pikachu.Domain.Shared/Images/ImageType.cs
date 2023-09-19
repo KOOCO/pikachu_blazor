@@ -4,6 +4,8 @@
     {
         Item,
         ItemDetail,
-        SetItem
+        SetItem,
+        GroupBuyItemGroup,
+        GroupBuyCarouselImage
     }
 }

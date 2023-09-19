@@ -2,12 +2,13 @@
 
 @using Kooco.Pikachu.EnumValues;
 @using Kooco.Pikachu.GroupBuys;
+@using Kooco.Pikachu.Items.Dtos;
 @using Pikachu.Items;
 @using Pikachu.Localization;
 @using Microsoft.Extensions.Localization;
 @using Volo.Abp.AspNetCore.Components.Web
 @using System.ComponentModel
-
+@using Blazorise.Components
 
 @inject IGroupBuyAppService AppService
 @inject NavigationManager NavigationManager
@@ -55,7 +56,7 @@
                 <label>@L["SalesURL1"]</label>
             </div>
             <div class="col-7">
-                <TextEdit @bind-Text="@editGroupBuyDto.EntryURL" />
+                <TextEdit @bind-Text="@EditGroupBuyDto.EntryURL" />
             </div>
            
             
@@ -66,7 +67,7 @@
                 <label>@L["SalesURL2"]</label>
             </div>
             <div class="col-7">
-                <TextEdit @bind-Text="@editGroupBuyDto.EntryURL2" />
+                <TextEdit @bind-Text="@EditGroupBuyDto.EntryURL2" />
             </div>
             </div>
             </div>
@@ -77,11 +78,11 @@
                 <label>@L["GroupBuyName"]</label>
             </div>
             <div class="col-9">
-                <TextEdit  MaxLength="@maxtextCount" @bind-Text="@editGroupBuyDto.GroupBuyName" />
+                <TextEdit  MaxLength="@MaxtextCount" @bind-Text="@EditGroupBuyDto.GroupBuyName" />
             </div>
             <div class="col-1">
                         <span>
-                            @(string.IsNullOrWhiteSpace(editGroupBuyDto.GroupBuyName) ? 60 : (maxtextCount - editGroupBuyDto.GroupBuyName.Count()))/@maxtextCount
+                            @(string.IsNullOrWhiteSpace(EditGroupBuyDto.GroupBuyName) ? 60 : (MaxtextCount - EditGroupBuyDto.GroupBuyName.Count()))/@MaxtextCount
                         </span>
                     </div>
             
@@ -91,11 +92,11 @@
                 <label>@L["Subject"]</label>
             </div>
             <div class="col-9">
-                <TextEdit  MaxLength="@maxtextCount" @bind-Text="@editGroupBuyDto.SubjectLine" />
+                <TextEdit  MaxLength="@MaxtextCount" @bind-Text="@EditGroupBuyDto.SubjectLine" />
             </div>
              <div class="col-1">
                         <span>
-                            @(string.IsNullOrWhiteSpace(editGroupBuyDto.SubjectLine) ? 60 : (maxtextCount - editGroupBuyDto.SubjectLine.Count()))/@maxtextCount
+                            @(string.IsNullOrWhiteSpace(EditGroupBuyDto.SubjectLine) ? 60 : (MaxtextCount - EditGroupBuyDto.SubjectLine.Count()))/@MaxtextCount
                         </span>
                     </div>
             </div>
@@ -104,11 +105,11 @@
                 <label>@L["GroupBuyShortName"]</label>
             </div>
             <div class="col-9">
-                <TextEdit  MaxLength="@maxtextCount" @bind-Text="@editGroupBuyDto.ShortName" />
+                <TextEdit  MaxLength="@MaxtextCount" @bind-Text="@EditGroupBuyDto.ShortName" />
             </div>
              <div class="col-1">
                         <span>
-                            @(string.IsNullOrWhiteSpace(editGroupBuyDto.ShortName) ? 60 : (maxtextCount - editGroupBuyDto.ShortName.Count()))/@maxtextCount
+                            @(string.IsNullOrWhiteSpace(EditGroupBuyDto.ShortName) ? 60 : (MaxtextCount - EditGroupBuyDto.ShortName.Count()))/@MaxtextCount
                         </span>
                     </div>
             </div>
@@ -123,7 +124,7 @@
                                        
                                         Changed="OnLogoUploadAsync"
                                         ShowMode="FilePickerShowMode.List"
-                                        Accept=".jpg, .png, .svg">
+                                        Accept=".jpg, .png, .svg,.jpeg,.webp">
                                 <FileTemplate>
                                     <Div Flex="Flex.JustifyContent.Between">
                                         <Div>
@@ -166,7 +167,7 @@
                         </Field>
 
             </div>
-                @if(editGroupBuyDto.LogoURL!=null)
+                @if(EditGroupBuyDto.LogoURL!=null)
                 {
                     <div Class="col-12 row">
                         <div class="col-2"></div>
@@ -174,8 +175,8 @@
                             <div class="image-list-container">
                                
                                     <div class="image-container">
-                                        <Image class="blur-image" Source="@editGroupBuyDto.LogoURL" Text="Logo Image" Fluid />
-                                        <button class="delete-button" @onclick="() => DeleteLogoAsync(editGroupBuyDto.BannerURL)">
+                                        <Image class="blur-image" Source="@EditGroupBuyDto.LogoURL" Text="Logo Image" Fluid />
+                                        <button class="delete-button" @onclick="() => DeleteLogoAsync(EditGroupBuyDto.BannerURL)">
                                             <i class="fa fa-trash"></i>
                                         </button>
                                     </div>
@@ -195,7 +196,7 @@
                                        
                                         Changed="OnBannerUploadAsync"
                                         ShowMode="FilePickerShowMode.List"
-                                        Accept=".jpg, .png, .svg">
+                                        Accept=".jpg, .png, .svg ,.jpeg,.webp">
                                 <FileTemplate>
                                     <Div Flex="Flex.JustifyContent.Between">
                                         <Div>
@@ -238,7 +239,7 @@
                         </Field>
 
             </div>
-                @if(editGroupBuyDto.BannerURL!=null)
+                @if(EditGroupBuyDto.BannerURL!=null)
                 {
                     <div Class="col-12 row">
                         <div class="col-2"></div>
@@ -246,8 +247,8 @@
                             <div class="image-list-container">
                                
                                     <div class="image-container">
-                                        <Image class="blur-image" Source="@editGroupBuyDto.BannerURL" Text="Logo Image" Fluid />
-                                        <button class="delete-button" @onclick="() => DeleteBannerAsync(editGroupBuyDto.BannerURL)">
+                                        <Image class="blur-image" Source="@EditGroupBuyDto.BannerURL" Text="Logo Image" Fluid />
+                                        <button class="delete-button" @onclick="() => DeleteBannerAsync(EditGroupBuyDto.BannerURL)">
                                             <i class="fa fa-trash"></i>
                                         </button>
                                     </div>
@@ -271,7 +272,7 @@
                                         Multiple
                                         Changed="OnCarouselUploadAsync"
                                         ShowMode="FilePickerShowMode.List"
-                                        Accept=".jpg, .png, .svg">
+                                        Accept=".jpg, .png, .svg ,.jpeg,.webp">
                                 <FileTemplate>
                                     <Div Flex="Flex.JustifyContent.Between">
                                         <Div>
@@ -305,10 +306,6 @@
                                 </FileTemplate>
                                 <ButtonsTemplate>
                                     <Progress Value="@CarouselPickerCustom.GetProgressPercentage()" />
-                                    @* <Buttons Class="mt-2 d-flex justify-content-end">
-                                        <Button Clicked="@context.Clear" Color="Color.Warning"><Icon Name="IconName.Clear" /></Button>
-                                        <Button Clicked="@context.Upload" Color="Color.Primary"><Icon Name="IconName.FileUpload" /></Button>
-                                    </Buttons> *@
                                 </ButtonsTemplate>
                             </FilePicker>
                         </Field>
@@ -341,12 +338,12 @@
                 <div class="col-4">
                  
     
-        <DateEdit  Class="form-control" @bind-Date=editGroupBuyDto.StartTime  Placeholder="@L["StartDate"].ToString()" TValue="DateTime?"/>
+        <DateEdit  Class="form-control" @bind-Date=EditGroupBuyDto.StartTime  Placeholder="@L["StartDate"].ToString()" TValue="DateTime?"/>
    
     </div>
                  <div class="col-4">
                  
-                     <DateEdit   Class="form-control"  @bind-Date=editGroupBuyDto.EndTime  Placeholder="@L["EndDate"].ToString()" TValue="DateTime"  />
+                     <DateEdit   Class="form-control"  @bind-Date=EditGroupBuyDto.EndTime  Placeholder="@L["EndDate"].ToString()" TValue="DateTime?"  />
   
    
                  </div>
@@ -355,7 +352,7 @@
                 <div class="col-1">@L["Logistic"]</div>
                  <div class="col-2">@L["FreeShipping"]</div>
             
-                 <div class="col-4"> <Switch TValue="bool" @bind-Checked="@editGroupBuyDto.FreeShipping"></Switch></div>
+                 <div class="col-4"> <Switch TValue="bool" @bind-Checked="@EditGroupBuyDto.FreeShipping"></Switch></div>
             </div>
             <div class="col-12 row">
                 <div class="col-1"></div>
@@ -365,7 +362,7 @@
             <div class="col-8">
                
                             <div class="col-7 form-control"  style="background-color:white">
-          @foreach (var item in itemTags)
+          @foreach (var item in ItemTags)
                             {
                                 <Badge class="item-tags" CloseClicked="@(() => HandleItemTagDelete(item))">@item</Badge>
                             }
@@ -385,26 +382,26 @@
                 <div class="col-1"></div>
                  <div class="col-2">@L["AllowShipToOuterIsland"]</div>
             
-                 <div class="col-4"> <Switch TValue="bool" @bind-Checked="@editGroupBuyDto.allowShipToOuterTaiwan"></Switch></div>
+                 <div class="col-4"> <Switch TValue="bool" @bind-Checked="@EditGroupBuyDto.AllowShipToOuterTaiwan"></Switch></div>
             </div>
                 <div class=" col-12 row">
                 <div class="col-1"></div>
                  <div class="col-2">@L["AllowShipToOverSea"]</div>
             
-                 <div class="col-4"> <Switch TValue="bool" @bind-Checked="@editGroupBuyDto.allowShipOversea"></Switch></div>
+                 <div class="col-4"> <Switch TValue="bool" @bind-Checked="@EditGroupBuyDto.AllowShipOversea"></Switch></div>
             </div>
                <div class=" col-12 row">
                    <div class="col-1"></div>
                 <div class="col-2">@L["ExpectDeliveryDate"]</div>
-                <div class="col-4"><DateEdit TValue="DateTime?" Class="form-control" @bind-Date=editGroupBuyDto.ExpectShippingDateTo  Placeholder="@L["StartDate"].ToString()" /></div>
-                 <div class="col-4"><DateEdit TValue="DateTime?"  Class="form-control" @bind-Date=editGroupBuyDto.ExpectShippingDateFrom  Placeholder="@L["EndDate"].ToString()" /></div>
+                <div class="col-4"><DateEdit TValue="DateTime?" Class="form-control" @bind-Date=EditGroupBuyDto.ExpectShippingDateTo  Placeholder="@L["StartDate"].ToString()" /></div>
+                 <div class="col-4"><DateEdit TValue="DateTime?"  Class="form-control" @bind-Date=EditGroupBuyDto.ExpectShippingDateFrom  Placeholder="@L["EndDate"].ToString()" /></div>
             </div>
           
               <div class="col-12 row">
                 <div class="col-1">@L["GateWay"]</div>
                  <div class="col-2">@L["PaymentMethod"]</div>
             
-                 <div class="col-4">  <Radio TValue="bool" Group="Payment" Value=editGroupBuyDto.IsDefaultPaymentGateWay>
+                 <div class="col-4">  <Radio TValue="bool" Group="Payment" Value=EditGroupBuyDto.IsDefaultPaymentGateWay>
         @L["DefaultPaymentGateWay"]
     </Radio>
        </div>
@@ -413,10 +410,10 @@
                 <div class="col-1"></div>
                  <div class="col-2"></div>
             
-                 <div class="col-1">    <Radio TValue="bool" Group="Payment" Value="@paymentMethodCheck" > </Radio></div>
+                 <div class="col-1">    <Radio TValue="bool" Group="Payment" Value="@PaymentMethodCheck" > </Radio></div>
                  <div class="col-7">
                      <div class="col-7 form-control"  style="background-color:white">
-               @foreach (var item in paymentMethodTags)
+               @foreach (var item in PaymentMethodTags)
                             {
                                 <Badge class="item-tags" CloseClicked="@(() => HandlePaymentTagDelete(item))">@item</Badge>
                             }
@@ -435,26 +432,26 @@
                 <div class="col-1">@L["Invoice"]</div>
                  <div class="col-2">@L["IssueInvoice"]</div>
             
-                 <div class="col-4"> <Switch TValue="bool" @bind-Checked="@editGroupBuyDto.issueInvoice"></Switch></div>
+                 <div class="col-4"> <Switch TValue="bool" @bind-Checked="@EditGroupBuyDto.IssueInvoice"></Switch></div>
             </div>
            <div class=" col-12 row">
                 <div class="col-1"></div>
                  <div class="col-2 form-label">@L["AutoIssueTriplicateInvoice"]</div>
             
-                 <div class="col-4"> <Switch TValue="bool" @bind-Checked="@editGroupBuyDto.AutoIssueTriplicateInvoice"></Switch></div>
+                 <div class="col-4"> <Switch TValue="bool" @bind-Checked="@EditGroupBuyDto.AutoIssueTriplicateInvoice"></Switch></div>
             </div>
              <div class=" col-12 row">
                 <div class="col-1"></div>
                  <div class="col-2 form-label">@L["InvoiceComment"]</div>
             
-                 <div class="col-8"> <InputTextArea class="form-control"   maxlength="200" @bind-Value="@editGroupBuyDto.InvoiceNote"></InputTextArea></div>
+                 <div class="col-8"> <InputTextArea class="form-control"   maxlength="200" @bind-Value="@EditGroupBuyDto.InvoiceNote"></InputTextArea></div>
             </div>
             <Divider></Divider>
              <div class=" col-12 row">
                 <div class="col-1 mx-1">@L["AdvanceSetting"]</div>
                  <div class="col-2 form-label">@L["HideCredention"]</div>
             
-                 <div class="col-4"> <Switch TValue="bool" @bind-Checked="@editGroupBuyDto.ProtectPrivacyData"></Switch></div>
+                 <div class="col-4"> <Switch TValue="bool" @bind-Checked="@EditGroupBuyDto.ProtectPrivacyData"></Switch></div>
             </div>
                 <div class=" col-12 row">
            <div class="col-1"></div>
@@ -462,7 +459,7 @@
                 <label>@L["InviteCode"]</label>
             </div>
             <div class="col-5">
-                <TextEdit  @bind-Text="@editGroupBuyDto.InviteCode" />
+                <TextEdit  @bind-Text="@EditGroupBuyDto.InviteCode" />
             </div>
            
             
@@ -473,7 +470,7 @@
                 <label>@L["ProfitShare"]</label>
             </div>
             <div class="col-5">
-                <InputNumber class="form-control"   @bind-Value="@editGroupBuyDto.ProfitShare" />
+                <InputNumber class="form-control"   @bind-Value="@EditGroupBuyDto.ProfitShare" />
             </div>
             </div>
              <div class=" col-12 row">
@@ -482,7 +479,7 @@
                 <label>@L["FaceBookPixelID"]</label>
             </div>
             <div class="col-5">
-                <InputNumber class="form-control"   @bind-Value="@editGroupBuyDto.MetaPixelNo" />
+                <InputNumber class="form-control"   @bind-Value="@EditGroupBuyDto.MetaPixelNo" />
             </div>
             </div>
              <div class=" col-12 row">
@@ -491,7 +488,7 @@
                 <label>@L["FaceBookID"]</label>
             </div>
             <div class="col-5">
-                <TextEdit    @bind-Text="@editGroupBuyDto.FBID" />
+                <TextEdit    @bind-Text="@EditGroupBuyDto.FBID" />
             </div>
             </div>
              <div class=" col-12 row">
@@ -500,7 +497,7 @@
                 <label>@L["IGID"]</label>
             </div>
             <div class="col-5">
-                <TextEdit  @bind-Text="@editGroupBuyDto.IGID" />
+                <TextEdit  @bind-Text="@EditGroupBuyDto.IGID" />
             </div>
             </div>
              <div class=" col-12 row">
@@ -509,7 +506,7 @@
                 <label>@L["LINEID"]</label>
             </div>
             <div class="col-5">
-                <TextEdit  @bind-Text="@editGroupBuyDto.LineID" />
+                <TextEdit  @bind-Text="@EditGroupBuyDto.LineID" />
             </div>
             </div>
              <div class=" col-12 row">
@@ -518,7 +515,7 @@
                 <label>@L["GAID"]</label>
             </div>
             <div class="col-5">
-                <TextEdit  @bind-Text="@editGroupBuyDto.GAID" />
+                <TextEdit  @bind-Text="@EditGroupBuyDto.GAID" />
             </div>
             </div>
              <div class=" col-12 row">
@@ -527,7 +524,7 @@
                 <label>@L["GTM"]</label>
             </div>
             <div class="col-5">
-                <TextEdit  @bind-Text="@editGroupBuyDto.GTM" />
+                <TextEdit  @bind-Text="@EditGroupBuyDto.GTM" />
             </div>
             </div>
     <Divider></Divider>
@@ -552,53 +549,141 @@
               
             </div>
             </div>
-            @foreach (var module in collapseItem)
-{<div class=" col-12 row">
-    <div class="col-2"></div>
-    <div class="col-8">
-        <Accordion>
-   <Collapse  >
-            <CollapseHeader>
-            <Heading Size="HeadingSize.Is5">
-                  <AccordionToggle>@module.Title</AccordionToggle>
-                </Heading>
-</CollapseHeader>
-<CollapseBody>
-     <div class="row">
-               <div class="col-3">
-                                   
-    </div>
-    <div class="col-8 mt-5">
-        <TextEdit MaxLength="60" ShowCount @bind-Text="@productDescription" />
-    </div>
-    </div>
-     <Divider></Divider>
-      @foreach(var item in module.ItemDetails){
- <div class="row col-12 ">
-    
-   <div class="col-4">
-           <Image  Source=""></Image> 
-        
-   </div>
-   <div class="col-7">
-       <p> @item.ItemDescription</p>
-   </div>
-   <div class="col-1"> <Button  class="close" Clicked="@(()=>RemoveProductItem(@item,@module.Index))"><span aria-hidden="true" >&times;</span></Button></div>
-   </div>
-   <Divider></Divider>
-  
-      }
-       <Divider></Divider>
-   
-        <Button Clicked="@(()=>HandelClick(module.Index))" Type="@ButtonType.Button"><span class="fa fas-plus"></span>Add Item</Button>
-        </CollapseBody>
-  
-    
+            @foreach (var module in CollapseItem)
+                {
+                    <div class=" col-12 row">
+                    <div class="col-2"></div>
+                    <div class="col-7">
 
-   
-</Collapse>
+                        <Accordion>
+                  <Collapse>
+                            <CollapseHeader>
+                                <AccordionToggle>@module.Title</AccordionToggle>
+                            </CollapseHeader>
+                            <CollapseBody>
+                                
+                                <div class="row mt-2">
+                                        <div class="col-3 mt-2">
+                                            @L["SelectItem"]
+                                        </div>
+                                        <div class="col-9">
+                                            <Autocomplete TItem="KeyValueDto"
+                                                          TValue="Guid?"
+                                                          Data="@ItemsList"
+                                                          TextField="@(( item ) => item.Name)"
+                                                          ValueField="@(( item ) => item.Id)"
+                                                          @bind-SelectedText="SelectedAutoCompleteText"
+                                                          Placeholder="Search..."
+                                                          Filter="AutocompleteFilter.StartsWith"
+                                                          CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                                                          HighlightSearch
+                                                          Immediate="true"
+                                                          SelectedValueChanged="(id) => OnSelectedValueChanged(id, module)"
+                                                          @ref="AutocompleteField">
+                                                <NotFoundContent> @L["NotFound"] </NotFoundContent>
+                                            </Autocomplete>
+                                        </div>
+                                </div>
+                                  
+                                    
+                                <div class="row">
+                                    <div class="col-3 mt-2">
+                                        @L["ProductImage"]
+                                    </div>
+                                    <div class="col-9 mt-2">
+                                        @if(module.SelectedImage == null || module.SelectedImage.ImageUrl.IsNullOrWhiteSpace())
+                                        {
+                                            <Field>
+                                                <FilePicker @ref="FilePicker"
+                                                    Changed="(e) => OnFileUploadAsync(e, module)"
+                                                    ShowMode="FilePickerShowMode.List"
+                                                            Accept=".jpg, .png, .svg ,.jpeg, .webp">
+                                                    <FileTemplate>
+                                                        <Div Flex="Flex.JustifyContent.Between">
+                                                            <Div>
+                                                                <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
+                                                                <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                                            </Div>
+                                                            <Div Class="ps-2">
+                                                                <Div>
+                                                                @if (context.File.Status == FileEntryStatus.Ready)
+                                                                {
+                                                                    <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
+                                                                }
+                                                                else if (context.File.Status == FileEntryStatus.Uploading)
+                                                                {
+                                                                    <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
+                                                                }
+                                                                else if (context.File.Status == FileEntryStatus.Uploaded)
+                                                                {
+                                                                    <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
+                                                                }
+                                                                else if (context.File.Status == FileEntryStatus.Error)
+                                                                {
+                                                                    <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
+                                                                }
+                                                            </Div>
+                                                            </Div>
+                                                        </Div>
+                                                    </FileTemplate>
+                                                    <ButtonsTemplate>
+                                                        <Progress Value="@FilePicker.GetProgressPercentage()" />
+                                                    </ButtonsTemplate>
+                                                </FilePicker>
+                                            </Field>
+                                        }
+                                        else
+                                        {
+                                            <div class="d-flex">
+                                                <div class="image-container">
+                                                    <Image class="blur-image" Source="@module.SelectedImage.ImageUrl" Text="Item Image" Fluid />
+                                                     <button class="delete-button" @onclick="() => DeleteImageAsync(module)">
+                                                         <i class="fa fa-trash"></i>
+                                                     </button>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                                        
+                                <div class="row">
+                                    <div class="col-3 mt-2">
+                                        @L["ProductDescription"]
+                                    </div>
+                                    <div class="col-9 mt-2">
+                                        <TextEdit MaxLength="60" ShowCount @bind-Text="@module.SelectedItemDescription" />
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-row-reverse mt-2">
+                                    <Button class="btn btn-primary" Clicked="@(()=>HandleClick(module.Index))" Type="@ButtonType.Button"><span class="fa fas-plus"></span>Add Item</Button>
+                                </div>
+                               
+                                <Divider></Divider>
+                                @foreach (var item in module.ItemDetails)
+                                {
+                                    <div class="row col-12 ">
+                                        <div class="col-3">
+                                            <Image style="height:50px; width:auto;" Source="@item.Image.ImageUrl"></Image>
+                                        </div>
+                                         <div class="col-2">
+                                            <p> @item.Item.ItemName</p>
+                                        </div>
+                                        <div class="col-6">
+                                            <p> @item.ItemDescription</p>
+                                        </div>
+                                        <div class="col-1"> <Button class="close" Clicked="@(()=>RemoveProductItem(@item,@module.Index))"><span aria-hidden="true">&times;</span></Button></div>
+                                    </div>
+                                    <Divider></Divider>
+                                }
+                            </CollapseBody>
+                        </Collapse>
 </Accordion>
 </div>
+            <div class="col-1"> 
+                    <Button class="btn btn-danger" Clicked="@(()=>RemoveCollapseItem(@module.Index))">
+                        <i class="fa fa-trash"></i>
+                    </Button>
+                </div>
 </div>
 }
     <Divider></Divider>
@@ -610,10 +695,10 @@
     <div class="col-9">
         <div class="col-12">
             <FieldLabel></FieldLabel>
-            <TextEdit Placeholder="@L["GroupBuyCondition"]" @bind-Text="editGroupBuyDto.GroupBuyCondition" MaxLength="60"  />
+            <TextEdit Placeholder="@L["GroupBuyCondition"]" @bind-Text="EditGroupBuyDto.GroupBuyCondition" MaxLength="60"  />
         </div>
         <div class=" col-12">
-            <Blazored.TextEditor.BlazoredTextEditor @ref="@quillHtml">
+            <Blazored.TextEditor.BlazoredTextEditor @ref="@GroupBuyHtml">
                 <ToolbarContent>
                     <select class="ql-header">
                         <option selected=""></option>
@@ -648,6 +733,7 @@
                     </span>
                 </ToolbarContent>
             </Blazored.TextEditor.BlazoredTextEditor>
+       
         </div>
     </div>
     <div class="col-1">
@@ -664,10 +750,10 @@
      <div class="col-9">
          <div class="col-12">
              <fieldLabel></fieldLabel>
-             <TextEdit Placeholder="@L["CustomerInformation"]" @bind-Text="@editGroupBuyDto.CustomerInformation" MaxLength="60"  />
+             <TextEdit Placeholder="@L["CustomerInformation"]" @bind-Text="@EditGroupBuyDto.CustomerInformation" MaxLength="60"  />
          </div>
          <div class=" col-12">
-             <Blazored.TextEditor.BlazoredTextEditor @ref="@quillHtml">
+             <Blazored.TextEditor.BlazoredTextEditor @ref="@CustomerInformationHtml">
                  <ToolbarContent>
                      <select class="ql-header">
                          <option selected=""></option>
@@ -718,10 +804,10 @@
      <div class="col-9">
          <div class="col-12">
              <fieldLabel></fieldLabel>
-             <TextEdit Placeholder="@L["ExchangePolicy"]" @bind-Text="@editGroupBuyDto.ExchangePolicy" MaxLength="60" ShowCount />
+             <TextEdit Placeholder="@L["ExchangePolicy"]" @bind-Text="@EditGroupBuyDto.ExchangePolicy" MaxLength="60" ShowCount />
          </div>
          <div class=" col-12">
-             <Blazored.TextEditor.BlazoredTextEditor  @ref="@quillHtml">
+             <Blazored.TextEditor.BlazoredTextEditor @ref="@ExchangePolicyHtml">
                  <ToolbarContent>
                      <select class="ql-header">
                          <option selected=""></option>
@@ -775,7 +861,7 @@
 
              </div>
              <div class=" col-12">
-                 <Blazored.TextEditor.BlazoredTextEditor @ref="@quillHtml">
+                 <Blazored.TextEditor.BlazoredTextEditor @ref="@NotifyEmailHtml">
                      <ToolbarContent>
                          <select class="ql-header">
                              <option selected=""></option>
@@ -820,10 +906,11 @@
      </div>
      <div class="row mb-3"></div>
 
-        <div style="text-align: center; margin-top:5px ;">
-            <Button Danger Type="@ButtonType.Button" Style="margin-right:5px">@L["Cancel"]</Button>
-            <Button Type="@ButtonType.Button" class="btn btn-primary me-1" Clicked="CreateEntityAsync">@L["Save"]</Button>
-            <Button Type="@ButtonType.Button" Style="margin-right:5px; background-color:skyblue">@L["Preview"]</Button>
+        <div class="d-flex flex-row-reverse">
+            <Button Type="@ButtonType.Button" class="btn btn-primary me-1" Clicked="UpdateEntityAsync"><i class="fa fa-check"></i> @L["Save"]</Button>
+
+            <Button Danger Type="@ButtonType.Button" class="btn btn-danger me-1" Clicked="CloseGroupBuyEdit">@L["Cancel"]</Button>
+             @*  <Button Type="@ButtonType.Button" class="btn btn-secondary me-1">@L["Preview"]</Button> *@
 
         </div>
     </CardBody>
@@ -845,18 +932,43 @@
     string productDescription = "";
     bool _visible = false;
     int selectedIndex = 0;
-    private void HandelClick(int i)
+    private void HandleClick(int i)
     {
-        int selectedIndex = i;
-        if (collapseItem.Where(x => x.Index == i).FirstOrDefault().ItemDetails.Count <= 3)
+        var checkValiate = CollapseItem.Where(x => x.Index == i).FirstOrDefault();
+        if(checkValiate is null)
         {
-            ProductPictureItem item = new ProductPictureItem();
-            // item.ImageDetail = productPicture;
-            item.ItemDescription = productDescription;
+            return;
+        }
+        if(checkValiate.SelectedItemId == null)
+        {
+            return;
+        }
+        if(checkValiate.SelectedItemDescription.IsNullOrWhiteSpace())
+        {
+            return;
+        }
+        if(checkValiate.SelectedImage == null || checkValiate.SelectedImage.ImageUrl.IsNullOrWhiteSpace())
+        {
+            return;
+        }
 
-            collapseItem.Where(x => x.Index == i).FirstOrDefault().ItemDetails.Add(item);
-            productDescription="";
-            // productPicture = new UploadFileItem();
+        int selectedIndex = i;
+        if (CollapseItem.Where(x => x.Index == i).FirstOrDefault().ItemDetails.Count <= 3)
+        {
+            var cItem = CollapseItem.Where(x => x.Index == i).FirstOrDefault();
+
+            ProductPictureItem item = new ProductPictureItem
+            {
+                ItemId = cItem.SelectedItemId,
+                ItemDescription = cItem.SelectedItemDescription,
+                Image = cItem.SelectedImage,
+                Item = cItem.SelectedItem
+            };
+
+            cItem.SelectedItemDescription = null;
+            cItem.SelectedImage = new();
+
+            CollapseItem.Where(x => x.Index == i).FirstOrDefault().ItemDetails.Add(item);
         }
     }
 
@@ -874,7 +986,7 @@
     }
        private void RemoveProductItem(ProductPictureItem item,int index)
     {
-    collapseItem.Where(x=>x.Index==index).FirstOrDefault().ItemDetails.Remove(item);
+    CollapseItem.Where(x=>x.Index==index).FirstOrDefault().ItemDetails.Remove(item);
     }
     }
 

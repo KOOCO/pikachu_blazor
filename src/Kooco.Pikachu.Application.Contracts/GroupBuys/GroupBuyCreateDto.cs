@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kooco.Pikachu.Items.Dtos;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,7 +7,7 @@ namespace Kooco.Pikachu.GroupBuys
 {
     public class GroupBuyCreateDto
     {
-
+        public ICollection<GroupBuyItemGroupCreateUpdateDto> ItemGroups { get; set; }   
 
         /// <summary>
         /// 團購編號  GroupBuysNo
@@ -58,27 +59,27 @@ namespace Kooco.Pikachu.GroupBuys
         /// <summary>
         /// 團購結束時間 EndTime
         /// </summary>
-        public DateTime EndTime { get; set; }
+        public DateTime? EndTime { get; set; }
 
         /// <summary>
         /// 免運費 FreeShipping
         /// </summary>
         public bool FreeShipping { get; set; }
-        //TODO: Find a better way to handle this
+
         /// <summary>
         /// 不可選用的運送選項 ExcludeShippingMethod
         /// </summary>
-        //public Array? ExcludeShippingMethod { get; set; }
+        public string? ExcludeShippingMethod { get; set; }
 
         /// <summary>
         /// 允許寄送到外島 AllowShipToOuterTaiwan
         /// </summary>
-        public bool allowShipToOuterTaiwan { get; set; }
+        public bool AllowShipToOuterTaiwan { get; set; }
 
         /// <summary>
         /// 允許寄送到海外 AllowShipOversea
         /// </summary>
-        public bool allowShipOversea { get; set; }
+        public bool AllowShipOversea { get; set; }
 
         /// <summary>
         /// 預計開始配送日期 ExpectShippingDateFrom
@@ -109,7 +110,7 @@ namespace Kooco.Pikachu.GroupBuys
         /// <summary>
         /// 開立發票 IssueInvoice
         /// </summary>
-        public bool issueInvoice { get; set; }
+        public bool IssueInvoice { get; set; }
 
         /// <summary>
         /// 自動開立三聯單 AutoIssueTriplicateInvoice
@@ -185,11 +186,13 @@ namespace Kooco.Pikachu.GroupBuys
         /// 通知信件文案 NotifyMessage
         /// </summary>
         public string? NotifyMessage { get; set; }
-        public string? ExcludeShippingMethod { get; set; }
         public bool IsDefaultPaymentGateWay { get; set; }
         public string? PaymentMethod { get; set; }
         public string? GroupBuyCondition { get; set; }
         public string? CustomerInformation { get; set; }
-     
+        public bool HideCredention { get; set; }
+        public string? GroupBuyConditionDescription { get; set; }
+        public string? CustomerInformationDescription { get; set; }
+        public string? ExchangePolicyDescription { get; set; }
     }
 }

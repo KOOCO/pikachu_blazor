@@ -32,11 +32,15 @@ namespace Kooco.Pikachu.Images
             await _repository.DeleteAsync(x => x.TargetId == GroupBuyId);
         }
 
-        public async Task<List<ImageDto>> GetGroupBuyImagesAsync(Guid GroupBuyId)
+        public async Task<List<ImageDto>> GetGroupBuyImagesAsync(Guid GroupBuyId, ImageType? imageType = null)
         {
-            List<ImageDto> result=new List<ImageDto>();
+            List<ImageDto> result = new List<ImageDto>();
             var query = await _repository.GetQueryableAsync();
-            result =ObjectMapper.Map<List<Image>,List<ImageDto>>(query.Where(x => x.TargetId == GroupBuyId).ToList());
+            if (imageType.HasValue)
+            {
+                query = query.Where(x => x.ImageType == imageType);
+            }
+            result = ObjectMapper.Map<List<Image>, List<ImageDto>>(query.Where(x => x.TargetId == GroupBuyId).ToList());
             return result;
         }
 
