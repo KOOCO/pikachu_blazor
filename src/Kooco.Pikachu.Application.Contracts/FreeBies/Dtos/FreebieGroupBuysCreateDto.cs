@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Kooco.Pikachu.Freebie.Dtos
+namespace Kooco.Pikachu.Freebies.Dtos
 {
-    public class CreateFreebieGroupBuysDto
+    public class FreebieGroupBuysCreateDto
     {
-        public Guid FreebieId { get; set; }
+        public Guid FreeBieId { get; set; }
         public Guid GroupBuyId { get; set; }
+
     }
 }

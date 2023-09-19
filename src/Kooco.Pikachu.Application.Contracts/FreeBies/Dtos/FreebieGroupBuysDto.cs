@@ -4,7 +4,7 @@ using System.Text;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.Domain.Entities;
 
-namespace Kooco.Pikachu.Freebie.Dtos
+namespace Kooco.Pikachu.Freebies.Dtos
 {
     public class FreebieGroupBuysDto: FullAuditedAggregateRoot<Guid>, IHasConcurrencyStamp
     {

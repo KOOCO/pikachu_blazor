@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Kooco.Pikachu.Freebie
+namespace Kooco.Pikachu.Freebies
 {
     public class FreebieConsts
     {

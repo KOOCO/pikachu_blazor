@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 
-namespace Kooco.Pikachu.Freebie
+namespace Kooco.Pikachu.Freebies
 {
     public class EfCoreFreebieRepository : EfCoreRepository<PikachuDbContext, Freebie, Guid>, IFreebieRepository
     {

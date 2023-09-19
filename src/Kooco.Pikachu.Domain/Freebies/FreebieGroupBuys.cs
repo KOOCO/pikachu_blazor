@@ -1,7 +1,7 @@
 ﻿using System;
 using Volo.Abp.Domain.Entities;
 
-namespace Kooco.Pikachu.Freebie
+namespace Kooco.Pikachu.Freebies
 {
     public class FreebieGroupBuys : Entity 
     {

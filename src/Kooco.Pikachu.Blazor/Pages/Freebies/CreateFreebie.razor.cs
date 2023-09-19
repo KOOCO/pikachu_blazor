@@ -1,5 +1,7 @@
 ﻿using Blazorise;
+using Blazorise.Components;
 using Kooco.Pikachu.AzureStorage.Image;
+using Kooco.Pikachu.Blazor.Pages.SetItem;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.ImageBlob;
 using Kooco.Pikachu.Images;
@@ -15,29 +17,34 @@ using Volo.Abp.AspNetCore.Components.Messages;
 
 namespace Kooco.Pikachu.Blazor.Pages.Freebie
 {
-   
+
     public partial class CreateFreebie
     {
-      //  private const int maxtextCount = 60;
+        //  private const int maxtextCount = 60;
         private const int TotalMaxAllowedFiles = 10;
         private const int MaxAllowedFileSize = 1024 * 1024 * 10;
-        private readonly IUiMessageService _uiMessageService;
-        private readonly ImageContainerManager _imageContainerManager;
-        private Blazored.TextEditor.BlazoredTextEditor itemDescription; //Item Discription Html
+        private Blazored.TextEditor.BlazoredTextEditor ItemDescription; //Item Discription Html
         private List<KeyValueDto> GroupBuyList { get; set; } = new();
         public List<CreateImageDto> ImageList { get; set; }
         private FilePicker FilePicker { get; set; }
+        private Autocomplete<KeyValueDto, Guid?> AutocompleteField { get; set; }
+        private List<string> SelectedTexts { get; set; }
+        private List<Guid?> SelectedItems { get; set; }
+
         private readonly IGroupBuyAppService _groupBuyAppService;
-        public CreateFreebie(IImageBlobService imageBlobService, IUiMessageService uiMessageService, 
-            ImageContainerManager imageContainerManager, IGroupBuyAppService groupBuyAppService
-            ) 
-        { 
-            _uiMessageService= uiMessageService;
+        private readonly IUiMessageService _uiMessageService;
+        private readonly ImageContainerManager _imageContainerManager;
+
+        public CreateFreebie(
+            IUiMessageService uiMessageService,
+            ImageContainerManager imageContainerManager,
+            IGroupBuyAppService groupBuyAppService
+            )
+        {
+            _uiMessageService = uiMessageService;
             _imageContainerManager = imageContainerManager;
-            _groupBuyAppService= groupBuyAppService;
+            _groupBuyAppService = groupBuyAppService;
             ImageList = new List<CreateImageDto>();
-
-
         }
 
         protected override async Task OnInitializedAsync()
@@ -137,7 +144,5 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebie
                 await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWentWrongWhileDeletingImage]);
             }
         }
-
     }
-
 }

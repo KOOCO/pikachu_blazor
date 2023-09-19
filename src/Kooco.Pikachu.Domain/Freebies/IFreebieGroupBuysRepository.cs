@@ -2,7 +2,7 @@
 
 using Volo.Abp.Domain.Repositories;
 
-namespace Kooco.Pikachu.Freebie
+namespace Kooco.Pikachu.Freebies
 {
     public interface IFreebieGroupBuysRepository : IRepository<FreebieGroupBuys>
     {

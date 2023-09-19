@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Kooco.Pikachu.Freebie.Dtos
+namespace Kooco.Pikachu.Freebies.Dtos
 {
     public class FreebieCreateDto
     {

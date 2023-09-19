@@ -1,10 +1,10 @@
-﻿using Kooco.Pikachu.Freebie.Dtos;
+﻿using Kooco.Pikachu.Freebies.Dtos;
 using Kooco.Pikachu.Items.Dtos;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 
-namespace Kooco.Pikachu.Freebie
+namespace Kooco.Pikachu.Freebies
 {
     public interface IFreebieAppService : IApplicationService
     {

@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories;
 
-namespace Kooco.Pikachu.Freebie
+namespace Kooco.Pikachu.Freebies
 {
     public interface IFreebieRepository : IRepository<Freebie, Guid>
     {

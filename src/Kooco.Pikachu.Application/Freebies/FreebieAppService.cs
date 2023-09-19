@@ -1,4 +1,4 @@
-﻿using Kooco.Pikachu.Freebie.Dtos;
+﻿using Kooco.Pikachu.Freebies.Dtos;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
 using System;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 
-namespace Kooco.Pikachu.Freebie
+namespace Kooco.Pikachu.Freebies
 {
     public class FreebieAppService : ApplicationService, IFreebieAppService
     {

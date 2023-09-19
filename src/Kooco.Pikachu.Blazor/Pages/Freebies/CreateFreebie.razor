@@ -1,12 +1,13 @@
-﻿@page "/Freebie/FreebieList/New"
+﻿@page "/Freebie/New"
 
 @using Kooco.Pikachu.EnumValues;
 @using Kooco.Pikachu.GroupBuys;
+@using Kooco.Pikachu.Items.Dtos;
 @using Pikachu.Items;
 @using Pikachu.Localization;
 @using Microsoft.Extensions.Localization;
 @using System.ComponentModel
-
+@using Blazorise.Components;
 
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<PikachuResource> L
@@ -81,10 +82,6 @@
                             </FileTemplate>
                             <ButtonsTemplate>
                                 <Progress Value="@FilePicker.GetProgressPercentage()" />
-                                @* <Buttons Class="mt-2 d-flex justify-content-end">
-                                <Button Clicked="@context.Clear" Color="Color.Warning"><Icon Name="IconName.Clear" /></Button>
-                                <Button Clicked="@context.Upload" Color="Color.Primary"><Icon Name="IconName.FileUpload" /></Button>
-                                </Buttons> *@
                             </ButtonsTemplate>
                         </FilePicker>
                     </Field>
@@ -115,7 +112,7 @@
                     <label>@L["ItemDescription"]</label>
                 </div>
                 <div class=" col-10">
-                    <Blazored.TextEditor.BlazoredTextEditor @ref="@itemDescription">
+                    <Blazored.TextEditor.BlazoredTextEditor @ref="@ItemDescription">
                         <ToolbarContent>
                             <select class="ql-header">
                                 <option selected=""></option>
@@ -152,51 +149,48 @@
                     </Blazored.TextEditor.BlazoredTextEditor>
                 </div>
             </div>
-          
+
             <div class=" col-12 row mt-5">
                 <div class="row mb-2"></div>
                 <div class="col-2">
                     <label>@L["ChooseGroupBuy"]</label>
                 </div>
                 <div class="col-4">
-                    <Radio TValue="bool" Group="Payment" >
+                    <Radio TValue="bool" Group="Payment">
                         @L["ApplyToAllGroupBuy"]
                     </Radio>
                 </div>
             </div>
             <div class=" col-12 row mt-1">
-              
                 <div class="col-2">
-                  
                 </div>
                 <div class="col-2">
                     <Radio TValue="bool" Group="Payment">
-                        
+
                     </Radio>
                 </div>
                 <div class="col-8">
-                        <Autocomplete TItem="KeyValueDto"
-                                  TValue="Guid?"
-                                  Data="@ItemsList"
-                                  TextField="@(( item ) => item.Name)"
-                                  ValueField="@(( item ) => item.Id)"
-                                  @bind-SelectedText="SelectedAutoCompleteText"
-                                  Placeholder="Search..."
-                                  Filter="AutocompleteFilter.StartsWith"
-                                  CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
-                                  HighlightSearch
-                                  Immediate="true"
-                                  SelectedValueChanged="OnSelectedValueChanged"
-                                  @ref="AutocompleteField">
-                        <NotFoundContent> @L["NotFound"] </NotFoundContent>
-                    </Autocomplete>
-                    </Div>
+                    <Autocomplete TItem="KeyValueDto"
+                                TValue="Guid?"
+                                Data="@GroupBuyList"
+                                TextField="@(( item ) => item.Name)"
+                                ValueField="@(( item ) => item.Id)"
+                                @bind-SelectedValues="SelectedItems"
+                                @bind-SelectedTexts="SelectedTexts"
+                                Placeholder="Search..."
+                                Filter="AutocompleteFilter.StartsWith"
+                                SelectionMode="AutocompleteSelectionMode.Multiple"
+                                CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                                HighlightSearch
+                                Immediate="true"
+                                @ref="AutocompleteField">
+                         <NotFoundContent> @L["NotFound"] </NotFoundContent>
+                     </Autocomplete>
+                 </div>
+             </div>
+         </div>
+     </CardBody>
+ </Card>
 
-            </div>
-        </div>
-    </CardBody>
-</Card>
-
-@code {
-
-            }
+ @code {
+    }

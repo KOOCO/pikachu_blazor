@@ -8,17 +8,16 @@ using Volo.Abp.Application.Services;
 
 namespace Kooco.Pikachu.GroupBuys
 {
-    
+
     public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     {
         private readonly IGroupBuyRepositroy _groupBuyRepository;
         private readonly GroupBuyManager _groupBuyManager;
-     
-        public GroupBuyAppService(IGroupBuyRepositroy groupBuyRepository, GroupBuyManager groupBuyManager) { 
-        
-        _groupBuyManager = groupBuyManager;
-           _groupBuyRepository = groupBuyRepository;
-        
+
+        public GroupBuyAppService(IGroupBuyRepositroy groupBuyRepository, GroupBuyManager groupBuyManager)
+        {
+            _groupBuyManager = groupBuyManager;
+            _groupBuyRepository = groupBuyRepository;
         }
 
         public async Task<GroupBuyDto> CreateAsync(GroupBuyCreateDto input)
@@ -28,7 +27,7 @@ namespace Kooco.Pikachu.GroupBuys
                                                          , input.allowShipOversea, input.ExpectShippingDateFrom, input.ExpectShippingDateTo, input.MoneyTransferValidDayBy, input.MoneyTransferValidDays,
                                                          input.issueInvoice, input.AutoIssueTriplicateInvoice, input.InvoiceNote, input.ProtectPrivacyData, input.InviteCode, input.ProfitShare,
                                                          input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy, input.NotifyMessage,
-                                                         input.ExcludeShippingMethod,input.IsDefaultPaymentGateWay,input.PaymentMethod,input.GroupBuyCondition,input.CustomerInformation);
+                                                         input.ExcludeShippingMethod, input.IsDefaultPaymentGateWay, input.PaymentMethod, input.GroupBuyCondition, input.CustomerInformation);
             return ObjectMapper.Map<GroupBuy, GroupBuyDto>(result);
         }
 
@@ -39,12 +38,12 @@ namespace Kooco.Pikachu.GroupBuys
 
         public async Task<GroupBuyDto> GetAsync(Guid id)
         {
-           return ObjectMapper.Map<GroupBuy,GroupBuyDto>(await _groupBuyRepository.GetAsync(id));
+            return ObjectMapper.Map<GroupBuy, GroupBuyDto>(await _groupBuyRepository.GetAsync(id));
         }
 
         public async Task<PagedResultDto<GroupBuyDto>> GetListAsync(GetGroupBuyInput input)
         {
-            var count = await _groupBuyRepository.GetGroupBuyCountAsync(input.FilterText,input.GroupBuyNo, input.Status, input.GroupBuyName, input.EntryURL, input.EntryURL2, input.SubjectLine
+            var count = await _groupBuyRepository.GetGroupBuyCountAsync(input.FilterText, input.GroupBuyNo, input.Status, input.GroupBuyName, input.EntryURL, input.EntryURL2, input.SubjectLine
                                                          , input.ShortName, input.LogoURL, input.BannerURL, input.StartTime, input.EndTime, input.FreeShipping, input.allowShipToOuterTaiwan
                                                          , input.allowShipOversea, input.ExpectShippingDateFrom, input.ExpectShippingDateTo, input.MoneyTransferValidDayBy, input.MoneyTransferValidDays,
                                                          input.issueInvoice, input.AutoIssueTriplicateInvoice, input.InvoiceNote, input.ProtectPrivacyData, input.InviteCode, input.ProfitShare,
@@ -56,7 +55,8 @@ namespace Kooco.Pikachu.GroupBuys
                                                          input.issueInvoice, input.AutoIssueTriplicateInvoice, input.InvoiceNote, input.ProtectPrivacyData, input.InviteCode, input.ProfitShare,
                                                          input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy, input.NotifyMessage,
                                                          input.Sorting, input.MaxResultCount, input.SkipCount);
-            return new PagedResultDto<GroupBuyDto> {
+            return new PagedResultDto<GroupBuyDto>
+            {
 
                 TotalCount = count,
                 Items = ObjectMapper.Map<List<GroupBuy>, List<GroupBuyDto>>(result)
@@ -66,7 +66,7 @@ namespace Kooco.Pikachu.GroupBuys
 
         public async Task<GroupBuyDto> UpdateAsync(Guid id, GroupBuyUpdateDto input)
         {
-            var result = await _groupBuyManager.UpdateAsync(id,input.GroupBuyNo, input.Status, input.GroupBuyName, input.EntryURL, input.EntryURL2, input.SubjectLine
+            var result = await _groupBuyManager.UpdateAsync(id, input.GroupBuyNo, input.Status, input.GroupBuyName, input.EntryURL, input.EntryURL2, input.SubjectLine
                                                        , input.ShortName, input.LogoURL, input.BannerURL, input.StartTime, input.EndTime, input.FreeShipping, input.allowShipToOuterTaiwan
                                                        , input.allowShipOversea, input.ExpectShippingDateFrom, input.ExpectShippingDateTo, input.MoneyTransferValidDayBy, input.MoneyTransferValidDays,
                                                        input.issueInvoice, input.AutoIssueTriplicateInvoice, input.InvoiceNote, input.ProtectPrivacyData, input.InviteCode, input.ProfitShare,
@@ -76,7 +76,8 @@ namespace Kooco.Pikachu.GroupBuys
         }
         public async Task<List<KeyValueDto>> GetGroupBuysAsync()
         {
-            return ObjectMapper.Map<List<GroupBuy>, List<KeyValueDto>>(await _groupBuyRepository.GetListAsync());
+            var data = await _groupBuyRepository.GetListAsync();
+            return ObjectMapper.Map<List<GroupBuy>, List<KeyValueDto>>(data);
         }
     }
 }
