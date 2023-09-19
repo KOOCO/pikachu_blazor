@@ -14,7 +14,6 @@ using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using Kooco.Pikachu.Items;
 using Volo.Abp.EntityFrameworkCore.Modeling;
-using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Images;
@@ -74,7 +73,7 @@ public class PikachuDbContext :
 
     public DbSet<Freebie> Freebies { get; set; }
     public DbSet<FreebieGroupBuys> FreebieGroupBuys { get; set; }
-  
+
 
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
@@ -105,7 +104,7 @@ public class PikachuDbContext :
             b.Property(x => x.Returnable).IsRequired();
             b.HasMany(x => x.ItemDetails).WithOne(d => d.Item);
         });
-        
+
         builder.Entity<EnumValue>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "EnumValues", PikachuConsts.DbSchema);
@@ -120,11 +119,11 @@ public class PikachuDbContext :
             b.ConfigureByConvention();
             b.HasOne(x => x.Item).WithMany(d => d.ItemDetails).HasForeignKey(i => i.ItemId);
         });
-        
+
         builder.Entity<Image>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "Images", PikachuConsts.DbSchema, table => table.HasComment(""));
-            b.ConfigureByConvention(); 
+            b.ConfigureByConvention();
         });
 
         builder.Entity<SetItem>(b =>
@@ -137,7 +136,7 @@ public class PikachuDbContext :
         builder.Entity<SetItemDetails>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "SetItemDetails", PikachuConsts.DbSchema, table => table.HasComment(""));
-            b.ConfigureByConvention(); 
+            b.ConfigureByConvention();
         });
         builder.Entity<GroupBuy>(b =>
         {
@@ -147,12 +146,6 @@ public class PikachuDbContext :
             b.HasMany(x => x.ItemGroups).WithOne();
         });
 
-        builder.Entity<Freebie>(b =>
-        {
-            b.ToTable(PikachuConsts.DbTablePrefix + "Freebie", PikachuConsts.DbSchema, table => table.HasComment(""));
-            b.ConfigureByConvention();
-            b.HasMany(x => x.FreebieGroupBuys).WithOne();
-        });
         builder.Entity<GroupBuyItemGroup>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "GroupBuyItemGroups", PikachuConsts.DbSchema, table => table.HasComment(""));
@@ -167,10 +160,18 @@ public class PikachuDbContext :
             b.ConfigureByConvention();
         });
 
+        builder.Entity<Freebie>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "Freebie", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+            b.HasMany(x => x.FreebieGroupBuys).WithOne();
+        });
+
         builder.Entity<FreebieGroupBuys>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "FreebieGroupBuys", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
+            b.HasKey(x => new { x.FreebieId, x.GroupBuyId });
         });
     }
 }

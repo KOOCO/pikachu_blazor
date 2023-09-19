@@ -9,6 +9,6 @@ namespace Kooco.Pikachu.Freebies
     public interface IFreebieAppService : IApplicationService
     {
         Task<FreebieDto> CreateAsync(FreebieCreateDto input);
-        
+        Task<List<KeyValueDto>> GetGroupBuyLookupAsync();
     }
 }

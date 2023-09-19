@@ -5,7 +5,7 @@ namespace Kooco.Pikachu.Freebies
 {
     public class FreebieGroupBuys : Entity 
     {
-        public Guid FreeBieId { get; set; }
+        public Guid FreebieId { get; set; }
         public Guid GroupBuyId { get; set; }
         public FreebieGroupBuys() 
         { 
@@ -13,12 +13,12 @@ namespace Kooco.Pikachu.Freebies
         }
         public FreebieGroupBuys(Guid freeBieId, Guid groupBuyId)
         {
-            FreeBieId = freeBieId;
+            FreebieId = freeBieId;
             GroupBuyId = groupBuyId;
         }
         public override object[] GetKeys()
         {
-            return new object[] { FreeBieId, GroupBuyId };
+            return new object[] { FreebieId, GroupBuyId };
         }
     }
 }

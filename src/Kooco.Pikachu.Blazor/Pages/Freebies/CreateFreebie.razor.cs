@@ -1,11 +1,9 @@
 ﻿using Blazorise;
 using Blazorise.Components;
 using Kooco.Pikachu.AzureStorage.Image;
-using Kooco.Pikachu.Blazor.Pages.SetItem;
+using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.GroupBuys;
-using Kooco.Pikachu.ImageBlob;
 using Kooco.Pikachu.Images;
-using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using System;
 using System.Collections.Generic;
@@ -15,7 +13,7 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
 
-namespace Kooco.Pikachu.Blazor.Pages.Freebie
+namespace Kooco.Pikachu.Blazor.Pages.Freebies
 {
 
     public partial class CreateFreebie
@@ -34,27 +32,37 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebie
         private readonly IGroupBuyAppService _groupBuyAppService;
         private readonly IUiMessageService _uiMessageService;
         private readonly ImageContainerManager _imageContainerManager;
+        private readonly IFreebieAppService _freebieAppService;
 
         public CreateFreebie(
             IUiMessageService uiMessageService,
             ImageContainerManager imageContainerManager,
-            IGroupBuyAppService groupBuyAppService
+            IGroupBuyAppService groupBuyAppService,
+            IFreebieAppService freebieAppService
             )
         {
             _uiMessageService = uiMessageService;
             _imageContainerManager = imageContainerManager;
             _groupBuyAppService = groupBuyAppService;
+            _freebieAppService = freebieAppService;
             ImageList = new List<CreateImageDto>();
         }
 
         protected override async Task OnInitializedAsync()
         {
-            GroupBuyList = await _groupBuyAppService.GetGroupBuysAsync();
+            try
+            {
+                GroupBuyList = await _freebieAppService.GetGroupBuyLookupAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
         async Task OnImageUploadAsync(FileChangedEventArgs e)
         {
-            if (e.Files.Count() > TotalMaxAllowedFiles)
+            if (e.Files.Length > TotalMaxAllowedFiles)
             {
                 await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesExceedMaxAllowedPerUpload]);
                 await FilePicker.Clear();

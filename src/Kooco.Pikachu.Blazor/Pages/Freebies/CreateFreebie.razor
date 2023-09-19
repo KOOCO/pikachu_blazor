@@ -11,7 +11,6 @@
 
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<PikachuResource> L
-<script src="interop.js"></script>
 
 <h3>@L["NewFreebie"]</h3>
 <Card>
@@ -45,7 +44,7 @@
                 <div class="col-10 ">
                     <Field>
                         <FilePicker @ref="FilePicker"
-                                                Multiple
+                                    Multiple
                                      Changed="OnImageUploadAsync"
                                      ShowMode="FilePickerShowMode.List"
                                      Accept=".jpg, .png, .svg">
@@ -165,11 +164,9 @@
                 <div class="col-2">
                 </div>
                 <div class="col-2">
-                    <Radio TValue="bool" Group="Payment">
-
-                    </Radio>
+                    <Radio TValue="bool" Group="Payment"></Radio>
                 </div>
-                <div class="col-8">
+                <div class="col-5">
                     <Autocomplete TItem="KeyValueDto"
                                 TValue="Guid?"
                                 Data="@GroupBuyList"
@@ -183,9 +180,60 @@
                                 CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
                                 HighlightSearch
                                 Immediate="true"
-                                @ref="AutocompleteField">
+                                @ref="AutocompleteField"
+                                Size="Size.Small"
+                                >
                          <NotFoundContent> @L["NotFound"] </NotFoundContent>
                      </Autocomplete>
+                 </div>
+             </div>
+             <div class=" col-12 row mt-1">
+                 <div class="col-2">
+                     @L["ApplyCondition"]
+                 </div>
+                 <div class="col-2">
+                     <Radio TValue="bool" Group="Condition">
+                         <Label>@L["Uncondition"]</Label>
+                     </Radio>
+                 </div>
+             </div>
+             <div class=" col-12 row mt-1">
+                 <div class="col-2">
+                 </div>
+                 <div class="col-2">
+                     <Radio TValue="bool" Group="Condition">
+                         <Label>@L["WhenOrderReach"]</Label>
+                     </Radio>
+                 </div>
+                 <div class="col-3">
+                     <SelectList TItem="EnumValueDto"
+                                 TValue="int"
+                                 TextField="@((item)=>item.Text)"
+                                 ValueField="@((item)=>item.Id)"
+                                 Size="Size.Small"
+                     />
+                     @* Data="@ShippingMethods"
+                     @bind-SelectedValue="@CreateItemDto.ShippingMethodId" *@
+
+                 </div>
+             </div>
+             <div class=" col-12 row mt-1">
+                 <div class="col-2">
+                 </div>
+                 <div class="col-2">
+                     <Radio TValue="bool" Group="Condition">
+                         <Label>@L["WhenOrderReach"]</Label>
+                     </Radio>
+                 </div>
+                 <div class="col-3">
+                     <SelectList TItem="EnumValueDto"
+                                 TValue="int"
+                                 TextField="@((item)=>item.Text)"
+                                 ValueField="@((item)=>item.Id)"
+                                 Size="Size.Small" />
+                     @* Data="@ShippingMethods"
+                    @bind-SelectedValue="@CreateItemDto.ShippingMethodId" *@
+
                  </div>
              </div>
          </div>
