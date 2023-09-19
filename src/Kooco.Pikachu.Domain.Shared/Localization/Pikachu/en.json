@@ -128,7 +128,22 @@
     "AddItem": "Add Item",
     "ChooseItem": "Choose Item",
     "ItemList": "Item List",
-    "SetItemPrice": "Set Item Price"
-
+    "SetItemPrice": "Set Item Price",
+ 
+    //Freebie
+    "NewFreebie": "New Freebie",
+    "ItemImages": "Item Images",
+    "ChooseGroupBuy": "Choose GroupBuy",
+    "ApplyToAllGroupBuy": "Apply to all GroupBuy",
+    "ApplyCondition": "Apply Condition",
+    "Uncondition": "Uncondition",
+    "AmountReach": "Amount Reach",
+    "Get": "Get",
+    "Piece": "Piece",
+    "ActivityDate": "Activity Date",
+    "FreebieAmount": "Freebie Amount",
+    "WhenOrderReach": "When Order Reach",
+    "MinimumAmount": "Minimum Amount",
+    "MinimumPiece": "Minimum Piece"
   }
 }

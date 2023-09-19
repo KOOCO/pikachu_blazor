@@ -12,6 +12,7 @@ namespace Kooco.Pikachu.Groupbuys
     public interface IGroupBuyRepositroy : IRepository<GroupBuy, Guid>
     {
         Task<List<GroupBuy>> GetGroupBuyListAsync(
+           
             string? filterText = null,
             int? groupBuyNo = null,
             string? status = null,

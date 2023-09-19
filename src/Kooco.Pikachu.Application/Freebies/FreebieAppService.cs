@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.Freebies.Dtos;
+﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Freebies.Dtos;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Items.Dtos;
@@ -43,17 +44,17 @@ namespace Kooco.Pikachu.Freebies
                 input.FreebieAmount
                 );
 
-            if (input.FreebieGroupBuys.Any())
+            if (input.FreebieGroupBuys!=null&& input.FreebieGroupBuys.Any())
             {
                 foreach (var freeBuyGroupBuys in input.FreebieGroupBuys)
                 {
                     result.AddFreebieGroupBuys(
-                        freeBuyGroupBuys.FreebieId, freeBuyGroupBuys.GroupBuyId
+                        result.Id, freeBuyGroupBuys.Value
                         );
                 }
             }
 
-            if (input.Images.Any())
+            if (input.Images != null && input.Images.Any())
             {
                 foreach (var image in input.Images)
                 {
@@ -75,6 +76,7 @@ namespace Kooco.Pikachu.Freebies
         {
             var groupbuys = await _groupBuyRepository.GetListAsync();
             return ObjectMapper.Map<List<GroupBuy>, List<KeyValueDto>>(groupbuys);
+
         }
     }
 }

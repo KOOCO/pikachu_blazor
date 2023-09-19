@@ -2,6 +2,7 @@
 using Blazorise.Components;
 using Kooco.Pikachu.AzureStorage.Image;
 using Kooco.Pikachu.Freebies;
+using Kooco.Pikachu.Freebies.Dtos;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items.Dtos;
@@ -18,22 +19,25 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
 
     public partial class CreateFreebie
     {
-        //  private const int maxtextCount = 60;
+        private const int MaxTextCount = 60;
         private const int TotalMaxAllowedFiles = 10;
         private const int MaxAllowedFileSize = 1024 * 1024 * 10;
         private Blazored.TextEditor.BlazoredTextEditor ItemDescription; //Item Discription Html
+      //  private Radio<bool> ApplyToAllGroupBuy;
+       // private Radio<bool> Uncondition;
         private List<KeyValueDto> GroupBuyList { get; set; } = new();
         public List<CreateImageDto> ImageList { get; set; }
         private FilePicker FilePicker { get; set; }
-        private Autocomplete<KeyValueDto, Guid?> AutocompleteField { get; set; }
-        private List<string> SelectedTexts { get; set; }
+        private Autocomplete<KeyValueDto, Guid?> AutocompleteField { get; set; } 
+        private List<string> SelectedTexts { get; set; } = new();
         private List<Guid?> SelectedItems { get; set; }
 
         private readonly IGroupBuyAppService _groupBuyAppService;
         private readonly IUiMessageService _uiMessageService;
         private readonly ImageContainerManager _imageContainerManager;
         private readonly IFreebieAppService _freebieAppService;
-
+      
+        private FreebieCreateDto FreebieCreateDto { get; set; } = new();
         public CreateFreebie(
             IUiMessageService uiMessageService,
             ImageContainerManager imageContainerManager,
@@ -98,7 +102,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
                         var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
 
                         int sortNo = ImageList.LastOrDefault()?.SortNo ?? 0;
-
+                      
                         ImageList.Add(new CreateImageDto
                         {
                             Name = file.Name,
@@ -150,6 +154,29 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
             {
                 Console.WriteLine(ex.Message);
                 await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWentWrongWhileDeletingImage]);
+            }
+        }
+
+        protected virtual async Task CreateFreebieAsync()
+        {
+            try
+            {
+                
+                //ValidateForm();
+                //FreebieCreateDto.FreebieGroupBuys = new();
+
+                FreebieCreateDto.ItemDescription = await ItemDescription.GetHTML();
+
+                await _freebieAppService.CreateAsync(FreebieCreateDto);
+                //NavigationManager.NavigateTo("/SetItem");
+            }
+            catch (BusinessException ex)
+            {
+                await _uiMessageService.Error(ex.Code?.ToString());
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
             }
         }
     }
