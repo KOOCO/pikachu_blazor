@@ -44,7 +44,7 @@
                             Caption="@L["ItemName"]">
             </DataGridColumn>
             <DataGridColumn TItem="FreebieDto"
-                            Caption="@L["ActivtyTimePeriod"]">
+                            Caption="@L["ActivityTimePeriod"]">
                 <DisplayTemplate>
                     @(context.ActivityStartDate?.ToShortDateString() ?? "") - @(context.ActivityEndDate?.ToShortDateString() ?? "")
                 </DisplayTemplate>

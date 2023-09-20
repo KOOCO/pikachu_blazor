@@ -133,8 +133,10 @@
     //Freebie
     "NewFreebie": "New Freebie",
     "ItemImages": "Item Images",
-    "ChooseGroupBuy": "Choose GroupBuy",
-    "ApplyToAllGroupBuy": "Apply to all GroupBuy",
+    "ChooseGroupBuy": "Choose Group Buy",
+    "ApplyToAllGroupBuys": "Apply To All Group Buys",
+    "SelectGroupsBuys": "Select Group Buys",
+    "SelectGroupBuys": "Select Group Buys",
     "ApplyCondition": "Apply Condition",
     "Uncondition": "Uncondition",
     "AmountReach": "Amount Reach",
@@ -147,7 +149,8 @@
     "MinimumPiece": "Minimum Piece",
     "Pikachu:FreebieAmountCannotBeZero": "Freebie Amount must be greater than zero",
     "Pikachu:SelectAtLeastOneGroupBuy": "Please Select at least one Group Buy",
-    "Pikachu:SelectAtLeastOneImage": "Please Select at least one Image"
-
+    "Pikachu:SelectAtLeastOneImage": "Please Select at least one Image",
+    "ActivityTimePeriod": "Activity Time Period",
+    "Pikachu:InvalidItemName": "Item Name Is Invalid"
   }
 }

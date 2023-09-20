@@ -3,6 +3,7 @@ using Kooco.Pikachu.Images;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
@@ -71,11 +72,14 @@ namespace Kooco.Pikachu.Freebies
                 Guid groupBuyId
         )
         {
-            FreebieGroupBuys.Add(
-                new FreebieGroupBuys(
-                  freeBieId, groupBuyId
-                    )
-                );
+            if (!FreebieGroupBuys.Any(x => x.GroupBuyId == groupBuyId))
+            {
+                FreebieGroupBuys.Add(
+                    new FreebieGroupBuys(
+                      freeBieId, groupBuyId
+                        )
+                    );
+            }
         }
         public void AddImage(
             Guid id,

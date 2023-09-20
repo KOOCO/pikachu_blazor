@@ -22,4 +22,5 @@ public static class PikachuDomainErrorCodes
     public const string FreebieAmountCannotBeZero = "Pikachu:FreebieAmountCannotBeZero";
     public const string SelectAtLeastOneGroupBuy = "Pikachu:SelectAtLeastOneGroupBuy";
     public const string SelectAtLeastOneImage = "Pikachu:SelectAtLeastOneImage";
+    public const string InvalidItemName = "Pikachu:InvalidItemName";
 }

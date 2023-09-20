@@ -71,19 +71,23 @@ namespace Kooco.Pikachu.Freebies
 
 
         public void RemoveFreebieGroupBuys(
-         [NotNull] Freebie @frebie,
+         [NotNull] Freebie freebie,
          List<Guid> freebieGroupBuysIds
          )
         {
             if (freebieGroupBuysIds != null && freebieGroupBuysIds.Any())
             {
-                foreach (var freebieGroupBuy in frebie.FreebieGroupBuys)
+                foreach (var freebieGroupBuy in freebie.FreebieGroupBuys)
                 {
                     if (!freebieGroupBuysIds.Contains(freebieGroupBuy.GroupBuyId))
                     {
-                        frebie.FreebieGroupBuys.Remove(freebieGroupBuy);
+                        freebie.FreebieGroupBuys.Remove(freebieGroupBuy);
                     }
                 }
+            }
+            else
+            {
+                freebie.FreebieGroupBuys.Clear();
             }
         }
     }

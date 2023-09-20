@@ -4,6 +4,9 @@ using Kooco.Pikachu.FreeBies.Dtos;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Kooco.Pikachu.Blazor
 {
@@ -21,10 +24,19 @@ namespace Kooco.Pikachu.Blazor
             CreateMap<SetItemDetails, SetItemDetailsDto>();
             CreateMap<SetItemDto, CreateUpdateSetItemDto>();
             CreateMap<SetItemDetailsDto, CreateUpdateSetItemDetailsDto>();
-            CreateMap<FreebieDto, UpdateFreebieDto>();
+            CreateMap<FreebieDto, UpdateFreebieDto>()
+                .ForMember(dest => dest.FreebieGroupBuys, opt => opt.MapFrom<FreebieGroupBuysResolver>());
 
             CreateMap<FreebieGroupBuysDto, CreateFreebieGroupBuysDto>();
         }
         
+    }
+
+    public class FreebieGroupBuysResolver : IValueResolver<FreebieDto, UpdateFreebieDto, List<Guid>>
+    {
+        public List<Guid> Resolve(FreebieDto source, UpdateFreebieDto destination, List<Guid> destMember, ResolutionContext context)
+        {
+            return source.FreebieGroupBuys.Select(x => x.GroupBuyId).ToList();
+        }
     }
 }

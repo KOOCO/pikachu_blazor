@@ -118,13 +118,16 @@ namespace Kooco.Pikachu.Freebies
             freebie.ActivityEndDate = input.ActivityEndDate;
             freebie.UnCondition = input.UnCondition;
             freebie.FreebieAmount = input.FreebieAmount;
-            await _freebieRepository.EnsureCollectionLoadedAsync(freebie, x => x.FreebieGroupBuys);
-            var freebieGroupBuysId = input.FreebieGroupBuys.Select(x => x.GroupBuyId).ToList();
+            freebie.MinimumAmount = input.MinimumAmount;
+            freebie.MinimumPiece = input.MinimumPiece;
+            freebie.FreebieOrderReach = input.FreebieOrderReach;
 
-            _freebieManager.RemoveFreebieGroupBuys(freebie, freebieGroupBuysId);
-            foreach (var freebieGroupBuys in input.FreebieGroupBuys)
+            await _freebieRepository.EnsureCollectionLoadedAsync(freebie, x => x.FreebieGroupBuys);
+
+            _freebieManager.RemoveFreebieGroupBuys(freebie, input.FreebieGroupBuys);
+            foreach (var groupBuyId in input.FreebieGroupBuys)
             {
-                freebie.AddFreebieGroupBuys(freebie.Id, freebieGroupBuys.GroupBuyId);
+                freebie.AddFreebieGroupBuys(freebie.Id, groupBuyId);
             }
             if (input.Images != null && input.Images.Any())
             {
@@ -144,7 +147,7 @@ namespace Kooco.Pikachu.Freebies
                     }
                 }
             }
-
+            await _freebieRepository.UpdateAsync(freebie);
             return ObjectMapper.Map<Freebie, FreebieDto>(freebie);
         }
         public async Task DeleteSingleImageAsync(Guid itemId, string blobImageName)

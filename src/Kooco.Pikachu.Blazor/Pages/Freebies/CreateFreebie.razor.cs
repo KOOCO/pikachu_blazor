@@ -1,9 +1,9 @@
 ﻿using Blazorise;
 using Blazorise.Components;
 using Kooco.Pikachu.AzureStorage.Image;
+using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Freebies.Dtos;
-using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components;
@@ -24,32 +24,24 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
         private const int TotalMaxAllowedFiles = 10;
         private const int MaxAllowedFileSize = 1024 * 1024 * 10;
         private Blazored.TextEditor.BlazoredTextEditor ItemDescription;
-        //Item Discription Html
-        private Radio<bool> ApplyAllRadio;
-        // private Radio<bool> Uncondition;
         private List<KeyValueDto> GroupBuyList { get; set; } = new();
         public List<CreateImageDto> ImageList { get; set; }
         private FilePicker FilePicker { get; set; }
-        private Autocomplete<KeyValueDto, Guid?> AutocompleteField { get; set; }
         private List<string> SelectedTexts { get; set; } = new();
-        private List<Guid?> SelectedItems { get; set; }
 
-        private readonly IGroupBuyAppService _groupBuyAppService;
         private readonly IUiMessageService _uiMessageService;
         private readonly ImageContainerManager _imageContainerManager;
         private readonly IFreebieAppService _freebieAppService;
 
-        private FreebieCreateDto freebieCreateDto { get; set; } = new();
+        private FreebieCreateDto FreebieCreateDto { get; set; } = new();
         public CreateFreebie(
             IUiMessageService uiMessageService,
             ImageContainerManager imageContainerManager,
-            IGroupBuyAppService groupBuyAppService,
             IFreebieAppService freebieAppService
             )
         {
             _uiMessageService = uiMessageService;
             _imageContainerManager = imageContainerManager;
-            _groupBuyAppService = groupBuyAppService;
             _freebieAppService = freebieAppService;
             ImageList = new List<CreateImageDto>();
         }
@@ -59,6 +51,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
             try
             {
                 GroupBuyList = await _freebieAppService.GetGroupBuyLookupAsync();
+                FreebieCreateDto.FreebieOrderReach = FreebieOrderReach.MinimumAmount;
             }
             catch (Exception ex)
             {
@@ -163,13 +156,13 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
         {
             try
             {
-                freebieCreateDto.ItemDescription = await ItemDescription.GetHTML();
+                FreebieCreateDto.ItemDescription = await ItemDescription.GetHTML();
                 ValidateForm();
 
-                freebieCreateDto.Images = ImageList;
+                FreebieCreateDto.Images = ImageList;
 
-                await _freebieAppService.CreateAsync(freebieCreateDto);
-                NavigationManager.NavigateTo("/New");
+                await _freebieAppService.CreateAsync(FreebieCreateDto);
+                CancelToFreebieList();
             }
             catch (BusinessException ex)
             {
@@ -183,28 +176,46 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
 
         private void ValidateForm()
         {
-            if (freebieCreateDto.ItemName.IsNullOrWhiteSpace())
+            if (FreebieCreateDto.ItemName.IsNullOrWhiteSpace())
             {
                 throw new BusinessException(L[PikachuDomainErrorCodes.ItemNameCannotBeNull]);
             }
-            if (freebieCreateDto.ItemDescription.IsNullOrWhiteSpace())
+            if (FreebieCreateDto.ItemName.Length > MaxTextCount)
             {
-                throw new BusinessException(L[PikachuDomainErrorCodes.ItemDetailsCannotBeEmpty]);
-            }
-            if (freebieCreateDto.FreebieAmount <= 0)
-            {
-                throw new BusinessException(L[PikachuDomainErrorCodes.FreebieAmountCannotBeZero]);
+                throw new BusinessException(L[PikachuDomainErrorCodes.InvalidItemName]);
             }
             if (!ImageList.Any())
             {
                 throw new BusinessException(L[PikachuDomainErrorCodes.SelectAtLeastOneImage]);
             }
+            if (FreebieCreateDto.ItemDescription.IsNullOrWhiteSpace())
+            {
+                throw new BusinessException(L[PikachuDomainErrorCodes.ItemDetailsCannotBeEmpty]);
+            }
+            if (FreebieCreateDto.FreebieAmount <= 0)
+            {
+                throw new BusinessException(L[PikachuDomainErrorCodes.FreebieAmountCannotBeZero]);
+            }
         }
 
-        //private void OnRadioChange(ChangeEventArgs e)
-        //{
-        //    freebieCreateDto.ApplyToAllGroupBuy = (bool)e.Value;
-        //}
+        private void CancelToFreebieList()
+        {
+            NavigationManager.NavigateTo("Freebie/FreebieList");
         }
+
+        Task OnGroupbuyCheckedValueChanged(bool value)
+        {
+            FreebieCreateDto.ApplyToAllGroupBuy = value;
+
+            return Task.CompletedTask;
+        }
+
+        Task OnUnconditionCheckedValueChanged(bool value)
+        {
+            FreebieCreateDto.UnCondition = value;
+
+            return Task.CompletedTask;
+        }
+    }
    
 }

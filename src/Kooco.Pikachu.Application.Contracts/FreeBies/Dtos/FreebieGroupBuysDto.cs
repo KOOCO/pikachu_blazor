@@ -10,6 +10,5 @@ namespace Kooco.Pikachu.Freebies.Dtos
     {
         public Guid FreeBieId { get; set; }
         public Guid GroupBuyId { get; set; }
-
     }
 }
