@@ -87,7 +87,10 @@ namespace Kooco.Pikachu.Freebies
         {
             Images.Add(new Image(id, name, blobImageName, imageUrl, ImageType.SetItem, this.Id, sortNo));
         }
-
+        public void RemoveFreebieGroupBuys(List<Guid?> ids)
+        {
+            FreebieGroupBuys.RemoveAll(x => !ids.Contains(x.GroupBuyId));
+        }
 
     }
 }

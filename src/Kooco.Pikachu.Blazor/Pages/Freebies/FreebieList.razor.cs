@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.Freebies;
+﻿using Blazorise.DataGrid;
+using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Freebies.Dtos;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Items.Dtos;
@@ -35,6 +36,11 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
           FreebieListItems = await _freebieAppService.GetListAsync();
             
 
+        }
+        public void OnEditItem(DataGridRowMouseEventArgs<FreebieDto> e)
+        {
+            var id = e.Item.Id;
+            NavigationManager.NavigateTo($"Freebie/Edit/{id}");
         }
     }
 }

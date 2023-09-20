@@ -129,7 +129,7 @@
     "ChooseItem": "Choose Item",
     "ItemList": "Item List",
     "SetItemPrice": "Set Item Price",
- 
+
     //Freebie
     "NewFreebie": "New Freebie",
     "ItemImages": "Item Images",
@@ -144,6 +144,10 @@
     "FreebieAmount": "Freebie Amount",
     "WhenOrderReach": "When Order Reach",
     "MinimumAmount": "Minimum Amount",
-    "MinimumPiece": "Minimum Piece"
+    "MinimumPiece": "Minimum Piece",
+    "Pikachu:FreebieAmountCannotBeZero": "Freebie Amount must be greater than zero",
+    "Pikachu:SelectAtLeastOneGroupBuy": "Please Select at least one Group Buy",
+    "Pikachu:SelectAtLeastOneImage": "Please Select at least one Image"
+
   }
 }

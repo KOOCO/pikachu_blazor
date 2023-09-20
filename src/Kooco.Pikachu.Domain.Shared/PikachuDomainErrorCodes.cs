@@ -19,4 +19,7 @@ public static class PikachuDomainErrorCodes
     public const string AlreadyUploadMaxAllowedFiles = "Pikachu:AlreadyUploadMaxAllowedFiles";
     public const string FilesExceedMaxAllowedPerUpload = "Pikachu:FilesExceedMaxAllowedPerUpload";
     public const string EntityWithGivenIdDoesnotExist = "Pikachu:EntityWithGivenIdDoesnotExist";
+    public const string FreebieAmountCannotBeZero = "Pikachu:FreebieAmountCannotBeZero";
+    public const string SelectAtLeastOneGroupBuy = "Pikachu:SelectAtLeastOneGroupBuy";
+    public const string SelectAtLeastOneImage = "Pikachu:SelectAtLeastOneImage";
 }

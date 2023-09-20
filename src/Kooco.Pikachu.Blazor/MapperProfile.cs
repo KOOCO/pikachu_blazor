@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Kooco.Pikachu.Freebies.Dtos;
+using Kooco.Pikachu.FreeBies.Dtos;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
@@ -19,6 +21,10 @@ namespace Kooco.Pikachu.Blazor
             CreateMap<SetItemDetails, SetItemDetailsDto>();
             CreateMap<SetItemDto, CreateUpdateSetItemDto>();
             CreateMap<SetItemDetailsDto, CreateUpdateSetItemDetailsDto>();
+            CreateMap<FreebieDto, UpdateFreebieDto>();
+
+            CreateMap<FreebieGroupBuysDto, CreateFreebieGroupBuysDto>();
         }
+        
     }
 }

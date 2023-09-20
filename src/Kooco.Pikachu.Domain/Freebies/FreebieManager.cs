@@ -3,7 +3,9 @@ using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Localization;
 using Microsoft.Extensions.Localization;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Domain.Services;
@@ -65,6 +67,24 @@ namespace Kooco.Pikachu.Freebies
                 minimumPiece,
                 freebieAmount
             );
+        }
+
+
+        public void RemoveFreebieGroupBuys(
+         [NotNull] Freebie @frebie,
+         List<Guid> freebieGroupBuysIds
+         )
+        {
+            if (freebieGroupBuysIds != null && freebieGroupBuysIds.Any())
+            {
+                foreach (var freebieGroupBuy in frebie.FreebieGroupBuys)
+                {
+                    if (!freebieGroupBuysIds.Contains(freebieGroupBuy.GroupBuyId))
+                    {
+                        frebie.FreebieGroupBuys.Remove(freebieGroupBuy);
+                    }
+                }
+            }
         }
     }
 }

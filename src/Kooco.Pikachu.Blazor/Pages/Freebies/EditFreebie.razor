@@ -1,4 +1,4 @@
-﻿@page "/Freebie/New"
+﻿@page "/Freebie/Edit/{id}"
 
 @using Kooco.Pikachu.EnumValues;
 @using Kooco.Pikachu.GroupBuys;
@@ -24,14 +24,14 @@
                     <label>@L["ItemName"]</label>
                 </div>
                 <div class="col-8">
-                    <TextEdit @bind-Text="freebieCreateDto.ItemName" />
+                    <TextEdit @bind-Text="UpdateFreebieDto.ItemName" />
                 </div>
                 <div class="col-1">
                     <span>
-                   
+
                         @(string.IsNullOrWhiteSpace(freebieCreateDto.ItemName) ? 60 : (MaxTextCount - freebieCreateDto.ItemName.Count()))/@MaxTextCount
-                  
-                 </span>
+
+                    </span>
                 </div>
 
             </div>
@@ -92,16 +92,16 @@
                     </Field>
 
                 </div>
-                @if (ImageList.Count > 0)
+                @if (UpdateFreebieDto?.Images != null && UpdateFreebieDto.Images.Count > 0)
                 {
-                    <div Class="col-12 row">
+                    <div Class="col-12 row mt-2">
                         <div class="col-2"></div>
-                        <div class="col-9">
+                        <div class="col-10">
                             <div class="image-list-container">
-                                @foreach (var image in ImageList)
+                                @foreach (var image in UpdateFreebieDto.Images)
                                 {
                                     <div class="image-container">
-                                        <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image" Fluid />
+                                        <Image class="blur-image" Source="@image.ImageUrl" Text="Item Image" Fluid />
                                          <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName)">
                                              <i class="fa fa-trash"></i>
                                          </button>
@@ -161,8 +161,8 @@
                     <label>@L["ChooseGroupBuy"]</label>
                 </div>
                 <div class="col-4">
-                    
-                    <Radio TValue="bool" @bind-Checked="freebieCreateDto.ApplyToAllGroupBuy" Value="true" Group="ApplyToAllGroupBuy">
+
+                    <Radio TValue="bool" @bind-Checked="UpdateFreebieDto.ApplyToAllGroupBuy" Value="true" Group="ApplyToAllGroupBuy">
                         @L["ApplyToAllGroupBuy"]
                     </Radio>
                 </div>
@@ -171,23 +171,23 @@
                 <div class="col-2">
                 </div>
                 <div class="col-2">
-                    <Radio TValue="bool" @bind-Checked="freebieCreateDto.ApplyToAllGroupBuy" Value="false" Group="ApplyToAllGroupBuy"></Radio>
+                    <Radio TValue="bool" @bind-Checked="UpdateFreebieDto.ApplyToAllGroupBuy" Value="false" Group="ApplyToAllGroupBuy"></Radio>
                 </div>
                 <div class="col-7">
                     <Autocomplete TItem="KeyValueDto"
-                                  TValue="Guid?"
+                                  TValue="Guid"
                                   Data="@GroupBuyList"
                                   TextField="@(( item ) => item.Name)"
                                   ValueField="@(( item ) => item.Id)"
-                                    @bind-SelectedValues="freebieCreateDto.FreebieGroupBuys"
-                                    @bind-SelectedTexts="SelectedTexts"
+                    @bind-SelectedValues="SelectedItems"
+                    @bind-SelectedTexts="SelectedTexts"
                                   Placeholder="Search..."
                                   Filter="AutocompleteFilter.StartsWith"
                                   SelectionMode="AutocompleteSelectionMode.Multiple"
-                                  CustomFilter="@((item, searchValue) =>item.Name != null && item.Name.IndexOf(searchValue, 0, StringComparison.CurrentCultureIgnoreCase) >= 0)" 
-                                  HighlightSearch
+                                  CustomFilter="@((item, searchValue) =>item.Name != null && item.Name.IndexOf(searchValue, 0, StringComparison.CurrentCultureIgnoreCase) >= 0)"
+                                                HighlightSearch
                                    Immediate="true"
-                     @ref="AutocompleteField"
+                     @ref="AutocompleteField"  
                                    Size="Size.Small">
                          <NotFoundContent> @L["NotFound"] </NotFoundContent>
                      </Autocomplete>
@@ -207,7 +207,7 @@
                  <div class="col-2">
                  </div>
                  <div class="col-2">
-                     <Radio TValue="bool" Group="Condition" @bind-value="freebieCreateDto.UnCondition">
+                     <Radio TValue="bool" Group="Condition" @bind-value="UpdateFreebieDto.UnCondition">
                          <Label>@L["WhenOrderReach"]</Label>
                      </Radio>
                  </div>
@@ -217,80 +217,80 @@
                         {
                             <option value="@enumValue">@L[enumValue.ToString()]</option>
                         }
-                     </select>
-                     @* Data="@ShippingMethods"
+                    </select>
+                    @* Data="@ShippingMethods"
                     @bind-SelectedValue="@CreateItemDto.ShippingMethodId" *@
 
-                 </div>
-             </div>
-             <div class=" col-12 row mt-1">
-                 <div class="col-2">
-                 </div>
-                 <div class="col-2">
-                     <Label>@L["AmountReach"]</Label>
-                 </div>
-                 <div class="col-3">
-                     <div class="input-group">
-                         <Span Class="bg-primary text-light px-2 py-1">$</Span>
-                         <NumericEdit TValue="decimal" @bind-Value="freebieCreateDto.MinimumAmount" Size="Size.Small" />
+                </div>
+            </div>
+            <div class=" col-12 row mt-1">
+                <div class="col-2">
+                </div>
+                <div class="col-2">
+                    <Label>@L["AmountReach"]</Label>
+                </div>
+                <div class="col-3">
+                    <div class="input-group">
+                        <Span Class="bg-primary text-light px-2 py-1">$</Span>
+                        <NumericEdit TValue="decimal" @bind-Value="UpdateFreebieDto.MinimumAmount" Size="Size.Small" />
 
-                     </div>
+                    </div>
 
 
-                 </div>
+                </div>
                 <div class="col-1 text-end">
-                     <Label  l>@L["Get"]</Label>
-                 </div>
-                 <div class="col-3">
-                     <div class="input-group">
-                         <NumericEdit Size="Size.Small" TValue="int" @bind-Value="freebieCreateDto.MinimumPiece" />
-                         <Span Class="bg-primary text-light px-2 py-1">@L["Piece"]</Span>
-                     </div>
-                 </div>
-             </div>
-             <div class="row mt-2">
-                 <div class="col-2">@L["ActivityDate"]</div>
-                 <div class="col-4">
+                    <Label l>@L["Get"]</Label>
+                </div>
+                <div class="col-3">
+                    <div class="input-group">
+                        <NumericEdit Size="Size.Small" TValue="int" @bind-Value="UpdateFreebieDto.MinimumPiece" />
+                        <Span Class="bg-primary text-light px-2 py-1">@L["Piece"]</Span>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-2">@L["ActivityDate"]</div>
+                <div class="col-4">
 
 
-                     <DateEdit Class="form-control" @bind-Date="freebieCreateDto.ActivityStartDate" Placeholder="@L["StartDate"].ToString()" TValue="DateTime?" />
+                    <DateEdit Class="form-control" @bind-Date="UpdateFreebieDto.ActivityStartDate" Placeholder="@L["StartDate"].ToString()" TValue="DateTime?" />
 
-                 </div>
-                 <div class="col-1">
-                     </div>
-                 <div class="col-4">
+                </div>
+                <div class="col-1">
+                </div>
+                <div class="col-4">
 
-                    <DateEdit Class="form-control" @bind-Date="freebieCreateDto.ActivityEndDate" Placeholder="@L["EndDate"].ToString()" TValue="DateTime?" />
+                    <DateEdit Class="form-control" @bind-Date="UpdateFreebieDto.ActivityEndDate" Placeholder="@L["EndDate"].ToString()" TValue="DateTime?" />
 
 
-                 </div>
-             </div>
-             <div class="row mt-2">
+                </div>
+            </div>
+            <div class="row mt-2">
 
-                 <div class="col-2">
-                     <label>@L["FreebieAmount"]</label>
-                 </div>
-                 <div class="col-9">
-                     <NumericEdit @bind-Value="freebieCreateDto.FreebieAmount" TValue="decimal">
-                         </NumericEdit>
-                 </div>
+                <div class="col-2">
+                    <label>@L["FreebieAmount"]</label>
+                </div>
+                <div class="col-9">
+                    <NumericEdit @bind-Value="UpdateFreebieDto.FreebieAmount" TValue="decimal">
+                    </NumericEdit>
+                </div>
 
-             </div>
-         </div>
-     </CardBody>
-     <CardFooter>
-         <div class="row">
-             <div class="col-12 text-lg-end">
-                 <Button Type="@ButtonType.Button"   class="btn btn-danger me-1" >@L["Cancel"]</Button>
-                <Button Type="@ButtonType.Button" Clicked="CreateFreebieAsync" class="btn btn-primary me-1">
-                     <i class="fa fa-check"></i>
-                     @L["Save"]
-                 </Button>
-             </div>
-         </div>
-     </CardFooter>
- </Card>
+            </div>
+        </div>
+    </CardBody>
+    <CardFooter>
+        <div class="row">
+            <div class="col-12 text-lg-end">
+                <Button Type="@ButtonType.Button" class="btn btn-danger me-1">@L["Cancel"]</Button>
+                <Button Type="@ButtonType.Button" Clicked="UpdateFreebieAsync" class="btn btn-primary me-1">
+                    <i class="fa fa-check"></i>
+                    @L["Save"]
+                </Button>
+            </div>
+        </div>
+    </CardFooter>
+</Card>
 
- @code {
-   
+@code {
+
  }

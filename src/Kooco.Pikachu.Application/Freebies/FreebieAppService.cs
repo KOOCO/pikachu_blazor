@@ -1,6 +1,7 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies.Dtos;
 using Kooco.Pikachu.FreeBies;
+using Kooco.Pikachu.FreeBies.Dtos;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Items.Dtos;
@@ -9,8 +10,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Data;
+using Volo.Abp.Domain.Repositories;
+using Volo.Abp.ObjectMapping;
 
 namespace Kooco.Pikachu.Freebies
 {
@@ -85,7 +90,70 @@ namespace Kooco.Pikachu.Freebies
         {
             var groupbuys = await _groupBuyRepository.GetListAsync();
             return ObjectMapper.Map<List<GroupBuy>, List<KeyValueDto>>(groupbuys);
-
         }
+
+        public async Task<FreebieDto> GetAsync(Guid id, bool includeDetails = false)
+        {
+            var freebie = await _freebieRepository.GetAsync(id);
+            if (includeDetails)
+            {
+                await _freebieRepository.EnsureCollectionLoadedAsync(freebie, i => i.FreebieGroupBuys);
+                await _freebieRepository.EnsureCollectionLoadedAsync(freebie, i => i.Images);
+            }
+            return ObjectMapper.Map<Freebie, FreebieDto>(freebie);
+        }
+        public  async Task<FreebieDto> UpdateAsync(Guid id, UpdateFreebieDto input)
+        {
+            var sameName = await _freebieRepository.FirstOrDefaultAsync(item => item.ItemName == input.ItemName);
+            if (sameName != null && sameName.Id != id)
+            {
+                throw new BusinessException(PikachuDomainErrorCodes.ItemWithSameNameAlreadyExists);
+            }
+
+            var freebie = await _freebieRepository.GetAsync(id);
+            freebie.ItemName = input.ItemName;
+            freebie.ItemDescription = input.ItemDescription;
+            freebie.ApplyToAllGroupBuy = input.ApplyToAllGroupBuy;
+            freebie.ActivityStartDate = input.ActivityStartDate;
+            freebie.ActivityEndDate = input.ActivityEndDate;
+            freebie.UnCondition = input.UnCondition;
+            freebie.FreebieAmount = input.FreebieAmount;
+            await _freebieRepository.EnsureCollectionLoadedAsync(freebie, x => x.FreebieGroupBuys);
+            var freebieGroupBuysId = input.FreebieGroupBuys.Select(x => x.GroupBuyId).ToList();
+
+            _freebieManager.RemoveFreebieGroupBuys(freebie, freebieGroupBuysId);
+            foreach (var freebieGroupBuys in input.FreebieGroupBuys)
+            {
+                freebie.AddFreebieGroupBuys(freebie.Id, freebieGroupBuys.GroupBuyId);
+            }
+            if (input.Images != null && input.Images.Any())
+            {
+                await _freebieRepository.EnsureCollectionLoadedAsync(freebie, s => s.Images);
+
+                foreach (var image in input.Images)
+                {
+                    if (!freebie.Images.Any(x => x.BlobImageName == image.BlobImageName))
+                    {
+                        freebie.AddImage(
+                        GuidGenerator.Create(),
+                        image.Name,
+                        image.BlobImageName,
+                        image.ImageUrl,
+                        image.SortNo
+                        );
+                    }
+                }
+            }
+
+            return ObjectMapper.Map<Freebie, FreebieDto>(freebie);
+        }
+        public async Task DeleteSingleImageAsync(Guid itemId, string blobImageName)
+        {
+            var item = await _freebieRepository.GetAsync(itemId);
+            await _freebieRepository.EnsureCollectionLoadedAsync(item, x => x.Images);
+            item.Images.RemoveAll(item.Images.Where(x => x.BlobImageName == blobImageName).ToList());
+        }
+
+     
     }
 }
