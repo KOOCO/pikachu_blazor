@@ -1,5 +1,6 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies.Dtos;
+using Kooco.Pikachu.FreeBies;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Items.Dtos;
@@ -8,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 
 namespace Kooco.Pikachu.Freebies
@@ -18,6 +20,7 @@ namespace Kooco.Pikachu.Freebies
         private readonly FreebieManager _freebieManager;
         private readonly IFreebieRepository _freebieRepository;
         private readonly IGroupBuyRepositroy _groupBuyRepository;
+
         public FreebieAppService(
             FreebieManager freebieManager,
             IFreebieRepository freebieRepository,
@@ -44,7 +47,7 @@ namespace Kooco.Pikachu.Freebies
                 input.FreebieAmount
                 );
 
-            if (input.FreebieGroupBuys!=null&& input.FreebieGroupBuys.Any())
+            if (input.FreebieGroupBuys != null && input.FreebieGroupBuys.Any())
             {
                 foreach (var freeBuyGroupBuys in input.FreebieGroupBuys)
                 {
@@ -70,6 +73,12 @@ namespace Kooco.Pikachu.Freebies
 
             await _freebieRepository.InsertAsync(result);
             return ObjectMapper.Map<Freebie, FreebieDto>(result);
+        }
+
+        public async Task<List<FreebieDto>> GetListAsync()
+        {
+            var data = await _freebieRepository.GetListAsync();
+            return ObjectMapper.Map<List<Freebie>, List<FreebieDto>>(data);
         }
 
         public async Task<List<KeyValueDto>> GetGroupBuyLookupAsync()

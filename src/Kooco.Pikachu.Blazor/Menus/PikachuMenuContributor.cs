@@ -62,6 +62,12 @@ public class PikachuMenuContributor : IMenuContributor
             displayName: "團購頁面設定",
             url: "/GroupBuyManagement/GroupBuyReport")
             )
+             .AddItem(new ApplicationMenuItem(
+            name: "Freebies",
+            icon: "fas fa-chalkboard-teacher",
+            displayName: "團購頁面設定",
+            url: "/Freebie/FreebieList")
+            )
         );
 
         context.Menu.Items.Insert(

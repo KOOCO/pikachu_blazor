@@ -22,7 +22,8 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
         private const int MaxTextCount = 60;
         private const int TotalMaxAllowedFiles = 10;
         private const int MaxAllowedFileSize = 1024 * 1024 * 10;
-        private Blazored.TextEditor.BlazoredTextEditor ItemDescription; //Item Discription Html
+        private Blazored.TextEditor.BlazoredTextEditor ItemDescription;
+        //Item Discription Html
       //  private Radio<bool> ApplyToAllGroupBuy;
        // private Radio<bool> Uncondition;
         private List<KeyValueDto> GroupBuyList { get; set; } = new();

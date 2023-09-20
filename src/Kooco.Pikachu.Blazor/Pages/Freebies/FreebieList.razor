@@ -1,0 +1,83 @@
+﻿@page "/Freebie/FreebieList"
+@using Volo.Abp.MultiTenancy
+@using Volo.Abp.Application.Dtos
+@using Kooco.Pikachu.Freebies.Dtos
+@using Kooco.Pikachu.Localization
+@using Microsoft.Extensions.Localization
+@using Volo.Abp
+@using System.Text.Json;
+@using System.ComponentModel
+
+
+@inject IStringLocalizer<PikachuResource> L
+@inject NavigationManager NavigationManager
+
+<div class="col-12 row mb-2">
+    <div class="col-6">
+        <h3>Freebies List</h3>
+    </div>
+    <div class="col-6 d-flex flex-row-reverse">
+        <Button Danger Type="@ButtonType.Button" Class="btn btn-sm btn-danger">
+            @L["DeleteSelected"]
+        </Button>
+        @*   <Button Type="@ButtonType.Button" Class="btn btn-sm btn-secondary me-1">@L["CopyItem"]</Button> *@
+        <Button Type="@ButtonType.Button" Class="btn btn-sm btn-primary me-1" Clicked="CreateNewItem">
+            <i class="fa fa-plus"></i>
+            @L["NewItem"]
+        </Button>
+        @* <div class="me-2 p-2">
+        <input type="checkbox" class="me-1" style="height: 15px; width: 15px;" checked="@IsAllSelected" @onchange="HandleSelectAllChange"></input>
+        <Label Class="form-label">@L["SelectAll"]</Label>
+        </div> *@
+    </div>
+</div>
+<div>
+    <DataGrid TItem="FreebieDto"
+              Data="FreebieListItems"
+              ReadData="UpdateFreebieList"
+              TotalItems="Total"
+              ShowPager="true">
+        <DataGridColumns>
+            <DataGridColumn TItem="FreebieDto"
+                            Field="@nameof(FreebieDto.ItemName)"
+                            Caption="@L["ItemName"]">
+            </DataGridColumn>
+            <DataGridColumn TItem="FreebieDto"
+                            Caption="@L["ActivtyTimePeriod"]">
+                <DisplayTemplate>
+                    @(context.ActivityStartDate?.ToShortDateString() ?? "") - @(context.ActivityEndDate?.ToShortDateString() ?? "")
+                </DisplayTemplate>
+            </DataGridColumn>
+            <DataGridColumn TItem="FreebieDto"
+                            Field="@nameof(FreebieDto.CreationTime)"
+                            Caption="@L["CreatedTime"]">
+                <DisplayTemplate>
+                    @context.CreationTime.ToShortDateString()
+                </DisplayTemplate>
+            </DataGridColumn>
+
+
+        </DataGridColumns>
+    </DataGrid>
+</div>
+
+@code {
+
+
+    public void CreateNewItem()
+    {
+        NavigationManager.NavigateTo("/Freebie/New");
+    }
+
+
+
+
+
+    public void OnEditItem(DataGridRowMouseEventArgs<FreebieDto> e)
+    {
+        var id = e.Item.Id;
+        // NavigationManager.NavigateTo("/Freebie/New" + id);
+
+    }
+
+}
