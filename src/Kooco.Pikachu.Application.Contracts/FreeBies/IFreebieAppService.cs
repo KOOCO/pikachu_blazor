@@ -18,7 +18,8 @@ namespace Kooco.Pikachu.Freebies
         Task<FreebieDto> GetAsync(Guid id, bool includeDetails = false);
         Task<FreebieDto> UpdateAsync(Guid id, UpdateFreebieDto input);
         Task DeleteSingleImageAsync(Guid itemId, string blobImageName);
-       
-       
+        Task DeleteManyItemsAsync(List<Guid> setItemIds);
+
+
     }
 }

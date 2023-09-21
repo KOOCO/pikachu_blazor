@@ -133,16 +133,9 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
                 var confirmed = await _uiMessageService.Confirm(L[PikachuDomainErrorCodes.AreYouSureToDeleteImage]);
                 if (confirmed)
                 {
-                    confirmed = await _imageContainerManager.DeleteAsync(blobImageName);
-                    if (confirmed)
-                    {
-                        ImageList = ImageList.Where(x => x.BlobImageName != blobImageName).ToList();
-                        StateHasChanged();
-                    }
-                    else
-                    {
-                        throw new BusinessException(L[PikachuDomainErrorCodes.SomethingWentWrongWhileDeletingImage]);
-                    }
+                    await _imageContainerManager.DeleteAsync(blobImageName);
+                    ImageList = ImageList.Where(x => x.BlobImageName != blobImageName).ToList();
+                    StateHasChanged();
                 }
             }
             catch (Exception ex)
@@ -192,6 +185,10 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
             {
                 throw new BusinessException(L[PikachuDomainErrorCodes.ItemDetailsCannotBeEmpty]);
             }
+            if (!FreebieCreateDto.FreebieGroupBuys.Any())
+            {
+                throw new BusinessException(L[PikachuDomainErrorCodes.SelectAtLeastOneGroupBuy]);
+            }
             if (FreebieCreateDto.FreebieAmount <= 0)
             {
                 throw new BusinessException(L[PikachuDomainErrorCodes.FreebieAmountCannotBeZero]);
@@ -217,5 +214,5 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
             return Task.CompletedTask;
         }
     }
-   
+
 }

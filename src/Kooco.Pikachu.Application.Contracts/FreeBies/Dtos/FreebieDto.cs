@@ -23,5 +23,6 @@ namespace Kooco.Pikachu.Freebies.Dtos
         public int MinimumPiece { get; set; }
         public decimal FreebieAmount { get; set; }
         public Guid? TenantId { get; set; }
+        public bool IsSelected { get; set; } = false;
     }
 }

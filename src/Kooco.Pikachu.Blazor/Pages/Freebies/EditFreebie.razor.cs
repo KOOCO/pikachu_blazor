@@ -205,6 +205,10 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
             {
                 throw new BusinessException(L[PikachuDomainErrorCodes.ItemDetailsCannotBeEmpty]);
             }
+            if (!UpdateFreebieDto.FreebieGroupBuys.Any())
+            {
+                throw new BusinessException(L[PikachuDomainErrorCodes.SelectAtLeastOneGroupBuy]);
+            }
             if (UpdateFreebieDto.FreebieAmount <= 0)
             {
                 throw new BusinessException(L[PikachuDomainErrorCodes.FreebieAmountCannotBeZero]);

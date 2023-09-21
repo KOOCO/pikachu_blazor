@@ -17,7 +17,7 @@
         <h3>Freebies List</h3>
     </div>
     <div class="col-6 d-flex flex-row-reverse">
-        <Button Danger Type="@ButtonType.Button" Class="btn btn-sm btn-danger">
+        <Button Danger Type="@ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="DeleteSelectedAsync">
             @L["DeleteSelected"]
         </Button>
         @*   <Button Type="@ButtonType.Button" Class="btn btn-sm btn-secondary me-1">@L["CopyItem"]</Button> *@
@@ -25,10 +25,10 @@
             <i class="fa fa-plus"></i>
             @L["NewItem"]
         </Button>
-        @* <div class="me-2 p-2">
+        <div class="me-2 p-2">
         <input type="checkbox" class="me-1" style="height: 15px; width: 15px;" checked="@IsAllSelected" @onchange="HandleSelectAllChange"></input>
         <Label Class="form-label">@L["SelectAll"]</Label>
-        </div> *@
+        </div>
     </div>
 </div>
 <div>
@@ -39,6 +39,11 @@
               ShowPager="true"
               RowDoubleClicked="OnEditItem">
         <DataGridColumns>
+            <DataGridColumn TItem="FreebieDto"  Caption="@L["Select"]">
+                <DisplayTemplate>
+                    <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
+                </DisplayTemplate>
+            </DataGridColumn>
             <DataGridColumn TItem="FreebieDto"
                             Field="@nameof(FreebieDto.ItemName)"
                             Caption="@L["ItemName"]">

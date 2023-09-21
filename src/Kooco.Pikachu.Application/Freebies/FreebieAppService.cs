@@ -1,9 +1,11 @@
-﻿using Kooco.Pikachu.EnumValues;
+﻿using Kooco.Pikachu.AzureStorage.Image;
+using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies.Dtos;
 using Kooco.Pikachu.FreeBies;
 using Kooco.Pikachu.FreeBies.Dtos;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
+using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using System;
 using System.Collections.Generic;
@@ -25,16 +27,18 @@ namespace Kooco.Pikachu.Freebies
         private readonly FreebieManager _freebieManager;
         private readonly IFreebieRepository _freebieRepository;
         private readonly IGroupBuyRepositroy _groupBuyRepository;
-
+        private readonly ImageContainerManager _imageContainerManager;
         public FreebieAppService(
             FreebieManager freebieManager,
             IFreebieRepository freebieRepository,
-            IGroupBuyRepositroy groupBuyRepository
+            IGroupBuyRepositroy groupBuyRepository,
+            ImageContainerManager imageContainerManager
             )
         {
             _freebieManager = freebieManager;
             _freebieRepository = freebieRepository;
             _groupBuyRepository = groupBuyRepository;
+            _imageContainerManager = imageContainerManager;
         }
 
         public async Task<FreebieDto> CreateAsync(FreebieCreateDto input)
@@ -156,7 +160,23 @@ namespace Kooco.Pikachu.Freebies
             await _freebieRepository.EnsureCollectionLoadedAsync(item, x => x.Images);
             item.Images.RemoveAll(item.Images.Where(x => x.BlobImageName == blobImageName).ToList());
         }
+        public async Task DeleteManyItemsAsync(List<Guid> freebieIds)
+        {
+            foreach (var id in freebieIds)
+            {
+                var freebie = await _freebieRepository.GetAsync(id);
+                await _freebieRepository.EnsureCollectionLoadedAsync(freebie, x => x.Images);
+                if (freebie.Images == null) continue;
 
-     
+                foreach(var image  in freebie.Images)
+                {
+                    await _imageContainerManager.DeleteAsync(image.BlobImageName);
+                }
+            }
+            await _freebieRepository.DeleteManyAsync(freebieIds);
+           
+        }
+
     }
 }
+
