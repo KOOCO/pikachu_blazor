@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.AspNetCore.Components.Messages;
 using Volo.Abp.TenantManagement;
@@ -37,7 +38,8 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
         private async Task UpdateFreebieList()
         {
             //int skipCount = PageIndex * PageSize;
-          FreebieListItems = await _freebieAppService.GetListAsync();
+         
+            FreebieListItems = await _freebieAppService.GetListAsync();
             
 
         }
@@ -74,6 +76,25 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
             catch (Exception ex)
             {
                 await _uiMessageService.Error(ex.GetType()?.ToString());
+            }
+        }
+             public async Task OnFreebieAvaliablityChange(Guid id)
+        {
+            try
+            {
+                var freebie =FreebieListItems.Where(x => x.Id == id).First();
+                freebie.IsFreebieAvaliable = !freebie.IsFreebieAvaliable;
+                await _freebieAppService.ChangeFreebieAvailability(id);
+                await UpdateFreebieList();
+                await InvokeAsync(StateHasChanged);
+            }
+            catch (BusinessException ex)
+            {
+                await _uiMessageService.Error(ex.Code.ToString());
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
             }
         }
     }

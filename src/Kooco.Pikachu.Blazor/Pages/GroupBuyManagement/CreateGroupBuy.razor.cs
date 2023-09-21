@@ -410,8 +410,15 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 }
                 CreateGroupBuyDto.GroupBuyNo = 0;
                 CreateGroupBuyDto.Status = "New";
-                CreateGroupBuyDto.ExcludeShippingMethod = string.Join(",", ItemTags);
-                CreateGroupBuyDto.PaymentMethod = string.Join(",", PaymentMethodTags);
+                if (ItemTags.Any())
+                {
+                    CreateGroupBuyDto.ExcludeShippingMethod = string.Join(",", ItemTags);
+                }
+                if (PaymentMethodTags.Any())
+                {
+                    CreateGroupBuyDto.PaymentMethod = string.Join(",", PaymentMethodTags);
+                }
+                
                 CreateGroupBuyDto.NotifyMessage = await NotifyEmailHtml.GetHTML();
                 CreateGroupBuyDto.GroupBuyConditionDescription = await GroupBuyHtml.GetHTML();
                 CreateGroupBuyDto.ExchangePolicyDescription = await ExchangePolicyHtml.GetHTML();

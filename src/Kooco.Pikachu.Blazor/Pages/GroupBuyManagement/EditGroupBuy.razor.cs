@@ -498,8 +498,14 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         {
             try
             {
-                EditGroupBuyDto.ExcludeShippingMethod = string.Join(",", ItemTags);
-                EditGroupBuyDto.PaymentMethod = string.Join(",", PaymentMethodTags);
+                if (ItemTags.Any())
+                {
+                    EditGroupBuyDto.ExcludeShippingMethod = string.Join(",", ItemTags);
+                }
+                if (PaymentMethodTags.Any())
+                {
+                    EditGroupBuyDto.PaymentMethod = string.Join(",", PaymentMethodTags);
+                }
 
                 EditGroupBuyDto.NotifyMessage = await NotifyEmailHtml.GetHTML();
                 EditGroupBuyDto.GroupBuyConditionDescription = await GroupBuyHtml.GetHTML();

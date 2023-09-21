@@ -300,7 +300,10 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 
                 CreateItemDto.ItemDetails = ItemDetailsList;
                 CreateItemDto.ItemDescription = await QuillHtml.GetHTML();
-                CreateItemDto.ItemTags = string.Join(",", ItemTags);
+                if (ItemTags.Any())
+                {
+                    CreateItemDto.ItemTags = string.Join(",", ItemTags);
+                }
                 await _itemAppService.CreateAsync(CreateItemDto);
                 NavigationManager.NavigateTo("Items");
             }

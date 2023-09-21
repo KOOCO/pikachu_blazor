@@ -13,6 +13,8 @@ using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Kooco.Pikachu.AzureStorage.Image;
+using Kooco.Pikachu.Freebies;
 
 namespace Kooco.Pikachu.GroupBuys
 {
@@ -22,12 +24,16 @@ namespace Kooco.Pikachu.GroupBuys
         private readonly IGroupBuyRepositroy _groupBuyRepository;
         private readonly GroupBuyManager _groupBuyManager;
         private readonly IImageAppService _imageAppService;
-        
-        public GroupBuyAppService(IGroupBuyRepositroy groupBuyRepository, GroupBuyManager groupBuyManager, IImageAppService imageAppService)
+        private readonly IRepository<Image, Guid> _imageRepository;
+        private readonly ImageContainerManager _imageContainerManager;
+        public GroupBuyAppService(IGroupBuyRepositroy groupBuyRepository, GroupBuyManager groupBuyManager,
+            IImageAppService imageAppService, ImageContainerManager imageContainerManager, IRepository<Image, Guid> imageRepository)
         {
             _groupBuyManager = groupBuyManager;
             _groupBuyRepository = groupBuyRepository;
             _imageAppService = imageAppService;
+            _imageContainerManager = imageContainerManager;
+            _imageRepository = imageRepository;
         }
 
         public async Task<GroupBuyDto> CreateAsync(GroupBuyCreateDto input)
@@ -275,6 +281,16 @@ namespace Kooco.Pikachu.GroupBuys
 
         public async Task DeleteManyGroupBuyItemsAsync(List<Guid> groupBuyIds)
         {
+            foreach (var id in groupBuyIds)
+            {
+                var images = await _imageRepository.GetListAsync(x => x.TargetId == id);
+                if (images == null) continue;
+
+                foreach (var image in images)
+                {
+                    await _imageContainerManager.DeleteAsync(image.BlobImageName);
+                }
+            }
             await _groupBuyRepository.DeleteManyAsync(groupBuyIds);
         }
         public async Task<List<KeyValueDto>> GetGroupBuysAsync()

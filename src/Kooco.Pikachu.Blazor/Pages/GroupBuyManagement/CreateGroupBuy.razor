@@ -356,13 +356,13 @@
             </div>
         </div>
         <div class=" col-12 row">
-            <div class="col-1">@L["Logistic"]</div>
+            <div class="col-2">@L["Logistic"]</div>
             <div class="col-2">@L["FreeShipping"]</div>
 
             <div class="col-4"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.FreeShipping"></Switch></div>
         </div>
         <div class="col-12 row">
-            <div class="col-1"></div>
+            <div class="col-2"></div>
             <div class="col-2">
                 @L["ExcludeShippingMethod"]
             </div>
@@ -386,26 +386,27 @@
 
         </div>
         <div class=" col-12 row">
-            <div class="col-1"></div>
+            <div class="col-2"></div>
             <div class="col-2">@L["AllowShipToOuterIsland"]</div>
 
             <div class="col-4"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.AllowShipToOuterTaiwan"></Switch></div>
         </div>
         <div class=" col-12 row">
-            <div class="col-1"></div>
-            <div class="col-2">@L["AllowShipToOverSea"]</div>
+            <div class="col-2"></div>
+            <div class="col-3">@L["AllowShipToOverSea"]</div>
 
             <div class="col-4"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.AllowShipOversea"></Switch></div>
         </div>
         <div class=" col-12 row">
-            <div class="col-1"></div>
+            <div class="col-2"></div>
             <div class="col-2">@L["ExpectDeliveryDate"]</div>
             <div class="col-4"><DateEdit TValue="DateTime?" Class="form-control" @bind-Date=CreateGroupBuyDto.ExpectShippingDateTo Placeholder="@L["StartDate"].ToString()" /></div>
             <div class="col-4"><DateEdit TValue="DateTime?" Class="form-control" @bind-Date=CreateGroupBuyDto.ExpectShippingDateFrom Placeholder="@L["EndDate"].ToString()" /></div>
         </div>
 
         <div class="col-12 row">
-            <div class="col-1">@L["GateWay"]</div>
+            
+            <div class="col-2">@L["Gateway"]</div>
             <div class="col-2">@L["PaymentMethod"]</div>
 
             <div class="col-4">
@@ -415,7 +416,7 @@
             </div>
         </div>
         <div class="col-12 row">
-            <div class="col-1"></div>
+            <div class="col-2"></div>
             <div class="col-2"></div>
 
             <div class="col-1">    <Radio TValue="bool" Group="Payment" Value="@paymentMethodCheck"> </Radio></div>
@@ -437,32 +438,32 @@
 
         </div>
         <div class=" col-12 row">
-            <div class="col-1">@L["Invoice"]</div>
+            <div class="col-2">@L["Invoice"]</div>
             <div class="col-2">@L["IssueInvoice"]</div>
 
             <div class="col-4"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.IssueInvoice"></Switch></div>
         </div>
         <div class=" col-12 row">
-            <div class="col-1"></div>
+            <div class="col-2"></div>
             <div class="col-2 form-label">@L["AutoIssueTriplicateInvoice"]</div>
 
             <div class="col-4"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.AutoIssueTriplicateInvoice"></Switch></div>
         </div>
         <div class=" col-12 row">
-            <div class="col-1"></div>
+            <div class="col-2"></div>
             <div class="col-2 form-label">@L["InvoiceComment"]</div>
 
             <div class="col-8"> <InputTextArea class="form-control" maxlength="200" @bind-Value="@CreateGroupBuyDto.InvoiceNote"></InputTextArea></div>
         </div>
         <Divider></Divider>
         <div class=" col-12 row">
-            <div class="col-1 mx-1">@L["AdvanceSetting"]</div>
+            <div class="col-2 mx-1">@L["AdvanceSetting"]</div>
             <div class="col-2 form-label">@L["HideCredention"]</div>
 
             <div class="col-4"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.ProtectPrivacyData"></Switch></div>
         </div>
         <div class=" col-12 row">
-            <div class="col-1"></div>
+            <div class="col-2"></div>
             <div class="col-2">
                 <label>@L["InviteCode"]</label>
             </div>
@@ -473,7 +474,7 @@
 
         </div>
         <div class=" col-12 row">
-            <div class="col-1"></div>
+            <div class="col-2"></div>
             <div class="col-2">
                 <label>@L["ProfitShare"]</label>
             </div>
@@ -482,7 +483,7 @@
             </div>
         </div>
         <div class=" col-12 row">
-            <div class="col-1"></div>
+            <div class="col-2"></div>
             <div class="col-2">
                 <label>@L["FaceBookPixelID"]</label>
             </div>
@@ -491,7 +492,7 @@
             </div>
         </div>
         <div class=" col-12 row">
-            <div class="col-1"></div>
+            <div class="col-2"></div>
             <div class="col-2">
                 <label>@L["FaceBookID"]</label>
             </div>
@@ -500,7 +501,7 @@
             </div>
         </div>
         <div class=" col-12 row">
-            <div class="col-1"></div>
+            <div class="col-2"></div>
             <div class="col-2">
                 <label>@L["IGID"]</label>
             </div>
@@ -509,7 +510,7 @@
             </div>
         </div>
         <div class=" col-12 row">
-            <div class="col-1"></div>
+            <div class="col-2"></div>
             <div class="col-2">
                 <label>@L["LINEID"]</label>
             </div>
@@ -518,7 +519,7 @@
             </div>
         </div>
         <div class=" col-12 row">
-            <div class="col-1"></div>
+            <div class="col-2"></div>
             <div class="col-2">
                 <label>@L["GAID"]</label>
             </div>
@@ -527,7 +528,7 @@
             </div>
         </div>
         <div class=" col-12 row">
-            <div class="col-1"></div>
+            <div class="col-2"></div>
             <div class="col-2">
                 <label>@L["GTM"]</label>
             </div>

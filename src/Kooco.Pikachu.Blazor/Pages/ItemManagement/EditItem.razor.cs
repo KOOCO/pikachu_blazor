@@ -139,6 +139,10 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 
                 UpdateItemDto.ItemDetails = ItemDetailsList;
                 UpdateItemDto.ItemDescription = await QuillHtml.GetHTML();
+                if (ItemTags.Any())
+                {
+                    UpdateItemDto.ItemTags = string.Join(",", ItemTags);
+                }
                 UpdateItemDto.ItemTags = string.Join(",", ItemTags);
                 await _itemAppService.UpdateAsync(EditingId, UpdateItemDto);
                 NavigationManager.NavigateTo("Items");

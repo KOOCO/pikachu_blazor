@@ -61,6 +61,12 @@
                     @context.CreationTime.ToShortDateString()
                 </DisplayTemplate>
             </DataGridColumn>
+            <DataGridColumn TItem="FreebieDto" Field="@nameof(FreebieDto.IsFreebieAvaliable)"
+                            Caption="@L["Availability"]">
+                <DisplayTemplate>
+                    <Switch TValue="bool" Checked="@context.IsFreebieAvaliable" CheckedChanged="@(() => OnFreebieAvaliablityChange(context.Id))"></Switch>
+                </DisplayTemplate>
+            </DataGridColumn>
 
 
         </DataGridColumns>

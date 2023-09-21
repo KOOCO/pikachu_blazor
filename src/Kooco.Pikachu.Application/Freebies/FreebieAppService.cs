@@ -176,6 +176,12 @@ namespace Kooco.Pikachu.Freebies
             await _freebieRepository.DeleteManyAsync(freebieIds);
            
         }
+        public async Task ChangeFreebieAvailability(Guid freebieId)
+        {
+            var freebie = await _freebieRepository.FindAsync(x => x.Id == freebieId);
+            freebie.IsFreebieAvaliable = !freebie.IsFreebieAvaliable;
+            await _freebieRepository.UpdateAsync(freebie);
+        }
 
     }
 }
