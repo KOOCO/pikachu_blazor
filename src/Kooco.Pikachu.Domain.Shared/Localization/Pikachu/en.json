@@ -2,6 +2,17 @@
   "culture": "en",
   "texts": {
     "Menu:Home": "Home",
+    "Menu:GroupBuyManagement": "Group Buy Management",
+    "Menu:GroupBuyListView": "Group Buy ListView",
+    "Menu:GroupBuyReports": "Group Buy Reports",
+    "Menu:GroupBuyPageConfig": "GroupBuy Page Config",
+    "Menu:FreebiesListView": "Freebies List View",
+    "Menu:ProductManagement": "Product Management",
+    "Menu:GoodsList": " Goods List",
+    "Menu:GroupGoodsManagement": "Group Goods Management",
+    "Menu:OrderManagement": "Order Management",
+    "Menu:PaymentManagement": "Payment Management",
+    "Menu:LogisticsManagement": "Logistics Management",
     "Welcome": "Welcome",
     "LongWelcomeMessage": "Welcome to the application. This is a startup project based on the ABP framework. For more information, visit abp.io.",
     "Permission:GroupBuyList": "Group Buy List",
@@ -168,6 +179,6 @@
     "Pikachu:SelectAtLeastOneImage": "Please Select at least one Image",
     "ActivityTimePeriod": "Activity Time Period",
     "Pikachu:InvalidItemName": "Item Name Is Invalid",
-    "Pikachu:FreebieWithSameNameAlreadyExists":"Freebie with same name already exist"
+    "Pikachu:FreebieWithSameNameAlreadyExists": "Freebie with same name already exist"
   }
 }
