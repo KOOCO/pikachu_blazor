@@ -17,9 +17,11 @@ namespace Kooco.Pikachu.Freebies
         private readonly IFreebieRepository _freebieRepository;
         private readonly IStringLocalizer<PikachuResource> L;
         public FreebieManager(
-            IFreebieRepository freebieRepository
+            IFreebieRepository freebieRepository,
+            IStringLocalizer<PikachuResource> l
             )
         {
+            L = l;
             _freebieRepository = freebieRepository;
         }
 
@@ -52,7 +54,7 @@ namespace Kooco.Pikachu.Freebies
             var existing = await _freebieRepository.FindByNameAsync(itemName);
             if (existing is not null)
             {
-                throw new BusinessException(L[PikachuDomainErrorCodes.ItemWithSameNameAlreadyExists]);
+                throw new BusinessException(L[PikachuDomainErrorCodes.FreebieWithSameNameAlreadyExists]);
             }
             return new Freebie(
                 GuidGenerator.Create(),

@@ -34,9 +34,10 @@
 <div>
     <DataGrid TItem="FreebieDto"
               Data="FreebieListItems"
-              ReadData="UpdateFreebieList"
+              ReadData="OnDataGridReadAsync"
               TotalItems="Total"
               ShowPager="true"
+              PageSize="PageSize"
               RowDoubleClicked="OnEditItem">
         <DataGridColumns>
             <DataGridColumn TItem="FreebieDto"  Caption="@L["Select"]">

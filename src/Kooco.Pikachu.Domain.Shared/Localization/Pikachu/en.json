@@ -167,6 +167,7 @@
     "Pikachu:SelectAtLeastOneGroupBuy": "Please Select at least one Group Buy",
     "Pikachu:SelectAtLeastOneImage": "Please Select at least one Image",
     "ActivityTimePeriod": "Activity Time Period",
-    "Pikachu:InvalidItemName": "Item Name Is Invalid"
+    "Pikachu:InvalidItemName": "Item Name Is Invalid",
+    "Pikachu:FreebieWithSameNameAlreadyExists":"Freebie with same name already exist"
   }
 }

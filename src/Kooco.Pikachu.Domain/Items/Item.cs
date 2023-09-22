@@ -20,7 +20,7 @@ namespace Kooco.Pikachu.Items
         public virtual ICollection<Image> Images { get; set; }
         public string? ItemDescriptionTitle { get; set; } //商品敘述抬頭/ItemDescriptionTitle
         public string? ItemDescription { get; set; }// 商品描述/ItemDescription
-        public string ItemTags { get; set; } // 项目标签/ItemTags
+        public string? ItemTags { get; set; } // 项目标签/ItemTags
         public string? SalesAccount { get; set; } //銷售帳戶/Sales Account
         public bool Returnable { get; set; } = false; // 可否退貨/Returnable
         public DateTime? LimitAvaliableTimeStart { get; set; } //限時販售開始時間/Limit Avaliable Time Start

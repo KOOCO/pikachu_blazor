@@ -33,14 +33,28 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
         }
         protected override async Task OnInitializedAsync()
         {
+           
+        }
+        private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<FreebieDto> e)
+        {
+            PageIndex = e.Page - 1;
             await UpdateFreebieList();
+            await InvokeAsync(StateHasChanged);
         }
         private async Task UpdateFreebieList()
         {
-            //int skipCount = PageIndex * PageSize;
-         
-            FreebieListItems = await _freebieAppService.GetListAsync();
             
+
+            //FreebieListItems = await _freebieAppService.GetListAsync();
+            int skipCount = PageIndex * PageSize;
+            var result = await _freebieAppService.GetListAsync(new PagedAndSortedResultRequestDto
+            {
+                Sorting = nameof(ItemDto.ItemName),
+                MaxResultCount = PageSize,
+                SkipCount = skipCount
+            });
+            FreebieListItems = result.Items.ToList();
+            Total = (int)result.TotalCount;
 
         }
         public void OnEditItem(DataGridRowMouseEventArgs<FreebieDto> e)

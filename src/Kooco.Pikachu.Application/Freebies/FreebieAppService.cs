@@ -1,27 +1,21 @@
 ﻿using Kooco.Pikachu.AzureStorage.Image;
-using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies.Dtos;
-using Kooco.Pikachu.FreeBies;
 using Kooco.Pikachu.FreeBies.Dtos;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
-using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
-using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
-using Volo.Abp.ObjectMapping;
 
 namespace Kooco.Pikachu.Freebies
 {
-    public class FreebieAppService : ApplicationService, IFreebieAppService
+    public class FreebieAppService : CrudAppService<Freebie, FreebieDto, Guid, PagedAndSortedResultRequestDto, FreebieCreateDto, UpdateFreebieDto>, IFreebieAppService
     {
 
         private readonly FreebieManager _freebieManager;
@@ -33,7 +27,7 @@ namespace Kooco.Pikachu.Freebies
             IFreebieRepository freebieRepository,
             IGroupBuyRepositroy groupBuyRepository,
             ImageContainerManager imageContainerManager
-            )
+            ) : base(freebieRepository)
         {
             _freebieManager = freebieManager;
             _freebieRepository = freebieRepository;
@@ -41,7 +35,7 @@ namespace Kooco.Pikachu.Freebies
             _imageContainerManager = imageContainerManager;
         }
 
-        public async Task<FreebieDto> CreateAsync(FreebieCreateDto input)
+        public override async Task<FreebieDto> CreateAsync(FreebieCreateDto input)
         {
             var result = await _freebieManager.CreateAsync(
                 input.ItemName,
@@ -106,7 +100,7 @@ namespace Kooco.Pikachu.Freebies
             }
             return ObjectMapper.Map<Freebie, FreebieDto>(freebie);
         }
-        public  async Task<FreebieDto> UpdateAsync(Guid id, UpdateFreebieDto input)
+        public override async Task<FreebieDto> UpdateAsync(Guid id, UpdateFreebieDto input)
         {
             var sameName = await _freebieRepository.FirstOrDefaultAsync(item => item.ItemName == input.ItemName);
             if (sameName != null && sameName.Id != id)
@@ -168,13 +162,13 @@ namespace Kooco.Pikachu.Freebies
                 await _freebieRepository.EnsureCollectionLoadedAsync(freebie, x => x.Images);
                 if (freebie.Images == null) continue;
 
-                foreach(var image  in freebie.Images)
+                foreach (var image in freebie.Images)
                 {
                     await _imageContainerManager.DeleteAsync(image.BlobImageName);
                 }
             }
             await _freebieRepository.DeleteManyAsync(freebieIds);
-           
+
         }
         public async Task ChangeFreebieAvailability(Guid freebieId)
         {

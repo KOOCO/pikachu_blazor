@@ -3,12 +3,13 @@ using Kooco.Pikachu.Images;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Volo.Abp.Application.Dtos;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Entities.Auditing;
 
 namespace Kooco.Pikachu.Freebies.Dtos
 {
-    public class FreebieDto : FullAuditedAggregateRoot<Guid>, IHasConcurrencyStamp
+    public class FreebieDto : FullAuditedEntityDto<Guid>
     {
         public string? ItemName { get; set; }
         public string? ItemDescription { get; set; }
