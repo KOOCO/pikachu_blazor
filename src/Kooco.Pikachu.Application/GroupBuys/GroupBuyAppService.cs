@@ -1,24 +1,18 @@
 ﻿using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.Images;
-using Kooco.Pikachu.Items;
-using Microsoft.AspNetCore.Authorization;
 using Kooco.Pikachu.Items.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Kooco.Pikachu.AzureStorage.Image;
-using Kooco.Pikachu.Freebies;
 
 namespace Kooco.Pikachu.GroupBuys
 {
-
     public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     {
         private readonly IGroupBuyRepositroy _groupBuyRepository;
@@ -133,10 +127,8 @@ namespace Kooco.Pikachu.GroupBuys
                                                          input.Sorting, input.MaxResultCount, input.SkipCount);
             return new PagedResultDto<GroupBuyDto>
             {
-
                 TotalCount = count,
                 Items = ObjectMapper.Map<List<GroupBuy>, List<GroupBuyDto>>(result)
-
             };
         }
 
@@ -293,10 +285,16 @@ namespace Kooco.Pikachu.GroupBuys
             }
             await _groupBuyRepository.DeleteManyAsync(groupBuyIds);
         }
-        public async Task<List<KeyValueDto>> GetGroupBuysAsync()
+
+        /// <summary>
+        /// This Method Returns the Desired Result For the Store Front End.
+        /// Do not change unless you want to make changes in the Store Front End Code
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<GroupBuyDto>> GetListForStoreAsync()
         {
             var data = await _groupBuyRepository.GetListAsync();
-            return ObjectMapper.Map<List<GroupBuy>, List<KeyValueDto>>(data);
+            return ObjectMapper.Map<List<GroupBuy>, List<GroupBuyDto>>(data);
         }
     }
 }
