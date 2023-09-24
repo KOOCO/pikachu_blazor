@@ -65,9 +65,15 @@ public class GroupBuyController : AbpController, IGroupBuyAppService
         return _groupBuyAppService.GetWithDetailsAsync(id);
     }
 
-    [HttpPut("id")]
+    [HttpPut("{id}")]
     public Task<GroupBuyDto> UpdateAsync(Guid id, GroupBuyUpdateDto input)
     {
         return _groupBuyAppService.UpdateAsync(id, input);
+    }
+
+    [HttpGet("get-carousel-images/{id}")]
+    public Task<List<string>> GetCarouselImagesAsync(Guid id)
+    {
+        return _groupBuyAppService.GetCarouselImagesAsync(id);
     }
 }

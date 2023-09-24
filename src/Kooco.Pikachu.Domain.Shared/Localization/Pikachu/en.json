@@ -39,6 +39,7 @@
 
     //items
     "NewItem": "New Item",
+    "EditItem": "Edit Item",
     "Items": "Item List View",
     "CopyItem": "Copy Item",
     "DeleteItem": "Delete Item",

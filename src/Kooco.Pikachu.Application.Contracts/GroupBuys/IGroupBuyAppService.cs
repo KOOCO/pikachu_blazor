@@ -9,7 +9,7 @@ using Volo.Abp.Application.Services;
 
 namespace Kooco.Pikachu.GroupBuys
 {
-    public interface IGroupBuyAppService:IApplicationService
+    public interface IGroupBuyAppService : IApplicationService
     {
         Task<PagedResultDto<GroupBuyDto>> GetListAsync(GetGroupBuyInput input);
         Task<List<GroupBuyDto>> GetListForStoreAsync();
@@ -17,7 +17,8 @@ namespace Kooco.Pikachu.GroupBuys
         Task<GroupBuyDto> GetAsync(Guid id, bool includeDetails = false);
         Task<GroupBuyDto> CreateAsync(GroupBuyCreateDto input);
         Task DeleteAsync(Guid id);
-        Task<GroupBuyDto> UpdateAsync(Guid id,GroupBuyUpdateDto input);
+        Task<GroupBuyDto> UpdateAsync(Guid id, GroupBuyUpdateDto input);
         Task<GroupBuyDto> GetWithDetailsAsync(Guid id);
+        Task<List<string>> GetCarouselImagesAsync(Guid id);
     }
 }

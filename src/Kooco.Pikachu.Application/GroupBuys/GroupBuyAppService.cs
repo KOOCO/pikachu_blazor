@@ -296,5 +296,16 @@ namespace Kooco.Pikachu.GroupBuys
             var data = await _groupBuyRepository.GetListAsync();
             return ObjectMapper.Map<List<GroupBuy>, List<GroupBuyDto>>(data);
         }
+
+        /// <summary>
+        /// This Method Returns the Desired Result For the Store Front End.
+        /// Do not change unless you want to make changes in the Store Front End Code
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<string>> GetCarouselImagesAsync(Guid id)
+        {
+            var data = await _imageRepository.GetListAsync(x => x.TargetId == id && x.ImageType == ImageType.GroupBuyCarouselImage);
+            return data.Select(i => i.ImageUrl).ToList();
+        }
     }
 }

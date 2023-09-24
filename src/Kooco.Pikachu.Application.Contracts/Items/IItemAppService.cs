@@ -20,4 +20,5 @@ public interface IItemAppService :
     Task DeleteSingleImageAsync(Guid itemId, string blobImageName);
     Task<List<KeyValueDto>> GetItemsLookupAsync();
     Task<string?> GetFirstImageUrlAsync(Guid id);
+    Task<List<ItemDto>> GetListForStoreAsync();
 }
