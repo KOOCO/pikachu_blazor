@@ -47,10 +47,10 @@ public class GroupBuyController : AbpController, IGroupBuyAppService
         return _groupBuyAppService.GetAsync(id, includeDetails);
     }
 
-    [HttpGet("get-list-for-store")]
-    public Task<List<GroupBuyDto>> GetListForStoreAsync()
+    [HttpGet("get-list-for-store/{id}")]
+    public Task<GroupBuyDto> GetDataForStoreAsync(Guid id)
     {
-        return _groupBuyAppService.GetListForStoreAsync();
+        return _groupBuyAppService.GetDataForStoreAsync(id);
     }
 
     [HttpGet("get-list")]
