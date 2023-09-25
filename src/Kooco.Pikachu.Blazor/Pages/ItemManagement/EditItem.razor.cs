@@ -89,6 +89,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 ItemDetailsList = mapper.Map<List<CreateItemDetailsDto>>(ExistingItem.ItemDetails);
                 ItemTags = ExistingItem.ItemTags?.Split(',').ToList();
                 if (ItemTags == null)
+
                 {
                     ItemTags = new List<string>();
                 }
@@ -144,6 +145,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 UpdateItemDto.ItemDetails = ItemDetailsList;
                 UpdateItemDto.ItemDescription = await QuillHtml.GetHTML();
                 UpdateItemDto.ItemTags = ItemTags.Any() ? string.Join(",", ItemTags) : null;
+
                 await _itemAppService.UpdateAsync(EditingId, UpdateItemDto);
                 NavigationManager.NavigateTo("Items");
             }
