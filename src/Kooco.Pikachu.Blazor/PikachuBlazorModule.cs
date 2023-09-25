@@ -338,6 +338,7 @@ public class PikachuBlazorModule : AbpModule
         app.UseRouting();
         app.UseAuthentication();
         app.UseAbpOpenIddictValidation();
+        app.UseCors();
 
         if (MultiTenancyConsts.IsEnabled)
         {

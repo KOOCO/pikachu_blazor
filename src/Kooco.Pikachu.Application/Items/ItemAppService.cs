@@ -282,4 +282,16 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
     {
         return ObjectMapper.Map<List<Item>, List<KeyValueDto>>(await _itemRepository.GetListAsync());
     }
+
+    /// <summary>
+    /// This Method Returns the Desired Result For the Store Front End.
+    /// Do not change unless you want to make changes in the Store Front End Code
+    /// </summary>
+    /// <returns></returns>
+    public async Task<List<ItemDto>> GetListForStoreAsync()
+    {
+        var data = await _itemRepository.GetWithImagesAsync(3);
+        
+        return ObjectMapper.Map<List<Item>, List<ItemDto>>(data.ToList());
+    }
 }

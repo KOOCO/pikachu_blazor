@@ -88,7 +88,8 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 UpdateItemDto.Images = UpdateItemDto.Images.OrderBy(x => x.SortNo).ToList();
                 ItemDetailsList = mapper.Map<List<CreateItemDetailsDto>>(ExistingItem.ItemDetails);
                 ItemTags = ExistingItem.ItemTags?.Split(',').ToList();
-                if(ItemTags == null)
+                if (ItemTags == null)
+
                 {
                     ItemTags = new List<string>();
                 }
