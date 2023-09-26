@@ -203,7 +203,6 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
         Task OnGroupbuyCheckedValueChanged(bool value)
         {
             FreebieCreateDto.ApplyToAllGroupBuy = value;
-
             return Task.CompletedTask;
         }
 

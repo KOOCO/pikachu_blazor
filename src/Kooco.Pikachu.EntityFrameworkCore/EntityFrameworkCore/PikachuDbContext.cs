@@ -20,6 +20,7 @@ using Kooco.Pikachu.Images;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.Freebies;
+using Kooco.Pikachu.Orders;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -73,7 +74,7 @@ public class PikachuDbContext :
 
     public DbSet<Freebie> Freebies { get; set; }
     public DbSet<FreebieGroupBuys> FreebieGroupBuys { get; set; }
-
+    public DbSet<Order> Orders { get; set; }
 
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
@@ -172,6 +173,12 @@ public class PikachuDbContext :
             b.ToTable(PikachuConsts.DbTablePrefix + "FreebieGroupBuys", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
             b.HasKey(x => new { x.FreebieId, x.GroupBuyId });
+        });
+
+        builder.Entity<Order>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "Orders", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
         });
     }
 }

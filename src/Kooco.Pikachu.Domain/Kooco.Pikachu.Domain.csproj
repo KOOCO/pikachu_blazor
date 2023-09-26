@@ -19,21 +19,18 @@
   <ItemGroup>
     <Compile Remove="Inventory\**" />
     <Compile Remove="Invoices\**" />
-    <Compile Remove="Orders\**" />
     <Compile Remove="PurchaseOrders\**" />
     <Compile Remove="SetItems\**" />
     <Compile Remove="Tenents\**" />
     <Compile Remove="Transactions\**" />
     <EmbeddedResource Remove="Inventory\**" />
     <EmbeddedResource Remove="Invoices\**" />
-    <EmbeddedResource Remove="Orders\**" />
     <EmbeddedResource Remove="PurchaseOrders\**" />
     <EmbeddedResource Remove="SetItems\**" />
     <EmbeddedResource Remove="Tenents\**" />
     <EmbeddedResource Remove="Transactions\**" />
     <None Remove="Inventory\**" />
     <None Remove="Invoices\**" />
-    <None Remove="Orders\**" />
     <None Remove="PurchaseOrders\**" />
     <None Remove="SetItems\**" />
     <None Remove="Tenents\**" />

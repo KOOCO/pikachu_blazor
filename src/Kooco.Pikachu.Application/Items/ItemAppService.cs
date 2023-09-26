@@ -44,7 +44,6 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
             input.IsReturnable,
             input.ShippingMethodId,
             input.TaxTypeId,
-
             input.CustomField1Value,
             input.CustomField1Name,
             input.CustomField2Value,
