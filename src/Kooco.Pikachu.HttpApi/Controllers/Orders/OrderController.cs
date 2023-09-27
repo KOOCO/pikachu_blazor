@@ -1,5 +1,6 @@
 ﻿using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Orders;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -16,20 +17,20 @@ namespace Kooco.Pikachu.Controllers.Orders
     [ControllerName("Orders")]
     [Area("app")]
     [Route("api/app/orders")]
-    public class OrderController: AbpController, IOrdersAppService
+    public class OrderController : AbpController, IOrderAppService
     {
-        private readonly IOrdersAppService _ordersAppService;
+        private readonly IOrderAppService _ordersAppService;
         public OrderController(
-            IOrdersAppService ordersAppService)
-        { 
-        _ordersAppService=ordersAppService;
+            IOrderAppService ordersAppService)
+        {
+            _ordersAppService = ordersAppService;
         }
         [HttpPost]
         public Task<OrderDto> CreateAsync(CreateOrderDto input)
         {
             return _ordersAppService.CreateAsync(input);
         }
-       
+
         [HttpDelete("{id}")]
         public Task DeleteAsync(Guid id)
         {

@@ -4,6 +4,7 @@ using Kooco.Pikachu.FreeBies.Dtos;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
+using Kooco.Pikachu.Orders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +29,8 @@ namespace Kooco.Pikachu.Blazor
                 .ForMember(dest => dest.FreebieGroupBuys, opt => opt.MapFrom<FreebieGroupBuysResolver>());
 
             CreateMap<FreebieGroupBuysDto, CreateFreebieGroupBuysDto>();
+            CreateMap<Order, OrderDto>();
+            CreateMap<OrderDto, CreateOrderDto>();
         }
         
     }

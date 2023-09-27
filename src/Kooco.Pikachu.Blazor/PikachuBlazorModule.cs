@@ -40,6 +40,8 @@ using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite.Bundling;
 using Blazorise.RichTextEdit;
 using Microsoft.AspNetCore.SignalR;
+using System.Linq;
+using Microsoft.AspNetCore.Cors;
 
 namespace Kooco.Pikachu.Blazor;
 
@@ -205,6 +207,25 @@ public class PikachuBlazorModule : AbpModule
         ConfigureRouter(context);
         ConfigureMenu(context);
         ConfigureSignalRHubOptions();
+
+        context.Services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(builder =>
+            {
+                builder
+                    .WithOrigins(
+                        configuration["App:CorsOrigins"]
+                            .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                            .Select(o => o.Trim().RemovePostFix("/"))
+                            .ToArray()
+                    )
+                    .WithAbpExposedHeaders()
+                    .SetIsOriginAllowedToAllowWildcardSubdomains()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+            });
+        });
     }
 
     private void ConfigureAuthentication(ServiceConfigurationContext context)

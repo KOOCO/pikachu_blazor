@@ -7,11 +7,11 @@ using Volo.Abp.Application.Services;
 
 namespace Kooco.Pikachu.Orders
 {
-    public interface IOrdersAppService: ICrudAppService<
+    public interface IOrderAppService: ICrudAppService<
         OrderDto,
         Guid,
         PagedAndSortedResultRequestDto,
-        CreateOrderDto>
+        CreateOrderDto>, IApplicationService
     {
 
 
