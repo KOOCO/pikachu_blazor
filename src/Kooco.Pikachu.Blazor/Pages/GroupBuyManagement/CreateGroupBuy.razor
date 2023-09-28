@@ -543,13 +543,13 @@
             <div class="col-3">
                 <Dropdown>
                     <DropdownToggle Color="Color.Primary">
-                        Dropdown
+                        @L["SelectModule"]
                     </DropdownToggle>
                     <DropdownMenu>
-                        @foreach (GroupBuyDropdown groupBuyDropdownValue in Enum.GetValues(typeof(GroupBuyDropdown)))
+                        @foreach (GroupBuyModule groupBuyDropdownValue in Enum.GetValues(typeof(GroupBuyModule)))
                         {
                             <DropdownItem Clicked='@(()=>AddProductItem(@groupBuyDropdownValue))'>
-                                @groupBuyDropdownValue
+                                @L[groupBuyDropdownValue.ToString()]
                             </DropdownItem>
                         }
                         @*    <DropdownItem Clicked='@(()=>AddProductItem("Product Image"))'>
@@ -569,13 +569,11 @@
                     <Accordion>
                         <Collapse>
                             <CollapseHeader>
-                                <AccordionToggle>@module.Title</AccordionToggle>
+                                <AccordionToggle>@L[module.GroupBuyModule.ToString()]</AccordionToggle>
                             </CollapseHeader>
                             <CollapseBody>
-                                @if (module.GroupBuyDropdown == GroupBuyDropdown.ProductDescription)
+                                @if (module.GroupBuyModule == GroupBuyModule.ProductDescription)
                                 {
-
-
                                     <div class="row mt-2">
                                         <div class="col-3 mt-2">
                                             @L["SelectItem"]
@@ -586,14 +584,14 @@
                                                           Data="@ItemsList"
                                                           TextField="@(( item ) => item.Name)"
                                                           ValueField="@(( item ) => item.Id)"
-                                            @bind-SelectedText="SelectedAutoCompleteText"
+                                                        @bind-SelectedText="SelectedAutoCompleteText"
                                                           Placeholder="Search..."
                                                           Filter="AutocompleteFilter.StartsWith"
                                                           CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
                                                                             HighlightSearch
                                                            Immediate="true"
                                                            SelectedValueChanged="(id) => OnSelectedValueChanged(id, module)"
-                                             @ref="AutocompleteField">
+                                                        @ref="AutocompleteField">
                                                  <NotFoundContent> @L["NotFound"] </NotFoundContent>
                                              </Autocomplete>
                                          </div>
@@ -604,12 +602,10 @@
                                 </div> *@
                                      </div>
 
-
                                     <div class="row">
                                         <div class="col-6 mt-2">
                                             <div class="image-container">
-                                                <Image Source="" Text="Item Image"
-                                                                      Fluid />
+                                                <img src="images/noimage.jpg"  style="height: 170px; width: 80%;" />
                                              </div>
                                          </div>
                                          <div class="col-6 mt-2">
@@ -617,15 +613,12 @@
                                          </div>
                                      </div>
 
-
                                     <div class="d-flex flex-row-reverse mt-2">
                                         <Button class="btn btn-primary" Clicked="@(()=>HandleClick(module.Index))" Type="@ButtonType.Button"><span class="fa fas-plus"></span>Add Item</Button>
-
                                     </div>
 
-                                    <Divider></Divider>
                                 }
-                                @if (module.GroupBuyDropdown == GroupBuyDropdown.ProductImage)
+                                @if (module.GroupBuyModule == GroupBuyModule.ProductImage)
                                 {
                                     <div class="row mt-2">
 
@@ -648,7 +641,7 @@
 
                                              <div class="mt-2">
                                                  <div class="image-container">
-                                                     <Image Source="" Text="Item Image" />
+                                                     <img src="images/noimage.jpg" style="height: 110px; width: 80%;" />
                                                  </div>
                                                  </div>
                                          </div>
@@ -670,7 +663,7 @@
                                              </Autocomplete>
                                              <div class="mt-2">
                                                  <div class="image-container">
-                                                     <Image Source="" Text="Item Image" />
+                                                     <img src="images/noimage.jpg" style="height: 110px; width: 80%;" />
                                                  </div>
                                              </div>
                                          </div>
@@ -692,7 +685,7 @@
                                              </Autocomplete>
                                              <div class="mt-2">
                                                  <div class="image-container">
-                                                     <Image Source="" Text="Item Image" />
+                                                     <img src="images/noimage.jpg" style="height: 110px; width: 80%;" />
                                                  </div>
                                              </div>
                                          </div>
@@ -704,13 +697,13 @@
                                      </div>
 
                                 }
-                                @if (module.GroupBuyDropdown == GroupBuyDropdown.ProductGroup)
+                                @if (module.GroupBuyModule == GroupBuyModule.ProductGroup)
                                 {
                                     <div class="row mt-2">
                                         <div class="col-4">
                                              <div class="mt-2">
                                                  <div class="image-container">
-                                                    <img src="images/noimage.jpg" />
+                                                    <img src="images/noimage.jpg" style="height: 170px; width: 80%;" />
                                                  </div>
                                              </div>
                                              <div class="row mt-2">
@@ -743,7 +736,7 @@
                                         <div class="col-4">
                                              <div class="mt-2">
                                                  <div class="image-container">
-                                                    <img src="images/noimage.jpg" />
+                                                    <img src="images/noimage.jpg" style="height: 170px; width: 80%;" />
                                                  </div>
                                              </div>
                                              <div class="row mt-2">
@@ -776,7 +769,7 @@
                                          <div class="col-4">
                                              <div class="mt-2">
                                                  <div class="image-container">
-                                                    <img src="images/noimage.jpg" />
+                                                    <img src="images/noimage.jpg" style="height: 170px; width: 80%;" />
                                                  </div>
                                              </div>
                                              <div class="row mt-2">

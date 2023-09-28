@@ -356,13 +356,13 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             }
         }
 
-        void AddProductItem(GroupBuyDropdown groupBuyDropdown)
+        void AddProductItem(GroupBuyModule groupBuyDropdown)
         {
             CollapseItem item = new()
             {
                 Title = @groupBuyDropdown.ToString(),
                 Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
-                GroupBuyDropdown = groupBuyDropdown
+                GroupBuyModule = groupBuyDropdown
             };
             CollapseItem.Add(item);
         }
@@ -561,7 +561,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
     public class CollapseItem
     {
         public int Index { get; set; }
-        public GroupBuyDropdown GroupBuyDropdown { get; set; }
+        public GroupBuyModule GroupBuyModule { get; set; }
         public string Title { get; set; }
         public bool IsProductDescription { get; set; }
 

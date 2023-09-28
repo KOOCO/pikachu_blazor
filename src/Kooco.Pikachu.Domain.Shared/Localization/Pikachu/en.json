@@ -145,10 +145,12 @@
     "ExchangePolicy": "Exchange Policy",
     "NotifyEmail": "Notify Email",
     "AddModule": "Add Module",
-    "DefaultPaymentGateWay": "Default Payment GateWay",
+    "DefaultPaymentGateWay": "Default Payment Gateway",
     "ProductImage": "Product Image",
     "SelectItem": "Select Item",
     "ProductDescription": "Product Description",
+    "ProductGroup": "Product Group",
+    "SelectModule": "Select Module",
 
     //SetItem
     "SetItem": "Set Item",
