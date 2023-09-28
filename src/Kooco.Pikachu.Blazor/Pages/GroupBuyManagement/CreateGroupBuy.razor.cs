@@ -2,6 +2,7 @@
 using Blazorise;
 using Blazorise.Components;
 using Kooco.Pikachu.AzureStorage.Image;
+using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.ImageBlob;
 using Kooco.Pikachu.Images;
@@ -355,12 +356,13 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             }
         }
 
-        void AddProductItem(string title)
+        void AddProductItem(GroupBuyDropdown groupBuyDropdown)
         {
             CollapseItem item = new()
             {
-                Title = title,
-                Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1
+                Title = @groupBuyDropdown.ToString(),
+                Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                GroupBuyDropdown = groupBuyDropdown
             };
             CollapseItem.Add(item);
         }
@@ -559,6 +561,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
     public class CollapseItem
     {
         public int Index { get; set; }
+        public GroupBuyDropdown GroupBuyDropdown { get; set; }
         public string Title { get; set; }
         public bool IsProductDescription { get; set; }
 

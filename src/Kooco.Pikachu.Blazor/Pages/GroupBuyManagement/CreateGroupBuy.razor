@@ -405,7 +405,7 @@
         </div>
 
         <div class="col-12 row">
-            
+
             <div class="col-2">@L["Gateway"]</div>
             <div class="col-2">@L["PaymentMethod"]</div>
 
@@ -546,15 +546,16 @@
                         Dropdown
                     </DropdownToggle>
                     <DropdownMenu>
-                        <DropdownItem Clicked='@(()=>AddProductItem("Product Image"))'>
+                        @foreach (GroupBuyDropdown groupBuyDropdownValue in Enum.GetValues(typeof(GroupBuyDropdown)))
+                        {
+                            <DropdownItem Clicked='@(()=>AddProductItem(@groupBuyDropdownValue))'>
+                                @groupBuyDropdownValue
+                            </DropdownItem>
+                        }
+                        @*    <DropdownItem Clicked='@(()=>AddProductItem("Product Image"))'>
 
-                            Product Picture
-                        </DropdownItem>
-                        <DropdownDivider />
-                        <DropdownItem Clicked='@(()=>AddProductItem("Product Description"))'>
-
-                            Product Description
-                        </DropdownItem>
+                        Product Picture
+                        </DropdownItem> *@
                     </DropdownMenu>
                 </Dropdown>
 
@@ -564,15 +565,18 @@
         {
             <div class=" col-12 row">
                 <div class="col-2"></div>
-                <div class="col-7">
+                <div class="col-9">
                     <Accordion>
                         <Collapse>
                             <CollapseHeader>
                                 <AccordionToggle>@module.Title</AccordionToggle>
                             </CollapseHeader>
                             <CollapseBody>
-                                
-                                <div class="row mt-2">
+                                @if (module.GroupBuyDropdown == GroupBuyDropdown.ProductDescription)
+                                {
+
+
+                                    <div class="row mt-2">
                                         <div class="col-3 mt-2">
                                             @L["SelectItem"]
                                         </div>
@@ -582,120 +586,239 @@
                                                           Data="@ItemsList"
                                                           TextField="@(( item ) => item.Name)"
                                                           ValueField="@(( item ) => item.Id)"
-                                                          @bind-SelectedText="SelectedAutoCompleteText"
+                                            @bind-SelectedText="SelectedAutoCompleteText"
                                                           Placeholder="Search..."
                                                           Filter="AutocompleteFilter.StartsWith"
                                                           CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
-                                                          HighlightSearch
-                                                          Immediate="true"
-                                                          SelectedValueChanged="(id) => OnSelectedValueChanged(id, module)"
-                                                          @ref="AutocompleteField">
-                                                <NotFoundContent> @L["NotFound"] </NotFoundContent>
-                                            </Autocomplete>
-                                        </div>
-                                       @*  <div class="col-1">
-                                            <Button Color="Color.Danger" Clicked="RemoveSelectedItems">
-                                                <i class="fa fa-trash"></i>
-                                            </Button>
-                                        </div> *@
-                                </div>
-                                  
-                                    
-                                <div class="row">
-                                    <div class="col-3 mt-2">
-                                        @L["ProductImage"]
+                                                                            HighlightSearch
+                                                           Immediate="true"
+                                                           SelectedValueChanged="(id) => OnSelectedValueChanged(id, module)"
+                                             @ref="AutocompleteField">
+                                                 <NotFoundContent> @L["NotFound"] </NotFoundContent>
+                                             </Autocomplete>
+                                         </div>
+                                         @*  <div class="col-1">
+                                <Button Color="Color.Danger" Clicked="RemoveSelectedItems">
+                                <i class="fa fa-trash"></i>
+                                </Button>
+                                </div> *@
+                                     </div>
+
+
+                                    <div class="row">
+                                        <div class="col-6 mt-2">
+                                            <div class="image-container">
+                                                <Image Source="" Text="Item Image"
+                                                                      Fluid />
+                                             </div>
+                                         </div>
+                                         <div class="col-6 mt-2">
+                                             <p> Description </p>
+                                         </div>
+                                     </div>
+
+
+                                    <div class="d-flex flex-row-reverse mt-2">
+                                        <Button class="btn btn-primary" Clicked="@(()=>HandleClick(module.Index))" Type="@ButtonType.Button"><span class="fa fas-plus"></span>Add Item</Button>
+
                                     </div>
-                                    <div class="col-9 mt-2">
-                                        @if(module.SelectedImage == null || module.SelectedImage.ImageUrl.IsNullOrWhiteSpace())
-                                        {
-                                            <Field>
-                                                <FilePicker @ref="FilePicker"
-                                                    Changed="(e) => OnFileUploadAsync(e, module)"
-                                                    ShowMode="FilePickerShowMode.List"
-                                                            Accept=".jpg, .png, .svg ,.jpeg, .webp">
-                                                    <FileTemplate>
-                                                        <Div Flex="Flex.JustifyContent.Between">
-                                                            <Div>
-                                                                <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
-                                                                <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
-                                                            </Div>
-                                                            <Div Class="ps-2">
-                                                                <Div>
-                                                                @if (context.File.Status == FileEntryStatus.Ready)
-                                                                {
-                                                                    <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
-                                                                }
-                                                                else if (context.File.Status == FileEntryStatus.Uploading)
-                                                                {
-                                                                    <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
-                                                                }
-                                                                else if (context.File.Status == FileEntryStatus.Uploaded)
-                                                                {
-                                                                    <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
-                                                                }
-                                                                else if (context.File.Status == FileEntryStatus.Error)
-                                                                {
-                                                                    <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
-                                                                }
-                                                            </Div>
-                                                            </Div>
-                                                        </Div>
-                                                    </FileTemplate>
-                                                    <ButtonsTemplate>
-                                                        <Progress Value="@FilePicker.GetProgressPercentage()" />
-                                                    </ButtonsTemplate>
-                                                </FilePicker>
-                                            </Field>
-                                        }
-                                        else
-                                        {
-                                            <div class="d-flex">
-                                                <div class="image-container">
-                                                    <Image class="blur-image" Source="@module.SelectedImage.ImageUrl" Text="Item Image" Fluid />
-                                                     <button class="delete-button" @onclick="() => DeleteImageAsync(module)">
-                                                         <i class="fa fa-trash"></i>
-                                                     </button>
-                                                </div>
-                                            </div>
-                                        }
-                                    </div>
-                                </div>
-                                        
-                                <div class="row">
-                                    <div class="col-3 mt-2">
-                                        @L["ProductDescription"]
-                                    </div>
-                                    <div class="col-9 mt-2">
-                                        <TextEdit MaxLength="60" ShowCount @bind-Text="@module.SelectedItemDescription" />
-                                    </div>
-                                </div>
-                                <div class="d-flex flex-row-reverse mt-2">
-                                    <Button class="btn btn-primary" Clicked="@(()=>HandleClick(module.Index))" Type="@ButtonType.Button"><span class="fa fas-plus"></span>Add Item</Button>
-                              
-                                </div>
-                               
-                                <Divider></Divider>
-                                @foreach (var item in module.ItemDetails)
-                                {
-                                    <div class="row col-12 ">
-                                        <div class="col-3">
-                                            <Image style="height:50px; width:auto;" Source="@item.Image?.ImageUrl"></Image>
-                                        </div>
-                                         <div class="col-2">
-                                            <p> @item.Item?.ItemName</p>
-                                        </div>
-                                        <div class="col-6">
-                                            <p> @item.ItemDescription</p>
-                                        </div>
-                                        <div class="col-1"> <Button class="close" Clicked="@(()=>RemoveProductItem(@item,@module.Index))"><span aria-hidden="true">&times;</span></Button></div>
-                                    </div>
+
                                     <Divider></Divider>
+                                }
+                                @if (module.GroupBuyDropdown == GroupBuyDropdown.ProductImage)
+                                {
+                                    <div class="row mt-2">
+
+                                        <div class="col-4">
+                                            <Autocomplete TItem="KeyValueDto"
+                                                          TValue="Guid?"
+                                                          Data="@ItemsList"
+                                                          TextField="@(( item ) => item.Name)"
+                                                          ValueField="@(( item ) => item.Id)"
+                                            @bind-SelectedText="SelectedAutoCompleteText"
+                                                          Placeholder="Search..."
+                                                          Filter="AutocompleteFilter.StartsWith"
+                                                          CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                                                                            HighlightSearch
+                                                           Immediate="true"
+                                                           SelectedValueChanged="(id) => OnSelectedValueChanged(id, module)"
+                                             @ref="AutocompleteField">
+                                                 <NotFoundContent> @L["NotFound"] </NotFoundContent>
+                                             </Autocomplete>
+
+                                             <div class="mt-2">
+                                                 <div class="image-container">
+                                                     <Image Source="" Text="Item Image" />
+                                                 </div>
+                                                 </div>
+                                         </div>
+                                         <div class="col-4">
+                                             <Autocomplete TItem="KeyValueDto"
+                                                           TValue="Guid?"
+                                                           Data="@ItemsList"
+                                                           TextField="@(( item ) => item.Name)"
+                                                           ValueField="@(( item ) => item.Id)"
+                                             @bind-SelectedText="SelectedAutoCompleteText"
+                                                           Placeholder="Search..."
+                                                           Filter="AutocompleteFilter.StartsWith"
+                                                           CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                                                                            HighlightSearch
+                                                           Immediate="true"
+                                                           SelectedValueChanged="(id) => OnSelectedValueChanged(id, module)"
+                                             @ref="AutocompleteField">
+                                                 <NotFoundContent> @L["NotFound"] </NotFoundContent>
+                                             </Autocomplete>
+                                             <div class="mt-2">
+                                                 <div class="image-container">
+                                                     <Image Source="" Text="Item Image" />
+                                                 </div>
+                                             </div>
+                                         </div>
+                                         <div class="col-4">
+                                             <Autocomplete TItem="KeyValueDto"
+                                                           TValue="Guid?"
+                                                           Data="@ItemsList"
+                                                           TextField="@(( item ) => item.Name)"
+                                                           ValueField="@(( item ) => item.Id)"
+                                             @bind-SelectedText="SelectedAutoCompleteText"
+                                                           Placeholder="Search..."
+                                                           Filter="AutocompleteFilter.StartsWith"
+                                                           CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                                                                            HighlightSearch
+                                                           Immediate="true"
+                                                           SelectedValueChanged="(id) => OnSelectedValueChanged(id, module)"
+                                             @ref="AutocompleteField">
+                                                 <NotFoundContent> @L["NotFound"] </NotFoundContent>
+                                             </Autocomplete>
+                                             <div class="mt-2">
+                                                 <div class="image-container">
+                                                     <Image Source="" Text="Item Image" />
+                                                 </div>
+                                             </div>
+                                         </div>
+                                         @*  <div class="col-1">
+                                <Button Color="Color.Danger" Clicked="RemoveSelectedItems">
+                                <i class="fa fa-trash"></i>
+                                </Button>
+                                </div> *@
+                                     </div>
+
+                                }
+                                @if (module.GroupBuyDropdown == GroupBuyDropdown.ProductGroup)
+                                {
+                                    <div class="row mt-2">
+                                        <div class="col-4">
+                                             <div class="mt-2">
+                                                 <div class="image-container">
+                                                    <img src="images/noimage.jpg" />
+                                                 </div>
+                                             </div>
+                                             <div class="row mt-2">
+                                                 <p class="mt-2">
+                                                     產品標題必須為 60
+                                                 </p>
+                                                 </div>
+                                            <div class="mt-2">
+                                               <select class="form-control dropdown">
+                                                   <option>
+                                                        選項1
+                                                   </option>
+                                               </select class="form-control dropdown">
+                                            </div>
+                                             <div class="mt-2">
+                                                <select class="form-control dropdown">
+                                                    <option>
+                                                        選項1
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div class="mt-2">
+                                                <select class="form-control dropdown">
+                                                    <option>
+                                                        選項1
+                                                    </option>
+                                                </select>
+                                            </div>
+                                         </div>
+                                        <div class="col-4">
+                                             <div class="mt-2">
+                                                 <div class="image-container">
+                                                    <img src="images/noimage.jpg" />
+                                                 </div>
+                                             </div>
+                                             <div class="row mt-2">
+                                                 <p class="mt-2">
+                                                     產品標題必須為 60
+                                                 </p>
+                                                 </div>
+                                            <div class="mt-2">
+                                               <select class="form-control dropdown">
+                                                   <option>
+                                                        選項1
+                                                   </option>
+                                               </select class="form-control dropdown">
+                                            </div>
+                                             <div class="mt-2">
+                                                <select class="form-control dropdown">
+                                                    <option>
+                                                        選項1
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div class="mt-2">
+                                                <select class="form-control dropdown">
+                                                    <option>
+                                                        選項1
+                                                    </option>
+                                                </select>
+                                            </div>
+                                         </div>
+                                         <div class="col-4">
+                                             <div class="mt-2">
+                                                 <div class="image-container">
+                                                    <img src="images/noimage.jpg" />
+                                                 </div>
+                                             </div>
+                                             <div class="row mt-2">
+                                                 <p class="mt-2">
+                                                     產品標題必須為 60
+                                                 </p>
+                                                 </div>
+                                            <div class="mt-2">
+                                               <select class="form-control dropdown">
+                                                   <option>
+                                                        選項1
+                                                   </option>
+                                               </select class="form-control dropdown">
+                                            </div>
+                                             <div class="mt-2">
+                                                <select class="form-control dropdown">
+                                                    <option>
+                                                        選項1
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div class="mt-2">
+                                                <select class="form-control dropdown">
+                                                    <option>
+                                                        選項1
+                                                    </option>
+                                                </select>
+                                            </div>
+                                         </div>
+                                         @*  <div class="col-1">
+                                <Button Color="Color.Danger" Clicked="RemoveSelectedItems">
+                                <i class="fa fa-trash"></i>
+                                </Button>
+                                </div> *@
+                                     </div>
+
                                 }
                             </CollapseBody>
                         </Collapse>
                     </Accordion>
                 </div>
-                <div class="col-1"> 
+                <div class="col-1">
                     <Button class="btn btn-danger" Clicked="@(()=>RemoveCollapseItem(@module.Index))">
                         <i class="fa fa-trash"></i>
                     </Button>
@@ -924,8 +1047,8 @@
         <div class="d-flex flex-row-reverse">
             <Button Type="@ButtonType.Button" class="btn btn-primary me-1" Clicked="CreateEntityAsync"> <i class="fa fa-check"></i> @L["Save"]</Button>
             <Button Danger Type="@ButtonType.Button" class="btn btn-danger me-1" Clicked="CloseGroupBuyEdit" Style="margin-right:5px">@L["Cancel"]</Button>
-            
-         @*    <Button Type="@ButtonType.Button" class="btn btn-secondary me-1" >@L["Preview"]</Button> *@
+
+            @*    <Button Type="@ButtonType.Button" class="btn btn-secondary me-1" >@L["Preview"]</Button> *@
 
         </div>
     </CardBody>
@@ -951,34 +1074,34 @@
     private void HandleClick(int i)
     {
         var checkValiate = CollapseItem.Where(x => x.Index == i).FirstOrDefault();
-        if(checkValiate is null)
+        if (checkValiate is null)
         {
             return;
         }
-        if(checkValiate.SelectedItemId == null)
+        if (checkValiate.SelectedItemId == null)
         {
             return;
         }
-        if(checkValiate.SelectedItemDescription.IsNullOrWhiteSpace())
+        if (checkValiate.SelectedItemDescription.IsNullOrWhiteSpace())
         {
             return;
         }
-        if(checkValiate.SelectedImage == null || checkValiate.SelectedImage.ImageUrl.IsNullOrWhiteSpace())
+        if (checkValiate.SelectedImage == null || checkValiate.SelectedImage.ImageUrl.IsNullOrWhiteSpace())
         {
             return;
         }
         int selectedIndex = i;
-        if (CollapseItem.Where(x => x.Index == i).FirstOrDefault().ItemDetails.Count <= 3)
+        if (CollapseItem.Where(x => x.Index == i).FirstOrDefault().ItemDetails.Count <= 2)
         {
             var cItem = CollapseItem.Where(x => x.Index == i).FirstOrDefault();
 
             ProductPictureItem item = new ProductPictureItem
-            {
-                ItemId = cItem.SelectedItemId,
-                ItemDescription = cItem.SelectedItemDescription,
-                Image = cItem.SelectedImage,
-                Item = cItem.SelectedItem
-            };
+                {
+                    ItemId = cItem.SelectedItemId,
+                    ItemDescription = cItem.SelectedItemDescription,
+                    Image = cItem.SelectedImage,
+                    Item = cItem.SelectedItem
+                };
 
             cItem.SelectedItemDescription = null;
             cItem.SelectedImage = new();
@@ -1007,7 +1130,7 @@
     {
         CollapseItem.Where(x => x.Index == index).FirstOrDefault().ItemDetails.Remove(item);
     }
- }
+}
 
 
 
