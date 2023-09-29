@@ -49,10 +49,10 @@ namespace Kooco.Pikachu.GroupBuys
                 .Where(x => x.Id == id)
                 .Include(x => x.ItemGroups)
                 .ThenInclude(ig => ig.ItemGroupDetails)
-                .ThenInclude(igd => igd.Item)
+                //.ThenInclude(igd => igd.Item)
                 .Include(x => x.ItemGroups)
                 .ThenInclude(ig => ig.ItemGroupDetails)
-                .ThenInclude(igd => igd.Image)
+                //.ThenInclude(igd => igd.Image)
                 .FirstOrDefaultAsync();
         }
 

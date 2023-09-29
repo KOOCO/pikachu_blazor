@@ -127,15 +127,6 @@
     margin-bottom: 10px;
 }
 
-.image-container {
-    position: relative;
-    height: 100px;
-    width: auto;
-    margin-right: 10px;
-    border-radius: 0.5rem;
-    margin-bottom: 10px;
-}
-
     .image-container img.blur-image {
         height: 100%;
         width: 7em;
@@ -193,4 +184,8 @@
 
 .lpx-topbar{
     border-radius: 0px!important;
+}
+
+.accordion-button::after {
+    margin-right: unset;
 }

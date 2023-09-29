@@ -1,13 +1,12 @@
 ﻿using JetBrains.Annotations;
+using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Items;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Domain.Services;
 
 namespace Kooco.Pikachu.Groupbuys
@@ -131,8 +130,8 @@ namespace Kooco.Pikachu.Groupbuys
             bool isDefaultPaymentGateway,
             string? paymentMethod,
             string? groupbuyCondition,
-            string? customerInformation,
-              [CanBeNull] string concurrencyStamp = null)
+            string? customerInformation
+            )
         {
             var groupBuy = await _groupBuyRepositroy.GetAsync(Id);
             groupBuy.GroupBuyNo = groupBuyNo;
@@ -181,32 +180,28 @@ namespace Kooco.Pikachu.Groupbuys
         public void AddItemGroupDetail(
             GroupBuyItemGroup itemGroup,
             int sortOrder,
-            string? itemDescription,
-            Guid? itemId,
-            Guid? imageId
-            
+            Guid itemId
             ) 
         {
+            Check.NotDefaultOrNull<Guid>(itemId, nameof(Item.Id));
             itemGroup.GroupBuyItemGroupDetails(
                 GuidGenerator.Create(),
                 itemGroup.Id,
                 sortOrder,
-                itemDescription,
-                itemId,
-                imageId
+                itemId
                 );
         }
         public GroupBuyItemGroup AddItemGroup(
             GroupBuy groupBuy,
             int sortOrder,
-            string? title
+            GroupBuyModuleType groupBuyModuleType
             )
         {
             return groupBuy.AddItemGroup(
                 GuidGenerator.Create(),
                 groupBuy.Id,
                 sortOrder,
-                title
+                groupBuyModuleType
                 );
         }
     }

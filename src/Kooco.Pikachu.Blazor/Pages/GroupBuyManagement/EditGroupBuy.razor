@@ -558,7 +558,7 @@
                         <Accordion>
                   <Collapse>
                             <CollapseHeader>
-                                <AccordionToggle>@module.Title</AccordionToggle>
+                                @* <AccordionToggle>@module.Title</AccordionToggle> *@
                             </CollapseHeader>
                             <CollapseBody>
                                 
@@ -591,7 +591,7 @@
                                         @L["ProductImage"]
                                     </div>
                                     <div class="col-9 mt-2">
-                                        @if(module.SelectedImage == null || module.SelectedImage.ImageUrl.IsNullOrWhiteSpace())
+                                        @* @if(module.SelectedImage == null || module.SelectedImage.ImageUrl.IsNullOrWhiteSpace())
                                         {
                                             <Field>
                                                 <FilePicker @ref="FilePicker"
@@ -642,11 +642,11 @@
                                                      </button>
                                                 </div>
                                             </div>
-                                        }
+                                        } *@
                                     </div>
                                 </div>
                                         
-                                <div class="row">
+                                @* <div class="row">
                                     <div class="col-3 mt-2">
                                         @L["ProductDescription"]
                                     </div>
@@ -656,10 +656,10 @@
                                 </div>
                                 <div class="d-flex flex-row-reverse mt-2">
                                     <Button class="btn btn-primary" Clicked="@(()=>HandleClick(module.Index))" Type="@ButtonType.Button"><span class="fa fas-plus"></span>Add Item</Button>
-                                </div>
+                                </div> *@
                                
                                 <Divider></Divider>
-                                @foreach (var item in module.ItemDetails)
+                                @* @foreach (var item in module.ItemDetails)
                                 {
                                     <div class="row col-12 ">
                                         <div class="col-3">
@@ -674,11 +674,11 @@
                                         <div class="col-1"> <Button class="close" Clicked="@(()=>RemoveProductItem(@item,@module.Index))"><span aria-hidden="true">&times;</span></Button></div>
                                     </div>
                                     <Divider></Divider>
-                                }
+                                } *@
                             </CollapseBody>
                         </Collapse>
-</Accordion>
-</div>
+                </Accordion>
+            </div>
             <div class="col-1"> 
                     <Button class="btn btn-danger" Clicked="@(()=>RemoveCollapseItem(@module.Index))">
                         <i class="fa fa-trash"></i>
@@ -928,7 +928,7 @@
 
     string title = "BasicModal";
     string customerInformation;
-     string groupBuyCondition;
+    string groupBuyCondition;
     string productDescription = "";
     bool _visible = false;
     int selectedIndex = 0;
@@ -939,37 +939,37 @@
         {
             return;
         }
-        if(checkValiate.SelectedItemId == null)
-        {
-            return;
-        }
-        if(checkValiate.SelectedItemDescription.IsNullOrWhiteSpace())
-        {
-            return;
-        }
-        if(checkValiate.SelectedImage == null || checkValiate.SelectedImage.ImageUrl.IsNullOrWhiteSpace())
-        {
-            return;
-        }
+        // if(checkValiate.SelectedItemId == null)
+        // {
+        //     return;
+        // }
+        // if(checkValiate.SelectedItemDescription.IsNullOrWhiteSpace())
+        // {
+        //     return;
+        // }
+        // if(checkValiate.SelectedImage == null || checkValiate.SelectedImage.ImageUrl.IsNullOrWhiteSpace())
+        // {
+        //     return;
+        // }
 
-        int selectedIndex = i;
-        if (CollapseItem.Where(x => x.Index == i).FirstOrDefault().ItemDetails.Count <= 3)
-        {
-            var cItem = CollapseItem.Where(x => x.Index == i).FirstOrDefault();
+        // int selectedIndex = i;
+        // if (CollapseItem.Where(x => x.Index == i).FirstOrDefault().ItemDetails.Count <= 3)
+        // {
+        //     var cItem = CollapseItem.Where(x => x.Index == i).FirstOrDefault();
 
-            ProductPictureItem item = new ProductPictureItem
-            {
-                ItemId = cItem.SelectedItemId,
-                ItemDescription = cItem.SelectedItemDescription,
-                Image = cItem.SelectedImage,
-                Item = cItem.SelectedItem
-            };
+        //     // ProductPictureItem item = new ProductPictureItem
+        //     // {
+        //     //     ItemId = cItem.SelectedItemId,
+        //     //     ItemDescription = cItem.SelectedItemDescription,
+        //     //     Image = cItem.SelectedImage,
+        //     //     Item = cItem.SelectedItem
+        //     // };
 
-            cItem.SelectedItemDescription = null;
-            cItem.SelectedImage = new();
+        //     // cItem.SelectedItemDescription = null;
+        //     // cItem.SelectedImage = new();
 
-            CollapseItem.Where(x => x.Index == i).FirstOrDefault().ItemDetails.Add(item);
-        }
+        //     // CollapseItem.Where(x => x.Index == i).FirstOrDefault().ItemDetails.Add(item);
+        // }
     }
 
     private void HandleOk(MouseEventArgs e)
@@ -984,10 +984,10 @@
         _visible = false;
         selectedIndex = 0;
     }
-       private void RemoveProductItem(ProductPictureItem item,int index)
-    {
-    CollapseItem.Where(x=>x.Index==index).FirstOrDefault().ItemDetails.Remove(item);
-    }
+    //    private void RemoveProductItem(ProductPictureItem item,int index)
+    // {
+    // CollapseItem.Where(x=>x.Index==index).FirstOrDefault().ItemDetails.Remove(item);
+    // }
     }
 
 

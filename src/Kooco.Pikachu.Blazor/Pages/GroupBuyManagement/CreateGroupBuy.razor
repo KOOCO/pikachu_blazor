@@ -18,39 +18,16 @@
     .row {
         margin-top: 10px;
     }
-
-    .site-tag-plus {
-        background: #fff;
-        border-style: dashed;
-    }
-    /* you can make up upload button and sample style by using stylesheets */
-    .ant-upload-select-picture-card i {
-        color: #999;
-        font-size: 32px;
-    }
-
-    .ant-upload-select-picture-card i {
-        color: #999;
-        font-size: 32px;
-    }
-
-    .ant-upload-select-picture-card .ant-upload-text {
-        margin-top: 8px;
-        color: #666;
-    }
-
-    .anticon {
-        vertical-align: 0.1em !important
-    }
-
 </style>
 <h3>@L["NewGroupBuy"]</h3>
 <Card>
 
     <CardBody>
         <div class="card-body">
-            <div class="col-12"><h4>Sales URL</h4>  </div>
-            <div class=" col-12 row">
+            <div class="col-12">
+                <h4>Sales URL</h4>  
+            </div>
+            <div class="row">
                 <div class="col-1"></div>
                 <div class="col-2">
                     <label>@L["SalesURL1"]</label>
@@ -61,7 +38,7 @@
 
 
             </div>
-            <div class=" col-12 row">
+            <div class="row">
                 <div class="col-1"></div>
                 <div class="col-2">
                     <label>@L["SalesURL2"]</label>
@@ -72,7 +49,7 @@
             </div>
         </div>
         <Divider></Divider>
-        <div class=" col-12 row">
+        <div class="row">
 
             <div class="col-2">
                 <label>@L["GroupBuyName"]</label>
@@ -87,7 +64,7 @@
             </div>
 
         </div>
-        <div class=" col-12 row">
+        <div class="row">
             <div class="col-2">
                 <label>@L["Subject"]</label>
             </div>
@@ -100,7 +77,7 @@
                 </span>
             </div>
         </div>
-        <div class=" col-12 row">
+        <div class="row">
             <div class="col-2">
                 <label>@L["GroupBuyShortName"]</label>
             </div>
@@ -113,12 +90,11 @@
                 </span>
             </div>
         </div>
-        <div class="col-12 row">
+        <div class="row">
             <div class="col-2">
                 <label>@L["GroupBuyLogo"]*</label>
             </div>
-            <div class="col-10 row">
-
+            <div class="col-10">
                 <Field>
                     <FilePicker @ref="LogoPickerCustom"
                                 Changed="OnLogoUploadAsync"
@@ -157,10 +133,6 @@
                         </FileTemplate>
                         <ButtonsTemplate>
                             <Progress Value="@LogoPickerCustom.GetProgressPercentage()" />
-                            @* <Buttons Class="mt-2 d-flex justify-content-end">
-                            <Button Clicked="@context.Clear" Color="Color.Warning"><Icon Name="IconName.Clear" /></Button>
-                            <Button Clicked="@context.Upload" Color="Color.Primary"><Icon Name="IconName.FileUpload" /></Button>
-                            </Buttons> *@
                         </ButtonsTemplate>
                     </FilePicker>
                 </Field>
@@ -168,7 +140,7 @@
             </div>
             @if (CreateGroupBuyDto.LogoURL != null)
             {
-                <div Class="col-12 row">
+                <div Class="row">
                     <div class="col-2"></div>
                     <div class="col-10">
                         <div class="image-list-container">
@@ -185,11 +157,11 @@
                  </div>
             }
         </div>
-        <div class="col-12 row">
+        <div class="row">
             <div class="col-2">
                 <label>@L["GroupBuyBanner"]</label>
             </div>
-            <div class="col-10 row">
+            <div class="col-10">
                 <Field>
                     <FilePicker @ref="BannerPickerCustom"
                                 Changed="OnBannerUploadAsync"
@@ -228,10 +200,6 @@
                         </FileTemplate>
                         <ButtonsTemplate>
                             <Progress Value="@BannerPickerCustom.GetProgressPercentage()" />
-                            @* <Buttons Class="mt-2 d-flex justify-content-end">
-                            <Button Clicked="@context.Clear" Color="Color.Warning"><Icon Name="IconName.Clear" /></Button>
-                            <Button Clicked="@context.Upload" Color="Color.Primary"><Icon Name="IconName.FileUpload" /></Button>
-                            </Buttons> *@
                         </ButtonsTemplate>
                     </FilePicker>
                 </Field>
@@ -239,7 +207,7 @@
             </div>
             @if (CreateGroupBuyDto.BannerURL != null)
             {
-                <div Class="col-12 row">
+                <div Class="row">
                     <div class="col-2"></div>
                     <div class="col-10">
                         <div class="image-list-container">
@@ -255,10 +223,8 @@
                      </div>
                  </div>
             }
-
-
         </div>
-        <div class="col-12 row ">
+        <div class="row">
             <div class="col-2">
                 <label>
                     @L["CarouselImages"]<Span>
@@ -309,10 +275,6 @@
                         </FileTemplate>
                         <ButtonsTemplate>
                             <Progress Value="@CarouselPickerCustom.GetProgressPercentage()" />
-                            @* <Buttons Class="mt-2 d-flex justify-content-end">
-                            <Button Clicked="@context.Clear" Color="Color.Warning"><Icon Name="IconName.Clear" /></Button>
-                            <Button Clicked="@context.Upload" Color="Color.Primary"><Icon Name="IconName.FileUpload" /></Button>
-                            </Buttons> *@
                         </ButtonsTemplate>
                     </FilePicker>
                 </Field>
@@ -320,7 +282,7 @@
             </div>
             @if (CarouselImages.Count > 0)
             {
-                <div Class="col-12 row">
+                <div Class="row">
                     <div class="col-2"></div>
                     <div class="col-10">
                         <div class="image-list-container">
@@ -340,40 +302,31 @@
         </div>
 
         <Divider></Divider>
-        <div class=" col-12 row">
+        <div class="row">
             <div class="col-2">@L["GroupBuyTime"]</div>
             <div class="col-4">
-
-
                 <DateEdit Class="form-control" @bind-Date=CreateGroupBuyDto.StartTime Placeholder="@L["StartDate"].ToString()" TValue="DateTime?" />
-
             </div>
             <div class="col-4">
-
                 <DateEdit Class="form-control" @bind-Date=CreateGroupBuyDto.EndTime Placeholder="@L["EndDate"].ToString()" TValue="DateTime?" />
-
-
             </div>
         </div>
-        <div class=" col-12 row">
+        <div class="row">
             <div class="col-2">@L["Logistic"]</div>
             <div class="col-2">@L["FreeShipping"]</div>
-
             <div class="col-4"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.FreeShipping"></Switch></div>
         </div>
-        <div class="col-12 row">
+        <div class="row">
             <div class="col-2"></div>
             <div class="col-2">
                 @L["ExcludeShippingMethod"]
             </div>
             <div class="col-8">
-
                 <div class="col-7 form-control" style="background-color:white">
                     @foreach (var item in ItemTags)
                     {
                         <Badge class="item-tags" CloseClicked="@(() => HandleItemTagDelete(item))">@item</Badge>
                     }
-
                     <div class="input-container">
                         <input type="text" id="tag-input" class="tag-input" placeholder="New Tag"
                         @bind-value="TagInputValue"
@@ -385,48 +338,44 @@
             </div>
 
         </div>
-        <div class=" col-12 row">
+        <div class="row">
             <div class="col-2"></div>
             <div class="col-2">@L["AllowShipToOuterIsland"]</div>
-
             <div class="col-4"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.AllowShipToOuterTaiwan"></Switch></div>
         </div>
         <div class=" col-12 row">
             <div class="col-2"></div>
             <div class="col-3">@L["AllowShipToOverSea"]</div>
-
             <div class="col-4"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.AllowShipOversea"></Switch></div>
         </div>
-        <div class=" col-12 row">
+        <div class="row">
             <div class="col-2"></div>
             <div class="col-2">@L["ExpectDeliveryDate"]</div>
             <div class="col-4"><DateEdit TValue="DateTime?" Class="form-control" @bind-Date=CreateGroupBuyDto.ExpectShippingDateTo Placeholder="@L["StartDate"].ToString()" /></div>
             <div class="col-4"><DateEdit TValue="DateTime?" Class="form-control" @bind-Date=CreateGroupBuyDto.ExpectShippingDateFrom Placeholder="@L["EndDate"].ToString()" /></div>
         </div>
 
-        <div class="col-12 row">
-
+        <div class="row">
             <div class="col-2">@L["Gateway"]</div>
             <div class="col-2">@L["PaymentMethod"]</div>
-
             <div class="col-4">
                 <Radio TValue="bool" Group="Payment" Value=CreateGroupBuyDto.IsDefaultPaymentGateWay>
                     @L["DefaultPaymentGateWay"]
                 </Radio>
             </div>
         </div>
-        <div class="col-12 row">
+        <div class="row">
             <div class="col-2"></div>
             <div class="col-2"></div>
-
-            <div class="col-1">    <Radio TValue="bool" Group="Payment" Value="@paymentMethodCheck"> </Radio></div>
+            <div class="col-1">    
+                <Radio TValue="bool" Group="Payment" Value="@paymentMethodCheck"> </Radio>
+            </div>
             <div class="col-7">
                 <div class="col-7 form-control" style="background-color:white">
                     @foreach (var item in PaymentMethodTags)
                     {
                         <Badge class="item-tags" CloseClicked="@(() => HandlePaymentTagDelete(item))">@item</Badge>
                     }
-
                     <div class="input-container">
                         <input type="text" id="tag-input" class="tag-input" placeholder="New Tag"
                         @bind-value="PaymentTagInputValue"
@@ -435,34 +384,33 @@
                     </div>
                 </div>
             </div>
-
         </div>
-        <div class=" col-12 row">
+        <div class="row">
             <div class="col-2">@L["Invoice"]</div>
             <div class="col-2">@L["IssueInvoice"]</div>
-
             <div class="col-4"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.IssueInvoice"></Switch></div>
         </div>
-        <div class=" col-12 row">
+        <div class="row">
             <div class="col-2"></div>
             <div class="col-2 form-label">@L["AutoIssueTriplicateInvoice"]</div>
-
             <div class="col-4"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.AutoIssueTriplicateInvoice"></Switch></div>
         </div>
-        <div class=" col-12 row">
+        <div class="row">
             <div class="col-2"></div>
-            <div class="col-2 form-label">@L["InvoiceComment"]</div>
-
-            <div class="col-8"> <InputTextArea class="form-control" maxlength="200" @bind-Value="@CreateGroupBuyDto.InvoiceNote"></InputTextArea></div>
+            <div class="col-2 form-label">
+                @L["InvoiceComment"]
+            </div>
+            <div class="col-8"> 
+                <InputTextArea class="form-control" maxlength="200" @bind-Value="@CreateGroupBuyDto.InvoiceNote"></InputTextArea>
+            </div>
         </div>
         <Divider></Divider>
-        <div class=" col-12 row">
+        <div class="row">
             <div class="col-2 mx-1">@L["AdvanceSetting"]</div>
             <div class="col-2 form-label">@L["HideCredention"]</div>
-
             <div class="col-4"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.ProtectPrivacyData"></Switch></div>
         </div>
-        <div class=" col-12 row">
+        <div class="row">
             <div class="col-2"></div>
             <div class="col-2">
                 <label>@L["InviteCode"]</label>
@@ -470,10 +418,8 @@
             <div class="col-5">
                 <TextEdit @bind-Text="@CreateGroupBuyDto.InviteCode" />
             </div>
-
-
         </div>
-        <div class=" col-12 row">
+        <div class="row">
             <div class="col-2"></div>
             <div class="col-2">
                 <label>@L["ProfitShare"]</label>
@@ -482,7 +428,7 @@
                 <InputNumber class="form-control" @bind-Value="@CreateGroupBuyDto.ProfitShare" />
             </div>
         </div>
-        <div class=" col-12 row">
+        <div class="row">
             <div class="col-2"></div>
             <div class="col-2">
                 <label>@L["FaceBookPixelID"]</label>
@@ -491,7 +437,7 @@
                 <InputNumber class="form-control" @bind-Value="@CreateGroupBuyDto.MetaPixelNo" />
             </div>
         </div>
-        <div class=" col-12 row">
+        <div class="row">
             <div class="col-2"></div>
             <div class="col-2">
                 <label>@L["FaceBookID"]</label>
@@ -500,7 +446,7 @@
                 <TextEdit @bind-Text="@CreateGroupBuyDto.FBID" />
             </div>
         </div>
-        <div class=" col-12 row">
+        <div class="row">
             <div class="col-2"></div>
             <div class="col-2">
                 <label>@L["IGID"]</label>
@@ -509,7 +455,7 @@
                 <TextEdit @bind-Text="@CreateGroupBuyDto.IGID" />
             </div>
         </div>
-        <div class=" col-12 row">
+        <div class="row">
             <div class="col-2"></div>
             <div class="col-2">
                 <label>@L["LINEID"]</label>
@@ -518,7 +464,7 @@
                 <TextEdit @bind-Text="@CreateGroupBuyDto.LineID" />
             </div>
         </div>
-        <div class=" col-12 row">
+        <div class="row">
             <div class="col-2"></div>
             <div class="col-2">
                 <label>@L["GAID"]</label>
@@ -527,7 +473,7 @@
                 <TextEdit @bind-Text="@CreateGroupBuyDto.GAID" />
             </div>
         </div>
-        <div class=" col-12 row">
+        <div class="row">
             <div class="col-2"></div>
             <div class="col-2">
                 <label>@L["GTM"]</label>
@@ -537,299 +483,151 @@
             </div>
         </div>
         <Divider></Divider>
-        <div class=" col-12 row">
+        <div class="row">
             <div class="col-2"><label>@L["AddModule"]</label></div>
-
-            <div class="col-3">
+            <div class="col-10">
                 <Dropdown>
                     <DropdownToggle Color="Color.Primary">
                         @L["SelectModule"]
                     </DropdownToggle>
                     <DropdownMenu>
-                        @foreach (GroupBuyModule groupBuyDropdownValue in Enum.GetValues(typeof(GroupBuyModule)))
+                        @foreach (GroupBuyModuleType groupBuyDropdownValue in Enum.GetValues(typeof(GroupBuyModuleType)))
                         {
                             <DropdownItem Clicked='@(()=>AddProductItem(@groupBuyDropdownValue))'>
                                 @L[groupBuyDropdownValue.ToString()]
                             </DropdownItem>
                         }
-                        @*    <DropdownItem Clicked='@(()=>AddProductItem("Product Image"))'>
-
-                        Product Picture
-                        </DropdownItem> *@
                     </DropdownMenu>
                 </Dropdown>
-
             </div>
         </div>
         @foreach (var module in CollapseItem)
         {
-            <div class=" col-12 row">
-                <div class="col-2"></div>
-                <div class="col-9">
+            <div class="row">
+                <div class="col-12">
                     <Accordion>
                         <Collapse>
                             <CollapseHeader>
-                                <AccordionToggle>@L[module.GroupBuyModule.ToString()]</AccordionToggle>
+                                <AccordionToggle>
+                                    <i class="fa fa-trash text-danger me-2" @onclick="@(()=>RemoveCollapseItem(@module.Index))"></i>
+                                    @L[module.GroupBuyModuleType.ToString()]
+                                </AccordionToggle>
                             </CollapseHeader>
                             <CollapseBody>
-                                @if (module.GroupBuyModule == GroupBuyModule.ProductDescription)
-                                {
-                                    <div class="row mt-2">
-                                        <div class="col-3 mt-2">
-                                            @L["SelectItem"]
+                                @if(module.GroupBuyModuleType == GroupBuyModuleType.ProductGroup)
+                                    {
+                                        <div class="d-flex justify-content-end">
+                                            <div style="width: 60px;">
+                                                <select class="form-control form-control-sm" @onchange="(e) => OnProductGroupValueChange(e, module)">
+                                                    <option value="3">3</option>
+                                                    <option value="4">4</option>
+                                                </select>
+                                            </div>
                                         </div>
-                                        <div class="col-9">
-                                            <Autocomplete TItem="KeyValueDto"
-                                                          TValue="Guid?"
-                                                          Data="@ItemsList"
-                                                          TextField="@(( item ) => item.Name)"
-                                                          ValueField="@(( item ) => item.Id)"
-                                                        @bind-SelectedText="SelectedAutoCompleteText"
-                                                          Placeholder="Search..."
-                                                          Filter="AutocompleteFilter.StartsWith"
-                                                          CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
-                                                                            HighlightSearch
-                                                           Immediate="true"
-                                                           SelectedValueChanged="(id) => OnSelectedValueChanged(id, module)"
-                                                        @ref="AutocompleteField">
-                                                 <NotFoundContent> @L["NotFound"] </NotFoundContent>
-                                             </Autocomplete>
-                                         </div>
-                                         @*  <div class="col-1">
-                                <Button Color="Color.Danger" Clicked="RemoveSelectedItems">
-                                <i class="fa fa-trash"></i>
-                                </Button>
-                                </div> *@
-                                     </div>
+                                    }
+                                <div class="row mt-2">
+                                    @foreach(var selectedItem in module.SelectedItems)
+                                    {
+                                        <div class="col-@(12 / module.SelectedItems.Count)">
+                                            <Autocomplete 
+                                                        TItem="KeyValueDto"
+                                                        TValue="Guid?"
+                                                        Data="@ItemsList"
+                                                        TextField="@(( item ) => item.Name)"
+                                                        ValueField="@(( item ) => item.Id)"
+                                                        Placeholder="Search..."
+                                                        Filter="AutocompleteFilter.StartsWith"
+                                                        CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                                                        HighlightSearch
+                                                        Immediate="true"
+                                                        SelectedValueChanged="(id) => OnSelectedValueChanged(id, module, selectedItem)">
+                                                    <NotFoundContent> @L["NotFound"] </NotFoundContent>
+                                            </Autocomplete>
+                                            @if (selectedItem.Id != null)
+                                            {
+                                                var firstImage = selectedItem.Images?.FirstOrDefault();
+                                                <div class="d-flex mt-3">
 
-                                    <div class="row">
-                                        <div class="col-6 mt-2">
-                                            <div class="image-container">
-                                                <img src="images/noimage.jpg"  style="height: 170px; width: 80%;" />
-                                             </div>
-                                         </div>
-                                         <div class="col-6 mt-2">
-                                             <p> Description </p>
-                                         </div>
-                                     </div>
-
-                                    <div class="d-flex flex-row-reverse mt-2">
-                                        <Button class="btn btn-primary" Clicked="@(()=>HandleClick(module.Index))" Type="@ButtonType.Button"><span class="fa fas-plus"></span>Add Item</Button>
-                                    </div>
-
-                                }
-                                @if (module.GroupBuyModule == GroupBuyModule.ProductImage)
-                                {
-                                    <div class="row mt-2">
-
-                                        <div class="col-4">
-                                            <Autocomplete TItem="KeyValueDto"
-                                                          TValue="Guid?"
-                                                          Data="@ItemsList"
-                                                          TextField="@(( item ) => item.Name)"
-                                                          ValueField="@(( item ) => item.Id)"
-                                            @bind-SelectedText="SelectedAutoCompleteText"
-                                                          Placeholder="Search..."
-                                                          Filter="AutocompleteFilter.StartsWith"
-                                                          CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
-                                                                            HighlightSearch
-                                                           Immediate="true"
-                                                           SelectedValueChanged="(id) => OnSelectedValueChanged(id, module)"
-                                             @ref="AutocompleteField">
-                                                 <NotFoundContent> @L["NotFound"] </NotFoundContent>
-                                             </Autocomplete>
-
-                                             <div class="mt-2">
-                                                 <div class="image-container">
-                                                     <img src="images/noimage.jpg" style="height: 110px; width: 80%;" />
-                                                 </div>
-                                                 </div>
-                                         </div>
-                                         <div class="col-4">
-                                             <Autocomplete TItem="KeyValueDto"
-                                                           TValue="Guid?"
-                                                           Data="@ItemsList"
-                                                           TextField="@(( item ) => item.Name)"
-                                                           ValueField="@(( item ) => item.Id)"
-                                             @bind-SelectedText="SelectedAutoCompleteText"
-                                                           Placeholder="Search..."
-                                                           Filter="AutocompleteFilter.StartsWith"
-                                                           CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
-                                                                            HighlightSearch
-                                                           Immediate="true"
-                                                           SelectedValueChanged="(id) => OnSelectedValueChanged(id, module)"
-                                             @ref="AutocompleteField">
-                                                 <NotFoundContent> @L["NotFound"] </NotFoundContent>
-                                             </Autocomplete>
-                                             <div class="mt-2">
-                                                 <div class="image-container">
-                                                     <img src="images/noimage.jpg" style="height: 110px; width: 80%;" />
-                                                 </div>
-                                             </div>
-                                         </div>
-                                         <div class="col-4">
-                                             <Autocomplete TItem="KeyValueDto"
-                                                           TValue="Guid?"
-                                                           Data="@ItemsList"
-                                                           TextField="@(( item ) => item.Name)"
-                                                           ValueField="@(( item ) => item.Id)"
-                                             @bind-SelectedText="SelectedAutoCompleteText"
-                                                           Placeholder="Search..."
-                                                           Filter="AutocompleteFilter.StartsWith"
-                                                           CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
-                                                                            HighlightSearch
-                                                           Immediate="true"
-                                                           SelectedValueChanged="(id) => OnSelectedValueChanged(id, module)"
-                                             @ref="AutocompleteField">
-                                                 <NotFoundContent> @L["NotFound"] </NotFoundContent>
-                                             </Autocomplete>
-                                             <div class="mt-2">
-                                                 <div class="image-container">
-                                                     <img src="images/noimage.jpg" style="height: 110px; width: 80%;" />
-                                                 </div>
-                                             </div>
-                                         </div>
-                                         @*  <div class="col-1">
-                                <Button Color="Color.Danger" Clicked="RemoveSelectedItems">
-                                <i class="fa fa-trash"></i>
-                                </Button>
-                                </div> *@
-                                     </div>
-
-                                }
-                                @if (module.GroupBuyModule == GroupBuyModule.ProductGroup)
-                                {
-                                    <div class="row mt-2">
-                                        <div class="col-4">
-                                             <div class="mt-2">
-                                                 <div class="image-container">
-                                                    <img src="images/noimage.jpg" style="height: 170px; width: 80%;" />
-                                                 </div>
-                                             </div>
-                                             <div class="row mt-2">
-                                                 <p class="mt-2">
-                                                     產品標題必須為 60
-                                                 </p>
-                                                 </div>
-                                            <div class="mt-2">
-                                               <select class="form-control dropdown">
-                                                   <option>
-                                                        選項1
-                                                   </option>
-                                               </select class="form-control dropdown">
-                                            </div>
-                                             <div class="mt-2">
-                                                <select class="form-control dropdown">
-                                                    <option>
-                                                        選項1
-                                                    </option>
-                                                </select>
-                                            </div>
-                                            <div class="mt-2">
-                                                <select class="form-control dropdown">
-                                                    <option>
-                                                        選項1
-                                                    </option>
-                                                </select>
-                                            </div>
-                                         </div>
-                                        <div class="col-4">
-                                             <div class="mt-2">
-                                                 <div class="image-container">
-                                                    <img src="images/noimage.jpg" style="height: 170px; width: 80%;" />
-                                                 </div>
-                                             </div>
-                                             <div class="row mt-2">
-                                                 <p class="mt-2">
-                                                     產品標題必須為 60
-                                                 </p>
-                                                 </div>
-                                            <div class="mt-2">
-                                               <select class="form-control dropdown">
-                                                   <option>
-                                                        選項1
-                                                   </option>
-                                               </select class="form-control dropdown">
-                                            </div>
-                                             <div class="mt-2">
-                                                <select class="form-control dropdown">
-                                                    <option>
-                                                        選項1
-                                                    </option>
-                                                </select>
-                                            </div>
-                                            <div class="mt-2">
-                                                <select class="form-control dropdown">
-                                                    <option>
-                                                        選項1
-                                                    </option>
-                                                </select>
-                                            </div>
-                                         </div>
-                                         <div class="col-4">
-                                             <div class="mt-2">
-                                                 <div class="image-container">
-                                                    <img src="images/noimage.jpg" style="height: 170px; width: 80%;" />
-                                                 </div>
-                                             </div>
-                                             <div class="row mt-2">
-                                                 <p class="mt-2">
-                                                     產品標題必須為 60
-                                                 </p>
-                                                 </div>
-                                            <div class="mt-2">
-                                               <select class="form-control dropdown">
-                                                   <option>
-                                                        選項1
-                                                   </option>
-                                               </select class="form-control dropdown">
-                                            </div>
-                                             <div class="mt-2">
-                                                <select class="form-control dropdown">
-                                                    <option>
-                                                        選項1
-                                                    </option>
-                                                </select>
-                                            </div>
-                                            <div class="mt-2">
-                                                <select class="form-control dropdown">
-                                                    <option>
-                                                        選項1
-                                                    </option>
-                                                </select>
-                                            </div>
-                                         </div>
-                                         @*  <div class="col-1">
-                                <Button Color="Color.Danger" Clicked="RemoveSelectedItems">
-                                <i class="fa fa-trash"></i>
-                                </Button>
-                                </div> *@
-                                     </div>
-
-                                }
+                                                    @if(firstImage != null)
+                                                    {
+                                                        <div>
+                                                            <img src="@firstImage?.ImageUrl" class="img-fluid" />
+                                                            @if(module.GroupBuyModuleType == GroupBuyModuleType.ProductGroup)
+                                                            {
+                                                                <div class="row mt-2">
+                                                                    <h4 class="text-center mt-2">
+                                                                        <strong>@selectedItem.ItemName</strong>
+                                                                    </h4>
+                                                                    @if(!selectedItem.Attribute1Name.IsNullOrEmpty() && selectedItem.ItemDetails != null)
+                                                                    {
+                                                                        <div class="mt-2">
+                                                                           <select class="form-control dropdown">
+                                                                               @foreach(var item in selectedItem.ItemDetails.DistinctBy(i => i.Attribute1Value))
+                                                                                {
+                                                                                    <option>
+                                                                                        @item.Attribute1Value
+                                                                                   </option>
+                                                                                }
+                                                                           </select class="form-control dropdown">
+                                                                        </div>
+                                                                    }
+                                                                    @if(!selectedItem.Attribute2Name.IsNullOrEmpty() && selectedItem.ItemDetails != null)
+                                                                    {
+                                                                        <div class="mt-2">
+                                                                           <select class="form-control dropdown">
+                                                                               @foreach(var item in selectedItem.ItemDetails.DistinctBy(i => i.Attribute2Value))
+                                                                                {
+                                                                                    <option>
+                                                                                        @item.Attribute2Value
+                                                                                   </option>
+                                                                                }
+                                                                           </select class="form-control dropdown">
+                                                                        </div>
+                                                                    }
+                                                                    @if(!selectedItem.Attribute3Name.IsNullOrEmpty() && selectedItem.ItemDetails != null)
+                                                                    {
+                                                                        <div class="mt-2">
+                                                                           <select class="form-control dropdown">
+                                                                               @foreach(var item in selectedItem.ItemDetails.DistinctBy(i => i.Attribute3Value))
+                                                                                {
+                                                                                    <option>
+                                                                                        @item.Attribute3Value
+                                                                                   </option>
+                                                                                }
+                                                                           </select class="form-control dropdown">
+                                                                        </div>
+                                                                    }
+                                                                 </div>
+                                                            }
+                                                        </div>
+                                                    }
+                                                    @if (module.GroupBuyModuleType == GroupBuyModuleType.ProductDescription)
+                                                    {
+                                                        <div class="ps-3">
+                                                            <p> @((MarkupString)selectedItem.ItemDescription) </p>
+                                                        </div>
+                                                    }
+                                                </div> 
+                                            }
+                                        </div>
+                                    }
+                                </div>
                             </CollapseBody>
                         </Collapse>
                     </Accordion>
                 </div>
-                <div class="col-1">
-                    <Button class="btn btn-danger" Clicked="@(()=>RemoveCollapseItem(@module.Index))">
-                        <i class="fa fa-trash"></i>
-                    </Button>
-                </div>
             </div>
         }
         <Divider></Divider>
-        <div class=" col-12 row">
-
+        <div class="row">
             <div class="col-2">
                 <fieldLabel>@L["GroupBuyPolicy"]</fieldLabel>
             </div>
-            <div class="col-9">
+            <div class="col-10">
                 <div class="col-12">
-                    <FieldLabel></FieldLabel>
                     <TextEdit Placeholder="@L["GroupBuyCondition"]" @bind-Text="CreateGroupBuyDto.GroupBuyCondition" MaxLength="60" />
                 </div>
-                <div class=" col-12">
+                <div class="col-12">
                     <Blazored.TextEditor.BlazoredTextEditor @ref="@GroupBuyHtml">
                         <ToolbarContent>
                             <select class="ql-header">
@@ -867,23 +665,15 @@
                     </Blazored.TextEditor.BlazoredTextEditor>
                 </div>
             </div>
-            <div class="col-1">
-                <span>
-
-                </span>
-            </div>
         </div>
-        <div class=" col-12 row">
-
+        <div class="row">
             <div class="col-2">
-                <fieldLabel></fieldLabel>
             </div>
-            <div class="col-9">
+            <div class="col-10">
                 <div class="col-12">
-                    <fieldLabel></fieldLabel>
                     <TextEdit Placeholder="@L["CustomerInformation"]" @bind-Text="@CreateGroupBuyDto.CustomerInformation" MaxLength="60" />
                 </div>
-                <div class=" col-12">
+                <div class="col-12">
                     <Blazored.TextEditor.BlazoredTextEditor @ref="@CustomerInformationHtml">
                         <ToolbarContent>
                             <select class="ql-header">
@@ -921,23 +711,15 @@
                     </Blazored.TextEditor.BlazoredTextEditor>
                 </div>
             </div>
-            <div class="col-1">
-                <span>
-
-                </span>
-            </div>
         </div>
-        <div class=" col-12 row">
-
+        <div class="row">
             <div class="col-2">
-                <fieldLabel></fieldLabel>
             </div>
-            <div class="col-9">
+            <div class="col-10">
                 <div class="col-12">
-                    <fieldLabel></fieldLabel>
                     <TextEdit Placeholder="@L["ExchangePolicy"]" @bind-Text="@CreateGroupBuyDto.ExchangePolicy" MaxLength="60" ShowCount />
                 </div>
-                <div class=" col-12">
+                <div class="col-12">
                     <Blazored.TextEditor.BlazoredTextEditor @ref="@ExchangePolicyHtml">
                         <ToolbarContent>
                             <select class="ql-header">
@@ -975,23 +757,13 @@
                     </Blazored.TextEditor.BlazoredTextEditor>
                 </div>
             </div>
-            <div class="col-1">
-                <span>
-
-                </span>
-            </div>
         </div>
-        <div class=" col-12 row">
-
+        <div class="row">
             <div class="col-2">
                 <fieldLabel>@L["NotifyEmail"]</fieldLabel>
             </div>
-            <div class="col-9">
+            <div class="col-10">
                 <div class="col-12">
-                    <fieldLabel></fieldLabel>
-
-                </div>
-                <div class=" col-12">
                     <Blazored.TextEditor.BlazoredTextEditor @ref="@NotifyEmailHtml">
                         <ToolbarContent>
                             <select class="ql-header">
@@ -1029,100 +801,18 @@
                     </Blazored.TextEditor.BlazoredTextEditor>
                 </div>
             </div>
-            <div class="col-1">
-                <span>
-
-                </span>
-            </div>
         </div>
-        <div class="row mb-3"></div>
-
-        <div class="d-flex flex-row-reverse">
-            <Button Type="@ButtonType.Button" class="btn btn-primary me-1" Clicked="CreateEntityAsync"> <i class="fa fa-check"></i> @L["Save"]</Button>
-            <Button Danger Type="@ButtonType.Button" class="btn btn-danger me-1" Clicked="CloseGroupBuyEdit" Style="margin-right:5px">@L["Cancel"]</Button>
-
-            @*    <Button Type="@ButtonType.Button" class="btn btn-secondary me-1" >@L["Preview"]</Button> *@
-
+        <div class="row mt-3 ">
+            <div class="d-flex flex-row-reverse">
+                <Button Type="@ButtonType.Button" class="btn btn-primary me-1" Clicked="CreateEntityAsync"> <i class="fa fa-check"></i> @L["Save"]</Button>
+                <Button Danger Type="@ButtonType.Button" class="btn btn-danger me-1" Clicked="BackToGroupBuyList" Style="margin-right:5px">@L["Cancel"]</Button>
+            </div>
         </div>
     </CardBody>
 </Card>
 
-<Modal Title="@title"
-       Visible="@_visible"
-       OnOk="@HandleOk"
-       OnCancel="@HandleCancel">
-
-</Modal>
-
-
 @code {
 
-    string title = "BasicModal";
-    string customerInformation;
-    string groupBuyCondition;
-    string productDescription = "";
-    bool _visible = false;
-    int selectedIndex = 0;
-
-    private void HandleClick(int i)
-    {
-        var checkValiate = CollapseItem.Where(x => x.Index == i).FirstOrDefault();
-        if (checkValiate is null)
-        {
-            return;
-        }
-        if (checkValiate.SelectedItemId == null)
-        {
-            return;
-        }
-        if (checkValiate.SelectedItemDescription.IsNullOrWhiteSpace())
-        {
-            return;
-        }
-        if (checkValiate.SelectedImage == null || checkValiate.SelectedImage.ImageUrl.IsNullOrWhiteSpace())
-        {
-            return;
-        }
-        int selectedIndex = i;
-        if (CollapseItem.Where(x => x.Index == i).FirstOrDefault().ItemDetails.Count <= 2)
-        {
-            var cItem = CollapseItem.Where(x => x.Index == i).FirstOrDefault();
-
-            ProductPictureItem item = new ProductPictureItem
-                {
-                    ItemId = cItem.SelectedItemId,
-                    ItemDescription = cItem.SelectedItemDescription,
-                    Image = cItem.SelectedImage,
-                    Item = cItem.SelectedItem
-                };
-
-            cItem.SelectedItemDescription = null;
-            cItem.SelectedImage = new();
-
-            CollapseItem.Where(x => x.Index == i).FirstOrDefault().ItemDetails.Add(item);
-        }
-    }
-
-    private void HandleOk(MouseEventArgs e)
-    {
-        Console.WriteLine(e);
-        _visible = false;
-    }
-
-    private void CloseGroupBuyEdit()
-    {
-        NavigationManager.NavigateTo("GroupBuyManagement/GroupBuyList");
-    }
-    private void HandleCancel(MouseEventArgs e)
-    {
-        Console.WriteLine(e);
-        _visible = false;
-        selectedIndex = 0;
-    }
-    private void RemoveProductItem(ProductPictureItem item, int index)
-    {
-        CollapseItem.Where(x => x.Index == index).FirstOrDefault().ItemDetails.Remove(item);
-    }
 }
 
 

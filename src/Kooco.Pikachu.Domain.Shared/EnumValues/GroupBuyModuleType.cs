@@ -1,7 +1,7 @@
 ﻿
 namespace Kooco.Pikachu.EnumValues
 {
-    public enum GroupBuyModule
+    public enum GroupBuyModuleType
     {
         ProductDescription,
         ProductImage,

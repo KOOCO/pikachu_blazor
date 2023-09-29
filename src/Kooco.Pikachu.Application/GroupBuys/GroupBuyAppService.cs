@@ -17,15 +17,17 @@ namespace Kooco.Pikachu.GroupBuys
     {
         private readonly IGroupBuyRepositroy _groupBuyRepository;
         private readonly GroupBuyManager _groupBuyManager;
-        private readonly IImageAppService _imageAppService;
         private readonly IRepository<Image, Guid> _imageRepository;
         private readonly ImageContainerManager _imageContainerManager;
-        public GroupBuyAppService(IGroupBuyRepositroy groupBuyRepository, GroupBuyManager groupBuyManager,
-            IImageAppService imageAppService, ImageContainerManager imageContainerManager, IRepository<Image, Guid> imageRepository)
+        public GroupBuyAppService(
+            IGroupBuyRepositroy groupBuyRepository, 
+            GroupBuyManager groupBuyManager,
+            ImageContainerManager imageContainerManager, 
+            IRepository<Image, Guid> imageRepository
+            )
         {
             _groupBuyManager = groupBuyManager;
             _groupBuyRepository = groupBuyRepository;
-            _imageAppService = imageAppService;
             _imageContainerManager = imageContainerManager;
             _imageRepository = imageRepository;
         }
@@ -46,34 +48,24 @@ namespace Kooco.Pikachu.GroupBuys
                                                          input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy, input.NotifyMessage,
                                                          input.ExcludeShippingMethod, input.IsDefaultPaymentGateWay, input.PaymentMethod, input.GroupBuyCondition, input.CustomerInformation, input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription);
 
-            if (input.ItemGroups.Any())
+            if (input.ItemGroups != null && input.ItemGroups.Any())
             {
                 foreach (var group in input.ItemGroups)
                 {
                     var itemGroup = _groupBuyManager.AddItemGroup(
                         result,
                         group.SortOrder,
-                        group.Title
+                        group.GroupBuyModuleType
                         );
 
-                    if (group.ItemDetails.Any())
+                    if (group.ItemDetails != null && group.ItemDetails.Any())
                     {
                         foreach (var item in group.ItemDetails)
                         {
-                            Guid? imageId = null;
-                            if (item.Image != null)
-                            {
-                                item.Image.TargetId = result.Id;
-                                var image = await _imageAppService.CreateAsync(item.Image);
-                                imageId = image?.Id;
-                            }
-
                             _groupBuyManager.AddItemGroupDetail(
                                 itemGroup,
                                 item.SortOrder,
-                                item.ItemDescription,
-                                item.ItemId,
-                                imageId
+                                item.ItemId
                                 );
                         }
                     }
@@ -200,37 +192,34 @@ namespace Kooco.Pikachu.GroupBuys
                     {
                         var itemGroup = groupBuy.ItemGroups.First(x => x.Id == group.Id);
                         itemGroup.SortOrder = group.SortOrder;
-                        itemGroup.Title = group.Title;
+                        //itemGroup.Title = group.Title;
 
                         if (group.ItemDetails.Any())
                         {
                             foreach (var item in group.ItemDetails)
                             {
-                                if (item.Id.HasValue)
-                                {
-                                    var itemDetail = itemGroup.ItemGroupDetails.First(x => x.Id == item.Id);
-                                    itemDetail.SortOrder = item.SortOrder;
-                                    itemDetail.ItemDescription = item.ItemDescription;
-                                    itemDetail.ItemId = item.ItemId;
-                                }
-                                else
-                                {
-                                    Guid? imageId = null;
-                                    if (item.Image != null)
-                                    {
-                                        item.Image.TargetId = groupBuy.Id;
-                                        var image = await _imageAppService.CreateAsync(item.Image);
-                                        imageId = image?.Id;
-                                    }
+                                //if (item.Id.HasValue)
+                                //{
+                                //    var itemDetail = itemGroup.ItemGroupDetails.First(x => x.Id == item.Id);
+                                //    itemDetail.SortOrder = item.SortOrder;
+                                //    itemDetail.ItemId = item.ItemId.Value;
+                                //}
+                                //else
+                                //{
+                                //    Guid? imageId = null;
+                                //    if (item.Image != null)
+                                //    {
+                                //        item.Image.TargetId = groupBuy.Id;
+                                //        var image = await _imageAppService.CreateAsync(item.Image);
+                                //        imageId = image?.Id;
+                                //    }
 
-                                    _groupBuyManager.AddItemGroupDetail(
-                                        itemGroup,
-                                        item.SortOrder,
-                                        item.ItemDescription,
-                                        item.ItemId,
-                                        imageId
-                                        );
-                                }
+                                //    _groupBuyManager.AddItemGroupDetail(
+                                //        itemGroup,
+                                //        item.SortOrder,
+                                //        item.ItemId.Value
+                                //        );
+                                //}
                             }
                         }
                     }
@@ -239,29 +228,28 @@ namespace Kooco.Pikachu.GroupBuys
                         var itemGroup = _groupBuyManager.AddItemGroup(
                         groupBuy,
                         group.SortOrder,
-                        group.Title
+                        group.GroupBuyModuleType
+                        //group.Title
                         );
 
                         if (group.ItemDetails.Any())
                         {
-                            foreach (var item in group.ItemDetails)
-                            {
-                                Guid? imageId = null;
-                                if (item.Image != null)
-                                {
-                                    item.Image.TargetId = groupBuy.Id;
-                                    var image = await _imageAppService.CreateAsync(item.Image);
-                                    imageId = image?.Id;
-                                }
+                            //foreach (var item in group.ItemDetails)
+                            //{
+                            //    Guid? imageId = null;
+                            //    if (item.Image != null)
+                            //    {
+                            //        item.Image.TargetId = groupBuy.Id;
+                            //        var image = await _imageAppService.CreateAsync(item.Image);
+                            //        imageId = image?.Id;
+                            //    }
 
-                                _groupBuyManager.AddItemGroupDetail(
-                                    itemGroup,
-                                    item.SortOrder,
-                                    item.ItemDescription,
-                                    item.ItemId,
-                                    imageId
-                                    );
-                            }
+                            //    _groupBuyManager.AddItemGroupDetail(
+                            //        itemGroup,
+                            //        item.SortOrder,
+                            //        item.ItemId.Value
+                            //        );
+                            //}
                         }
                     }
                 }

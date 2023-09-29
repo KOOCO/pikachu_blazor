@@ -138,21 +138,21 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                         var collapseItem = new CollapseItem
                         {
                             Index = i++,
-                            Title = itemGroup.Title
+                            //Title = itemGroup.Title
                         };
                         if (itemGroup.ItemGroupDetails.Any())
                         {
 
-                            foreach (var item in itemGroup.ItemGroupDetails)
-                            {
-                                collapseItem.ItemDetails.Add(new ProductPictureItem
-                                {
-                                    ItemId = item.ItemId,
-                                    ItemDescription = item.ItemDescription,
-                                    Item = item.Item,
-                                    Image = new ProductImage(item.Image.Name, item.Image.BlobImageName, item.Image.ImageUrl)
-                                });
-                            }
+                            //foreach (var item in itemGroup.ItemGroupDetails)
+                            //{
+                            //    collapseItem.ItemDetails.Add(new ProductPictureItem
+                            //    {
+                            //        ItemId = item.ItemId,
+                            //        ItemDescription = item.ItemDescription,
+                            //        Item = item.Item,
+                            //        Image = new ProductImage(item.Image.Name, item.Image.BlobImageName, item.Image.ImageUrl)
+                            //    });
+                            //}
                         }
 
                         CollapseItem.Add(collapseItem);
@@ -174,7 +174,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         void addProductItem(string title)
         {
             CollapseItem item = new();
-            item.Title = title;
+            //item.Title = title;
             item.Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1;
             CollapseItem.Add(item);
         }
@@ -448,8 +448,8 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 var confirmed = await _uiMessageService.Confirm(L[PikachuDomainErrorCodes.AreYouSureToDeleteImage]);
                 if (confirmed)
                 {
-                    confirmed = await _imageContainerManager.DeleteAsync(collapse.SelectedImage.BlobImageName);
-                    collapse.SelectedImage = new();
+                    //confirmed = await _imageContainerManager.DeleteAsync(collapse.SelectedImage.BlobImageName);
+                    //collapse.SelectedImage = new();
                 }
                 else
                 {
@@ -518,27 +518,27 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 foreach (var item in CollapseItem)
                 {
                     int j = 1;
-                    if (item.ItemDetails.Any())
-                    {
-                        var itemGroup = new GroupBuyItemGroupCreateUpdateDto
-                        {
-                            SortOrder = i++,
-                            Title = item.Title
-                        };
+                    //if (item.ItemDetails.Any())
+                    //{
+                    //    var itemGroup = new GroupBuyItemGroupCreateUpdateDto
+                    //    {
+                    //        SortOrder = i++,
+                    //        Title = item.Title
+                    //    };
 
-                        foreach (var itemDetail in item.ItemDetails)
-                        {
-                            itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
-                            {
-                                SortOrder = j++,
-                                ItemDescription = itemDetail.ItemDescription,
-                                ItemId = itemDetail.ItemId,
-                                Image = new CreateImageDto(itemDetail.Image.ImageName, itemDetail.Image.BlobImageName, itemDetail.Image.ImageUrl, ImageType.GroupBuyItemGroup)
-                            });
-                        }
+                    //    foreach (var itemDetail in item.ItemDetails)
+                    //    {
+                    //        itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
+                    //        {
+                    //            SortOrder = j++,
+                    //            ItemDescription = itemDetail.ItemDescription,
+                    //            ItemId = itemDetail.ItemId,
+                    //            Image = new CreateImageDto(itemDetail.Image.ImageName, itemDetail.Image.BlobImageName, itemDetail.Image.ImageUrl, ImageType.GroupBuyItemGroup)
+                    //        });
+                    //    }
 
-                        EditGroupBuyDto.ItemGroups.Add(itemGroup);
-                    }
+                    //    EditGroupBuyDto.ItemGroups.Add(itemGroup);
+                    //}
                 }
 
                 var result = await _groupBuyAppService.UpdateAsync(Id, EditGroupBuyDto);
@@ -570,8 +570,8 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             {
                 if (id != null)
                 {
-                    collapseItem.SelectedItemId = id.Value;
-                    collapseItem.SelectedItem = await _itemAppService.GetAsync(id.Value);
+                    //collapseItem.SelectedItemIds = id.Value;
+                    //collapseItem.SelectedItem = await _itemAppService.GetAsync(id.Value);
 
                     StateHasChanged();
                 }
@@ -614,7 +614,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                         memoryStream.Position = 0;
                         var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
 
-                        collapseItem.SelectedImage = new ProductImage(file.Name, newFileName, url);
+                        //collapseItem.SelectedImage = new ProductImage(file.Name, newFileName, url);
 
                         await FilePicker.Clear();
                     }

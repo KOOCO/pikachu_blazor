@@ -151,6 +151,7 @@
     "ProductDescription": "Product Description",
     "ProductGroup": "Product Group",
     "SelectModule": "Select Module",
+    "Pikachu:GroupBuyModuleCannotBeEmpty": "Group Buy Module Can Not Be Empty",
 
     //SetItem
     "SetItem": "Set Item",
