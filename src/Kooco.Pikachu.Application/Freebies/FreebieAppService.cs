@@ -20,12 +20,12 @@ namespace Kooco.Pikachu.Freebies
 
         private readonly FreebieManager _freebieManager;
         private readonly IFreebieRepository _freebieRepository;
-        private readonly IGroupBuyRepositroy _groupBuyRepository;
+        private readonly IGroupBuyRepository _groupBuyRepository;
         private readonly ImageContainerManager _imageContainerManager;
         public FreebieAppService(
             FreebieManager freebieManager,
             IFreebieRepository freebieRepository,
-            IGroupBuyRepositroy groupBuyRepository,
+            IGroupBuyRepository groupBuyRepository,
             ImageContainerManager imageContainerManager
             ) : base(freebieRepository)
         {

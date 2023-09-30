@@ -1,15 +1,13 @@
 ﻿using Kooco.Pikachu.GroupBuys;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories;
 
 namespace Kooco.Pikachu.Groupbuys
 {
-    public interface IGroupBuyRepositroy : IRepository<GroupBuy, Guid>
+    public interface IGroupBuyRepository : IRepository<GroupBuy, Guid>
     {
         Task<List<GroupBuy>> GetGroupBuyListAsync(
            
@@ -51,11 +49,9 @@ namespace Kooco.Pikachu.Groupbuys
             string? sorting = null,
             int maxResultCount = int.MaxValue,
             int skipCount = 0,
-            CancellationToken cancellationToken = default);
-
-
-
-
+            CancellationToken cancellationToken = default
+            );
+        
         Task<long> GetGroupBuyCountAsync(
             string? filterText = null,
             int? groupBuyNo = null,

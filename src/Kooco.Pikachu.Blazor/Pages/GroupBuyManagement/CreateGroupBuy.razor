@@ -356,16 +356,21 @@
             <div class="col-2">@L["Gateway"]</div>
             <div class="col-2">@L["PaymentMethod"]</div>
             <div class="col-4">
-                <Radio TValue="bool" Group="PaymentGateway" Checked="CreateGroupBuyDto.IsDefaultPaymentGateWay" CheckedChanged="() => CreateGroupBuyDto.IsDefaultPaymentGateWay = true">
-                    @L["DefaultPaymentGateWay"]
-                </Radio>
+                <div class="form-check">
+                    <input type="radio" class="form-check-input" name="PaymentGateway" id="payment-gateway-1" checked="@CreateGroupBuyDto.IsDefaultPaymentGateWay" @onclick="() => CreateGroupBuyDto.IsDefaultPaymentGateWay = true" />
+                    <label class="form-check-label" for="payment-gateway-1">
+                        @L["DefaultPaymentGateWay"]
+                    </label>
+                </div>
             </div>
         </div>
         <div class="row">
             <div class="col-2"></div>
             <div class="col-2"></div>
             <div class="col-1">  
-                <Radio TValue="bool" Group="PaymentGateway" Checked="!CreateGroupBuyDto.IsDefaultPaymentGateWay" CheckedChanged="() => CreateGroupBuyDto.IsDefaultPaymentGateWay = false"></Radio>
+                <div class="form-check">
+                    <input type="radio" class="form-check-input" name="PaymentGateway" id="payment-gateway-2" checked="@(!CreateGroupBuyDto.IsDefaultPaymentGateWay)" @onclick="() => CreateGroupBuyDto.IsDefaultPaymentGateWay = false" />
+                </div>
             </div>
             <div class="col-7">
                 <div class="col-7 form-control" style="background-color:white">

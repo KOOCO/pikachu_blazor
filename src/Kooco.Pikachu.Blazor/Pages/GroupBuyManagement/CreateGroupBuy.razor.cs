@@ -500,6 +500,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         {
             NavigationManager.NavigateTo("GroupBuyManagement/GroupBuyList");
         }
+
     }
 
     public class CollapseItem
