@@ -8,40 +8,37 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Volo.Abp.Application.Dtos;
 using Volo.Abp.AspNetCore.Components.Messages;
 using Volo.Abp.TenantManagement;
-using Volo.Abp.TenantManagement.Blazor.Pages.TenantManagement;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 {
     public partial class GroupBuyList
     {
-        public string TestProperty { get; set; } = string.Empty;
-        public string TenantNameList { get; set; } = string.Empty;
         public List<GroupBuyDto> GroupBuyListItem { get; set; }
-        private readonly IItemAppService _itemAppService;
         public bool IsAllSelected { get; private set; } = false;
+
         private readonly IUiMessageService _uiMessageService;
-        
+
         private readonly IGroupBuyAppService _groupBuyAppService;
         int _pageIndex = 1;
         int _pageSize = 10;
         int Total = 0;
 
-        public GroupBuyList(ITenantAppService tenantAppService, IGroupBuyAppService groupBuyAppService, IUiMessageService messageService) 
+        public GroupBuyList(
+            IGroupBuyAppService groupBuyAppService,
+            IUiMessageService messageService
+            )
         {
             _groupBuyAppService = groupBuyAppService;
-            GroupBuyListItem=new List<GroupBuyDto>();
             _uiMessageService = messageService;
+            GroupBuyListItem = new List<GroupBuyDto>();
         }
-        protected override async Task OnInitializedAsync()
-        {
-            await UpdateGroupBuyList();
-        }
+
         private void HandleSelectAllChange(ChangeEventArgs e)
         {
-            IsAllSelected = (bool)e.Value;
+            IsAllSelected = (bool?)e.Value ?? false;
             GroupBuyListItem.ForEach(item =>
             {
                 item.IsSelected = IsAllSelected;
@@ -51,28 +48,60 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
         private async Task UpdateGroupBuyList()
         {
-            int skipCount = (_pageIndex - 1) * _pageSize;
-            var result = await _groupBuyAppService.GetListAsync(new GetGroupBuyInput
+            try
             {
-                MaxResultCount = _pageSize,
-                SkipCount = skipCount
-            });
-            GroupBuyListItem = result.Items.ToList();
-            Total = (int)result.TotalCount;
+                int skipCount = _pageIndex * _pageSize;
+                var result = await _groupBuyAppService.GetListAsync(new GetGroupBuyInput
+                {
+                    Sorting = nameof(GroupBuy.GroupBuyName),
+                    MaxResultCount = _pageSize,
+                    SkipCount = skipCount
+                });
+                GroupBuyListItem = result.Items.ToList();
+                Total = (int)result.TotalCount;
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType()?.ToString());
+            }
         }
         private async Task DeleteSelectedAsync()
         {
-            var groupBuyItemsids = GroupBuyListItem.Where(x => x.IsSelected).Select(x => x.Id).ToList();
-            if (groupBuyItemsids.Count > 0)
+            try
             {
-                var confirmed = await _uiMessageService.Confirm(L["AreYouSureToDeleteSelectedItem"]);
-                if (confirmed)
+                var groupBuyItemsids = GroupBuyListItem.Where(x => x.IsSelected).Select(x => x.Id).ToList();
+                if (groupBuyItemsids.Count > 0)
                 {
-                    await _groupBuyAppService.DeleteManyGroupBuyItemsAsync(groupBuyItemsids);
-                    await UpdateGroupBuyList();
-                    IsAllSelected = false;
+                    var confirmed = await _uiMessageService.Confirm(L["AreYouSureToDeleteSelectedItem"]);
+                    if (confirmed)
+                    {
+                        await _groupBuyAppService.DeleteManyGroupBuyItemsAsync(groupBuyItemsids);
+                        await UpdateGroupBuyList();
+                        IsAllSelected = false;
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType()?.ToString());
+            }
+        }
+        private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<GroupBuyDto> e)
+        {
+            _pageIndex = e.Page - 1;
+            await UpdateGroupBuyList();
+            await InvokeAsync(StateHasChanged);
+        }
+
+        public void CreateNewItem()
+        {
+            NavigationManager.NavigateTo("/GroupBuyManagement/GroupBuyList/New");
+        }
+
+        public void OnEditItem(DataGridRowMouseEventArgs<GroupBuyDto> e)
+        {
+            var id = e.Item.Id;
+            NavigationManager.NavigateTo("/GroupBuyManagement/GroupBuyList/Edit/" + id);
         }
     }
 }

@@ -31,8 +31,6 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             ItemList = new List<ItemDto>();
         }
 
-        protected override async Task OnInitializedAsync() { }
-
         private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<ItemDto> e)
         {
             PageIndex = e.Page - 1;

@@ -37,13 +37,13 @@ namespace Kooco.Pikachu.GroupBuys
         
         public DateTime? EndTime { get; set; }
 
-        public bool FreeShipping { get; set; }
+        public bool? FreeShipping { get; set; }
        
 
-        public bool allowShipToOuterTaiwan { get; set; }
+        public bool? AllowShipToOuterTaiwan { get; set; }
 
      
-        public bool allowShipOversea { get; set; }
+        public bool? AllowShipOversea { get; set; }
 
      
         public DateTime? ExpectShippingDateFrom { get; set; }
@@ -58,21 +58,21 @@ namespace Kooco.Pikachu.GroupBuys
         public int? MoneyTransferValidDays { get; set; }
 
      
-        public bool issueInvoice { get; set; }
+        public bool? IssueInvoice { get; set; }
 
      
-        public bool AutoIssueTriplicateInvoice { get; set; }
+        public bool? AutoIssueTriplicateInvoice { get; set; }
 
         public string? InvoiceNote { get; set; }
 
   
-        public bool ProtectPrivacyData { get; set; }
+        public bool? ProtectPrivacyData { get; set; }
 
 
         public string? InviteCode { get; set; }
 
       
-        public int ProfitShare { get; set; }
+        public int? ProfitShare { get; set; }
 
        
         public int? MetaPixelNo { get; set; }
@@ -100,7 +100,6 @@ namespace Kooco.Pikachu.GroupBuys
      
         public string? ExchangePolicy { get; set; }
 
-       
         public string? NotifyMessage { get; set; }
 
     }

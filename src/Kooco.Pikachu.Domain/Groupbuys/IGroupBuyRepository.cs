@@ -10,7 +10,6 @@ namespace Kooco.Pikachu.Groupbuys
     public interface IGroupBuyRepository : IRepository<GroupBuy, Guid>
     {
         Task<List<GroupBuy>> GetGroupBuyListAsync(
-           
             string? filterText = null,
             int? groupBuyNo = null,
             string? status = null,
@@ -23,17 +22,17 @@ namespace Kooco.Pikachu.Groupbuys
             string? bannerURL = null,
             DateTime? startTime = null,
             DateTime? endTime = null,
-            bool freeShipping = false,
-            bool allowShipToOuterTaiwan = false,
-            bool allowShipOversea = false,
+            bool? freeShipping = false,
+            bool? allowShipToOuterTaiwan = false,
+            bool? allowShipOversea = false,
             DateTime? expectShippingDateFrom = null,
             DateTime? expectShippingDateTo = null,
             int? moneyTransferValidDayBy = null,
             int? moneyTransferValidDays = null,
-            bool issueInvoice = false,
-            bool autoIssueTriplicateInvoice = false,
+            bool? issueInvoice = false,
+            bool? autoIssueTriplicateInvoice = false,
             string? invoiceNote = null,
-            bool protectPrivacyData = false,
+            bool? protectPrivacyData = false,
             string? inviteCode = null,
             int? profitShare = null,
             int? metaPixelNo = null,
@@ -65,17 +64,17 @@ namespace Kooco.Pikachu.Groupbuys
             string? bannerURL = null,
             DateTime? startTime = null,
             DateTime? endTime = null,
-            bool freeShipping = false,
-            bool allowShipToOuterTaiwan = false,
-            bool allowShipOversea = false,
+            bool? freeShipping = false,
+            bool? allowShipToOuterTaiwan = false,
+            bool? allowShipOversea = false,
             DateTime? expectShippingDateFrom = null,
             DateTime? expectShippingDateTo = null,
             int? moneyTransferValidDayBy = null,
             int? moneyTransferValidDays = null,
-            bool issueInvoice = false,
-            bool autoIssueTriplicateInvoice = false,
+            bool? issueInvoice = false,
+            bool? autoIssueTriplicateInvoice = false,
             string? invoiceNote = null,
-            bool protectPrivacyData = false,
+            bool? protectPrivacyData = false,
             string? inviteCode = null,
             int? profitShare = null,
             int? metaPixelNo = null,
@@ -88,8 +87,6 @@ namespace Kooco.Pikachu.Groupbuys
             string? orderContactInfo = null,
             string? exchangePolicy = null,
             string? notifyMessage = null,
-
-
             CancellationToken cancellationToken = default);
 
         Task<GroupBuy> GetWithDetailsAsync(Guid id);
