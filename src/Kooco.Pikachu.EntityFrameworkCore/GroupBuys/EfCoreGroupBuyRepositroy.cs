@@ -5,8 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
@@ -47,12 +45,16 @@ namespace Kooco.Pikachu.GroupBuys
 
             return await dbContext.GroupBuys
                 .Where(x => x.Id == id)
+                .Include(x => x.ItemGroups.OrderBy(i => i.SortOrder))
+                    .ThenInclude(ig => ig.ItemGroupDetails.OrderBy(i => i.SortOrder))
+                    .ThenInclude(igd => igd.Item)
+                    .ThenInclude(i => i.Images)
                 .Include(x => x.ItemGroups)
-                .ThenInclude(ig => ig.ItemGroupDetails)
-                //.ThenInclude(igd => igd.Item)
+                    .ThenInclude(ig => ig.ItemGroupDetails.OrderBy(i => i.SortOrder))
+                    .ThenInclude(igd => igd.Item)
+                    .ThenInclude(i => i.ItemDetails)
                 .Include(x => x.ItemGroups)
-                .ThenInclude(ig => ig.ItemGroupDetails)
-                //.ThenInclude(igd => igd.Image)
+                    .ThenInclude(ig => ig.ItemGroupDetails.OrderBy(i => i.SortOrder))
                 .FirstOrDefaultAsync();
         }
 

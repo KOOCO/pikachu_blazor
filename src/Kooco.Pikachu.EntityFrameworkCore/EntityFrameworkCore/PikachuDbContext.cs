@@ -159,7 +159,7 @@ public class PikachuDbContext :
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "GroupBuyItemGroupDetails", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
-            b.HasOne<Item>().WithMany().HasForeignKey(x => x.ItemId);
+            b.HasOne(x => x.Item).WithMany().HasForeignKey(x => x.ItemId);
         });
 
         builder.Entity<Freebie>(b =>

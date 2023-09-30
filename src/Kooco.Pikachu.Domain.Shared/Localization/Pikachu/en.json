@@ -115,8 +115,9 @@
     //GroupBuy
     "NewGroupBuy": "New Group Buy",
     "EditGroupBuy": "Edit Group Buy",
-    "SalesURL1": "Sales URL 1",
-    "SalesURL2": "Sales URL 2",
+    "SalesURL": "Sales Url",
+    "SalesURL1": "Sales Url 1",
+    "SalesURL2": "Sales Url 2",
     "GroupBuyName": "Group Buy Name",
     "Subject": "Subject",
     "GroupBuyShortName": "Short Name",
@@ -152,6 +153,8 @@
     "ProductGroup": "Product Group",
     "SelectModule": "Select Module",
     "Pikachu:GroupBuyModuleCannotBeEmpty": "Group Buy Module Can Not Be Empty",
+    "Gateway": "Gateway",
+    "InvalidFileType": "Invalid File Type",
 
     //SetItem
     "SetItem": "Set Item",

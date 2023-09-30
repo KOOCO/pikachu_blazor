@@ -3,6 +3,7 @@ using Blazorise;
 using Blazorise.Components;
 using Kooco.Pikachu.AzureStorage.Image;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Freebies.Dtos;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.ImageBlob;
 using Kooco.Pikachu.Images;
@@ -23,7 +24,6 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 {
     public partial class CreateGroupBuy
     {
-        bool paymentMethodCheck = false;
         private const int maxtextCount = 60;
         private const int MaxAllowedFilesPerUpload = 5;
         private const int TotalMaxAllowedFiles = 5;
@@ -46,24 +46,24 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         private BlazoredTextEditor ExchangePolicyHtml { get; set; }
 
         public string _ProductPicture = "Product Picture";
-        private readonly IImageBlobService _imageBlobService;
         private FilePicker LogoPickerCustom { get; set; }
         private FilePicker BannerPickerCustom { get; set; }
         private FilePicker CarouselPickerCustom { get; set; }
-        private FilePicker FilePicker { get; set; }
-        private Autocomplete<KeyValueDto, Guid?> AutocompleteField { get; set; }
-        private readonly HttpClient _httpClient;
+
         private readonly IGroupBuyAppService _groupBuyAppService;
         private readonly IImageAppService _imageAppService;
         private readonly IItemAppService _itemAppService;
         private readonly IUiMessageService _uiMessageService;
         private readonly ImageContainerManager _imageContainerManager;
         private readonly List<string> ValidFileExtensions = new() { ".jpg", ".png", ".svg", ".jpeg", ".webp" };
-        public CreateGroupBuy(IImageBlobService imageBlobService, HttpClient httpClient, IGroupBuyAppService groupBuyAppService,
-            IImageAppService imageAppService, IUiMessageService uiMessageService, ImageContainerManager imageContainerManager, IItemAppService itemAppService)
+        public CreateGroupBuy(
+            IGroupBuyAppService groupBuyAppService,
+            IImageAppService imageAppService, 
+            IUiMessageService uiMessageService, 
+            ImageContainerManager imageContainerManager, 
+            IItemAppService itemAppService
+            )
         {
-            _imageBlobService = imageBlobService;
-            _httpClient = httpClient;
             _groupBuyAppService = groupBuyAppService;
             _imageAppService = imageAppService;
             _uiMessageService = uiMessageService;
@@ -79,31 +79,34 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
         async Task OnLogoUploadAsync(FileChangedEventArgs e)
         {
-            if (e.Files.Count() > 1)
+            if (e.Files.Length > 1)
             {
                 await _uiMessageService.Error("Select Only 1 Logo Upload");
                 await LogoPickerCustom.Clear();
                 return;
             }
-            if (e.Files.Count() == 0)
+            if (e.Files.Length == 0)
             {
-
                 return;
-
             }
-            var count = 0;
             try
             {
+                if (!ValidFileExtensions.Contains(Path.GetExtension(e.Files[0].Name)))
+                {
+                    await _uiMessageService.Error(L["InvalidFileType"]);
+                    await LogoPickerCustom.Clear();
+                    return;
+                }
                 if (e.Files[0].Size > MaxAllowedFileSize)
                 {
-
                     await LogoPickerCustom.RemoveFile(e.Files[0]);
+                    await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
                     return;
                 }
                 string newFileName = Path.ChangeExtension(
                       Guid.NewGuid().ToString().Replace("-", ""),
                       Path.GetExtension(e.Files[0].Name));
-                var stream = e.Files[0].OpenReadStream();
+                var stream = e.Files[0].OpenReadStream(long.MaxValue);
                 try
                 {
                     var memoryStream = new MemoryStream();
@@ -113,7 +116,6 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
                     logoBlobName = newFileName;
 
-
                     CreateGroupBuyDto.LogoURL = url;
 
                     await LogoPickerCustom.Clear();
@@ -121,11 +123,6 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 finally
                 {
                     stream.Close();
-                }
-
-                if (count > 0)
-                {
-                    await _uiMessageService.Error(count + ' ' + L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
                 }
             }
             catch (Exception exc)
@@ -137,7 +134,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
         async Task OnCarouselUploadAsync(FileChangedEventArgs e)
         {
-            if (e.Files.Count() > MaxAllowedFilesPerUpload)
+            if (e.Files.Length > MaxAllowedFilesPerUpload)
             {
                 await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesExceedMaxAllowedPerUpload]);
                 await CarouselPickerCustom.Clear();
@@ -154,16 +151,22 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             {
                 foreach (var file in e.Files)
                 {
+                    if (!ValidFileExtensions.Contains(Path.GetExtension(file.Name)))
+                    {
+                        await CarouselPickerCustom.RemoveFile(file);
+                        await _uiMessageService.Error(L["InvalidFileType"]);
+                        continue;
+                    }
                     if (file.Size > MaxAllowedFileSize)
                     {
                         count++;
                         await CarouselPickerCustom.RemoveFile(file);
-                        return;
+                        continue;
                     }
                     string newFileName = Path.ChangeExtension(
                           Guid.NewGuid().ToString().Replace("-", ""),
                           Path.GetExtension(file.Name));
-                    var stream = file.OpenReadStream();
+                    var stream = file.OpenReadStream(long.MaxValue);
                     try
                     {
                         var memoryStream = new MemoryStream();
@@ -204,30 +207,34 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
         async Task OnBannerUploadAsync(FileChangedEventArgs e)
         {
-            if (e.Files.Count() > 1)
+            if (e.Files.Length > 1)
             {
                 await _uiMessageService.Error("Select Only 1 Logo Upload");
                 await BannerPickerCustom.Clear();
                 return;
             }
-            if (e.Files.Count() == 0)
+            if (e.Files.Length == 0)
             {
                 return;
             }
-            var count = 0;
             try
             {
-
+                if (!ValidFileExtensions.Contains(Path.GetExtension(e.Files[0].Name)))
+                {
+                    await _uiMessageService.Error(L["InvalidFileType"]);
+                    await BannerPickerCustom.Clear();
+                    return;
+                }
                 if (e.Files[0].Size > MaxAllowedFileSize)
                 {
-
                     await BannerPickerCustom.RemoveFile(e.Files[0]);
+                    await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
                     return;
                 }
                 string newFileName = Path.ChangeExtension(
                       Guid.NewGuid().ToString().Replace("-", ""),
                       Path.GetExtension(e.Files[0].Name));
-                var stream = e.Files[0].OpenReadStream();
+                var stream = e.Files[0].OpenReadStream(long.MaxValue);
                 try
                 {
                     var memoryStream = new MemoryStream();
@@ -236,20 +243,12 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     memoryStream.Position = 0;
                     var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
                     bannerBlobName = newFileName;
-
-
                     CreateGroupBuyDto.BannerURL = url;
-
                     await BannerPickerCustom.Clear();
                 }
                 finally
                 {
                     stream.Close();
-                }
-
-                if (count > 0)
-                {
-                    await _uiMessageService.Error(count + ' ' + L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
                 }
             }
             catch (Exception exc)
@@ -266,16 +265,9 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 var confirmed = await _uiMessageService.Confirm(L[PikachuDomainErrorCodes.AreYouSureToDeleteImage]);
                 if (confirmed)
                 {
-                    confirmed = await _imageContainerManager.DeleteAsync(blobImageName);
-                    if (confirmed)
-                    {
-                        CreateGroupBuyDto.LogoURL = null;
-                        StateHasChanged();
-                    }
-                    else
-                    {
-                        throw new BusinessException(L[PikachuDomainErrorCodes.SomethingWentWrongWhileDeletingImage]);
-                    }
+                    await _imageContainerManager.DeleteAsync(blobImageName);
+                    CreateGroupBuyDto.LogoURL = null;
+                    StateHasChanged();
                 }
             }
             catch (Exception ex)
@@ -292,15 +284,8 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 if (confirmed)
                 {
                     confirmed = await _imageContainerManager.DeleteAsync(blobImageName);
-                    if (confirmed)
-                    {
-                        CreateGroupBuyDto.BannerURL = null;
-                        StateHasChanged();
-                    }
-                    else
-                    {
-                        throw new BusinessException(L[PikachuDomainErrorCodes.SomethingWentWrongWhileDeletingImage]);
-                    }
+                    CreateGroupBuyDto.BannerURL = null;
+                    StateHasChanged();
                 }
             }
             catch (Exception ex)
@@ -317,7 +302,6 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 if (confirmed)
                 {
                     await _imageContainerManager.DeleteAsync(blobImageName);
-
                     CarouselImages = CarouselImages.Where(x => x.BlobImageName != blobImageName).ToList();
                     StateHasChanged();
                 }
@@ -365,7 +349,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         private static void OnProductGroupValueChange(ChangeEventArgs e, CollapseItem collapseItem)
         {
             int takeCount = int.Parse(e?.Value.ToString());
-            if(collapseItem.SelectedItems.Count > takeCount)
+            if (collapseItem.SelectedItems.Count > takeCount)
             {
                 collapseItem.SelectedItems = collapseItem.SelectedItems.Take(takeCount).ToList();
             }
@@ -407,7 +391,6 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         {
             PaymentMethodTags.Remove(item);
         }
-
 
         protected virtual async Task CreateEntityAsync()
         {
@@ -523,6 +506,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
     {
         public int Index { get; set; }
         public GroupBuyModuleType GroupBuyModuleType { get; set; }
+        public int SortOrder { get; set; }
         public List<ItemDto> SelectedItems { get; set; }
 
         public CollapseItem()

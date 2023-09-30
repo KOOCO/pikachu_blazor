@@ -10,6 +10,7 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Kooco.Pikachu.AzureStorage.Image;
+using Kooco.Pikachu.Items;
 
 namespace Kooco.Pikachu.GroupBuys
 {
@@ -96,11 +97,9 @@ namespace Kooco.Pikachu.GroupBuys
         public async Task<GroupBuyDto> GetWithDetailsAsync(Guid id)
         {
             var item = await _groupBuyRepository.GetWithDetailsAsync(id);
-            if (item is null)
-            {
-                throw new BusinessException(PikachuDomainErrorCodes.EntityWithGivenIdDoesnotExist);
-            }
-            return ObjectMapper.Map<GroupBuy, GroupBuyDto>(item);
+            return item is null
+                ? throw new BusinessException(PikachuDomainErrorCodes.EntityWithGivenIdDoesnotExist)
+                : ObjectMapper.Map<GroupBuy, GroupBuyDto>(item);
         }
 
         public async Task<PagedResultDto<GroupBuyDto>> GetListAsync(GetGroupBuyInput input)
@@ -179,84 +178,64 @@ namespace Kooco.Pikachu.GroupBuys
             groupBuy.ExchangePolicyDescription = input.ExchangePolicyDescription;
 
             var itemGroupIds = input.ItemGroups?.Select(x => x.Id).ToList();
-            if (itemGroupIds.Any())
+            if (itemGroupIds != null && itemGroupIds.Any())
             {
                 _groupBuyManager.RemoveItemGroups(groupBuy, itemGroupIds);
             }
 
-            if (input.ItemGroups.Any())
+            if (input?.ItemGroups != null)
             {
                 foreach (var group in input.ItemGroups)
                 {
                     if (group.Id.HasValue)
                     {
-                        var itemGroup = groupBuy.ItemGroups.First(x => x.Id == group.Id);
-                        itemGroup.SortOrder = group.SortOrder;
-                        //itemGroup.Title = group.Title;
-
-                        if (group.ItemDetails.Any())
+                        var itemGroup = groupBuy.ItemGroups.FirstOrDefault(x => x.Id == group.Id);
+                        if (itemGroup != null)
                         {
-                            foreach (var item in group.ItemDetails)
-                            {
-                                //if (item.Id.HasValue)
-                                //{
-                                //    var itemDetail = itemGroup.ItemGroupDetails.First(x => x.Id == item.Id);
-                                //    itemDetail.SortOrder = item.SortOrder;
-                                //    itemDetail.ItemId = item.ItemId.Value;
-                                //}
-                                //else
-                                //{
-                                //    Guid? imageId = null;
-                                //    if (item.Image != null)
-                                //    {
-                                //        item.Image.TargetId = groupBuy.Id;
-                                //        var image = await _imageAppService.CreateAsync(item.Image);
-                                //        imageId = image?.Id;
-                                //    }
+                            itemGroup.SortOrder = group.SortOrder;
+                            itemGroup.GroupBuyModuleType = group.GroupBuyModuleType;
 
-                                //    _groupBuyManager.AddItemGroupDetail(
-                                //        itemGroup,
-                                //        item.SortOrder,
-                                //        item.ItemId.Value
-                                //        );
-                                //}
-                            }
+                            ProcessItemDetails(itemGroup, group.ItemDetails);
                         }
                     }
                     else
                     {
                         var itemGroup = _groupBuyManager.AddItemGroup(
-                        groupBuy,
-                        group.SortOrder,
-                        group.GroupBuyModuleType
-                        //group.Title
-                        );
+                                groupBuy,
+                                group.SortOrder,
+                                group.GroupBuyModuleType
+                         );
 
-                        if (group.ItemDetails.Any())
-                        {
-                            //foreach (var item in group.ItemDetails)
-                            //{
-                            //    Guid? imageId = null;
-                            //    if (item.Image != null)
-                            //    {
-                            //        item.Image.TargetId = groupBuy.Id;
-                            //        var image = await _imageAppService.CreateAsync(item.Image);
-                            //        imageId = image?.Id;
-                            //    }
-
-                            //    _groupBuyManager.AddItemGroupDetail(
-                            //        itemGroup,
-                            //        item.SortOrder,
-                            //        item.ItemId.Value
-                            //        );
-                            //}
-                        }
+                        ProcessItemDetails(itemGroup, group.ItemDetails);
                     }
                 }
             }
 
 
             return ObjectMapper.Map<GroupBuy, GroupBuyDto>(groupBuy);
+        }
+        private void ProcessItemDetails(GroupBuyItemGroup itemGroup, IEnumerable<GroupBuyItemGroupDetailCreateUpdateDto> itemDetails)
+        {
+            foreach (var item in itemDetails)
+            {
+                if (item.Id.HasValue)
+                {
+                    var itemDetail = itemGroup.ItemGroupDetails.FirstOrDefault(x => x.Id == item.Id);
+                    if (itemDetail != null)
+                    {
+                        itemDetail.SortOrder = item.SortOrder;
+                        itemDetail.ItemId = item.ItemId;
+                    }
+                }
+                else
+                {
+                    _groupBuyManager.AddItemGroupDetail(
+                        itemGroup,
+                        item.SortOrder,
+                        item.ItemId
+                    );
+                }
+            }
         }
 
         public async Task DeleteManyGroupBuyItemsAsync(List<Guid> groupBuyIds)

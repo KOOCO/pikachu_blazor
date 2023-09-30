@@ -21,11 +21,10 @@
 </style>
 <h3>@L["NewGroupBuy"]</h3>
 <Card>
-
     <CardBody>
-        <div class="card-body">
+        <div class="row">
             <div class="col-12">
-                <h4>Sales URL</h4>  
+                <h4>@L["SalesURL"]</h4>  
             </div>
             <div class="row">
                 <div class="col-1"></div>
@@ -35,8 +34,6 @@
                 <div class="col-7">
                     <TextEdit @bind-Text="@CreateGroupBuyDto.EntryURL" />
                 </div>
-
-
             </div>
             <div class="row">
                 <div class="col-1"></div>
@@ -50,7 +47,6 @@
         </div>
         <Divider></Divider>
         <div class="row">
-
             <div class="col-2">
                 <label>@L["GroupBuyName"]</label>
             </div>
@@ -62,7 +58,6 @@
                     @(string.IsNullOrWhiteSpace(CreateGroupBuyDto.GroupBuyName) ? 60 : (maxtextCount - CreateGroupBuyDto.GroupBuyName.Count()))/@maxtextCount
                 </span>
             </div>
-
         </div>
         <div class="row">
             <div class="col-2">
@@ -92,7 +87,9 @@
         </div>
         <div class="row">
             <div class="col-2">
-                <label>@L["GroupBuyLogo"]*</label>
+                <label>@L["GroupBuyLogo"]
+                    <span class="text-danger"> *</span>
+                </label>
             </div>
             <div class="col-10">
                 <Field>
@@ -343,9 +340,9 @@
             <div class="col-2">@L["AllowShipToOuterIsland"]</div>
             <div class="col-4"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.AllowShipToOuterTaiwan"></Switch></div>
         </div>
-        <div class=" col-12 row">
+        <div class="row">
             <div class="col-2"></div>
-            <div class="col-3">@L["AllowShipToOverSea"]</div>
+            <div class="col-2">@L["AllowShipToOverSea"]</div>
             <div class="col-4"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.AllowShipOversea"></Switch></div>
         </div>
         <div class="row">
@@ -359,7 +356,7 @@
             <div class="col-2">@L["Gateway"]</div>
             <div class="col-2">@L["PaymentMethod"]</div>
             <div class="col-4">
-                <Radio TValue="bool" Group="Payment" Value=CreateGroupBuyDto.IsDefaultPaymentGateWay>
+                <Radio TValue="bool" Group="PaymentGateway" Checked="CreateGroupBuyDto.IsDefaultPaymentGateWay" CheckedChanged="() => CreateGroupBuyDto.IsDefaultPaymentGateWay = true">
                     @L["DefaultPaymentGateWay"]
                 </Radio>
             </div>
@@ -367,8 +364,8 @@
         <div class="row">
             <div class="col-2"></div>
             <div class="col-2"></div>
-            <div class="col-1">    
-                <Radio TValue="bool" Group="Payment" Value="@paymentMethodCheck"> </Radio>
+            <div class="col-1">  
+                <Radio TValue="bool" Group="PaymentGateway" Checked="!CreateGroupBuyDto.IsDefaultPaymentGateWay" CheckedChanged="() => CreateGroupBuyDto.IsDefaultPaymentGateWay = false"></Radio>
             </div>
             <div class="col-7">
                 <div class="col-7 form-control" style="background-color:white">
@@ -406,7 +403,7 @@
         </div>
         <Divider></Divider>
         <div class="row">
-            <div class="col-2 mx-1">@L["AdvanceSetting"]</div>
+            <div class="col-2">@L["AdvanceSetting"]</div>
             <div class="col-2 form-label">@L["HideCredention"]</div>
             <div class="col-4"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.ProtectPrivacyData"></Switch></div>
         </div>
@@ -540,6 +537,7 @@
                                                         CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
                                                         HighlightSearch
                                                         Immediate="true"
+                                                        SelectedValue="selectedItem.Id"
                                                         SelectedValueChanged="(id) => OnSelectedValueChanged(id, module, selectedItem)">
                                                     <NotFoundContent> @L["NotFound"] </NotFoundContent>
                                             </Autocomplete>
@@ -802,7 +800,7 @@
                 </div>
             </div>
         </div>
-        <div class="row mt-3 ">
+        <div class="row mt-3">
             <div class="d-flex flex-row-reverse">
                 <Button Type="@ButtonType.Button" class="btn btn-primary me-1" Clicked="CreateEntityAsync"> <i class="fa fa-check"></i> @L["Save"]</Button>
                 <Button Danger Type="@ButtonType.Button" class="btn btn-danger me-1" Clicked="BackToGroupBuyList" Style="margin-right:5px">@L["Cancel"]</Button>

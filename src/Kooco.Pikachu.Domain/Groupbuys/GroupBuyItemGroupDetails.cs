@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Kooco.Pikachu.Items;
+using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using Volo.Abp.Domain.Entities;
 
 namespace Kooco.Pikachu.Groupbuys
@@ -9,6 +11,9 @@ namespace Kooco.Pikachu.Groupbuys
         public Guid ItemId { get; set; }
         public int SortOrder { get; set; }
 
+        [ForeignKey(nameof(ItemId))]
+        public Item Item { get; set; }
+        
         public GroupBuyItemGroupDetails()
         {
             
