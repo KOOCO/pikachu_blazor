@@ -246,16 +246,6 @@ namespace Kooco.Pikachu.GroupBuys
             await _groupBuyRepository.DeleteManyAsync(groupBuyIds);
         }
 
-        /// <summary>
-        /// This Method Returns the Desired Result For the Store Front End.
-        /// Do not change unless you want to make changes in the Store Front End Code
-        /// </summary>
-        /// <returns></returns>
-        public async Task<GroupBuyDto> GetDataForStoreAsync(Guid id)
-        {
-            var data = await _groupBuyRepository.GetAsync(id);
-            return ObjectMapper.Map<GroupBuy, GroupBuyDto>(data);
-        }
 
         /// <summary>
         /// This Method Returns the Desired Result For the Store Front End.

@@ -50,7 +50,6 @@ namespace Kooco.Pikachu.GroupBuys
                 .Include(x => x.ItemGroups)
                     .ThenInclude(ig => ig.ItemGroupDetails.OrderBy(i => i.SortOrder))
                     .ThenInclude(igd => igd.Item)
-                    .ThenInclude(i => i.ItemDetails)
                 .Include(x => x.ItemGroups)
                     .ThenInclude(ig => ig.ItemGroupDetails.OrderBy(i => i.SortOrder))
                 .FirstOrDefaultAsync();
