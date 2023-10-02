@@ -62,10 +62,10 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
         public EditGroupBuy(
             IGroupBuyAppService groupBuyAppService,
-            IImageAppService imageAppService, 
-            IObjectMapper objectMapper, 
-            IUiMessageService uiMessageService, 
-            ImageContainerManager imageContainerManager, 
+            IImageAppService imageAppService,
+            IObjectMapper objectMapper,
+            IUiMessageService uiMessageService,
+            ImageContainerManager imageContainerManager,
             IItemAppService itemAppService
             )
         {
@@ -154,6 +154,13 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         void AddProductItem(GroupBuyModuleType groupBuyModuleType)
         {
             CollapseItem collapseItem;
+
+            if (CollapseItem.Count >= 20)
+            {
+                _uiMessageService.Error(L[PikachuDomainErrorCodes.CanNotAddMoreThan20Modules]);
+                return;
+            }
+
             if (groupBuyModuleType == GroupBuyModuleType.ProductDescription)
             {
                 collapseItem = new()

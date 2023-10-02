@@ -315,6 +315,12 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
         void AddProductItem(GroupBuyModuleType groupBuyModuleType)
         {
+            if (CollapseItem.Count >= 20)
+            {
+                _uiMessageService.Error(L[PikachuDomainErrorCodes.CanNotAddMoreThan20Modules]);
+                return;
+            }
+
             CollapseItem collapseItem;
             if (groupBuyModuleType == GroupBuyModuleType.ProductDescription)
             {

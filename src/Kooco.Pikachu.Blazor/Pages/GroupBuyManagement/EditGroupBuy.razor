@@ -475,19 +475,22 @@
         <div class="row">
             <div class="col-2"><label>@L["AddModule"]</label></div>
             <div class="col-3">
-                <Dropdown>
-                    <DropdownToggle Color="Color.Primary">
-                        @L["SelectModule"]
-                    </DropdownToggle>
-                    <DropdownMenu>
-                        @foreach (GroupBuyModuleType groupBuyDropdownValue in Enum.GetValues(typeof(GroupBuyModuleType)))
-                        {
-                            <DropdownItem Clicked='@(()=>AddProductItem(@groupBuyDropdownValue))'>
-                                @L[groupBuyDropdownValue.ToString()]
-                            </DropdownItem>
-                        }
-                    </DropdownMenu>
+                @if (CollapseItem.Count < 20)
+                {
+                    <Dropdown>
+                        <DropdownToggle Color="Color.Primary">
+                            @L["SelectModule"]
+                        </DropdownToggle>
+                        <DropdownMenu>
+                            @foreach (GroupBuyModuleType groupBuyDropdownValue in Enum.GetValues(typeof(GroupBuyModuleType)))
+                            {
+                                <DropdownItem Clicked='@(()=>AddProductItem(@groupBuyDropdownValue))'>
+                                    @L[groupBuyDropdownValue.ToString()]
+                                </DropdownItem>
+                            }
+                        </DropdownMenu>
                 </Dropdown>
+                }
             </div>
         </div>
         @foreach (var module in CollapseItem)
@@ -508,12 +511,22 @@
                                         <div class="d-flex justify-content-end">
                                             <div style="width: 60px;">
                                                 <select class="form-control form-control-sm" @onchange="(e) => OnProductGroupValueChange(e, module)">
-                                                    <option value="3">3</option>
-                                                    <option value="4">4</option>
+                                                    @if (module.SelectedItems.Count == 3)
+                                                    {
+                                                        <option selected="selected" value="3">3</option>
+                                                        <option value="4">4</option>
+                                                    } 
+                                                    else if (module.SelectedItems.Count == 4)
+                                                    {
+                                                        <option value="3">3</option>
+                                                        <option selected="selected" value="4">4</option>
+                                                    }
                                                 </select>
                                             </div>
                                         </div>
+
                                     }
+
                                 <div class="row mt-2">
                                     @foreach(var selectedItem in module.SelectedItems)
                                     {
