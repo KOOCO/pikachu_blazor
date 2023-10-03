@@ -1,5 +1,7 @@
 ﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.OrderItems;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Volo.Abp.Domain.Entities.Auditing;
 
@@ -26,6 +28,8 @@ namespace Kooco.Pikachu.Orders
         public string? AddressDetails { get; set; }
         public string? Remarks { get; set; }
         public ReceivingTime? ReceivingTime { get; set; }
+
+        public ICollection<OrderItem> OrderItems { get; set; }
 
         public Order() { }
         
@@ -72,7 +76,27 @@ namespace Kooco.Pikachu.Orders
             AddressDetails = addressDetails;
             Remarks = remarks;
             ReceivingTime = receivingTime;
+            OrderItems = new List<OrderItem>();
         }
 
+        public void AddOrderItem(
+            Guid id,
+            Guid itemId,
+            string? attribute1Value,
+            string? attribute2Value,
+            string? attribute3Value,
+            int quantity
+            )
+        {
+            OrderItems.Add(new OrderItem(
+                    id,
+                    itemId,
+                    this.Id,
+                    attribute1Value,
+                    attribute2Value,
+                    attribute3Value,
+                    quantity
+                    ));
+        }
     }
 }

@@ -64,7 +64,25 @@ namespace Kooco.Pikachu.Orders
                 remarks,
                 receivingTime
                 );
+        }
 
+        public void AddOrderItem(
+            Order order,
+            Guid itemId,
+            string? attribute1Value,
+            string? attribute2Value,
+            string? attribute3Value,
+            int quantity
+            )
+        {
+            order.AddOrderItem(
+                GuidGenerator.Create(),
+                itemId,
+                attribute1Value,
+                attribute2Value,
+                attribute3Value,
+                quantity
+                );
         }
     }
 }
