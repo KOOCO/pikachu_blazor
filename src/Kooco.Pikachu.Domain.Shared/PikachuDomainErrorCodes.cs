@@ -24,4 +24,6 @@ public static class PikachuDomainErrorCodes
     public const string SelectAtLeastOneGroupBuy = "Pikachu:SelectAtLeastOneGroupBuy";
     public const string SelectAtLeastOneImage = "Pikachu:SelectAtLeastOneImage";
     public const string InvalidItemName = "Pikachu:InvalidItemName";
+    public const string GroupBuyModuleCannotBeEmpty = "Pikachu:GroupBuyModuleCannotBeEmpty";
+    public const string CanNotAddMoreThan20Modules = "Pikachu:CanNotAddMoreThan20Modules";
 }

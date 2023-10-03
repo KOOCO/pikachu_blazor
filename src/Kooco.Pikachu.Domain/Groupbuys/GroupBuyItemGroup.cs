@@ -3,6 +3,7 @@ using Volo.Abp.MultiTenancy;
 using Volo.Abp.Domain.Entities;
 using Kooco.Pikachu.Groupbuys;
 using System.Collections.Generic;
+using Kooco.Pikachu.EnumValues;
 
 namespace Kooco.Pikachu.GroupBuys
 { 
@@ -20,7 +21,7 @@ namespace Kooco.Pikachu.GroupBuys
         /// </summary>
         public int SortOrder { get; set; }
 
-        public string? Title { get; set; }
+        public GroupBuyModuleType GroupBuyModuleType { get; set; }
 
         public ICollection<GroupBuyItemGroupDetails> ItemGroupDetails { get; set; }
 
@@ -33,12 +34,12 @@ namespace Kooco.Pikachu.GroupBuys
             Guid id,
             Guid groupBuyId,
             int sortOrder,
-            string? title
+            GroupBuyModuleType groupBuyModuleType
             ) : base(id)
         {
             GroupBuyId = groupBuyId;
             SortOrder = sortOrder;
-            Title = title;
+            GroupBuyModuleType = groupBuyModuleType;
             ItemGroupDetails = new List<GroupBuyItemGroupDetails>();
         }
 
@@ -46,9 +47,7 @@ namespace Kooco.Pikachu.GroupBuys
             Guid id,
             Guid groupBuyItemGroupId,
             int sortOrder,
-            string? itemDescription,
-            Guid? itemId,
-            Guid? imageId
+            Guid itemId
             
             )
         {
@@ -56,9 +55,7 @@ namespace Kooco.Pikachu.GroupBuys
                 id,
                 groupBuyItemGroupId,
                 sortOrder,
-                itemDescription,
-                itemId,
-                imageId
+                itemId
                 ));
         }
     }

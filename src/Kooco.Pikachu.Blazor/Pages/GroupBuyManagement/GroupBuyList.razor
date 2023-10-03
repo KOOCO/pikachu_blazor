@@ -12,33 +12,33 @@
 @inject IStringLocalizer<PikachuResource> L
 @inject NavigationManager NavigationManager
 
-<div class="col-12 row mb-2">
-    <div class="col-6">
-        <h3>Group Buy List</h3>
-    </div>
-    <div class="col-6 d-flex flex-row-reverse">
-        <Button Danger Type="@ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="DeleteSelectedAsync">
-            @L["DeleteSelected"]
-        </Button>
-      @*   <Button Type="@ButtonType.Button" Class="btn btn-sm btn-secondary me-1">@L["CopyItem"]</Button> *@
-        <Button Type="@ButtonType.Button" Class="btn btn-sm btn-primary me-1" Clicked="CreateNewItem">
-            <i class="fa fa-plus"></i>
-            @L["NewItem"]
-        </Button>
-        <div class="me-2 p-2">
-            <input type="checkbox" class="me-1" style="height: 15px; width: 15px;" checked="@IsAllSelected" @onchange="HandleSelectAllChange"></input>
-            <Label Class="form-label">@L["SelectAll"]</Label>
+    <div class="row mb-2">
+        <div class="col-6">
+            <h3>Group Buy List</h3>
+        </div>
+        <div class="col-6 d-flex flex-row-reverse">
+            <Button Danger Type="@ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="DeleteSelectedAsync">
+                @L["DeleteSelected"]
+            </Button>
+          @*   <Button Type="@ButtonType.Button" Class="btn btn-sm btn-secondary me-1">@L["CopyItem"]</Button> *@
+            <Button Type="@ButtonType.Button" Class="btn btn-sm btn-primary me-1" Clicked="CreateNewItem">
+                <i class="fa fa-plus"></i>
+                @L["NewItem"]
+            </Button>
+            <div class="me-2 p-2">
+                <input type="checkbox" class="me-1" style="height: 15px; width: 15px;" checked="@IsAllSelected" @onchange="HandleSelectAllChange"></input>
+                <Label Class="form-label">@L["SelectAll"]</Label>
+            </div>
         </div>
     </div>
-</div>
-<div>
-  <DataGrid TItem="GroupBuyDto"
-                  Data="GroupBuyListItem"
-                  ReadData="UpdateGroupBuyList"
-                  TotalItems="Total"
-                  ShowPager="true"
-                  PageSize="_pageSize"
-  RowDoubleClicked="OnEditItem">
+    <div>
+      <DataGrid TItem="GroupBuyDto"
+                Data="GroupBuyListItem"
+                ReadData="OnDataGridReadAsync"
+                TotalItems="Total"
+                ShowPager="true"
+                PageSize="_pageSize"
+                RowDoubleClicked="OnEditItem">
             <DataGridColumns>
 
             <DataGridColumn TItem="GroupBuyDto" Caption="@L["Select"]">
@@ -47,56 +47,14 @@
                 </DisplayTemplate>
             </DataGridColumn>
 
-
-                <DataGridColumn TItem="GroupBuyDto"
-                                Field="@nameof(GroupBuyDto.GroupBuyName)"
-                                Caption="@L["GroupBuyName"]">
-                </DataGridColumn>
-@*      <DataGridColumn Width="150px"
-                                TItem="GroupBuyDto"
-                                Field="@nameof(GroupBuyDto.Id)"
-                                Sortable="false"
-                                Caption="@L["Actions"]">
-                    <DisplayTemplate>
-                        <Dropdown>
-                            <DropdownToggle Color="Color.Primary">
-                                @L["Actions"]
-                            </DropdownToggle>
-                            <DropdownMenu>
-                              
-                                    <DropdownItem Clicked="() => startEdit(context.Id)">
-                                        @L["Edit"]
-                                    </DropdownItem> 
-                              
-                             
-                            </DropdownMenu>
-                        </Dropdown>
-                    </DisplayTemplate>
-                </DataGridColumn> *@
-          
-            
+            <DataGridColumn TItem="GroupBuyDto"
+                            Field="@nameof(GroupBuyDto.GroupBuyName)"
+                            Caption="@L["GroupBuyName"]">
+            </DataGridColumn>
             </DataGridColumns>
         </DataGrid>
-</div>
+    </div>
 
 @code {
-  
-
-    public void CreateNewItem()
-    {
-        NavigationManager.NavigateTo("/GroupBuyManagement/GroupBuyList/New");
-    }
-    
-    
-
-  
-
-     public void OnEditItem(DataGridRowMouseEventArgs<GroupBuyDto> e)
-        {
-            var id = e.Item.Id;
-            NavigationManager.NavigateTo("/GroupBuyManagement/GroupBuyList/Edit/" + id);
-
-        }
-   
 }
 

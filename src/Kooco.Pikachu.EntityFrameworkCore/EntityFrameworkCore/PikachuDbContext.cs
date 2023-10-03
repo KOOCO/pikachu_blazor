@@ -103,7 +103,7 @@ public class PikachuDbContext :
             b.Property(x => x.ItemNo).IsRequired().ValueGeneratedOnAdd().Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
             b.Property(x => x.ItemName).IsRequired();
             b.Property(x => x.Returnable).IsRequired();
-            b.HasMany(x => x.ItemDetails).WithOne(d => d.Item);
+            b.HasMany(x => x.ItemDetails).WithOne();
         });
 
         builder.Entity<EnumValue>(b =>
@@ -118,7 +118,7 @@ public class PikachuDbContext :
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "ItemDetails", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
-            b.HasOne(x => x.Item).WithMany(d => d.ItemDetails).HasForeignKey(i => i.ItemId);
+            //b.HasOne(x => x.Item).WithMany(d => d.ItemDetails).HasForeignKey(i => i.ItemId);
         });
 
         builder.Entity<Image>(b =>
@@ -159,12 +159,15 @@ public class PikachuDbContext :
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "GroupBuyItemGroupDetails", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
+            b.HasOne(x => x.Item).WithMany().HasForeignKey(x => x.ItemId);
         });
 
         builder.Entity<Freebie>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "Freebie", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
+            b.Property(x => x.FreebieAmount).HasColumnType("money");
+            b.Property(x => x.MinimumAmount).HasColumnType("money");
             b.HasMany(x => x.FreebieGroupBuys).WithOne();
         });
 

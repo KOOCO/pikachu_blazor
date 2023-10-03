@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Domain.Entities.Auditing;
-using Kooco.Pikachu.Items;
+using Kooco.Pikachu.EnumValues;
 
 namespace Kooco.Pikachu.GroupBuys
 {
@@ -309,15 +306,14 @@ namespace Kooco.Pikachu.GroupBuys
             Guid id,
             Guid groupBuyId,
             int sortOrder,
-            string? title
-
+            GroupBuyModuleType groupBuyModuleType
             )
         {
             var groupBuyItemGroup = new GroupBuyItemGroup(
                 id,
                 groupBuyId,
                 sortOrder,
-                title
+                groupBuyModuleType
                 );
             ItemGroups.Add(groupBuyItemGroup);
             return groupBuyItemGroup;

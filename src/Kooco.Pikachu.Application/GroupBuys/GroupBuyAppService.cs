@@ -1,6 +1,5 @@
 ﻿using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.Images;
-using Kooco.Pikachu.Items.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,65 +14,51 @@ namespace Kooco.Pikachu.GroupBuys
 {
     public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     {
-        private readonly IGroupBuyRepositroy _groupBuyRepository;
+        private readonly IGroupBuyRepository _groupBuyRepository;
         private readonly GroupBuyManager _groupBuyManager;
-        private readonly IImageAppService _imageAppService;
         private readonly IRepository<Image, Guid> _imageRepository;
         private readonly ImageContainerManager _imageContainerManager;
-        public GroupBuyAppService(IGroupBuyRepositroy groupBuyRepository, GroupBuyManager groupBuyManager,
-            IImageAppService imageAppService, ImageContainerManager imageContainerManager, IRepository<Image, Guid> imageRepository)
+        public GroupBuyAppService(
+            IGroupBuyRepository groupBuyRepository, 
+            GroupBuyManager groupBuyManager,
+            ImageContainerManager imageContainerManager, 
+            IRepository<Image, Guid> imageRepository
+            )
         {
             _groupBuyManager = groupBuyManager;
             _groupBuyRepository = groupBuyRepository;
-            _imageAppService = imageAppService;
             _imageContainerManager = imageContainerManager;
             _imageRepository = imageRepository;
         }
 
         public async Task<GroupBuyDto> CreateAsync(GroupBuyCreateDto input)
         {
-            var sameName = await _groupBuyRepository.FirstOrDefaultAsync(x => x.GroupBuyName == input.GroupBuyName);
+            var result = await _groupBuyManager.CreateAsync(input.GroupBuyNo, input.Status, input.GroupBuyName, input.EntryURL, input.EntryURL2, input.SubjectLine, 
+                                                        input.ShortName, input.LogoURL, input.BannerURL, input.StartTime, input.EndTime, input.FreeShipping, input.AllowShipToOuterTaiwan, 
+                                                        input.AllowShipOversea, input.ExpectShippingDateFrom, input.ExpectShippingDateTo, input.MoneyTransferValidDayBy, input.MoneyTransferValidDays,
+                                                        input.IssueInvoice, input.AutoIssueTriplicateInvoice, input.InvoiceNote, input.ProtectPrivacyData, input.InviteCode, input.ProfitShare,
+                                                        input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy, 
+                                                        input.NotifyMessage, input.ExcludeShippingMethod, input.IsDefaultPaymentGateWay, input.PaymentMethod, input.GroupBuyCondition, input.CustomerInformation, 
+                                                        input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription);
 
-            if (sameName != null)
-            {
-                throw new BusinessException(PikachuDomainErrorCodes.ItemWithSameNameAlreadyExists);
-            }
-
-            var result = await _groupBuyManager.CreateAsync(input.GroupBuyNo, input.Status, input.GroupBuyName, input.EntryURL, input.EntryURL2, input.SubjectLine
-                                                         , input.ShortName, input.LogoURL, input.BannerURL, input.StartTime, input.EndTime, input.FreeShipping, input.AllowShipToOuterTaiwan
-                                                         , input.AllowShipOversea, input.ExpectShippingDateFrom, input.ExpectShippingDateTo, input.MoneyTransferValidDayBy, input.MoneyTransferValidDays,
-                                                         input.IssueInvoice, input.AutoIssueTriplicateInvoice, input.InvoiceNote, input.ProtectPrivacyData, input.InviteCode, input.ProfitShare,
-                                                         input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy, input.NotifyMessage,
-                                                         input.ExcludeShippingMethod, input.IsDefaultPaymentGateWay, input.PaymentMethod, input.GroupBuyCondition, input.CustomerInformation, input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription);
-
-            if (input.ItemGroups.Any())
+            if (input.ItemGroups != null && input.ItemGroups.Any())
             {
                 foreach (var group in input.ItemGroups)
                 {
                     var itemGroup = _groupBuyManager.AddItemGroup(
                         result,
                         group.SortOrder,
-                        group.Title
+                        group.GroupBuyModuleType
                         );
 
-                    if (group.ItemDetails.Any())
+                    if (group.ItemDetails != null && group.ItemDetails.Any())
                     {
                         foreach (var item in group.ItemDetails)
                         {
-                            Guid? imageId = null;
-                            if (item.Image != null)
-                            {
-                                item.Image.TargetId = result.Id;
-                                var image = await _imageAppService.CreateAsync(item.Image);
-                                imageId = image?.Id;
-                            }
-
                             _groupBuyManager.AddItemGroupDetail(
                                 itemGroup,
                                 item.SortOrder,
-                                item.ItemDescription,
-                                item.ItemId,
-                                imageId
+                                item.ItemId
                                 );
                         }
                     }
@@ -104,27 +89,26 @@ namespace Kooco.Pikachu.GroupBuys
         public async Task<GroupBuyDto> GetWithDetailsAsync(Guid id)
         {
             var item = await _groupBuyRepository.GetWithDetailsAsync(id);
-            if (item is null)
-            {
-                throw new BusinessException(PikachuDomainErrorCodes.EntityWithGivenIdDoesnotExist);
-            }
-            return ObjectMapper.Map<GroupBuy, GroupBuyDto>(item);
+            return item is null
+                ? throw new BusinessException(PikachuDomainErrorCodes.EntityWithGivenIdDoesnotExist)
+                : ObjectMapper.Map<GroupBuy, GroupBuyDto>(item);
         }
 
         public async Task<PagedResultDto<GroupBuyDto>> GetListAsync(GetGroupBuyInput input)
         {
             var count = await _groupBuyRepository.GetGroupBuyCountAsync(input.FilterText, input.GroupBuyNo, input.Status, input.GroupBuyName, input.EntryURL, input.EntryURL2, input.SubjectLine
-                                                         , input.ShortName, input.LogoURL, input.BannerURL, input.StartTime, input.EndTime, input.FreeShipping, input.allowShipToOuterTaiwan
-                                                         , input.allowShipOversea, input.ExpectShippingDateFrom, input.ExpectShippingDateTo, input.MoneyTransferValidDayBy, input.MoneyTransferValidDays,
-                                                         input.issueInvoice, input.AutoIssueTriplicateInvoice, input.InvoiceNote, input.ProtectPrivacyData, input.InviteCode, input.ProfitShare,
-                                                         input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy, input.NotifyMessage
+                                                         , input.ShortName, input.LogoURL, input.BannerURL, input.StartTime, input.EndTime, input.FreeShipping, input.AllowShipToOuterTaiwan
+                                                         , input.AllowShipOversea, input.ExpectShippingDateFrom, input.ExpectShippingDateTo, input.MoneyTransferValidDayBy, input.MoneyTransferValidDays,
+                                                         input.IssueInvoice, input.AutoIssueTriplicateInvoice, input.InvoiceNote, input.ProtectPrivacyData, input.InviteCode, input.ProfitShare,
+                                                         input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy, 
+                                                         input.NotifyMessage
                                                          );
-            var result = await _groupBuyRepository.GetGroupBuyListAsync(input.FilterText, input.GroupBuyNo, input.Status, input.GroupBuyName, input.EntryURL, input.EntryURL2, input.SubjectLine
-                                                         , input.ShortName, input.LogoURL, input.BannerURL, input.StartTime, input.EndTime, input.FreeShipping, input.allowShipToOuterTaiwan
-                                                         , input.allowShipOversea, input.ExpectShippingDateFrom, input.ExpectShippingDateTo, input.MoneyTransferValidDayBy, input.MoneyTransferValidDays,
-                                                         input.issueInvoice, input.AutoIssueTriplicateInvoice, input.InvoiceNote, input.ProtectPrivacyData, input.InviteCode, input.ProfitShare,
-                                                         input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy, input.NotifyMessage,
-                                                         input.Sorting, input.MaxResultCount, input.SkipCount);
+            var result = await _groupBuyRepository.GetGroupBuyListAsync(input.FilterText, input.GroupBuyNo, input.Status, input.GroupBuyName, input.EntryURL, input.EntryURL2, input.SubjectLine, 
+                                                        input.ShortName, input.LogoURL, input.BannerURL, input.StartTime, input.EndTime, input.FreeShipping, input.AllowShipToOuterTaiwan, 
+                                                        input.AllowShipOversea, input.ExpectShippingDateFrom, input.ExpectShippingDateTo, input.MoneyTransferValidDayBy, input.MoneyTransferValidDays,
+                                                        input.IssueInvoice, input.AutoIssueTriplicateInvoice, input.InvoiceNote, input.ProtectPrivacyData, input.InviteCode, input.ProfitShare,
+                                                        input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy, 
+                                                        input.NotifyMessage, input.Sorting, input.MaxResultCount, input.SkipCount);
             return new PagedResultDto<GroupBuyDto>
             {
                 TotalCount = count,
@@ -187,88 +171,64 @@ namespace Kooco.Pikachu.GroupBuys
             groupBuy.ExchangePolicyDescription = input.ExchangePolicyDescription;
 
             var itemGroupIds = input.ItemGroups?.Select(x => x.Id).ToList();
-            if (itemGroupIds.Any())
+            if (itemGroupIds != null && itemGroupIds.Any())
             {
                 _groupBuyManager.RemoveItemGroups(groupBuy, itemGroupIds);
             }
 
-            if (input.ItemGroups.Any())
+            if (input?.ItemGroups != null)
             {
                 foreach (var group in input.ItemGroups)
                 {
                     if (group.Id.HasValue)
                     {
-                        var itemGroup = groupBuy.ItemGroups.First(x => x.Id == group.Id);
-                        itemGroup.SortOrder = group.SortOrder;
-                        itemGroup.Title = group.Title;
-
-                        if (group.ItemDetails.Any())
+                        var itemGroup = groupBuy.ItemGroups.FirstOrDefault(x => x.Id == group.Id);
+                        if (itemGroup != null)
                         {
-                            foreach (var item in group.ItemDetails)
-                            {
-                                if (item.Id.HasValue)
-                                {
-                                    var itemDetail = itemGroup.ItemGroupDetails.First(x => x.Id == item.Id);
-                                    itemDetail.SortOrder = item.SortOrder;
-                                    itemDetail.ItemDescription = item.ItemDescription;
-                                    itemDetail.ItemId = item.ItemId;
-                                }
-                                else
-                                {
-                                    Guid? imageId = null;
-                                    if (item.Image != null)
-                                    {
-                                        item.Image.TargetId = groupBuy.Id;
-                                        var image = await _imageAppService.CreateAsync(item.Image);
-                                        imageId = image?.Id;
-                                    }
+                            itemGroup.SortOrder = group.SortOrder;
+                            itemGroup.GroupBuyModuleType = group.GroupBuyModuleType;
 
-                                    _groupBuyManager.AddItemGroupDetail(
-                                        itemGroup,
-                                        item.SortOrder,
-                                        item.ItemDescription,
-                                        item.ItemId,
-                                        imageId
-                                        );
-                                }
-                            }
+                            ProcessItemDetails(itemGroup, group.ItemDetails);
                         }
                     }
                     else
                     {
                         var itemGroup = _groupBuyManager.AddItemGroup(
-                        groupBuy,
-                        group.SortOrder,
-                        group.Title
-                        );
+                                groupBuy,
+                                group.SortOrder,
+                                group.GroupBuyModuleType
+                         );
 
-                        if (group.ItemDetails.Any())
-                        {
-                            foreach (var item in group.ItemDetails)
-                            {
-                                Guid? imageId = null;
-                                if (item.Image != null)
-                                {
-                                    item.Image.TargetId = groupBuy.Id;
-                                    var image = await _imageAppService.CreateAsync(item.Image);
-                                    imageId = image?.Id;
-                                }
-
-                                _groupBuyManager.AddItemGroupDetail(
-                                    itemGroup,
-                                    item.SortOrder,
-                                    item.ItemDescription,
-                                    item.ItemId,
-                                    imageId
-                                    );
-                            }
-                        }
+                        ProcessItemDetails(itemGroup, group.ItemDetails);
                     }
                 }
             }
 
 
             return ObjectMapper.Map<GroupBuy, GroupBuyDto>(groupBuy);
+        }
+        private void ProcessItemDetails(GroupBuyItemGroup itemGroup, ICollection<GroupBuyItemGroupDetailCreateUpdateDto> itemDetails)
+        {
+            foreach (var item in itemDetails)
+            {
+                if (item.Id.HasValue)
+                {
+                    var itemDetail = itemGroup.ItemGroupDetails.FirstOrDefault(x => x.Id == item.Id);
+                    if (itemDetail != null)
+                    {
+                        itemDetail.SortOrder = item.SortOrder;
+                        itemDetail.ItemId = item.ItemId;
+                    }
+                }
+                else
+                {
+                    _groupBuyManager.AddItemGroupDetail(
+                        itemGroup,
+                        item.SortOrder,
+                        item.ItemId
+                    );
+                }
+            }
         }
 
         public async Task DeleteManyGroupBuyItemsAsync(List<Guid> groupBuyIds)
@@ -286,16 +246,6 @@ namespace Kooco.Pikachu.GroupBuys
             await _groupBuyRepository.DeleteManyAsync(groupBuyIds);
         }
 
-        /// <summary>
-        /// This Method Returns the Desired Result For the Store Front End.
-        /// Do not change unless you want to make changes in the Store Front End Code
-        /// </summary>
-        /// <returns></returns>
-        public async Task<GroupBuyDto> GetDataForStoreAsync(Guid id)
-        {
-            var data = await _groupBuyRepository.GetAsync(id);
-            return ObjectMapper.Map<GroupBuy, GroupBuyDto>(data);
-        }
 
         /// <summary>
         /// This Method Returns the Desired Result For the Store Front End.

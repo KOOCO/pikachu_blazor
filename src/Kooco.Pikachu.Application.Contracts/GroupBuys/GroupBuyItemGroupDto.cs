@@ -2,6 +2,7 @@
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Application.Dtos;
 using System.Collections.Generic;
+using Kooco.Pikachu.EnumValues;
 
 namespace Kooco.Pikachu.GroupBuys
 {
@@ -9,17 +10,10 @@ namespace Kooco.Pikachu.GroupBuys
     {
         public Guid? TenantId { get; set; }
 
-        /// <summary>
-        /// 團購編號
-        /// </summary>
         public Guid GroupBuyId { get; set; }
-
-        /// <summary>
-        /// 商品組合排序 Sorting Orger of groupbuy item groupf
-        /// </summary>
         public int SortOrder { get; set; }
 
-        public string? Title { get; set; }
+        public GroupBuyModuleType GroupBuyModuleType { get; set; }
 
         public ICollection<GroupBuyItemGroupDetailsDto> ItemGroupDetails { get; set; }
 

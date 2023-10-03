@@ -1,7 +1,7 @@
 ﻿using Blazored.TextEditor;
 using Blazorise;
-using Blazorise.Components;
 using Kooco.Pikachu.AzureStorage.Image;
+using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.ImageBlob;
 using Kooco.Pikachu.Images;
@@ -9,9 +9,6 @@ using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using Microsoft.CodeAnalysis.Diagnostics;
-using NUglify;
-using Polly;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,8 +18,6 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
 using Volo.Abp.ObjectMapping;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using static Volo.Abp.Identity.IdentityPermissions;
 
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 {
@@ -32,7 +27,6 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         public string id { get; set; }
         public Guid Id { get; set; }
 
-        bool PaymentMethodCheck = false;
         private const int MaxtextCount = 60;
         private GroupBuyUpdateDto EditGroupBuyDto { get; set; }
         private List<CreateImageDto> CarouselImages { get; set; }
@@ -40,20 +34,12 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         private const int TotalMaxAllowedFiles = 5;
         private const int MaxAllowedFileSize = 1024 * 1024 * 10;
         private string? TagInputValue { get; set; }
-
-        //private Input<string> inputTagRef; //used for create tag input
         private List<string> ItemTags { get; set; } = new List<string>(); //used for store item tags 
-
-        //private Input<string> inputPaymentMethodTagRef; //used for create tag input
         private List<string> PaymentMethodTags { get; set; } = new List<string>(); //used for store item tags 
         private string PaymentTagInputValue { get; set; }
-        bool loading = false;
         private List<CollapseItem> CollapseItem = new();
-        int _value = 1;
-        private Blazored.TextEditor.BlazoredTextEditor quillHtml; //Item Discription Html
+
         public string _ProductPicture = "Product Picture";
-        private readonly IImageBlobService _imageBlobService;
-        private readonly HttpClient _httpClient;
         private readonly IGroupBuyAppService _groupBuyAppService;
         private readonly IImageAppService _imageAppService;
         private readonly IObjectMapper _objectMapper;
@@ -65,23 +51,24 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         private BlazoredTextEditor ExchangePolicyHtml { get; set; }
         private BlazoredTextEditor NotifyEmailHtml { get; set; }
 
-        private Autocomplete<KeyValueDto, Guid?> AutocompleteField { get; set; }
         private FilePicker LogoPickerCustom { get; set; }
         private FilePicker BannerPickerCustom { get; set; }
         private FilePicker CarouselPickerCustom { get; set; }
         private List<KeyValueDto> ItemsList { get; set; } = new();
-        private FilePicker FilePicker { get; set; }
-        private string? SelectedAutoCompleteText { get; set; }
         private readonly ImageContainerManager _imageContainerManager;
         private readonly List<string> ValidFileExtensions = new() { ".jpg", ".png", ".svg", ".jpeg", ".webp" };
 
         private List<ImageDto> ExistingImages { get; set; } = new();
 
-        public EditGroupBuy(IImageBlobService imageBlobService, HttpClient httpClient, IGroupBuyAppService groupBuyAppService,
-            IImageAppService imageAppService, IObjectMapper objectMapper, IUiMessageService uiMessageService, ImageContainerManager imageContainerManager, IItemAppService itemAppService)
+        public EditGroupBuy(
+            IGroupBuyAppService groupBuyAppService,
+            IImageAppService imageAppService,
+            IObjectMapper objectMapper,
+            IUiMessageService uiMessageService,
+            ImageContainerManager imageContainerManager,
+            IItemAppService itemAppService
+            )
         {
-            _imageBlobService = imageBlobService;
-            _httpClient = httpClient;
             _groupBuyAppService = groupBuyAppService;
             _imageAppService = imageAppService;
             _objectMapper = objectMapper;
@@ -101,9 +88,9 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 var groupbuy = await _groupBuyAppService.GetWithDetailsAsync(Id);
                 EditGroupBuyDto = _objectMapper.Map<GroupBuyDto, GroupBuyUpdateDto>(groupbuy);
                 ExistingImages = await _imageAppService.GetGroupBuyImagesAsync(Id, ImageType.GroupBuyCarouselImage);
-                string[] paymentMethotTagArray = EditGroupBuyDto.PaymentMethod != null ? EditGroupBuyDto.PaymentMethod.Split(',') : null;
+                List<string> paymentMethotTagArray = EditGroupBuyDto.PaymentMethod?.Split(',')?.ToList() ?? new List<string>();
                 PaymentMethodTags = paymentMethotTagArray != null ? paymentMethotTagArray.ToList() : new List<string>();
-                string[] excludeShippingMethodArray = EditGroupBuyDto.ExcludeShippingMethod != null ? EditGroupBuyDto.ExcludeShippingMethod.Split(',') : null;
+                List<string> excludeShippingMethodArray = EditGroupBuyDto.ExcludeShippingMethod?.Split(',')?.ToList() ?? new();
                 ItemTags = excludeShippingMethodArray != null ? excludeShippingMethodArray.ToList() : new List<string>();
                 CarouselImages = _objectMapper.Map<List<ImageDto>, List<CreateImageDto>>(ExistingImages);
                 ItemsList = await _itemAppService.GetItemsLookupAsync();
@@ -128,7 +115,6 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     await NotifyEmailHtml.LoadHTMLContent(EditGroupBuyDto.NotifyMessage);
                 }
 
-
                 var itemGroups = groupbuy.ItemGroups;
                 if (itemGroups.Any())
                 {
@@ -138,20 +124,14 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                         var collapseItem = new CollapseItem
                         {
                             Index = i++,
-                            Title = itemGroup.Title
+                            SortOrder = itemGroup.SortOrder,
+                            GroupBuyModuleType = itemGroup.GroupBuyModuleType
                         };
                         if (itemGroup.ItemGroupDetails.Any())
                         {
-
                             foreach (var item in itemGroup.ItemGroupDetails)
                             {
-                                collapseItem.ItemDetails.Add(new ProductPictureItem
-                                {
-                                    ItemId = item.ItemId,
-                                    ItemDescription = item.ItemDescription,
-                                    Item = item.Item,
-                                    Image = new ProductImage(item.Image.Name, item.Image.BlobImageName, item.Image.ImageUrl)
-                                });
+                                collapseItem.SelectedItems.Add(item.Item);
                             }
                         }
 
@@ -171,36 +151,70 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             }
         }
 
-        void addProductItem(string title)
+        void AddProductItem(GroupBuyModuleType groupBuyModuleType)
         {
-            CollapseItem item = new();
-            item.Title = title;
-            item.Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1;
-            CollapseItem.Add(item);
+            CollapseItem collapseItem;
+
+            if (CollapseItem.Count >= 20)
+            {
+                _uiMessageService.Error(L[PikachuDomainErrorCodes.CanNotAddMoreThan20Modules]);
+                return;
+            }
+
+            if (groupBuyModuleType == GroupBuyModuleType.ProductDescription)
+            {
+                collapseItem = new()
+                {
+                    Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                    GroupBuyModuleType = groupBuyModuleType,
+                    SelectedItems = new()
+                    {
+                        new ItemDto()
+                    }
+                };
+            }
+
+            else
+            {
+                collapseItem = new()
+                {
+                    Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                    GroupBuyModuleType = groupBuyModuleType,
+                    SelectedItems = new()
+                    {
+                        new ItemDto(),
+                        new ItemDto(),
+                        new ItemDto()
+                    }
+                };
+            }
+            CollapseItem.Add(collapseItem);
         }
 
         async Task OnLogoUploadAsync(FileChangedEventArgs e)
         {
-            if (e.Files.Count() > 1)
+            if (e.Files.Length > 1)
             {
                 await _uiMessageService.Error("Select Only 1 Logo Upload");
                 await LogoPickerCustom.Clear();
                 return;
             }
-            if (e.Files.Count() == 0)
+            if (e.Files.Length == 0)
             {
-
                 return;
-
             }
-            var count = 0;
             try
             {
-
+                if (!ValidFileExtensions.Contains(Path.GetExtension(e.Files[0].Name)))
+                {
+                    await _uiMessageService.Error(L["InvalidFileType"]);
+                    await LogoPickerCustom.Clear();
+                    return;
+                }
                 if (e.Files[0].Size > MaxAllowedFileSize)
                 {
-
                     await LogoPickerCustom.RemoveFile(e.Files[0]);
+                    await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
                     return;
                 }
                 string newFileName = Path.ChangeExtension(
@@ -214,21 +228,12 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     await stream.CopyToAsync(memoryStream);
                     memoryStream.Position = 0;
                     var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
-
-
-
                     EditGroupBuyDto.LogoURL = url;
-
                     await LogoPickerCustom.Clear();
                 }
                 finally
                 {
                     stream.Close();
-                }
-
-                if (count > 0)
-                {
-                    await _uiMessageService.Error(count + ' ' + L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
                 }
             }
             catch (Exception exc)
@@ -240,7 +245,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
         async Task OnCarouselUploadAsync(FileChangedEventArgs e)
         {
-            if (e.Files.Count() > MaxAllowedFilesPerUpload)
+            if (e.Files.Length > MaxAllowedFilesPerUpload)
             {
                 await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesExceedMaxAllowedPerUpload]);
                 await CarouselPickerCustom.Clear();
@@ -257,6 +262,12 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             {
                 foreach (var file in e.Files)
                 {
+                    if (!ValidFileExtensions.Contains(Path.GetExtension(file.Name)))
+                    {
+                        await CarouselPickerCustom.RemoveFile(file);
+                        await _uiMessageService.Error(L["InvalidFileType"]);
+                        continue;
+                    }
                     if (file.Size > MaxAllowedFileSize)
                     {
                         count++;
@@ -307,26 +318,28 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
         async Task OnBannerUploadAsync(FileChangedEventArgs e)
         {
-            if (e.Files.Count() > 1)
+            if (e.Files.Length > 1)
             {
                 await _uiMessageService.Error("Select Only 1 Logo Upload");
                 await BannerPickerCustom.Clear();
                 return;
             }
-            if (e.Files.Count() == 0)
+            if (e.Files.Length == 0)
             {
-
                 return;
-
             }
-            var count = 0;
             try
             {
-
+                if (!ValidFileExtensions.Contains(Path.GetExtension(e.Files[0].Name)))
+                {
+                    await _uiMessageService.Error(L["InvalidFileType"]);
+                    await BannerPickerCustom.Clear();
+                    return;
+                }
                 if (e.Files[0].Size > MaxAllowedFileSize)
                 {
-
                     await BannerPickerCustom.RemoveFile(e.Files[0]);
+                    await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
                     return;
                 }
                 string newFileName = Path.ChangeExtension(
@@ -341,8 +354,6 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     memoryStream.Position = 0;
                     var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
 
-
-
                     EditGroupBuyDto.BannerURL = url;
 
                     await BannerPickerCustom.Clear();
@@ -350,11 +361,6 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 finally
                 {
                     stream.Close();
-                }
-
-                if (count > 0)
-                {
-                    await _uiMessageService.Error(count + ' ' + L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
                 }
             }
             catch (Exception exc)
@@ -441,27 +447,19 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             }
         }
 
-        async Task DeleteImageAsync(CollapseItem collapse)
+        private static void OnProductGroupValueChange(ChangeEventArgs e, CollapseItem collapseItem)
         {
-            try
+            int takeCount = int.Parse(e?.Value.ToString());
+            if (collapseItem.SelectedItems.Count > takeCount)
             {
-                var confirmed = await _uiMessageService.Confirm(L[PikachuDomainErrorCodes.AreYouSureToDeleteImage]);
-                if (confirmed)
-                {
-                    confirmed = await _imageContainerManager.DeleteAsync(collapse.SelectedImage.BlobImageName);
-                    collapse.SelectedImage = new();
-                }
-                else
-                {
-                    throw new BusinessException(L[PikachuDomainErrorCodes.SomethingWentWrongWhileDeletingImage]);
-                }
+                collapseItem.SelectedItems = collapseItem.SelectedItems.Take(takeCount).ToList();
             }
-            catch (Exception ex)
+            else
             {
-                Console.WriteLine(ex.Message);
-                await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWentWrongWhileDeletingImage]);
+                collapseItem.SelectedItems.Add(new ItemDto());
             }
         }
+
         private void HandleItemTagInputKeyUp(KeyboardEventArgs e)
         {
             if (e.Key == "Enter")
@@ -478,6 +476,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         {
             ItemTags.Remove(item);
         }
+
         private void HandlePaymentTagInputKeyUp(KeyboardEventArgs e)
         {
             if (e.Key == "Enter")
@@ -494,10 +493,21 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         {
             PaymentMethodTags.Remove(item);
         }
+
         protected virtual async Task UpdateEntityAsync()
         {
             try
             {
+                if (EditGroupBuyDto.GroupBuyName.IsNullOrWhiteSpace())
+                {
+                    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyNameCannotBeNull]);
+                    return;
+                }
+                if (CollapseItem.Any(c => c.SelectedItems.Any(s => s.Id == Guid.Empty)))
+                {
+                    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyModuleCannotBeEmpty]);
+                    return;
+                }
                 if (ItemTags.Any())
                 {
                     EditGroupBuyDto.ExcludeShippingMethod = string.Join(",", ItemTags);
@@ -518,22 +528,20 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 foreach (var item in CollapseItem)
                 {
                     int j = 1;
-                    if (item.ItemDetails.Any())
+                    if (item.SelectedItems.Any())
                     {
                         var itemGroup = new GroupBuyItemGroupCreateUpdateDto
                         {
                             SortOrder = i++,
-                            Title = item.Title
+                            GroupBuyModuleType = item.GroupBuyModuleType
                         };
 
-                        foreach (var itemDetail in item.ItemDetails)
+                        foreach (var itemDetail in item.SelectedItems)
                         {
                             itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
                             {
                                 SortOrder = j++,
-                                ItemDescription = itemDetail.ItemDescription,
-                                ItemId = itemDetail.ItemId,
-                                Image = new CreateImageDto(itemDetail.Image.ImageName, itemDetail.Image.BlobImageName, itemDetail.Image.ImageUrl, ImageType.GroupBuyItemGroup)
+                                ItemId = itemDetail.Id
                             });
                         }
 
@@ -564,16 +572,18 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             }
         }
 
-        private async void OnSelectedValueChanged(Guid? id, CollapseItem collapseItem)
+        private async Task OnSelectedValueChanged(Guid? id, CollapseItem collapseItem, ItemDto? selectedItem = null)
         {
             try
             {
+                var index = collapseItem.SelectedItems.IndexOf(selectedItem);
                 if (id != null)
                 {
-                    collapseItem.SelectedItemId = id.Value;
-                    collapseItem.SelectedItem = await _itemAppService.GetAsync(id.Value);
-
-                    StateHasChanged();
+                    collapseItem.SelectedItems[index] = await _itemAppService.GetAsync(id.Value, true);
+                }
+                else
+                {
+                    collapseItem.SelectedItems[index] = new();
                 }
             }
             catch (Exception ex)
@@ -586,56 +596,12 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         {
             NavigationManager.NavigateTo("GroupBuyManagement/GroupBuyList");
         }
-        async Task OnFileUploadAsync(FileChangedEventArgs e, CollapseItem collapseItem)
-        {
-            try
-            {
-                foreach (var file in e.Files)
-                {
-                    if (!ValidFileExtensions.Contains(Path.GetExtension(file.Name).ToLower()))
-                    {
-                        await FilePicker.RemoveFile(file);
-                        return;
-                    }
-                    if (file.Size > MaxAllowedFileSize)
-                    {
-                        await FilePicker.RemoveFile(file);
-                        return;
-                    }
-                    string newFileName = Path.ChangeExtension(
-                          Guid.NewGuid().ToString().Replace("-", ""),
-                          Path.GetExtension(file.Name));
-                    var stream = file.OpenReadStream(long.MaxValue);
-                    try
-                    {
-                        var memoryStream = new MemoryStream();
 
-                        await stream.CopyToAsync(memoryStream);
-                        memoryStream.Position = 0;
-                        var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
-
-                        collapseItem.SelectedImage = new ProductImage(file.Name, newFileName, url);
-
-                        await FilePicker.Clear();
-                    }
-                    finally
-                    {
-                        stream.Close();
-                    }
-                }
-            }
-            catch (Exception exc)
-            {
-                Console.WriteLine(exc.Message);
-                await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
-            }
-        }
         private void RemoveCollapseItem(int index)
         {
             var item = CollapseItem.Where(i => i.Index == index).FirstOrDefault();
             CollapseItem.Remove(item);
         }
-
     }
 
 }

@@ -1,18 +1,12 @@
-﻿using Kooco.Pikachu.Items.Dtos;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Domain.Entities;
-using Volo.Abp.Domain.Entities.Auditing;
 
 namespace Kooco.Pikachu.GroupBuys
 {
     public class GroupBuyDto: EntityDto<Guid>,IHasConcurrencyStamp
     {
-       
-
-
         /// <summary>
         /// 團購編號  GroupBuysNo
         /// </summary>
@@ -197,7 +191,7 @@ namespace Kooco.Pikachu.GroupBuys
         public ICollection<GroupBuyItemGroupDto> ItemGroups { get; set; }
 
         public string? ConcurrencyStamp { get; set; }
-
+        public bool IsDefaultPaymentGateWay { get; set; }
         public string? ExcludeShippingMethod { get; set; }
         public string? GroupBuyConditionDescription { get; set; }
         public string? CustomerInformationDescription { get; set; }

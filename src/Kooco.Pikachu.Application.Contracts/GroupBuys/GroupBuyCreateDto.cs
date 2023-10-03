@@ -186,7 +186,7 @@ namespace Kooco.Pikachu.GroupBuys
         /// 通知信件文案 NotifyMessage
         /// </summary>
         public string? NotifyMessage { get; set; }
-        public bool IsDefaultPaymentGateWay { get; set; }
+        public bool IsDefaultPaymentGateWay { get; set; } = true;
         public string? PaymentMethod { get; set; }
         public string? GroupBuyCondition { get; set; }
         public string? CustomerInformation { get; set; }
