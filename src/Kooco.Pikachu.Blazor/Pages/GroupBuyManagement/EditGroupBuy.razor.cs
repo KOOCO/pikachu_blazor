@@ -143,11 +143,12 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             }
             catch (BusinessException ex)
             {
+                Console.WriteLine(ex.ToString());
                 await _uiMessageService.Error(L[ex.Code]);
             }
             catch (Exception ex)
             {
-                await _uiMessageService.Error(ex.GetType().ToString());
+                Console.WriteLine(ex.ToString());
             }
         }
 

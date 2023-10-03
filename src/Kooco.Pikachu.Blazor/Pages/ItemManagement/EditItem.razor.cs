@@ -131,7 +131,8 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             }
             catch (Exception ex)
             {
-                await _uiMessageService.Error(ex.Message.ToString());
+                Console.WriteLine(ex.ToString());
+                //await _uiMessageService.Error(ex.Message.ToString());
             }
         }
 

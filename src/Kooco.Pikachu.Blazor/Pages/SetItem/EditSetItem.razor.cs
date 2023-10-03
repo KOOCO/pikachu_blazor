@@ -90,8 +90,10 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
                                 )
                             );
                     });
-
-                    await QuillHtml.LoadHTMLContent(ExistingItem.Description);
+                    if (!ExistingItem.Description.IsNullOrEmpty())
+                    {
+                        await QuillHtml.LoadHTMLContent(ExistingItem.Description);
+                    }
                     ItemsList = await _itemAppService.GetItemsLookupAsync();
 
                 }
@@ -102,7 +104,8 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
             }
             catch (Exception ex)
             {
-                await _uiMessageService.Error(ex.GetType()?.ToString());
+                Console.WriteLine(ex.ToString());
+                //await _uiMessageService.Error(ex.GetType()?.ToString());
             }
         }
 
