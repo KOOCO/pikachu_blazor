@@ -1040,23 +1040,23 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Attribute1Value")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Attribute2Value")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Attribute3Value")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("ItemPrice")
+                        .HasColumnType("money");
 
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
+
+                    b.Property<string>("Spec")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("money");
 
                     b.HasKey("Id");
 

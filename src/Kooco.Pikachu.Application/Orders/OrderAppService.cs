@@ -51,9 +51,9 @@ namespace Kooco.Pikachu.Orders
                     _orderManager.AddOrderItem(
                         order,
                         item.ItemId,
-                        item.Attribute1Value,
-                        item.Attribute2Value,
-                        item.Attribute3Value,
+                        item.Spec,
+                        item.ItemPrice,
+                        item.TotalAmount,
                         item.Quantity
                         );
                 }

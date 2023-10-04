@@ -6,9 +6,9 @@ namespace Kooco.Pikachu.Orders
     {
         public Guid ItemId { get; set; }
         public Guid OrderId { get; set; }
-        public string? Attribute1Value { get; set; }
-        public string? Attribute2Value { get; set; }
-        public string? Attribute3Value { get; set; }
+        public string? Spec { get; set; }
+        public decimal ItemPrice { get; set; }
+        public decimal TotalAmount { get; set; }
         public int Quantity { get; set; }
     }
 }

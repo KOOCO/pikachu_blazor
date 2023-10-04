@@ -191,6 +191,8 @@ public class PikachuDbContext :
             b.ToTable(PikachuConsts.DbTablePrefix + "OrderItems", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
             b.HasOne(x => x.Item).WithMany().HasForeignKey(x => x.ItemId);
+            b.Property(x => x.ItemPrice).HasColumnType("money");
+            b.Property(x => x.TotalAmount).HasColumnType("money");
         });
     }
 }

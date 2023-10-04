@@ -64,7 +64,6 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
             input.CustomField9Name,
             input.CustomField10Value,
             input.CustomField10Name,
-
             input.Attribute1Name,
             input.Attribute2Name,
             input.Attribute3Name
@@ -83,8 +82,8 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
                     itemDetail.SaleableQuantity,
                     itemDetail.PreOrderableQuantity,
                     itemDetail.SaleablePreOrderQuantity,
+                    itemDetail.GroupBuyPrice,
                     itemDetail.InventoryAccount,
-
                     itemDetail.Attribute1Value,
                     itemDetail.Attribute2Value,
                     itemDetail.Attribute3Value
@@ -183,6 +182,7 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
                     existing.SaleableQuantity = itemDetail.SaleableQuantity;
                     existing.PreOrderableQuantity = itemDetail.PreOrderableQuantity;
                     existing.SaleablePreOrderQuantity = itemDetail.SaleablePreOrderQuantity;
+                    existing.GroupBuyPrice = itemDetail.GroupBuyPrice;
                     existing.InventoryAccount = itemDetail.InventoryAccount;
                     existing.Attribute1Value = itemDetail.Attribute1Value;
                     existing.Attribute2Value = itemDetail.Attribute2Value;
@@ -199,8 +199,8 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
                         itemDetail.SaleableQuantity,
                         itemDetail.PreOrderableQuantity,
                         itemDetail.SaleablePreOrderQuantity,
+                        itemDetail.GroupBuyPrice,
                         itemDetail.InventoryAccount,
-
                         itemDetail.Attribute1Value,
                         itemDetail.Attribute2Value,
                         itemDetail.Attribute3Value

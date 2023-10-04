@@ -14,11 +14,10 @@ namespace Kooco.Pikachu.Orders
 
     public class OrderManager : DomainService
     {
-        private readonly IOrderRepository _orderRepository;
-        public OrderManager(
-         IOrderRepository orderRepository)
+       
+        public OrderManager()
         {
-            _orderRepository = orderRepository;
+            
         }
         public async Task<Order> CreateAsync(
              bool isIndividual,
@@ -69,18 +68,18 @@ namespace Kooco.Pikachu.Orders
         public void AddOrderItem(
             Order order,
             Guid itemId,
-            string? attribute1Value,
-            string? attribute2Value,
-            string? attribute3Value,
+            string? spec,
+            decimal itemPrice,
+            decimal totalAmount,
             int quantity
             )
         {
             order.AddOrderItem(
                 GuidGenerator.Create(),
                 itemId,
-                attribute1Value,
-                attribute2Value,
-                attribute3Value,
+                spec,
+                itemPrice,
+                totalAmount,
                 quantity
                 );
         }

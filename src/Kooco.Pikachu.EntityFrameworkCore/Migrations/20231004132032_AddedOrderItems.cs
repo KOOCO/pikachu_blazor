@@ -18,10 +18,10 @@ namespace Kooco.Pikachu.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     OrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Attribute1Value = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Attribute2Value = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Attribute3Value = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Quantity = table.Column<int>(type: "int", nullable: false)
+                    Spec = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    ItemPrice = table.Column<decimal>(type: "money", nullable: false),
+                    TotalAmount = table.Column<decimal>(type: "money", nullable: false)
                 },
                 constraints: table =>
                 {

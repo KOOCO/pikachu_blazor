@@ -82,9 +82,9 @@ namespace Kooco.Pikachu.Orders
         public void AddOrderItem(
             Guid id,
             Guid itemId,
-            string? attribute1Value,
-            string? attribute2Value,
-            string? attribute3Value,
+            string? spec,
+            decimal itemPrice,
+            decimal totalAmount,
             int quantity
             )
         {
@@ -92,9 +92,9 @@ namespace Kooco.Pikachu.Orders
                     id,
                     itemId,
                     this.Id,
-                    attribute1Value,
-                    attribute2Value,
-                    attribute3Value,
+                    spec,
+                    itemPrice,
+                    totalAmount,
                     quantity
                     ));
         }
