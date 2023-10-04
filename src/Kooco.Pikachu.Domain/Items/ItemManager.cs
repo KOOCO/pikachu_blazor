@@ -127,8 +127,8 @@ namespace Kooco.Pikachu.Items
             float saleableQuantity,
             float? preOrderableQuantity,
             float? saleablePreOrderQuantity,
+            float? groupBuyPrice,
             string? inventoryAccount,
-
             string? attribute1Value,
             string? attribute2Value,
             string? attribute3Value
@@ -152,8 +152,8 @@ namespace Kooco.Pikachu.Items
                 saleableQuantity,
                 preOrderableQuantity,
                 saleablePreOrderQuantity,
+                groupBuyPrice,
                 inventoryAccount,
-
                 attribute1Value,
                 attribute2Value,
                 attribute3Value

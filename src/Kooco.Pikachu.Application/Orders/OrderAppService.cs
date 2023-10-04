@@ -22,37 +22,44 @@ namespace Kooco.Pikachu.Orders
 
         public override async Task<OrderDto> CreateAsync(CreateOrderDto input)
         {
-            try
-            {
-                var order = await _orderManager.CreateAsync(
-               input.IsIndividual,
-               input.Name,
-               input.Phone,
-               input.Email,
-               input.PaymentMethod,
-               input.InvoiceType,
-               input.InvoiceNumber,
-               input.UniformNumber,
-               input.IsAsSameBuyer,
-               input.Name2,
-               input.Email2,
-               input.Phone2,
-               input.DeliveryMethod,
-               input.City,
-               input.District,
-               input.Road,
-               input.AddressDetails,
-               input.Remarks,
-               input.ReceivingTime
-               );
-                await _orderRepository.InsertAsync(order);
-                return ObjectMapper.Map<Order, OrderDto>(order);
-            }
-            catch (Exception e)
-            {
-                throw;
-            }
+            var order = await _orderManager.CreateAsync(
+                   input.IsIndividual,
+                   input.Name,
+                   input.Phone,
+                   input.Email,
+                   input.PaymentMethod,
+                   input.InvoiceType,
+                   input.InvoiceNumber,
+                   input.UniformNumber,
+                   input.IsAsSameBuyer,
+                   input.Name2,
+                   input.Email2,
+                   input.Phone2,
+                   input.DeliveryMethod,
+                   input.City,
+                   input.District,
+                   input.Road,
+                   input.AddressDetails,
+                   input.Remarks,
+                   input.ReceivingTime
+                   );
 
+            if (input.OrderItems != null)
+            {
+                foreach (var item in input.OrderItems)
+                {
+                    _orderManager.AddOrderItem(
+                        order,
+                        item.ItemId,
+                        item.Spec,
+                        item.ItemPrice,
+                        item.TotalAmount,
+                        item.Quantity
+                        );
+                }
+            }
+            await _orderRepository.InsertAsync(order);
+            return ObjectMapper.Map<Order, OrderDto>(order);
         }
 
     }

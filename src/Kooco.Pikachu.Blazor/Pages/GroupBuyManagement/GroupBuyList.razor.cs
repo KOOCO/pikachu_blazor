@@ -1,16 +1,12 @@
 ﻿using Blazorise;
 using Blazorise.DataGrid;
 using Kooco.Pikachu.GroupBuys;
-using Kooco.Pikachu.Items;
-using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.AspNetCore.Components.Messages;
-using Volo.Abp.TenantManagement;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 {
@@ -25,6 +21,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         int _pageIndex = 1;
         int _pageSize = 10;
         int Total = 0;
+        private string Sorting = nameof(GroupBuy.GroupBuyName);
 
         public GroupBuyList(
             IGroupBuyAppService groupBuyAppService,
@@ -53,7 +50,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 int skipCount = _pageIndex * _pageSize;
                 var result = await _groupBuyAppService.GetListAsync(new GetGroupBuyInput
                 {
-                    Sorting = nameof(GroupBuy.GroupBuyName),
+                    Sorting = Sorting,
                     MaxResultCount = _pageSize,
                     SkipCount = skipCount
                 });
@@ -63,8 +60,10 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             catch (Exception ex)
             {
                 await _uiMessageService.Error(ex.GetType()?.ToString());
+                Console.WriteLine(ex.ToString());
             }
         }
+
         private async Task DeleteSelectedAsync()
         {
             try
@@ -84,6 +83,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             catch (Exception ex)
             {
                 await _uiMessageService.Error(ex.GetType()?.ToString());
+                Console.WriteLine(ex.ToString());
             }
         }
         private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<GroupBuyDto> e)
@@ -102,6 +102,12 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         {
             var id = e.Item.Id;
             NavigationManager.NavigateTo("/GroupBuyManagement/GroupBuyList/Edit/" + id);
+        }
+
+        async void OnSortChange(DataGridSortChangedEventArgs e)
+        {
+            Sorting = e.FieldName + " " + (e.SortDirection != SortDirection.Default ? e.SortDirection : "");
+            await UpdateGroupBuyList();
         }
     }
 }

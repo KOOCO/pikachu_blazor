@@ -20,7 +20,6 @@
         <Button Danger Type="@ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="DeleteSelectedAsync">
             @L["DeleteSelected"]
         </Button>
-        @*   <Button Type="@ButtonType.Button" Class="btn btn-sm btn-secondary me-1">@L["CopyItem"]</Button> *@
         <Button Type="@ButtonType.Button" Class="btn btn-sm btn-primary me-1" Clicked="CreateNewItem">
             <i class="fa fa-plus"></i>
             @L["NewItem"]
@@ -38,7 +37,8 @@
               TotalItems="Total"
               ShowPager="true"
               PageSize="PageSize"
-              RowDoubleClicked="OnEditItem">
+              RowDoubleClicked="OnEditItem"
+              SortChanged="OnSortChange">
         <DataGridColumns>
             <DataGridColumn TItem="FreebieDto"  Caption="@L["Select"]">
                 <DisplayTemplate>
@@ -74,18 +74,4 @@
     </DataGrid>
 </div>
 
-@code {
-
-
-    public void CreateNewItem()
-    {
-        NavigationManager.NavigateTo("/Freebie/New");
-    }
-
-
-
-
-
-    
-
-}
+@code {}

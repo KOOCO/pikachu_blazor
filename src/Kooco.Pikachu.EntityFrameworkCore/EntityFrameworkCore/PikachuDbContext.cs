@@ -21,6 +21,7 @@ using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.OrderItems;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -182,6 +183,16 @@ public class PikachuDbContext :
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "Orders", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
+            b.HasMany(x => x.OrderItems).WithOne().HasForeignKey(d => d.OrderId);
+        });
+
+        builder.Entity<OrderItem>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "OrderItems", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+            b.HasOne(x => x.Item).WithMany().HasForeignKey(x => x.ItemId);
+            b.Property(x => x.ItemPrice).HasColumnType("money");
+            b.Property(x => x.TotalAmount).HasColumnType("money");
         });
     }
 }

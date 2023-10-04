@@ -26,5 +26,6 @@ namespace Kooco.Pikachu.Orders
         public string? AddressDetails { get; set; }
         public string? Remarks { get; set; }
         public ReceivingTime? ReceivingTime { get; set; }
+        public List<OrderItemsCreateDto> OrderItems { get; set; }
     }
 }
