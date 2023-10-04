@@ -43,6 +43,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         private Modal GenerateSKUModal { get; set; }
         private SKUModel SKUModel { get; set; } = new();
         private FilePicker FilePickerCustom { get; set; }
+        private string QuillReadOnlyContent { get; set; } = "";
 
         private readonly IItemAppService _itemAppService;
         private readonly IEnumValueAppService _enumValueService;
@@ -61,81 +62,85 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             _uiMessageService = uiMessageService;
             _imageContainerManager = imageContainerManager;
         }
-        protected override async Task OnInitializedAsync()
+
+        protected override async Task OnAfterRenderAsync(bool isFirstRender)
         {
-            await base.OnInitializedAsync();
-
-            try
+            if (isFirstRender)
             {
-                EditingId = Guid.Parse(Id);
-                ExistingItem = await _itemAppService.GetAsync(EditingId, true);
 
-                var enumValues = (await _enumValueService.GetEnums(new List<EnumType> {
+                try
+                {
+                    EditingId = Guid.Parse(Id);
+                    ExistingItem = await _itemAppService.GetAsync(EditingId, true);
+
+                    var enumValues = (await _enumValueService.GetEnums(new List<EnumType> {
                                                              EnumType.ShippingMethod,
                                                              EnumType.TaxType
                                                          })).ToList();
 
-                TaxTypes = enumValues.Where(x => x.EnumType == EnumType.TaxType).ToList();
+                    TaxTypes = enumValues.Where(x => x.EnumType == EnumType.TaxType).ToList();
 
-                ShippingMethods = enumValues.Where(x => x.EnumType == EnumType.ShippingMethod).ToList();
+                    ShippingMethods = enumValues.Where(x => x.EnumType == EnumType.ShippingMethod).ToList();
 
-                var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfile>());
-                // Create a new mapper
-                var mapper = config.CreateMapper();
+                    var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfile>());
+                    // Create a new mapper
+                    var mapper = config.CreateMapper();
 
-                // Map ItemDto to UpdateItemDto
-                UpdateItemDto = mapper.Map<UpdateItemDto>(ExistingItem);
-                UpdateItemDto.Images = UpdateItemDto.Images.OrderBy(x => x.SortNo).ToList();
-                ItemDetailsList = mapper.Map<List<CreateItemDetailsDto>>(ExistingItem.ItemDetails);
-                ItemTags = ExistingItem.ItemTags?.Split(',').ToList();
-                if (ItemTags == null)
+                    // Map ItemDto to UpdateItemDto
+                    UpdateItemDto = mapper.Map<UpdateItemDto>(ExistingItem);
+                    UpdateItemDto.Images = UpdateItemDto.Images.OrderBy(x => x.SortNo).ToList();
+                    ItemDetailsList = mapper.Map<List<CreateItemDetailsDto>>(ExistingItem.ItemDetails);
+                    ItemTags = ExistingItem.ItemTags?.Split(',').ToList();
+                    if (ItemTags == null)
+                    {
+                        ItemTags = new List<string>();
+                    }
 
-                {
-                    ItemTags = new List<string>();
+                    if (!ExistingItem.Attribute1Name.IsNullOrWhiteSpace())
+                    {
+                        Attributes.Add(
+                            new Attributes
+                            {
+                                Id = 1,
+                                Name = ExistingItem.Attribute1Name,
+                                ItemTags = ItemDetailsList.Where(x => x.Attribute1Value != null).Select(x => x.Attribute1Value).Distinct().ToList()
+                            });
+                    }
+                    if (!ExistingItem.Attribute2Name.IsNullOrWhiteSpace())
+                    {
+                        Attributes.Add(
+                            new Attributes
+                            {
+                                Id = 2,
+                                Name = ExistingItem.Attribute2Name,
+                                ItemTags = ItemDetailsList.Where(x => x.Attribute2Value != null).Select(x => x.Attribute2Value).Distinct().ToList()
+                            });
+                    }
+                    if (!ExistingItem.Attribute3Name.IsNullOrWhiteSpace())
+                    {
+                        Attributes.Add(
+                            new Attributes
+                            {
+                                Id = 3,
+                                Name = ExistingItem.Attribute3Name,
+                                ItemTags = ItemDetailsList.Where(x => x.Attribute3Value != null).Select(x => x.Attribute3Value).Distinct().ToList()
+                            });
+                    }
+                    await LoadHtmlContent();
+                    StateHasChanged();
                 }
-                if (!ExistingItem.ItemDescription.IsNullOrWhiteSpace())
+                catch (Exception ex)
                 {
-                    await QuillHtml.LoadHTMLContent(ExistingItem.ItemDescription);
+                    await _uiMessageService.Error(ex.Message.ToString());
                 }
-
-                if (!ExistingItem.Attribute1Name.IsNullOrWhiteSpace())
-                {
-                    Attributes.Add(
-                        new Attributes
-                        {
-                            Id = 1,
-                            Name = ExistingItem.Attribute1Name,
-                            ItemTags = ItemDetailsList.Where(x => x.Attribute1Value != null).Select(x => x.Attribute1Value).Distinct().ToList()
-                        });
-                }
-                if (!ExistingItem.Attribute2Name.IsNullOrWhiteSpace())
-                {
-                    Attributes.Add(
-                        new Attributes
-                        {
-                            Id = 2,
-                            Name = ExistingItem.Attribute2Name,
-                            ItemTags = ItemDetailsList.Where(x => x.Attribute2Value != null).Select(x => x.Attribute2Value).Distinct().ToList()
-                        });
-                }
-                if (!ExistingItem.Attribute3Name.IsNullOrWhiteSpace())
-                {
-                    Attributes.Add(
-                        new Attributes
-                        {
-                            Id = 3,
-                            Name = ExistingItem.Attribute3Name,
-                            ItemTags = ItemDetailsList.Where(x => x.Attribute3Value != null).Select(x => x.Attribute3Value).Distinct().ToList()
-                        });
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-                //await _uiMessageService.Error(ex.Message.ToString());
             }
         }
 
+        private async Task LoadHtmlContent()
+        {
+            await Task.Delay(1);
+            await QuillHtml.LoadHTMLContent(ExistingItem.ItemDescription);
+        }
         protected virtual async Task UpdateEntityAsync()
         {
             try
