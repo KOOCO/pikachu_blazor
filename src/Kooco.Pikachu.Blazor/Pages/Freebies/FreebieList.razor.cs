@@ -1,8 +1,7 @@
-﻿using Blazorise.DataGrid;
+﻿using Blazorise;
+using Blazorise.DataGrid;
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Freebies.Dtos;
-using Kooco.Pikachu.GroupBuys;
-using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
@@ -11,13 +10,11 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.AspNetCore.Components.Messages;
-using Volo.Abp.TenantManagement;
 
 namespace Kooco.Pikachu.Blazor.Pages.Freebies
 {
     public partial class FreebieList
     {
-       
         public List<FreebieDto> FreebieListItems { get; set; }
         private readonly IFreebieAppService _freebieAppService;
         private readonly IUiMessageService _uiMessageService;
@@ -25,43 +22,52 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
         int PageIndex = 1;
         int PageSize = 10;
         int Total = 0;
-        public FreebieList(ITenantAppService tenantAppService, IFreebieAppService freebieAppService, IUiMessageService messageService)
+        private string Sorting = nameof(FreebieDto.ItemName);
+
+        public FreebieList(
+            IFreebieAppService freebieAppService, 
+            IUiMessageService messageService
+            )
         {
             _freebieAppService = freebieAppService;
             FreebieListItems = new List<FreebieDto>();
             _uiMessageService = messageService;
         }
-        protected override async Task OnInitializedAsync()
-        {
-           
-        }
+
         private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<FreebieDto> e)
         {
             PageIndex = e.Page - 1;
             await UpdateFreebieList();
             await InvokeAsync(StateHasChanged);
         }
+
         private async Task UpdateFreebieList()
         {
-            
-
-            //FreebieListItems = await _freebieAppService.GetListAsync();
-            int skipCount = PageIndex * PageSize;
-            var result = await _freebieAppService.GetListAsync(new PagedAndSortedResultRequestDto
+            try
             {
-                Sorting = nameof(ItemDto.ItemName),
-                MaxResultCount = PageSize,
-                SkipCount = skipCount
-            });
-            FreebieListItems = result.Items.ToList();
-            Total = (int)result.TotalCount;
-
+                int skipCount = PageIndex * PageSize;
+                var result = await _freebieAppService.GetListAsync(new PagedAndSortedResultRequestDto
+                {
+                    Sorting = Sorting,
+                    MaxResultCount = PageSize,
+                    SkipCount = skipCount
+                });
+                FreebieListItems = result.Items.ToList();
+                Total = (int)result.TotalCount;
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
+                Console.WriteLine(ex.ToString());
+            }
         }
+
         public void OnEditItem(DataGridRowMouseEventArgs<FreebieDto> e)
         {
             var id = e.Item.Id;
             NavigationManager.NavigateTo($"Freebie/Edit/{id}");
         }
+
         private void HandleSelectAllChange(ChangeEventArgs e)
         {
             IsAllSelected = (bool)e.Value;
@@ -71,6 +77,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
             });
             StateHasChanged();
         }
+
         private async Task DeleteSelectedAsync()
         {
             try
@@ -90,13 +97,15 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
             catch (Exception ex)
             {
                 await _uiMessageService.Error(ex.GetType()?.ToString());
+                Console.WriteLine(ex.ToString());
             }
         }
-             public async Task OnFreebieAvaliablityChange(Guid id)
+
+        public async Task OnFreebieAvaliablityChange(Guid id)
         {
             try
             {
-                var freebie =FreebieListItems.Where(x => x.Id == id).First();
+                var freebie = FreebieListItems.Where(x => x.Id == id).First();
                 freebie.IsFreebieAvaliable = !freebie.IsFreebieAvaliable;
                 await _freebieAppService.ChangeFreebieAvailability(id);
                 await UpdateFreebieList();
@@ -105,11 +114,24 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
             catch (BusinessException ex)
             {
                 await _uiMessageService.Error(ex.Code.ToString());
+                Console.WriteLine(ex.ToString());
             }
             catch (Exception ex)
             {
                 await _uiMessageService.Error(ex.GetType().ToString());
+                Console.WriteLine(ex.ToString());
             }
+        }
+
+        public void CreateNewItem()
+        {
+            NavigationManager.NavigateTo("/Freebie/New");
+        }
+
+        async void OnSortChange(DataGridSortChangedEventArgs e)
+        {
+            Sorting = e.FieldName + " " + (e.SortDirection != SortDirection.Default ? e.SortDirection : "");
+            await UpdateFreebieList();
         }
     }
 }

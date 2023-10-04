@@ -9,6 +9,7 @@ using Blazorise.DataGrid;
 using Volo.Abp;
 using Microsoft.AspNetCore.Components;
 using Volo.Abp.AspNetCore.Components.Messages;
+using Blazorise;
 
 namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 {
@@ -19,11 +20,15 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         int PageIndex = 1;
         int PageSize = 10;
         int Total = 0;
+        string Sorting = nameof(ItemDto.ItemName);
 
         private readonly IUiMessageService _uiMessageService;
         private readonly IItemAppService _itemAppService;
 
-        public Items(IItemAppService itemAppService, IUiMessageService messageService)
+        public Items(
+            IItemAppService itemAppService, 
+            IUiMessageService messageService
+            )
         {
             _itemAppService = itemAppService;
             _uiMessageService = messageService;
@@ -40,15 +45,23 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 
         private async Task UpdateItemList()
         {
-            int skipCount = PageIndex * PageSize;
-            var result = await _itemAppService.GetListAsync(new PagedAndSortedResultRequestDto
+            try
             {
-                Sorting = nameof(ItemDto.ItemName),
-                MaxResultCount = PageSize,
-                SkipCount = skipCount
-            });
-            ItemList = result.Items.ToList();
-            Total = (int)result.TotalCount;
+                int skipCount = PageIndex * PageSize;
+                var result = await _itemAppService.GetListAsync(new PagedAndSortedResultRequestDto
+                {
+                    Sorting = Sorting,
+                    MaxResultCount = PageSize,
+                    SkipCount = skipCount
+                });
+                ItemList = result.Items.ToList();
+                Total = (int)result.TotalCount;
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
+                Console.WriteLine(ex.ToString());
+            }
         }
 
         public async Task OnItemAvaliablityChange(Guid id)
@@ -64,10 +77,12 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             catch (BusinessException ex)
             {
                 await _uiMessageService.Error(ex.Code.ToString());
+                Console.WriteLine(ex.ToString());
             }
             catch (Exception ex)
             {
                 await _uiMessageService.Error(ex.GetType().ToString());
+                Console.WriteLine(ex.ToString());
             }
         }
         private void HandleSelectAllChange(ChangeEventArgs e)
@@ -101,6 +116,12 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         {
             var id = e.Item.Id;
             NavigationManager.NavigateTo($"Items/Edit/{id}");
+        }
+
+        async void OnSortChange(DataGridSortChangedEventArgs e)
+        {
+            Sorting = e.FieldName + " " + (e.SortDirection != SortDirection.Default ? e.SortDirection : "");
+            await UpdateItemList();
         }
     }
 }
