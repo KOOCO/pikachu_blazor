@@ -90,11 +90,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                     UpdateItemDto = mapper.Map<UpdateItemDto>(ExistingItem);
                     UpdateItemDto.Images = UpdateItemDto.Images.OrderBy(x => x.SortNo).ToList();
                     ItemDetailsList = mapper.Map<List<CreateItemDetailsDto>>(ExistingItem.ItemDetails);
-                    ItemTags = ExistingItem.ItemTags?.Split(',').ToList();
-                    if (ItemTags == null)
-                    {
-                        ItemTags = new List<string>();
-                    }
+                    ItemTags = ExistingItem.ItemTags?.Split(',').ToList() ?? new List<string>();
 
                     if (!ExistingItem.Attribute1Name.IsNullOrWhiteSpace())
                     {
@@ -131,6 +127,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 }
                 catch (Exception ex)
                 {
+                    Console.WriteLine(ex.ToString());
                     await _uiMessageService.Error(ex.Message.ToString());
                 }
             }
@@ -141,6 +138,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             await Task.Delay(1);
             await QuillHtml.LoadHTMLContent(ExistingItem.ItemDescription);
         }
+
         protected virtual async Task UpdateEntityAsync()
         {
             try
@@ -157,10 +155,12 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             }
             catch (BusinessException ex)
             {
+                Console.WriteLine(ex.ToString());
                 await _uiMessageService.Error(ex.Code.ToString());
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.ToString());
                 await _uiMessageService.Error(ex.GetType().ToString());
             }
         }
@@ -401,6 +401,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.ToString());
                 _uiMessageService.Error(ex.GetType().ToString());
             }
         }

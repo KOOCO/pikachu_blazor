@@ -95,25 +95,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 CarouselImages = _objectMapper.Map<List<ImageDto>, List<CreateImageDto>>(ExistingImages);
                 ItemsList = await _itemAppService.GetItemsLookupAsync();
 
-                if (!EditGroupBuyDto.GroupBuyConditionDescription.IsNullOrWhiteSpace())
-                {
-                    await GroupBuyHtml.LoadHTMLContent(EditGroupBuyDto.GroupBuyConditionDescription);
-                }
-
-                if (!EditGroupBuyDto.CustomerInformationDescription.IsNullOrWhiteSpace())
-                {
-                    await CustomerInformationHtml.LoadHTMLContent(EditGroupBuyDto.CustomerInformationDescription);
-                }
-
-                if (!EditGroupBuyDto.ExchangePolicyDescription.IsNullOrWhiteSpace())
-                {
-                    await ExchangePolicyHtml.LoadHTMLContent(EditGroupBuyDto.ExchangePolicyDescription);
-                }
-
-                if (!EditGroupBuyDto.NotifyMessage.IsNullOrWhiteSpace())
-                {
-                    await NotifyEmailHtml.LoadHTMLContent(EditGroupBuyDto.NotifyMessage);
-                }
+                await LoadHtmlContent();
 
                 var itemGroups = groupbuy.ItemGroups;
                 if (itemGroups.Any())
@@ -149,7 +131,17 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
+                await _uiMessageService.Error(ex.GetType().ToString());
             }
+        }
+
+        private async Task LoadHtmlContent()
+        {
+            await Task.Delay(2);
+            await GroupBuyHtml.LoadHTMLContent(EditGroupBuyDto.GroupBuyConditionDescription);
+            await CustomerInformationHtml.LoadHTMLContent(EditGroupBuyDto.CustomerInformationDescription);
+            await ExchangePolicyHtml.LoadHTMLContent(EditGroupBuyDto.ExchangePolicyDescription);
+            await NotifyEmailHtml.LoadHTMLContent(EditGroupBuyDto.NotifyMessage);
         }
 
         void AddProductItem(GroupBuyModuleType groupBuyModuleType)
@@ -565,10 +557,12 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             }
             catch (BusinessException ex)
             {
+                Console.WriteLine(ex.ToString());
                 await _uiMessageService.Error(L[ex.Code]);
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.ToString());
                 await _uiMessageService.Error(ex.Message.GetType()?.ToString());
             }
         }
@@ -589,6 +583,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.ToString());
                 await _uiMessageService.Error(ex.GetType().ToString());
             }
         }

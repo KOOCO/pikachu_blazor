@@ -1,9 +1,7 @@
-﻿using Blazorise.Components;
-using Blazorise;
+﻿using Blazorise;
 using Kooco.Pikachu.AzureStorage.Image;
 using Kooco.Pikachu.Freebies.Dtos;
 using Kooco.Pikachu.Freebies;
-using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items.Dtos;
 using System.Collections.Generic;
@@ -16,6 +14,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Components;
 using AutoMapper;
 using Kooco.Pikachu.FreeBies.Dtos;
+using Blazored.TextEditor;
 
 namespace Kooco.Pikachu.Blazor.Pages.Freebies
 {
@@ -27,7 +26,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
         private const int MaxTextCount = 60;
         private const int TotalMaxAllowedFiles = 10;
         private const int MaxAllowedFileSize = 1024 * 1024 * 10;
-        private Blazored.TextEditor.BlazoredTextEditor ItemDescription;
+        private BlazoredTextEditor ItemDescription;
         private List<KeyValueDto> GroupBuyList { get; set; } = new();
         private FilePicker FilePicker { get; set; }
         private List<string> SelectedTexts { get; set; } = new();
@@ -66,16 +65,20 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
                 UpdateFreebieDto = mapper.Map<UpdateFreebieDto>(ExistingItem);
                 UpdateFreebieDto.Images = UpdateFreebieDto.Images.OrderBy(x => x.SortNo).ToList();
 
-                if (!ExistingItem.ItemDescription.IsNullOrWhiteSpace())
-                {
-                    await ItemDescription.LoadHTMLContent(ExistingItem.ItemDescription);
-                }
+                await LoadHtmlContent();
                 GroupBuyList = await _freebieAppService.GetGroupBuyLookupAsync();
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.ToString());
                 await _uiMessageService.Error(ex.GetType().ToString());
             }
+        }
+
+        private async Task LoadHtmlContent()
+        {
+            await Task.Delay(1);
+            await ItemDescription.LoadHTMLContent(ExistingItem.ItemDescription);
         }
 
         async Task OnImageUploadAsync(FileChangedEventArgs e)
@@ -179,10 +182,12 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
             }
             catch (BusinessException ex)
             {
+                Console.WriteLine(ex.ToString());
                 await _uiMessageService.Error(ex.Code?.ToString());
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.ToString());
                 await _uiMessageService.Error(ex.GetType().ToString());
             }
         }
@@ -197,7 +202,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
             {
                 throw new BusinessException(L[PikachuDomainErrorCodes.InvalidItemName]);
             }
-            if (UpdateFreebieDto?.Images == null || !UpdateFreebieDto.Images.Any())
+            if (!UpdateFreebieDto.Images.Any())
             {
                 throw new BusinessException(L[PikachuDomainErrorCodes.SelectAtLeastOneImage]);
             }
@@ -205,7 +210,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
             {
                 throw new BusinessException(L[PikachuDomainErrorCodes.ItemDetailsCannotBeEmpty]);
             }
-            if (!UpdateFreebieDto.FreebieGroupBuys.Any())
+            if (UpdateFreebieDto.ApplyToAllGroupBuy == false && !UpdateFreebieDto.FreebieGroupBuys.Any())
             {
                 throw new BusinessException(L[PikachuDomainErrorCodes.SelectAtLeastOneGroupBuy]);
             }
