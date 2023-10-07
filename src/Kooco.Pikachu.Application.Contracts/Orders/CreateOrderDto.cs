@@ -1,4 +1,5 @@
 ﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.OrderItems;
 using System;
 using System.Collections.Generic;
 using System.Text;

@@ -42,14 +42,9 @@ namespace Kooco.Pikachu.Controllers.Orders
             return _ordersAppService.GetAsync(id);
         }
         [HttpGet("get-list")]
-        public Task<PagedResultDto<OrderDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+        public Task<PagedResultDto<OrderDto>> GetListAsync(GetOrderListDto input)
         {
             return _ordersAppService.GetListAsync(input);
-        }
-        [HttpPut("{id}")]
-        public Task<OrderDto> UpdateAsync(Guid id, CreateOrderDto input)
-        {
-            return _ordersAppService.UpdateAsync(id, input);
         }
     }
 }

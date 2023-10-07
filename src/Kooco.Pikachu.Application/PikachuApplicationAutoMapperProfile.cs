@@ -7,6 +7,8 @@ using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.Freebies.Dtos;
 using Kooco.Pikachu.Freebies;
+using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.OrderItems;
 
 namespace Kooco.Pikachu;
 
@@ -52,5 +54,8 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<GroupBuy, KeyValueDto>().ForMember(dest => dest.Name, src => src.MapFrom(s => s.GroupBuyName));
         CreateMap<Freebie, FreebieDto>();
         CreateMap<FreebieGroupBuys, FreebieGroupBuysDto>();
+
+        CreateMap<Order, OrderDto>();
+        CreateMap<OrderItem, OrderItemDto>();
     }
 }

@@ -1,12 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 
 namespace Kooco.Pikachu.Orders
 {
-    public class OrderAppService : CrudAppService<Order, OrderDto, Guid, PagedAndSortedResultRequestDto, CreateOrderDto>,
-    IOrderAppService
+    public class OrderAppService : ApplicationService, IOrderAppService
     {
         private readonly IOrderRepository _orderRepository;
         private readonly OrderManager _orderManager;
@@ -14,13 +14,13 @@ namespace Kooco.Pikachu.Orders
         public OrderAppService(
             IOrderRepository orderRepository,
             OrderManager orderManager
-            ) : base(orderRepository)
+            )
         {
             _orderRepository = orderRepository;
             _orderManager = orderManager;
         }
 
-        public override async Task<OrderDto> CreateAsync(CreateOrderDto input)
+        public async Task<OrderDto> CreateAsync(CreateOrderDto input)
         {
             var order = await _orderManager.CreateAsync(
                    input.IsIndividual,
@@ -62,6 +62,34 @@ namespace Kooco.Pikachu.Orders
             return ObjectMapper.Map<Order, OrderDto>(order);
         }
 
+        public async Task DeleteAsync(Guid id)
+        {
+            var order = await _orderRepository.GetAsync(id);
+            await _orderRepository.DeleteAsync(order);
+        }
+
+        public async Task<OrderDto> GetAsync(Guid id)
+        {
+            return ObjectMapper.Map<Order, OrderDto>(await _orderRepository.GetAsync(id));
+        }
+
+        public async Task<PagedResultDto<OrderDto>> GetListAsync(GetOrderListDto input)
+        {
+            if (input.Sorting.IsNullOrEmpty())
+            {
+                input.Sorting = $"{nameof(Order.CreationTime)} desc";
+            }
+
+            var totalCount = await _orderRepository.CountAsync(input.Filter);
+
+            var items = await _orderRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter);
+
+            return new PagedResultDto<OrderDto>
+            {
+                TotalCount = totalCount,
+                Items = ObjectMapper.Map<List<Order>, List<OrderDto>>(items)
+            };
+        }
     }
 }
 

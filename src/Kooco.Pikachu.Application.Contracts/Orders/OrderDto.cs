@@ -1,7 +1,7 @@
 ﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.OrderItems;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Volo.Abp.Application.Dtos;
 
 namespace Kooco.Pikachu.Orders
@@ -27,6 +27,6 @@ namespace Kooco.Pikachu.Orders
         public string? AddressDetails { get; set; }
         public string? Remarks { get; set; }
         public ReceivingTime? ReceivingTime { get; set; }
-
+        public List<OrderItemDto> OrderItems { get; set; }
     }
 }
