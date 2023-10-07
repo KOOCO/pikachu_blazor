@@ -7,28 +7,25 @@
 @inject NavigationManager NavigationManager;
 
 <div class="row">
-    <div Class="col-6">
+    <div class="col-6">
         <h3>@L["SetItem"]</h3>
     </div>
-    <div Class="col-6 d-flex flex-row-reverse">
-        
-        <button class="btn btn-sm btn-danger me-2" @onclick="DeleteSelectedAsync">
-            @L["DeleteSelected"]
-        </button>
-
+    <div class="col-6 text-lg-end">
+        <div class="custom-check-group me-1">
+            <input type="checkbox" class="form-check-input" checked="@IsAllSelected" @onchange="HandleSelectAllChange"></input>
+            <Label Class="form-label">@L["SelectAll"]</Label>
+        </div>
         <button class="btn btn-sm btn-primary" @onclick="NavigateToCreateSetItem">
             <i class="fa fa-plus"></i>
             @L["NewSetItem"]
         </button>
-
-        <div class="me-2 p-2">
-            <input type="checkbox" class="me-1" style="height: 15px; width: 15px;" checked="@IsAllSelected" @onchange="HandleSelectAllChange"></input>
-            <Label Class="form-label">@L["SelectAll"]</Label>
-        </div>
+        <button class="btn btn-sm btn-danger" @onclick="DeleteSelectedAsync">
+            @L["DeleteSelected"]
+        </button>
     </div>
 </div>
 
-<Card Class="mt-2">
+<Card>
     <CardBody>
         <DataGrid TItem="SetItemDto"
                   Data="SetItemList"
@@ -39,7 +36,7 @@
                   RowDoubleClicked="OnEditItem"
                   SortChanged="OnSortChange">
             <DataGridColumns>
-                <DataGridColumn TItem="SetItemDto" Caption="@L["Select"]">
+                <DataGridColumn TItem="SetItemDto" Caption="@L["Select"]" Width="30px">
                     <DisplayTemplate>
                         <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
                     </DisplayTemplate>

@@ -23,6 +23,7 @@ namespace Kooco.Pikachu.Orders
         public async Task<OrderDto> CreateAsync(CreateOrderDto input)
         {
             var order = await _orderManager.CreateAsync(
+                   input.GroupBuyId,
                    input.IsIndividual,
                    input.Name,
                    input.Phone,
@@ -41,7 +42,9 @@ namespace Kooco.Pikachu.Orders
                    input.Road,
                    input.AddressDetails,
                    input.Remarks,
-                   input.ReceivingTime
+                   input.ReceivingTime,
+                   input.TotalQuantity,
+                   input.TotalAmount
                    );
 
             if (input.OrderItems != null)

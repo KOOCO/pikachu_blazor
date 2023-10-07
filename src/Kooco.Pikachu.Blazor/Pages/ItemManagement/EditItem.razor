@@ -384,19 +384,19 @@
             </div>
         </div>
     </CardBody>
-    <CardFooter>
-        <div class="d-flex flex-row-reverse">
-            <Button Color="Color.Primary" Type="@ButtonType.Submit" PreventDefaultOnSubmit="true" Clicked="UpdateEntityAsync">
-                <i class="fa fa-check"></i>
-                @L["Save"]
-            </Button>
-            <Button Color="Color.Danger" Type="ButtonType.Link" To="Items" Class="me-2">
-                @L["Cancel"]
-            </Button>
-        </div>
-    </CardFooter>
 </Card>
 
+<div class="row">
+    <div class="col-12 text-lg-end">
+        <Button Color="Color.Danger" Type="ButtonType.Link" To="Items">
+            @L["Cancel"]
+        </Button>
+        <Button Color="Color.Primary" Type="@ButtonType.Submit" PreventDefaultOnSubmit="true" Clicked="UpdateEntityAsync">
+            <i class="fa fa-check"></i>
+            @L["Save"]
+        </Button>
+    </div>
+</div>
 
 <Modal @ref="GenerateSKUModal">
     <ModalBackdrop />

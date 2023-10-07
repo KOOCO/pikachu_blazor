@@ -414,19 +414,19 @@
                         </div>
                     </div>
                 </div>
-                <div style="text-align: right; margin-top:5px ;">
-                    <Button Type="@ButtonType.Button" class="btn btn-danger me-1" Clicked="CancelToItemList">@L["Cancel"]</Button>
-                    <Button Type="@ButtonType.Button" class="btn btn-primary me-1" Clicked="CreateEntityAsync">
-                        <i class="fa fa-check"></i>
-                        @L["Save"]
-                    </Button>
-                    @* <Button Type="@ButtonType.Button" class="btn btn-secondary me-1">@L["Preview"]</Button> *@
-                </div>
             </div>
         </CardBody>
     </Card>
 </div>
-
+<div class="row">
+    <div class="col-12 text-lg-end">
+        <Button Type="@ButtonType.Button" class="btn btn-danger" Clicked="CancelToItemList">@L["Cancel"]</Button>
+        <Button Type="@ButtonType.Button" class="btn btn-primary" Clicked="CreateEntityAsync">
+            <i class="fa fa-check"></i>
+            @L["Save"]
+        </Button>
+    </div>
+</div>
 <Modal @ref="GenerateSKUModal">
     <ModalBackdrop />
     <ModalContent IsCentered="true" Size="ModalSize.ExtraLarge">

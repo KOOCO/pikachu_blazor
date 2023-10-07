@@ -8,52 +8,54 @@
 @using System.Text.Json;
 @using System.ComponentModel
 
-
 @inject IStringLocalizer<PikachuResource> L
 @inject NavigationManager NavigationManager
 
-    <div class="row mb-2">
-        <div class="col-6">
-            <h3>Group Buy List</h3>
-        </div>
-        <div class="col-6 d-flex flex-row-reverse">
-            <Button Danger Type="@ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="DeleteSelectedAsync">
-                @L["DeleteSelected"]
-            </Button>
-            <Button Type="@ButtonType.Button" Class="btn btn-sm btn-primary me-1" Clicked="CreateNewItem">
-                <i class="fa fa-plus"></i>
-                @L["NewItem"]
-            </Button>
-            <div class="me-2 p-2">
-                <input type="checkbox" class="me-1" style="height: 15px; width: 15px;" checked="@IsAllSelected" @onchange="HandleSelectAllChange"></input>
-                <Label Class="form-label">@L["SelectAll"]</Label>
-            </div>
-        </div>
+<div class="row">
+    <div class="col-6">
+        <h3>@L["GroupBuyList"]</h3>
     </div>
-    <div>
-      <DataGrid TItem="GroupBuyDto"
-                Data="GroupBuyListItem"
-                ReadData="OnDataGridReadAsync"
-                TotalItems="Total"
-                ShowPager="true"
-                PageSize="_pageSize"
-                RowDoubleClicked="OnEditItem"
-                SortChanged="OnSortChange">
+    <div class="col-6 text-lg-end">
+        <div class="custom-check-group me-1">
+            <input type="checkbox" class="form-check-input" checked="@IsAllSelected" @onchange="HandleSelectAllChange"></input>
+            <Label Class="form-label">@L["SelectAll"]</Label>
+        </div>
+        <Button Type="@ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="CreateNewItem">
+            <i class="fa fa-plus"></i>
+            @L["NewItem"]
+        </Button>
+        <Button Type="@ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="DeleteSelectedAsync">
+            @L["DeleteSelected"]
+        </Button>
+    </div>
+</div>
+<Card>
+    <CardBody>
+        <DataGrid TItem="GroupBuyDto"
+                  Data="GroupBuyListItem"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="Total"
+                  ShowPager="true"
+                  PageSize="_pageSize"
+                  RowDoubleClicked="OnEditItem"
+                  SortChanged="OnSortChange">
             <DataGridColumns>
 
-            <DataGridColumn TItem="GroupBuyDto" Caption="@L["Select"]">
-                <DisplayTemplate>
-                    <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
-                </DisplayTemplate>
-            </DataGridColumn>
+                <DataGridColumn TItem="GroupBuyDto" Caption="@L["Select"]" Width="30px">
+                    <DisplayTemplate>
+                        <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
+                    </DisplayTemplate>
+                </DataGridColumn>
 
-            <DataGridColumn TItem="GroupBuyDto"
-                            Field="@nameof(GroupBuyDto.GroupBuyName)"
-                            Caption="@L["GroupBuyName"]">
-            </DataGridColumn>
+                <DataGridColumn TItem="GroupBuyDto"
+                                Field="@nameof(GroupBuyDto.GroupBuyName)"
+                                Caption="@L["GroupBuyName"]">
+                </DataGridColumn>
             </DataGridColumns>
         </DataGrid>
-    </div>
+    </CardBody>
+</Card>
+
 
 @code {
 }

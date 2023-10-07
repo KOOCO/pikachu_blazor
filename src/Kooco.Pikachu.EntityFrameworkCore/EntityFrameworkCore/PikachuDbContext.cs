@@ -183,7 +183,9 @@ public class PikachuDbContext :
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "Orders", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
+            b.HasOne(o => o.GroupBuy).WithMany().HasForeignKey(o => o.GroupBuyId);
             b.HasMany(x => x.OrderItems).WithOne().HasForeignKey(d => d.OrderId);
+            b.Property(x => x.TotalAmount).HasColumnType("money");
         });
 
         builder.Entity<OrderItem>(b =>

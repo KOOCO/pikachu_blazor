@@ -130,10 +130,10 @@
     .image-container img.blur-image {
         height: 100%;
         width: 7em;
-        object-fit:contain;
+        object-fit: contain;
         border-radius: 0.5rem;
         border: 1px solid rgb(150, 113, 36);
-        padding:0.5em;
+        padding: 0.5em;
     }
 
     .image-container:hover img.blur-image {
@@ -182,10 +182,21 @@
     width: auto;
 }
 
-.lpx-topbar{
-    border-radius: 0px!important;
+.lpx-topbar {
+    border-radius: 0px !important;
 }
 
 .accordion-button::after {
     margin-right: unset;
 }
+
+
+.custom-check-group {
+    display: inline-block;
+    padding: 0.1rem;
+}
+
+    .custom-check-group .form-check-input:not(:checked) {
+        background-color: white;
+        border: 1px solid lightgrey !important;
+    }

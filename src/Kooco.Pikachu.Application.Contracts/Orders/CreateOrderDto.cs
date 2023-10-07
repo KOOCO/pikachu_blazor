@@ -2,7 +2,6 @@
 using Kooco.Pikachu.OrderItems;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Kooco.Pikachu.Orders
 {
@@ -27,6 +26,9 @@ namespace Kooco.Pikachu.Orders
         public string? AddressDetails { get; set; }
         public string? Remarks { get; set; }
         public ReceivingTime? ReceivingTime { get; set; }
+        public Guid GroupBuyId { get; set; }
+        public int TotalQuantity { get; set; }
+        public decimal TotalAmount { get; set; }
         public List<OrderItemsCreateDto> OrderItems { get; set; }
     }
 }

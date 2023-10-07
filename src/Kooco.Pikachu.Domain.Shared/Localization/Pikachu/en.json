@@ -156,6 +156,7 @@
     "Gateway": "Gateway",
     "InvalidFileType": "Invalid File Type",
     "Pikachu:CanNotAddMoreThan20Modules": "Can not add more than 20 modules",
+    "GroupBuyList": "Group Buy List",
 
     //SetItem
     "SetItem": "Set Item",
@@ -192,6 +193,28 @@
 
     //Orders
     "Order": "Orders",
-    "Menu:Orders": "Orders"
+    "Menu:Orders": "Orders",
+    "OrderNo": "Order No",
+    "OrderDate": "Order Date",
+    "CustomerName": "Customer Name",
+    "Email": "Email",
+    "OrderStatus": "Order Status",
+    "ShippingStatus": "Shipping Status",
+    "CheckoutAmount": "Checkout Amount",
+    "BankTransfer": "Bank Transfer",
+    "CreditCard": "Credit Card",
+    "LinePay": "Line Pay",
+    "RecipientInformation": "Recipient's Information",
+    "PickupTheGoodsWithoutPayment": "Pickup The Goods Without Payment",
+    "AllHandOverTheGoodsWithoutPayment": "All Handover The Goods Without Payment",
+    "BlackCatHomeDelivery": "Black Cat Home Delivery",
+    "OrderItems": "Order Items",
+    "Address": "Address",
+    "Remarks": "Remarks",
+    "MerchantRemarks": "Merchant Remarks",
+    "CombineItems": "Combine Items",
+    "Open": "Open",
+    "Closed": "Closed",
+    "Returned": "Returned"
   }
 }

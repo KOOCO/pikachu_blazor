@@ -807,15 +807,14 @@
                 </div>
             </div>
         </div>
-        <div class="row mt-3">
-            <div class="d-flex flex-row-reverse">
-                <Button Type="@ButtonType.Button" class="btn btn-primary me-1" Clicked="CreateEntityAsync"> <i class="fa fa-check"></i> @L["Save"]</Button>
-                <Button Danger Type="@ButtonType.Button" class="btn btn-danger me-1" Clicked="BackToGroupBuyList" Style="margin-right:5px">@L["Cancel"]</Button>
-            </div>
-        </div>
     </CardBody>
 </Card>
-
+<div class="row">
+    <div class="col-12 text-lg-end">
+        <Button Type="@ButtonType.Button" class="btn btn-danger" Clicked="BackToGroupBuyList">@L["Cancel"]</Button>
+        <Button Type="@ButtonType.Button" class="btn btn-primary" Clicked="CreateEntityAsync"> <i class="fa fa-check"></i> @L["Save"]</Button>
+    </div>
+</div>
 @code {
 
 }

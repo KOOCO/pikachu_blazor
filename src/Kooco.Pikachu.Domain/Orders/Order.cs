@@ -1,7 +1,9 @@
 ﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.OrderItems;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 using Volo.Abp.Domain.Entities.Auditing;
 
@@ -9,6 +11,7 @@ namespace Kooco.Pikachu.Orders
 {
     public class Order : FullAuditedAggregateRoot<Guid>
     {
+        public string OrderNo { get; set; }
         public bool IsIndividual { get; set; }
         public string? Name { get; set; }
         public string? Phone { get; set; }
@@ -28,13 +31,21 @@ namespace Kooco.Pikachu.Orders
         public string? AddressDetails { get; set; }
         public string? Remarks { get; set; }
         public ReceivingTime? ReceivingTime { get; set; }
+        public Guid GroupBuyId { get; set; }
 
+        [ForeignKey(nameof(GroupBuyId))]
+        public GroupBuy GroupBuy { get; set; }
+        public int TotalQuantity { get; set; }
+        public decimal TotalAmount { get; set; }
+        public OrderStatus OrderStatus { get; set; }
         public ICollection<OrderItem> OrderItems { get; set; }
 
         public Order() { }
-        
+
         public Order(
             [NotNull] Guid id,
+            [NotNull] Guid groupBuyId,
+            string orderNo,
             bool isIndividual,
             string? name,
             string? phone,
@@ -53,10 +64,14 @@ namespace Kooco.Pikachu.Orders
             string? road,
             string? addressDetails,
             string? remarks,
-            ReceivingTime? receivingTime
+            ReceivingTime? receivingTime,
+            int totalQuantity,
+            decimal totalAmount
          )
         {
             Id = id;
+            GroupBuyId = groupBuyId;
+            OrderNo = orderNo;
             IsIndividual = isIndividual;
             Name = name;
             Phone = phone;
@@ -76,6 +91,9 @@ namespace Kooco.Pikachu.Orders
             AddressDetails = addressDetails;
             Remarks = remarks;
             ReceivingTime = receivingTime;
+            TotalQuantity = totalQuantity; 
+            TotalAmount = totalAmount;
+            OrderStatus = OrderStatus.Open;
             OrderItems = new List<OrderItem>();
         }
 

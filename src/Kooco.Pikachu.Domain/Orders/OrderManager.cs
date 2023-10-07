@@ -1,11 +1,6 @@
 ﻿using Kooco.Pikachu.EnumValues;
-using Kooco.Pikachu.Freebies;
-using Kooco.Pikachu.Items;
+using Kooco.Pikachu.Groupbuys;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Services;
 
@@ -14,12 +9,20 @@ namespace Kooco.Pikachu.Orders
 
     public class OrderManager : DomainService
     {
-       
-        public OrderManager()
+        private readonly IOrderRepository _orderRepository;
+        private readonly IGroupBuyRepository _groupBuyRepository;
+
+        public OrderManager(
+            IOrderRepository orderRepository,
+            IGroupBuyRepository groupBuyRepository
+            )
         {
-            
+            _orderRepository = orderRepository;
+            _groupBuyRepository = groupBuyRepository;
         }
+
         public async Task<Order> CreateAsync(
+             Guid groupBuyId,
              bool isIndividual,
              string name,
              string phone,
@@ -38,11 +41,17 @@ namespace Kooco.Pikachu.Orders
              string road,
              string addressDetails,
              string remarks,
-             ReceivingTime? receivingTime
+             ReceivingTime? receivingTime,
+             int totalQuantity,
+             decimal totalAmount
              )
         {
+            string orderNo = await GenerateOrderNoAsync(groupBuyId);
+
             return new Order(
                 GuidGenerator.Create(),
+                groupBuyId,
+                orderNo,
                 isIndividual,
                 name,
                 phone,
@@ -61,7 +70,9 @@ namespace Kooco.Pikachu.Orders
                 road,
                 addressDetails,
                 remarks,
-                receivingTime
+                receivingTime,
+                totalQuantity,
+                totalAmount
                 );
         }
 
@@ -82,6 +93,24 @@ namespace Kooco.Pikachu.Orders
                 totalAmount,
                 quantity
                 );
+        }
+
+        async Task<string> GenerateOrderNoAsync(Guid groupBuyId)
+        {
+            var order = await _orderRepository.MaxByOrderNumberAsync();
+
+            long orderNo = 1;
+            if (order != null)
+            {
+                string lastNineDigits = order.OrderNo[^9..];
+                _ = long.TryParse(lastNineDigits, out orderNo);
+                orderNo++;
+            }
+
+            var groupBuy = await _groupBuyRepository.GetAsync(groupBuyId);
+            string tenantIdPrefix = groupBuy.TenantId?.ToString().Substring(0, 2);
+
+            return $"{tenantIdPrefix}{DateTime.Now:yy}{orderNo:D9}";
         }
     }
 }

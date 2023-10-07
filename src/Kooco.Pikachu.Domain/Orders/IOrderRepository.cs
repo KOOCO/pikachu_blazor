@@ -16,5 +16,6 @@ namespace Kooco.Pikachu.Orders
             string? sorting,
             string? filter
             );
+        Task<Order> MaxByOrderNumberAsync();
     }
 }

@@ -1,11 +1,11 @@
-﻿using Blazorise.DataGrid;
+﻿using Blazorise;
+using Blazorise.DataGrid;
 using Kooco.Pikachu.Orders;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Volo.Abp.Application.Dtos;
 
 namespace Kooco.Pikachu.Blazor.Pages.Orders
 {
@@ -13,16 +13,17 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
     {
         private bool IsAllSelected { get; set; } = false;
         private List<OrderDto> Orders { get; set; } = new();
-        private long TotalCount { get; set; }
+        private int TotalCount { get; set; }
         private OrderDto SelectedOrder { get; set; }
         private int PageIndex { get; set; } = 1;
         private int PageSize { get; set; } = 10;
         private string? Sorting { get; set; }
         private string? Filter { get; set; }
-
+        HashSet<Guid> ExpandedRows = new HashSet<Guid>();
 
         private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<OrderDto> e)
         {
+            PageIndex = e.Page - 1;
             await UpdateItemList();
             await InvokeAsync(StateHasChanged);
         }
@@ -40,7 +41,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                     Filter = Filter
                 });
                 Orders = result?.Items.ToList() ?? new List<OrderDto>();
-                TotalCount = result?.TotalCount ?? 0;
+                TotalCount = (int?)result?.TotalCount ?? 0;
             }
             catch (Exception ex)
             {
@@ -49,16 +50,39 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
             }
         }
 
-
-        async void HandleSelectAllChange(ChangeEventArgs e)
+        void HandleSelectAllChange(ChangeEventArgs e)
         {
-            await _uiMessageService.Confirm("Hello World");
-            //IsAllSelected = (bool)e.Value;
-            //ItemList.ForEach(item =>
-            //{
-            //    item.IsSelected = IsAllSelected;
-            //});
-            //StateHasChanged();
+            IsAllSelected = (bool)e.Value;
+            Orders.ForEach(item =>
+            {
+                item.IsSelected = IsAllSelected;
+            });
+            StateHasChanged();
+        }
+
+        public void OnEditItem(DataGridRowMouseEventArgs<OrderDto> e)
+        {
+            return;
+            var id = e.Item.Id;
+            NavigationManager.NavigateTo($"Items/Edit/{id}");
+        }
+
+        async void OnSortChange(DataGridSortChangedEventArgs e)
+        {
+            Sorting = e.FieldName + " " + (e.SortDirection != SortDirection.Default ? e.SortDirection : "");
+            await UpdateItemList();
+        }
+
+        void ToggleRow(DataGridRowMouseEventArgs<OrderDto> e)
+        {
+            if (ExpandedRows.Contains(e.Item.Id))
+            {
+                ExpandedRows.Remove(e.Item.Id);
+            }
+            else
+            {
+                ExpandedRows.Add(e.Item.Id);
+            }
         }
     }
 }

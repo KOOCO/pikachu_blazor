@@ -27,7 +27,9 @@ namespace Kooco.Pikachu.Orders
             return await ApplyFilters(await GetQueryableAsync(), filter)
                 .OrderBy(sorting)
                 .PageBy(skipCount, maxResultCount)
+                .Include(o => o.GroupBuy)
                 .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Item)
                 .ToListAsync();
         }
 
@@ -41,6 +43,12 @@ namespace Kooco.Pikachu.Orders
                 x => x.Name.Contains(filter)
                 || x.Email.Contains(filter)
                 );
+        }
+
+        public async Task<Order> MaxByOrderNumberAsync()
+        {
+            var orders = await (await GetQueryableAsync()).ToListAsync();
+            return orders.OrderByDescending(x => long.Parse(x.OrderNo[^9..])).FirstOrDefault();
         }
     }
 }

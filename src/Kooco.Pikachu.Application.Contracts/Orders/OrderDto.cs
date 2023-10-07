@@ -1,4 +1,5 @@
 ﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.OrderItems;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ namespace Kooco.Pikachu.Orders
 {
     public class OrderDto : FullAuditedEntityDto<Guid>
     {
+        public string OrderNo { get; set; }
         public bool IsIndividual { get; set; }
         public string? Name { get; set; }
         public string? Phone { get; set; }
@@ -27,6 +29,12 @@ namespace Kooco.Pikachu.Orders
         public string? AddressDetails { get; set; }
         public string? Remarks { get; set; }
         public ReceivingTime? ReceivingTime { get; set; }
+        public Guid GroupBuyId { get; set; }
+        public GroupBuyDto GroupBuy { get; set; }
+        public int TotalQuantity { get; set; }
+        public decimal TotalAmount { get; set; }
+        public OrderStatus OrderStatus { get; set; }
         public List<OrderItemDto> OrderItems { get; set; }
+        public bool IsSelected { get; set; } = false;
     }
 }
