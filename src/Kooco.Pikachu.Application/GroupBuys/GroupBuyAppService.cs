@@ -9,6 +9,8 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Kooco.Pikachu.AzureStorage.Image;
+using Volo.Abp.Data;
+using Volo.Abp.MultiTenancy;
 
 namespace Kooco.Pikachu.GroupBuys
 {
@@ -18,17 +20,20 @@ namespace Kooco.Pikachu.GroupBuys
         private readonly GroupBuyManager _groupBuyManager;
         private readonly IRepository<Image, Guid> _imageRepository;
         private readonly ImageContainerManager _imageContainerManager;
+        private readonly IDataFilter _dataFilter;
         public GroupBuyAppService(
             IGroupBuyRepository groupBuyRepository, 
             GroupBuyManager groupBuyManager,
             ImageContainerManager imageContainerManager, 
-            IRepository<Image, Guid> imageRepository
+            IRepository<Image, Guid> imageRepository,
+            IDataFilter dataFilter
             )
         {
             _groupBuyManager = groupBuyManager;
             _groupBuyRepository = groupBuyRepository;
             _imageContainerManager = imageContainerManager;
             _imageRepository = imageRepository;
+            _dataFilter = dataFilter;
         }
 
         public async Task<GroupBuyDto> CreateAsync(GroupBuyCreateDto input)
@@ -246,7 +251,21 @@ namespace Kooco.Pikachu.GroupBuys
             await _groupBuyRepository.DeleteManyAsync(groupBuyIds);
         }
 
-
+        /// <summary>
+        /// This Method Returns the Desired Result For the Store Front End.
+        /// Do not change unless you want to make changes in the Store Front End Code
+        /// </summary>
+        /// <returns></returns>
+        public async Task<GroupBuyDto> GetForStoreAsync(Guid id)
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var item = await _groupBuyRepository.GetWithDetailsAsync(id);
+                return item is null
+                    ? throw new BusinessException(PikachuDomainErrorCodes.EntityWithGivenIdDoesnotExist)
+                    : ObjectMapper.Map<GroupBuy, GroupBuyDto>(item); 
+            }
+        }
         /// <summary>
         /// This Method Returns the Desired Result For the Store Front End.
         /// Do not change unless you want to make changes in the Store Front End Code

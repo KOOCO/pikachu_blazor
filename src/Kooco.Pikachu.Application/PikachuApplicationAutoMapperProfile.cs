@@ -9,6 +9,7 @@ using Kooco.Pikachu.Freebies.Dtos;
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.OrderItems;
+using Kooco.Pikachu.StoreComments;
 
 namespace Kooco.Pikachu;
 
@@ -57,5 +58,6 @@ public class PikachuApplicationAutoMapperProfile : Profile
 
         CreateMap<Order, OrderDto>();
         CreateMap<OrderItem, OrderItemDto>();
+        CreateMap<StoreComment, StoreCommentDto>();
     }
 }

@@ -1,8 +1,13 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
 using System;
+using System.ComponentModel.Design;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Domain.Services;
+using Volo.Abp.Users;
 
 namespace Kooco.Pikachu.Orders
 {
@@ -24,17 +29,17 @@ namespace Kooco.Pikachu.Orders
         public async Task<Order> CreateAsync(
              Guid groupBuyId,
              bool isIndividual,
-             string name,
-             string phone,
-             string email,
+             string customerName,
+             string customerPhone,
+             string customerEmail,
              PaymentMethods? paymentMethods,
              InvoiceType? invoiceType,
              string invoiceNumber,
              string uniformNumber,
              bool IsAsSameBuyer,
-             string name2,
-             string phone2,
-             string email2,
+             string recipientName,
+             string recipientPhone,
+             string recipientEmail,
              DeliveryMethod? deliveryMethod,
              string city,
              string district,
@@ -53,17 +58,17 @@ namespace Kooco.Pikachu.Orders
                 groupBuyId,
                 orderNo,
                 isIndividual,
-                name,
-                phone,
-                email,
+                customerName,
+                customerPhone,
+                customerEmail,
                 paymentMethods,
                 invoiceType,
                 invoiceNumber,
                 uniformNumber,
                 IsAsSameBuyer,
-                name2,
-                phone2,
-                email2,
+                recipientName,
+                recipientPhone,
+                recipientEmail,
                 deliveryMethod,
                 city,
                 district,
@@ -111,6 +116,15 @@ namespace Kooco.Pikachu.Orders
             string tenantIdPrefix = groupBuy.TenantId?.ToString().Substring(0, 2);
 
             return $"{tenantIdPrefix}{DateTime.Now:yy}{orderNo:D9}";
+        }
+
+        public void AddStoreComment(
+            [NotNull] Order order,
+            [NotNull] string comment
+            )
+        {
+            Check.NotNullOrWhiteSpace(comment, nameof(comment));
+            order.AddStoreComment(comment);
         }
     }
 }

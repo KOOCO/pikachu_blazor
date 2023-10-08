@@ -1,29 +1,32 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.OrderItems;
+using Kooco.Pikachu.StoreComments;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 using Volo.Abp.Domain.Entities.Auditing;
+using Volo.Abp.MultiTenancy;
 
 namespace Kooco.Pikachu.Orders
 {
-    public class Order : FullAuditedAggregateRoot<Guid>
+    public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
     {
+        public Guid? TenantId { get; set; }
         public string OrderNo { get; set; }
         public bool IsIndividual { get; set; }
-        public string? Name { get; set; }
-        public string? Phone { get; set; }
-        public string? Email { get; set; }
+        public string? CustomerName { get; set; }
+        public string? CustomerPhone { get; set; }
+        public string? CustomerEmail { get; set; }
         public PaymentMethods? PaymentMethod { get; set; }
         public InvoiceType? InvoiceType { get; set; }
         public string? InvoiceNumber { get; set; }
         public string? UniformNumber { get; set; }
         public bool IsAsSameBuyer { get; set; }
-        public string? Name2 { get; set; }
-        public string? Phone2 { get; set; }
-        public string? Email2 { get; set; }
+        public string? RecipientName { get; set; }
+        public string? RecipientPhone { get; set; }
+        public string? RecipientEmail { get; set; }
         public DeliveryMethod? DeliveryMethod { get; set; }
         public string? City { get; set; }
         public string? District { get; set; }
@@ -39,6 +42,7 @@ namespace Kooco.Pikachu.Orders
         public decimal TotalAmount { get; set; }
         public OrderStatus OrderStatus { get; set; }
         public ICollection<OrderItem> OrderItems { get; set; }
+        public ICollection<StoreComment> StoreComments { get; set; }
 
         public Order() { }
 
@@ -47,17 +51,17 @@ namespace Kooco.Pikachu.Orders
             [NotNull] Guid groupBuyId,
             string orderNo,
             bool isIndividual,
-            string? name,
-            string? phone,
-            string? email,
+            string? customerName,
+            string? customerPhone,
+            string? customerEmail,
             PaymentMethods? paymentMethods,
             InvoiceType? invoiceType,
             string invoiceNumber,
             string? uniformNumber,
             bool isAsSameBuyer,
-            string? name2,
-            string? email2,
-            string? phone2,
+            string? recipientName,
+            string? recipientPhone,
+            string? recipientEmail,
             DeliveryMethod? deliveryMethod,
             string? city,
             string? district,
@@ -73,17 +77,17 @@ namespace Kooco.Pikachu.Orders
             GroupBuyId = groupBuyId;
             OrderNo = orderNo;
             IsIndividual = isIndividual;
-            Name = name;
-            Phone = phone;
-            Email = email;
+            CustomerName = customerName;
+            CustomerPhone = customerPhone;
+            CustomerEmail = customerEmail;
             PaymentMethod = paymentMethods;
             InvoiceType = invoiceType;
             InvoiceNumber = invoiceNumber;
             UniformNumber = uniformNumber;
             IsAsSameBuyer = isAsSameBuyer;
-            Name2 = name2;
-            Email2 = email2;
-            Phone2 = phone2;
+            RecipientName = recipientName;
+            RecipientEmail = recipientEmail;
+            RecipientPhone = recipientPhone;
             DeliveryMethod = deliveryMethod;
             City = city;
             District = district;
@@ -91,10 +95,11 @@ namespace Kooco.Pikachu.Orders
             AddressDetails = addressDetails;
             Remarks = remarks;
             ReceivingTime = receivingTime;
-            TotalQuantity = totalQuantity; 
+            TotalQuantity = totalQuantity;
             TotalAmount = totalAmount;
             OrderStatus = OrderStatus.Open;
             OrderItems = new List<OrderItem>();
+            StoreComments = new List<StoreComment>();
         }
 
         public void AddOrderItem(
@@ -115,6 +120,13 @@ namespace Kooco.Pikachu.Orders
                     totalAmount,
                     quantity
                     ));
+        }
+
+        internal void AddStoreComment(
+            [NotNull] string comment
+            )
+        {
+            StoreComments.AddIfNotContains(new StoreComment(comment));
         }
     }
 }

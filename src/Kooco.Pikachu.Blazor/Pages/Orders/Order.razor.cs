@@ -2,6 +2,7 @@
 using Blazorise.DataGrid;
 using Kooco.Pikachu.Orders;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,8 +20,8 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         private int PageSize { get; set; } = 10;
         private string? Sorting { get; set; }
         private string? Filter { get; set; }
-        HashSet<Guid> ExpandedRows = new HashSet<Guid>();
 
+        private readonly HashSet<Guid> ExpandedRows = new();
         private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<OrderDto> e)
         {
             PageIndex = e.Page - 1;
@@ -50,9 +51,22 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
             }
         }
 
+        async Task OnSearch()
+        {
+            PageIndex = 0;
+            await UpdateItemList();
+        }
+        async Task CheckForEnter(KeyboardEventArgs e)
+        {
+            if (e.Key == "Enter")
+            {
+                await OnSearch();
+            }
+        }
+
         void HandleSelectAllChange(ChangeEventArgs e)
         {
-            IsAllSelected = (bool)e.Value;
+            IsAllSelected = e.Value != null ? (bool)e.Value : false;
             Orders.ForEach(item =>
             {
                 item.IsSelected = IsAllSelected;
@@ -60,11 +74,10 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
             StateHasChanged();
         }
 
-        public void OnEditItem(DataGridRowMouseEventArgs<OrderDto> e)
+        public void NavigateToOrderDetails(DataGridRowMouseEventArgs<OrderDto> e)
         {
-            return;
             var id = e.Item.Id;
-            NavigationManager.NavigateTo($"Items/Edit/{id}");
+            NavigationManager.NavigateTo($"Orders/OrderDetails/{id}");
         }
 
         async void OnSortChange(DataGridSortChangedEventArgs e)

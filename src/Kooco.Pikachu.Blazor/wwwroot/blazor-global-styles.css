@@ -200,3 +200,17 @@
         background-color: white;
         border: 1px solid lightgrey !important;
     }
+
+.invalid{
+    border: 1px solid red !important;
+}
+
+.validation-message{
+    font-size: smaller;
+    margin-top: 2px;
+    color: red;
+}
+
+.search-bar{
+    border-color: lightgrey;
+}

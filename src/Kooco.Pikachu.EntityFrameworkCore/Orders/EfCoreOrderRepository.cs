@@ -40,8 +40,9 @@ namespace Kooco.Pikachu.Orders
         {
             return queryable
                 .WhereIf(!filter.IsNullOrWhiteSpace(),
-                x => x.Name.Contains(filter)
-                || x.Email.Contains(filter)
+                x => x.OrderNo.Contains(filter)
+                || (x.CustomerName != null && x.CustomerName.Contains(filter))
+                || (x.CustomerEmail != null && x.CustomerEmail.Contains(filter))
                 );
         }
 
@@ -49,6 +50,19 @@ namespace Kooco.Pikachu.Orders
         {
             var orders = await (await GetQueryableAsync()).ToListAsync();
             return orders.OrderByDescending(x => long.Parse(x.OrderNo[^9..])).FirstOrDefault();
+        }
+
+        public async Task<Order> GetWithDetailsAsync(Guid id)
+        {
+            return await (await GetQueryableAsync())
+                .Where(o => o.Id == id)
+                .Include(o => o.GroupBuy)
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Item)
+                .ThenInclude(i => i.Images)
+                .Include(o => o.StoreComments.OrderByDescending(c => c.CreationTime))
+                .ThenInclude(c => c.User)
+                .FirstOrDefaultAsync();
         }
     }
 }

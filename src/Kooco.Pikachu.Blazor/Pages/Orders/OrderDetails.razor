@@ -1,0 +1,312 @@
+﻿@page "/Orders/OrderDetails/{id}"
+@using Kooco.Pikachu.Localization;
+@using Kooco.Pikachu.OrderItems;
+@using Kooco.Pikachu.Orders;
+@using Microsoft.Extensions.Localization;
+@using Blazorise;
+@using Volo.Abp.AspNetCore.Components.Messages;
+@using Volo.Abp.Users;
+
+@inject IStringLocalizer<PikachuResource> L;
+@inject NavigationManager NavigationManager;
+@inject IUiMessageService _uiMessageService;
+@inject IOrderAppService _orderAppService;
+@inject ICurrentUser CurrentUser;
+
+<style>
+    
+    table tr td{
+        padding-bottom: 0.5rem;
+        padding-right: 1rem;
+    }
+
+</style>
+
+<h3>@L["OrderDetails"]</h3>
+
+<div class="row">
+    <div class="col-md-6 col-sm-12">
+        <Card>
+            <CardBody>
+                @if(Order != null)
+                {
+                    <div class="row">
+                        <div class="col-12">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td>@L["GroupBuyName"]</td>
+                                        <td>@Order.GroupBuy?.GroupBuyName</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@L["OrderInformation"]</td>
+                                        <td>@Order.OrderNo</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@L["CustomerName"]</td>
+                                        <td>@Order.CustomerName</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@L["Telephone"]</td>
+                                        <td>@Order.CustomerPhone</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@L["Email"]</td>
+                                        <td>@Order.CustomerEmail</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@L["PaymentMethod"]</td>
+                                        <td>@L[Order.PaymentMethod.ToString()]</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@L["Invoice"]</td>
+                                        <td>@Order.InvoiceNumber</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@L["TaxNumber"]</td>
+                                        <td>-</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@L["InvoiceCarrier"]</td>
+                                        <td>-</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@L["ShippingMethod"]</td>
+                                        <td>@L[Order.DeliveryMethod.ToString()]</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 text-end">
+                            <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary">
+                                @L["ShipmentNotify"]
+                            </Button>
+                            <Button Type="ButtonType.Button" Class="btn btn-sm btn-danger">
+                                @L["ApplyRefund"]
+                            </Button>
+                        </div>
+                    </div>
+                    <Divider></Divider>
+                    <div class="row">
+                        <div class="col-12">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td>@L["Recipient"]</td>
+                                        <td>@Order.RecipientName</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@L["RecipientPhoneNumber"]</td>
+                                        <td>@Order.RecipientPhone</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@L["RecipientAddress"]</td>
+                                        <td>@Order.AddressDetails, @Order.Road, @Order.District, @Order.City</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@L["RecipientComments"]</td>
+                                        <td>@Order.Remarks</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+            </CardBody>
+        </Card>
+    </div>
+    <div class="col-md-6 col-sm-12">
+        <div class="row mb-2">
+            <div class="col-md-6 col-sm-12">
+                <Button Type="ButtonType.Button" Class="btn btn-sm btn-danger">@L["CancelOrder"]</Button>
+                <Button Type="ButtonType.Button" Class="btn btn-sm btn-secondary">@L["ExchangeItem"]</Button>
+            </div>
+            <div class="col-md-6 col-sm-12 text-lg-end">
+                <Button Type="ButtonType.Button" Class="btn btn-sm btn-secondary">@L["SplitOrder"]</Button>
+                <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary">
+                    <Icon Class="fa fa-print"></Icon>
+                    @L["PrintOrder"]
+                </Button>
+            </div>
+        </div>
+        <Card>
+            <CardBody>
+                <p class="fw-bold">@L["OrderStatus"]</p>
+                <div class="row">
+                    <div class="col-12 d-flex justify-content-between">
+                        <p>Date</p>
+                        <p>Order Created</p>
+                    </div>
+                </div>
+            </CardBody>
+        </Card>
+    </div>
+</div>
+<div class="row">
+    <div class="col-6">
+        <h4 class="d-inline-block">@L["OrderItems"]</h4>
+    </div>
+    <div class="col-6 text-end">
+        <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary">
+            <i class="fa fa-pencil"></i>
+            @L["Edit"]
+        </Button>
+    </div>
+    <div class="col-12">
+        <Card>
+            <CardBody>
+                <table class="table table-responsive table-striped text-center">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th>@L["Quantity"]</th>
+                            <th>@L["UnitPrice"]</th>
+                            <th>@L["Subtotal"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if(Order != null && Order.OrderItems != null)
+                        {
+                            @foreach(var item in Order.OrderItems)
+                            {
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="form-check-input" />
+                                    </td>
+                                    <td class="text-start">
+                                        @{
+                                            var firstImage = item.Item?.Images?.FirstOrDefault()?.ImageUrl;
+                                        }
+                                        @if(!string.IsNullOrEmpty(firstImage))
+                                        {
+                                            <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;"/>
+                                        }
+                                        @item.Item?.ItemName
+                                    </td>
+                                    <td>
+                                        @item.Quantity
+                                    </td>
+                                    <td>
+                                        $@item.ItemPrice.ToString("N2")
+                                    </td>
+                                    <td>
+                                        $@item.TotalAmount.ToString("N2")
+                                    </td>
+                                </tr>
+                            }
+                            <tr>
+                                <td colspan="2" class="text-end">
+                                    @L["Subtotal"]
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                    $@Order.TotalAmount.ToString("N2")
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="text-end">
+                                    @L["DeliveryFee"]
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                    -
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="text-end">
+                                    @L["Total"]
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                    $@Order.TotalAmount.ToString("N2")
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </CardBody>
+        </Card>
+    </div>
+</div>
+<div class="row">
+    <div class="col-6">
+        <h4>@L["StoreComments"]</h4>
+        <Card>
+            <CardBody>
+                <div class="row">
+                    <EditForm Model="@StoreComments" OnValidSubmit="SubmitStoreCommentsAsync">
+                        <DataAnnotationsValidator />
+                        <div class="col-12 mb-2">
+                            <InputTextArea class="form-control" @bind-Value="@StoreComments.Comment"></InputTextArea>
+                            <ValidationMessage For="@(() => StoreComments.Comment)" />
+                        </div>
+                        <div class="col-12 text-end">
+                            <Button Type="ButtonType.Button" Class="btn btn-sm btn-danger me-1" Clicked="() => StoreComments = new()">
+                                @L["Cancel"]
+                            </Button>
+                            @if(StoreComments.Id == null)
+                            {
+                                <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
+                                    <i class="fa fa-check"></i>
+                                    @L["Save"]
+                                </Button>
+                            }
+                            else
+                            {
+                                <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
+                                    <i class="fa fa-check"></i>
+                                    @L["Update"]
+                                </Button>
+                            }
+                        </div>
+                    </EditForm>
+                </div>
+            </CardBody>
+        </Card>
+    </div>
+    <div class="col-6">
+        <h4>@L["StoreCommentsHistory"]</h4>
+        <Card>
+            <CardBody>
+                <div class="row">
+                    @if(Order != null && Order.StoreComments != null)
+                    {
+                        @foreach(var comment in Order.StoreComments)
+                        {
+                            <div class="col-12">
+                                <span class="fw-bold me-2">
+                                    @comment.User?.Email
+                                </span>
+                                <span class="me-2">
+                                    @comment.CreationTime
+                                </span>
+                                @if(comment.CreatorId == CurrentUser.Id)
+                                {
+                                    <span>
+                                        <i class="fa fa-pencil text-secondary cursor-pointer" @onclick="() => EditStoreComment(comment.Id, comment.Comment)"></i>
+                                    </span>
+                                }
+                                <p class="me-2">@comment.Comment</p>
+                            </div>
+                        }
+                    }
+                </div>
+            </CardBody>
+        </Card>
+    </div>
+</div>
+@code {
+
+}

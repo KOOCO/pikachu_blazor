@@ -70,4 +70,10 @@ public class GroupBuyController : AbpController, IGroupBuyAppService
     {
         return _groupBuyAppService.GetCarouselImagesAsync(id);
     }
+
+    [HttpGet("for-store/{id}")]
+    public Task<GroupBuyDto> GetForStoreAsync(Guid id)
+    {
+        return _groupBuyAppService.GetForStoreAsync(id);
+    }
 }
