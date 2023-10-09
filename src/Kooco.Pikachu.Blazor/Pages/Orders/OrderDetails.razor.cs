@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.Orders;
+﻿using Kooco.Pikachu.Migrations;
+using Kooco.Pikachu.Orders;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -14,7 +15,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         private Guid OrderId { get; set; }
         private OrderDto Order { get; set; }
         private StoreCommentsModel StoreComments = new();
-        
+        private ModificationTrack ModificationTrack = new();
         protected async override Task OnInitializedAsync()
         {
             try
@@ -78,6 +79,37 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 Comment = comment
             };
         }
+
+        void EditRecipientName()
+        {
+            ModificationTrack.IsModified = true;
+            ModificationTrack.NewName = Order.RecipientName;
+
+            ModificationTrack.IsNameInputVisible = true;
+        }
+
+        void EditRecipientPhone()
+        {
+            ModificationTrack.IsModified = true;
+            ModificationTrack.NewPhone = Order.RecipientPhone;
+
+            ModificationTrack.IsPhoneInputVisible = true;
+        }
+        void EditRecipientAddress()
+        {
+            ModificationTrack.IsModified = true;
+            ModificationTrack.NewRoad = Order.Road;
+            ModificationTrack.NewDistrict = Order.District;
+            ModificationTrack.NewCity = Order.City;
+            ModificationTrack.NewAddress = Order.AddressDetails;
+
+            ModificationTrack.IsAddressInputVisible = true;
+        }
+
+        void CancelChanges()
+        {
+            ModificationTrack = new();
+        }   
     }
 
     public class StoreCommentsModel
@@ -86,5 +118,28 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
 
         [Required(ErrorMessage = "This Field Is Required")]
         public string Comment { get; set; }
+    }
+
+    public class ModificationTrack
+    {
+        public bool IsModified { get; set; }
+
+        public bool IsNameInputVisible { get; set; }
+        public string NewName { get; set; }
+        public bool IsValidName { get; set; }
+        public bool IsNameModified { get; set; }
+
+        public bool IsPhoneInputVisible { get; set; }
+        public string NewPhone { get; set; }
+        public bool IsValidPhone { get; set; }
+        public bool IsPhoneModified { get; set; }
+
+        public bool IsAddressInputVisible { get; set; }
+        public string NewRoad { get; set; }
+        public string NewDistrict { get; set; }
+        public string NewCity { get; set; }
+        public string NewAddress { get; set; }
+        public bool IsValidAddress { get;set; }
+        public bool IsAddressModified { get; set; }
     }
 }

@@ -20,6 +20,11 @@
         padding-right: 1rem;
     }
 
+    table tr td:first-child {
+        width: 1px;
+        white-space: nowrap;
+    }
+
 </style>
 
 <h3>@L["OrderDetails"]</h3>
@@ -32,7 +37,7 @@
                 {
                     <div class="row">
                         <div class="col-12">
-                            <table>
+                            <table class="w-100">
                                 <tbody>
                                     <tr>
                                         <td>@L["GroupBuyName"]</td>
@@ -91,19 +96,112 @@
                     <Divider></Divider>
                     <div class="row">
                         <div class="col-12">
-                            <table>
+                            <table class="w-100">
                                 <tbody>
                                     <tr>
                                         <td>@L["Recipient"]</td>
-                                        <td>@Order.RecipientName</td>
+                                        @if(ModificationTrack.IsNameInputVisible)
+                                        {
+                                            <td>
+                                                <div class="input-group">
+                                                    <InputText class="form-control form-control-sm" @bind-Value="@ModificationTrack.NewName"></InputText>
+                                                    <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary">
+                                                        <i class="fa fa-check"></i>
+                                                    </Button>
+                                                </div>
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td class="d-flex justify-content-between">
+                                                @if (ModificationTrack.IsNameModified)
+                                                {
+                                                    @ModificationTrack.NewName
+                                                }
+                                                else
+                                                {
+                                                    @Order.RecipientName
+                                                }
+                                                <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientName">
+                                                    <i class="fa fa-pencil text-secondary"></i>
+                                                </span>
+                                            </td>
+                                        }
                                     </tr>
                                     <tr>
                                         <td>@L["RecipientPhoneNumber"]</td>
-                                        <td>@Order.RecipientPhone</td>
+                                        @if(ModificationTrack.IsPhoneInputVisible)
+                                        {
+                                            <td>
+                                                <div class="input-group">
+                                                    <InputText class="form-control form-control-sm" @bind-Value="@ModificationTrack.NewPhone"></InputText>
+                                                    <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary">
+                                                        <i class="fa fa-check"></i>
+                                                    </Button>
+                                                </div>
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td class="d-flex justify-content-between">
+                                                @if (ModificationTrack.IsPhoneModified)
+                                                {
+                                                    @ModificationTrack.NewPhone
+                                                }
+                                                else
+                                                {
+                                                    @Order.RecipientPhone
+                                                }
+                                                <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientPhone">
+                                                    <i class="fa fa-pencil text-secondary"></i>
+                                                </span>
+                                            </td>
+                                        }
                                     </tr>
                                     <tr>
                                         <td>@L["RecipientAddress"]</td>
-                                        <td>@Order.AddressDetails, @Order.Road, @Order.District, @Order.City</td>
+                                        @if (ModificationTrack.IsAddressInputVisible)
+                                        {
+                                            <td>
+                                                <div class="row mb-1">
+                                                    <div class="col-4">
+                                                        <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewRoad"></InputSelect>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewDistrict"></InputSelect>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewCity"></InputSelect>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <div class="input-group">
+                                                            <InputText class="form-control form-control-sm" @bind-Value="@ModificationTrack.NewPhone"></InputText>
+                                                            <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary">
+                                                                <i class="fa fa-check"></i>
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td class="d-flex justify-content-between">
+                                                @if (ModificationTrack.IsAddressModified)
+                                                {
+                                                    @(ModificationTrack.NewAddress + ", " + ModificationTrack.NewRoad + ", " + ModificationTrack.NewDistrict + ", " + ModificationTrack.NewCity)
+                                                }
+                                                else
+                                                {
+                                                    @(Order.AddressDetails + ", " + Order.Road + ", " + Order.District + ", " + Order.City)
+                                                }
+                                                <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientAddress">
+                                                    <i class="fa fa-pencil text-secondary"></i>
+                                                </span>
+                                            </td>
+                                        }
                                     </tr>
                                     <tr>
                                         <td>@L["RecipientComments"]</td>
@@ -113,10 +211,25 @@
                             </table>
                         </div>
                     </div>
+                    @if (ModificationTrack.IsModified)
+                    {
+                        <div class="row">
+                            <div class="col-12 text-end">
+                                <Button Type="ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="CancelChanges">
+                                    @L["Cancel"]
+                                </Button>
+                                <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary">
+                                    <i class="fa fa-check"></i>
+                                    @L["SaveChanges"]
+                                </Button>
+                            </div>
+                        </div>
+                    }
                 }
             </CardBody>
         </Card>
     </div>
+    
     <div class="col-md-6 col-sm-12">
         <div class="row mb-2">
             <div class="col-md-6 col-sm-12">
@@ -144,6 +257,7 @@
         </Card>
     </div>
 </div>
+
 <div class="row">
     <div class="col-6">
         <h4 class="d-inline-block">@L["OrderItems"]</h4>

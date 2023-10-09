@@ -60,7 +60,7 @@
                      <DisplayTemplate>
                          @{
                             var isExpanded = ExpandedRows.Contains(context.Id);
-                            var chevronClass = isExpanded ? "fa fa-caret-up me-2" : "fa fa-caret-down me-2";
+                            var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
                         }
                         <i class="@chevronClass"></i>
                         @L[context.OrderNo]
