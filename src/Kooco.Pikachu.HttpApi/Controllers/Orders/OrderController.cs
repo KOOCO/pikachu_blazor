@@ -52,7 +52,11 @@ namespace Kooco.Pikachu.Controllers.Orders
         {
             return _ordersAppService.GetWithDetailsAsync(id);
         }
-
+        [HttpPut("{id}/{update}")]
+        public Task<OrderDto> UpdateAsync(Guid id,CreateOrderDto input)
+        {
+            return _ordersAppService.UpdateAsync(id,input);
+        }
         [HttpPut("{id}/{commentId}/{comment}")]
         public Task UpdateStoreCommentAsync(Guid id, Guid commentId, string comment)
         {

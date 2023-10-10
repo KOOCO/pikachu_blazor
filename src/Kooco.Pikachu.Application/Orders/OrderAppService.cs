@@ -1,4 +1,7 @@
-﻿using Kooco.Pikachu.Groupbuys;
+﻿using Kooco.Pikachu.Freebies.Dtos;
+using Kooco.Pikachu.FreeBies.Dtos;
+using Kooco.Pikachu.Freebies;
+using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Permissions;
 using Microsoft.AspNetCore.Authorization;
@@ -6,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
@@ -140,6 +144,19 @@ namespace Kooco.Pikachu.Orders
             }
             storeComment.Comment = comment;
         }
+        public  async Task<OrderDto> UpdateAsync(Guid id, CreateOrderDto input)
+        {
+            var order = await _orderRepository.GetAsync(id);
+            order.RecipientName = input.RecipientName;
+            order.RecipientPhone = input.RecipientPhone;
+            order.District = input.District;
+            order.City = input.City;
+            order.Road = input.Road;
+            order.AddressDetails = input.AddressDetails;
+            
+            await _orderRepository.UpdateAsync(order);
+            return ObjectMapper.Map<Order, OrderDto>(order);
+        }
+        }
     }
-}
 

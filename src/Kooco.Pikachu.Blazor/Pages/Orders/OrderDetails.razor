@@ -14,16 +14,16 @@
 @inject ICurrentUser CurrentUser;
 
 <style>
-    
-    table tr td{
+
+    table tr td {
         padding-bottom: 0.5rem;
         padding-right: 1rem;
     }
 
-    table tr td:first-child {
-        width: 1px;
-        white-space: nowrap;
-    }
+        table tr td:first-child {
+            width: 1px;
+            white-space: nowrap;
+        }
 
 </style>
 
@@ -33,7 +33,7 @@
     <div class="col-md-6 col-sm-12">
         <Card>
             <CardBody>
-                @if(Order != null)
+                @if (Order != null)
                 {
                     <div class="row">
                         <div class="col-12">
@@ -100,16 +100,20 @@
                                 <tbody>
                                     <tr>
                                         <td>@L["Recipient"]</td>
-                                        @if(ModificationTrack.IsNameInputVisible)
+                                        @if (ModificationTrack.IsNameInputVisible)
                                         {
-                                            <td>
-                                                <div class="input-group">
-                                                    <InputText class="form-control form-control-sm" @bind-Value="@ModificationTrack.NewName"></InputText>
-                                                    <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary">
-                                                        <i class="fa fa-check"></i>
-                                                    </Button>
-                                                </div>
-                                            </td>
+                                                <td>
+                                                    <div class="input-group">
+
+                                                    @{
+                                                        var errorClass = ModificationTrack.IsInvalidName ? "invalid" : "";
+                                                    }
+                                                    <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewName" />
+                                                        <Button Type="ButtonType.Button" @onclick="SaveRecipientName" Class="btn btn-sm btn-primary">
+                                                            <i class="fa fa-check"></i>
+                                                        </Button>
+                                                    </div>
+                                                </td>
                                         }
                                         else
                                         {
@@ -130,12 +134,15 @@
                                     </tr>
                                     <tr>
                                         <td>@L["RecipientPhoneNumber"]</td>
-                                        @if(ModificationTrack.IsPhoneInputVisible)
+                                        @if (ModificationTrack.IsPhoneInputVisible)
                                         {
                                             <td>
                                                 <div class="input-group">
-                                                    <InputText class="form-control form-control-sm" @bind-Value="@ModificationTrack.NewPhone"></InputText>
-                                                    <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary">
+                                                    @{
+                                                        var errorClass2 = ModificationTrack.IsInvalidPhone ? "invalid" : "";
+                                                    }
+                                                    <input type="text" class="form-control form-control-sm @errorClass2" @bind-value="@ModificationTrack.NewPhone" />
+                                                    <Button Type="ButtonType.Button" @onclick="SaveRecipientPhone" Class="btn btn-sm btn-primary">
                                                         <i class="fa fa-check"></i>
                                                     </Button>
                                                 </div>
@@ -165,20 +172,38 @@
                                             <td>
                                                 <div class="row mb-1">
                                                     <div class="col-4">
-                                                        <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewRoad"></InputSelect>
+                                                        <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewRoad">
+                                                            <option disabled="disabled" selected="selected">選擇城市</option>
+                                                            <option value="臺北市">臺北市</option>
+                                                            <option value="桃園市">桃園市</option>
+                                                            <option value="嘉義市">嘉義市</option>
+                                                        </InputSelect>
                                                     </div>
                                                     <div class="col-4">
-                                                        <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewDistrict"></InputSelect>
+                                                        <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewDistrict">
+                                                            <option disabled="disabled" selected="selected">選擇地區</option>
+                                                            <option value="石碇區">石碇區</option>
+                                                            <option value="坪林區">坪林區</option>
+                                                            <option value="烏來區">烏來區</option>
+                                                        </InputSelect>
                                                     </div>
                                                     <div class="col-4">
-                                                        <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewCity"></InputSelect>
+                                                        <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewCity">
+                                                            <option disabled="disabled" selected="selected">選擇城市</option>
+                                                            <option value="臺北市">臺北市</option>
+                                                            <option value="桃園市">桃園市</option>
+                                                            <option value="嘉義市">嘉義市</option>
+                                                        </InputSelect>
                                                     </div>
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-12">
                                                         <div class="input-group">
-                                                            <InputText class="form-control form-control-sm" @bind-Value="@ModificationTrack.NewPhone"></InputText>
-                                                            <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary">
+                                                            @{
+                                                                var errorClass = ModificationTrack.IsInvalidAddress ? "invalid" : "";
+                                                            }
+                                                            <input class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewAddress" />
+                                                            <Button Type="ButtonType.Button" @onclick="SaveRecipientAddress" Class="btn btn-sm btn-primary">
                                                                 <i class="fa fa-check"></i>
                                                             </Button>
                                                         </div>
@@ -218,7 +243,7 @@
                                 <Button Type="ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="CancelChanges">
                                     @L["Cancel"]
                                 </Button>
-                                <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary">
+                                <Button Type="ButtonType.Button" Clicked="SaveChangesAsync" Class="btn btn-sm btn-primary">
                                     <i class="fa fa-check"></i>
                                     @L["SaveChanges"]
                                 </Button>
@@ -229,7 +254,7 @@
             </CardBody>
         </Card>
     </div>
-    
+
     <div class="col-md-6 col-sm-12">
         <div class="row mb-2">
             <div class="col-md-6 col-sm-12">
@@ -282,9 +307,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @if(Order != null && Order.OrderItems != null)
+                        @if (Order != null && Order.OrderItems != null)
                         {
-                            @foreach(var item in Order.OrderItems)
+                            @foreach (var item in Order.OrderItems)
                             {
                                 <tr>
                                     <td>
@@ -294,9 +319,9 @@
                                         @{
                                             var firstImage = item.Item?.Images?.FirstOrDefault()?.ImageUrl;
                                         }
-                                        @if(!string.IsNullOrEmpty(firstImage))
+                                        @if (!string.IsNullOrEmpty(firstImage))
                                         {
-                                            <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;"/>
+                                            <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
                                         }
                                         @item.Item?.ItemName
                                     </td>
@@ -370,7 +395,7 @@
                             <Button Type="ButtonType.Button" Class="btn btn-sm btn-danger me-1" Clicked="() => StoreComments = new()">
                                 @L["Cancel"]
                             </Button>
-                            @if(StoreComments.Id == null)
+                            @if (StoreComments.Id == null)
                             {
                                 <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
                                     <i class="fa fa-check"></i>
@@ -395,9 +420,9 @@
         <Card>
             <CardBody>
                 <div class="row">
-                    @if(Order != null && Order.StoreComments != null)
+                    @if (Order != null && Order.StoreComments != null)
                     {
-                        @foreach(var comment in Order.StoreComments)
+                        @foreach (var comment in Order.StoreComments)
                         {
                             <div class="col-12">
                                 <span class="fw-bold me-2">
@@ -406,7 +431,7 @@
                                 <span class="me-2">
                                     @comment.CreationTime
                                 </span>
-                                @if(comment.CreatorId == CurrentUser.Id)
+                                @if (comment.CreatorId == CurrentUser.Id)
                                 {
                                     <span>
                                         <i class="fa fa-pencil text-secondary cursor-pointer" @onclick="() => EditStoreComment(comment.Id, comment.Comment)"></i>
