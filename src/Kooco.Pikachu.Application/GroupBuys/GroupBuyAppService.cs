@@ -225,6 +225,8 @@ namespace Kooco.Pikachu.GroupBuys
                     {
                         itemDetail.SortOrder = item.SortOrder;
                         itemDetail.ItemId = item.ItemId;
+                        itemDetail.SetItemId = item.SetItemId;
+                        itemDetail.ItemType = item.ItemType;
                     }
                 }
                 else

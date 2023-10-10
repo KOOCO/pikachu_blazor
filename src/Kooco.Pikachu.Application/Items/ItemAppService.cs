@@ -279,7 +279,9 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
 
     public async Task<List<ItemWithItemTypeDto>> GetItemsLookupAsync()
     {
-        return ObjectMapper.Map<List<Item>, List<ItemWithItemTypeDto>>(await _itemRepository.GetListAsync());
+        var items = await _itemRepository.GetListAsync();
+        items = items.Where(i => i.IsItemAvaliable).ToList();
+        return ObjectMapper.Map<List<Item>, List<ItemWithItemTypeDto>>(items);
     }
 
     /// <summary>

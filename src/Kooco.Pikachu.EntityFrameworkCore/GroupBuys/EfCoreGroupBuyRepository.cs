@@ -45,19 +45,23 @@ namespace Kooco.Pikachu.GroupBuys
                 .Where(x => x.Id == id)
                 .Include(x => x.ItemGroups.OrderBy(i => i.SortOrder))
                     .ThenInclude(ig => ig.ItemGroupDetails.OrderBy(i => i.SortOrder))
+                    .ThenInclude(igd => igd.SetItem)
+                    .ThenInclude(s => s.Images)
+                .Include(x => x.ItemGroups.OrderBy(i => i.SortOrder))
+                    .ThenInclude(ig => ig.ItemGroupDetails.OrderBy(i => i.SortOrder))
                     .ThenInclude(igd => igd.Item)
                     .ThenInclude(i => i.Images)
                 .Include(x => x.ItemGroups)
                     .ThenInclude(ig => ig.ItemGroupDetails.OrderBy(i => i.SortOrder))
                     .ThenInclude(igd => igd.Item)
                     .ThenInclude(i => i.ItemDetails)
-                .Include(x => x.ItemGroups)
+                .Include(x => x.ItemGroups.OrderBy(i => i.SortOrder))
                     .ThenInclude(ig => ig.ItemGroupDetails.OrderBy(i => i.SortOrder))
                 .FirstOrDefaultAsync();
         }
 
-        protected virtual System.Linq.IQueryable<GroupBuy> ApplyFilter(
-            System.Linq.IQueryable<GroupBuy> query,
+        protected virtual IQueryable<GroupBuy> ApplyFilter(
+            IQueryable<GroupBuy> query,
             string filterText,
             int? groupBuyNo = null, string? status = null, string? groupBuyName = null, string? entryURL = null, string? entryURL2 = null, string? subjectLine = null, string? shortName = null, string? logoURL = null, string? bannerURL = null, DateTime? startTime = null, DateTime? endTime = null, bool? freeShipping = false, bool? allowShipToOuterTaiwan = false, bool? allowShipOversea = false, DateTime? expectShippingDateFrom = null, DateTime? expectShippingDateTo = null, int? moneyTransferValidDayBy = null, int? moneyTransferValidDays = null, bool? issueInvoice = false, bool? autoIssueTriplicateInvoice = false, string? invoiceNote = null, bool? protectPrivacyData = false, string? inviteCode = null, int? profitShare = null, int? metaPixelNo = null, string? fBID = null, string? iGID = null, string? lineID = null, string? gAID = null, string? gTM = null, string? warningMessage = null, string? orderContactInfo = null, string? exchangePolicy = null, string? notifyMessage = null, CancellationToken cancellationToken = default)
         {

@@ -1,12 +1,8 @@
 ﻿using Blazored.TextEditor;
 using Blazorise;
-using Blazorise.Components;
 using Kooco.Pikachu.AzureStorage.Image;
-using Kooco.Pikachu.Blazor.Pages.Orders;
 using Kooco.Pikachu.EnumValues;
-using Kooco.Pikachu.Freebies.Dtos;
 using Kooco.Pikachu.GroupBuys;
-using Kooco.Pikachu.ImageBlob;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
@@ -457,9 +453,8 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                                 SortOrder = j++,
                                 ItemId = itemDetail.ItemType == ItemType.Item ? itemDetail.Id : null,
                                 SetItemId = itemDetail.ItemType == ItemType.SetItem ? itemDetail.Id : null,
-                                ItemType =itemDetail.ItemType,
-                               
-                        });
+                                ItemType = itemDetail.ItemType
+                            });
                         }
 
                         CreateGroupBuyDto.ItemGroups.Add(itemGroup);
@@ -491,18 +486,20 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             {
                 var item = ItemsList.FirstOrDefault(x => x.Id == id);
                 var index = collapseItem.Selected.IndexOf(selectedItem);
-                if (id != null)
+                if (item != null)
                 {
-                    if (item != null && item.ItemType == ItemType.Item)
+                    if (item.ItemType == ItemType.Item)
                     {
-                        selectedItem.Item = await _itemAppService.GetAsync(id.Value, true);
+                        selectedItem.Item = await _itemAppService.GetAsync(item.Id, true);
                         selectedItem.Id = selectedItem.Item.Id;
+                        selectedItem.Name = selectedItem.Item.ItemName;
                         selectedItem.ItemType = ItemType.Item;
                     }
-                    if (item != null && item.ItemType == ItemType.SetItem)
+                    if (item.ItemType == ItemType.SetItem)
                     {
-                        selectedItem.SetItem = await _setItemAppService.GetAsync(id.Value, true);
+                        selectedItem.SetItem = await _setItemAppService.GetAsync(item.Id, true);
                         selectedItem.Id = selectedItem.SetItem.Id;
+                        selectedItem.Name = selectedItem.SetItem.SetItemName;
                         selectedItem.ItemType = ItemType.SetItem;
                     }
                     collapseItem.Selected[index] = selectedItem;

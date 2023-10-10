@@ -14,6 +14,5 @@ namespace Kooco.Pikachu.GroupBuys
         public ItemDto Item { get; set; }
         public SetItemDto SetItem { get; set; }
         public ItemType ItemType { get; set; }
-        public ItemWithItemTypeDto ItemWithItemType { get; set; }
     }
 }

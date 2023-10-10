@@ -551,7 +551,7 @@
                                             @if (selectedItem.Id != null)
                                             {
                                                 string? firstImage;
-                                                if (selectedItem.ItemType==ItemType.Item)
+                                                if (selectedItem.ItemType == ItemType.Item)
                                                 {
                                                      firstImage = selectedItem.Item?.Images?.FirstOrDefault()?.ImageUrl;
                                                 }
@@ -586,7 +586,7 @@
                                                                                 </select class="form-control dropdown">
                                                                             </div>
                                                                         }
-                                                                        @if (!selectedItem.Item.Attribute2Name.IsNullOrEmpty()&& selectedItem.Item.ItemDetails!=null)
+                                                                        @if (!selectedItem.Item.Attribute2Name.IsNullOrEmpty() && selectedItem.Item.ItemDetails != null)
                                                                         {
                                                                             <div class="mt-2">
                                                                                 <select class="form-control dropdown">
@@ -619,8 +619,8 @@
                                                     }
                                                     @if (module.GroupBuyModuleType == GroupBuyModuleType.ProductDescription)
                                                     {
-                                                         string? ItemDescription;
-                                                        if (selectedItem.ItemType==ItemType.Item)
+                                                        string? ItemDescription;
+                                                        if (selectedItem.ItemType == ItemType.Item)
                                                         {
                                                              ItemDescription = selectedItem.Item?.ItemDescription;
                                                         }
@@ -628,7 +628,6 @@
                                                         {
                                                              ItemDescription = selectedItem.SetItem?.Description;
                                                         }
-                                               
                                                         <div class="ps-3">
                                                             <p> @((MarkupString)ItemDescription) </p>
                                                         </div>
