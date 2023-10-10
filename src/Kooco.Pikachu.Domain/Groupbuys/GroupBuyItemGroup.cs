@@ -47,7 +47,9 @@ namespace Kooco.Pikachu.GroupBuys
             Guid id,
             Guid groupBuyItemGroupId,
             int sortOrder,
-            Guid itemId
+            Guid? itemId,
+            Guid? setItemId,
+            ItemType itemType
             
             )
         {
@@ -55,7 +57,9 @@ namespace Kooco.Pikachu.GroupBuys
                 id,
                 groupBuyItemGroupId,
                 sortOrder,
-                itemId
+                itemId,
+                setItemId,
+                itemType
                 ));
         }
     }

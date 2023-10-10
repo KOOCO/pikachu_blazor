@@ -183,4 +183,8 @@ public class SetItemAppService : CrudAppService<SetItem, SetItemDto, Guid, Paged
 
         return ObjectMapper.Map<SetItem, SetItemDto>(setItem);
     }
+    public async Task<List<ItemWithItemTypeDto>> GetItemsLookupAsync()
+    {
+        return ObjectMapper.Map<List<SetItem>, List<ItemWithItemTypeDto>>(await _setItemRepository.GetListAsync());
+    }
 }

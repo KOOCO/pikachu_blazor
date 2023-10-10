@@ -27,6 +27,10 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<UpdateItemDto, Item>();
         CreateMap<CreateItemDto, Item>();
         CreateMap<Item, KeyValueDto>().ForMember(dest => dest.Name, src => src.MapFrom(x => x.ItemName));
+        CreateMap<Item, ItemWithItemTypeDto>()
+            .ForMember(dest => dest.Name, src => src.MapFrom(x => x.ItemName))
+            .ForMember(dest => dest.ItemType, opt => opt.MapFrom(src => ItemType.Item));
+
 
         // ItemDetailDto EntityMapping
         CreateMap<ItemDetails, ItemDetailsDto>();
@@ -47,6 +51,10 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<CreateUpdateSetItemDto, SetItem>(MemberList.Source);
         CreateMap<SetItemDetails, SetItemDetailsDto>();
         CreateMap<CreateUpdateSetItemDetailsDto, SetItemDetails>(MemberList.Source);
+        CreateMap<SetItem, ItemWithItemTypeDto>()
+            .ForMember(dest => dest.Name, src => src.MapFrom(x => x.SetItemName))
+            .ForMember(dest => dest.ItemType, opt => opt.MapFrom(src => ItemType.SetItem));
+
         //
         CreateMap<GroupBuy, GroupBuyDto>();
         CreateMap<GroupBuyItemGroup, GroupBuyItemGroupDto>();

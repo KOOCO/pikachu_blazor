@@ -76,12 +76,6 @@ namespace Kooco.Pikachu.Controllers.Items
             return _itemAppService.GetFirstImageUrlAsync(id);
         }
 
-        [HttpGet("get-items-lookup")]
-        public Task<List<KeyValueDto>> GetItemsLookupAsync()
-        {
-            return _itemAppService.GetItemsLookupAsync();
-        }
-
         [HttpGet]
         public Task<PagedResultDto<ItemDto>> GetListAsync(PagedAndSortedResultRequestDto input)
         {
@@ -98,6 +92,12 @@ namespace Kooco.Pikachu.Controllers.Items
         public Task<ItemDto> UpdateAsync(Guid id, UpdateItemDto input)
         {
             return _itemAppService.UpdateAsync(id, input);
+        }
+
+        [HttpGet("get-items-lookup")]
+        public Task<List<ItemWithItemTypeDto>> GetItemsLookupAsync()
+        {
+            return _itemAppService.GetItemsLookupAsync();
         }
     }
 }

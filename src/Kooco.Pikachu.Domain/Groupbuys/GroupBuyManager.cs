@@ -103,15 +103,18 @@ namespace Kooco.Pikachu.Groupbuys
         public void AddItemGroupDetail(
             GroupBuyItemGroup itemGroup,
             int sortOrder,
-            Guid itemId
+            Guid? itemId,
+            Guid? setItemId,
+            ItemType itemType
             ) 
         {
-            Check.NotDefaultOrNull<Guid>(itemId, nameof(Item.Id));
             itemGroup.GroupBuyItemGroupDetails(
                 GuidGenerator.Create(),
                 itemGroup.Id,
                 sortOrder,
-                itemId
+                itemId,
+                setItemId,
+                itemType
                 );
         }
         public GroupBuyItemGroup AddItemGroup(

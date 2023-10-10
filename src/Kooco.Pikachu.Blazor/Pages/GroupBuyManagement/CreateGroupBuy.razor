@@ -530,11 +530,11 @@
                                         </div>
                                     }
                                 <div class="row mt-2">
-                                    @foreach(var selectedItem in module.SelectedItems)
+                                    @foreach(var selectedItem in module.Selected)
                                     {
-                                        <div class="col-@(12 / module.SelectedItems.Count)">
+                                        <div class="col-@(12 / module.Selected.Count)">
                                             <Autocomplete 
-                                                        TItem="KeyValueDto"
+                                                        TItem="ItemWithItemTypeDto"
                                                         TValue="Guid?"
                                                         Data="@ItemsList"
                                                         TextField="@(( item ) => item.Name)"
@@ -550,66 +550,87 @@
                                             </Autocomplete>
                                             @if (selectedItem.Id != null)
                                             {
-                                                var firstImage = selectedItem.Images?.FirstOrDefault();
+                                                string? firstImage;
+                                                if (selectedItem.ItemType==ItemType.Item)
+                                                {
+                                                     firstImage = selectedItem.Item?.Images?.FirstOrDefault()?.ImageUrl;
+                                                }
+                                                else
+                                                {
+                                                     firstImage = selectedItem.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
+                                                }
+                                               
                                                 <div class="d-flex mt-3">
-
                                                     @if(firstImage != null)
                                                     {
                                                         <div>
-                                                            <img src="@firstImage?.ImageUrl" class="img-fluid" />
+                                                            <img src="@firstImage" class="img-fluid" />
                                                             @if(module.GroupBuyModuleType == GroupBuyModuleType.ProductGroup)
                                                             {
                                                                 <div class="row mt-2">
                                                                     <h4 class="text-center mt-2">
-                                                                        <strong>@selectedItem.ItemName</strong>
+                                                                        <strong>@selectedItem.Name</strong>
                                                                     </h4>
-                                                                    @if(!selectedItem.Attribute1Name.IsNullOrEmpty() && selectedItem.ItemDetails != null)
+                                                                    @if (selectedItem.Item != null)
                                                                     {
-                                                                        <div class="mt-2">
-                                                                           <select class="form-control dropdown">
-                                                                               @foreach(var item in selectedItem.ItemDetails.DistinctBy(i => i.Attribute1Value))
-                                                                                {
-                                                                                    <option>
-                                                                                        @item.Attribute1Value
-                                                                                   </option>
-                                                                                }
-                                                                           </select class="form-control dropdown">
-                                                                        </div>
-                                                                    }
-                                                                    @if(!selectedItem.Attribute2Name.IsNullOrEmpty() && selectedItem.ItemDetails != null)
-                                                                    {
-                                                                        <div class="mt-2">
-                                                                           <select class="form-control dropdown">
-                                                                               @foreach(var item in selectedItem.ItemDetails.DistinctBy(i => i.Attribute2Value))
-                                                                                {
-                                                                                    <option>
-                                                                                        @item.Attribute2Value
-                                                                                   </option>
-                                                                                }
-                                                                           </select class="form-control dropdown">
-                                                                        </div>
-                                                                    }
-                                                                    @if(!selectedItem.Attribute3Name.IsNullOrEmpty() && selectedItem.ItemDetails != null)
-                                                                    {
-                                                                        <div class="mt-2">
-                                                                           <select class="form-control dropdown">
-                                                                               @foreach(var item in selectedItem.ItemDetails.DistinctBy(i => i.Attribute3Value))
-                                                                                {
-                                                                                    <option>
-                                                                                        @item.Attribute3Value
-                                                                                   </option>
-                                                                                }
-                                                                           </select class="form-control dropdown">
-                                                                        </div>
-                                                                    }
-                                                                 </div>
+                                                                        @if (!selectedItem.Item.Attribute1Name.IsNullOrEmpty() && selectedItem.Item.ItemDetails != null)
+                                                                        {
+                                                                            <div class="mt-2">
+                                                                                <select class="form-control dropdown">
+                                                                                    @foreach (var item in selectedItem.Item?.ItemDetails.DistinctBy(i => i.Attribute1Value))
+                                                                                    {
+                                                                                        <option>
+                                                                                            @item.Attribute1Value
+                                                                                        </option>
+                                                                                    }
+                                                                                </select class="form-control dropdown">
+                                                                            </div>
+                                                                        }
+                                                                        @if (!selectedItem.Item.Attribute2Name.IsNullOrEmpty()&& selectedItem.Item.ItemDetails!=null)
+                                                                        {
+                                                                            <div class="mt-2">
+                                                                                <select class="form-control dropdown">
+                                                                                    @foreach (var item in selectedItem.Item?.ItemDetails.DistinctBy(i => i.Attribute2Value))
+                                                                                    {
+                                                                                        <option>
+                                                                                            @item.Attribute2Value
+                                                                                        </option>
+                                                                                    }
+                                                                                </select class="form-control dropdown">
+                                                                            </div>
+                                                                        }
+                                                                        @if (!selectedItem.Item.Attribute3Name.IsNullOrEmpty() && selectedItem.Item.ItemDetails != null)
+                                                                        {
+                                                                            <div class="mt-2">
+                                                                                <select class="form-control dropdown">
+                                                                                    @foreach (var item in selectedItem.Item?.ItemDetails.DistinctBy(i => i.Attribute3Value))
+                                                                                    {
+                                                                                        <option>
+                                                                                            @item.Attribute3Value
+                                                                                        </option>
+                                                                                    }
+                                                                                </select>
+                                                                            </div>
+                                                                        }
+                                                                    } 
+                                                                </div>
                                                             }
                                                         </div>
                                                     }
                                                     @if (module.GroupBuyModuleType == GroupBuyModuleType.ProductDescription)
                                                     {
+                                                         string? ItemDescription;
+                                                        if (selectedItem.ItemType==ItemType.Item)
+                                                        {
+                                                             ItemDescription = selectedItem.Item?.ItemDescription;
+                                                        }
+                                                        else
+                                                        {
+                                                             ItemDescription = selectedItem.SetItem?.Description;
+                                                        }
+                                               
                                                         <div class="ps-3">
-                                                            <p> @((MarkupString)selectedItem.ItemDescription) </p>
+                                                            <p> @((MarkupString)ItemDescription) </p>
                                                         </div>
                                                     }
                                                 </div> 

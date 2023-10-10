@@ -63,7 +63,9 @@ namespace Kooco.Pikachu.GroupBuys
                             _groupBuyManager.AddItemGroupDetail(
                                 itemGroup,
                                 item.SortOrder,
-                                item.ItemId
+                                item.ItemId,
+                                item.SetItemId,
+                                item.ItemType
                                 );
                         }
                     }
@@ -230,7 +232,9 @@ namespace Kooco.Pikachu.GroupBuys
                     _groupBuyManager.AddItemGroupDetail(
                         itemGroup,
                         item.SortOrder,
-                        item.ItemId
+                        item.ItemId,
+                        item.SetItemId,
+                        item.ItemType
                     );
                 }
             }

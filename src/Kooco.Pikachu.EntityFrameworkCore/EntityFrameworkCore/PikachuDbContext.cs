@@ -157,11 +157,13 @@ public class PikachuDbContext :
             b.HasMany(x => x.ItemGroupDetails).WithOne();
 
         });
+
         builder.Entity<GroupBuyItemGroupDetails>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "GroupBuyItemGroupDetails", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
-            b.HasOne(x => x.Item).WithMany().HasForeignKey(x => x.ItemId);
+            b.HasOne(x => x.Item).WithMany().IsRequired(false).HasForeignKey(x => x.ItemId);
+            b.HasOne(x => x.SetItem).WithMany().IsRequired(false).HasForeignKey(x => x.SetItemId);
         });
 
         builder.Entity<Freebie>(b =>
@@ -194,7 +196,9 @@ public class PikachuDbContext :
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "OrderItems", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
-            b.HasOne(x => x.Item).WithMany().HasForeignKey(x => x.ItemId);
+            b.HasOne(x => x.Item).WithMany().IsRequired(false).HasForeignKey(x => x.ItemId);
+            b.HasOne(x => x.SetItem).WithMany().IsRequired(false).HasForeignKey(x => x.SetItemId);
+            b.HasOne(x => x.Freebie).WithMany().IsRequired(false).HasForeignKey(x => x.FreebieId);
             b.Property(x => x.ItemPrice).HasColumnType("money");
             b.Property(x => x.TotalAmount).HasColumnType("money");
         });
