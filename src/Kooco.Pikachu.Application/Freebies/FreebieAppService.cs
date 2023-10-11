@@ -12,6 +12,7 @@ using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.ObjectMapping;
 
 namespace Kooco.Pikachu.Freebies
 {
@@ -77,19 +78,16 @@ namespace Kooco.Pikachu.Freebies
             await _freebieRepository.InsertAsync(result);
             return ObjectMapper.Map<Freebie, FreebieDto>(result);
         }
-
         public async Task<List<FreebieDto>> GetListAsync()
         {
             var data = await _freebieRepository.GetListAsync();
             return ObjectMapper.Map<List<Freebie>, List<FreebieDto>>(data);
         }
-
         public async Task<List<KeyValueDto>> GetGroupBuyLookupAsync()
         {
             var groupbuys = await _groupBuyRepository.GetListAsync();
             return ObjectMapper.Map<List<GroupBuy>, List<KeyValueDto>>(groupbuys);
         }
-
         public async Task<FreebieDto> GetAsync(Guid id, bool includeDetails = false)
         {
             var freebie = await _freebieRepository.GetAsync(id);

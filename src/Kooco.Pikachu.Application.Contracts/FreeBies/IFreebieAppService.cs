@@ -22,6 +22,7 @@ namespace Kooco.Pikachu.Freebies
         Task DeleteSingleImageAsync(Guid itemId, string blobImageName);
         Task DeleteManyItemsAsync(List<Guid> setItemIds);
         Task ChangeFreebieAvailability(Guid freebieId);
+        
 
     }
 }

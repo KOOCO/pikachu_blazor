@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kooco.Pikachu.Freebies.Dtos;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
@@ -18,5 +19,6 @@ namespace Kooco.Pikachu.GroupBuys
         Task<GroupBuyDto> GetWithDetailsAsync(Guid id);
         Task<List<string>> GetCarouselImagesAsync(Guid id);
         Task<GroupBuyDto> GetForStoreAsync(Guid id);
+        Task<List<FreebieDto>> GetFreebieForStoreAsync(Guid groupBuyId);
     }
 }

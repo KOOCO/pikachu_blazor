@@ -1,5 +1,7 @@
 ﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Groupbuys;
+using Kooco.Pikachu.Items;
 using System;
 using System.ComponentModel.Design;
 using System.Diagnostics.CodeAnalysis;
@@ -83,7 +85,11 @@ namespace Kooco.Pikachu.Orders
 
         public void AddOrderItem(
             Order order,
-            Guid itemId,
+            Guid? itemId,
+            Guid? setItemId,
+            Guid? freebieId,
+            ItemType itemType,
+            Guid orderId,
             string? spec,
             decimal itemPrice,
             decimal totalAmount,
@@ -93,6 +99,10 @@ namespace Kooco.Pikachu.Orders
             order.AddOrderItem(
                 GuidGenerator.Create(),
                 itemId,
+                setItemId,
+                freebieId,
+                itemType,
+                orderId,
                 spec,
                 itemPrice,
                 totalAmount,

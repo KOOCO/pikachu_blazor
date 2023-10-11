@@ -12,15 +12,12 @@ namespace Kooco.Pikachu.OrderItems
         public Guid? ItemId { get; set; }
         [ForeignKey(nameof(ItemId))]
         public Item? Item { get; set; }
-
         public Guid? SetItemId { get; set; }
         [ForeignKey(nameof(SetItemId))]
         public SetItem? SetItem { get; set; }
-
         public Guid? FreebieId { get; set; }
         [ForeignKey(nameof(FreebieId))]
         public Freebie? Freebie { get; set; }
-
         public ItemType ItemType { get; set; }
         public Guid OrderId { get; set; }
         public string? Spec { get; set; }
@@ -34,7 +31,10 @@ namespace Kooco.Pikachu.OrderItems
         }
         public OrderItem(
             Guid id,
-            Guid itemId,
+            Guid? itemId,
+            Guid? setItemId,
+            Guid? freebieId,
+            ItemType itemType,
             Guid orderId,
             string? spec,
             decimal itemPrice,
@@ -43,6 +43,9 @@ namespace Kooco.Pikachu.OrderItems
             ) : base(id)
         {
             ItemId = itemId;
+            SetItemId = setItemId;
+            FreebieId = freebieId;  
+            ItemType = itemType;
             OrderId = orderId;
             Spec = spec;
             ItemPrice = itemPrice;

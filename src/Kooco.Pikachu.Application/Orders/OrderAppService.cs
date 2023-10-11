@@ -82,6 +82,10 @@ namespace Kooco.Pikachu.Orders
                         _orderManager.AddOrderItem(
                             order,
                             item.ItemId,
+                            item.SetItemId,
+                            item.FreebieId,
+                            item.ItemType,
+                            item.OrderId,
                             item.Spec,
                             item.ItemPrice,
                             item.TotalAmount,
@@ -128,7 +132,6 @@ namespace Kooco.Pikachu.Orders
         {
             var order = await _orderRepository.GetAsync(id);
             await _orderRepository.EnsureCollectionLoadedAsync(order, o => o.StoreComments);
-
             _orderManager.AddStoreComment(order, comment);
         }
 
@@ -153,7 +156,6 @@ namespace Kooco.Pikachu.Orders
             order.City = input.City;
             order.Road = input.Road;
             order.AddressDetails = input.AddressDetails;
-            
             await _orderRepository.UpdateAsync(order);
             return ObjectMapper.Map<Order, OrderDto>(order);
         }

@@ -11,6 +11,8 @@ using Volo.Abp.Domain.Repositories;
 using Kooco.Pikachu.AzureStorage.Image;
 using Volo.Abp.Data;
 using Volo.Abp.MultiTenancy;
+using Kooco.Pikachu.Freebies.Dtos;
+using Kooco.Pikachu.Freebies;
 
 namespace Kooco.Pikachu.GroupBuys
 {
@@ -20,11 +22,13 @@ namespace Kooco.Pikachu.GroupBuys
         private readonly GroupBuyManager _groupBuyManager;
         private readonly IRepository<Image, Guid> _imageRepository;
         private readonly ImageContainerManager _imageContainerManager;
+        private readonly IFreebieRepository _freebieRepository;
         private readonly IDataFilter _dataFilter;
         public GroupBuyAppService(
             IGroupBuyRepository groupBuyRepository, 
             GroupBuyManager groupBuyManager,
-            ImageContainerManager imageContainerManager, 
+            ImageContainerManager imageContainerManager,
+            IFreebieRepository freebieRepository,
             IRepository<Image, Guid> imageRepository,
             IDataFilter dataFilter
             )
@@ -34,6 +38,7 @@ namespace Kooco.Pikachu.GroupBuys
             _imageContainerManager = imageContainerManager;
             _imageRepository = imageRepository;
             _dataFilter = dataFilter;
+            _freebieRepository = freebieRepository;
         }
 
         public async Task<GroupBuyDto> CreateAsync(GroupBuyCreateDto input)
@@ -281,6 +286,11 @@ namespace Kooco.Pikachu.GroupBuys
         {
             var data = await _imageRepository.GetListAsync(x => x.TargetId == id && x.ImageType == ImageType.GroupBuyCarouselImage);
             return data.Select(i => i.ImageUrl).ToList();
+        }
+        public async Task<List<FreebieDto>> GetFreebieForStoreAsync(Guid groupBuyId)
+        {
+            var freebie = await _freebieRepository.GetFreebieStoreAsync(groupBuyId);
+            return ObjectMapper.Map<List<Freebie>, List<FreebieDto>>(freebie);
         }
     }
 }

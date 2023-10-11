@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.GroupBuys;
+﻿using Kooco.Pikachu.Freebies.Dtos;
+using Kooco.Pikachu.GroupBuys;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -75,5 +76,10 @@ public class GroupBuyController : AbpController, IGroupBuyAppService
     public Task<GroupBuyDto> GetForStoreAsync(Guid id)
     {
         return _groupBuyAppService.GetForStoreAsync(id);
+    }
+    [HttpGet("freebie-store/{id}")]
+    public Task<List<FreebieDto>> GetFreebieForStoreAsync(Guid groupBuyId)
+    {
+        return _groupBuyAppService.GetFreebieForStoreAsync(groupBuyId);
     }
 }
