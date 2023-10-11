@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Kooco.Pikachu.Orders
+namespace Kooco.Pikachu.OrderItems
 {
     public class OrderItemsCreateDto
     {

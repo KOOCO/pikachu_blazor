@@ -411,7 +411,13 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<Guid>("GroupBuyItemGroupId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ItemId")
+                    b.Property<Guid?>("ItemId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("ItemType")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("SetItemId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("SortOrder")
@@ -422,6 +428,8 @@ namespace Kooco.Pikachu.Migrations
                     b.HasIndex("GroupBuyItemGroupId");
 
                     b.HasIndex("ItemId");
+
+                    b.HasIndex("SetItemId");
 
                     b.ToTable("AppGroupBuyItemGroupDetails", null, t =>
                         {
@@ -1040,17 +1048,26 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ItemId")
+                    b.Property<Guid?>("FreebieId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ItemId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("ItemPrice")
                         .HasColumnType("money");
+
+                    b.Property<int>("ItemType")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
+
+                    b.Property<Guid?>("SetItemId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Spec")
                         .HasColumnType("nvarchar(max)");
@@ -1060,9 +1077,13 @@ namespace Kooco.Pikachu.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("FreebieId");
+
                     b.HasIndex("ItemId");
 
                     b.HasIndex("OrderId");
+
+                    b.HasIndex("SetItemId");
 
                     b.ToTable("AppOrderItems", null, t =>
                         {
@@ -1095,6 +1116,15 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("CreatorId");
 
+                    b.Property<string>("CustomerEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerPhone")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid?>("DeleterId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("DeleterId");
@@ -1109,15 +1139,12 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<string>("District")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email2")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ExtraProperties")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("ExtraProperties");
+
+                    b.Property<Guid>("GroupBuyId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("InvoiceNumber")
                         .HasColumnType("nvarchar(max)");
@@ -1145,23 +1172,27 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("LastModifierId");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("OrderNo")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name2")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("OrderStatus")
+                        .HasColumnType("int");
 
                     b.Property<int?>("PaymentMethod")
                         .HasColumnType("int");
 
-                    b.Property<string>("Phone")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Phone2")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("ReceivingTime")
                         .HasColumnType("int");
+
+                    b.Property<string>("RecipientEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RecipientName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RecipientPhone")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
@@ -1169,12 +1200,66 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<string>("Road")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("TenantId");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("money");
+
+                    b.Property<int>("TotalQuantity")
+                        .HasColumnType("int");
+
                     b.Property<string>("UniformNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("GroupBuyId");
+
                     b.ToTable("AppOrders", null, t =>
+                        {
+                            t.HasComment("");
+                        });
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.StoreComments.StoreComment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)")
+                        .HasColumnName("ConcurrencyStamp");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ExtraProperties");
+
+                    b.Property<Guid?>("OrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatorId");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("AppStoreComments", null, t =>
                         {
                             t.HasComment("");
                         });
@@ -2864,11 +2949,15 @@ namespace Kooco.Pikachu.Migrations
 
                     b.HasOne("Kooco.Pikachu.Items.Item", "Item")
                         .WithMany()
-                        .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ItemId");
+
+                    b.HasOne("Kooco.Pikachu.Items.SetItem", "SetItem")
+                        .WithMany()
+                        .HasForeignKey("SetItemId");
 
                     b.Navigation("Item");
+
+                    b.Navigation("SetItem");
                 });
 
             modelBuilder.Entity("Kooco.Pikachu.Images.Image", b =>
@@ -2937,11 +3026,13 @@ namespace Kooco.Pikachu.Migrations
 
             modelBuilder.Entity("Kooco.Pikachu.OrderItems.OrderItem", b =>
                 {
+                    b.HasOne("Kooco.Pikachu.Freebies.Freebie", "Freebie")
+                        .WithMany()
+                        .HasForeignKey("FreebieId");
+
                     b.HasOne("Kooco.Pikachu.Items.Item", "Item")
                         .WithMany()
-                        .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ItemId");
 
                     b.HasOne("Kooco.Pikachu.Orders.Order", null)
                         .WithMany("OrderItems")
@@ -2949,7 +3040,39 @@ namespace Kooco.Pikachu.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Kooco.Pikachu.Items.SetItem", "SetItem")
+                        .WithMany()
+                        .HasForeignKey("SetItemId");
+
+                    b.Navigation("Freebie");
+
                     b.Navigation("Item");
+
+                    b.Navigation("SetItem");
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.Orders.Order", b =>
+                {
+                    b.HasOne("Kooco.Pikachu.GroupBuys.GroupBuy", "GroupBuy")
+                        .WithMany()
+                        .HasForeignKey("GroupBuyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GroupBuy");
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.StoreComments.StoreComment", b =>
+                {
+                    b.HasOne("Volo.Abp.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("CreatorId");
+
+                    b.HasOne("Kooco.Pikachu.Orders.Order", null)
+                        .WithMany("StoreComments")
+                        .HasForeignKey("OrderId");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLogAction", b =>
@@ -3128,6 +3251,8 @@ namespace Kooco.Pikachu.Migrations
             modelBuilder.Entity("Kooco.Pikachu.Orders.Order", b =>
                 {
                     b.Navigation("OrderItems");
+
+                    b.Navigation("StoreComments");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>

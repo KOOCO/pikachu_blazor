@@ -1,11 +1,8 @@
-﻿using Kooco.Pikachu.GroupBuys;
-using Kooco.Pikachu.Orders;
-using Microsoft.AspNetCore.Authorization;
+﻿using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.StoreComments;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
@@ -25,31 +22,45 @@ namespace Kooco.Pikachu.Controllers.Orders
         {
             _ordersAppService = ordersAppService;
         }
+
+        [HttpPut("{id}/{comment}")]
+        public Task AddStoreCommentAsync(Guid id, string comment)
+        {
+            return _ordersAppService.AddStoreCommentAsync(id, comment);
+        }
+
         [HttpPost]
         public Task<OrderDto> CreateAsync(CreateOrderDto input)
         {
             return _ordersAppService.CreateAsync(input);
         }
 
-        [HttpDelete("{id}")]
-        public Task DeleteAsync(Guid id)
-        {
-            return _ordersAppService.DeleteAsync(id);
-        }
         [HttpGet("{id}")]
         public Task<OrderDto> GetAsync(Guid id)
         {
             return _ordersAppService.GetAsync(id);
         }
+        
         [HttpGet("get-list")]
-        public Task<PagedResultDto<OrderDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+        public Task<PagedResultDto<OrderDto>> GetListAsync(GetOrderListDto input)
         {
             return _ordersAppService.GetListAsync(input);
         }
-        [HttpPut("{id}")]
-        public Task<OrderDto> UpdateAsync(Guid id, CreateOrderDto input)
+        
+        [HttpGet("with-details/{id}")]
+        public Task<OrderDto> GetWithDetailsAsync(Guid id)
         {
-            return _ordersAppService.UpdateAsync(id, input);
+            return _ordersAppService.GetWithDetailsAsync(id);
+        }
+        [HttpPut("{id}/{update}")]
+        public Task<OrderDto> UpdateAsync(Guid id,CreateOrderDto input)
+        {
+            return _ordersAppService.UpdateAsync(id,input);
+        }
+        [HttpPut("{id}/{commentId}/{comment}")]
+        public Task UpdateStoreCommentAsync(Guid id, Guid commentId, string comment)
+        {
+            return _ordersAppService.UpdateStoreCommentAsync(id, commentId, comment);
         }
     }
 }

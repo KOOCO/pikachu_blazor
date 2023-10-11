@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.Items;
+﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Items;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using Volo.Abp.Domain.Entities;
@@ -8,12 +9,17 @@ namespace Kooco.Pikachu.Groupbuys
     public class GroupBuyItemGroupDetails : Entity<Guid>
     {
         public Guid GroupBuyItemGroupId { get; set; }
-        public Guid ItemId { get; set; }
+        public Guid? ItemId { get; set; }
+        public Guid? SetItemId { get; set; }
+
         public int SortOrder { get; set; }
 
         [ForeignKey(nameof(ItemId))]
-        public Item Item { get; set; }
-        
+        public Item? Item { get; set; }
+
+        [ForeignKey(nameof(SetItemId))]
+        public SetItem? SetItem { get; set; }
+        public ItemType ItemType { get; set; }
         public GroupBuyItemGroupDetails()
         {
             
@@ -23,12 +29,17 @@ namespace Kooco.Pikachu.Groupbuys
             Guid id,
             Guid groupBuyItemGroupId,
             int sortOrder,
-            Guid itemId
+            Guid? itemId,
+            Guid? setItemId,
+            ItemType itemType
+
             ) : base(id)
         {
             GroupBuyItemGroupId = groupBuyItemGroupId;
             SortOrder = sortOrder;
             ItemId = itemId;
+            SetItemId = setItemId;
+            ItemType = itemType;
         }
     }
 }

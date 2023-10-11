@@ -277,19 +277,16 @@
             </div>
         </div>
     </CardBody>
-    <CardFooter>
-        <div class="row">
-            <div class="col-11 text-lg-end">
-                <Button Type="@ButtonType.Button" class="btn btn-danger me-1" Clicked="CancelToFreebieList">@L["Cancel"]</Button>
-                <Button Type="@ButtonType.Button" Clicked="UpdateFreebieAsync" class="btn btn-primary me-1">
-                    <i class="fa fa-check"></i>
-                    @L["Save"]
-                </Button>
-            </div>
-        </div>
-    </CardFooter>
 </Card>
-
+<div class="row">
+    <div class="col-12 text-lg-end">
+        <Button Type="@ButtonType.Button" class="btn btn-danger" Clicked="CancelToFreebieList">@L["Cancel"]</Button>
+        <Button Type="@ButtonType.Button" class="btn btn-primary" Clicked="UpdateFreebieAsync">
+            <i class="fa fa-check"></i>
+            @L["Save"]
+        </Button>
+    </div>
+</div>
 @code {
 
  }

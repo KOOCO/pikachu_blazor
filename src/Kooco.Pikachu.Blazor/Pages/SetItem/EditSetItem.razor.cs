@@ -3,6 +3,7 @@ using Blazored.TextEditor;
 using Blazorise;
 using Blazorise.Components;
 using Kooco.Pikachu.AzureStorage.Image;
+using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
@@ -30,9 +31,9 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
         private const int MaxAllowedFileSize = 1024 * 1024 * 10;
         private readonly List<string> ValidFileExtensions = new() { ".jpg", ".png", ".svg",".jpeg",".webp" };
         private BlazoredTextEditor QuillHtml;
-        private Autocomplete<KeyValueDto, Guid?> AutocompleteField { get; set; }
+        private Autocomplete<ItemWithItemTypeDto, Guid?> AutocompleteField { get; set; }
         private string? SelectedAutoCompleteText { get; set; }
-        private List<KeyValueDto> ItemsList { get; set; } = new();
+        private List<ItemWithItemTypeDto> ItemsList { get; set; } = new();
         private bool IsAllSelected { get; set; } = false;
         private FilePicker FilePicker { get; set; }
         private CreateUpdateSetItemDto CreateUpdateSetItemDto { get; set; } = new();
@@ -198,7 +199,6 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
                 {
                     await _imageContainerManager.DeleteAsync(blobImageName);
                     await _setItemAppService.DeleteSingleImageAsync(EditingId, blobImageName);
-
                     CreateUpdateSetItemDto.Images = CreateUpdateSetItemDto.Images.Where(x => x.BlobImageName != blobImageName).ToList();
                     StateHasChanged();
                 }
@@ -295,7 +295,7 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
             selected.ForEach(item =>
             {
                 ItemDetails.Remove(item);
-                ItemsList.Add(new KeyValueDto(item.ItemId, item.ItemName));
+                ItemsList.Add(new ItemWithItemTypeDto(item.ItemId, item.ItemName,ItemType.Item));
             });
             IsAllSelected = false;
         }

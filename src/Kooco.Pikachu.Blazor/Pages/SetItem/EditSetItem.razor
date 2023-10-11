@@ -158,7 +158,7 @@
                     @L["AddItem"]
                 </div>
                 <div class="col-9">
-                    <Autocomplete TItem="KeyValueDto"
+                    <Autocomplete TItem="ItemWithItemTypeDto"
                                   TValue="Guid?"
                                   Data="@ItemsList"
                                   TextField="@(( item ) => item.Name)"
@@ -281,22 +281,17 @@
                 </div>
             </div>
         </div>
-
     </CardBody>
-
-    <CardFooter>
-        <div class="row">
-            <div class="col-12 text-lg-end">
-                <Button Type="@ButtonType.Button" class="btn btn-danger me-1" Clicked="CancelToSetItem">@L["Cancel"]</Button>
-                <Button Type="@ButtonType.Button" class="btn btn-primary me-1" Clicked="UpdateSetItemAsync">
-                    <i class="fa fa-check"></i>
-                    @L["Save"]
-                </Button>
-            </div>
-        </div>
-    </CardFooter>
 </Card>
-
+<div class="row">
+    <div class="col-12 text-lg-end">
+        <Button Type="@ButtonType.Button" class="btn btn-danger" Clicked="CancelToSetItem">@L["Cancel"]</Button>
+        <Button Type="@ButtonType.Button" class="btn btn-primary" Clicked="UpdateSetItemAsync">
+            <i class="fa fa-check"></i>
+            @L["Save"]
+        </Button>
+    </div>
+</div>
 
 @code {
 }

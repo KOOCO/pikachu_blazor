@@ -22,6 +22,7 @@ using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.OrderItems;
+using Kooco.Pikachu.StoreComments;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -76,7 +77,7 @@ public class PikachuDbContext :
     public DbSet<Freebie> Freebies { get; set; }
     public DbSet<FreebieGroupBuys> FreebieGroupBuys { get; set; }
     public DbSet<Order> Orders { get; set; }
-
+    public DbSet<StoreComment> StoreComments { get; set; }
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
     {
@@ -156,11 +157,13 @@ public class PikachuDbContext :
             b.HasMany(x => x.ItemGroupDetails).WithOne();
 
         });
+
         builder.Entity<GroupBuyItemGroupDetails>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "GroupBuyItemGroupDetails", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
-            b.HasOne(x => x.Item).WithMany().HasForeignKey(x => x.ItemId);
+            b.HasOne(x => x.Item).WithMany().IsRequired(false).HasForeignKey(x => x.ItemId);
+            b.HasOne(x => x.SetItem).WithMany().IsRequired(false).HasForeignKey(x => x.SetItemId);
         });
 
         builder.Entity<Freebie>(b =>
@@ -183,16 +186,28 @@ public class PikachuDbContext :
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "Orders", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
-            b.HasMany(x => x.OrderItems).WithOne().HasForeignKey(d => d.OrderId);
+            b.HasOne(o => o.GroupBuy).WithMany().HasForeignKey(o => o.GroupBuyId);
+            b.HasMany(o => o.OrderItems).WithOne().HasForeignKey(d => d.OrderId);
+            b.HasMany(o => o.StoreComments).WithOne();
+            b.Property(o => o.TotalAmount).HasColumnType("money");
         });
 
         builder.Entity<OrderItem>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "OrderItems", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
-            b.HasOne(x => x.Item).WithMany().HasForeignKey(x => x.ItemId);
+            b.HasOne(x => x.Item).WithMany().IsRequired(false).HasForeignKey(x => x.ItemId);
+            b.HasOne(x => x.SetItem).WithMany().IsRequired(false).HasForeignKey(x => x.SetItemId);
+            b.HasOne(x => x.Freebie).WithMany().IsRequired(false).HasForeignKey(x => x.FreebieId);
             b.Property(x => x.ItemPrice).HasColumnType("money");
             b.Property(x => x.TotalAmount).HasColumnType("money");
+        });
+
+        builder.Entity<StoreComment>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "StoreComments", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+            b.HasOne(x => x.User).WithMany().HasForeignKey(x => x.CreatorId);
         });
     }
 }

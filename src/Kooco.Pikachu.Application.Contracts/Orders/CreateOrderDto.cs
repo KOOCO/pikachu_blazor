@@ -1,24 +1,24 @@
 ﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.OrderItems;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Kooco.Pikachu.Orders
 {
     public class CreateOrderDto
     {
         public bool IsIndividual { get; set; }
-        public string? Name { get; set; }
-        public string? Phone { get; set; }
-        public string? Email { get; set; }
+        public string? CustomerName { get; set; }
+        public string? CustomerPhone { get; set; }
+        public string? CustomerEmail { get; set; }
         public PaymentMethods? PaymentMethod { get; set; }
         public InvoiceType? InvoiceType { get; set; }
         public string? InvoiceNumber { get; set; }
         public string? UniformNumber { get; set; }
         public bool IsAsSameBuyer { get; set; }
-        public string? Name2 { get; set; }
-        public string? Phone2 { get; set; }
-        public string? Email2 { get; set; }
+        public string? RecipientName { get; set; }
+        public string? RecipientPhone { get; set; }
+        public string? RecipientEmail { get; set; }
         public DeliveryMethod? DeliveryMethod { get; set; }
         public string? City { get; set; }
         public string? District { get; set; }
@@ -26,6 +26,9 @@ namespace Kooco.Pikachu.Orders
         public string? AddressDetails { get; set; }
         public string? Remarks { get; set; }
         public ReceivingTime? ReceivingTime { get; set; }
+        public Guid GroupBuyId { get; set; }
+        public int TotalQuantity { get; set; }
+        public decimal TotalAmount { get; set; }
         public List<OrderItemsCreateDto> OrderItems { get; set; }
     }
 }

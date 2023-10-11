@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.MultiTenancy;
-using Volo.Abp.Authorization.Permissions;
+using Kooco.Pikachu.Permissions;
 using Volo.Abp.Identity.Blazor;
 using Volo.Abp.SettingManagement.Blazor.Menus;
 using Volo.Abp.TenantManagement.Blazor.Navigation;
@@ -116,10 +116,12 @@ public class PikachuMenuContributor : IMenuContributor
                 order: 3
             )
             .AddItem(new ApplicationMenuItem(
-            name: "FreebieManagement",
+            "Orders",
             icon: "fas fa-list",
-            displayName: "訂單列表",
-            url: "/GroupBuyManagement/GroupBuyReport1")
+            displayName: l["Menu:Orders"],
+            url: "/Orders",
+            requiredPermissionName: PikachuPermissions.Orders.Default
+            )
             )
             .AddItem(new ApplicationMenuItem(
             name: "FreebieManagement",

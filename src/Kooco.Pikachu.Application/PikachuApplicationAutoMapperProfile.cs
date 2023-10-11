@@ -7,6 +7,9 @@ using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.Freebies.Dtos;
 using Kooco.Pikachu.Freebies;
+using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.OrderItems;
+using Kooco.Pikachu.StoreComments;
 
 namespace Kooco.Pikachu;
 
@@ -24,6 +27,10 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<UpdateItemDto, Item>();
         CreateMap<CreateItemDto, Item>();
         CreateMap<Item, KeyValueDto>().ForMember(dest => dest.Name, src => src.MapFrom(x => x.ItemName));
+        CreateMap<Item, ItemWithItemTypeDto>()
+            .ForMember(dest => dest.Name, src => src.MapFrom(x => x.ItemName))
+            .ForMember(dest => dest.ItemType, opt => opt.MapFrom(src => ItemType.Item));
+
 
         // ItemDetailDto EntityMapping
         CreateMap<ItemDetails, ItemDetailsDto>();
@@ -44,6 +51,10 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<CreateUpdateSetItemDto, SetItem>(MemberList.Source);
         CreateMap<SetItemDetails, SetItemDetailsDto>();
         CreateMap<CreateUpdateSetItemDetailsDto, SetItemDetails>(MemberList.Source);
+        CreateMap<SetItem, ItemWithItemTypeDto>()
+            .ForMember(dest => dest.Name, src => src.MapFrom(x => x.SetItemName))
+            .ForMember(dest => dest.ItemType, opt => opt.MapFrom(src => ItemType.SetItem));
+
         //
         CreateMap<GroupBuy, GroupBuyDto>();
         CreateMap<GroupBuyItemGroup, GroupBuyItemGroupDto>();
@@ -52,5 +63,9 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<GroupBuy, KeyValueDto>().ForMember(dest => dest.Name, src => src.MapFrom(s => s.GroupBuyName));
         CreateMap<Freebie, FreebieDto>();
         CreateMap<FreebieGroupBuys, FreebieGroupBuysDto>();
+
+        CreateMap<Order, OrderDto>();
+        CreateMap<OrderItem, OrderItemDto>();
+        CreateMap<StoreComment, StoreCommentDto>();
     }
 }

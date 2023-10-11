@@ -7,14 +7,9 @@ using System.Linq;
 using Volo.Abp;
 using System.Collections.Generic;
 using Volo.Abp.Domain.Repositories;
-using static Kooco.Pikachu.Permissions.PikachuPermissions;
 
 namespace Kooco.Pikachu.Items;
 
-
-/// <summary>
-/// 
-/// </summary>
 public class SetItemAppService : CrudAppService<SetItem, SetItemDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateSetItemDto>, ISetItemAppService
 {
     private readonly ISetItemRepository _setItemRepository;
@@ -182,5 +177,9 @@ public class SetItemAppService : CrudAppService<SetItem, SetItemDto, Guid, Paged
         var setItem = await _setItemRepository.GetWithDetailsAsync(id);
 
         return ObjectMapper.Map<SetItem, SetItemDto>(setItem);
+    }
+    public async Task<List<ItemWithItemTypeDto>> GetItemsLookupAsync()
+    {
+        return ObjectMapper.Map<List<SetItem>, List<ItemWithItemTypeDto>>(await _setItemRepository.GetListAsync());
     }
 }

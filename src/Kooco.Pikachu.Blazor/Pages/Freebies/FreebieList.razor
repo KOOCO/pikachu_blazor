@@ -12,66 +12,69 @@
 @inject IStringLocalizer<PikachuResource> L
 @inject NavigationManager NavigationManager
 
-<div class="col-12 row mb-2">
+<div class="row">
     <div class="col-6">
         <h3>Freebies List</h3>
     </div>
-    <div class="col-6 d-flex flex-row-reverse">
-        <Button Danger Type="@ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="DeleteSelectedAsync">
-            @L["DeleteSelected"]
-        </Button>
-        <Button Type="@ButtonType.Button" Class="btn btn-sm btn-primary me-1" Clicked="CreateNewItem">
+    <div class="col-6 text-lg-end">
+        <div class="custom-check-group me-1">
+            <input type="checkbox" class="form-check-input" checked="@IsAllSelected" @onchange="HandleSelectAllChange"></input>
+            <Label Class="form-label">@L["SelectAll"]</Label>
+        </div>
+        <Button Type="@ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="CreateNewItem">
             <i class="fa fa-plus"></i>
             @L["NewItem"]
         </Button>
-        <div class="me-2 p-2">
-        <input type="checkbox" class="me-1" style="height: 15px; width: 15px;" checked="@IsAllSelected" @onchange="HandleSelectAllChange"></input>
-        <Label Class="form-label">@L["SelectAll"]</Label>
-        </div>
+        <Button Type="@ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="DeleteSelectedAsync">
+            @L["DeleteSelected"]
+        </Button>
     </div>
 </div>
-<div>
-    <DataGrid TItem="FreebieDto"
-              Data="FreebieListItems"
-              ReadData="OnDataGridReadAsync"
-              TotalItems="Total"
-              ShowPager="true"
-              PageSize="PageSize"
-              RowDoubleClicked="OnEditItem"
-              SortChanged="OnSortChange">
-        <DataGridColumns>
-            <DataGridColumn TItem="FreebieDto"  Caption="@L["Select"]">
-                <DisplayTemplate>
-                    <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
-                </DisplayTemplate>
-            </DataGridColumn>
-            <DataGridColumn TItem="FreebieDto"
-                            Field="@nameof(FreebieDto.ItemName)"
-                            Caption="@L["ItemName"]">
-            </DataGridColumn>
-            <DataGridColumn TItem="FreebieDto"
-                            Caption="@L["ActivityTimePeriod"]">
-                <DisplayTemplate>
-                    @(context.ActivityStartDate?.ToShortDateString() ?? "") - @(context.ActivityEndDate?.ToShortDateString() ?? "")
-                </DisplayTemplate>
-            </DataGridColumn>
-            <DataGridColumn TItem="FreebieDto"
-                            Field="@nameof(FreebieDto.CreationTime)"
-                            Caption="@L["CreatedTime"]">
-                <DisplayTemplate>
-                    @context.CreationTime.ToShortDateString()
-                </DisplayTemplate>
-            </DataGridColumn>
-            <DataGridColumn TItem="FreebieDto" Field="@nameof(FreebieDto.IsFreebieAvaliable)"
-                            Caption="@L["Availability"]">
-                <DisplayTemplate>
-                    <Switch TValue="bool" Checked="@context.IsFreebieAvaliable" CheckedChanged="@(() => OnFreebieAvaliablityChange(context.Id))"></Switch>
-                </DisplayTemplate>
-            </DataGridColumn>
+<Card>
+    <CardBody>
+        <DataGrid TItem="FreebieDto"
+                  Data="FreebieListItems"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="Total"
+                  ShowPager="true"
+                  PageSize="PageSize"
+                  RowDoubleClicked="OnEditItem"
+                  SortChanged="OnSortChange">
+            <DataGridColumns>
+                <DataGridColumn TItem="FreebieDto" Caption="@L["Select"]" Width="30px">
+                    <DisplayTemplate>
+                        <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="FreebieDto"
+                                Field="@nameof(FreebieDto.ItemName)"
+                                Caption="@L["ItemName"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="FreebieDto"
+                                Caption="@L["ActivityTimePeriod"]">
+                    <DisplayTemplate>
+                        @(context.ActivityStartDate?.ToShortDateString() ?? "") - @(context.ActivityEndDate?.ToShortDateString() ?? "")
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="FreebieDto"
+                                Field="@nameof(FreebieDto.CreationTime)"
+                                Caption="@L["CreatedTime"]">
+                    <DisplayTemplate>
+                        @context.CreationTime.ToShortDateString()
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="FreebieDto" Field="@nameof(FreebieDto.IsFreebieAvaliable)"
+                                Caption="@L["Availability"]">
+                    <DisplayTemplate>
+                        <Switch TValue="bool" Checked="@context.IsFreebieAvaliable" CheckedChanged="@(() => OnFreebieAvaliablityChange(context.Id))"></Switch>
+                    </DisplayTemplate>
+                </DataGridColumn>
 
 
-        </DataGridColumns>
-    </DataGrid>
-</div>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
 
-@code {}
+@code {
+    }

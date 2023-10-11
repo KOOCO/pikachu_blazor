@@ -3,7 +3,6 @@ using Blazorise;
 using Kooco.Pikachu.AzureStorage.Image;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.GroupBuys;
-using Kooco.Pikachu.ImageBlob;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
@@ -13,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
@@ -46,7 +44,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         private readonly IUiMessageService _uiMessageService;
         private readonly IItemAppService _itemAppService;
         private BlazoredTextEditor GroupBuyHtml { get; set; }
-
+        private readonly ISetItemAppService _setItemAppService;
         private BlazoredTextEditor CustomerInformationHtml { get; set; }
         private BlazoredTextEditor ExchangePolicyHtml { get; set; }
         private BlazoredTextEditor NotifyEmailHtml { get; set; }
@@ -54,7 +52,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         private FilePicker LogoPickerCustom { get; set; }
         private FilePicker BannerPickerCustom { get; set; }
         private FilePicker CarouselPickerCustom { get; set; }
-        private List<KeyValueDto> ItemsList { get; set; } = new();
+        private List<ItemWithItemTypeDto> ItemsList { get; set; } = new();
         private readonly ImageContainerManager _imageContainerManager;
         private readonly List<string> ValidFileExtensions = new() { ".jpg", ".png", ".svg", ".jpeg", ".webp" };
 
@@ -66,7 +64,8 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             IObjectMapper objectMapper,
             IUiMessageService uiMessageService,
             ImageContainerManager imageContainerManager,
-            IItemAppService itemAppService
+            IItemAppService itemAppService,
+             ISetItemAppService setItemAppService
             )
         {
             _groupBuyAppService = groupBuyAppService;
@@ -77,6 +76,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             _uiMessageService = uiMessageService;
             _imageContainerManager = imageContainerManager;
             _itemAppService = itemAppService;
+            _setItemAppService = setItemAppService;
         }
 
         protected override async Task OnInitializedAsync()
@@ -94,7 +94,9 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 ItemTags = excludeShippingMethodArray != null ? excludeShippingMethodArray.ToList() : new List<string>();
                 CarouselImages = _objectMapper.Map<List<ImageDto>, List<CreateImageDto>>(ExistingImages);
                 ItemsList = await _itemAppService.GetItemsLookupAsync();
-
+                var setItemsList = await _setItemAppService.GetItemsLookupAsync();
+                ItemsList.AddRange(setItemsList);
+                
                 await LoadHtmlContent();
 
                 var itemGroups = groupbuy.ItemGroups;
@@ -113,8 +115,20 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                         {
                             foreach (var item in itemGroup.ItemGroupDetails)
                             {
-                                collapseItem.SelectedItems.Add(item.Item);
+                                var itemWithItemType = new ItemWithItemTypeDto
+                                {
+                                    Id = item.ItemType == ItemType.Item ? item.ItemId.Value : item.SetItemId.Value,
+                                    Name = item.ItemType == ItemType.Item ? item.Item.ItemName : item.SetItem.SetItemName,
+                                    ItemType = item.ItemType,
+                                    Item = item.Item,
+                                    SetItem = item.SetItem
+                                };
+                                collapseItem.Selected.Add(itemWithItemType);
                             }
+                        }
+                        else
+                        {
+                            collapseItem.Selected = new();
                         }
 
                         CollapseItem.Add(collapseItem);
@@ -160,9 +174,9 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 {
                     Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
                     GroupBuyModuleType = groupBuyModuleType,
-                    SelectedItems = new()
+                    Selected = new()
                     {
-                        new ItemDto()
+                        new ItemWithItemTypeDto()
                     }
                 };
             }
@@ -173,11 +187,11 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 {
                     Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
                     GroupBuyModuleType = groupBuyModuleType,
-                    SelectedItems = new()
+                    Selected = new()
                     {
-                        new ItemDto(),
-                        new ItemDto(),
-                        new ItemDto()
+                        new ItemWithItemTypeDto(),
+                        new ItemWithItemTypeDto(),
+                        new ItemWithItemTypeDto()
                     }
                 };
             }
@@ -443,13 +457,13 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         private static void OnProductGroupValueChange(ChangeEventArgs e, CollapseItem collapseItem)
         {
             int takeCount = int.Parse(e?.Value.ToString());
-            if (collapseItem.SelectedItems.Count > takeCount)
+            if (collapseItem.Selected.Count > takeCount)
             {
-                collapseItem.SelectedItems = collapseItem.SelectedItems.Take(takeCount).ToList();
+                collapseItem.Selected = collapseItem.Selected.Take(takeCount).ToList();
             }
             else
             {
-                collapseItem.SelectedItems.Add(new ItemDto());
+                collapseItem.Selected.Add(new ItemWithItemTypeDto());
             }
         }
 
@@ -496,7 +510,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyNameCannotBeNull]);
                     return;
                 }
-                if (CollapseItem.Any(c => c.SelectedItems.Any(s => s.Id == Guid.Empty)))
+                if (CollapseItem.Any(c => c.Selected.Any(s => s.Id == Guid.Empty)))
                 {
                     await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyModuleCannotBeEmpty]);
                     return;
@@ -521,7 +535,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 foreach (var item in CollapseItem)
                 {
                     int j = 1;
-                    if (item.SelectedItems.Any())
+                    if (item.Selected.Any())
                     {
                         var itemGroup = new GroupBuyItemGroupCreateUpdateDto
                         {
@@ -529,12 +543,14 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                             GroupBuyModuleType = item.GroupBuyModuleType
                         };
 
-                        foreach (var itemDetail in item.SelectedItems)
+                        foreach (var itemDetail in item.Selected)
                         {
                             itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
                             {
                                 SortOrder = j++,
-                                ItemId = itemDetail.Id
+                                ItemId = itemDetail.ItemType == ItemType.Item ? itemDetail.Id : null,
+                                SetItemId = itemDetail.ItemType == ItemType.SetItem ? itemDetail.Id : null,
+                                ItemType = itemDetail.ItemType
                             });
                         }
 
@@ -567,23 +583,37 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             }
         }
 
-        private async Task OnSelectedValueChanged(Guid? id, CollapseItem collapseItem, ItemDto? selectedItem = null)
+        private async Task OnSelectedValueChanged(Guid? id, CollapseItem collapseItem, ItemWithItemTypeDto? selectedItem = null)
         {
             try
             {
-                var index = collapseItem.SelectedItems.IndexOf(selectedItem);
-                if (id != null)
+                var item = ItemsList.FirstOrDefault(x => x.Id == id);
+                var index = collapseItem.Selected.IndexOf(selectedItem);
+                if (item != null)
                 {
-                    collapseItem.SelectedItems[index] = await _itemAppService.GetAsync(id.Value, true);
+                    if (item.ItemType == ItemType.Item)
+                    {
+                        selectedItem.Item = await _itemAppService.GetAsync(item.Id, true);
+                        selectedItem.Id = selectedItem.Item.Id;
+                        selectedItem.Name = selectedItem.Item.ItemName;
+                        selectedItem.ItemType = ItemType.Item;
+                    }
+                    if (item.ItemType == ItemType.SetItem)
+                    {
+                        selectedItem.SetItem = await _setItemAppService.GetAsync(item.Id, true);
+                        selectedItem.Id = selectedItem.SetItem.Id;
+                        selectedItem.Name = selectedItem.SetItem.SetItemName;
+                        selectedItem.ItemType = ItemType.SetItem;
+                    }
+                    collapseItem.Selected[index] = selectedItem;
                 }
                 else
                 {
-                    collapseItem.SelectedItems[index] = new();
+                    collapseItem.Selected[index] = new();
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
                 await _uiMessageService.Error(ex.GetType().ToString());
             }
         }

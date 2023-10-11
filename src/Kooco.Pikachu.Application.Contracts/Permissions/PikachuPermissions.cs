@@ -51,4 +51,10 @@ public static class PikachuPermissions
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
     }
+
+    public class Orders
+    {
+        public const string Default = GroupName + ".Orders";
+        public const string AddStoreComment = GroupName + ".AddStoreComments";
+    }
 }
