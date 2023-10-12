@@ -30,6 +30,10 @@ namespace Kooco.Pikachu.Orders
                 .Include(o => o.GroupBuy)
                 .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Item)
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.SetItem)
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Freebie)
                 .ToListAsync();
         }
 
@@ -58,10 +62,16 @@ namespace Kooco.Pikachu.Orders
                 .Where(o => o.Id == id)
                 .Include(o => o.GroupBuy)
                 .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.Item)
-                .ThenInclude(i => i.Images)
+                    .ThenInclude(oi => oi.Item)
+                    .ThenInclude(i => i.Images)
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.SetItem)
+                    .ThenInclude(i => i.Images)
+                .Include(o => o.OrderItems.OrderBy(oi => oi.ItemType))
+                    .ThenInclude(oi => oi.Freebie)
+                    .ThenInclude(i => i.Images)
                 .Include(o => o.StoreComments.OrderByDescending(c => c.CreationTime))
-                .ThenInclude(c => c.User)
+                    .ThenInclude(c => c.User)
                 .FirstOrDefaultAsync();
         }
     }

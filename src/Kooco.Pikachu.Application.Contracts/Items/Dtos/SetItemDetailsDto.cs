@@ -15,14 +15,6 @@ public class SetItemDetailsDto : FullAuditedEntityDto<Guid>
     /// </summary>
     public Guid SetItemId { get; set; }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public SetItemDto SetItem { get; set; }
-
-    /// <summary>
-    /// 
-    /// </summary>
     public ItemDto Item { get; set; }
 
     public Guid ItemId { get; set; }

@@ -1,4 +1,5 @@
 ﻿@page "/Orders"
+@using Kooco.Pikachu.EnumValues;
 @using Kooco.Pikachu.Localization;
 @using Kooco.Pikachu.OrderItems;
 @using Kooco.Pikachu.Orders;
@@ -129,10 +130,27 @@
                                     <td>
                                         @foreach (var item in orderItems)
                                         {
-                                            <div mb-1>
-                                                <span class="me-2">@item.Spec</span>
-                                                <span>@item.Item.ItemName x @item.Quantity</span>
-                                            </div>
+                                            @if(item.ItemType == ItemType.Item)
+                                            {
+                                                <div mb-1>
+                                                    <span>@item.Spec</span>
+                                                    <span>@item.Item.ItemName x @item.Quantity</span>
+                                                </div>
+                                            }
+                                            @if (item.ItemType == ItemType.SetItem)
+                                            {
+                                                <div mb-1>
+                                                    <span>@item.Spec</span>
+                                                    <span>@item.SetItem.SetItemName x @item.Quantity</span>
+                                                </div>
+                                            }
+                                            @if (item.ItemType == ItemType.Freebie)
+                                            {
+                                                <div mb-1>
+                                                    <span>@item.Spec</span>
+                                                    <span>@item.Freebie.ItemName x @item.Quantity</span>
+                                                </div>
+                                            }
                                         }
                                     </td>
                                 </tr>

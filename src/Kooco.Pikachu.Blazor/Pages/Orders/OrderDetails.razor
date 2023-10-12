@@ -1,4 +1,5 @@
 ﻿@page "/Orders/OrderDetails/{id}"
+@using Kooco.Pikachu.EnumValues;
 @using Kooco.Pikachu.Localization;
 @using Kooco.Pikachu.OrderItems;
 @using Kooco.Pikachu.Orders;
@@ -316,14 +317,37 @@
                                         <input type="checkbox" class="form-check-input" />
                                     </td>
                                     <td class="text-start">
-                                        @{
-                                            var firstImage = item.Item?.Images?.FirstOrDefault()?.ImageUrl;
-                                        }
-                                        @if (!string.IsNullOrEmpty(firstImage))
+
+                                        @if(item.ItemType == ItemType.Item)
                                         {
-                                            <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                            var firstImage = item.Item?.Images?.FirstOrDefault()?.ImageUrl;
+                                            @if (!string.IsNullOrEmpty(firstImage))
+                                            {
+                                                <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                            }
+                                            @item.Item?.ItemName
                                         }
-                                        @item.Item?.ItemName
+
+                                        @if(item.ItemType == ItemType.SetItem)
+                                        {
+                                            var firstImage = item.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
+                                            @if (!string.IsNullOrEmpty(firstImage))
+                                            {
+                                                <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                            }
+                                            @item.SetItem?.SetItemName
+                                        }
+
+                                        @if(item.ItemType == ItemType.Freebie)
+                                        {
+                                            var firstImage = item.Freebie?.Images?.FirstOrDefault()?.ImageUrl;
+                                            @if (!string.IsNullOrEmpty(firstImage))
+                                            {
+                                                <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                            }
+                                            @item.Freebie?.ItemName
+                                        }
+
                                     </td>
                                     <td>
                                         @item.Quantity

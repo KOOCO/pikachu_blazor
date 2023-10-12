@@ -13,6 +13,7 @@ using Volo.Abp.Data;
 using Volo.Abp.MultiTenancy;
 using Kooco.Pikachu.Freebies.Dtos;
 using Kooco.Pikachu.Freebies;
+using Kooco.Pikachu.Items;
 
 namespace Kooco.Pikachu.GroupBuys
 {
@@ -24,13 +25,16 @@ namespace Kooco.Pikachu.GroupBuys
         private readonly ImageContainerManager _imageContainerManager;
         private readonly IFreebieRepository _freebieRepository;
         private readonly IDataFilter _dataFilter;
+        private readonly ISetItemRepository _setItemRepository;
+
         public GroupBuyAppService(
-            IGroupBuyRepository groupBuyRepository, 
+            IGroupBuyRepository groupBuyRepository,
             GroupBuyManager groupBuyManager,
             ImageContainerManager imageContainerManager,
             IFreebieRepository freebieRepository,
             IRepository<Image, Guid> imageRepository,
-            IDataFilter dataFilter
+            IDataFilter dataFilter,
+            ISetItemRepository setItemRepository
             )
         {
             _groupBuyManager = groupBuyManager;
@@ -39,16 +43,17 @@ namespace Kooco.Pikachu.GroupBuys
             _imageRepository = imageRepository;
             _dataFilter = dataFilter;
             _freebieRepository = freebieRepository;
+            _setItemRepository = setItemRepository;
         }
 
         public async Task<GroupBuyDto> CreateAsync(GroupBuyCreateDto input)
         {
-            var result = await _groupBuyManager.CreateAsync(input.GroupBuyNo, input.Status, input.GroupBuyName, input.EntryURL, input.EntryURL2, input.SubjectLine, 
-                                                        input.ShortName, input.LogoURL, input.BannerURL, input.StartTime, input.EndTime, input.FreeShipping, input.AllowShipToOuterTaiwan, 
+            var result = await _groupBuyManager.CreateAsync(input.GroupBuyNo, input.Status, input.GroupBuyName, input.EntryURL, input.EntryURL2, input.SubjectLine,
+                                                        input.ShortName, input.LogoURL, input.BannerURL, input.StartTime, input.EndTime, input.FreeShipping, input.AllowShipToOuterTaiwan,
                                                         input.AllowShipOversea, input.ExpectShippingDateFrom, input.ExpectShippingDateTo, input.MoneyTransferValidDayBy, input.MoneyTransferValidDays,
                                                         input.IssueInvoice, input.AutoIssueTriplicateInvoice, input.InvoiceNote, input.ProtectPrivacyData, input.InviteCode, input.ProfitShare,
-                                                        input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy, 
-                                                        input.NotifyMessage, input.ExcludeShippingMethod, input.IsDefaultPaymentGateWay, input.PaymentMethod, input.GroupBuyCondition, input.CustomerInformation, 
+                                                        input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy,
+                                                        input.NotifyMessage, input.ExcludeShippingMethod, input.IsDefaultPaymentGateWay, input.PaymentMethod, input.GroupBuyCondition, input.CustomerInformation,
                                                         input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription);
 
             if (input.ItemGroups != null && input.ItemGroups.Any())
@@ -112,14 +117,14 @@ namespace Kooco.Pikachu.GroupBuys
                                                          , input.ShortName, input.LogoURL, input.BannerURL, input.StartTime, input.EndTime, input.FreeShipping, input.AllowShipToOuterTaiwan
                                                          , input.AllowShipOversea, input.ExpectShippingDateFrom, input.ExpectShippingDateTo, input.MoneyTransferValidDayBy, input.MoneyTransferValidDays,
                                                          input.IssueInvoice, input.AutoIssueTriplicateInvoice, input.InvoiceNote, input.ProtectPrivacyData, input.InviteCode, input.ProfitShare,
-                                                         input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy, 
+                                                         input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy,
                                                          input.NotifyMessage
                                                          );
-            var result = await _groupBuyRepository.GetGroupBuyListAsync(input.FilterText, input.GroupBuyNo, input.Status, input.GroupBuyName, input.EntryURL, input.EntryURL2, input.SubjectLine, 
-                                                        input.ShortName, input.LogoURL, input.BannerURL, input.StartTime, input.EndTime, input.FreeShipping, input.AllowShipToOuterTaiwan, 
+            var result = await _groupBuyRepository.GetGroupBuyListAsync(input.FilterText, input.GroupBuyNo, input.Status, input.GroupBuyName, input.EntryURL, input.EntryURL2, input.SubjectLine,
+                                                        input.ShortName, input.LogoURL, input.BannerURL, input.StartTime, input.EndTime, input.FreeShipping, input.AllowShipToOuterTaiwan,
                                                         input.AllowShipOversea, input.ExpectShippingDateFrom, input.ExpectShippingDateTo, input.MoneyTransferValidDayBy, input.MoneyTransferValidDays,
                                                         input.IssueInvoice, input.AutoIssueTriplicateInvoice, input.InvoiceNote, input.ProtectPrivacyData, input.InviteCode, input.ProfitShare,
-                                                        input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy, 
+                                                        input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy,
                                                         input.NotifyMessage, input.Sorting, input.MaxResultCount, input.SkipCount);
             return new PagedResultDto<GroupBuyDto>
             {
@@ -262,6 +267,14 @@ namespace Kooco.Pikachu.GroupBuys
             await _groupBuyRepository.DeleteManyAsync(groupBuyIds);
         }
 
+        public async Task ChangeGroupBuyAvailability(Guid groupBuyID)
+        {
+            var groupBuy = await _groupBuyRepository.FindAsync(x => x.Id == groupBuyID);
+            groupBuy.IsGroupBuyAvaliable = !groupBuy.IsGroupBuyAvaliable;
+            await _groupBuyRepository.UpdateAsync(groupBuy);
+        }
+
+
         /// <summary>
         /// This Method Returns the Desired Result For the Store Front End.
         /// Do not change unless you want to make changes in the Store Front End Code
@@ -274,9 +287,10 @@ namespace Kooco.Pikachu.GroupBuys
                 var item = await _groupBuyRepository.GetWithDetailsAsync(id);
                 return item is null
                     ? throw new BusinessException(PikachuDomainErrorCodes.EntityWithGivenIdDoesnotExist)
-                    : ObjectMapper.Map<GroupBuy, GroupBuyDto>(item); 
+                    : ObjectMapper.Map<GroupBuy, GroupBuyDto>(item);
             }
         }
+
         /// <summary>
         /// This Method Returns the Desired Result For the Store Front End.
         /// Do not change unless you want to make changes in the Store Front End Code
@@ -284,19 +298,25 @@ namespace Kooco.Pikachu.GroupBuys
         /// <returns></returns>
         public async Task<List<string>> GetCarouselImagesAsync(Guid id)
         {
-            var data = await _imageRepository.GetListAsync(x => x.TargetId == id && x.ImageType == ImageType.GroupBuyCarouselImage);
-            return data.Select(i => i.ImageUrl).ToList();
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var data = await _imageRepository.GetListAsync(x => x.TargetId == id && x.ImageType == ImageType.GroupBuyCarouselImage);
+                return data.Select(i => i.ImageUrl).ToList();
+            }
         }
+
+        /// <summary>
+        /// This Method Returns the Desired Result For the Store Front End.
+        /// Do not change unless you want to make changes in the Store Front End Code
+        /// </summary>
+        /// <returns></returns>
         public async Task<List<FreebieDto>> GetFreebieForStoreAsync(Guid groupBuyId)
         {
-            var freebie = await _freebieRepository.GetFreebieStoreAsync(groupBuyId);
-            return ObjectMapper.Map<List<Freebie>, List<FreebieDto>>(freebie);
-        }
-        public async Task ChangeGroupBuyAvailability(Guid groupBuyID)
-        {
-            var groupBuy = await _groupBuyRepository.FindAsync(x => x.Id == groupBuyID);
-            groupBuy.IsGroupBuyAvaliable = !groupBuy.IsGroupBuyAvaliable;
-            await _groupBuyRepository.UpdateAsync(groupBuy);
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var freebie = await _freebieRepository.GetFreebieStoreAsync(groupBuyId);
+                return ObjectMapper.Map<List<Freebie>, List<FreebieDto>>(freebie);
+            }
         }
     }
 }
