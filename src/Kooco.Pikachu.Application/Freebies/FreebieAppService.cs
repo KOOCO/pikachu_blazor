@@ -48,6 +48,7 @@ namespace Kooco.Pikachu.Freebies
                 input.FreebieOrderReach,
                 input.MinimumAmount,
                 input.MinimumPiece,
+                input.FreebieQuantity,
                 input.FreebieAmount
                 );
 
@@ -85,7 +86,9 @@ namespace Kooco.Pikachu.Freebies
         }
         public async Task<List<KeyValueDto>> GetGroupBuyLookupAsync()
         {
-            var groupbuys = await _groupBuyRepository.GetListAsync();
+            var groupbuys = (await _groupBuyRepository.GetListAsync())
+                            .Where(g => g.IsGroupBuyAvaliable)
+                            .ToList();
             return ObjectMapper.Map<List<GroupBuy>, List<KeyValueDto>>(groupbuys);
         }
         public async Task<FreebieDto> GetAsync(Guid id, bool includeDetails = false)
@@ -105,7 +108,6 @@ namespace Kooco.Pikachu.Freebies
             {
                 throw new BusinessException(PikachuDomainErrorCodes.ItemWithSameNameAlreadyExists);
             }
-
             var freebie = await _freebieRepository.GetAsync(id);
             freebie.ItemName = input.ItemName;
             freebie.ItemDescription = input.ItemDescription;

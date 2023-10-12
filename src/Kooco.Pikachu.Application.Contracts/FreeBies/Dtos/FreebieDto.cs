@@ -20,9 +20,10 @@ namespace Kooco.Pikachu.Freebies.Dtos
         public DateTime? ActivityStartDate { get; set; }
         public DateTime? ActivityEndDate { get; set; }
         public FreebieOrderReach? FreebieOrderReach { get; set; }
-        public decimal MinimumAmount { get; set; }
-        public int MinimumPiece { get; set; }
-        public decimal FreebieAmount { get; set; }
+        public decimal? MinimumAmount { get; set; }
+        public int? MinimumPiece { get; set; }
+        public int FreebieQuantity { get; set; }
+        public decimal? FreebieAmount { get; set; }
         public Guid? TenantId { get; set; }
         public bool IsSelected { get; set; } = false;
         public bool IsFreebieAvaliable { get; set; }

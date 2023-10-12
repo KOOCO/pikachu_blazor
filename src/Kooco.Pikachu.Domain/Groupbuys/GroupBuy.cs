@@ -195,6 +195,7 @@ namespace Kooco.Pikachu.GroupBuys
         public string? GroupBuyConditionDescription { get; set; }
         public string? CustomerInformation { get; set; }
         public string? CustomerInformationDescription { get; set; }
+        public bool IsGroupBuyAvaliable { get; set; }
         /// <summary>
         /// 預設使用的發貨倉庫 Default Warehouse used for shipping
         /// </summary>

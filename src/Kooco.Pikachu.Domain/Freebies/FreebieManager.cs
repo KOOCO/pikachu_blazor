@@ -40,6 +40,7 @@ namespace Kooco.Pikachu.Freebies
             FreebieOrderReach? freebieOrderReach,
             decimal? minimumAmount,
             int? minimumPiece,
+            int freebieQuantity,
             decimal? freebieAmount
             )
         {
@@ -67,6 +68,7 @@ namespace Kooco.Pikachu.Freebies
                 activityEndtDate,
                 minimumAmount,
                 minimumPiece,
+                freebieQuantity,
                 freebieAmount
             );
         }

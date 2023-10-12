@@ -51,6 +51,21 @@
                                 Field="@nameof(GroupBuyDto.GroupBuyName)"
                                 Caption="@L["GroupBuyName"]">
                 </DataGridColumn>
+                <DataGridColumn TItem="GroupBuyDto"
+                                Field="@nameof(GroupBuyDto.CreationTime)"
+                                Caption="@L["CreatedTime"]">
+                    <DisplayTemplate>
+                        @context.CreationTime.ToShortDateString()
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="GroupBuyDto" Field="@nameof(GroupBuyDto.IsGroupBuyAvaliable)"
+                                Caption="@L["Availability"]">
+                    <DisplayTemplate>
+                        <Switch TValue="bool" Checked="@context.IsGroupBuyAvaliable" CheckedChanged="@(() => OnGroupBuyAvaliablityChanged(context.Id))"></Switch>
+                    </DisplayTemplate>
+                </DataGridColumn>
+               
+
             </DataGridColumns>
         </DataGrid>
     </CardBody>

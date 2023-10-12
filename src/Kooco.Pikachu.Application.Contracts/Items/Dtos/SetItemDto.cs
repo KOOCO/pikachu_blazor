@@ -1,8 +1,8 @@
 using Kooco.Pikachu.Images;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Volo.Abp.Application.Dtos;
-using static Kooco.Pikachu.Permissions.PikachuPermissions;
 
 namespace Kooco.Pikachu.Items.Dtos;
 
@@ -61,6 +61,8 @@ public class SetItemDto : FullAuditedEntityDto<Guid>
     /// 
     /// </summary>
     public int? GroupBuyPrice { get; set; }
+    public float SetItemPrice { get; set; }
+    public int? LimitQuantity { get; set; }
 
     /// <summary>
     /// 可販售數量限制

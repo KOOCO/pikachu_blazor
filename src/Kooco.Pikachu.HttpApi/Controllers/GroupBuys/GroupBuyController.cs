@@ -66,6 +66,12 @@ public class GroupBuyController : AbpController, IGroupBuyAppService
         return _groupBuyAppService.UpdateAsync(id, input);
     }
 
+    [HttpPut("ChangeGroupBuyAvailability/{id}")]
+    public Task ChangeGroupBuyAvailability(Guid id)
+    {
+        return _groupBuyAppService.ChangeGroupBuyAvailability(id);
+    }
+
     [HttpGet("get-carousel-images/{id}")]
     public Task<List<string>> GetCarouselImagesAsync(Guid id)
     {
@@ -77,7 +83,7 @@ public class GroupBuyController : AbpController, IGroupBuyAppService
     {
         return _groupBuyAppService.GetForStoreAsync(id);
     }
-    [HttpGet("freebie-store/{id}")]
+    [HttpGet("freebie-store/{groupBuyId}")]
     public Task<List<FreebieDto>> GetFreebieForStoreAsync(Guid groupBuyId)
     {
         return _groupBuyAppService.GetFreebieForStoreAsync(groupBuyId);

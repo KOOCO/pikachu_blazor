@@ -200,5 +200,7 @@ namespace Kooco.Pikachu.GroupBuys
         public string? CustomerInformation { get; set; }
         public string? PaymentMethod { get; set; }
         public bool IsSelected { get; set; } = false;
+        public bool IsGroupBuyAvaliable { get; set; }
+        public DateTime CreationTime { get; set; }
     }
 }

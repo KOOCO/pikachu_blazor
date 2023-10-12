@@ -31,27 +31,15 @@ public class SetItemAppService : CrudAppService<SetItem, SetItemDto, Guid, Paged
             GuidGenerator.Create(),
             CurrentTenant?.Id,
             input.SetItemName,
-            input.SetItemNo,
             input.SetItemDescriptionTitle,
             input.Description,
             input.SetItemMainImageURL,
-            input.SetItemStatus,
-            input.SetItemSaleableQuantity,
-            input.SellingPrice,
-            input.GroupBuyPrice,
-            input.SaleableQuantity,
-            input.PreOrderableQuantity,
-            input.SaleablePreOrderQuantity,
-            input.SalesAccount,
-            input.Returnable,
+            input.SetItemPrice,
+            input.LimitQuantity,
             input.LimitAvaliableTimeStart,
             input.LimitAvaliableTimeEnd,
             input.ShareProfit,
-            input.IsFreeShipping,
-            input.TaxName,
-            input.TaxPercentage,
-            input.TaxType,
-            input.ItemCategory
+            input.IsFreeShipping
             );
 
         if (input.SetItemDetails.Any())
@@ -96,32 +84,19 @@ public class SetItemAppService : CrudAppService<SetItem, SetItemDto, Guid, Paged
 
         var setItem = await _setItemRepository.GetAsync(id);
         setItem.SetItemName = input.SetItemName;
-        setItem.SetItemNo = input.SetItemNo;
         setItem.SetItemDescriptionTitle = input.SetItemDescriptionTitle;
         setItem.Description = input.Description;
         setItem.SetItemMainImageURL = input.SetItemMainImageURL;
         setItem.SetItemStatus = input.SetItemStatus;
-        setItem.SetItemSaleableQuantity = input.SetItemSaleableQuantity;
-        setItem.SellingPrice = input.SellingPrice;
-        setItem.GroupBuyPrice = input.GroupBuyPrice;
-        setItem.SaleableQuantity = input.SaleableQuantity;
-        setItem.PreOrderableQuantity = input.PreOrderableQuantity;
-        setItem.SaleablePreOrderQuantity = input.SaleablePreOrderQuantity;
-        setItem.SalesAccount = input.SalesAccount;
-        setItem.Returnable = input.Returnable;
+        setItem.SetItemPrice = input.SetItemPrice;
+        setItem.LimitQuantity = input.LimitQuantity;
         setItem.LimitAvaliableTimeStart = input.LimitAvaliableTimeStart;
         setItem.LimitAvaliableTimeEnd = input.LimitAvaliableTimeEnd;
         setItem.ShareProfit = input.ShareProfit;
         setItem.IsFreeShipping = input.IsFreeShipping;
-        setItem.TaxName = input.TaxName;
-        setItem.TaxPercentage = input.TaxPercentage;
-        setItem.TaxType = input.TaxType;
-        setItem.ItemCategory = input.ItemCategory;
-
         await _setItemRepository.EnsureCollectionLoadedAsync(setItem, x => x.SetItemDetails);
         var setItemDetailIds = input.SetItemDetails.Select(x => x.Id).ToList();
         setItem.RemoveItemDetailsAsync(setItemDetailIds);
-
         foreach (var itemDetail in input.SetItemDetails)
         {
             if (itemDetail.Id.HasValue)

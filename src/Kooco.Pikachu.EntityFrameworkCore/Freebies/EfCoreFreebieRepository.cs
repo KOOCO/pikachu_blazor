@@ -28,6 +28,7 @@ namespace Kooco.Pikachu.Freebies
             var data = await GetQueryableAsync();
             return await data
                 .Where(x => x.IsFreebieAvaliable)
+                .Include(x => x.FreebieGroupBuys)
                 .Where(x => x.ApplyToAllGroupBuy || x.FreebieGroupBuys.Select(x => x.GroupBuyId).Contains(groupBuyId))
                 .ToListAsync();
         }

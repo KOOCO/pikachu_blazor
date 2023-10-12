@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
 
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
@@ -83,6 +84,27 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             catch (Exception ex)
             {
                 await _uiMessageService.Error(ex.GetType()?.ToString());
+                Console.WriteLine(ex.ToString());
+            }
+        }
+        public async Task OnGroupBuyAvaliablityChanged(Guid id)
+        {
+            try
+            {
+                var freebie = GroupBuyListItem.Where(x => x.Id == id).First();
+                freebie.IsGroupBuyAvaliable = !freebie.IsGroupBuyAvaliable;
+                await _groupBuyAppService.ChangeGroupBuyAvailability(id);
+                await UpdateGroupBuyList();
+                await InvokeAsync(StateHasChanged);
+            }
+            catch (BusinessException ex)
+            {
+                await _uiMessageService.Error(ex.Code.ToString());
+                Console.WriteLine(ex.ToString());
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
                 Console.WriteLine(ex.ToString());
             }
         }

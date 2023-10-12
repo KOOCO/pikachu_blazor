@@ -258,7 +258,6 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
                             Quantity = item.Quantity
                         });
                 });
-
                 CreateUpdateSetItemDto.Description = await QuillHtml.GetHTML();
 
                 await _setItemAppService.UpdateAsync(EditingId, CreateUpdateSetItemDto);

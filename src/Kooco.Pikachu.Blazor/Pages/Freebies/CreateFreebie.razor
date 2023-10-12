@@ -248,17 +248,30 @@
                 <div class="row mt-1">
                     <div class="col-2">
                     </div>
-                    <div class="col-2">
-                        <Label>@L["AmountReach"]</Label>
-                        <div class="input-group">
-                            <Span Class="bg-primary text-light px-2 py-1">$</Span>
-                            <NumericEdit TValue="decimal" @bind-Value="FreebieCreateDto.MinimumAmount" Size="Size.Small" />
+                    @if (FreebieCreateDto.FreebieOrderReach==FreebieOrderReach.MinimumAmount)
+                    {
+                        <div class="col-2">
+                            <Label>@L["AmountReach"]</Label>
+                            <div class="input-group">
+                                <Span Class="bg-primary text-light px-2 py-1">$</Span>
+                                <NumericEdit TValue="decimal?" @bind-Value="FreebieCreateDto.MinimumAmount" Size="Size.Small" />
+                            </div>
                         </div>
-                    </div>
+                    }else
+                    {
+                        <div class="col-2">
+                            <Label>@L["QuantityReach"]</Label>
+                            <div class="input-group">
+                                <Span Class="bg-primary text-light px-2 py-1">@L["Piece"]</Span>
+                                <NumericEdit TValue="int?" @bind-Value="FreebieCreateDto.MinimumPiece" Size="Size.Small" />
+                            </div>
+                        </div>
+                    }
+                   
                     <div class="col-2">
                         <Label l>@L["Get"]</Label>
                         <div class="input-group">
-                            <NumericEdit Size="Size.Small" TValue="int" @bind-Value="FreebieCreateDto.MinimumPiece" />
+                            <NumericEdit Size="Size.Small" TValue="int" @bind-Value="FreebieCreateDto.FreebieQuantity" />
                             <Span Class="bg-primary text-light px-2 py-1">@L["Piece"]</Span>
                         </div>
                     </div>

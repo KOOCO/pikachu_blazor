@@ -27,6 +27,8 @@ namespace Kooco.Pikachu.Items
         /// <summary>
         /// 可販售數量限制
         /// </summary>
+        public float SetItemPrice { get; set; }
+        public int? LimitQuantity { get; set; }
         public int? SaleableQuantity { get; set; }
 
         /// <summary>
@@ -104,111 +106,32 @@ namespace Kooco.Pikachu.Items
             Guid id,
             Guid? tenantId,
             string setItemName,
-            string? setItemNo,
             string? setItemDescriptionTitle,
             string? description,
             string? setItemMainImageURL,
-            string setItemStatus,
-            int? setItemSaleableQuantity,
-            int sellingPrice,
-            int? groupBuyPrice,
-            int? saleableQuantity,
-            int? preOrderableQuantity,
-            int? saleablePreOrderQuantity,
-            string? salesAccount,
-            Boolean returnable,
+            float setItemPrice,
+            int? limitQuantity,
             DateTime limitAvaliableTimeStart,
             DateTime limitAvaliableTimeEnd,
             int shareProfit,
-            bool isFreeShipping,
-            string? taxName,
-            int? taxPercentage,
-            string? taxType,
-            string? itemCategory
+            bool isFreeShipping
         ) : base(id)
         {
             TenantId = tenantId;
             SetItemName = setItemName;
-            SetItemNo = setItemNo;
             SetItemDescriptionTitle = setItemDescriptionTitle;
             Description = description;
             SetItemMainImageURL = setItemMainImageURL;
-            SetItemStatus = setItemStatus;
-            SetItemSaleableQuantity = setItemSaleableQuantity;
-            SellingPrice = sellingPrice;
-            GroupBuyPrice = groupBuyPrice;
-            SaleableQuantity = saleableQuantity;
-            PreOrderableQuantity = preOrderableQuantity;
-            SaleablePreOrderQuantity = saleablePreOrderQuantity;
-            SalesAccount = salesAccount;
-            Returnable = returnable;
+            SetItemPrice = setItemPrice;
+            LimitQuantity = limitQuantity;
             LimitAvaliableTimeStart = limitAvaliableTimeStart;
             LimitAvaliableTimeEnd = limitAvaliableTimeEnd;
             ShareProfit = shareProfit;
             IsFreeShipping = isFreeShipping;
-            TaxName = taxName;
-            TaxPercentage = taxPercentage;
-            TaxType = taxType;
-            ItemCategory = itemCategory;
-
             SetItemDetails = new List<SetItemDetails>();
             Images = new List<Image>();
         }
 
-        public SetItem(
-            Guid id,
-            Guid? tenantId,
-            List<SetItemDetails> setItemDetails,
-            string setItemName,
-            string? setItemNo,
-            string? setItemDescriptionTitle,
-            string? description,
-            string? setItemMainImageURL,
-            string setItemStatus,
-            int? setItemSaleableQuantity,
-            int sellingPrice,
-            int? groupBuyPrice,
-            int? saleableQuantity,
-            int? preOrderableQuantity,
-            int? saleablePreOrderQuantity,
-            string? salesAccount,
-            Boolean returnable,
-            DateTime limitAvaliableTimeStart,
-            DateTime limitAvaliableTimeEnd,
-            int shareProfit,
-            bool isFreeShipping,
-            string? taxName,
-            int? taxPercentage,
-            string? taxType,
-            string? itemCategory
-        ) : base(id)
-        {
-            TenantId = tenantId;
-            SetItemDetails = setItemDetails;
-            SetItemName = setItemName;
-            SetItemNo = setItemNo;
-            SetItemDescriptionTitle = setItemDescriptionTitle;
-            Description = description;
-            SetItemMainImageURL = setItemMainImageURL;
-            SetItemStatus = setItemStatus;
-            SetItemSaleableQuantity = setItemSaleableQuantity;
-            SellingPrice = sellingPrice;
-            GroupBuyPrice = groupBuyPrice;
-            SaleableQuantity = saleableQuantity;
-            PreOrderableQuantity = preOrderableQuantity;
-            SaleablePreOrderQuantity = saleablePreOrderQuantity;
-            SalesAccount = salesAccount;
-            Returnable = returnable;
-            LimitAvaliableTimeStart = limitAvaliableTimeStart;
-            LimitAvaliableTimeEnd = limitAvaliableTimeEnd;
-            ShareProfit = shareProfit;
-            IsFreeShipping = isFreeShipping;
-            TaxName = taxName;
-            TaxPercentage = taxPercentage;
-            TaxType = taxType;
-            ItemCategory = itemCategory;
-            Images = new List<Image>();
-        }
 
         public void AddSetItemDetails(
         Guid id,

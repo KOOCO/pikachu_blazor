@@ -189,10 +189,6 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
             {
                 throw new BusinessException(L[PikachuDomainErrorCodes.SelectAtLeastOneGroupBuy]);
             }
-            if (FreebieCreateDto.FreebieAmount <= 0)
-            {
-                throw new BusinessException(L[PikachuDomainErrorCodes.FreebieAmountCannotBeZero]);
-            }
         }
 
         private void CancelToFreebieList()

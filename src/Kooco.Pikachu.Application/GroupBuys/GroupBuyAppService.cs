@@ -292,5 +292,11 @@ namespace Kooco.Pikachu.GroupBuys
             var freebie = await _freebieRepository.GetFreebieStoreAsync(groupBuyId);
             return ObjectMapper.Map<List<Freebie>, List<FreebieDto>>(freebie);
         }
+        public async Task ChangeGroupBuyAvailability(Guid groupBuyID)
+        {
+            var groupBuy = await _groupBuyRepository.FindAsync(x => x.Id == groupBuyID);
+            groupBuy.IsGroupBuyAvaliable = !groupBuy.IsGroupBuyAvaliable;
+            await _groupBuyRepository.UpdateAsync(groupBuy);
+        }
     }
 }

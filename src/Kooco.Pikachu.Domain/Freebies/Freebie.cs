@@ -23,6 +23,7 @@ namespace Kooco.Pikachu.Freebies
         public FreebieOrderReach? FreebieOrderReach { get; set; }
         public decimal? MinimumAmount { get; set; }
         public int? MinimumPiece { get; set; }
+        public int FreebieQuantity { get; set; }
         public decimal? FreebieAmount { get; set; }
         public Guid? TenantId { get; set; }
         public bool IsFreebieAvaliable { get; set; }
@@ -42,6 +43,7 @@ namespace Kooco.Pikachu.Freebies
             DateTime? activityEndDate,
             decimal? minimumAmount,
             int? minimumPiece,
+            int freebieQuantity,
             decimal? freebieAmount
             ) : base(id)
         {
@@ -54,6 +56,7 @@ namespace Kooco.Pikachu.Freebies
             FreebieAmount = freebieAmount;
             MinimumAmount = minimumAmount;
             MinimumPiece = minimumPiece;
+            FreebieQuantity = freebieQuantity;
             FreebieOrderReach = freebieOrderReach;
             Images = new List<Image>();
             FreebieGroupBuys = new List<FreebieGroupBuys>();
