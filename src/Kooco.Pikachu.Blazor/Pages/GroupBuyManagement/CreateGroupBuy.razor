@@ -2,6 +2,7 @@
 @using Kooco.Pikachu.EnumValues;
 @using Kooco.Pikachu.GroupBuys;
 @using Kooco.Pikachu.Items.Dtos;
+@using Microsoft.Extensions.Configuration;
 @using Pikachu.Items;
 @using Pikachu.Localization;
 @using Microsoft.Extensions.Localization;
@@ -13,6 +14,8 @@
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<PikachuResource> L
 @inject IMessageService _message
+@inject IConfiguration _configuration
+
 <style>
     .row {
         margin-top: 10px;
@@ -31,7 +34,7 @@
                     <label>@L["SalesURL1"]</label>
                 </div>
                 <div class="col-7">
-                    <TextEdit @bind-Text="@CreateGroupBuyDto.EntryURL" />
+                    <TextEdit @bind-Text="@CreateGroupBuyDto.EntryURL" ReadOnly />
                 </div>
             </div>
             <div class="row">

@@ -210,7 +210,7 @@ namespace Kooco.Pikachu.GroupBuys
 
         public GroupBuy(Guid id, int groupNo, string status,
             string groupBuyName,
-            string entryURL,
+            string entryURL, // Not Saving this on purpose
             string entryURL2,
             string subjectLine,
             string shortName,
@@ -258,7 +258,6 @@ namespace Kooco.Pikachu.GroupBuys
             GroupBuyNo = groupNo;
             Status = status;
             GroupBuyName = groupBuyName;
-            EntryURL = entryURL;
             EntryURL2 = entryURL2;
             SubjectLine = subjectLine;
             ShortName = shortName;

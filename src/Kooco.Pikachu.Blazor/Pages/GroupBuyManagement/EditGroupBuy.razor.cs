@@ -87,6 +87,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 Id = Guid.Parse(id);
                 var groupbuy = await _groupBuyAppService.GetWithDetailsAsync(Id);
                 EditGroupBuyDto = _objectMapper.Map<GroupBuyDto, GroupBuyUpdateDto>(groupbuy);
+                EditGroupBuyDto.EntryURL = $"{_configuration["EntryUrl"]}/{Id}";
                 ExistingImages = await _imageAppService.GetGroupBuyImagesAsync(Id, ImageType.GroupBuyCarouselImage);
                 List<string> paymentMethotTagArray = EditGroupBuyDto.PaymentMethod?.Split(',')?.ToList() ?? new List<string>();
                 PaymentMethodTags = paymentMethotTagArray != null ? paymentMethotTagArray.ToList() : new List<string>();
