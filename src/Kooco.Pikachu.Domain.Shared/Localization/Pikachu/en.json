@@ -239,5 +239,7 @@
     "SubTotal": "Sub Total",
     "Permission:Orders": "Orders Management",
     "Permission:AddStoreComments": "Add Store Comments",
+    "WaitingForPayment": "Waiting For Payment",
+    "PrepareShipment": "Prepare Shipment"
   }
 }

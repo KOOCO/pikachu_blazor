@@ -41,6 +41,7 @@ namespace Kooco.Pikachu.Orders
         public GroupBuy GroupBuy { get; set; }
         public int TotalQuantity { get; set; }
         public decimal TotalAmount { get; set; }
+        public ShippingStatus ShippingStatus { get; set; }
         public OrderStatus OrderStatus { get; set; }
         public ICollection<OrderItem> OrderItems { get; set; }
         public ICollection<StoreComment> StoreComments { get; set; }
@@ -99,6 +100,7 @@ namespace Kooco.Pikachu.Orders
             TotalQuantity = totalQuantity;
             TotalAmount = totalAmount;
             OrderStatus = OrderStatus.Open;
+            ShippingStatus = ShippingStatus.WaitingForPayment;
             OrderItems = new List<OrderItem>();
             StoreComments = new List<StoreComment>();
         }

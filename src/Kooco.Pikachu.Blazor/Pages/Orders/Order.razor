@@ -75,9 +75,9 @@
                         @L[context.OrderStatus.ToString()]
                     </DisplayTemplate>
                 </DataGridColumn>
-                <DataGridColumn Field="@nameof(OrderDto.CustomerName)" Caption="@L["ShippingStatus"]">
+                <DataGridColumn Field="@nameof(OrderDto.ShippingStatus)" Caption="@L["ShippingStatus"]">
                     <DisplayTemplate>
-                        待實現
+                        @L[context.ShippingStatus.ToString()]
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn Field="@nameof(OrderDto.PaymentMethod)" Caption="@L["PaymentMethod"]">

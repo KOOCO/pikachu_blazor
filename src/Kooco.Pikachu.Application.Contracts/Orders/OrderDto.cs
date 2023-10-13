@@ -38,5 +38,6 @@ namespace Kooco.Pikachu.Orders
         public List<OrderItemDto> OrderItems { get; set; }
         public List<StoreCommentDto> StoreComments { get; set; }
         public bool IsSelected { get; set; } = false;
+        public ShippingStatus ShippingStatus { get; set; }
     }
 }
