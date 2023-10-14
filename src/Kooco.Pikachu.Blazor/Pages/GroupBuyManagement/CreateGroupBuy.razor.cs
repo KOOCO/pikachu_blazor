@@ -12,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
@@ -25,6 +24,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         private const int MaxAllowedFilesPerUpload = 5;
         private const int TotalMaxAllowedFiles = 5;
         private const int MaxAllowedFileSize = 1024 * 1024 * 10;
+
         private GroupBuyCreateDto CreateGroupBuyDto = new();
         public List<CreateImageDto> CarouselImages { get; set; }
         private string TagInputValue { get; set; }
@@ -55,6 +55,8 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         private readonly IUiMessageService _uiMessageService;
         private readonly ImageContainerManager _imageContainerManager;
         private readonly List<string> ValidFileExtensions = new() { ".jpg", ".png", ".svg", ".jpeg", ".webp" };
+        public readonly List<string> ValidPaymentMethods = new() { "ALL", "Credit", "WebATM", "ATM", "CVS", "BARCODE", "Alipay", "Tenpay", "TopUpUsed", "GooglePay" };
+        private string? PaymentMethodError { get; set; } = null;
         public CreateGroupBuy(
             IGroupBuyAppService groupBuyAppService,
             IImageAppService imageAppService,
@@ -75,7 +77,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         }
         protected override async Task OnInitializedAsync()
         {
-            CreateGroupBuyDto.EntryURL = _configuration["EntryUrl"];
+            CreateGroupBuyDto.EntryURL = _configuration["EntryUrl"]?.TrimEnd('/');
             SetItemList = await _setItemAppService.GetItemsLookupAsync();
             ItemsList = await _itemAppService.GetItemsLookupAsync();
             ItemsList.AddRange(SetItemList);
@@ -386,11 +388,20 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         }
         private void HandlePaymentTagInputKeyUp(KeyboardEventArgs e)
         {
+            PaymentMethodError = null;
             if (e.Key == "Enter")
             {
                 if (!PaymentTagInputValue.IsNullOrWhiteSpace() && !PaymentMethodTags.Any(x => x == PaymentTagInputValue))
                 {
-                    PaymentMethodTags.Add(PaymentTagInputValue);
+                    var matchedPaymentMethod = ValidPaymentMethods.FirstOrDefault(pm => string.Equals(pm, PaymentTagInputValue, StringComparison.OrdinalIgnoreCase));
+                    if (matchedPaymentMethod != null)
+                    {
+                        PaymentMethodTags.Add(matchedPaymentMethod);
+                    }
+                    else
+                    {
+                        PaymentMethodError = $"{PaymentTagInputValue} is not a valid Payment Method";
+                    }
                 }
                 PaymentTagInputValue = string.Empty;
             }

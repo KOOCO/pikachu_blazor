@@ -1,7 +1,4 @@
-﻿using Kooco.Pikachu.Freebies.Dtos;
-using Kooco.Pikachu.FreeBies.Dtos;
-using Kooco.Pikachu.Freebies;
-using Kooco.Pikachu.Groupbuys;
+﻿using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Permissions;
 using Microsoft.AspNetCore.Authorization;
@@ -9,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;

@@ -1,8 +1,7 @@
 ﻿using Kooco.Pikachu.Orders;
-using Kooco.Pikachu.StoreComments;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
@@ -61,6 +60,16 @@ namespace Kooco.Pikachu.Controllers.Orders
         public Task UpdateStoreCommentAsync(Guid id, Guid commentId, string comment)
         {
             return _ordersAppService.UpdateStoreCommentAsync(id, commentId, comment);
+        }
+
+        [HttpPost("callback")]
+        [AllowAnonymous]
+        public IActionResult HandleCallback(PaymentResult result)
+        {
+            // Handle the callback data here
+            // This is just a placeholder. Replace with your actual handling code.
+
+            return Ok();
         }
     }
 }

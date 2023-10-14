@@ -55,7 +55,8 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         private List<ItemWithItemTypeDto> ItemsList { get; set; } = new();
         private readonly ImageContainerManager _imageContainerManager;
         private readonly List<string> ValidFileExtensions = new() { ".jpg", ".png", ".svg", ".jpeg", ".webp" };
-
+        public readonly List<string> ValidPaymentMethods = new() { "ALL", "Credit", "WebATM", "ATM", "CVS", "BARCODE", "Alipay", "Tenpay", "TopUpUsed", "GooglePay" };
+        private string? PaymentMethodError { get; set; } = null;
         private List<ImageDto> ExistingImages { get; set; } = new();
 
         public EditGroupBuy(
@@ -87,7 +88,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 Id = Guid.Parse(id);
                 var groupbuy = await _groupBuyAppService.GetWithDetailsAsync(Id);
                 EditGroupBuyDto = _objectMapper.Map<GroupBuyDto, GroupBuyUpdateDto>(groupbuy);
-                EditGroupBuyDto.EntryURL = $"{_configuration["EntryUrl"]}/{Id}";
+                EditGroupBuyDto.EntryURL = $"{_configuration["EntryUrl"]?.TrimEnd('/')}/{Id}";
                 ExistingImages = await _imageAppService.GetGroupBuyImagesAsync(Id, ImageType.GroupBuyCarouselImage);
                 List<string> paymentMethotTagArray = EditGroupBuyDto.PaymentMethod?.Split(',')?.ToList() ?? new List<string>();
                 PaymentMethodTags = paymentMethotTagArray != null ? paymentMethotTagArray.ToList() : new List<string>();
@@ -489,9 +490,14 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         {
             if (e.Key == "Enter")
             {
-                if (!PaymentTagInputValue.IsNullOrWhiteSpace() && !PaymentMethodTags.Any(x => x == PaymentTagInputValue))
+                var matchedPaymentMethod = ValidPaymentMethods.FirstOrDefault(pm => string.Equals(pm, PaymentTagInputValue, StringComparison.OrdinalIgnoreCase));
+                if (matchedPaymentMethod != null)
                 {
-                    PaymentMethodTags.Add(PaymentTagInputValue);
+                    PaymentMethodTags.Add(matchedPaymentMethod);
+                }
+                else
+                {
+                    PaymentMethodError = $"{PaymentTagInputValue} is not a valid Payment Method";
                 }
                 PaymentTagInputValue = string.Empty;
             }
