@@ -64,12 +64,25 @@ namespace Kooco.Pikachu.Controllers.Orders
 
         [HttpPost("callback")]
         [AllowAnonymous]
-        public IActionResult HandleCallback(PaymentResult result)
+        public async Task<IActionResult> HandleCallbackAsync(PaymentResult result)
         {
             // Handle the callback data here
             // This is just a placeholder. Replace with your actual handling code.
+            try
+            {
+                await _ordersAppService.HandlePaymentAsync(result);
+                return Ok("1|OK");
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
 
-            return Ok();
+        [HttpPost("dummy")]
+        Task IOrderAppService.HandlePaymentAsync(PaymentResult result)
+        {
+            throw new NotImplementedException();
         }
     }
 }

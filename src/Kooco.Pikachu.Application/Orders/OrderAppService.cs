@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.Groupbuys;
+﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Permissions;
 using Microsoft.AspNetCore.Authorization;
@@ -137,13 +138,13 @@ namespace Kooco.Pikachu.Orders
             var order = await _orderRepository.GetAsync(id);
             await _orderRepository.EnsureCollectionLoadedAsync(order, o => o.StoreComments);
             var storeComment = order.StoreComments.First(c => c.Id == commentId);
-            if(storeComment.CreatorId != CurrentUser.Id)
+            if (storeComment.CreatorId != CurrentUser.Id)
             {
                 throw new UnauthorizedAccessException();
             }
             storeComment.Comment = comment;
         }
-        public  async Task<OrderDto> UpdateAsync(Guid id, CreateOrderDto input)
+        public async Task<OrderDto> UpdateAsync(Guid id, CreateOrderDto input)
         {
             var order = await _orderRepository.GetAsync(id);
             order.RecipientName = input.RecipientName;
@@ -155,6 +156,14 @@ namespace Kooco.Pikachu.Orders
             await _orderRepository.UpdateAsync(order);
             return ObjectMapper.Map<Order, OrderDto>(order);
         }
+
+        public async Task HandlePaymentAsync(PaymentResult result)
+        {
+            var order = await _orderRepository.FirstOrDefaultAsync(o => o.OrderNo == result.MerchantTradeNo);
+            order.ShippingStatus = ShippingStatus.PrepareShipment;
+
+            await _orderRepository.UpdateAsync(order);
         }
     }
+}
 
