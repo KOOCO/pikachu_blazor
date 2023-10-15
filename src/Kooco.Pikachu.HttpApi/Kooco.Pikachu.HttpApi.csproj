@@ -8,6 +8,14 @@
     <RootNamespace>Kooco.Pikachu</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>$(NoWarn);CS1591;CS8601;</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>$(NoWarn);CS1591;CS8601;</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Kooco.Pikachu.Application.Contracts\Kooco.Pikachu.Application.Contracts.csproj" />
   </ItemGroup>

@@ -34,6 +34,8 @@ namespace Kooco.Pikachu.Orders
         public GroupBuyDto GroupBuy { get; set; }
         public int TotalQuantity { get; set; }
         public decimal TotalAmount { get; set; }
+        public string? CheckMacValue { get; set; }
+        public DateTime? PaymentDate { get; set; }
         public OrderStatus OrderStatus { get; set; }
         public List<OrderItemDto> OrderItems { get; set; }
         public List<StoreCommentDto> StoreComments { get; set; }

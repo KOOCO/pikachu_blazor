@@ -3,13 +3,18 @@ using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Permissions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 
@@ -22,18 +27,21 @@ namespace Kooco.Pikachu.Orders
         private readonly OrderManager _orderManager;
         private readonly IDataFilter _dataFilter;
         private readonly IGroupBuyRepository _groupBuyRepository;
+        private readonly IConfiguration _configuration;
 
         public OrderAppService(
             IOrderRepository orderRepository,
             OrderManager orderManager,
             IDataFilter dataFilter,
-            IGroupBuyRepository groupBuyRepository
+            IGroupBuyRepository groupBuyRepository,
+            IConfiguration configuration
             )
         {
             _orderRepository = orderRepository;
             _orderManager = orderManager;
             _dataFilter = dataFilter;
             _groupBuyRepository = groupBuyRepository;
+            _configuration = configuration;
         }
 
         [AllowAnonymous]
@@ -144,6 +152,7 @@ namespace Kooco.Pikachu.Orders
             }
             storeComment.Comment = comment;
         }
+
         public async Task<OrderDto> UpdateAsync(Guid id, CreateOrderDto input)
         {
             var order = await _orderRepository.GetAsync(id);
@@ -158,12 +167,72 @@ namespace Kooco.Pikachu.Orders
         }
 
         [AllowAnonymous]
-        public async Task HandlePaymentAsync(string id)
+        public async Task AddCheckMacValueAsync(Guid id, string checkMacValue)
         {
-            var order = await _orderRepository.FirstOrDefaultAsync(o => o.OrderNo == id);
-            order.ShippingStatus = ShippingStatus.PrepareShipment;
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var order = await _orderRepository.GetAsync(id);
+                order.CheckMacValue = checkMacValue;
+                await _orderRepository.UpdateAsync(order);
+            }
+        }
 
-            await _orderRepository.UpdateAsync(order);
+        [AllowAnonymous]
+        public async Task HandlePaymentAsync(PaymentResult paymentResult)
+        {
+            if (paymentResult.SimulatePaid == 0)
+            {
+                using (_dataFilter.Disable<IMultiTenant>())
+                {
+                    var order = await _orderRepository
+                                    .FirstOrDefaultAsync(o => o.OrderNo == paymentResult.MerchantTradeNo)
+                                    ?? throw new EntityNotFoundException();
+
+                    var hashKey = _configuration["EcPay:HashKey"];
+                    var hashIV = _configuration["EcPay:HashIV"];
+                    var checkMacValue = GenerateCheckMacValue(paymentResult.RequestBody, hashKey, hashIV);
+
+                    if (checkMacValue != order.CheckMacValue)
+                    {
+                        throw new Exception();
+                    }
+
+                    order.ShippingStatus = ShippingStatus.PrepareShipment;
+                    _ = DateTime.TryParse(paymentResult.PaymentDate, out DateTime parsedDate);
+                    order.PaymentDate = parsedDate;
+
+                    await _orderRepository.UpdateAsync(order);
+                }
+            }
+        }
+
+        [AllowAnonymous]
+        private static string GenerateCheckMacValue(string requestBody, string hashKey, string hashIV)
+        {
+            // Split by '&' and sort alphabetically
+            var sortedQuery = WebUtility.UrlDecode(requestBody)
+                                        .Split('&')
+                                        .OrderBy(queryParam => queryParam)
+                                        .ToList();
+
+            // Join back with '&'
+            string sortedQueryString = string.Join('&', sortedQuery);
+
+            // Add HashKey & HashIV
+            string hashQueryString = $"{hashKey}&{sortedQueryString}&{hashIV}";
+
+            // UrlEncode
+            string encodedQuery = WebUtility.UrlEncode(hashQueryString).ToLower();
+
+            // Get SHA256
+            byte[] bytes = SHA256.HashData(Encoding.UTF8.GetBytes(encodedQuery));
+
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                builder.Append(bytes[i].ToString("X2"));
+            }
+            return builder.ToString().ToUpper();
         }
     }
 }

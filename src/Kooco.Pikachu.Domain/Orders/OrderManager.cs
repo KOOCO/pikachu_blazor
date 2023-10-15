@@ -9,7 +9,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Domain.Services;
-using Volo.Abp.Users;
 
 namespace Kooco.Pikachu.Orders
 {
@@ -53,8 +52,11 @@ namespace Kooco.Pikachu.Orders
              decimal totalAmount
              )
         {
-            string orderNo = await GenerateOrderNoAsync(groupBuyId);
-
+            //string orderNo = await GenerateOrderNoAsync(groupBuyId);
+            var newGuid = Guid.NewGuid();
+            string orderNo = newGuid.ToString().Replace("-", "");
+            orderNo = orderNo.Length >= 10 ? orderNo.Substring(0, 11) : orderNo;
+            orderNo = orderNo.ToUpper();
             return new Order(
                 GuidGenerator.Create(),
                 groupBuyId,

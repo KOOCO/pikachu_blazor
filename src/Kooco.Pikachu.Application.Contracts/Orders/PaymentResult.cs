@@ -23,5 +23,6 @@ namespace Kooco.Pikachu.Orders
         public string CustomField3 { get; set; }
         public string CustomField4 { get; set; }
         public string CheckMacValue { get; set; }
+        public string RequestBody { get; set; }
     }
 }
