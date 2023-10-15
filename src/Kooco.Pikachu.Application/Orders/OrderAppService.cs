@@ -157,6 +157,7 @@ namespace Kooco.Pikachu.Orders
             return ObjectMapper.Map<Order, OrderDto>(order);
         }
 
+        [AllowAnonymous]
         public async Task HandlePaymentAsync(PaymentResult result)
         {
             var order = await _orderRepository.FirstOrDefaultAsync(o => o.OrderNo == result.MerchantTradeNo);
