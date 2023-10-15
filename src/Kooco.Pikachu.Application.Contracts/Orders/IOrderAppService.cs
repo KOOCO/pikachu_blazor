@@ -14,6 +14,6 @@ namespace Kooco.Pikachu.Orders
         Task<OrderDto> GetWithDetailsAsync(Guid id);
         Task AddStoreCommentAsync(Guid id, string comment);
         Task UpdateStoreCommentAsync(Guid id, Guid commentId, string comment);
-        Task HandlePaymentAsync(PaymentResult result);
+        Task HandlePaymentAsync(string id);
     }
 }

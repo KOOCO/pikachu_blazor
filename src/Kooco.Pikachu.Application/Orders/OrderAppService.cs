@@ -158,9 +158,9 @@ namespace Kooco.Pikachu.Orders
         }
 
         [AllowAnonymous]
-        public async Task HandlePaymentAsync(PaymentResult result)
+        public async Task HandlePaymentAsync(string id)
         {
-            var order = await _orderRepository.FirstOrDefaultAsync(o => o.OrderNo == result.MerchantTradeNo);
+            var order = await _orderRepository.FirstOrDefaultAsync(o => o.OrderNo == id);
             order.ShippingStatus = ShippingStatus.PrepareShipment;
 
             await _orderRepository.UpdateAsync(order);

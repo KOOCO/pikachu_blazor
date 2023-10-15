@@ -70,7 +70,10 @@ namespace Kooco.Pikachu.Controllers.Orders
             // This is just a placeholder. Replace with your actual handling code.
             try
             {
-                //await _ordersAppService.HandlePaymentAsync(result);
+                var form = await Request.ReadFormAsync();
+
+                var id = form["MerchantTradeNo"];
+                await _ordersAppService.HandlePaymentAsync(id);
                 return Ok("1|OK");
             }
             catch
@@ -80,7 +83,7 @@ namespace Kooco.Pikachu.Controllers.Orders
         }
 
         [HttpPost("dummy")]
-        public Task HandlePaymentAsync(PaymentResult result)
+        public Task HandlePaymentAsync(string id)
         {
             throw new NotImplementedException();
         }
