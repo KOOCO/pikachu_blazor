@@ -213,18 +213,11 @@ public class PikachuBlazorModule : AbpModule
             options.AddDefaultPolicy(builder =>
             {
                 builder
-                    //.WithOrigins(
-                    //    configuration["App:CorsOrigins"]
-                    //        .Split(",", StringSplitOptions.RemoveEmptyEntries)
-                    //        .Select(o => o.Trim().RemovePostFix("/"))
-                    //        .ToArray()
-                    //)
                     .AllowAnyOrigin()
                     .WithAbpExposedHeaders()
                     .SetIsOriginAllowedToAllowWildcardSubdomains()
                     .AllowAnyHeader()
                     .AllowAnyMethod();
-                    //.AllowCredentials();
             });
         });
     }

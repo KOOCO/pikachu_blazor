@@ -1,5 +1,6 @@
 ﻿using Blazorise;
 using Blazorise.DataGrid;
+using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.Orders;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -22,6 +23,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         private string? Filter { get; set; }
 
         private readonly HashSet<Guid> ExpandedRows = new();
+        private LoadingIndicator loading { get; set; }
         private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<OrderDto> e)
         {
             PageIndex = e.Page - 1;
@@ -33,6 +35,8 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         {
             try
             {
+                await loading.Show();
+
                 int skipCount = PageIndex * PageSize;
                 var result = await _orderAppService.GetListAsync(new GetOrderListDto
                 {
@@ -43,9 +47,12 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 });
                 Orders = result?.Items.ToList() ?? new List<OrderDto>();
                 TotalCount = (int?)result?.TotalCount ?? 0;
+
+                await loading.Hide();
             }
             catch (Exception ex)
             {
+                await loading.Hide();
                 await _uiMessageService.Error(ex.GetType().ToString());
                 Console.WriteLine(ex.ToString());
             }
@@ -55,13 +62,6 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         {
             PageIndex = 0;
             await UpdateItemList();
-        }
-        async Task CheckForEnter(KeyboardEventArgs e)
-        {
-            if (e.Key == "Enter")
-            {
-                await OnSearch();
-            }
         }
 
         void HandleSelectAllChange(ChangeEventArgs e)
@@ -74,10 +74,14 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
             StateHasChanged();
         }
 
-        public void NavigateToOrderDetails(DataGridRowMouseEventArgs<OrderDto> e)
+        public async void NavigateToOrderDetails(DataGridRowMouseEventArgs<OrderDto> e)
         {
+            await loading.Show();
+
             var id = e.Item.Id;
             NavigationManager.NavigateTo($"Orders/OrderDetails/{id}");
+
+            await loading.Hide();
         }
 
         async void OnSortChange(DataGridSortChangedEventArgs e)

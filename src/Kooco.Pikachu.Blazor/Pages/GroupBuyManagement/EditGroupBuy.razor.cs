@@ -8,6 +8,7 @@ using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -80,74 +81,77 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             _setItemAppService = setItemAppService;
         }
 
-        protected override async Task OnInitializedAsync()
+        protected override async Task OnAfterRenderAsync(bool isFirstRender)
         {
-            try
+            if (isFirstRender)
             {
-                id ??= "";
-                Id = Guid.Parse(id);
-                var groupbuy = await _groupBuyAppService.GetWithDetailsAsync(Id);
-                EditGroupBuyDto = _objectMapper.Map<GroupBuyDto, GroupBuyUpdateDto>(groupbuy);
-                EditGroupBuyDto.EntryURL = $"{_configuration["EntryUrl"]?.TrimEnd('/')}/{Id}";
-                ExistingImages = await _imageAppService.GetGroupBuyImagesAsync(Id, ImageType.GroupBuyCarouselImage);
-                List<string> paymentMethotTagArray = EditGroupBuyDto.PaymentMethod?.Split(',')?.ToList() ?? new List<string>();
-                PaymentMethodTags = paymentMethotTagArray != null ? paymentMethotTagArray.ToList() : new List<string>();
-                List<string> excludeShippingMethodArray = EditGroupBuyDto.ExcludeShippingMethod?.Split(',')?.ToList() ?? new();
-                ItemTags = excludeShippingMethodArray != null ? excludeShippingMethodArray.ToList() : new List<string>();
-                CarouselImages = _objectMapper.Map<List<ImageDto>, List<CreateImageDto>>(ExistingImages);
-                ItemsList = await _itemAppService.GetItemsLookupAsync();
-                var setItemsList = await _setItemAppService.GetItemsLookupAsync();
-                ItemsList.AddRange(setItemsList);
-                
-                await LoadHtmlContent();
-
-                var itemGroups = groupbuy.ItemGroups;
-                if (itemGroups.Any())
+                try
                 {
-                    var i = 0;
-                    foreach (var itemGroup in itemGroups)
+                    id ??= "";
+                    Id = Guid.Parse(id);
+                    var groupbuy = await _groupBuyAppService.GetWithDetailsAsync(Id);
+                    EditGroupBuyDto = _objectMapper.Map<GroupBuyDto, GroupBuyUpdateDto>(groupbuy);
+                    EditGroupBuyDto.EntryURL = $"{_configuration["EntryUrl"]?.TrimEnd('/')}/{Id}";
+                    ExistingImages = await _imageAppService.GetGroupBuyImagesAsync(Id, ImageType.GroupBuyCarouselImage);
+                    List<string> paymentMethotTagArray = EditGroupBuyDto.PaymentMethod?.Split(',')?.ToList() ?? new List<string>();
+                    PaymentMethodTags = paymentMethotTagArray != null ? paymentMethotTagArray.ToList() : new List<string>();
+                    List<string> excludeShippingMethodArray = EditGroupBuyDto.ExcludeShippingMethod?.Split(',')?.ToList() ?? new();
+                    ItemTags = excludeShippingMethodArray != null ? excludeShippingMethodArray.ToList() : new List<string>();
+                    CarouselImages = _objectMapper.Map<List<ImageDto>, List<CreateImageDto>>(ExistingImages);
+                    ItemsList = await _itemAppService.GetItemsLookupAsync();
+                    var setItemsList = await _setItemAppService.GetItemsLookupAsync();
+                    ItemsList.AddRange(setItemsList);
+
+                    var itemGroups = groupbuy.ItemGroups;
+                    if (itemGroups.Any())
                     {
-                        var collapseItem = new CollapseItem
+                        var i = 0;
+                        foreach (var itemGroup in itemGroups)
                         {
-                            Index = i++,
-                            SortOrder = itemGroup.SortOrder,
-                            GroupBuyModuleType = itemGroup.GroupBuyModuleType
-                        };
-                        if (itemGroup.ItemGroupDetails.Any())
-                        {
-                            foreach (var item in itemGroup.ItemGroupDetails)
+                            var collapseItem = new CollapseItem
                             {
-                                var itemWithItemType = new ItemWithItemTypeDto
+                                Index = i++,
+                                SortOrder = itemGroup.SortOrder,
+                                GroupBuyModuleType = itemGroup.GroupBuyModuleType
+                            };
+                            if (itemGroup.ItemGroupDetails.Any())
+                            {
+                                foreach (var item in itemGroup.ItemGroupDetails)
                                 {
-                                    Id = item.ItemType == ItemType.Item ? item.ItemId.Value : item.SetItemId.Value,
-                                    Name = item.ItemType == ItemType.Item ? item.Item.ItemName : item.SetItem.SetItemName,
-                                    ItemType = item.ItemType,
-                                    Item = item.Item,
-                                    SetItem = item.SetItem
-                                };
-                                collapseItem.Selected.Add(itemWithItemType);
+                                    var itemWithItemType = new ItemWithItemTypeDto
+                                    {
+                                        Id = item.ItemType == ItemType.Item ? item.ItemId.Value : item.SetItemId.Value,
+                                        Name = item.ItemType == ItemType.Item ? item.Item.ItemName : item.SetItem.SetItemName,
+                                        ItemType = item.ItemType,
+                                        Item = item.Item,
+                                        SetItem = item.SetItem
+                                    };
+                                    collapseItem.Selected.Add(itemWithItemType);
+                                }
                             }
-                        }
-                        else
-                        {
-                            collapseItem.Selected = new();
-                        }
+                            else
+                            {
+                                collapseItem.Selected = new();
+                            }
 
-                        CollapseItem.Add(collapseItem);
+                            CollapseItem.Add(collapseItem);
+                        }
                     }
-                }
+                    await LoadHtmlContent();
 
-                StateHasChanged();
-            }
-            catch (BusinessException ex)
-            {
-                Console.WriteLine(ex.ToString());
-                await _uiMessageService.Error(L[ex.Code]);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-                await _uiMessageService.Error(ex.GetType().ToString());
+                    StateHasChanged();
+                    await JsRuntime.InvokeVoidAsync("console.log", "Success");
+                }
+                catch (BusinessException ex)
+                {
+                    await JsRuntime.InvokeVoidAsync("console.error", ex.ToString());
+                    await _uiMessageService.Error(L[ex.Code]);
+                }
+                catch (Exception ex)
+                {
+                    await JsRuntime.InvokeVoidAsync("console.error", ex.ToString());
+                    await _uiMessageService.Error(ex.GetType().ToString());
+                } 
             }
         }
 
