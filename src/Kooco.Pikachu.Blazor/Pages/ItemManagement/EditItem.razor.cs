@@ -67,7 +67,6 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         {
             if (isFirstRender)
             {
-
                 try
                 {
                     EditingId = Guid.Parse(Id);
@@ -77,21 +76,16 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                                                              EnumType.ShippingMethod,
                                                              EnumType.TaxType
                                                          })).ToList();
-
                     TaxTypes = enumValues.Where(x => x.EnumType == EnumType.TaxType).ToList();
-
                     ShippingMethods = enumValues.Where(x => x.EnumType == EnumType.ShippingMethod).ToList();
-
                     var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfile>());
                     // Create a new mapper
                     var mapper = config.CreateMapper();
-
                     // Map ItemDto to UpdateItemDto
                     UpdateItemDto = mapper.Map<UpdateItemDto>(ExistingItem);
                     UpdateItemDto.Images = UpdateItemDto.Images.OrderBy(x => x.SortNo).ToList();
                     ItemDetailsList = mapper.Map<List<CreateItemDetailsDto>>(ExistingItem.ItemDetails);
                     ItemTags = ExistingItem.ItemTags?.Split(',').ToList() ?? new List<string>();
-
                     if (!ExistingItem.Attribute1Name.IsNullOrWhiteSpace())
                     {
                         Attributes.Add(
@@ -121,6 +115,15 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                                 Name = ExistingItem.Attribute3Name,
                                 ItemTags = ItemDetailsList.Where(x => x.Attribute3Value != null).Select(x => x.Attribute3Value).Distinct().ToList()
                             });
+                    }
+                    if (ExistingItem.Attribute1Name.IsNullOrWhiteSpace() && ExistingItem.Attribute2Name.IsNullOrWhiteSpace() && ExistingItem.Attribute3Name.IsNullOrWhiteSpace())
+                    {
+                        Attributes.Add(new Attributes
+                        {
+                            Id = 1,
+                            Name = "ItemStyle1",
+                            ItemTags = new List<string>()
+                        });
                     }
                     await LoadHtmlContent();
                     StateHasChanged();
@@ -326,12 +329,11 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 Attributes.Add(new Attributes
                 {
                     Id = attribute == null ? 1 : +attribute.Id + 1,
-                    Name = "",
+                    Name = "ItemStyle" + (attribute == null ? 1 : +attribute.Id + 1),
                     ItemTags = new List<string>()
                 });
             }
         }
-
         void BindItemDetailList()
         {
             ItemDetailsList = new List<CreateItemDetailsDto>();

@@ -57,60 +57,63 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
             _itemAppService = itemAppService;
         }
 
-        protected override async Task OnInitializedAsync()
+        protected override async Task OnAfterRenderAsync(bool isFirstRender)
         {
-            try
+            if (isFirstRender)
             {
-                var result = Guid.TryParse(Id, out Guid editingId);
-                if (result)
+                try
                 {
-                    EditingId = editingId;
-                    ExistingItem = await _setItemAppService.GetAsync(editingId, true);
-
-                    var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfile>());
-                    // Create a new mapper
-                    var mapper = config.CreateMapper();
-
-                    // Map ItemDto to UpdateItemDto
-                    CreateUpdateSetItemDto = mapper.Map<CreateUpdateSetItemDto>(ExistingItem);
-                    CreateUpdateSetItemDto.Images = CreateUpdateSetItemDto.Images.OrderBy(x => x.SortNo).ToList();
-
-                    var itemDetails = ExistingItem.SetItemDetails.ToList();
-
-                    itemDetails.ForEach(item =>
+                    var result = Guid.TryParse(Id, out Guid editingId);
+                    if (result)
                     {
-                        ItemDetails.Add(
-                            new ItemDetailsModel(
-                                item.ItemId, 
-                                item.Item?.ItemName, 
-                                item.Item?.ItemDescription, 
-                                item.Item?.ItemDescriptionTitle, 
-                                item.Quantity, 
-                                false,
-                                item.Item?.Images?.FirstOrDefault()?.ImageUrl
-                                )
-                            );
-                    });
+                        EditingId = editingId;
+                        ExistingItem = await _setItemAppService.GetAsync(editingId, true);
 
-                    await LoadHtmlContent();
-                    ItemsList = await _itemAppService.GetItemsLookupAsync();
+                        var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfile>());
+                        // Create a new mapper
+                        var mapper = config.CreateMapper();
 
+                        // Map ItemDto to UpdateItemDto
+                        CreateUpdateSetItemDto = mapper.Map<CreateUpdateSetItemDto>(ExistingItem);
+                        CreateUpdateSetItemDto.Images = CreateUpdateSetItemDto.Images.OrderBy(x => x.SortNo).ToList();
+
+                        var itemDetails = ExistingItem.SetItemDetails.ToList();
+
+                        itemDetails.ForEach(item =>
+                        {
+                            ItemDetails.Add(
+                                new ItemDetailsModel(
+                                    item.ItemId,
+                                    item.Item?.ItemName,
+                                    item.Item?.ItemDescription,
+                                    item.Item?.ItemDescriptionTitle,
+                                    item.Quantity,
+                                    false,
+                                    item.Item?.Images?.FirstOrDefault()?.ImageUrl
+                                    )
+                                );
+                        });
+
+                        ItemsList = await _itemAppService.GetItemsLookupAsync();
+                        await LoadHtmlContent();
+                        StateHasChanged();
+                    }
+                    else
+                    {
+                        NavigationManager.NavigateTo("/SetItem");
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    NavigationManager.NavigateTo("/SetItem");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-                await _uiMessageService.Error(ex.GetType()?.ToString());
+                    Console.WriteLine(ex.ToString());
+                    await _uiMessageService.Error(ex.GetType()?.ToString());
+                } 
             }
         }
 
         private async Task LoadHtmlContent()
         {
-            await Task.Delay(1);
+            await Task.Delay(2);
             await QuillHtml.LoadHTMLContent(ExistingItem.Description);
         }
 

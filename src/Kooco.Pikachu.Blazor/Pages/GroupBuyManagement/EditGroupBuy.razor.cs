@@ -128,6 +128,14 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                                     };
                                     collapseItem.Selected.Add(itemWithItemType);
                                 }
+
+                                if(itemGroup.GroupBuyModuleType != GroupBuyModuleType.ProductDescription && itemGroup.ItemGroupDetails.Count < 3)
+                                {
+                                    for(int x = itemGroup.ItemGroupDetails.Count; x < 3; x++)
+                                    {
+                                        collapseItem.Selected.Add(new ItemWithItemTypeDto());
+                                    }
+                                }
                             }
                             else
                             {
@@ -521,11 +529,6 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyNameCannotBeNull]);
                     return;
                 }
-                if (CollapseItem.Any(c => c.Selected.Any(s => s.Id == Guid.Empty)))
-                {
-                    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyModuleCannotBeEmpty]);
-                    return;
-                }
                 if (ItemTags.Any())
                 {
                     EditGroupBuyDto.ExcludeShippingMethod = string.Join(",", ItemTags);
@@ -534,7 +537,6 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 {
                     EditGroupBuyDto.PaymentMethod = string.Join(",", PaymentMethodTags);
                 }
-
                 EditGroupBuyDto.NotifyMessage = await NotifyEmailHtml.GetHTML();
                 EditGroupBuyDto.GroupBuyConditionDescription = await GroupBuyHtml.GetHTML();
                 EditGroupBuyDto.ExchangePolicyDescription = await ExchangePolicyHtml.GetHTML();
@@ -545,6 +547,12 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 int i = 1;
                 foreach (var item in CollapseItem)
                 {
+                    if (item.Selected.TrueForAll(s => s.Id == Guid.Empty))
+                    {
+                        await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyModuleCannotBeEmpty]);
+                        return;
+                    }
+
                     int j = 1;
                     if (item.Selected.Any())
                     {
@@ -556,13 +564,16 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
                         foreach (var itemDetail in item.Selected)
                         {
-                            itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
+                            if (itemDetail.Id != Guid.Empty)
                             {
-                                SortOrder = j++,
-                                ItemId = itemDetail.ItemType == ItemType.Item ? itemDetail.Id : null,
-                                SetItemId = itemDetail.ItemType == ItemType.SetItem ? itemDetail.Id : null,
-                                ItemType = itemDetail.ItemType
-                            });
+                                itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
+                                {
+                                    SortOrder = j++,
+                                    ItemId = itemDetail.ItemType == ItemType.Item ? itemDetail.Id : null,
+                                    SetItemId = itemDetail.ItemType == ItemType.SetItem ? itemDetail.Id : null,
+                                    ItemType = itemDetail.ItemType
+                                });
+                            }
                         }
 
                         EditGroupBuyDto.ItemGroups.Add(itemGroup);

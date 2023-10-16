@@ -42,7 +42,6 @@ public class CreateItemDto
     public string? CustomField9Value { get; set; }
     public string? CustomField10Name { get; set; }
     public string? CustomField10Value { get; set; }
-
     public string? Attribute1Name { get; set; }
     public string? Attribute2Name { get; set; }
     public string? Attribute3Name { get; set; }

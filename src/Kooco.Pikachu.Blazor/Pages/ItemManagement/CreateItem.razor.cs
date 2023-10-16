@@ -64,6 +64,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                                                          })).ToList();
             TaxTypes = enumValues.Where(x => x.EnumType == EnumType.TaxType).ToList();
             CreateItemDto.TaxTypeId = TaxTypes.First().Id;
+            //CreateItemDto.Attribute1Name = "ItemStyle1";
 
             ShippingMethods = enumValues.Where(x => x.EnumType == EnumType.ShippingMethod).ToList();
             CreateItemDto.ShippingMethodId = ShippingMethods.First().Id;
@@ -73,7 +74,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             Attributes.Add(new Attributes
             {
                 Id = 1,
-                Name = "",
+                Name = "ItemStyle1",
                 ItemTags = new List<string>()
             });
         }
@@ -245,7 +246,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 Attributes.Add(new Attributes
                 {
                     Id = attribute == null ? 1 : +attribute.Id + 1,
-                    Name = "",
+                    Name = "ItemStyle"+ (attribute == null ? 1 : +attribute.Id + 1),
                     ItemTags = new List<string>()
                 });
             }

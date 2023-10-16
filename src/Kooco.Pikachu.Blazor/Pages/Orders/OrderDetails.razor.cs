@@ -160,14 +160,34 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
             {
 
                 if (
-                    ModificationTrack.IsInvalidName 
-                    || ModificationTrack.IsInvalidPhone 
+                    ModificationTrack.IsInvalidName
+                    || ModificationTrack.IsInvalidPhone
                     || ModificationTrack.IsInvalidAddress
                     )
                 {
                     return;
                 }
-
+                if (ModificationTrack.IsNameInputVisible)
+                {
+                    ModificationTrack.IsInvalidName = true;
+                    return;
+                }
+                else if (ModificationTrack.IsPhoneInputVisible)
+                {
+                    ModificationTrack.IsInvalidPhone = true;
+                    return;
+                }
+                else if (ModificationTrack.IsAddressInputVisible)
+                {
+                    ModificationTrack.IsInvalidAddress = true;
+                    return;
+                }
+                else
+                {
+                    ModificationTrack.IsInvalidName = false;
+                    ModificationTrack.IsInvalidPhone = false;
+                    ModificationTrack.IsInvalidAddress = false;
+                }
                 UpdateOrder.RecipientName = ModificationTrack.IsNameModified
                 ? ModificationTrack.NewName
                 : Order.RecipientName;

@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Components;
 using Kooco.Pikachu.Items;
 using Blazorise.Components;
 using Kooco.Pikachu.EnumValues;
+using static Kooco.Pikachu.Permissions.PikachuPermissions;
 
 namespace Kooco.Pikachu.Blazor.Pages.SetItem
 {
@@ -54,6 +55,7 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
         protected override async Task OnInitializedAsync()
         {
             ItemsList = await _itemAppService.GetItemsLookupAsync();
+            
         }
 
         async Task OnFileUploadAsync(FileChangedEventArgs e)
@@ -165,7 +167,6 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
                 if (id != null)
                 {
                     await AutocompleteField.Clear();
-
                     var item = await _itemAppService.GetAsync(id.Value);
                     ItemDetails.Add(new ItemDetailsModel
                         (

@@ -212,7 +212,7 @@
                         @foreach (var item in Attributes)
                         {
                             <div class="input-group">
-                                <TextEdit Placeholder="@L["ItemStyleKey"]" @bind-Text="@item.Name" />
+                                <TextEdit Placeholder="@L["ItemStyleKey"]"  @bind-Text="@item.Name" />
                                 @if (Attributes?.Count > 1)
                                 {
                                     <Button Class="btn btn-danger" @onclick="()=>DeleteAttribute(item)"><i class="fa fa-trash"></i></Button>

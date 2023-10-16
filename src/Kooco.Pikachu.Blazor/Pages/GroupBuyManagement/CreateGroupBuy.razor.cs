@@ -422,11 +422,11 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     return;
                 }
 
-                if (CollapseItem.Any(c => c.Selected.Any(s => s.Id == Guid.Empty)))
-                {
-                    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyModuleCannotBeEmpty]);
-                    return;
-                }
+                //if (CollapseItem.Any(c => c.Selected.Any(s => s.Id == Guid.Empty)))
+                //{
+                //    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyModuleCannotBeEmpty]);
+                //    return;
+                //}
 
                 CreateGroupBuyDto.GroupBuyNo = 0;
                 CreateGroupBuyDto.Status = "New";
@@ -449,6 +449,12 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 int i = 1;
                 foreach (var item in CollapseItem)
                 {
+                    if (item.Selected.TrueForAll(s => s.Id == Guid.Empty))
+                    {
+                        await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyModuleCannotBeEmpty]);
+                        return;
+                    }
+
                     int j = 1;
                     if (item.Selected.Any())
                     {
@@ -460,13 +466,16 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
                         foreach (var itemDetail in item.Selected)
                         {
-                            itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
+                            if (itemDetail.Id != Guid.Empty)
                             {
-                                SortOrder = j++,
-                                ItemId = itemDetail.ItemType == ItemType.Item ? itemDetail.Id : null,
-                                SetItemId = itemDetail.ItemType == ItemType.SetItem ? itemDetail.Id : null,
-                                ItemType = itemDetail.ItemType
-                            });
+                                itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
+                                {
+                                    SortOrder = j++,
+                                    ItemId = itemDetail.ItemType == ItemType.Item ? itemDetail.Id : null,
+                                    SetItemId = itemDetail.ItemType == ItemType.SetItem ? itemDetail.Id : null,
+                                    ItemType = itemDetail.ItemType
+                                }); 
+                            }
                         }
 
                         CreateGroupBuyDto.ItemGroups.Add(itemGroup);
