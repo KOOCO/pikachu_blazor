@@ -73,15 +73,11 @@ namespace Kooco.Pikachu.Controllers.Orders
             try
             {
                 string requestBody = string.Empty;
-                Request.Body.Position = 0;
                 // Read the request body into a string
                 using (StreamReader reader = new(Request.Body, Encoding.UTF8))
                 {
                     requestBody = await reader.ReadToEndAsync();
                 }
-
-                // Return the stream position to the beginning again so the next middleware can handle it
-                Request.Body.Position = 0;
 
                 var form = await Request.ReadFormAsync();
 
@@ -93,7 +89,7 @@ namespace Kooco.Pikachu.Controllers.Orders
                 var paymentResult = new PaymentResult
                 {
                     MerchantID = form["MerchantID "],
-                    MerchantTradeNo = form["MerchantTradeNo "],
+                    MerchantTradeNo = form["MerchantTradeNo"],
                     StoreID = form["StoreID"],
                     RtnCode = validRtnCode ? rtnCode : 0,
                     RtnMsg = form["RtnMsg"],
