@@ -88,7 +88,7 @@ namespace Kooco.Pikachu.Controllers.Orders
 
                 var paymentResult = new PaymentResult
                 {
-                    MerchantID = form["MerchantID "],
+                    MerchantID = form["MerchantID"],
                     MerchantTradeNo = form["MerchantTradeNo"],
                     StoreID = form["StoreID"],
                     RtnCode = validRtnCode ? rtnCode : 0,
