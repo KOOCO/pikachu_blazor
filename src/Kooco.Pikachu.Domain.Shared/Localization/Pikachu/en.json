@@ -157,7 +157,7 @@
     "InvalidFileType": "Invalid File Type",
     "Pikachu:CanNotAddMoreThan20Modules": "Can not add more than 20 modules",
     "GroupBuyList": "Group Buy List",
-    
+
     //SetItem
     "SetItem": "Set Item",
     "AddItem": "Add Item",
@@ -244,6 +244,7 @@
     "PrepareShipment": "Prepare Shipment",
     "PersonalInvoice": "Personal Invoice",
     "CellphoneInvoice": "Cellphone Invoice",
-    "BusinessInvoice": "Business Invoice"
+    "BusinessInvoice": "Business Invoice",
+    "SaveChanges": "Save Changes"
   }
 }
