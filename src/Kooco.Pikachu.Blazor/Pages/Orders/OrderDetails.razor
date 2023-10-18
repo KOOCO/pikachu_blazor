@@ -74,7 +74,7 @@
                                     </tr>
                                     <tr>
                                         <td>@L["InvoiceCarrier"]</td>
-                                        <td>@Order.InvoiceType</td>
+                                        <td>@L[Order.InvoiceType.ToString()]</td>
                                     </tr>
                                     <tr>
                                         <td>@L["ShippingMethod"]</td>
@@ -171,7 +171,7 @@
                                         @if (ModificationTrack.IsAddressInputVisible)
                                         {
                                             <td>
-                                                <div class="row mb-1">
+                                                @* <div class="row mb-1">
                                                     <div class="col-4">
                                                         <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewRoad">
                                                             <option disabled="disabled" selected="selected">選擇城市</option>
@@ -196,7 +196,7 @@
                                                             <option value="嘉義市">嘉義市</option>
                                                         </InputSelect>
                                                     </div>
-                                                </div>
+                                                </div> *@
                                                 <div class="row">
                                                     <div class="col-12">
                                                         <div class="input-group">
@@ -217,11 +217,13 @@
                                             <td class="d-flex justify-content-between">
                                                 @if (ModificationTrack.IsAddressModified)
                                                 {
-                                                    @(ModificationTrack.NewAddress + ", " + ModificationTrack.NewRoad + ", " + ModificationTrack.NewDistrict + ", " + ModificationTrack.NewCity)
+                                                    @(ModificationTrack.NewAddress)
+                                                    @* +", " + ModificationTrack.NewRoad + ", " + ModificationTrack.NewDistrict + ", " + ModificationTrack.NewCity *@
                                                 }
                                                 else
                                                 {
-                                                    @(Order.AddressDetails + ", " + Order.Road + ", " + Order.District + ", " + Order.City)
+                                                    @(Order.AddressDetails)
+                                                    @*  + ", " + Order.Road + ", " + Order.District + ", " + Order.City *@
                                                 }
                                                 <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientAddress">
                                                     <i class="fa fa-pencil text-secondary"></i>

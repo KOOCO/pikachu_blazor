@@ -136,7 +136,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
 
         void SaveRecipientAddress()
         {
-            if (ModificationTrack.NewAddress.IsNullOrWhiteSpace() || ModificationTrack.NewDistrict.IsNullOrWhiteSpace() || ModificationTrack.NewCity.IsNullOrWhiteSpace() || ModificationTrack.NewRoad.IsNullOrWhiteSpace())
+            if (ModificationTrack.NewAddress.IsNullOrWhiteSpace())
             {
                 ModificationTrack.IsInvalidAddress = true;
             }

@@ -188,15 +188,14 @@ namespace Kooco.Pikachu.Orders
                                     .FirstOrDefaultAsync(o => o.OrderNo == paymentResult.MerchantTradeNo)
                                     ?? throw new EntityNotFoundException();
 
-                    var hashKey = _configuration["EcPay:HashKey"];
-                    var hashIV = _configuration["EcPay:HashIV"];
-                    var checkMacValue = GenerateCheckMacValue(paymentResult.RequestBody, hashKey, hashIV);
-
-                    if (checkMacValue != order.CheckMacValue)
+                    if (paymentResult.CustomField1 != order.CheckMacValue)
                     {
                         throw new Exception();
                     }
-
+                    if (paymentResult.TradeAmt != order.TotalAmount)
+                    {
+                        throw new Exception();
+                    }
                     order.ShippingStatus = ShippingStatus.PrepareShipment;
                     _ = DateTime.TryParse(paymentResult.PaymentDate, out DateTime parsedDate);
                     order.PaymentDate = parsedDate;
