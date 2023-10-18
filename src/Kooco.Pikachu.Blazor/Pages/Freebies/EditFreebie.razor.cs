@@ -47,37 +47,39 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
             _freebieAppService = freebieAppService;
         }
 
-        protected override async Task OnInitializedAsync()
+        protected override async Task OnAfterRenderAsync(bool isFirstRender)
         {
-            await base.OnInitializedAsync();
-
-            try
+            if (isFirstRender)
             {
-                EditingId = Guid.Parse(Id);
+                try
+                {
+                    EditingId = Guid.Parse(Id);
 
-                ExistingItem = await _freebieAppService.GetAsync(EditingId, true);
+                    ExistingItem = await _freebieAppService.GetAsync(EditingId, true);
 
-                var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfile>());
-                // Create a new mapper
-                var mapper = config.CreateMapper();
+                    var config = new MapperConfiguration(cfg => cfg.AddProfile<MapperProfile>());
+                    // Create a new mapper
+                    var mapper = config.CreateMapper();
 
-                // Map ItemDto to UpdateItemDto
-                UpdateFreebieDto = mapper.Map<UpdateFreebieDto>(ExistingItem);
-                UpdateFreebieDto.Images = UpdateFreebieDto.Images.OrderBy(x => x.SortNo).ToList();
+                    // Map ItemDto to UpdateItemDto
+                    UpdateFreebieDto = mapper.Map<UpdateFreebieDto>(ExistingItem);
+                    UpdateFreebieDto.Images = UpdateFreebieDto.Images.OrderBy(x => x.SortNo).ToList();
 
-                await LoadHtmlContent();
-                GroupBuyList = await _freebieAppService.GetGroupBuyLookupAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-                await _uiMessageService.Error(ex.GetType().ToString());
+                    GroupBuyList = await _freebieAppService.GetGroupBuyLookupAsync();
+                    await LoadHtmlContent();
+                    StateHasChanged();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    await _uiMessageService.Error(ex.GetType().ToString());
+                } 
             }
         }
 
         private async Task LoadHtmlContent()
         {
-            await Task.Delay(1);
+            await Task.Delay(5);
             await ItemDescription.LoadHTMLContent(ExistingItem.ItemDescription);
         }
 
