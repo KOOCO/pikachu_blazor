@@ -328,7 +328,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             }
 
             CollapseItem collapseItem;
-            if (groupBuyModuleType == GroupBuyModuleType.ProductDescription)
+            if (groupBuyModuleType == GroupBuyModuleType.ProductDescriptionModule)
             {
                 collapseItem = new()
                 {
