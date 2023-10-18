@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Kooco.Pikachu.EntityFrameworkCore;
@@ -37,5 +38,13 @@ public class ItemRepository : EfCoreRepository<PikachuDbContext, Item, Guid>, II
     public override async Task<IQueryable<Item>> WithDetailsAsync()
     {
         return (await GetQueryableAsync()).IncludeDetails();
+    }
+    public async Task DeleteManyAsync(List<Guid> ids)
+    {
+        var dbContext = await GetDbContextAsync();
+        dbContext.Items.RemoveRange(dbContext.Items.Where(item => ids.Contains(item.Id)));
+        dbContext.GroupBuyItemGroupDetails.RemoveRange(dbContext.GroupBuyItemGroupDetails.Where(gd => ids.Contains(gd.ItemId ?? Guid.Empty)));
+    
+
     }
 }
