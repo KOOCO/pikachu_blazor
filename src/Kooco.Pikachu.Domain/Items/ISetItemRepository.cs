@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories;
 
@@ -10,4 +11,5 @@ namespace Kooco.Pikachu.Items;
 public interface ISetItemRepository : IRepository<SetItem, Guid>
 {
     Task<SetItem> GetWithDetailsAsync(Guid id);
+    Task DeleteManyAsync(List<Guid> ids);
 }
