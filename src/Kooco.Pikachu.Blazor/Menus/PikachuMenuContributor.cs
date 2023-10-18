@@ -96,12 +96,6 @@ public class PikachuMenuContributor : IMenuContributor
             name: "FreebieManagement",
             icon: "fas fa-gifts",
             displayName: "贈品設定",
-            url: "/Freebie/FreebieManagement")
-            )
-             .AddItem(new ApplicationMenuItem(
-            name: "Freebies",
-            icon: "fas fa-chalkboard-teacher",
-            displayName: "團購頁面設定d",
             url: "/Freebie/FreebieList")
             )
 

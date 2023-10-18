@@ -214,7 +214,7 @@
     "Address": "地址",
     "Remarks": "Remarks",
     "MerchantRemarks": "商家備註",
-    "CombineItems": "組合商品",
+    "CombineOrders": "合併訂單",
     "Open": "開啟",
     "Closed": "關閉",
     "Returned": "退貨",
@@ -240,6 +240,12 @@
     "Subtotal": "小記",
     "SubTotal": "小記",
     "Permission:Orders": "訂單管理",
-    "Permission:AddStoreComments": "新增商家備註"
+    "Permission:AddStoreComments": "新增商家備註",
+    "WaitingForPayment": "等待付款中",
+    "PrepareShipment": "檢貨中",
+    "PersonalInvoice": "Personal Invoice",
+    "CellphoneInvoice": "Cellphone Invoice",
+    "BusinessInvoice": "Business Invoice",
+    "SaveChanges": "Save Changes"
   }
   }
