@@ -110,9 +110,16 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         }
         private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<GroupBuyDto> e)
         {
-            _pageIndex = e.Page - 1;
-            await UpdateGroupBuyList();
-            await InvokeAsync(StateHasChanged);
+            try
+            {
+                _pageIndex = e.Page - 1;
+                await UpdateGroupBuyList();
+                await InvokeAsync(StateHasChanged);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
         }
 
         public void CreateNewItem()
