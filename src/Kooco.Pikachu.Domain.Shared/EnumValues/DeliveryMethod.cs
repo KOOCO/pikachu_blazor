@@ -8,6 +8,7 @@ namespace Kooco.Pikachu.EnumValues
     {
         PickupTheGoodsWithoutPayment,
         AllHandOverTheGoodsWithoutPayment,
-        BlackCatHomeDelivery
+        BlackCatHomeDelivery,
+        HomeDelivery
     }
 }

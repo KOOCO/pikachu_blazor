@@ -209,6 +209,7 @@
     "PickupTheGoodsWithoutPayment": "Pickup The Goods Without Payment",
     "AllHandOverTheGoodsWithoutPayment": "All Handover The Goods Without Payment",
     "BlackCatHomeDelivery": "Black Cat Home Delivery",
+    "HomeDelivery": "Home Delivery",
     "OrderItems": "Order Items",
     "Address": "Address",
     "Remarks": "Remarks",
@@ -241,6 +242,9 @@
     "Permission:Orders": "Orders Management",
     "Permission:AddStoreComments": "Add Store Comments",
     "WaitingForPayment": "Waiting For Payment",
-    "PrepareShipment": "Prepare Shipment"
+    "PrepareShipment": "Prepare Shipment",
+    "PersonalInvoice": "Personal Invoice",
+    "CellphoneInvoice": "Cellphone Invoice",
+    "BusinessInvoice": "Business Invoice"
   }
 }
