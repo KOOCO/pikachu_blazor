@@ -41,13 +41,13 @@ namespace Kooco.Pikachu.Controllers.Orders
         {
             return _ordersAppService.GetAsync(id);
         }
-        
+
         [HttpGet("get-list")]
         public Task<PagedResultDto<OrderDto>> GetListAsync(GetOrderListDto input)
         {
             return _ordersAppService.GetListAsync(input);
         }
-        
+
         [HttpGet("with-details/{id}")]
         public Task<OrderDto> GetWithDetailsAsync(Guid id)
         {
@@ -55,9 +55,9 @@ namespace Kooco.Pikachu.Controllers.Orders
         }
 
         [HttpPut("{id}/{update}")]
-        public Task<OrderDto> UpdateAsync(Guid id,CreateOrderDto input)
+        public Task<OrderDto> UpdateAsync(Guid id, CreateOrderDto input)
         {
-            return _ordersAppService.UpdateAsync(id,input);
+            return _ordersAppService.UpdateAsync(id, input);
         }
 
         [HttpPut("{id}/{commentId}/{comment}")]
@@ -101,7 +101,7 @@ namespace Kooco.Pikachu.Controllers.Orders
                     TradeDate = form["TradeDate"],
                     SimulatePaid = validSimulatePaid ? simulatePaid : 0,
                     CheckMacValue = form["CheckMacValue"],
-                    RequestBody = requestBody
+                    CustomField1 = form["CustomField1"]
                 };
 
                 await _ordersAppService.HandlePaymentAsync(paymentResult);
