@@ -1,8 +1,8 @@
-name: 建置 .NET Core 應用程式並部署到 Web 應用程式 pikachu-production
+name: Deploy to pikachu-production
 on:
   push:
     branches:
-    - localization_gorupbuy
+    - Release
 env:
   AZURE_WEBAPP_NAME: pikachu-production
   AZURE_WEBAPP_PACKAGE_PATH: .\published
