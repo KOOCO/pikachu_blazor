@@ -70,7 +70,7 @@
                                     </tr>
                                     <tr>
                                         <td>@L["TaxNumber"]</td>
-                                        <td>-</td>
+                                        <td>@Order.UniformNumber</td>
                                     </tr>
                                     <tr>
                                         <td>@L["InvoiceCarrier"]</td>
@@ -276,10 +276,28 @@
             <CardBody>
                 <p class="fw-bold">@L["OrderStatus"]</p>
                 <div class="row">
-                    <div class="col-12 d-flex justify-content-between">
-                        <p>Date</p>
-                        <p>Order Created</p>
-                    </div>
+                    @if (Order?.ShippingStatus == ShippingStatus.WaitingForPayment || Order?.ShippingStatus == ShippingStatus.PrepareShipment)
+                    {
+                        <div class="col-12 d-flex justify-content-between">
+                            <p>@Order?.CreationTime.ToShortDateString()</p>
+                            <p>@L[ShippingStatus.WaitingForPayment.ToString()]</p>
+                        </div>
+                    }
+                    @if (Order?.ShippingStatus == ShippingStatus.PrepareShipment)
+                    {
+                        <div class="col-12 d-flex justify-content-between">
+                            @if (Order != null && Order.PaymentDate.HasValue)
+                            {
+                                <p>@Order?.PaymentDate.Value.ToShortDateString()</p>
+                            }
+                            else
+                            {
+                                <p></p>
+                            }
+                            <p>@L[ShippingStatus.PrepareShipment.ToString()]</p>
+                        </div>
+                    }
+
                 </div>
             </CardBody>
         </Card>
