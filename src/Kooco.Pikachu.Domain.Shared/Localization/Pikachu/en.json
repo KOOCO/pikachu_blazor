@@ -190,6 +190,7 @@
     "ActivityTimePeriod": "Activity Time Period",
     "Pikachu:InvalidItemName": "Item Name Is Invalid",
     "Pikachu:FreebieWithSameNameAlreadyExists": "Freebie with same name already exist",
+    "FreebiesList": "Freebies List",
 
 
     //Orders
@@ -246,6 +247,12 @@
     "PersonalInvoice": "Personal Invoice",
     "CellphoneInvoice": "Cellphone Invoice",
     "BusinessInvoice": "Business Invoice",
-    "SaveChanges": "Save Changes"
+    "SaveChanges": "Save Changes",
+    "Telephone": "Telephone",
+    "OrderCreated": "Order Created",
+    "Quantity": "Quantity",
+    "UnitPrice": "UnitPrice",
+    "Subtotal": "Subtotal"
+
   }
 }
