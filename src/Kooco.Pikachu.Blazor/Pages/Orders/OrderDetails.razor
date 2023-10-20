@@ -13,7 +13,7 @@
 @inject IUiMessageService _uiMessageService;
 @inject IOrderAppService _orderAppService;
 @inject ICurrentUser CurrentUser;
-
+@inject IModalService ModalService;
 <style>
 
     table tr td {
@@ -78,7 +78,7 @@
                                     </tr>
                                     <tr>
                                         <td>@L["ShippingMethod"]</td>
-                                        <td>@L[Order.DeliveryMethod.ToString()]</td>
+                                        <td>@L[Order.DeliveryMethod.ToString()]@Order.ShippingNumber </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -86,7 +86,7 @@
                     </div>
                     <div class="row">
                         <div class="col-12 text-end">
-                            <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary">
+                            <Button Type="ButtonType.Button" @onclick="OpenShipmentModal" Class="btn btn-sm btn-primary">
                                 @L["ShipmentNotify"]
                             </Button>
                             <Button Type="ButtonType.Button" Class="btn btn-sm btn-danger">
@@ -103,18 +103,18 @@
                                         <td>@L["Recipient"]</td>
                                         @if (ModificationTrack.IsNameInputVisible)
                                         {
-                                                <td>
-                                                    <div class="input-group">
+                                            <td>
+                                                <div class="input-group">
 
                                                     @{
                                                         var errorClass = ModificationTrack.IsInvalidName ? "invalid" : "";
                                                     }
                                                     <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewName" />
-                                                        <Button Type="ButtonType.Button" @onclick="SaveRecipientName" Class="btn btn-sm btn-primary">
-                                                            <i class="fa fa-check"></i>
-                                                        </Button>
-                                                    </div>
-                                                </td>
+                                                    <Button Type="ButtonType.Button" @onclick="SaveRecipientName" Class="btn btn-sm btn-primary">
+                                                        <i class="fa fa-check"></i>
+                                                    </Button>
+                                                </div>
+                                            </td>
                                         }
                                         else
                                         {
@@ -172,31 +172,31 @@
                                         {
                                             <td>
                                                 @* <div class="row mb-1">
-                                                    <div class="col-4">
-                                                        <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewRoad">
-                                                            <option disabled="disabled" selected="selected">選擇城市</option>
-                                                            <option value="臺北市">臺北市</option>
-                                                            <option value="桃園市">桃園市</option>
-                                                            <option value="嘉義市">嘉義市</option>
-                                                        </InputSelect>
-                                                    </div>
-                                                    <div class="col-4">
-                                                        <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewDistrict">
-                                                            <option disabled="disabled" selected="selected">選擇地區</option>
-                                                            <option value="石碇區">石碇區</option>
-                                                            <option value="坪林區">坪林區</option>
-                                                            <option value="烏來區">烏來區</option>
-                                                        </InputSelect>
-                                                    </div>
-                                                    <div class="col-4">
-                                                        <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewCity">
-                                                            <option disabled="disabled" selected="selected">選擇城市</option>
-                                                            <option value="臺北市">臺北市</option>
-                                                            <option value="桃園市">桃園市</option>
-                                                            <option value="嘉義市">嘉義市</option>
-                                                        </InputSelect>
-                                                    </div>
-                                                </div> *@
+                                        <div class="col-4">
+                                        <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewRoad">
+                                        <option disabled="disabled" selected="selected">選擇城市</option>
+                                        <option value="臺北市">臺北市</option>
+                                        <option value="桃園市">桃園市</option>
+                                        <option value="嘉義市">嘉義市</option>
+                                        </InputSelect>
+                                        </div>
+                                        <div class="col-4">
+                                        <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewDistrict">
+                                        <option disabled="disabled" selected="selected">選擇地區</option>
+                                        <option value="石碇區">石碇區</option>
+                                        <option value="坪林區">坪林區</option>
+                                        <option value="烏來區">烏來區</option>
+                                        </InputSelect>
+                                        </div>
+                                        <div class="col-4">
+                                        <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewCity">
+                                        <option disabled="disabled" selected="selected">選擇城市</option>
+                                        <option value="臺北市">臺北市</option>
+                                        <option value="桃園市">桃園市</option>
+                                        <option value="嘉義市">嘉義市</option>
+                                        </InputSelect>
+                                        </div>
+                                        </div> *@
                                                 <div class="row">
                                                     <div class="col-12">
                                                         <div class="input-group">
@@ -261,12 +261,19 @@
     <div class="col-md-6 col-sm-12">
         <div class="row mb-2">
             <div class="col-md-6 col-sm-12">
-                <Button Type="ButtonType.Button" Class="btn btn-sm btn-danger">@L["CancelOrder"]</Button>
+                @if (Order?.ShippingStatus != ShippingStatus.WaitingForPayment)
+                {
+                    <Button Type="ButtonType.Button" disabled Class="btn btn-sm btn-danger me-1">@L["CancelOrder"]</Button>
+                }
+                else
+                {
+                    <Button Type="ButtonType.Button" @onclick="CancelOrder" Class="btn btn-sm btn-danger">@L["CancelOrder"]</Button>
+                }
                 <Button Type="ButtonType.Button" Class="btn btn-sm btn-secondary">@L["ExchangeItem"]</Button>
             </div>
             <div class="col-md-6 col-sm-12 text-lg-end">
                 <Button Type="ButtonType.Button" Class="btn btn-sm btn-secondary">@L["SplitOrder"]</Button>
-                <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary">
+                <Button Type="ButtonType.Button" @onclick="NavigateToOrderShipmentDetails" Class="btn btn-sm btn-primary">
                     <Icon Class="fa fa-print"></Icon>
                     @L["PrintOrder"]
                 </Button>
@@ -337,8 +344,7 @@
                                         <input type="checkbox" class="form-check-input" />
                                     </td>
                                     <td class="text-start">
-
-                                        @if(item.ItemType == ItemType.Item)
+                                        @if (item.ItemType == ItemType.Item)
                                         {
                                             var firstImage = item.Item?.Images?.FirstOrDefault()?.ImageUrl;
                                             @if (!string.IsNullOrEmpty(firstImage))
@@ -348,7 +354,7 @@
                                             @item.Item?.ItemName
                                         }
 
-                                        @if(item.ItemType == ItemType.SetItem)
+                                        @if (item.ItemType == ItemType.SetItem)
                                         {
                                             var firstImage = item.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
                                             @if (!string.IsNullOrEmpty(firstImage))
@@ -358,7 +364,7 @@
                                             @item.SetItem?.SetItemName
                                         }
 
-                                        @if(item.ItemType == ItemType.Freebie)
+                                        @if (item.ItemType == ItemType.Freebie)
                                         {
                                             var firstImage = item.Freebie?.Images?.FirstOrDefault()?.ImageUrl;
                                             @if (!string.IsNullOrEmpty(firstImage))
@@ -490,6 +496,52 @@
         </Card>
     </div>
 </div>
+<Modal @ref="CreateShipmentModal">
+    <ModalBackdrop />
+    <ModalContent IsCentered="true">
+        <EditForm Model="@shipments" OnValidSubmit="ApplyShipmentAsync">
+            <ModalHeader>
+                <ModalTitle>@L["ShipmentNotify"]</ModalTitle>
+                <CloseButton Clicked="CloseShipmentModal" onv />
+            </ModalHeader>
+            <ModalBody>
+
+                <DataAnnotationsValidator />
+                <div class="row my-2">
+                    <label class="form-label">@L["ShippingMethod"]</label>
+                    <div class="col-12">
+                        <InputSelect class="form-select" @bind-Value="@shipments.ShippingMethod">
+                            @foreach (DeliveryMethod option in Enum.GetValues(typeof(DeliveryMethod)))
+                            {
+                                <option value="@option">
+                                    @L[option.ToString()]
+                                </option>
+                            }
+                        </InputSelect>
+                    </div>
+                </div>
+                <div class="row my-2">
+                    <label class="form-label">@L["ShippingNumber"]</label>
+                <div class="col-12 mb-2">
+                    <InputText class="form-control" @bind-Value="@shipments.ShippingNumber"></InputText>
+                    <ValidationMessage For="@(() => shipments.ShippingNumber)" />
+                </div>
+                </div>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary"
+                        Clicked="CloseShipmentModal">
+                    @L["Cancel"]
+                </Button>
+                <Button Type="ButtonType.Submit" Class="btn btn-primary">
+                    <i class="fa fa-check"></i>
+                    @L["Save"]
+                </Button>
+            </ModalFooter>
+        </EditForm>
+    </ModalContent>
+</Modal>
+
 @code {
 
 }

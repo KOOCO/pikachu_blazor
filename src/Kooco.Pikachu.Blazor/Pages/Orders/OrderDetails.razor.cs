@@ -1,10 +1,13 @@
-﻿using Kooco.Pikachu.Orders;
+﻿using Blazorise;
+using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Orders;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.AspNetCore.Components.Messages;
 
 namespace Kooco.Pikachu.Blazor.Pages.Orders
 {
@@ -17,6 +20,10 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         private CreateOrderDto UpdateOrder { get; set; } = new();
         private StoreCommentsModel StoreComments = new();
         private ModificationTrack ModificationTrack = new();
+        private Shipments shipments = new();
+        private bool isModalVisible = false;
+        private Validations CreateValidationsRef;
+        private Modal CreateShipmentModal { get; set; }
         protected async override Task OnInitializedAsync()
         {
             try
@@ -133,7 +140,6 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 ModificationTrack.IsInvalidPhone = false;
             }
         }
-
         void SaveRecipientAddress()
         {
             if (ModificationTrack.NewAddress.IsNullOrWhiteSpace())
@@ -152,8 +158,6 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         {
             ModificationTrack = new();
         }
-
-
         protected virtual async Task SaveChangesAsync()
         {
             try
@@ -191,7 +195,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 UpdateOrder.RecipientName = ModificationTrack.IsNameModified
                 ? ModificationTrack.NewName
                 : Order.RecipientName;
-                
+
                 UpdateOrder.RecipientPhone = ModificationTrack.IsPhoneModified
                 ? ModificationTrack.NewPhone
                 : Order.RecipientPhone;
@@ -206,12 +210,11 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 else
                 {
                     UpdateOrder.City = Order.City;
-                    UpdateOrder.District =Order.District;
+                    UpdateOrder.District = Order.District;
                     UpdateOrder.Road = Order.Road;
                     UpdateOrder.AddressDetails = Order.AddressDetails;
-
                 }
-
+                UpdateOrder.OrderStatus = Order.OrderStatus;
                 Order = await _orderAppService.UpdateAsync(OrderId, UpdateOrder);
                 ModificationTrack = new();
                 await InvokeAsync(StateHasChanged);
@@ -226,37 +229,89 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 Console.WriteLine(ex.ToString());
                 await _uiMessageService.Error(ex.GetType().ToString());
             }
+
         }
+        public void NavigateToOrderShipmentDetails()
+        {
+            var id = Order?.Id;
+            NavigationManager.NavigateTo($"Orders/OrderShippingDetails/{id}");
+        }
+        protected virtual async Task CancelOrder()
+        {
+            var confirmed = await _uiMessageService.Confirm("Are you sure to cancel the Order?");
+            if (confirmed)
+            {
+                //Delete the 'admin' role here.
+
+                if (Order?.ShippingStatus == ShippingStatus.WaitingForPayment)
+                {
+                    UpdateOrder.City = Order.City;
+                    UpdateOrder.District = Order.District;
+                    UpdateOrder.Road = Order.Road;
+                    UpdateOrder.AddressDetails = Order.AddressDetails;
+                    UpdateOrder.RecipientName = Order.RecipientName;
+                    UpdateOrder.RecipientPhone = Order.RecipientPhone;
+                    UpdateOrder.OrderStatus = OrderStatus.Closed;
+                    await _orderAppService.UpdateAsync(OrderId, UpdateOrder);
+                    await InvokeAsync(StateHasChanged);
+                }
+            }
+        }
+        private void OpenShipmentModal()
+        {
+            // CreateValidationsRef.ClearAll();
+
+            // NewAuthor = new CreateAuthorDto();
+            CreateShipmentModal.Show();
+        }
+        private void CloseShipmentModal()
+        {
+            CreateShipmentModal.Hide();
+        }
+        private async Task ApplyShipmentAsync()
+        {
+                UpdateOrder.ShippingNumber = shipments.ShippingNumber;
+                UpdateOrder.DeliveryMethod = shipments.ShippingMethod;
+                await _orderAppService.UpdateShippingDetails(OrderId, UpdateOrder);
+                CreateShipmentModal.Hide();
+                await InvokeAsync(StateHasChanged);
+            
+        }
+        public class StoreCommentsModel
+        {
+            public Guid? Id { get; set; }
+
+            [Required(ErrorMessage = "This Field Is Required")]
+            public string Comment { get; set; }
+        }
+
     }
+        public class ModificationTrack
+        {
+            public bool IsModified { get; set; }
 
-    public class StoreCommentsModel
-    {
-        public Guid? Id { get; set; }
+            public bool IsNameInputVisible { get; set; }
+            public string NewName { get; set; }
+            public bool IsInvalidName { get; set; }
+            public bool IsNameModified { get; set; }
+            public bool IsPhoneInputVisible { get; set; }
+            public string NewPhone { get; set; }
+            public bool IsInvalidPhone { get; set; }
+            public bool IsPhoneModified { get; set; }
+            public bool IsAddressInputVisible { get; set; }
+            public string NewRoad { get; set; }
+            public string NewDistrict { get; set; }
+            public string NewCity { get; set; }
+            public string NewAddress { get; set; }
+            public bool IsInvalidAddress { get; set; }
+            public bool IsAddressModified { get; set; }
+        }
+       public class Shipments
+        {
+        [Required]
+        public DeliveryMethod ShippingMethod { get; set; }
+        [Required]
+        public string? ShippingNumber { get; set; }
+        }
 
-        [Required(ErrorMessage = "This Field Is Required")]
-        public string Comment { get; set; }
     }
-
-
-    public class ModificationTrack
-    {
-        public bool IsModified { get; set; }
-
-        public bool IsNameInputVisible { get; set; }
-        public string NewName { get; set; }
-        public bool IsInvalidName { get; set; }
-        public bool IsNameModified { get; set; }
-
-        public bool IsPhoneInputVisible { get; set; }
-        public string NewPhone { get; set; }
-        public bool IsInvalidPhone { get; set; }
-        public bool IsPhoneModified { get; set; }
-        public bool IsAddressInputVisible { get; set; }
-        public string NewRoad { get; set; }
-        public string NewDistrict { get; set; }
-        public string NewCity { get; set; }
-        public string NewAddress { get; set; }
-        public bool IsInvalidAddress { get; set; }
-        public bool IsAddressModified { get; set; }
-    }
-}

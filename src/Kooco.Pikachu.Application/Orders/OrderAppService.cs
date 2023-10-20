@@ -162,6 +162,17 @@ namespace Kooco.Pikachu.Orders
             order.City = input.City;
             order.Road = input.Road;
             order.AddressDetails = input.AddressDetails;
+            order.OrderStatus = input.OrderStatus;
+            await _orderRepository.UpdateAsync(order);
+            return ObjectMapper.Map<Order, OrderDto>(order);
+        }
+
+
+        public async Task<OrderDto> UpdateShippingDetails(Guid id, CreateOrderDto input)
+        {
+            var order = await _orderRepository.GetAsync(id);
+          order.DeliveryMethod=input.DeliveryMethod;
+            order.ShippingNumber=input.ShippingNumber;
             await _orderRepository.UpdateAsync(order);
             return ObjectMapper.Map<Order, OrderDto>(order);
         }
@@ -204,7 +215,6 @@ namespace Kooco.Pikachu.Orders
                 }
             }
         }
-
         [AllowAnonymous]
         private static string GenerateCheckMacValue(string requestBody, string hashKey, string hashIV)
         {
@@ -213,7 +223,6 @@ namespace Kooco.Pikachu.Orders
                                         .Split('&')
                                         .OrderBy(queryParam => queryParam)
                                         .ToList();
-
             // Join back with '&'
             string sortedQueryString = string.Join('&', sortedQuery);
 

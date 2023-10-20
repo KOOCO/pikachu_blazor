@@ -1,0 +1,146 @@
+﻿@page "/Orders/OrderShippingDetails/{id}"
+@using Kooco.Pikachu.EnumValues;
+@using Kooco.Pikachu.Localization;
+@using Kooco.Pikachu.OrderItems;
+@using Kooco.Pikachu.Orders;
+@using Kooco.Pikachu.StoreComments;
+@using Microsoft.Extensions.Localization;
+@using Blazorise;
+@using Volo.Abp.AspNetCore.Components.Messages;
+@using Volo.Abp.Users;
+
+
+@inject IStringLocalizer<PikachuResource> L;
+@inject NavigationManager NavigationManager;
+@inject IUiMessageService _uiMessageService;
+@inject IOrderAppService _orderAppService;
+@inject ICurrentUser CurrentUser;
+@inject IJSRuntime JSRuntime
+
+<style>
+    .tbl thead th {
+    font-weight:bold;
+    border-top:1px solid;
+    border-bottom:1px solid;
+    height:40px;
+    font-weight:bold;
+    text-align:center;
+    }
+    .tbl tbody td {
+    border-bottom:1px solid;
+    border-color:lightgrey;
+    }
+    .tbl tfoot td {
+    border-top:1px solid;
+    border-bottom: 1px solid;
+    font-weight:bold;
+    }
+    @@media print {
+    /* Define styles for printing, e.g., hiding unnecessary elements */
+    body * {
+        visibility: hidden;
+    }
+    #divToPrint, #divToPrint * {
+        visibility: visible;
+    }
+}
+</style>
+<div class="row justify-content-center">
+    <div class="col-md-10 col-sm-12">
+        <Card>
+            <CardBody>
+                <div class="row" id="divToPrint">
+                    <h3 style="text-align:center">@L["OrderShippingDetails"]</h3>
+                    <div class="col-12">
+                        <table class="w-100">
+                            <tbody>
+                                <tr>
+                                    <td>@L["OrderInformation"]:</td>
+                                    <td>@L["PaymentMethod"]: @Order?.PaymentMethod</td>
+                                </tr>
+                                <tr>
+                                    <td>@L["OrderDate"]: @Order?.CreationTime</td>
+                                    <td>@L["ShippingMethod"]:@Order?.DeliveryMethod </td>
+                                </tr>
+                                <tr>
+                                    <td>@L["CustomerName"]:  @Order?.CustomerName</td>
+                                    <td>@L["RecipientName"]:  @Order?.RecipientName</td>
+                                </tr>
+                                <tr>
+                                    <td>@L["CustomerEmail"]:  @Order?.CustomerEmail</td>
+                                    <td>@L["ShippingMethod"]:  @Order?.RecipientPhone</td>
+                                </tr>
+                                <tr>
+                                    <td> @L["CustomerPhone"]: @Order?.CustomerPhone</td>
+                                    <td> @L["AddressDetails"]: @Order?.AddressDetails</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        @L["RecipientComments"]:
+                                        @if (Order?.StoreComments != null)
+                                        {
+                                            @foreach (StoreCommentDto comment in Order?.StoreComments)
+                                            {
+                                                @comment.Comment
+                                            }
+                                        }
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="tbl table w-100 mt-3">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>@L["ItemName"]</th>
+                                    <th> @L["UnitPrice"]</th>
+                                    <th>@L["Quantity"]</th>
+                                    <th> @L["SubTotal"]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Order?.OrderItems != null)
+                                {
+                                    @foreach (OrderItemDto item in Order?.OrderItems)
+                                    {
+                                        <tr>
+                                            <td style="width:50%">@item.Item?.ItemName </td>
+                                            <td style="text-align:center">@item.ItemPrice.ToString("N0") </td>
+                                            <td style="text-align:center">@item.Quantity </td>
+                                            <td style="text-align:center">@item.TotalAmount.ToString("N0") </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td></td>
+                                    <td colspan="2">@L["DeliveryFee"]:</td>
+                                    <td style="text-align:center">0</td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td colspan="2">@L["Total"] </td>
+                                    <td style="text-align:center">NT $@Order?.TotalAmount.ToString("N0")</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <Button Type="ButtonType.Button" @onclick="PrintDiv" Class="btn btn-sm btn-primary col-md-2">
+                        <Icon Class="fa fa-print"></Icon>
+                        @L["PrintOrder"]
+                    </Button>
+                </div>
+            </CardBody>
+        </Card>
+    </div>
+</div>
+<script>
+    window.printJS = function () {
+        window.print();
+    };
+</script>
+@code {
+
+    }

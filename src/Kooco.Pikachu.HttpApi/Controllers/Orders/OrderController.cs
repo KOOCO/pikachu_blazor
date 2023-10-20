@@ -59,6 +59,11 @@ namespace Kooco.Pikachu.Controllers.Orders
         {
             return _ordersAppService.UpdateAsync(id, input);
         }
+        [HttpPut("{id}/{update-shipping}")]
+        public Task<OrderDto> UpdateShippingDetails(Guid id, CreateOrderDto input)
+        {
+            return _ordersAppService.UpdateAsync(id, input);
+        }
 
         [HttpPut("{id}/{commentId}/{comment}")]
         public Task UpdateStoreCommentAsync(Guid id, Guid commentId, string comment)
@@ -124,5 +129,6 @@ namespace Kooco.Pikachu.Controllers.Orders
         {
             return _ordersAppService.AddCheckMacValueAsync(id, checkMacValue);
         }
+
     }
 }

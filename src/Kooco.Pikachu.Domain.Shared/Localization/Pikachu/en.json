@@ -252,7 +252,13 @@
     "OrderCreated": "Order Created",
     "Quantity": "Quantity",
     "UnitPrice": "UnitPrice",
-    "Subtotal": "Subtotal"
+    "RecipientName": "Recipient Name",
+    "CustomerEmail": "Customer Email",
+    "CustomerPhone": "Customer Phone",
+    "AddressDetails": "Address Details",
+    "OrderShippingDetails": "Order Shipping Details"
+
+
 
   }
 }
