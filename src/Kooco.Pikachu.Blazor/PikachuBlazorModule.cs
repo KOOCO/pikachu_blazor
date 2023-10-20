@@ -377,6 +377,7 @@ public class PikachuBlazorModule : AbpModule
         Configure<HubOptions>(options =>
         {
             options.DisableImplicitFromServicesParameters = true;
+            options.MaximumReceiveMessageSize = 100 * 1024 * 1024;
         });
     }
 }
