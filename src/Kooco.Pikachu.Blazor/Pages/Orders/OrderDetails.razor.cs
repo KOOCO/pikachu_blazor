@@ -258,17 +258,26 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         
         async Task CancelOrder()
         {
-            if (Order?.ShippingStatus == ShippingStatus.WaitingForPayment)
+            try
             {
-                var confirmed = await _uiMessageService.Confirm(L["AreYouSureToCancelOrder?"]);
-                if (confirmed)
+                if (Order?.ShippingStatus == ShippingStatus.WaitingForPayment)
                 {
-                    await loading.Show();
-                    await _orderAppService.CancelOrderAsync(OrderId);
-                    await GetOrderDetailsAsync();
-                    await InvokeAsync(StateHasChanged);
-                    await loading.Hide();
+                    var confirmed = await _uiMessageService.Confirm(L["AreYouSureToCancelOrder?"]);
+                    if (confirmed)
+                    {
+                        await loading.Show();
+                        await _orderAppService.CancelOrderAsync(OrderId);
+                        await GetOrderDetailsAsync();
+                        await InvokeAsync(StateHasChanged);
+                        await loading.Hide();
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                await loading.Hide();
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+                await _uiMessageService.Error(ex.GetType().ToString());
             }
         }
 

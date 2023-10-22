@@ -6,7 +6,6 @@ using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Permissions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Localization;
-using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -104,6 +103,9 @@ namespace Kooco.Pikachu.Orders
                     }
                 }
                 await _orderRepository.InsertAsync(order);
+
+                await SendEmailAsync(order);
+                
                 return ObjectMapper.Map<Order, OrderDto>(order);
             }
         }
@@ -192,10 +194,12 @@ namespace Kooco.Pikachu.Orders
 
         public async Task CancelOrderAsync(Guid id)
         {
-            var order = await _orderRepository.GetAsync(id);
+            var order = await _orderRepository.GetWithDetailsAsync(id);
             order.OrderStatus = OrderStatus.Closed;
             order.CancellationDate = DateTime.Now;
             await _orderRepository.UpdateAsync(order);
+            
+            await SendEmailAsync(order, OrderStatus.Closed);
         }
 
         public async Task<OrderDto> UpdateShippingDetails(Guid id, CreateOrderDto input)
@@ -207,24 +211,18 @@ namespace Kooco.Pikachu.Orders
             order.ShippingDate = DateTime.Now;
 
             await _orderRepository.UpdateAsync(order);
-
-            var groupbuy = await _groupBuyRepository.GetAsync(g => g.Id == order.GroupBuyId);
-
-            string subject = $"{groupbuy.GroupBuyName} 訂單#{order.OrderNo} {_l[order.ShippingStatus.ToString()]}";
-            
-            string body = CreateEmailBody(order, groupbuy);
-
-            await _emailSender.QueueAsync(
-                order.CustomerEmail,
-                subject,
-                body
-                );
-
+            await SendEmailAsync(order);
             return ObjectMapper.Map<Order, OrderDto>(order);
         }
 
-        private string CreateEmailBody(Order order, GroupBuy groupbuy)
+        private async Task SendEmailAsync(Order order, OrderStatus? orderStatus = null)
         {
+            var groupbuy = await _groupBuyRepository.GetAsync(g => g.Id == order.GroupBuyId);
+            
+            string status = orderStatus == null ? _l[order.ShippingStatus.ToString()] : _l[orderStatus.ToString()];
+            
+            string subject = $"{groupbuy.GroupBuyName} 訂單#{order.OrderNo} {status}";
+
             string body = File.ReadAllText("wwwroot/EmailTemplates/email.html");
 
             body = body.Replace("{{NotifyMessage}}", groupbuy.NotifyMessage);
@@ -280,7 +278,13 @@ namespace Kooco.Pikachu.Orders
 
             body = body.Replace("{{DeliveryFee}}", "$0");
             body = body.Replace("{{TotalAmount}}", $"${order.TotalAmount:N0}");
-            return body;
+
+
+            await _emailSender.QueueAsync(
+                order.CustomerEmail,
+                subject,
+                body
+                );
         }
 
         [AllowAnonymous]
@@ -305,19 +309,25 @@ namespace Kooco.Pikachu.Orders
                                     .FirstOrDefaultAsync(o => o.OrderNo == paymentResult.MerchantTradeNo)
                                     ?? throw new EntityNotFoundException();
 
+                    order = await _orderRepository.GetWithDetailsAsync(order.Id);
+                    
                     if (paymentResult.CustomField1 != order.CheckMacValue)
                     {
                         throw new Exception();
                     }
+                    
                     if (paymentResult.TradeAmt != order.TotalAmount)
                     {
                         throw new Exception();
                     }
+                    
                     order.ShippingStatus = ShippingStatus.PrepareShipment;
                     _ = DateTime.TryParse(paymentResult.PaymentDate, out DateTime parsedDate);
                     order.PaymentDate = parsedDate;
 
                     await _orderRepository.UpdateAsync(order);
+
+                    await SendEmailAsync(order);
                 }
             }
         }
