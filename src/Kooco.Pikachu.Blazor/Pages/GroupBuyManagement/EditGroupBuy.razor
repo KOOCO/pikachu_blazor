@@ -10,6 +10,7 @@
 @using Volo.Abp.AspNetCore.Components.Web
 @using System.ComponentModel
 @using Blazorise.Components
+@using Blazorise.LoadingIndicator;
 
 @inject IGroupBuyAppService AppService
 @inject NavigationManager NavigationManager
@@ -23,8 +24,8 @@
     }
 </style>
   <h3>@L["EditGroupBuy"]</h3>
+<LoadingIndicator @ref="loading" FullScreen FadeIn></LoadingIndicator>
 <Card >
-   
  <CardBody>
         <div class="row">
             <div class="col-12">

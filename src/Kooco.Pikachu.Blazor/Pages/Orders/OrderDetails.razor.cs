@@ -4,6 +4,7 @@ using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -248,12 +249,14 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
             }
 
         }
+        
         public void NavigateToOrderShipmentDetails()
         {
             var id = Order?.Id;
             NavigationManager.NavigateTo($"Orders/OrderShippingDetails/{id}");
         }
-        protected virtual async Task CancelOrder()
+        
+        async Task CancelOrder()
         {
             if (Order?.ShippingStatus == ShippingStatus.WaitingForPayment)
             {
@@ -261,20 +264,14 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 if (confirmed)
                 {
                     await loading.Show();
-                    UpdateOrder.City = Order.City;
-                    UpdateOrder.District = Order.District;
-                    UpdateOrder.Road = Order.Road;
-                    UpdateOrder.AddressDetails = Order.AddressDetails;
-                    UpdateOrder.RecipientName = Order.RecipientName;
-                    UpdateOrder.RecipientPhone = Order.RecipientPhone;
-                    UpdateOrder.OrderStatus = OrderStatus.Closed;
-                    await _orderAppService.UpdateAsync(OrderId, UpdateOrder);
+                    await _orderAppService.CancelOrderAsync(OrderId);
                     await GetOrderDetailsAsync();
                     await InvokeAsync(StateHasChanged);
                     await loading.Hide();
                 }
             }
         }
+
         private void OpenShipmentModal()
         {
             shipments = new Shipments
@@ -291,15 +288,25 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         }
         private async Task ApplyShipmentAsync()
         {
-            await loading.Show();
-            UpdateOrder.ShippingNumber = shipments.ShippingNumber;
-            UpdateOrder.DeliveryMethod = shipments.ShippingMethod;
-            await _orderAppService.UpdateShippingDetails(OrderId, UpdateOrder);
-            await CreateShipmentModal.Hide();
-            await GetOrderDetailsAsync();
-            await InvokeAsync(StateHasChanged);
-            await loading.Hide();
-
+            try
+            {
+                await loading.Show();
+                UpdateOrder.ShippingNumber = shipments.ShippingNumber;
+                UpdateOrder.DeliveryMethod = shipments.ShippingMethod;
+                await _orderAppService.UpdateShippingDetails(OrderId, UpdateOrder);
+                await CreateShipmentModal.Hide();
+                await GetOrderDetailsAsync();
+                await InvokeAsync(StateHasChanged);
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+                await loading.Hide();
+            }
         }
 
         async void SubmitOrderItemChanges()

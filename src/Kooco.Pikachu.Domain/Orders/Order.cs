@@ -46,6 +46,8 @@ namespace Kooco.Pikachu.Orders
         public string? CheckMacValue { get; set; }
         public DateTime? PaymentDate { get; set; }
         public ShippingStatus ShippingStatus { get; set; }
+        public DateTime? ShippingDate { get; set; }
+        public DateTime? CancellationDate { get; set; }
         public OrderStatus OrderStatus { get; set; }
         public ICollection<OrderItem> OrderItems { get; set; }
         public ICollection<StoreComment> StoreComments { get; set; }

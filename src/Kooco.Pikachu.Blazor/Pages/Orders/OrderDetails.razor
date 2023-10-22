@@ -9,6 +9,7 @@
 @using Volo.Abp.Users;
 @using Blazorise.LoadingIndicator;
 
+@inject IJSRuntime JSRuntime;
 @inject IStringLocalizer<PikachuResource> L;
 @inject NavigationManager NavigationManager;
 @inject IUiMessageService _uiMessageService;
@@ -285,7 +286,7 @@
             <CardBody>
                 <p class="fw-bold">@L["OrderStatus"]</p>
                 <div class="row">
-                    @if (Order?.ShippingStatus == ShippingStatus.WaitingForPayment || Order?.ShippingStatus == ShippingStatus.PrepareShipment)
+                    @if (Order?.ShippingStatus == ShippingStatus.WaitingForPayment)
                     {
                         <div class="col-12 d-flex justify-content-between">
                             <p>@Order?.CreationTime.ToShortDateString()</p>
@@ -294,6 +295,10 @@
                     }
                     @if (Order?.ShippingStatus == ShippingStatus.PrepareShipment)
                     {
+                        <div class="col-12 d-flex justify-content-between">
+                            <p>@Order?.CreationTime.ToShortDateString()</p>
+                            <p>@L[ShippingStatus.WaitingForPayment.ToString()]</p>
+                        </div>
                         <div class="col-12 d-flex justify-content-between">
                             @if (Order != null && Order.PaymentDate.HasValue)
                             {
@@ -306,7 +311,42 @@
                             <p>@L[ShippingStatus.PrepareShipment.ToString()]</p>
                         </div>
                     }
-
+                    @if (Order?.ShippingStatus == ShippingStatus.Shipped)
+                    {
+                        <div class="col-12 d-flex justify-content-between">
+                            <p>@Order?.CreationTime.ToShortDateString()</p>
+                            <p>@L[ShippingStatus.WaitingForPayment.ToString()]</p>
+                        </div>
+                        <div class="col-12 d-flex justify-content-between">
+                            <p>@Order?.PaymentDate.Value.ToShortDateString()</p>
+                            <p>@L[ShippingStatus.PrepareShipment.ToString()]</p>
+                        </div>
+                        <div class="col-12 d-flex justify-content-between">
+                            @if (Order != null && Order.ShippingDate.HasValue)
+                            {
+                                <p>@Order?.ShippingDate.Value.ToShortDateString()</p>
+                            }
+                            else
+                            {
+                                <p></p>
+                            }
+                            <p>@L[ShippingStatus.Shipped.ToString()]</p>
+                        </div>
+                    }
+                    @if(Order?.OrderStatus == OrderStatus.Closed)
+                    {
+                        <div class="col-12 d-flex justify-content-between">
+                            @if (Order != null && Order.CancellationDate.HasValue)
+                            {
+                                <p>@Order?.CancellationDate.Value.ToShortDateString()</p>
+                            }
+                            else
+                            {
+                                <p></p>
+                            }
+                            <p>@L[OrderStatus.Closed.ToString()]</p>
+                        </div>
+                    }
                 </div>
             </CardBody>
         </Card>
