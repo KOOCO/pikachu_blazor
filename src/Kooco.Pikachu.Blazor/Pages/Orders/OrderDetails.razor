@@ -7,13 +7,15 @@
 @using Blazorise;
 @using Volo.Abp.AspNetCore.Components.Messages;
 @using Volo.Abp.Users;
+@using Blazorise.LoadingIndicator;
 
+@inject IJSRuntime JSRuntime;
 @inject IStringLocalizer<PikachuResource> L;
 @inject NavigationManager NavigationManager;
 @inject IUiMessageService _uiMessageService;
 @inject IOrderAppService _orderAppService;
 @inject ICurrentUser CurrentUser;
-
+@inject IModalService ModalService;
 <style>
 
     table tr td {
@@ -29,7 +31,7 @@
 </style>
 
 <h3>@L["OrderDetails"]</h3>
-
+<LoadingIndicator @ref="loading" FullScreen FadeIn>
 <div class="row">
     <div class="col-md-6 col-sm-12">
         <Card>
@@ -78,7 +80,7 @@
                                     </tr>
                                     <tr>
                                         <td>@L["ShippingMethod"]</td>
-                                        <td>@L[Order.DeliveryMethod.ToString()]</td>
+                                        <td>@L[Order.DeliveryMethod.ToString()] @Order.ShippingNumber </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -86,7 +88,7 @@
                     </div>
                     <div class="row">
                         <div class="col-12 text-end">
-                            <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary">
+                            <Button Type="ButtonType.Button" @onclick="OpenShipmentModal" Class="btn btn-sm btn-primary">
                                 @L["ShipmentNotify"]
                             </Button>
                             <Button Type="ButtonType.Button" Class="btn btn-sm btn-danger">
@@ -103,18 +105,18 @@
                                         <td>@L["Recipient"]</td>
                                         @if (ModificationTrack.IsNameInputVisible)
                                         {
-                                                <td>
-                                                    <div class="input-group">
+                                            <td>
+                                                <div class="input-group">
 
                                                     @{
                                                         var errorClass = ModificationTrack.IsInvalidName ? "invalid" : "";
                                                     }
                                                     <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewName" />
-                                                        <Button Type="ButtonType.Button" @onclick="SaveRecipientName" Class="btn btn-sm btn-primary">
-                                                            <i class="fa fa-check"></i>
-                                                        </Button>
-                                                    </div>
-                                                </td>
+                                                    <Button Type="ButtonType.Button" @onclick="SaveRecipientName" Class="btn btn-sm btn-primary">
+                                                        <i class="fa fa-check"></i>
+                                                    </Button>
+                                                </div>
+                                            </td>
                                         }
                                         else
                                         {
@@ -172,31 +174,31 @@
                                         {
                                             <td>
                                                 @* <div class="row mb-1">
-                                                    <div class="col-4">
-                                                        <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewRoad">
-                                                            <option disabled="disabled" selected="selected">選擇城市</option>
-                                                            <option value="臺北市">臺北市</option>
-                                                            <option value="桃園市">桃園市</option>
-                                                            <option value="嘉義市">嘉義市</option>
-                                                        </InputSelect>
-                                                    </div>
-                                                    <div class="col-4">
-                                                        <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewDistrict">
-                                                            <option disabled="disabled" selected="selected">選擇地區</option>
-                                                            <option value="石碇區">石碇區</option>
-                                                            <option value="坪林區">坪林區</option>
-                                                            <option value="烏來區">烏來區</option>
-                                                        </InputSelect>
-                                                    </div>
-                                                    <div class="col-4">
-                                                        <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewCity">
-                                                            <option disabled="disabled" selected="selected">選擇城市</option>
-                                                            <option value="臺北市">臺北市</option>
-                                                            <option value="桃園市">桃園市</option>
-                                                            <option value="嘉義市">嘉義市</option>
-                                                        </InputSelect>
-                                                    </div>
-                                                </div> *@
+                                        <div class="col-4">
+                                        <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewRoad">
+                                        <option disabled="disabled" selected="selected">選擇城市</option>
+                                        <option value="臺北市">臺北市</option>
+                                        <option value="桃園市">桃園市</option>
+                                        <option value="嘉義市">嘉義市</option>
+                                        </InputSelect>
+                                        </div>
+                                        <div class="col-4">
+                                        <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewDistrict">
+                                        <option disabled="disabled" selected="selected">選擇地區</option>
+                                        <option value="石碇區">石碇區</option>
+                                        <option value="坪林區">坪林區</option>
+                                        <option value="烏來區">烏來區</option>
+                                        </InputSelect>
+                                        </div>
+                                        <div class="col-4">
+                                        <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewCity">
+                                        <option disabled="disabled" selected="selected">選擇城市</option>
+                                        <option value="臺北市">臺北市</option>
+                                        <option value="桃園市">桃園市</option>
+                                        <option value="嘉義市">嘉義市</option>
+                                        </InputSelect>
+                                        </div>
+                                        </div> *@
                                                 <div class="row">
                                                     <div class="col-12">
                                                         <div class="input-group">
@@ -261,12 +263,20 @@
     <div class="col-md-6 col-sm-12">
         <div class="row mb-2">
             <div class="col-md-6 col-sm-12">
-                <Button Type="ButtonType.Button" Class="btn btn-sm btn-danger">@L["CancelOrder"]</Button>
-                <Button Type="ButtonType.Button" Class="btn btn-sm btn-secondary">@L["ExchangeItem"]</Button>
+                @if (Order?.ShippingStatus != ShippingStatus.WaitingForPayment || Order?.OrderStatus == OrderStatus.Closed)
+                {
+                    var text = Order?.OrderStatus == OrderStatus.Closed ? "Closed" : "CancelOrder";
+                    <Button Type="ButtonType.Button" disabled Class="btn btn-sm btn-danger">@L[text]</Button>
+                }
+                else
+                {
+                    <Button Type="ButtonType.Button" @onclick="CancelOrder" Class="btn btn-sm btn-danger">@L["CancelOrder"]</Button>
+                }
+                <Button Type="ButtonType.Button" Class="btn btn-sm btn-secondary me-1">@L["ExchangeItem"]</Button>
             </div>
             <div class="col-md-6 col-sm-12 text-lg-end">
                 <Button Type="ButtonType.Button" Class="btn btn-sm btn-secondary">@L["SplitOrder"]</Button>
-                <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary">
+                <Button Type="ButtonType.Button" @onclick="NavigateToOrderShipmentDetails" Class="btn btn-sm btn-primary">
                     <Icon Class="fa fa-print"></Icon>
                     @L["PrintOrder"]
                 </Button>
@@ -276,7 +286,7 @@
             <CardBody>
                 <p class="fw-bold">@L["OrderStatus"]</p>
                 <div class="row">
-                    @if (Order?.ShippingStatus == ShippingStatus.WaitingForPayment || Order?.ShippingStatus == ShippingStatus.PrepareShipment)
+                    @if (Order?.ShippingStatus == ShippingStatus.WaitingForPayment)
                     {
                         <div class="col-12 d-flex justify-content-between">
                             <p>@Order?.CreationTime.ToShortDateString()</p>
@@ -285,6 +295,10 @@
                     }
                     @if (Order?.ShippingStatus == ShippingStatus.PrepareShipment)
                     {
+                        <div class="col-12 d-flex justify-content-between">
+                            <p>@Order?.CreationTime.ToShortDateString()</p>
+                            <p>@L[ShippingStatus.WaitingForPayment.ToString()]</p>
+                        </div>
                         <div class="col-12 d-flex justify-content-between">
                             @if (Order != null && Order.PaymentDate.HasValue)
                             {
@@ -297,7 +311,42 @@
                             <p>@L[ShippingStatus.PrepareShipment.ToString()]</p>
                         </div>
                     }
-
+                    @if (Order?.ShippingStatus == ShippingStatus.Shipped)
+                    {
+                        <div class="col-12 d-flex justify-content-between">
+                            <p>@Order?.CreationTime.ToShortDateString()</p>
+                            <p>@L[ShippingStatus.WaitingForPayment.ToString()]</p>
+                        </div>
+                        <div class="col-12 d-flex justify-content-between">
+                            <p>@Order?.PaymentDate.Value.ToShortDateString()</p>
+                            <p>@L[ShippingStatus.PrepareShipment.ToString()]</p>
+                        </div>
+                        <div class="col-12 d-flex justify-content-between">
+                            @if (Order != null && Order.ShippingDate.HasValue)
+                            {
+                                <p>@Order?.ShippingDate.Value.ToShortDateString()</p>
+                            }
+                            else
+                            {
+                                <p></p>
+                            }
+                            <p>@L[ShippingStatus.Shipped.ToString()]</p>
+                        </div>
+                    }
+                    @if(Order?.OrderStatus == OrderStatus.Closed)
+                    {
+                        <div class="col-12 d-flex justify-content-between">
+                            @if (Order != null && Order.CancellationDate.HasValue)
+                            {
+                                <p>@Order?.CancellationDate.Value.ToShortDateString()</p>
+                            }
+                            else
+                            {
+                                <p></p>
+                            }
+                            <p>@L[OrderStatus.Closed.ToString()]</p>
+                        </div>
+                    }
                 </div>
             </CardBody>
         </Card>
@@ -309,11 +358,24 @@
         <h4 class="d-inline-block">@L["OrderItems"]</h4>
     </div>
     <div class="col-6 text-end">
-        <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary">
-            <i class="fa fa-pencil"></i>
-            @L["Edit"]
-        </Button>
-    </div>
+            @if (IsItemsEditMode)
+            {
+                <Button Type="ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="CancelOrderItemChanges">
+                    @L["Cancel"]
+                </Button>
+                <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="SubmitOrderItemChanges">
+                    <i class="fa fa-pencil"></i>
+                    @L["SaveChanges"]
+                </Button>
+            }
+            else
+            {
+                <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="ToggleEditMode">
+                    <i class="fa fa-pencil"></i>
+                    @L["Edit"]
+                </Button>
+            }
+        </div>
     <div class="col-12">
         <Card>
             <CardBody>
@@ -334,11 +396,10 @@
                             {
                                 <tr>
                                     <td>
-                                        <input type="checkbox" class="form-check-input" />
+                                        <InputCheckbox class="form-check-input" @bind-Value="item.IsSelected" />
                                     </td>
-                                    <td class="text-start">
-
-                                        @if(item.ItemType == ItemType.Item)
+                                    <td class="text-start" style="width: 50%;">
+                                        @if (item.ItemType == ItemType.Item)
                                         {
                                             var firstImage = item.Item?.Images?.FirstOrDefault()?.ImageUrl;
                                             @if (!string.IsNullOrEmpty(firstImage))
@@ -348,7 +409,7 @@
                                             @item.Item?.ItemName
                                         }
 
-                                        @if(item.ItemType == ItemType.SetItem)
+                                        @if (item.ItemType == ItemType.SetItem)
                                         {
                                             var firstImage = item.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
                                             @if (!string.IsNullOrEmpty(firstImage))
@@ -358,7 +419,7 @@
                                             @item.SetItem?.SetItemName
                                         }
 
-                                        @if(item.ItemType == ItemType.Freebie)
+                                        @if (item.ItemType == ItemType.Freebie)
                                         {
                                             var firstImage = item.Freebie?.Images?.FirstOrDefault()?.ImageUrl;
                                             @if (!string.IsNullOrEmpty(firstImage))
@@ -369,15 +430,34 @@
                                         }
 
                                     </td>
-                                    <td>
-                                        @item.Quantity
-                                    </td>
-                                    <td>
-                                        $@item.ItemPrice.ToString("N2")
-                                    </td>
-                                    <td>
-                                        $@item.TotalAmount.ToString("N2")
-                                    </td>
+                                    @if (item.IsSelected && IsItemsEditMode)
+                                    {
+                                        var thisItem = EditingItems.FirstOrDefault(e => e.Id == item.Id);
+                                        @if(thisItem != null)
+                                        {
+                                            <td>
+                                                <input type="number" min="1" class="form-control form-control-sm @(thisItem.IsQuantiyError ? "invalid" : "")" @bind-value="thisItem.Quantity" @onblur="() => CalculateTotal(thisItem)" />
+                                            </td>
+                                            <td>
+                                                <input type="number" min="1" class="form-control form-control-sm @(thisItem.IsItemPriceError ? "invalid" : "")" @bind-value="thisItem.ItemPrice" @onblur="() => CalculateTotal(thisItem)" />
+                                            </td>
+                                            <td>
+                                                $@thisItem.TotalAmount.ToString("N2")
+                                            </td>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <td>
+                                            @item.Quantity
+                                        </td>
+                                        <td>
+                                            <span>$@item.ItemPrice.ToString("N2")</span>
+                                        </td>
+                                        <td>
+                                            $@item.TotalAmount.ToString("N2")
+                                        </td>
+                                    }
                                 </tr>
                             }
                             <tr>
@@ -490,6 +570,52 @@
         </Card>
     </div>
 </div>
+<Modal @ref="CreateShipmentModal">
+    <ModalBackdrop />
+    <ModalContent IsCentered="true">
+        <EditForm Model="@shipments" OnValidSubmit="ApplyShipmentAsync">
+            <ModalHeader>
+                <ModalTitle>@L["ShipmentNotify"]</ModalTitle>
+                <CloseButton Clicked="CloseShipmentModal" onv />
+            </ModalHeader>
+            <ModalBody>
+
+                <DataAnnotationsValidator />
+                <div class="row my-2">
+                    <label class="form-label">@L["ShippingMethod"]</label>
+                    <div class="col-12">
+                        <InputSelect class="form-select" @bind-Value="@shipments.ShippingMethod">
+                            @foreach (DeliveryMethod option in Enum.GetValues(typeof(DeliveryMethod)))
+                            {
+                                <option value="@option">
+                                    @L[option.ToString()]
+                                </option>
+                            }
+                        </InputSelect>
+                    </div>
+                </div>
+                <div class="row my-2">
+                    <label class="form-label">@L["ShippingNumber"]</label>
+                    <div class="col-12 mb-2">
+                        <InputText class="form-control" @bind-Value="@shipments.ShippingNumber"></InputText>
+                        <ValidationMessage For="@(() => shipments.ShippingNumber)" />
+                    </div>
+                </div>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary"
+                        Clicked="CloseShipmentModal">
+                    @L["Cancel"]
+                </Button>
+                <Button Type="ButtonType.Submit" Class="btn btn-primary">
+                    <i class="fa fa-check"></i>
+                    @L["Save"]
+                </Button>
+            </ModalFooter>
+        </EditForm>
+    </ModalContent>
+</Modal>
+</LoadingIndicator>
 @code {
 
 }

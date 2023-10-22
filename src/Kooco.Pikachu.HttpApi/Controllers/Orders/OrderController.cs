@@ -6,7 +6,6 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
-using Volo.Abp.Application.Dtos;
 using Volo.Abp.AspNetCore.Mvc;
 
 namespace Kooco.Pikachu.Controllers.Orders
@@ -15,7 +14,7 @@ namespace Kooco.Pikachu.Controllers.Orders
     [ControllerName("Orders")]
     [Area("app")]
     [Route("api/app/orders")]
-    public class OrderController : AbpController, IOrderAppService
+    public class OrderController : AbpController
     {
         private readonly IOrderAppService _ordersAppService;
         public OrderController(
@@ -24,46 +23,10 @@ namespace Kooco.Pikachu.Controllers.Orders
             _ordersAppService = ordersAppService;
         }
 
-        [HttpPut("{id}/{comment}")]
-        public Task AddStoreCommentAsync(Guid id, string comment)
-        {
-            return _ordersAppService.AddStoreCommentAsync(id, comment);
-        }
-
         [HttpPost]
         public Task<OrderDto> CreateAsync(CreateOrderDto input)
         {
             return _ordersAppService.CreateAsync(input);
-        }
-
-        [HttpGet("{id}")]
-        public Task<OrderDto> GetAsync(Guid id)
-        {
-            return _ordersAppService.GetAsync(id);
-        }
-
-        [HttpGet("get-list")]
-        public Task<PagedResultDto<OrderDto>> GetListAsync(GetOrderListDto input)
-        {
-            return _ordersAppService.GetListAsync(input);
-        }
-
-        [HttpGet("with-details/{id}")]
-        public Task<OrderDto> GetWithDetailsAsync(Guid id)
-        {
-            return _ordersAppService.GetWithDetailsAsync(id);
-        }
-
-        [HttpPut("{id}/{update}")]
-        public Task<OrderDto> UpdateAsync(Guid id, CreateOrderDto input)
-        {
-            return _ordersAppService.UpdateAsync(id, input);
-        }
-
-        [HttpPut("{id}/{commentId}/{comment}")]
-        public Task UpdateStoreCommentAsync(Guid id, Guid commentId, string comment)
-        {
-            return _ordersAppService.UpdateStoreCommentAsync(id, commentId, comment);
         }
 
         [HttpPost("callback")]
@@ -111,12 +74,6 @@ namespace Kooco.Pikachu.Controllers.Orders
             {
                 return BadRequest();
             }
-        }
-
-        [HttpPost("dummy")]
-        public Task HandlePaymentAsync(PaymentResult paymentResult)
-        {
-            throw new NotImplementedException();
         }
 
         [HttpPut("check-mac-value/{id}/{checkMacValue}")]

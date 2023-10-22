@@ -1,7 +1,14 @@
-﻿using Kooco.Pikachu.Orders;
+﻿using Blazorise;
+using Blazorise.LoadingIndicator;
+using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.OrderItems;
+using Kooco.Pikachu.Orders;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -17,18 +24,33 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         private CreateOrderDto UpdateOrder { get; set; } = new();
         private StoreCommentsModel StoreComments = new();
         private ModificationTrack ModificationTrack = new();
-        protected async override Task OnInitializedAsync()
+        private Shipments shipments = new();
+        private List<UpdateOrderItemDto> EditingItems { get; set; } = new();
+        private Modal CreateShipmentModal { get; set; }
+        private LoadingIndicator loading { get; set; } = new();
+        private bool IsItemsEditMode { get; set; } = false;
+        public OrderDetails()
         {
-            try
+            Order = new();
+        }
+        protected async override Task OnAfterRenderAsync(bool isFirstRender)
+        {
+            if (isFirstRender)
             {
-                OrderId = Guid.Parse(id);
-                await GetOrderDetailsAsync();
-                await base.OnInitializedAsync();
-            }
-            catch (Exception ex)
-            {
-                await _uiMessageService.Error(ex.GetType().ToString());
-                Console.WriteLine(ex.Message);
+                try
+                {
+                    await loading.Show();
+                    OrderId = Guid.Parse(id);
+                    await GetOrderDetailsAsync();
+                    await base.OnInitializedAsync();
+                    await loading.Hide();
+                }
+                catch (Exception ex)
+                {
+                    await loading.Hide();
+                    await _uiMessageService.Error(ex.GetType().ToString());
+                    Console.WriteLine(ex.Message);
+                }
             }
         }
 
@@ -42,6 +64,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         {
             try
             {
+                await loading.Show();
                 string comment = StoreComments.Comment;
                 if (comment.IsNullOrWhiteSpace())
                 {
@@ -59,14 +82,17 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
 
                 StoreComments = new();
                 await GetOrderDetailsAsync();
+                await loading.Hide();
             }
             catch (BusinessException ex)
             {
+                await loading.Hide();
                 await _uiMessageService.Error(L[ex.Code]);
                 Console.WriteLine(ex.ToString());
             }
             catch (Exception ex)
             {
+                await loading.Hide();
                 await _uiMessageService.Error(ex.GetType().ToString());
                 Console.WriteLine(ex.ToString());
             }
@@ -133,7 +159,6 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 ModificationTrack.IsInvalidPhone = false;
             }
         }
-
         void SaveRecipientAddress()
         {
             if (ModificationTrack.NewAddress.IsNullOrWhiteSpace())
@@ -152,18 +177,11 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         {
             ModificationTrack = new();
         }
-
-
         protected virtual async Task SaveChangesAsync()
         {
             try
             {
-
-                if (
-                    ModificationTrack.IsInvalidName
-                    || ModificationTrack.IsInvalidPhone
-                    || ModificationTrack.IsInvalidAddress
-                    )
+                if (ModificationTrack.IsInvalidName || ModificationTrack.IsInvalidPhone || ModificationTrack.IsInvalidAddress)
                 {
                     return;
                 }
@@ -191,7 +209,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 UpdateOrder.RecipientName = ModificationTrack.IsNameModified
                 ? ModificationTrack.NewName
                 : Order.RecipientName;
-                
+
                 UpdateOrder.RecipientPhone = ModificationTrack.IsPhoneModified
                 ? ModificationTrack.NewPhone
                 : Order.RecipientPhone;
@@ -206,47 +224,175 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 else
                 {
                     UpdateOrder.City = Order.City;
-                    UpdateOrder.District =Order.District;
+                    UpdateOrder.District = Order.District;
                     UpdateOrder.Road = Order.Road;
                     UpdateOrder.AddressDetails = Order.AddressDetails;
-
                 }
-
+                await loading.Show();
+                UpdateOrder.OrderStatus = Order.OrderStatus;
                 Order = await _orderAppService.UpdateAsync(OrderId, UpdateOrder);
                 ModificationTrack = new();
                 await InvokeAsync(StateHasChanged);
+                await loading.Hide();
             }
             catch (BusinessException ex)
             {
+                await loading.Hide();
                 Console.WriteLine(ex.ToString());
-                await _uiMessageService.Error(ex.Code?.ToString());
+                await _uiMessageService.Error(L[ex.Code?.ToString()]);
             }
             catch (Exception ex)
             {
+                await loading.Hide();
                 Console.WriteLine(ex.ToString());
                 await _uiMessageService.Error(ex.GetType().ToString());
             }
+
         }
+        
+        public void NavigateToOrderShipmentDetails()
+        {
+            var id = Order?.Id;
+            NavigationManager.NavigateTo($"Orders/OrderShippingDetails/{id}");
+        }
+        
+        async Task CancelOrder()
+        {
+            if (Order?.ShippingStatus == ShippingStatus.WaitingForPayment)
+            {
+                var confirmed = await _uiMessageService.Confirm(L["AreYouSureToCancelOrder?"]);
+                if (confirmed)
+                {
+                    await loading.Show();
+                    await _orderAppService.CancelOrderAsync(OrderId);
+                    await GetOrderDetailsAsync();
+                    await InvokeAsync(StateHasChanged);
+                    await loading.Hide();
+                }
+            }
+        }
+
+        private void OpenShipmentModal()
+        {
+            shipments = new Shipments
+            {
+                ShippingMethod = Order.DeliveryMethod ?? DeliveryMethod.PickupTheGoodsWithoutPayment,
+                ShippingNumber = Order.ShippingNumber
+            };
+
+            CreateShipmentModal.Show();
+        }
+        private void CloseShipmentModal()
+        {
+            CreateShipmentModal.Hide();
+        }
+        private async Task ApplyShipmentAsync()
+        {
+            try
+            {
+                await loading.Show();
+                UpdateOrder.ShippingNumber = shipments.ShippingNumber;
+                UpdateOrder.DeliveryMethod = shipments.ShippingMethod;
+                await _orderAppService.UpdateShippingDetails(OrderId, UpdateOrder);
+                await CreateShipmentModal.Hide();
+                await GetOrderDetailsAsync();
+                await InvokeAsync(StateHasChanged);
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+                await loading.Hide();
+            }
+        }
+
+        async void SubmitOrderItemChanges()
+        {
+            bool isValid = true;
+
+            EditingItems.ForEach(item =>
+            {
+                item.IsItemPriceError = false;
+                item.IsQuantiyError = false;
+
+                if(item.Quantity < 1)
+                {
+                    item.IsQuantiyError = true;
+                    isValid = false;
+                }
+                if (item.ItemPrice < 1)
+                {
+                    item.IsItemPriceError = true;
+                    isValid = false;
+                }
+            });
+
+            if (!isValid) return;
+
+            await loading.Show();
+            await _orderAppService.UpdateOrderItemsAsync(OrderId, EditingItems);
+            CancelOrderItemChanges();
+            await GetOrderDetailsAsync();
+            await loading.Hide();
+            await InvokeAsync(StateHasChanged);
+        }
+
+        void CancelOrderItemChanges()
+        {
+            EditingItems = new();
+            IsItemsEditMode = false;
+            Order.OrderItems.ForEach(item =>
+            {
+                item.IsSelected = false;
+            });
+        }
+
+        async void ToggleEditMode()
+        {
+            EditingItems = new();
+            var selectedItems = Order.OrderItems.Where(x => x.IsSelected).ToList();
+            if(selectedItems.Count > 0)
+            {
+                selectedItems.ForEach(item =>
+                {
+                    EditingItems.Add(new UpdateOrderItemDto
+                    {
+                        Id = item.Id,
+                        Quantity = item.Quantity,
+                        ItemPrice = item.ItemPrice,
+                        TotalAmount = item.TotalAmount
+                    });
+                });
+                IsItemsEditMode = true;
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+
+        void CalculateTotal(UpdateOrderItemDto item)
+        {
+            var index = EditingItems.IndexOf(item);
+            EditingItems[index].TotalAmount = item.Quantity * item.ItemPrice;
+        }
+
+        public class StoreCommentsModel
+        {
+            public Guid? Id { get; set; }
+
+            [Required(ErrorMessage = "This Field Is Required")]
+            public string Comment { get; set; }
+        }
+
     }
-
-    public class StoreCommentsModel
-    {
-        public Guid? Id { get; set; }
-
-        [Required(ErrorMessage = "This Field Is Required")]
-        public string Comment { get; set; }
-    }
-
-
     public class ModificationTrack
     {
         public bool IsModified { get; set; }
-
         public bool IsNameInputVisible { get; set; }
         public string NewName { get; set; }
         public bool IsInvalidName { get; set; }
         public bool IsNameModified { get; set; }
-
         public bool IsPhoneInputVisible { get; set; }
         public string NewPhone { get; set; }
         public bool IsInvalidPhone { get; set; }
@@ -258,5 +404,13 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         public string NewAddress { get; set; }
         public bool IsInvalidAddress { get; set; }
         public bool IsAddressModified { get; set; }
+    }
+    public class Shipments
+    {
+        [Required]
+        public DeliveryMethod ShippingMethod { get; set; }
+
+        [Required(ErrorMessage = "This Field Is Required")]
+        public string? ShippingNumber { get; set; }
     }
 }

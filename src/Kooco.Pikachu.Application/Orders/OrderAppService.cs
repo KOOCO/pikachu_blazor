@@ -1,14 +1,16 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
+using Kooco.Pikachu.Localization;
+using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Permissions;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Localization;
+using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Net;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
@@ -16,6 +18,7 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.Emailing;
 using Volo.Abp.MultiTenancy;
 
 namespace Kooco.Pikachu.Orders
@@ -27,21 +30,23 @@ namespace Kooco.Pikachu.Orders
         private readonly OrderManager _orderManager;
         private readonly IDataFilter _dataFilter;
         private readonly IGroupBuyRepository _groupBuyRepository;
-        private readonly IConfiguration _configuration;
-
+        private readonly IEmailSender _emailSender;
+        private readonly IStringLocalizer<PikachuResource> _l;
         public OrderAppService(
             IOrderRepository orderRepository,
             OrderManager orderManager,
             IDataFilter dataFilter,
             IGroupBuyRepository groupBuyRepository,
-            IConfiguration configuration
+            IEmailSender emailSender,
+            IStringLocalizer<PikachuResource> l
             )
         {
             _orderRepository = orderRepository;
             _orderManager = orderManager;
             _dataFilter = dataFilter;
             _groupBuyRepository = groupBuyRepository;
-            _configuration = configuration;
+            _emailSender = emailSender;
+            _l = l;
         }
 
         [AllowAnonymous]
@@ -162,8 +167,120 @@ namespace Kooco.Pikachu.Orders
             order.City = input.City;
             order.Road = input.Road;
             order.AddressDetails = input.AddressDetails;
+            order.OrderStatus = input.OrderStatus;
             await _orderRepository.UpdateAsync(order);
             return ObjectMapper.Map<Order, OrderDto>(order);
+        }
+
+        public async Task UpdateOrderItemsAsync(Guid id, List<UpdateOrderItemDto> orderItems)
+        {
+            var order = await _orderRepository.GetAsync(id);
+            await _orderRepository.EnsureCollectionLoadedAsync(order, o => o.OrderItems);
+
+            foreach (var item in orderItems)
+            {
+                var orderItem = order.OrderItems.First(o => o.Id == item.Id);
+                orderItem.Quantity = item.Quantity;
+                orderItem.ItemPrice = item.ItemPrice;
+                orderItem.TotalAmount = item.TotalAmount;
+            }
+
+            order.TotalQuantity = order.OrderItems.Sum(o => o.Quantity);
+            order.TotalAmount = order.OrderItems.Sum(o => o.TotalAmount);
+            await _orderRepository.UpdateAsync(order);
+        }
+
+        public async Task CancelOrderAsync(Guid id)
+        {
+            var order = await _orderRepository.GetAsync(id);
+            order.OrderStatus = OrderStatus.Closed;
+            order.CancellationDate = DateTime.Now;
+            await _orderRepository.UpdateAsync(order);
+        }
+
+        public async Task<OrderDto> UpdateShippingDetails(Guid id, CreateOrderDto input)
+        {
+            var order = await _orderRepository.GetWithDetailsAsync(id);
+            order.DeliveryMethod = input.DeliveryMethod;
+            order.ShippingNumber = input.ShippingNumber;
+            order.ShippingStatus = ShippingStatus.Shipped;
+            order.ShippingDate = DateTime.Now;
+
+            await _orderRepository.UpdateAsync(order);
+
+            var groupbuy = await _groupBuyRepository.GetAsync(g => g.Id == order.GroupBuyId);
+
+            string subject = $"{groupbuy.GroupBuyName} 訂單#{order.OrderNo} {_l[order.ShippingStatus.ToString()]}";
+            
+            string body = CreateEmailBody(order, groupbuy);
+
+            await _emailSender.QueueAsync(
+                order.CustomerEmail,
+                subject,
+                body
+                );
+
+            return ObjectMapper.Map<Order, OrderDto>(order);
+        }
+
+        private string CreateEmailBody(Order order, GroupBuy groupbuy)
+        {
+            string body = File.ReadAllText("wwwroot/EmailTemplates/email.html");
+
+            body = body.Replace("{{NotifyMessage}}", groupbuy.NotifyMessage);
+            body = body.Replace("{{GroupBuyName}}", groupbuy.GroupBuyName);
+            body = body.Replace("{{OrderNo}}", order.OrderNo);
+            body = body.Replace("{{OrderDate}}", order.CreationTime.ToString("yyyy-MM-dd hh:mm:ss"));
+            body = body.Replace("{{CustomerName}}", order.CustomerName);
+            body = body.Replace("{{CustomerEmail}}", order.CustomerEmail);
+            body = body.Replace("{{CustomerPhone}}", order.CustomerPhone);
+            body = body.Replace("{{RecipientName}}", order.RecipientName);
+            body = body.Replace("{{RecipientPhone}}", order.RecipientPhone);
+            body = body.Replace("{{PaymentMethod}}", _l[order.PaymentMethod.ToString()]);
+            body = body.Replace("{{PaymentStatus}}", _l[order.OrderStatus.ToString()]);
+            body = body.Replace("{{ShippingMethod}}", _l[order.DeliveryMethod.ToString()]);
+            body = body.Replace("{{DeliveryFee}}", "0");
+            body = body.Replace("{{RecipientAddress}}", order.AddressDetails);
+            body = body.Replace("{{ShippingStatus}}", _l[order.ShippingStatus.ToString()]);
+            body = body.Replace("{{RecipientComments}}", order.Remarks);
+
+            if(order.OrderItems != null)
+            {
+                StringBuilder sb = new StringBuilder();
+                foreach (var item in order.OrderItems)
+                {
+                    string itemName = "";
+                    if(item.ItemType == ItemType.Item)
+                    {
+                        itemName = item.Item?.ItemName;
+                    } 
+                    else if (item.ItemType == ItemType.SetItem)
+                    {
+                        itemName = item.SetItem?.SetItemName;
+                    }
+                    else
+                    {
+                        itemName = item.Freebie?.ItemName;
+                    }
+
+                    itemName += $" {item.ItemPrice:N0} x {item.Quantity}";
+                    sb.Append(
+                        $@"
+                    <tr>
+                        <td>{itemName}</td>
+                        <td>${item.ItemPrice:N0}</td>
+                        <td>${item.Quantity}</td>
+                        <td>${item.TotalAmount:N0}</td>
+                    </tr>"
+                    );
+                }
+
+                body = body.Replace("{{OrderItems}}", sb.ToString());
+            }
+
+            body = body.Replace("{{DeliveryFee}}", "$0");
+            body = body.Replace("{{TotalAmount}}", $"${order.TotalAmount:N0}");
+            return body;
         }
 
         [AllowAnonymous]
@@ -203,35 +320,6 @@ namespace Kooco.Pikachu.Orders
                     await _orderRepository.UpdateAsync(order);
                 }
             }
-        }
-
-        [AllowAnonymous]
-        private static string GenerateCheckMacValue(string requestBody, string hashKey, string hashIV)
-        {
-            // Split by '&' and sort alphabetically
-            var sortedQuery = WebUtility.UrlDecode(requestBody)
-                                        .Split('&')
-                                        .OrderBy(queryParam => queryParam)
-                                        .ToList();
-
-            // Join back with '&'
-            string sortedQueryString = string.Join('&', sortedQuery);
-
-            // Add HashKey & HashIV
-            string hashQueryString = $"{hashKey}&{sortedQueryString}&{hashIV}";
-
-            // UrlEncode
-            string encodedQuery = WebUtility.UrlEncode(hashQueryString).ToLower();
-
-            // Get SHA256
-            byte[] bytes = SHA256.HashData(Encoding.UTF8.GetBytes(encodedQuery));
-
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < bytes.Length; i++)
-            {
-                builder.Append(bytes[i].ToString("X2"));
-            }
-            return builder.ToString().ToUpper();
         }
     }
 }

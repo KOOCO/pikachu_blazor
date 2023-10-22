@@ -500,7 +500,6 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 await _uiMessageService.Error(ex.Message.GetType()?.ToString());
             }
         }
-
         private async Task OnSelectedValueChanged(Guid? id, CollapseItem collapseItem, ItemWithItemTypeDto? selectedItem = null)
         {
             try

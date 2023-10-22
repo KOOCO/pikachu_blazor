@@ -6,11 +6,12 @@
 @using Microsoft.Extensions.Localization
 @using Volo.Abp
 @using System.Text.Json;
-@using System.ComponentModel
-
+@using System.ComponentModel;
+@using Blazorise.LoadingIndicator;
 @inject IStringLocalizer<PikachuResource> L
 @inject NavigationManager NavigationManager
 
+<LoadingIndicator @ref="loading" FullScreen FadeIn>
 <div class="row">
     <div class="col-6">
         <h3>@L["GroupBuyList"]</h3>
@@ -70,7 +71,7 @@
         </DataGrid>
     </CardBody>
 </Card>
-
+</LoadingIndicator>
 
 @code {
 }
