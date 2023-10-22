@@ -50,17 +50,19 @@
         <Card>
             <CardBody>
                 <div class="row" id="divToPrint">
-                    <h3 style="text-align:center">@L["OrderShippingDetails"]</h3>
-                    <div class="col-12">
+                    <h3 class="text-center">@L["OrderShippingDetails"]</h3>
+                    @if(Order != null)
+                    {
+                        <div class="col-12">
                         <table class="w-100">
                             <tbody>
                                 <tr>
-                                    <td>@L["OrderInformation"]:</td>
-                                    <td>@L["PaymentMethod"]: @Order?.PaymentMethod</td>
+                                    <td>@L["OrderInformation"]: @Order?.OrderNo</td>
+                                    <td>@L["PaymentMethod"]: @L[Order?.PaymentMethod?.ToString()]</td>
                                 </tr>
                                 <tr>
                                     <td>@L["OrderDate"]: @Order?.CreationTime</td>
-                                    <td>@L["ShippingMethod"]:@Order?.DeliveryMethod </td>
+                                    <td>@L["ShippingMethod"]: @L[Order?.DeliveryMethod?.ToString()] </td>
                                 </tr>
                                 <tr>
                                     <td>@L["CustomerName"]:  @Order?.CustomerName</td>
@@ -68,72 +70,62 @@
                                 </tr>
                                 <tr>
                                     <td>@L["CustomerEmail"]:  @Order?.CustomerEmail</td>
-                                    <td>@L["ShippingMethod"]:  @Order?.RecipientPhone</td>
+                                    <td>@L["RecipientPhoneNumber"]:  @Order?.RecipientPhone</td>
                                 </tr>
                                 <tr>
                                     <td> @L["CustomerPhone"]: @Order?.CustomerPhone</td>
-                                    <td> @L["AddressDetails"]: @Order?.AddressDetails</td>
+                                    <td> @L["RecipientAddress"]: @Order?.AddressDetails</td>
                                 </tr>
                                 <tr>
-                                    <td>
-                                        @L["RecipientComments"]:
-                                        @if (Order?.StoreComments != null)
-                                        {
-                                            @foreach (StoreCommentDto comment in Order?.StoreComments)
-                                            {
-                                                @comment.Comment
-                                            }
-                                        }
-                                    </td>
+                                    <td>@L["RecipientComments"]: @Order?.Remarks</td>
                                 </tr>
                             </tbody>
                         </table>
                         <table class="tbl table w-100 mt-3">
                             <thead class="thead-dark">
                                 <tr>
-                                    <th>@L["ItemName"]</th>
-                                    <th> @L["UnitPrice"]</th>
+                                    <th class="text-start">@L["ItemName"]</th>
+                                    <th>@L["UnitPrice"]</th>
                                     <th>@L["Quantity"]</th>
-                                    <th> @L["SubTotal"]</th>
+                                    <th>@L["SubTotal"]</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody class="text-center">
                                 @if (Order?.OrderItems != null)
                                 {
                                     @foreach (OrderItemDto item in Order?.OrderItems)
                                     {
                                         <tr>
-                                            <td style="width:50%">@item.Item?.ItemName </td>
-                                            <td style="text-align:center">@item.ItemPrice.ToString("N0") </td>
-                                            <td style="text-align:center">@item.Quantity </td>
-                                            <td style="text-align:center">@item.TotalAmount.ToString("N0") </td>
+                                            <td class="text-start" style="width:50%">@item.Item?.ItemName</td>
+                                            <td>@item.ItemPrice.ToString("N0")</td>
+                                            <td>@item.Quantity</td>
+                                            <td>@item.TotalAmount.ToString("N0")</td>
                                         </tr>
                                     }
                                 }
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td></td>
-                                    <td colspan="2">@L["DeliveryFee"]:</td>
-                                    <td style="text-align:center">0</td>
+                                    <td colspan="3" class="text-end">@L["DeliveryFee"] :</td>
+                                    <td class="text-center">0</td>
                                 </tr>
                                 <tr>
-                                    <td></td>
-                                    <td colspan="2">@L["Total"] </td>
-                                    <td style="text-align:center">NT $@Order?.TotalAmount.ToString("N0")</td>
+                                    <td colspan="3" class="text-end">@L["Total"] :</td>
+                                    <td class="text-center">NT $@Order?.TotalAmount.ToString("N0")</td>
                                 </tr>
                             </tfoot>
                         </table>
                     </div>
-                </div>
-                <div class="row justify-content-center">
-                    <Button Type="ButtonType.Button" @onclick="PrintDiv" Class="btn btn-sm btn-primary col-md-2">
-                        <Icon Class="fa fa-print"></Icon>
-                        @L["PrintOrder"]
-                    </Button>
+                    }
                 </div>
             </CardBody>
         </Card>
+        <div class="row justify-content-center">
+            <Button Type="ButtonType.Button" @onclick="PrintDiv" Class="btn btn-sm btn-primary col-md-2">
+                <Icon Class="fa fa-print me-1"></Icon>
+                @L["PrintOrder"]
+            </Button>
+        </div>
     </div>
 </div>
 <script>

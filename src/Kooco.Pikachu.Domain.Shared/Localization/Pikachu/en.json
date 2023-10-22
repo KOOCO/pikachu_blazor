@@ -251,14 +251,14 @@
     "Telephone": "Telephone",
     "OrderCreated": "Order Created",
     "Quantity": "Quantity",
-    "UnitPrice": "UnitPrice",
+    "UnitPrice": "Unit Price",
     "RecipientName": "Recipient Name",
     "CustomerEmail": "Customer Email",
     "CustomerPhone": "Customer Phone",
     "AddressDetails": "Address Details",
-    "OrderShippingDetails": "Order Shipping Details"
-
-
-
+    "OrderShippingDetails": "Order Shipping Details",
+    "ShippingNumber": "Shipping Number",
+    "AreYouSureToCancelOrder?": "Are You Sure To Cancel The Order?",
+    "CombineOrders": "Combine Orders"
   }
 }

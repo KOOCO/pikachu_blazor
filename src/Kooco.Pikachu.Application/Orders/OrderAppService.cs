@@ -1,22 +1,22 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
+using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Permissions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.Emailing;
 using Volo.Abp.MultiTenancy;
+using Volo.Abp.SettingManagement;
 
 namespace Kooco.Pikachu.Orders
 {
@@ -28,13 +28,17 @@ namespace Kooco.Pikachu.Orders
         private readonly IDataFilter _dataFilter;
         private readonly IGroupBuyRepository _groupBuyRepository;
         private readonly IConfiguration _configuration;
+        private readonly ISettingManager _settingManager;
+        private readonly IEmailSender _emailSender;
 
         public OrderAppService(
             IOrderRepository orderRepository,
             OrderManager orderManager,
             IDataFilter dataFilter,
             IGroupBuyRepository groupBuyRepository,
-            IConfiguration configuration
+            IConfiguration configuration,
+            ISettingManager settingManager,
+            IEmailSender emailSender
             )
         {
             _orderRepository = orderRepository;
@@ -42,6 +46,8 @@ namespace Kooco.Pikachu.Orders
             _dataFilter = dataFilter;
             _groupBuyRepository = groupBuyRepository;
             _configuration = configuration;
+            _settingManager = settingManager;
+            _emailSender = emailSender;
         }
 
         [AllowAnonymous]
@@ -167,13 +173,40 @@ namespace Kooco.Pikachu.Orders
             return ObjectMapper.Map<Order, OrderDto>(order);
         }
 
+        public async Task UpdateOrderItemsAsync(Guid id, List<UpdateOrderItemDto> orderItems)
+        {
+            var order = await _orderRepository.GetAsync(id);
+            await _orderRepository.EnsureCollectionLoadedAsync(order, o => o.OrderItems);
+
+            foreach (var item in orderItems)
+            {
+                var orderItem = order.OrderItems.First(o => o.Id == item.Id);
+                orderItem.Quantity = item.Quantity;
+                orderItem.ItemPrice = item.ItemPrice;
+                orderItem.TotalAmount = item.TotalAmount;
+            }
+
+            order.TotalQuantity = order.OrderItems.Sum(o => o.Quantity);
+            order.TotalAmount = order.OrderItems.Sum(o => o.TotalAmount);
+            await _orderRepository.UpdateAsync(order);
+        }
 
         public async Task<OrderDto> UpdateShippingDetails(Guid id, CreateOrderDto input)
         {
             var order = await _orderRepository.GetAsync(id);
-          order.DeliveryMethod=input.DeliveryMethod;
-            order.ShippingNumber=input.ShippingNumber;
+            order.DeliveryMethod = input.DeliveryMethod;
+            order.ShippingNumber = input.ShippingNumber;
             await _orderRepository.UpdateAsync(order);
+            
+            var groupBuy = await _groupBuyRepository.GetAsync(g => g.Id == order.GroupBuyId);
+            var notifyMessage = groupBuy.NotifyMessage;
+            
+            await _emailSender.SendAsync(
+                order.CustomerEmail,
+                "Order has been shipped",
+                notifyMessage
+                );
+
             return ObjectMapper.Map<Order, OrderDto>(order);
         }
 
@@ -214,33 +247,6 @@ namespace Kooco.Pikachu.Orders
                     await _orderRepository.UpdateAsync(order);
                 }
             }
-        }
-        [AllowAnonymous]
-        private static string GenerateCheckMacValue(string requestBody, string hashKey, string hashIV)
-        {
-            // Split by '&' and sort alphabetically
-            var sortedQuery = WebUtility.UrlDecode(requestBody)
-                                        .Split('&')
-                                        .OrderBy(queryParam => queryParam)
-                                        .ToList();
-            // Join back with '&'
-            string sortedQueryString = string.Join('&', sortedQuery);
-
-            // Add HashKey & HashIV
-            string hashQueryString = $"{hashKey}&{sortedQueryString}&{hashIV}";
-
-            // UrlEncode
-            string encodedQuery = WebUtility.UrlEncode(hashQueryString).ToLower();
-
-            // Get SHA256
-            byte[] bytes = SHA256.HashData(Encoding.UTF8.GetBytes(encodedQuery));
-
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < bytes.Length; i++)
-            {
-                builder.Append(bytes[i].ToString("X2"));
-            }
-            return builder.ToString().ToUpper();
         }
     }
 }

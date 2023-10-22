@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Kooco.Pikachu.OrderItems;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -17,6 +19,6 @@ namespace Kooco.Pikachu.Orders
         Task UpdateStoreCommentAsync(Guid id, Guid commentId, string comment);
         Task HandlePaymentAsync(PaymentResult paymentResult);
         Task AddCheckMacValueAsync(Guid id, string checkMacValue);
-        
+        Task UpdateOrderItemsAsync(Guid id, List<UpdateOrderItemDto> orderItems);
     }
 }

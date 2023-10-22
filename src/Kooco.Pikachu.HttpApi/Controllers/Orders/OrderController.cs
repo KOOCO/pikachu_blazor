@@ -1,7 +1,9 @@
-﻿using Kooco.Pikachu.Orders;
+﻿using Kooco.Pikachu.OrderItems;
+using Kooco.Pikachu.Orders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -130,5 +132,10 @@ namespace Kooco.Pikachu.Controllers.Orders
             return _ordersAppService.AddCheckMacValueAsync(id, checkMacValue);
         }
 
+        [HttpPost("update-order-items")]
+        public Task UpdateOrderItemsAsync(Guid id, List<UpdateOrderItemDto> orderItems)
+        {
+            return _ordersAppService.UpdateOrderItemsAsync(id, orderItems);
+        }
     }
 }
