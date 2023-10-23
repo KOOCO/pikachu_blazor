@@ -1,13 +1,16 @@
 ﻿using Blazorise;
 using Blazorise.DataGrid;
 using Blazorise.LoadingIndicator;
+using Kooco.Pikachu.Blazor.Pages.ItemManagement;
 using Kooco.Pikachu.Orders;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form;
 
 namespace Kooco.Pikachu.Blazor.Pages.Orders
 {
@@ -36,7 +39,6 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
             try
             {
                 await loading.Show();
-
                 int skipCount = PageIndex * PageSize;
                 var result = await _orderAppService.GetListAsync(new GetOrderListDto
                 {
@@ -101,5 +103,13 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 ExpandedRows.Add(e.Item.Id);
             }
         }
+        public void NavigateToOrderPrint()
+        {
+            var selectedOrder = Orders.SingleOrDefault(x => x.IsSelected);
+
+            // var id = Order?.Id;
+            NavigationManager.NavigateTo($"Orders/OrderShippingDetails/{selectedOrder.Id}");
+        }
+
     }
 }

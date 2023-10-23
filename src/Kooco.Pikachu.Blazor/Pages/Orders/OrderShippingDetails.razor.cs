@@ -23,25 +23,26 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 OrderId = Guid.Parse(id);
                 await GetOrderDetailsAsync();
                 await base.OnInitializedAsync();
+              
             }
-            catch
+            catch(Exception ex)
             {
+                await _uiMessageService.Error(ex.GetType().ToString());
+                Console.WriteLine(ex.Message);
             }
         }
         async Task GetOrderDetailsAsync()
         {
             Order = await _orderAppService.GetWithDetailsAsync(OrderId);
-           
+            JSRuntime.InvokeVoidAsync("eval", $"document.title = '{Order.OrderNo.ToString()}'");
+
             await InvokeAsync(StateHasChanged);
         }
         private void  PrintDiv()
         {
             isPrinting = true;
             StateHasChanged(); // Trigger a UI update
-
-            // This setTimeout ensures that the print dialog is shown after the styles are applied.
-            JSRuntime.InvokeVoidAsync("printJS"); // Replace "printJS" with the name of your JavaScript function
-
+             JSRuntime.InvokeVoidAsync("printJS"); 
         }
 
     }
