@@ -33,13 +33,13 @@
             <Button Type="@ButtonType.Button" Class="btn btn-sm btn-secondary">@L["CombineOrders"]</Button>
             @if(Orders.Where(x => x.IsSelected).Count() != 1)
             {
-            <Button Type="@ButtonType.Button" disabled Class="btn btn-sm btn-primary">
+            <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
                 <i class="fa fa-print"></i>
                 @L["Print"]
             </Button>
             }else
             {
-                <Button Type="@ButtonType.Button" onclick="@NavigateToOrderPrint" Class="btn btn-sm btn-primary">
+                <Button Type="@ButtonType.Button" onclick="@NavigateToOrderPrint" Class="ms-1 btn btn-sm btn-primary">
                     <i class="fa fa-print"></i>
                     @L["Print"]
                 </Button>
@@ -106,7 +106,6 @@
                 <DetailRowTemplate>
                     @{
                         var orderItems = (context as OrderDto).OrderItems;
-
                         <div class="mx-2 px-3 py-2 border">
                             <div class="row">
                                 <div class="col-12">
