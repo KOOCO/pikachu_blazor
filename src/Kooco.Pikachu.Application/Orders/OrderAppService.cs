@@ -282,7 +282,7 @@ namespace Kooco.Pikachu.Orders
             body = body.Replace("{{TotalAmount}}", $"${order.TotalAmount:N0}");
 
 
-            await _emailSender.QueueAsync(
+            await _emailSender.SendAsync(
                 order.CustomerEmail,
                 subject,
                 body
