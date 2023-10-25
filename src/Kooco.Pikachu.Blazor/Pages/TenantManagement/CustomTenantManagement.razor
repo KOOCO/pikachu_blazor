@@ -156,7 +156,7 @@
                     </div>
                 }
                           <Field>
-                        <FieldLabel>@L["ParentTenant"]</FieldLabel>
+                        <FieldLabel>@L["TenantOwner"]</FieldLabel>
                         <Select TValue="Guid?" @bind-SelectedValue="@TenantOwnerId">
                              
                             @foreach (var tenant in UsersList)
@@ -168,7 +168,7 @@
                         </Select>
                     </Field>
                     <Field>
-                        <FieldLabel>@L["SharePoint"]</FieldLabel>
+                        <FieldLabel>@L["ShareProfit%"]</FieldLabel>
                         <NumericEdit @bind-Value="@ShareProfitPercentage" />
                     </Field>
                         <Field>
@@ -276,7 +276,7 @@
                         </div>
                     </div>
                 }
-                        <FieldLabel>@L["ParentTenant"]</FieldLabel>
+                        <FieldLabel>@L["TenantOwner"]</FieldLabel>
                         <Select TValue="Guid?" @bind-SelectedValue="@TenantOwnerId">
                            
                                 @foreach (var tenant in UsersList)
@@ -288,7 +288,7 @@
                         </Select>
                     </Field>
                     <Field>
-                        <FieldLabel>@L["SharePoint"]</FieldLabel>
+                        <FieldLabel>@L["ShareProfit%"]</FieldLabel>
                         <NumericEdit @bind-Value="@ShareProfitPercentage" />
                     </Field>
                         <Field>
