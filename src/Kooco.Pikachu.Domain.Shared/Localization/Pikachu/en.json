@@ -259,6 +259,10 @@
     "OrderShippingDetails": "Order Shipping Details",
     "ShippingNumber": "Shipping Number",
     "AreYouSureToCancelOrder?": "Are You Sure To Cancel The Order?",
-    "CombineOrders": "Combine Orders"
+    "CombineOrders": "Combine Orders",
+    "Enum:TenantStatus.0": "Open",
+    "Enum:TenantStatus.1": "Closed",
+    "Enum:TenantStatus.2": "Warning",
+    "Enum:TenantStatus.3": "Suspend",
   }
 }

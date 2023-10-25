@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Kooco.Pikachu.EnumValues;
+using System;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using Volo.Abp.Identity;
 using Volo.Abp.ObjectExtending;
@@ -75,8 +77,8 @@ public static class PikachuModuleExtensionConfigurator
            {
                tenantConfig.ConfigureTenant(tenant =>
                {
-                   tenant.AddOrUpdateProperty<string>( //property type: string
-                       Constant.ParentTenant, //property name
+                   tenant.AddOrUpdateProperty<Guid?>( //property type: string
+                       Constant.TenantOwner, //property name
                        property =>
                        {
                            //validation rules
@@ -95,6 +97,26 @@ public static class PikachuModuleExtensionConfigurator
                            property.Configuration[IdentityModuleExtensionConsts.ConfigurationNames.AllowUserToEdit] = true;
                        }
                    );
+                   tenant.AddOrUpdateProperty<string>(
+                      Constant.Logo, //property name
+                      property =>
+                      {
+                          //validation rules
+                          //property.Attributes.Add(new RequiredAttribute());
+                          //to do: need to make sure number is between 0 and 100
+                          property.Configuration[IdentityModuleExtensionConsts.ConfigurationNames.AllowUserToEdit] = true;
+                      }
+                  );
+                   tenant.AddOrUpdateProperty<TenantStatus>(
+                    Constant.Status, //property name
+                    property =>
+                    {
+                        //validation rules
+                        //property.Attributes.Add(new RequiredAttribute());
+                        //to do: need to make sure number is between 0 and 100
+                        property.Configuration[IdentityModuleExtensionConsts.ConfigurationNames.AllowUserToEdit] = true;
+                    }
+                );
                });
            });
     }
