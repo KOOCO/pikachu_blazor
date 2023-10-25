@@ -92,7 +92,7 @@
             <p>{{CustomerPhone}}</p>
           </td>
           <td>
-            <p>接受者</p>
+              <p>收件人</p>
             <p>{{RecipientName}}</p>
             <span class="spacer"></span>
             <p>收件人電話號碼</p>
@@ -108,10 +108,10 @@
             <p>{{PaymentStatus}}</p>
           </td>
           <td>
-            <p>郵寄方式</p>
+              <p>寄送方式</p>
             <p>{{ShippingMethod}}</p>
             <span class="spacer"></span>
-            <p>快遞費</p>
+            <p>運費</p>
             <p>{{DeliveryFee}}</p>
             <span class="spacer"></span>
             <p>收件者地址</p>
@@ -123,7 +123,7 @@
         </tr>
         <tr>
           <td colspan="2">
-            <p>收件者評論</p>
+              <p>訂單備註</p>
             <p>{{RecipientComments}}</p>
           </td>
         </tr>
@@ -134,7 +134,7 @@
       <thead>
         <tr>
           <!-- ItemName -->
-          <th>專案名</th>
+            <th>品名</th>
           <!-- UnitPrice -->
           <th>單價</th>
           <!-- Quantity -->
@@ -146,13 +146,13 @@
       <tbody>
         {{OrderItems}}
         <tr>
-          <td colspan="3" style="text-align: right;">
-            <!-- DeliveryFee -->
-            快遞費 :
-            <span class="spacer"></span>
-            <!-- Total -->
-            全部的 :
-          </td>
+            <td colspan="3" style="text-align: right;">
+                <!-- DeliveryFee -->
+                快遞費 :
+                <span class="spacer"></span>
+                <!-- Total -->
+                合計 :
+            </td>
           <td>
             {{DeliveryFee}}
             <span class="spacer"></span>
@@ -164,9 +164,7 @@
   </body>
   <footer>
     <span class="spacer"></span>
-    <span
-      >若有任何與訂單相關的問題，可透過商店下方的聯絡我們與 {{GroupBuyName}}
-      連繫。</span
-    >
+    <span style="font-size:20px;">若有任何與訂單相關的問題，可透過商店下方的聯絡我們與 {{GroupBuyName}}
+      連繫。</span>
   </footer>
 </html>

@@ -103,8 +103,8 @@ namespace Kooco.Pikachu.Orders
                     }
                 }
                 await _orderRepository.InsertAsync(order);
-
-                await SendEmailAsync(order);
+                await UnitOfWorkManager.Current.SaveChangesAsync();
+                await SendEmailAsync(order.Id);
                 
                 return ObjectMapper.Map<Order, OrderDto>(order);
             }
@@ -198,8 +198,8 @@ namespace Kooco.Pikachu.Orders
             order.OrderStatus = OrderStatus.Closed;
             order.CancellationDate = DateTime.Now;
             await _orderRepository.UpdateAsync(order);
-            
-            await SendEmailAsync(order, OrderStatus.Closed);
+            await UnitOfWorkManager.Current.SaveChangesAsync();
+            await SendEmailAsync(order.Id, OrderStatus.Closed);
         }
 
         public async Task<OrderDto> UpdateShippingDetails(Guid id, CreateOrderDto input)
@@ -211,24 +211,26 @@ namespace Kooco.Pikachu.Orders
             order.ShippingDate = DateTime.Now;
 
             await _orderRepository.UpdateAsync(order);
-            await SendEmailAsync(order);
+            await UnitOfWorkManager.Current.SaveChangesAsync();
+            await SendEmailAsync(order.Id);
             return ObjectMapper.Map<Order, OrderDto>(order);
         }
 
-        private async Task SendEmailAsync(Order order, OrderStatus? orderStatus = null)
+        private async Task SendEmailAsync(Guid id, OrderStatus? orderStatus = null)
         {
+            var order = await _orderRepository.GetWithDetailsAsync(id);
             var groupbuy = await _groupBuyRepository.GetAsync(g => g.Id == order.GroupBuyId);
-            
             string status = orderStatus == null ? _l[order.ShippingStatus.ToString()] : _l[orderStatus.ToString()];
-            
             string subject = $"{groupbuy.GroupBuyName} 訂單#{order.OrderNo} {status}";
-
             string body = File.ReadAllText("wwwroot/EmailTemplates/email.html");
-
+            DateTime creationTime = order.CreationTime;
+            TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById("China Standard Time"); // UTC+8
+            DateTimeOffset creationTimeInTimeZone = TimeZoneInfo.ConvertTime(creationTime, tz);
+            string formattedTime = creationTimeInTimeZone.ToString("yyyy-MM-dd HH:mm:ss");
             body = body.Replace("{{NotifyMessage}}", groupbuy.NotifyMessage);
             body = body.Replace("{{GroupBuyName}}", groupbuy.GroupBuyName);
             body = body.Replace("{{OrderNo}}", order.OrderNo);
-            body = body.Replace("{{OrderDate}}", order.CreationTime.ToString("yyyy-MM-dd hh:mm:ss"));
+            body = body.Replace("{{OrderDate}}", formattedTime);
             body = body.Replace("{{CustomerName}}", order.CustomerName);
             body = body.Replace("{{CustomerEmail}}", order.CustomerEmail);
             body = body.Replace("{{CustomerPhone}}", order.CustomerPhone);
@@ -267,7 +269,7 @@ namespace Kooco.Pikachu.Orders
                     <tr>
                         <td>{itemName}</td>
                         <td>${item.ItemPrice:N0}</td>
-                        <td>${item.Quantity}</td>
+                        <td>{item.Quantity}</td>
                         <td>${item.TotalAmount:N0}</td>
                     </tr>"
                     );
@@ -327,7 +329,7 @@ namespace Kooco.Pikachu.Orders
 
                     await _orderRepository.UpdateAsync(order);
 
-                    await SendEmailAsync(order);
+                    await SendEmailAsync(order.Id);
                 }
             }
         }
