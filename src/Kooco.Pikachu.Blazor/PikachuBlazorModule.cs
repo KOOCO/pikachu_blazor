@@ -42,6 +42,10 @@ using Blazorise.RichTextEdit;
 using Microsoft.AspNetCore.SignalR;
 using System.Linq;
 using Microsoft.AspNetCore.Cors;
+using Autofac.Core;
+using Kooco.Pikachu.Blazor.Pages.TenantManagement;
+using Microsoft.EntityFrameworkCore.Internal;
+using Volo.Abp.TenantManagement.Blazor.Pages.TenantManagement;
 
 namespace Kooco.Pikachu.Blazor;
 
@@ -207,7 +211,7 @@ public class PikachuBlazorModule : AbpModule
         ConfigureRouter(context);
         ConfigureMenu(context);
         ConfigureSignalRHubOptions();
-
+        context.Services.AddScoped<CustomTenantManagement>();
         context.Services.AddCors(options =>
         {
             options.AddDefaultPolicy(builder =>
@@ -359,7 +363,7 @@ public class PikachuBlazorModule : AbpModule
         {
             app.UseMultiTenancy();
         }
-
+     
         app.UseUnitOfWork();
         app.UseAuthorization();
         app.UseSwagger();

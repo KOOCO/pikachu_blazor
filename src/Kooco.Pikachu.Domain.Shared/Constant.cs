@@ -9,7 +9,9 @@ namespace Kooco.Pikachu
     /// </summary>
     public static class Constant
     {
-        public const string ParentTenant = "ParentTenant";
+        public const string TenantOwner = "TenantOwner";
         public const string ShareProfitPercent = "ShareProfitPercent";
+        public const string Logo = "LogoUrl";
+        public const string Status = "Status";
     }
 }
