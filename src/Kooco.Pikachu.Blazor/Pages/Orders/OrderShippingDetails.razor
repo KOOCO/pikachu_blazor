@@ -102,7 +102,8 @@
                                             <tr>
                                                 @if (item.ItemType == ItemType.Item)
                                                 {
-                                                  }
+                                                    <td class="text-start" style="width:50%">@item.Item?.ItemName </td>
+                                                }
                                                 else if (item.ItemType == ItemType.SetItem)
                                                 {   
                                                     <td class="text-start" style="width:50%">@item.SetItem?.SetItemName </td>
