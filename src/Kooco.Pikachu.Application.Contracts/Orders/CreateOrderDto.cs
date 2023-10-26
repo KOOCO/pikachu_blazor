@@ -20,11 +20,13 @@ namespace Kooco.Pikachu.Orders
         public string? RecipientPhone { get; set; }
         public string? RecipientEmail { get; set; }
         public DeliveryMethod? DeliveryMethod { get; set; }
+        public string? ShippingNumber { get; set; }
         public string? City { get; set; }
         public string? District { get; set; }
         public string? Road { get; set; }
         public string? AddressDetails { get; set; }
         public string? Remarks { get; set; }
+        public OrderStatus OrderStatus { get; set; }
         public ReceivingTime? ReceivingTime { get; set; }
         public Guid GroupBuyId { get; set; }
         public int TotalQuantity { get; set; }

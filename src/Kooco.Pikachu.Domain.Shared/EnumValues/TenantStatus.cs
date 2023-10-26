@@ -4,10 +4,12 @@ using System.Text;
 
 namespace Kooco.Pikachu.EnumValues
 {
-    public enum ShippingStatus
+    public enum TenantStatus
     {
-        WaitingForPayment,
-        PrepareShipment,
-        Shipped
+        Open = 0,
+        Closed=1,
+        Warning=2,
+        Suspend=3,
+
     }
 }

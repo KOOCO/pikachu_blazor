@@ -33,6 +33,8 @@ public class Program
                 .UseAutofac()
                 .UseSerilog();
             await builder.AddApplicationAsync<PikachuBlazorModule>();
+          
+
             var app = builder.Build();
             await app.InitializeApplicationAsync();
             await app.RunAsync();

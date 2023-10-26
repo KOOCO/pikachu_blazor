@@ -243,16 +243,17 @@
                         </div>
                     </div>
                 }
+                <Divider></Divider>
                 <div class="col-12 row">
                     <div class="col-2">
                         <label>@L["PriceAndInventory"]</label>
                     </div>
-                    <div class="col-10">
+                    <div class="col-12">
                         <div>
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHeaderCell Class="text-center">@L["ItemName"]</TableHeaderCell>
+                                        <TableHeaderCell Class="text-center">@L["PropertyName"]</TableHeaderCell>
                                         <TableHeaderCell Class="text-center">
                                             @L["SKU"]
                                             @if (ItemDetailsList != null && ItemDetailsList.Count > 0)
@@ -346,6 +347,7 @@
 
                     </div>
                 </div>
+                <Divider></Divider>
                 <div class="col-12 row">
                     <div class="col-2">
                         <label>@L["CommodityAttributes"]</label>

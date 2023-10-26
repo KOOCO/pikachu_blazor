@@ -1,5 +1,6 @@
 ﻿using Blazorise;
 using Blazorise.DataGrid;
+using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.GroupBuys;
 using Microsoft.AspNetCore.Components;
 using System;
@@ -23,6 +24,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         int _pageSize = 10;
         int Total = 0;
         private string Sorting = nameof(GroupBuy.GroupBuyName);
+        private LoadingIndicator loading { get; set; } = new();
 
         public GroupBuyList(
             IGroupBuyAppService groupBuyAppService,
@@ -75,14 +77,17 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     var confirmed = await _uiMessageService.Confirm(L["AreYouSureToDeleteSelectedItem"]);
                     if (confirmed)
                     {
+                        await loading.Show();
                         await _groupBuyAppService.DeleteManyGroupBuyItemsAsync(groupBuyItemsids);
                         await UpdateGroupBuyList();
                         IsAllSelected = false;
+                        await loading.Hide();
                     }
                 }
             }
             catch (Exception ex)
             {
+                await loading.Hide();
                 await _uiMessageService.Error(ex.GetType()?.ToString());
                 Console.WriteLine(ex.ToString());
             }
@@ -91,19 +96,23 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         {
             try
             {
+                await loading.Show();
                 var freebie = GroupBuyListItem.Where(x => x.Id == id).First();
                 freebie.IsGroupBuyAvaliable = !freebie.IsGroupBuyAvaliable;
                 await _groupBuyAppService.ChangeGroupBuyAvailability(id);
                 await UpdateGroupBuyList();
                 await InvokeAsync(StateHasChanged);
+                await loading.Hide();
             }
             catch (BusinessException ex)
             {
+                await loading.Hide();
                 await _uiMessageService.Error(ex.Code.ToString());
                 Console.WriteLine(ex.ToString());
             }
             catch (Exception ex)
             {
+                await loading.Hide();
                 await _uiMessageService.Error(ex.GetType().ToString());
                 Console.WriteLine(ex.ToString());
             }
@@ -112,12 +121,15 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         {
             try
             {
+                await loading.Show();
                 _pageIndex = e.Page - 1;
                 await UpdateGroupBuyList();
                 await InvokeAsync(StateHasChanged);
+                await loading.Hide();
             }
             catch (Exception ex)
             {
+                await loading.Hide();
                 Console.WriteLine(ex.ToString());
             }
         }
@@ -135,8 +147,10 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
         async void OnSortChange(DataGridSortChangedEventArgs e)
         {
+            await loading.Show();
             Sorting = e.FieldName + " " + (e.SortDirection != SortDirection.Default ? e.SortDirection : "");
             await UpdateGroupBuyList();
+            await loading.Hide();
         }
     }
 }

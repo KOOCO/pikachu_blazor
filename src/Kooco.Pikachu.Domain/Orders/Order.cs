@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
 
@@ -29,6 +30,7 @@ namespace Kooco.Pikachu.Orders
         public string? RecipientPhone { get; set; }
         public string? RecipientEmail { get; set; }
         public DeliveryMethod? DeliveryMethod { get; set; }
+        public string? ShippingNumber { get; set; }
         public string? City { get; set; }
         public string? District { get; set; }
         public string? Road { get; set; }
@@ -44,6 +46,8 @@ namespace Kooco.Pikachu.Orders
         public string? CheckMacValue { get; set; }
         public DateTime? PaymentDate { get; set; }
         public ShippingStatus ShippingStatus { get; set; }
+        public DateTime? ShippingDate { get; set; }
+        public DateTime? CancellationDate { get; set; }
         public OrderStatus OrderStatus { get; set; }
         public ICollection<OrderItem> OrderItems { get; set; }
         public ICollection<StoreComment> StoreComments { get; set; }

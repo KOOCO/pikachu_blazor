@@ -190,6 +190,7 @@
     "ActivityTimePeriod": "Activity Time Period",
     "Pikachu:InvalidItemName": "Item Name Is Invalid",
     "Pikachu:FreebieWithSameNameAlreadyExists": "Freebie with same name already exist",
+    "FreebiesList": "Freebies List",
 
 
     //Orders
@@ -246,6 +247,22 @@
     "PersonalInvoice": "Personal Invoice",
     "CellphoneInvoice": "Cellphone Invoice",
     "BusinessInvoice": "Business Invoice",
-    "SaveChanges": "Save Changes"
+    "SaveChanges": "Save Changes",
+    "Telephone": "Telephone",
+    "OrderCreated": "Order Created",
+    "Quantity": "Quantity",
+    "UnitPrice": "Unit Price",
+    "RecipientName": "Recipient Name",
+    "CustomerEmail": "Customer Email",
+    "CustomerPhone": "Customer Phone",
+    "AddressDetails": "Address Details",
+    "OrderShippingDetails": "Order Shipping Details",
+    "ShippingNumber": "Shipping Number",
+    "AreYouSureToCancelOrder?": "Are You Sure To Cancel The Order?",
+    "CombineOrders": "Combine Orders",
+    "Enum:TenantStatus.0": "Open",
+    "Enum:TenantStatus.1": "Closed",
+    "Enum:TenantStatus.2": "Warning",
+    "Enum:TenantStatus.3": "Suspend",
   }
 }

@@ -43,6 +43,7 @@
     "Save": "儲存",
     "Upload": "上傳",
     "SelectAll": "全選",
+    "NewGroupBuy": "建立新團購",
 
     //items
     "NewItem": "建立新商品",
@@ -51,6 +52,7 @@
     "DeleteItem": "刪除商品",
     "TurnItemOn": "開啟商品",
     "ItemName": "商品名稱",
+    "PropertyName": "樣式名稱",
     "ItemDescriptionTitle": "商品敘述抬頭",
     "ItemDescription": "商品敘述",
     "ItemPriceAndInventory": "商品價格和庫存",
@@ -65,7 +67,7 @@
     "SKU": "SKU",
     "SellPrice": "售價",
     "InventoryAccount": "倉儲帳戶",
-    "GroupBuyPrice": "團購管理",
+    "GroupBuyPrice": "團購價",
     "SaleableQuantity": "可銷售數量",
     "SaleablePreorderQuantity": "可銷售預購數量",
     "PreorderQuantity": "預購數量",
@@ -112,7 +114,7 @@
     "Pikachu:AlreadyUploadMaxAllowedFiles": "已達到本商品最大圖像數量上限",
     "Pikachu:FilesExceedMaxAllowedPerUpload": "已超過單次可上傳檔案數量上限",
     "AreYouSureToDeleteSelectedItem": "請確認是否要刪除已選擇商品?",
-    "DeleteSelected": "選取檔案已刪除",
+    "DeleteSelected": "刪除",
     "NewSetItem": "新商品組",
     "NotFound": "查無此物",
     "EditSetItem": "編輯商品組",
@@ -123,6 +125,7 @@
     "EditGroupBuy": "編輯團購",
     "SalesURL1": "銷售連結1",
     "SalesURL2": "銷售連結2",
+    "SalesURL": "銷售連結",
     "GroupBuyName": "團購名稱",
     "Subject": "團購主題",
     "GroupBuyShortName": "團購簡稱",
@@ -144,6 +147,7 @@
     "InviteCode": "團購邀請碼",
     "ProfitShare": "分潤",
     "GateWay": "金流",
+    "Gateway": "金流",
     "PaymentMethod": "付款方式",
     "GroupBuyPolicy": "團購內容",
     "GroupBuyCondition": "團購注意事項",
@@ -159,6 +163,9 @@
     "SelectModule": "選擇頁面模組",
     "uploadUpto5Images": "最多上傳5張圖片",
     "uploadUpto10Images": "最多上傳10張圖片",
+    "GroupBuyList": "團購列表",
+    "AVAILABILITY": "上/下架",
+    "Select": "選取",
 
 
     //SetItem
@@ -192,6 +199,7 @@
     "ActivityTimePeriod": "活動期間",
     "Pikachu:InvalidItemName": "商品名稱無效",
     "Pikachu:FreebieWithSameNameAlreadyExists": "商品名稱不能重複",
+    "FreebiesList": "贈品清單",
 
     //Orders
     "Order": "訂單",
@@ -214,7 +222,7 @@
     "Address": "地址",
     "Remarks": "Remarks",
     "MerchantRemarks": "商家備註",
-    "CombineItems": "組合商品",
+    "CombineOrders": "合併訂單",
     "Open": "開啟",
     "Closed": "關閉",
     "Returned": "退貨",
@@ -240,6 +248,18 @@
     "Subtotal": "小記",
     "SubTotal": "小記",
     "Permission:Orders": "訂單管理",
-    "Permission:AddStoreComments": "新增商家備註"
+    "Permission:AddStoreComments": "新增商家備註",
+    "WaitingForPayment": "等待付款中",
+    "PrepareShipment": "處理中",
+    "PersonalInvoice": "Personal Invoice",
+    "CellphoneInvoice": "Cellphone Invoice",
+    "BusinessInvoice": "Business Invoice",
+    "SaveChanges": "Save Changes",
+    "HomeDelivery": "宅配",
+    "OrderCreated": "訂單成立",
+    "Telephone": "電話",
+    "Quantity": "數量",
+    "UnitPrice": "單價",
+    "Date": "日期"
   }
   }

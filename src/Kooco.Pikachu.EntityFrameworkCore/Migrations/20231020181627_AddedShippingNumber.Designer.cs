@@ -4,6 +4,7 @@ using Kooco.Pikachu.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    partial class PikachuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231020181627_AddedShippingNumber")]
+    partial class AddedShippingNumber
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1111,9 +1114,6 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<string>("AddressDetails")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("CancellationDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("CheckMacValue")
                         .HasColumnType("nvarchar(max)");
 
@@ -1220,9 +1220,6 @@ namespace Kooco.Pikachu.Migrations
 
                     b.Property<string>("Road")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("ShippingDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("ShippingNumber")
                         .HasColumnType("nvarchar(max)");

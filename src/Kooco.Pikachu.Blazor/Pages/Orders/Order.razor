@@ -30,11 +30,22 @@
                 <input type="checkbox" class="form-check-input" checked="@IsAllSelected" @onchange="HandleSelectAllChange"></input>
                 <Label Class="form-label">@L["SelectAll"]</Label>
             </div>
-            <Button Type="@ButtonType.Button" Class="btn btn-sm btn-secondary">@L["CombineItems"]</Button>
-            <Button Type="@ButtonType.Button" Class="btn btn-sm btn-primary">
+            <Button Type="@ButtonType.Button" Class="btn btn-sm btn-secondary">@L["CombineOrders"]</Button>
+            @if(Orders.Where(x => x.IsSelected).Count() != 1)
+            {
+            <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
                 <i class="fa fa-print"></i>
                 @L["Print"]
             </Button>
+            }else
+            {
+                <Button Type="@ButtonType.Button" onclick="@NavigateToOrderPrint" Class="ms-1 btn btn-sm btn-primary">
+                    <i class="fa fa-print"></i>
+                    @L["Print"]
+                </Button>
+
+            }
+
         </div>
     </div>
     <Card>
@@ -55,7 +66,7 @@
                      <DataGridCommandColumn />
                      <DataGridColumn Caption="@L["Select"]" Width="30px">
                          <DisplayTemplate>
-                             <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
+                             <InputCheckbox class="form-check-input"  @bind-Value="@context.IsSelected"></InputCheckbox>
                          </DisplayTemplate>
                      </DataGridColumn>
                      <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
@@ -95,7 +106,6 @@
                 <DetailRowTemplate>
                     @{
                         var orderItems = (context as OrderDto).OrderItems;
-
                         <div class="mx-2 px-3 py-2 border">
                             <div class="row">
                                 <div class="col-12">
@@ -116,7 +126,8 @@
                                     </tr>
                                     <tr>
                                         <td>@L["Address"]</td>
-                                        <td>@context.AddressDetails, @context.Road, @context.District, @context.City</td>
+                                        <td class="d-none">@context.AddressDetails, @context.Road, @context.District, @context.City</td>
+                                        <td>@context.AddressDetails</td>
                                     </tr>
                                     <tr>
                                         <td>@L["Remarks"]</td>
@@ -164,9 +175,6 @@
         </CardBody>
     </Card>
 </LoadingIndicator>
-
-
-
 @code {
 
 }

@@ -1,0 +1,153 @@
+﻿@page "/Orders/OrderShippingDetails/{id}"
+@using Kooco.Pikachu.EnumValues;
+@using Kooco.Pikachu.Localization;
+@using Kooco.Pikachu.OrderItems;
+@using Kooco.Pikachu.Orders;
+@using Kooco.Pikachu.StoreComments;
+@using Microsoft.Extensions.Localization;
+@using Blazorise;
+@using Volo.Abp.AspNetCore.Components.Messages;
+@using Volo.Abp.Users;
+
+
+@inject IStringLocalizer<PikachuResource> L;
+@inject NavigationManager NavigationManager;
+@inject IUiMessageService _uiMessageService;
+@inject IOrderAppService _orderAppService;
+@inject ICurrentUser CurrentUser;
+@inject IJSRuntime JSRuntime
+
+<style>
+    .tbl thead th {
+        font-weight: bold;
+        border-top: 1px solid;
+        border-bottom: 1px solid;
+        height: 40px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .tbl tbody td {
+        border-bottom: 1px solid;
+        border-color: lightgrey;
+    }
+
+    .tbl tfoot td {
+        border-top: 1px solid;
+        border-bottom: 1px solid;
+        font-weight: bold;
+    }
+
+    @@media print {
+        /* Define styles for printing, e.g., hiding unnecessary elements */
+        body * {
+            visibility: hidden;
+        }
+
+        #divToPrint, #divToPrint * {
+            visibility: visible;
+        }
+    }
+</style>
+<div class="row justify-content-center">
+    <div class="col-md-10 col-sm-12">
+        <Card>
+            <CardBody>
+                <div class="row" id="divToPrint">
+                    <h3 class="text-center">@L["OrderShippingDetails"]</h3>
+                    @if (Order != null)
+                    {
+                        <div class="col-12">
+                            <table class="w-100">
+                                <tbody>
+                                    <tr>
+                                        <td>@L["OrderInformation"]: @Order?.OrderNo</td>
+                                        <td>@L["PaymentMethod"]: @L[Order?.PaymentMethod?.ToString()]</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@L["OrderDate"]: @Order?.CreationTime</td>
+                                        <td>@L["ShippingMethod"]: @L[Order?.DeliveryMethod?.ToString()] </td>
+                                    </tr>
+                                    <tr>
+                                        <td>@L["CustomerName"]:  @Order?.CustomerName</td>
+                                        <td>@L["RecipientName"]:  @Order?.RecipientName</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@L["CustomerEmail"]:  @Order?.CustomerEmail</td>
+                                        <td>@L["RecipientPhoneNumber"]:  @Order?.RecipientPhone</td>
+                                    </tr>
+                                    <tr>
+                                        <td> @L["CustomerPhone"]: @Order?.CustomerPhone</td>
+                                        <td> @L["RecipientAddress"]: @Order?.AddressDetails</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@L["RecipientComments"]: @Order?.Remarks</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="tbl table w-100 mt-3">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        <th class="text-start">@L["ItemName"]</th>
+                                        <th>@L["UnitPrice"]</th>
+                                        <th>@L["Quantity"]</th>
+                                        <th>@L["SubTotal"]</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                    @if (Order?.OrderItems != null)
+                                    {
+                                        @foreach (OrderItemDto item in Order?.OrderItems)
+                                        {
+                                            <tr>
+                                                @if (item.ItemType == ItemType.Item)
+                                                {
+                                                    <td class="text-start" style="width:50%">@item.Item?.ItemName </td>
+                                                }
+                                                else if (item.ItemType == ItemType.SetItem)
+                                                {   
+                                                    <td class="text-start" style="width:50%">@item.SetItem?.SetItemName </td>
+                                                }
+                                                else if (item.ItemType == ItemType.Freebie)
+                                                {
+                                                    <td class="text-start" style="width:50%">@item.Freebie?.ItemName</td>
+                                                }
+                                                <td>@item.ItemPrice.ToString("N0")</td>
+                                                <td>@item.Quantity</td>
+                                                <td>@item.TotalAmount.ToString("N0")</td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="3" class="text-end">@L["DeliveryFee"] :</td>
+                                        <td class="text-center">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" class="text-end">@L["Total"] :</td>
+                                        <td class="text-center">NT $@Order?.TotalAmount.ToString("N0")</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </CardBody>
+        </Card>
+        <div class="row justify-content-center">
+            <Button Type="ButtonType.Button" @onclick="PrintDiv" Class="btn btn-sm btn-primary col-md-2">
+                <Icon Class="fa fa-print me-1"></Icon>
+                @L["PrintOrder"]
+            </Button>
+        </div>
+    </div>
+</div>
+<script>
+    window.printJS = function () {
+        window.print();
+    };
+</script>
+@code {
+
+    }

@@ -1,5 +1,6 @@
 ﻿using Blazored.TextEditor;
 using Blazorise;
+using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.AzureStorage.Image;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.GroupBuys;
@@ -59,6 +60,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         public readonly List<string> ValidPaymentMethods = new() { "ALL", "Credit", "WebATM", "ATM", "CVS", "BARCODE", "Alipay", "Tenpay", "TopUpUsed", "GooglePay" };
         private string? PaymentMethodError { get; set; } = null;
         private List<ImageDto> ExistingImages { get; set; } = new();
+        private LoadingIndicator loading { get; set; } = new();
 
         public EditGroupBuy(
             IGroupBuyAppService groupBuyAppService,
@@ -89,6 +91,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 {
                     id ??= "";
                     Id = Guid.Parse(id);
+                    await loading.Show();
                     var groupbuy = await _groupBuyAppService.GetWithDetailsAsync(Id);
                     EditGroupBuyDto = _objectMapper.Map<GroupBuyDto, GroupBuyUpdateDto>(groupbuy);
                     EditGroupBuyDto.EntryURL = $"{_configuration["EntryUrl"]?.TrimEnd('/')}/{Id}";
@@ -148,15 +151,18 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     await LoadHtmlContent();
 
                     StateHasChanged();
+                    await loading.Hide();
                     await JsRuntime.InvokeVoidAsync("console.log", "Success");
                 }
                 catch (BusinessException ex)
                 {
+                    await loading.Hide();
                     await JsRuntime.InvokeVoidAsync("console.error", ex.ToString());
                     await _uiMessageService.Error(L[ex.Code]);
                 }
                 catch (Exception ex)
                 {
+                    await loading.Hide();
                     await JsRuntime.InvokeVoidAsync("console.error", ex.ToString());
                     await _uiMessageService.Error(ex.GetType().ToString());
                 } 
@@ -244,6 +250,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 var stream = e.Files[0].OpenReadStream(long.MaxValue);
                 try
                 {
+                    await loading.Show();
                     var memoryStream = new MemoryStream();
 
                     await stream.CopyToAsync(memoryStream);
@@ -254,11 +261,13 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 }
                 finally
                 {
+                    await loading.Hide();
                     stream.Close();
                 }
             }
             catch (Exception exc)
             {
+                await loading.Hide();
                 Console.WriteLine(exc.Message);
                 await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
             }
@@ -301,6 +310,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     var stream = file.OpenReadStream(long.MaxValue);
                     try
                     {
+                        await loading.Show();
                         var memoryStream = new MemoryStream();
 
                         await stream.CopyToAsync(memoryStream);
@@ -322,6 +332,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     }
                     finally
                     {
+                        await loading.Hide();
                         stream.Close();
                     }
                 }
@@ -332,6 +343,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             }
             catch (Exception exc)
             {
+                await loading.Hide();
                 Console.WriteLine(exc.Message);
                 await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
             }
@@ -369,6 +381,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 var stream = e.Files[0].OpenReadStream(long.MaxValue);
                 try
                 {
+                    await loading.Show();
                     var memoryStream = new MemoryStream();
 
                     await stream.CopyToAsync(memoryStream);
@@ -381,11 +394,13 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 }
                 finally
                 {
+                    await loading.Hide();
                     stream.Close();
                 }
             }
             catch (Exception exc)
             {
+                await loading.Hide();
                 Console.WriteLine(exc.Message);
                 await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
             }
@@ -450,6 +465,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 var confirmed = await _uiMessageService.Confirm(L[PikachuDomainErrorCodes.AreYouSureToDeleteImage]);
                 if (confirmed)
                 {
+                    await loading.Show();
                     await _imageContainerManager.DeleteAsync(blobImageName);
                     if (ExistingImages.Any(x => x.BlobImageName == blobImageName))
                     {
@@ -459,10 +475,12 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     CarouselImages = CarouselImages.Where(x => x.BlobImageName != blobImageName).ToList();
                     ExistingImages = ExistingImages.Where(x => x.BlobImageName != blobImageName).ToList();
                     StateHasChanged();
+                    await loading.Hide();
                 }
             }
             catch (Exception ex)
             {
+                await loading.Hide();
                 Console.WriteLine(ex.Message);
                 await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWentWrongWhileDeletingImage]);
             }
@@ -579,6 +597,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                         EditGroupBuyDto.ItemGroups.Add(itemGroup);
                     }
                 }
+                await loading.Show();
 
                 var result = await _groupBuyAppService.UpdateAsync(Id, EditGroupBuyDto);
 
@@ -590,16 +609,18 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                         await _imageAppService.CreateAsync(item);
                     }
                 }
-
+                await loading.Hide();
                 NavigationManager.NavigateTo("GroupBuyManagement/GroupBuyList");
             }
             catch (BusinessException ex)
             {
+                await loading.Hide();
                 Console.WriteLine(ex.ToString());
                 await _uiMessageService.Error(L[ex.Code]);
             }
             catch (Exception ex)
             {
+                await loading.Hide();
                 Console.WriteLine(ex.ToString());
                 await _uiMessageService.Error(ex.Message.GetType()?.ToString());
             }

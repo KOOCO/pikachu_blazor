@@ -1,0 +1,320 @@
+﻿
+
+@using Volo.Abp.DependencyInjection;
+@using Microsoft.AspNetCore.Authorization
+@using Volo.Abp.FeatureManagement.Blazor.Components
+@using Microsoft.AspNetCore.Components.Forms
+@using Volo.Abp.TenantManagement.Localization
+@using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
+@using Volo.Abp.BlazoriseUI.Components.ObjectExtending
+@using Volo.Abp.AspNetCore.Components.Web
+@using Volo.Abp.TenantManagement;
+@using System.ComponentModel
+@using Blazorise.Components;
+@using Kooco.Pikachu.EnumValues;
+@using Kooco.Pikachu.Localization;
+@using Microsoft.Extensions.Localization;
+
+
+@* @page "/tenant-management/tenants" *@
+
+
+@attribute [Authorize(TenantManagementPermissions.Tenants.Default)]
+  @attribute [ExposeServices(typeof(Volo.Abp.TenantManagement.Blazor.Pages.TenantManagement.TenantManagement),typeof(CustomTenantManagement))]
+   @attribute [Dependency(ReplaceServices = true)]
+@inject IStringLocalizer<PikachuResource> Lo
+@inject AbpBlazorMessageLocalizerHelper<AbpTenantManagementResource> LH
+@inherits  Volo.Abp.TenantManagement.Blazor.Pages.TenantManagement.TenantManagement
+<Card>
+    <CardHeader>
+        @* ************************* PAGE HEADER ************************* *@
+        <Volo.Abp.AspNetCore.Components.Web.Theming.Layout.PageHeader Title="@L["Tenants"]"
+                    BreadcrumbItems="@BreadcrumbItems"
+                    Toolbar="@Toolbar">
+        </Volo.Abp.AspNetCore.Components.Web.Theming.Layout.PageHeader>
+    </CardHeader>
+    <CardBody>
+        @* ************************* DATA GRID ************************* *@
+        <AbpExtensibleDataGrid TItem="TenantDto"
+                               Data="@Entities"
+                               ReadData="@OnDataGridReadAsync"
+                               TotalItems="@TotalCount"
+                               ShowPager="true"
+                               PageSize="@PageSize"
+                               CurrentPage="@CurrentPage"
+                               Columns="@TenantManagementTableColumns">
+        </AbpExtensibleDataGrid>
+    </CardBody>
+</Card>
+
+@* ************************* CREATE MODAL ************************* *@
+@if ( HasCreatePermission )
+{
+    <Modal @ref="CreateModal" Closing="@ClosingCreateModal">
+        <ModalContent Centered="true">
+            <Form>
+                <ModalHeader>
+                    <ModalTitle>@L["NewTenant"]</ModalTitle>
+                    <CloseButton Clicked="CloseCreateModalAsync"/>
+                </ModalHeader>
+                <ModalBody>
+                    <Validations @ref="@CreateValidationsRef" Model="@NewEntity" ValidateOnLoad="false">
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <FieldLabel>@L["TenantName"] *</FieldLabel>
+                                <TextEdit @bind-Text="@NewEntity.Name" Autofocus="true">
+                                    <Feedback>
+                                        <ValidationError/>
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <FieldLabel>@L["DisplayName:AdminEmailAddress"] *</FieldLabel>
+                                <TextEdit Role="@TextRole.Email" @bind-Text="@NewEntity.AdminEmailAddress">
+                                    <Feedback>
+                                        <ValidationError/>
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                  
+                        <Validation MessageLocalizer="@LH.Localize">
+						<Field>
+                             <FieldLabel>@L["DisplayName:AdminPassword"] *</FieldLabel>
+                             <Addons>
+                                <Addon AddonType="AddonType.Body">
+                                    <TextEdit Role="ShowPassword ? TextRole.Text : TextRole.Password" @bind-Text="@NewEntity.AdminPassword">
+                                    </TextEdit>
+                                </Addon>
+                                <Addon AddonType="AddonType.End">
+                                    <Button Color="Color.Secondary" Clicked="@(() => TogglePasswordVisibility())">
+                                        <Icon Name="ShowPassword ? IconName.Eye : IconName.EyeSlash" />
+                                    </Button>
+                                </Addon>
+                            </Addons>
+                            <ValidationError Style="display: block" />
+                         </Field>
+                        </Validation>
+                                
+                            <Field>
+                                <FieldLabel>@L["UploadLogo"]</FieldLabel>
+                                <FilePicker @ref="FilePickerCustom"
+                                        Multiple=false
+                                        Changed="OnFileUploadAsync"
+                                        ShowMode="FilePickerShowMode.List"
+                                        Accept=".jpg, .png, .svg,.jpeg,.webp">
+                                <FileTemplate>
+                                    <Div Flex="Flex.JustifyContent.Between">
+                                        <Div>
+                                            <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
+                                            <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                        </Div>
+                                        <Div Class="ps-2">
+                                            <Div>
+                                                 @if (context.File.Status == FileEntryStatus.Ready)
+                                                {
+                                                    <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
+                                                }
+                                                else if (context.File.Status == FileEntryStatus.Uploading)
+                                                {
+                                                    <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
+                                                }
+                                                else if (context.File.Status == FileEntryStatus.Uploaded)
+                                                {
+                                                    <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
+                                                }
+                                                else if (context.File.Status == FileEntryStatus.Error)
+                                                {
+                                                    <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
+                                                }
+                                            </Div>
+                                            <Div>
+                                                <Icon TextColor="TextColor.Danger" Name="IconName.Delete" class="cursor-pointer" Clicked="context.RemoveFile" />
+                                            </Div>
+                                        </Div>
+                                    </Div>
+                                </FileTemplate>
+                                <ButtonsTemplate>
+                                    <Progress Value="@FilePickerCustom.GetProgressPercentage()" />
+                                </ButtonsTemplate>
+                            </FilePicker>
+                            </Field>
+                              @if(LogoUrl != null)
+                {
+                    <div Class="col-12 row">
+                        <div class="col-12">
+                             
+                                    <div class="image-container">
+                                        <Image class="blur-image" Source="@LogoUrl" Text="Item Image" Fluid />
+                                      
+                                    </div>
+                              
+                          
+                        </div>
+                    </div>
+                }
+                          <Field>
+                        <FieldLabel>@L["TenantOwner"]</FieldLabel>
+                        <Select TValue="Guid?" @bind-SelectedValue="@TenantOwnerId">
+                             
+                            @foreach (var tenant in UsersList)
+                            {
+                                <SelectItem TValue="Guid" Value="@(tenant.Id)">
+                                    @tenant.Name
+                                </SelectItem>
+                            }
+                        </Select>
+                    </Field>
+                    <Field>
+                        <FieldLabel>@L["ShareProfit%"]</FieldLabel>
+                        <NumericEdit @bind-Value="@ShareProfitPercentage" />
+                    </Field>
+                        <Field>
+                            <FieldLabel>@L["Status"]</FieldLabel>
+                            <Select TValue="TenantStatus" @bind-SelectedValue="@Status">
+                                @foreach (int bookTypeValue in Enum.GetValues(typeof(TenantStatus)))
+                                {
+                                    <SelectItem TValue="TenantStatus" Value="@((TenantStatus) bookTypeValue)">
+                                        @Lo[$"Enum:TenantStatus.{bookTypeValue}"]
+                                    </SelectItem>
+                                }
+                            </Select>
+                        </Field>
+                      @*   <ExtensionProperties TEntityType="TenantCreateDto" TResourceType="AbpTenantManagementResource" Entity="@NewEntity" LH="@LH" ModalType="ExtensionPropertyModalType.CreateModal" /> *@
+                    </Validations>
+                </ModalBody>
+                <ModalFooter>
+                    <Button Color="Color.Secondary" Clicked="CloseCreateModalAsync">@L["Cancel"]</Button>
+                    <SubmitButton Clicked="@CreateEntityAsync"/>
+                </ModalFooter>
+            </Form>
+        </ModalContent>
+    </Modal>
+}
+
+@* ************************* EDIT MODAL ************************* *@
+@if ( HasUpdatePermission )
+{
+    <Modal @ref="EditModal" Closing="@ClosingEditModal">
+        <ModalContent Centered="true">
+            <Form>
+                <ModalHeader>
+                    <ModalTitle>@L["Edit"]</ModalTitle>
+                    <CloseButton Clicked="CloseEditModalAsync"/>
+                </ModalHeader>
+                <ModalBody>
+                    <Validations @ref="@EditValidationsRef" Model="@EditingEntity" ValidateOnLoad="false">
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <FieldLabel>@L["TenantName"] *</FieldLabel>
+                                <TextEdit @bind-Text="@EditingEntity.Name" Autofocus="true">
+                                    <Feedback>
+                                        <ValidationError/>
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                        <Field>
+                                <FieldLabel>@L["UploadLogo"]</FieldLabel>
+                                <FilePicker @ref="FilePickerCustom"
+                                        Multiple=false
+                                        Changed="OnFileUploadAsync"
+                                        ShowMode="FilePickerShowMode.List"
+                                        Accept=".jpg, .png, .svg,.jpeg,.webp">
+                                <FileTemplate>
+                                    <Div Flex="Flex.JustifyContent.Between">
+                                        <Div>
+                                            <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
+                                            <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                        </Div>
+                                        <Div Class="ps-2">
+                                            <Div>
+                                                 @if (context.File.Status == FileEntryStatus.Ready)
+                                                {
+                                                    <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
+                                                }
+                                                else if (context.File.Status == FileEntryStatus.Uploading)
+                                                {
+                                                    <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
+                                                }
+                                                else if (context.File.Status == FileEntryStatus.Uploaded)
+                                                {
+                                                    <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
+                                                }
+                                                else if (context.File.Status == FileEntryStatus.Error)
+                                                {
+                                                    <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
+                                                }
+                                            </Div>
+                                            <Div>
+                                                <Icon TextColor="TextColor.Danger" Name="IconName.Delete" class="cursor-pointer" Clicked="context.RemoveFile" />
+                                            </Div>
+                                        </Div>
+                                    </Div>
+                                </FileTemplate>
+                                <ButtonsTemplate>
+                                    <Progress Value="@FilePickerCustom.GetProgressPercentage()" />
+                                </ButtonsTemplate>
+                            </FilePicker>
+                            </Field>
+                          <Field>
+                                               @if(LogoUrl != null)
+                {
+                    <div Class="col-12 row">
+                       
+                        <div class="col-12">
+                          @*   <div class="image-list-container">
+                              *@
+                                    <div class="image-container">
+                                        <Image class="blur-image" Source="@LogoUrl" Text="Item Image" Fluid />
+                                      
+                                    </div>
+                              
+                           @*  </div> *@
+                        </div>
+                    </div>
+                }
+                        <FieldLabel>@L["TenantOwner"]</FieldLabel>
+                        <Select TValue="Guid?" @bind-SelectedValue="@TenantOwnerId">
+                           
+                                @foreach (var tenant in UsersList)
+                            {
+                                <SelectItem TValue="Guid" Value="@(tenant.Id)">
+                                    @tenant.Name
+                                </SelectItem>
+                            }
+                        </Select>
+                    </Field>
+                    <Field>
+                        <FieldLabel>@L["ShareProfit%"]</FieldLabel>
+                        <NumericEdit @bind-Value="@ShareProfitPercentage" />
+                    </Field>
+                        <Field>
+                            <FieldLabel>@L["Status"]</FieldLabel>
+                            <Select TValue="TenantStatus" @bind-SelectedValue="@Status">
+                                @foreach (int bookTypeValue in Enum.GetValues(typeof(TenantStatus)))
+                                {
+                                    <SelectItem TValue="TenantStatus" Value="@((TenantStatus) bookTypeValue)">
+                                        @Lo[$"Enum:TenantStatus.{bookTypeValue}"]
+                                    </SelectItem>
+                                }
+                            </Select>
+                        </Field>
+                    </Validations>
+                 @*    <ExtensionProperties TEntityType="TenantUpdateDto" TResourceType="AbpTenantManagementResource" Entity="@EditingEntity" LH="@LH" ModalType="ExtensionPropertyModalType.EditModal" /> *@
+                </ModalBody>
+                <ModalFooter>
+                    <Button Color="Color.Secondary" Clicked="CloseEditModalAsync">@L["Cancel"]</Button>
+                    <SubmitButton Clicked="@UpdateEntityAsync"/>
+                </ModalFooter>
+            </Form>
+        </ModalContent>
+    </Modal>
+}
+
+@if (HasManageFeaturesPermission)
+{
+    <FeatureManagementModal @ref="FeatureManagementModal"/>
+}
