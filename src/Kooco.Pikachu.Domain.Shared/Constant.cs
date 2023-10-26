@@ -13,5 +13,6 @@ namespace Kooco.Pikachu
         public const string ShareProfitPercent = "ShareProfitPercent";
         public const string Logo = "LogoUrl";
         public const string Status = "Status";
+        public const string BannerUrl = "BannerUrl";
     }
 }

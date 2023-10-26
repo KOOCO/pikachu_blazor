@@ -7,3 +7,9 @@ body {
     --lpx-logo-icon: url('https://kooco.oss-cn-hongkong.aliyuncs.com/logo-thumbnail ');
 /*    background-image: url('https://kooco.oss-cn-hongkong.aliyuncs.com/logo.png')!important;*/
 }
+.lpx-landing-hero-section {
+   
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: right;
+}

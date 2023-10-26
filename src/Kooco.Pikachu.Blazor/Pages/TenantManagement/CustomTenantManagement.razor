@@ -156,6 +156,65 @@
                         </div>
                     </div>
                 }
+                        <Field>
+                            <FieldLabel>@L["UploadBanner"]</FieldLabel>
+                            <FilePicker @ref="BannerPickerCustom"
+                                        Multiple=false
+                                        Changed="OnBannerUploadAsync"
+                                        ShowMode="FilePickerShowMode.List"
+                                        Accept=".jpg, .png, .svg,.jpeg,.webp">
+                                <FileTemplate>
+                                    <Div Flex="Flex.JustifyContent.Between">
+                                        <Div>
+                                            <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
+                                            <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                        </Div>
+                                        <Div Class="ps-2">
+                                            <Div>
+                                                @if (context.File.Status == FileEntryStatus.Ready)
+                                                {
+                                                    <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
+                                                }
+                                                else if (context.File.Status == FileEntryStatus.Uploading)
+                                                {
+                                                    <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
+                                                }
+                                                else if (context.File.Status == FileEntryStatus.Uploaded)
+                                                {
+                                                    <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
+                                                }
+                                                else if (context.File.Status == FileEntryStatus.Error)
+                                                {
+                                                    <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
+                                                }
+                                            </Div>
+                                            <Div>
+                                                <Icon TextColor="TextColor.Danger" Name="IconName.Delete" class="cursor-pointer" Clicked="context.RemoveFile" />
+                                            </Div>
+                                        </Div>
+                                    </Div>
+                                </FileTemplate>
+                                <ButtonsTemplate>
+                                    <Progress Value="@FilePickerCustom.GetProgressPercentage()" />
+                                </ButtonsTemplate>
+                            </FilePicker>
+                        </Field>
+                        @if (BannerUrl != null)
+                        {
+                            <div Class="col-12 row">
+                                <div class="col-12">
+
+                                    <div class="image-container">
+                                        <Image class="blur-image" Source="@BannerUrl" Text="Item Image" Fluid />
+
+                                     </div>
+
+
+                                 </div>
+                             </div>
+                        }
+
+
                           <Field>
 
                         <FieldLabel>@L["TenantOwner"]</FieldLabel>
@@ -276,6 +335,63 @@
                         </div>
                     </div>
                 }
+                        <Field>
+                            <FieldLabel>@L["UploadBanner"]</FieldLabel>
+                            <FilePicker @ref="BannerPickerCustom"
+                                        Multiple=false
+                                        Changed="OnBannerUploadAsync"
+                                        ShowMode="FilePickerShowMode.List"
+                                        Accept=".jpg, .png, .svg,.jpeg,.webp">
+                                <FileTemplate>
+                                    <Div Flex="Flex.JustifyContent.Between">
+                                        <Div>
+                                            <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
+                                            <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                        </Div>
+                                        <Div Class="ps-2">
+                                            <Div>
+                                                @if (context.File.Status == FileEntryStatus.Ready)
+                                                {
+                                                    <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
+                                                }
+                                                else if (context.File.Status == FileEntryStatus.Uploading)
+                                                {
+                                                    <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
+                                                }
+                                                else if (context.File.Status == FileEntryStatus.Uploaded)
+                                                {
+                                                    <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
+                                                }
+                                                else if (context.File.Status == FileEntryStatus.Error)
+                                                {
+                                                    <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
+                                                }
+                                            </Div>
+                                            <Div>
+                                                <Icon TextColor="TextColor.Danger" Name="IconName.Delete" class="cursor-pointer" Clicked="context.RemoveFile" />
+                                            </Div>
+                                        </Div>
+                                    </Div>
+                                </FileTemplate>
+                                <ButtonsTemplate>
+                                    <Progress Value="@FilePickerCustom.GetProgressPercentage()" />
+                                </ButtonsTemplate>
+                            </FilePicker>
+                        </Field>
+                        @if (BannerUrl != null)
+                        {
+                            <div Class="col-12 row">
+                                <div class="col-12">
+
+                                    <div class="image-container">
+                                        <Image class="blur-image" Source="@BannerUrl" Text="Item Image" Fluid />
+
+                                     </div>
+
+
+                                 </div>
+                             </div>
+                        }
                           <Field>
                 
                         <FieldLabel>@L["TenantOwner"]</FieldLabel>

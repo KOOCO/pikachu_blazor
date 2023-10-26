@@ -117,6 +117,16 @@ public static class PikachuModuleExtensionConfigurator
                         property.Configuration[IdentityModuleExtensionConsts.ConfigurationNames.AllowUserToEdit] = true;
                     }
                 );
+                   tenant.AddOrUpdateProperty<string>(
+                   Constant.BannerUrl, //property name
+                   property =>
+                   {
+                       //validation rules
+                       //property.Attributes.Add(new RequiredAttribute());
+                       //to do: need to make sure number is between 0 and 100
+                       property.Configuration[IdentityModuleExtensionConsts.ConfigurationNames.AllowUserToEdit] = true;
+                   }
+               );
                });
            });
     }
