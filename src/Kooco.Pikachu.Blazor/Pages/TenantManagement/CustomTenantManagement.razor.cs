@@ -40,11 +40,13 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement
         private const int MaxAllowedFileSize = 1024 * 1024 * 10;
         private readonly List<string> ValidFileExtensions = new() { ".jpg", ".png", ".svg", ".jpeg", ".webp" };
         private FilePicker FilePickerCustom { get; set; }
+        private FilePicker BannerPickerCustom { get; set; }
         public Guid? TenantOwnerId { get; set; }
         public TenantStatus Status { get; set; }
         IReadOnlyList<IdentityUserDto> UsersList = Array.Empty<IdentityUserDto>();
         public int ShareProfitPercentage { get; set; }
         public string LogoUrl { get; set; }
+        public string BannerUrl { get; set; }
         private readonly IUiMessageService _uiMessageService;
         private readonly ImageContainerManager _imageContainerManager;
         private readonly IIdentityUserAppService _identityUserAppService;
@@ -76,11 +78,13 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement
             base.NewEntity.SetProperty("ShareProfitPercent", ShareProfitPercentage);
             base.NewEntity.SetProperty("TenantOwner", TenantOwnerId);
             base.NewEntity.SetProperty("Status", Status);
+            base.NewEntity.SetProperty("BannerUrl", BannerUrl);
             await base.CreateEntityAsync();
             LogoUrl = null;
             ShareProfitPercentage = 0;
             TenantOwnerId = null;
             Status = 0;
+            BannerUrl = null;
            
         }
         protected override ValueTask SetTableColumnsAsync()
@@ -110,6 +114,14 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement
                    Sortable=false,
                    //Data=columns[2].Data,
                    Component=typeof(CustomTableColumn)
+
+
+                   },
+                    new TableColumn{
+                   Title="Banner",
+                   Sortable=false,
+                   //Data=columns[2].Data,
+                   Component=typeof(BannerTableColumn)
 
 
                    },
@@ -147,6 +159,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement
             ShareProfitPercentage = 0;
             TenantOwnerId = null;
             Status = 0;
+            BannerUrl = null;
            return base.OpenCreateModalAsync();
         
         }
@@ -156,10 +169,12 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement
             base.EditingEntity.ExtraProperties.Remove("ShareProfitPercent");
             base.EditingEntity.ExtraProperties.Remove("TenantOwner");
             base.EditingEntity.ExtraProperties.Remove("Status");
+            base.EditingEntity.ExtraProperties.Remove("BannerUrl");
             base.EditingEntity.SetProperty("LogoUrl", LogoUrl);
             base.EditingEntity.SetProperty("ShareProfitPercent", ShareProfitPercentage);
             base.EditingEntity.SetProperty("TenantOwner", TenantOwnerId);
             base.EditingEntity.SetProperty("Status", Status);
+            base.EditingEntity.SetProperty("BannerUrl",BannerUrl);
             LogoUrl = null;
             ShareProfitPercentage = 0;
             TenantOwnerId = null;
@@ -174,6 +189,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement
             ShareProfitPercentage=row.GetProperty<int>("ShareProfitPercent");
             LogoUrl = row.GetProperty<string>("LogoUrl");
             Status = row.GetProperty<TenantStatus>("Status");
+            BannerUrl = row.GetProperty<string>("BannerUrl");
             return base.OpenEditModalAsync(row);
         
         }
@@ -217,6 +233,66 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement
                         int sortNo = 0;
                         base.NewEntity.SetProperty("LogoUrl", url);
                         LogoUrl = url;
+
+                        //await FilePickerCustom.Clear();
+                    }
+                    finally
+                    {
+                        stream.Close();
+                    }
+                }
+                if (count > 0)
+                {
+                    await _uiMessageService.Error(count + ' ' + L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
+                }
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine(exc.Message);
+                await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
+            }
+        }
+
+        async Task OnBannerUploadAsync(FileChangedEventArgs e)
+        {
+            if (e.Files.Count() > MaxAllowedFilesPerUpload)
+            {
+                await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesExceedMaxAllowedPerUpload]);
+                await BannerPickerCustom.Clear();
+                return;
+            }
+
+            var count = 0;
+            try
+            {
+                foreach (var file in e.Files)
+                {
+                    if (!ValidFileExtensions.Contains(Path.GetExtension(file.Name).ToLower()))
+                    {
+                        await BannerPickerCustom.RemoveFile(file);
+                        return;
+                    }
+                    if (file.Size > MaxAllowedFileSize)
+                    {
+                        count++;
+                        await BannerPickerCustom.RemoveFile(file);
+                        return;
+                    }
+                    string newFileName = Path.ChangeExtension(
+                          Guid.NewGuid().ToString().Replace("-", ""),
+                          Path.GetExtension(file.Name));
+                    var stream = file.OpenReadStream(long.MaxValue);
+                    try
+                    {
+                        var memoryStream = new MemoryStream();
+
+                        await stream.CopyToAsync(memoryStream);
+                        memoryStream.Position = 0;
+                        var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
+
+                        int sortNo = 0;
+                        base.NewEntity.SetProperty("BannerUrl", url);
+                        BannerUrl = url;
 
                         //await FilePickerCustom.Clear();
                     }
