@@ -10,6 +10,7 @@ using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.StoreComments;
+using Kooco.Pikachu.Refunds;
 
 namespace Kooco.Pikachu;
 
@@ -67,5 +68,8 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<Order, OrderDto>();
         CreateMap<OrderItem, OrderItemDto>();
         CreateMap<StoreComment, StoreCommentDto>();
+
+
+        CreateMap<Refund, RefundDto>();
     }
 }

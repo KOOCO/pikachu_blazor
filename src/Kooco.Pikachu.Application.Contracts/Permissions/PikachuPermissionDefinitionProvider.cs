@@ -44,6 +44,9 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
 
         var orderPermissions = myGroup.AddPermission(PikachuPermissions.Orders.Default, L("Permission:Orders"));
         orderPermissions.AddChild(PikachuPermissions.Orders.AddStoreComment, L("Permission:AddStoreComments"));
+
+        var refundPermissions = myGroup.AddPermission(PikachuPermissions.Refund.Default, L("Permission:Refunds"));
+        refundPermissions.AddChild(PikachuPermissions.Refund.Create, L("Permission:Create"));
     }
 
     private static LocalizableString L(string name)

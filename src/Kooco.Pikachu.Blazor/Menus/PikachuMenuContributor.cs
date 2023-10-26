@@ -125,10 +125,11 @@ public class PikachuMenuContributor : IMenuContributor
             url: "/GroupBuyManagement/GroupBuyReport2")
             )
             .AddItem(new ApplicationMenuItem(
-            name: "FreebieManagement",
+            name: "Refund",
             icon: "fas fa-stamp",
-            displayName: "退款審核列表",
-            url: "/GroupBuyManagement/GroupBuyReport3")
+            displayName: l["Refund"],
+            url: "/Refund",
+            requiredPermissionName: PikachuPermissions.Orders.Default)
             )
         );
 

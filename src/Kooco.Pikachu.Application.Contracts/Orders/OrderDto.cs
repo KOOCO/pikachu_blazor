@@ -44,5 +44,6 @@ namespace Kooco.Pikachu.Orders
         public ShippingStatus ShippingStatus { get; set; }
         public DateTime? ShippingDate { get; set; }
         public DateTime? CancellationDate { get; set; }
+        public bool IsRefunded { get; set; }
     }
 }
