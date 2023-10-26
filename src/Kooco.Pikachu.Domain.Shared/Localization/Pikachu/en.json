@@ -272,11 +272,10 @@
     "ReviewCompletionTime": "Review Completion Time",
     "RefundReview": "Refund Review",
     "PendingReview": "Pending Review",
-    "Refunded": "Refunded"
-    "CombineOrders": "Combine Orders",
+    "Refunded": "Refunded",
     "Enum:TenantStatus.0": "Open",
     "Enum:TenantStatus.1": "Closed",
     "Enum:TenantStatus.2": "Warning",
-    "Enum:TenantStatus.3": "Suspend",
+    "Enum:TenantStatus.3": "Suspend"
   }
 }
