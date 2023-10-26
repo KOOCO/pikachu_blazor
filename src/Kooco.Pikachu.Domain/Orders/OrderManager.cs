@@ -104,7 +104,6 @@ namespace Kooco.Pikachu.Orders
                 setItemId,
                 freebieId,
                 itemType,
-                orderId,
                 spec,
                 itemPrice,
                 totalAmount,

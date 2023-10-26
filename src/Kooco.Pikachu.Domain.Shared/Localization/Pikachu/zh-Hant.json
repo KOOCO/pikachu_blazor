@@ -1,5 +1,5 @@
 {
-    "culture": "zh-Hant",
+  "culture": "zh-Hant",
   "texts": {
     "Menu:Home": "首頁",
     "Welcome": "歡迎",
@@ -260,6 +260,19 @@
     "Telephone": "電話",
     "Quantity": "數量",
     "UnitPrice": "單價",
-    "Date": "日期"
+    "Date": "日期",
+
+
+    //Refund
+    "Pikachu:RefundForSameOrderAlreadyExists": "同一訂單已存在退款",
+    "Pikachu:RefundIsOnlyAvailableForCreditCardPayments": "退款僅適用於信用卡付款",
+    "AreYouSureToRefundThisOrder?": "您確定要對訂單退款嗎？",
+    "Refund": "退款",
+    "Permission:Refunds": "退款管理",
+    "SubmissionTime": "提交時間",
+    "ReviewCompletionTime": "審核完成時間",
+    "RefundReview": "退款審核",
+    "PendingReview": "待審核",
+    "Refunded": "已退款"
   }
-  }
+}

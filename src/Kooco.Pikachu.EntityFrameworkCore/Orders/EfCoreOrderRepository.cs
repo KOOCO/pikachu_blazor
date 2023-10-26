@@ -19,7 +19,7 @@ namespace Kooco.Pikachu.Orders
 
         public async Task<long> CountAsync(string? filter)
         {
-            return await ApplyFilters(await GetQueryableAsync(), filter).CountAsync();
+            return await ApplyFilters((await GetQueryableAsync()).Include(o => o.GroupBuy), filter).CountAsync();
         }
 
         public async Task<List<Order>> GetListAsync(int skipCount, int maxResultCount, string? sorting, string? filter)
