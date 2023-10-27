@@ -93,7 +93,7 @@
                                 <Button Type="ButtonType.Button" @onclick="OpenShipmentModal" Class="btn btn-sm btn-primary me-1">
                                     @L["ShipmentNotify"]
                                 </Button>
-                                @if(Order.PaymentMethod == PaymentMethods.CreditCard && Order.IsRefunded == false)
+                                @if (Order.PaymentMethod == PaymentMethods.CreditCard && Order.IsRefunded == false)
                                 {
                                     <Button Type="ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="ApplyRefund">
                                         @L["ApplyRefund"]
@@ -102,8 +102,8 @@
                                 else
                                 {
                                     <Button Type="ButtonType.Button" Disabled Class="btn btn-sm btn-danger" Clicked="ApplyRefund">
-                                        @L["ApplyRefund"]
-                                    </Button>
+                                         @L["ApplyRefund"]
+                                     </Button>
                                 }
                             </div>
                         </div>

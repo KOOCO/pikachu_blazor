@@ -16,5 +16,9 @@ namespace Kooco.Pikachu.Orders
             );
         Task<Order> MaxByOrderNumberAsync();
         Task<Order> GetWithDetailsAsync(Guid id);
+        Task<List<OrderReport>> GetGroupBuyReport(
+            int skipCount, 
+            int maxResultCount, 
+            string? sorting);
     }
 }

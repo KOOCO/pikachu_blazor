@@ -102,7 +102,6 @@ namespace Kooco.Pikachu.GroupBuys
 
             return ObjectMapper.Map<GroupBuy, GroupBuyDto>(item);
         }
-
         public async Task<GroupBuyDto> GetWithDetailsAsync(Guid id)
         {
             var item = await _groupBuyRepository.GetWithDetailsAsync(id);
@@ -252,7 +251,6 @@ namespace Kooco.Pikachu.GroupBuys
                 }
             }
         }
-
         public async Task DeleteManyGroupBuyItemsAsync(List<Guid> groupBuyIds)
         {
             foreach (var id in groupBuyIds)

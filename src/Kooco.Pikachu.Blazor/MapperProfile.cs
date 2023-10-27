@@ -31,7 +31,8 @@ namespace Kooco.Pikachu.Blazor
             CreateMap<FreebieGroupBuysDto, CreateFreebieGroupBuysDto>();
             CreateMap<Order, OrderDto>();
             CreateMap<OrderDto, CreateOrderDto>();
-           
+            CreateMap<OrderReport, OrderReportDto>();
+
         }
         
     }

@@ -36,8 +36,7 @@ namespace Kooco.Pikachu.GroupBuys
             query = query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? GroupBuyConsts.GetDefaultSorting(false) : sorting);
             return await query.PageBy(skipCount, maxResultCount).ToListAsync(cancellationToken);
         }
-
-        public async Task<GroupBuy> GetWithDetailsAsync(Guid id)
+            public async Task<GroupBuy> GetWithDetailsAsync(Guid id)
         {
             var dbContext = await GetDbContextAsync();
 
@@ -64,7 +63,7 @@ namespace Kooco.Pikachu.GroupBuys
                     .ThenInclude(ig => ig.ItemGroupDetails.OrderBy(i => i.SortOrder))
                 .FirstOrDefaultAsync();
         }
-
+     
         protected virtual IQueryable<GroupBuy> ApplyFilter(
             IQueryable<GroupBuy> query,
             string filterText,

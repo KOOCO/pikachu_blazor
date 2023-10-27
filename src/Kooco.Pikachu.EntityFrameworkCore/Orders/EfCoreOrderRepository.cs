@@ -1,9 +1,11 @@
 ﻿using Kooco.Pikachu.EntityFrameworkCore;
+using Kooco.Pikachu.EnumValues;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -36,7 +38,31 @@ namespace Kooco.Pikachu.Orders
                 .ThenInclude(oi => oi.Freebie)
                 .ToListAsync();
         }
-
+        public async Task<List<OrderReport>> GetGroupBuyReport(int skipCount, int maxResultCount, string? sorting)
+        {
+            var dbContext = await GetDbContextAsync();
+            var query = from o in dbContext.Orders
+                        join gb in dbContext.GroupBuys
+                        on o.GroupBuyId equals gb.Id
+                        group new { o.TotalQuantity, o.TotalAmount, o.ShippingStatus, o.GroupBuyId } by gb.GroupBuyName into grouped
+                        select new
+                        {
+                            GroupBuyName = grouped.Key,
+                            TotalQuantity = grouped.Sum(x => x.TotalQuantity),
+                            TotalAmount = grouped.Sum(x => x.TotalAmount),
+                            PaidAmount = grouped.Sum(x => x.ShippingStatus == ShippingStatus.PrepareShipment ? x.TotalAmount : 0)
+                        };
+            List<OrderReport> orderReports = System.Linq.Enumerable.AsEnumerable(query)
+             .Select(a => new OrderReport
+               {
+            GroupBuyName = a.GroupBuyName,
+            TotalQuantity = a.TotalQuantity,
+            TotalAmount = a.TotalAmount,
+            PaidAmount = a.PaidAmount
+             })
+                .ToList();
+            return orderReports;        
+        } 
         private static IQueryable<Order> ApplyFilters(
             IQueryable<Order> queryable,
             string? filter
