@@ -51,7 +51,7 @@ namespace Kooco.Pikachu.Orders
         public OrderStatus OrderStatus { get; set; }
         public ICollection<OrderItem> OrderItems { get; set; }
         public ICollection<StoreComment> StoreComments { get; set; }
-
+        public bool IsRefunded { get; set; }
         public Order() { }
 
         public Order(
@@ -109,6 +109,7 @@ namespace Kooco.Pikachu.Orders
             ShippingStatus = ShippingStatus.WaitingForPayment;
             OrderItems = new List<OrderItem>();
             StoreComments = new List<StoreComment>();
+            IsRefunded = false;
         }
 
         public void AddOrderItem(
@@ -117,7 +118,6 @@ namespace Kooco.Pikachu.Orders
             Guid? setItemId,
             Guid? freebieId,
             ItemType itemType,
-            Guid OrderId,
             string? spec,
             decimal itemPrice,
             decimal totalAmount,

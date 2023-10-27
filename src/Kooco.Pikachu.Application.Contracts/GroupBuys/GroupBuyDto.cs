@@ -15,6 +15,7 @@ namespace Kooco.Pikachu.GroupBuys
         /// 團購狀態  Status
         /// </summary>
         public string Status { get; set; }
+        public string ShortCode { get; set; }
         /// <summary>
         /// 團購名稱  GroupBuyName
         /// </summary>

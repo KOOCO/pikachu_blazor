@@ -260,9 +260,22 @@
     "ShippingNumber": "Shipping Number",
     "AreYouSureToCancelOrder?": "Are You Sure To Cancel The Order?",
     "CombineOrders": "Combine Orders",
+
+
+    //Refund
+    "Pikachu:RefundForSameOrderAlreadyExists": "Refund For Same Order Already Exists",
+    "Pikachu:RefundIsOnlyAvailableForCreditCardPayments": "Refund Is Only Available For Credit Card Payments",
+    "AreYouSureToRefundThisOrder?": "Are You Sure You Want To Refund This Order?",
+    "Refund": "Refund",
+    "Permission:Refunds": "Refund Management",
+    "SubmissionTime": "Submission Time",
+    "ReviewCompletionTime": "Review Completion Time",
+    "RefundReview": "Refund Review",
+    "PendingReview": "Pending Review",
+    "Refunded": "Refunded",
     "Enum:TenantStatus.0": "Open",
     "Enum:TenantStatus.1": "Closed",
     "Enum:TenantStatus.2": "Warning",
-    "Enum:TenantStatus.3": "Suspend",
+    "Enum:TenantStatus.3": "Suspend"
   }
 }

@@ -372,6 +372,7 @@ public class PikachuBlazorModule : AbpModule
             options.SwaggerEndpoint("/swagger/v1/swagger.json", "Pikachu API");
         });
         app.UseConfiguredEndpoints();
+    
     }
 
     // This method is required for the Image Upload in blazor

@@ -49,7 +49,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 {
                     await loading.Hide();
                     await _uiMessageService.Error(ex.GetType().ToString());
-                    Console.WriteLine(ex.Message);
+                    await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
                 }
             }
         }
@@ -88,13 +88,13 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
             {
                 await loading.Hide();
                 await _uiMessageService.Error(L[ex.Code]);
-                Console.WriteLine(ex.ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
             }
             catch (Exception ex)
             {
                 await loading.Hide();
                 await _uiMessageService.Error(ex.GetType().ToString());
-                Console.WriteLine(ex.ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
             }
         }
 
@@ -238,13 +238,13 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
             catch (BusinessException ex)
             {
                 await loading.Hide();
-                Console.WriteLine(ex.ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
                 await _uiMessageService.Error(L[ex.Code?.ToString()]);
             }
             catch (Exception ex)
             {
                 await loading.Hide();
-                Console.WriteLine(ex.ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
                 await _uiMessageService.Error(ex.GetType().ToString());
             }
 
@@ -384,6 +384,38 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         {
             var index = EditingItems.IndexOf(item);
             EditingItems[index].TotalAmount = item.Quantity * item.ItemPrice;
+        }
+
+        async Task ApplyRefund()
+        {
+            try
+            {
+                if (Order.PaymentMethod != PaymentMethods.CreditCard)
+                {
+                    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.RefundIsOnlyAvailableForCreditCardPayments]);
+                    return;
+                }
+                var confimation = await _uiMessageService.Confirm(L["AreYouSureToRefundThisOrder?"]);
+                if (confimation)
+                {
+                    await loading.Show();
+                    await _refundAppService.CreateAsync(OrderId);
+                    await GetOrderDetailsAsync();
+                }
+            }
+            catch(BusinessException ex)
+            {
+                await _uiMessageService.Error(L[ex.Code]);
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+                await loading.Hide();
+            }
         }
 
         public class StoreCommentsModel
