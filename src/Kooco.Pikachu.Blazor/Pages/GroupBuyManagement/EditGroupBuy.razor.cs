@@ -3,6 +3,7 @@ using Blazorise;
 using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.AzureStorage.Image;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items;
@@ -61,7 +62,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         private string? PaymentMethodError { get; set; } = null;
         private List<ImageDto> ExistingImages { get; set; } = new();
         private LoadingIndicator loading { get; set; } = new();
-
+      
         public EditGroupBuy(
             IGroupBuyAppService groupBuyAppService,
             IImageAppService imageAppService,
@@ -81,6 +82,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             _imageContainerManager = imageContainerManager;
             _itemAppService = itemAppService;
             _setItemAppService = setItemAppService;
+           
         }
 
         protected override async Task OnAfterRenderAsync(bool isFirstRender)
@@ -545,6 +547,18 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 if (EditGroupBuyDto.GroupBuyName.IsNullOrWhiteSpace())
                 {
                     await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyNameCannotBeNull]);
+                    return;
+                }
+                if (EditGroupBuyDto.ShortCode.IsNullOrWhiteSpace())
+                {
+                    await _uiMessageService.Warn(L["Short Code Can't Null"]);
+                    return;
+                }
+                var check = await _groupBuyAppService.CheckShortCodeForEdit(EditGroupBuyDto.ShortCode,Id);
+                
+                if (check)
+                {
+                    await _uiMessageService.Warn(L["Short Code Alredy Exist"]);
                     return;
                 }
                 if (ItemTags.Any())

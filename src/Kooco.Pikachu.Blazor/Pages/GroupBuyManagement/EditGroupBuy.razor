@@ -64,6 +64,28 @@
                 </span>
             </div>
         </div>
+          <div class="row">
+            <div class="col-2">
+                <label>@L["ShortCode"]</label>
+            </div>
+            <div class="col-9">
+               
+                <Validation UsePattern>
+    <TextEdit Pattern="^[A-Za-z]{4}\d{4}$"  MaxLength="8" @bind-Text="@EditGroupBuyDto.ShortCode">
+        <Feedback>
+            
+            <ValidationError>Pattern does not match!</ValidationError>
+        </Feedback>
+    </TextEdit>
+</Validation>
+
+            </div>
+            <div class="col-1">
+                <span>
+                    @((string.IsNullOrWhiteSpace(EditGroupBuyDto.ShortCode) ? 0 : (0 + EditGroupBuyDto.ShortCode.Count())))/@(8)
+                </span>
+            </div>
+        </div>
         <div class="row">
             <div class="col-2">
                 <label>@L["Subject"]</label>

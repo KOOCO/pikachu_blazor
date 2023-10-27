@@ -54,7 +54,7 @@ namespace Kooco.Pikachu.GroupBuys
                                                         input.IssueInvoice, input.AutoIssueTriplicateInvoice, input.InvoiceNote, input.ProtectPrivacyData, input.InviteCode, input.ProfitShare,
                                                         input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy,
                                                         input.NotifyMessage, input.ExcludeShippingMethod, input.IsDefaultPaymentGateWay, input.PaymentMethod, input.GroupBuyCondition, input.CustomerInformation,
-                                                        input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription);
+                                                        input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription,input.ShortCode);
 
             if (input.ItemGroups != null && input.ItemGroups.Any())
             {
@@ -186,6 +186,7 @@ namespace Kooco.Pikachu.GroupBuys
             groupBuy.CustomerInformationDescription = input.CustomerInformationDescription;
             groupBuy.GroupBuyConditionDescription = input.GroupBuyConditionDescription;
             groupBuy.ExchangePolicyDescription = input.ExchangePolicyDescription;
+            groupBuy.ShortCode=input.ShortCode;
 
             var itemGroupIds = input.ItemGroups?.Select(x => x.Id).ToList();
             if (itemGroupIds != null && itemGroupIds.Any())
@@ -318,5 +319,32 @@ namespace Kooco.Pikachu.GroupBuys
                 return ObjectMapper.Map<List<Freebie>, List<FreebieDto>>(freebie);
             }
         }
+
+        public async Task<bool> CheckShortCodeForCreate(string shortCode) {
+
+            var query = await _groupBuyRepository.GetQueryableAsync();
+            var check = query.Any(x => x.ShortCode == shortCode);
+            return check;
+        
+        
+        }
+        public async Task<bool> CheckShortCodeForEdit(string shortCode,Guid Id)
+        {
+
+            var query = await _groupBuyRepository.GetQueryableAsync();
+            var check = query.Any(x => x.ShortCode == shortCode && x.Id!=Id);
+            return check;
+
+
+        }
+        public async Task<GroupBuyDto> GetGroupBuyByShortCode(string ShortCode) {
+        
+          var query = await _groupBuyRepository.GetQueryableAsync();
+            var groupbuy = query.Where(x => x.ShortCode == ShortCode).FirstOrDefault();
+            return ObjectMapper.Map<GroupBuy,GroupBuyDto>(groupbuy);
+
+        }
+
+
     }
 }
