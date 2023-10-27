@@ -2,6 +2,7 @@
 using Blazorise;
 using Kooco.Pikachu.AzureStorage.Image;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items;
@@ -42,7 +43,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         private BlazoredTextEditor GroupBuyHtml { get; set; }
         private BlazoredTextEditor CustomerInformationHtml { get; set; }
         private BlazoredTextEditor ExchangePolicyHtml { get; set; }
-
+       
         public string _ProductPicture = "Product Picture";
         private FilePicker LogoPickerCustom { get; set; }
         private FilePicker BannerPickerCustom { get; set; }
@@ -74,6 +75,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             CarouselImages = new List<CreateImageDto>();
             _itemAppService = itemAppService;
             _setItemAppService = setItemAppService;
+          
         }
         protected override async Task OnInitializedAsync()
         {
@@ -416,12 +418,25 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         {
             try
             {
+               
+
                 if (CreateGroupBuyDto.GroupBuyName.IsNullOrWhiteSpace())
                 {
                     await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyNameCannotBeNull]);
                     return;
                 }
-
+                if (CreateGroupBuyDto.ShortCode.IsNullOrWhiteSpace())
+                {
+                    await _uiMessageService.Warn(L["Short Code Can't Null"]);
+                    return;
+                }
+                var check = await _groupBuyAppService.CheckShortCodeForCreate(CreateGroupBuyDto.ShortCode);
+                
+                if (check)
+                {
+                    await _uiMessageService.Warn(L["Short Code Alredy Exist"]);
+                    return;
+                }
                 //if (CollapseItem.Any(c => c.Selected.Any(s => s.Id == Guid.Empty)))
                 //{
                 //    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyModuleCannotBeEmpty]);

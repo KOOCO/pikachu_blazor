@@ -14,6 +14,8 @@ namespace Kooco.Pikachu.GroupBuys
         /// 團購編號  GroupBuysNo
         /// </summary>
         public int GroupBuyNo { get; set; }
+
+        public string ShortCode { get; set; }
         /// <summary>
         /// 團購狀態  Status
         /// </summary>
@@ -248,7 +250,8 @@ namespace Kooco.Pikachu.GroupBuys
             string? customerInformation,
           string? customerInformationDescription,
           string? groupBuyConditionDescription,
-          string? exchangePolicyDescription
+          string? exchangePolicyDescription,
+          string shortCode
 
 
 
@@ -297,7 +300,7 @@ namespace Kooco.Pikachu.GroupBuys
 
             GroupBuyConditionDescription = groupBuyConditionDescription;
             ExchangePolicyDescription = exchangePolicyDescription;
-
+            ShortCode = shortCode;
 
             ItemGroups = new List<GroupBuyItemGroup>();
         }
