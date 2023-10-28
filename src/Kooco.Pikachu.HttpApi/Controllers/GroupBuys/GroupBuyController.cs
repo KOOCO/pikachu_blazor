@@ -106,8 +106,8 @@ public class GroupBuyController : AbpController, IGroupBuyAppService
 
 
     [HttpGet("get-groupbuy-for-tenant")]
-    public Task<GroupBuyDto> GetGroupBuyofTenant(string ShortCode, Guid TenantId)
+    public  Task<GroupBuyDto> GetGroupBuyofTenant(string ShortCode, Guid TenantId)
     {
-        throw new NotImplementedException();
+        return _groupBuyAppService.GetGroupBuyofTenant(ShortCode, TenantId);
     }
 }
