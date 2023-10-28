@@ -108,10 +108,10 @@ public class GroupBuyController : AbpController, IGroupBuyAppService
         return _groupBuyAppService.GetGroupBuyByShortCode(ShortCode);
     }
 
-    [HttpGet("for-store-with-details/{id}")]
-    public Task<GroupBuyDto> GetWithDetailsForStoreAsync(Guid id)
+    [HttpGet("get-paged-item-group/{id}/{skipCount}")]
+    public Task<GroupBuyItemGroupWithCountDto> GetPagedItemGroupAsync(Guid id, int skipCount)
     {
-        return _groupBuyAppService.GetWithDetailsForStoreAsync(id);
+        return _groupBuyAppService.GetPagedItemGroupAsync(id, skipCount);
     }
 
 

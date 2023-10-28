@@ -90,5 +90,6 @@ namespace Kooco.Pikachu.Groupbuys
             CancellationToken cancellationToken = default);
 
         Task<GroupBuy> GetWithDetailsAsync(Guid id);
+        Task<GroupBuyItemGroupWithCount> GetPagedItemGroupAsync(Guid id, int skipCount);
     }
 }

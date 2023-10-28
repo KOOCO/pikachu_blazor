@@ -294,14 +294,14 @@ namespace Kooco.Pikachu.GroupBuys
         /// Do not change unless you want to make changes in the Store Front End Code
         /// </summary>
         /// <returns></returns>
-        public async Task<GroupBuyDto> GetWithDetailsForStoreAsync(Guid id)
+        public async Task<GroupBuyItemGroupWithCountDto> GetPagedItemGroupAsync(Guid id, int skipCount)
         {
             using (_dataFilter.Disable<IMultiTenant>())
             {
-                var item = await _groupBuyRepository.GetWithDetailsAsync(id);
+                var item = await _groupBuyRepository.GetPagedItemGroupAsync(id, skipCount);
                 return item == null ?
                     throw new BusinessException(PikachuDomainErrorCodes.EntityWithGivenIdDoesnotExist)
-                    : ObjectMapper.Map<GroupBuy, GroupBuyDto>(item);
+                    : ObjectMapper.Map<GroupBuyItemGroupWithCount, GroupBuyItemGroupWithCountDto>(item);
 
             }
         }
