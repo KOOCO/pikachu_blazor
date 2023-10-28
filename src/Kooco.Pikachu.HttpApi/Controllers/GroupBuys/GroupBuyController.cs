@@ -83,25 +83,35 @@ public class GroupBuyController : AbpController, IGroupBuyAppService
     {
         return _groupBuyAppService.GetForStoreAsync(id);
     }
+
     [HttpGet("freebie-store/{groupBuyId}")]
     public Task<List<FreebieDto>> GetFreebieForStoreAsync(Guid groupBuyId)
     {
         return _groupBuyAppService.GetFreebieForStoreAsync(groupBuyId);
     }
+
     [HttpGet("check-shortcode-forcreate/{shortCode}")]
     public Task<bool> CheckShortCodeForCreate(string shortCode)
     {
         return _groupBuyAppService.CheckShortCodeForCreate(shortCode);
     }
+
     [HttpGet("check-shortcode-foredit")]
     public Task<bool> CheckShortCodeForEdit(string shortCode, Guid Id)
     {
        return _groupBuyAppService.CheckShortCodeForEdit(shortCode, Id);
     }
+
     [HttpGet("get-by-shortcode/{ShortCode}")]
     public Task<List<GroupBuyDto>> GetGroupBuyByShortCode(string ShortCode)
     {
         return _groupBuyAppService.GetGroupBuyByShortCode(ShortCode);
+    }
+
+    [HttpGet("for-store-with-details/{id}")]
+    public Task<GroupBuyDto> GetWithDetailsForStoreAsync(Guid id)
+    {
+        return _groupBuyAppService.GetWithDetailsForStoreAsync(id);
     }
 
 

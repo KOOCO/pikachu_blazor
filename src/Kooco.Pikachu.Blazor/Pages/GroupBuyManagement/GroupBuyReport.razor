@@ -1,5 +1,52 @@
 ﻿@page "/GroupBuyManagement/GroupBuyReport"
-<h3>This Page In Under Process</h3>
+@using Volo.Abp.MultiTenancy
+@using Volo.Abp.Application.Dtos
+@using Kooco.Pikachu.Orders;
+@using Kooco.Pikachu.Localization
+@using Microsoft.Extensions.Localization
+@using Volo.Abp
+@using System.Text.Json;
+@using System.ComponentModel;
+@using Blazorise.LoadingIndicator;
+@inject IStringLocalizer<PikachuResource> L
+@inject NavigationManager NavigationManager
+
+<LoadingIndicator @ref="loading" FullScreen FadeIn>
+</LoadingIndicator>
+
+<div class="row">
+    <div class="col-6">
+        <h3>@L["GroupBuyReport"]</h3>
+    </div>
+</div>
+<Card>
+    <CardBody>
+        <DataGrid TItem="OrderReportDto"
+                  Data="GroupBuyReportList"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="Total"
+                  ShowPager="true"
+                  PageSize="_pageSize">
+            <DataGridColumns>
+                <DataGridColumn TItem="OrderReportDto"
+                                Field="@nameof(OrderReportDto.GroupBuyName)"
+                                Caption="@L["GroupBuyName"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="OrderReportDto"
+                                Field="@nameof(OrderReportDto.TotalQuantity)"
+                                Caption="@L["TotalQuantity"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="OrderReportDto" Field="@nameof(OrderReportDto.TotalAmount)"
+                                Caption="@L["TotalAmount"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="OrderReportDto" Field="@nameof(OrderReportDto.PaidAmount)"
+                                Caption="@L["PaidAmount"]">
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
+
+    </CardBody>
+</Card>
 @code {
 
 }
