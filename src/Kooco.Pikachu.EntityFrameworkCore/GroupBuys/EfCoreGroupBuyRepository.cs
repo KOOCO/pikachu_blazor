@@ -65,6 +65,39 @@ namespace Kooco.Pikachu.GroupBuys
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<GroupBuyItemGroupWithCount> GetPagedItemGroupAsync(Guid id, int skipCount)
+        {
+            var dbContext = await GetDbContextAsync();
+
+            var itemGroups = dbContext.GroupBuyItemGroups
+                .Where(x => x.GroupBuyId == id)
+                .OrderBy(x => x.SortOrder)
+                .Include(ig => ig.ItemGroupDetails.OrderBy(i => i.SortOrder))
+                    .ThenInclude(igd => igd.SetItem)
+                    .ThenInclude(s => s.Images)
+                .Include(ig => ig.ItemGroupDetails.OrderBy(i => i.SortOrder))
+                    .ThenInclude(igd => igd.SetItem)
+                    .ThenInclude(s => s.SetItemDetails)
+                    .ThenInclude(sid => sid.Item)
+                .Include(ig => ig.ItemGroupDetails.OrderBy(i => i.SortOrder))
+                    .ThenInclude(igd => igd.Item)
+                    .ThenInclude(i => i.Images)
+                .Include(ig => ig.ItemGroupDetails.OrderBy(i => i.SortOrder))
+                    .ThenInclude(igd => igd.Item)
+                    .ThenInclude(i => i.ItemDetails)
+                .Include(ig => ig.ItemGroupDetails.OrderBy(i => i.SortOrder));
+
+            var itemGroup = await itemGroups
+                .PageBy(skipCount, 1)
+                .FirstOrDefaultAsync();
+
+            return new GroupBuyItemGroupWithCount
+            {
+                TotalCount = itemGroups.Count(),
+                ItemGroup = itemGroup
+            };
+        }
+
         protected virtual IQueryable<GroupBuy> ApplyFilter(
             IQueryable<GroupBuy> query,
             string filterText,
@@ -91,11 +124,7 @@ namespace Kooco.Pikachu.GroupBuys
                     .WhereIf(!string.IsNullOrWhiteSpace(orderContactInfo), e => e.OrderContactInfo.Contains(orderContactInfo))
                     .WhereIf(!string.IsNullOrWhiteSpace(exchangePolicy), e => e.ExchangePolicy.Contains(exchangePolicy))
                     .WhereIf(!string.IsNullOrWhiteSpace(notifyMessage), e => e.NotifyMessage.Contains(notifyMessage))
-
                     .WhereIf(groupBuyNo.HasValue, e => e.GroupBuyNo == groupBuyNo);
         }
-
-
-
     }
 }
