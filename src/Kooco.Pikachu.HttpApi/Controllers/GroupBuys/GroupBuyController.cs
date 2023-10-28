@@ -99,8 +99,15 @@ public class GroupBuyController : AbpController, IGroupBuyAppService
        return _groupBuyAppService.CheckShortCodeForEdit(shortCode, Id);
     }
     [HttpGet("get-by-shortcode/{ShortCode}")]
-    public Task<GroupBuyDto> GetGroupBuyByShortCode(string ShortCode)
+    public Task<List<GroupBuyDto>> GetGroupBuyByShortCode(string ShortCode)
     {
         return _groupBuyAppService.GetGroupBuyByShortCode(ShortCode);
+    }
+
+
+    [HttpGet("get-groupbuy-for-tenant")]
+    public Task<GroupBuyDto> GetGroupBuyofTenant(string ShortCode, Guid TenantId)
+    {
+        throw new NotImplementedException();
     }
 }
