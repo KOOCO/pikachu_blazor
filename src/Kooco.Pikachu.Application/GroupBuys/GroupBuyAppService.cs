@@ -337,11 +337,23 @@ namespace Kooco.Pikachu.GroupBuys
 
 
         }
-        public async Task<GroupBuyDto> GetGroupBuyByShortCode(string ShortCode) {
-        
-          var query = await _groupBuyRepository.GetQueryableAsync();
-            var groupbuy = query.Where(x => x.ShortCode == ShortCode).FirstOrDefault();
-            return ObjectMapper.Map<GroupBuy,GroupBuyDto>(groupbuy);
+        public async Task<List<GroupBuyDto>> GetGroupBuyByShortCode(string ShortCode) {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var query = await _groupBuyRepository.GetQueryableAsync();
+                var groupbuy = query.Where(x => x.ShortCode == ShortCode).ToList();
+                return ObjectMapper.Map<List<GroupBuy>, List<GroupBuyDto>>(groupbuy);
+            }
+
+        }
+        public async Task<GroupBuyDto> GetGroupBuyofTenant(string ShortCode,Guid TenantId)
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var query = await _groupBuyRepository.GetQueryableAsync();
+                var groupbuy = query.Where(x => x.ShortCode == ShortCode && x.TenantId==TenantId).FirstOrDefault();
+                return ObjectMapper.Map<GroupBuy,GroupBuyDto>(groupbuy);
+            }
 
         }
 
