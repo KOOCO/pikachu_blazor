@@ -288,7 +288,7 @@ namespace Kooco.Pikachu.GroupBuys
 
             }
         }
-        
+
         /// <summary>
         /// This Method Returns the Desired Result For the Store Front End.
         /// Do not change unless you want to make changes in the Store Front End Code
@@ -350,8 +350,8 @@ namespace Kooco.Pikachu.GroupBuys
             return check;
         }
 
-        }
-        public async Task<List<GroupBuyDto>> GetGroupBuyByShortCode(string ShortCode) {
+        public async Task<List<GroupBuyDto>> GetGroupBuyByShortCode(string ShortCode)
+        {
             using (_dataFilter.Disable<IMultiTenant>())
             {
                 var query = await _groupBuyRepository.GetQueryableAsync();
@@ -360,13 +360,13 @@ namespace Kooco.Pikachu.GroupBuys
             }
 
         }
-        public async Task<GroupBuyDto> GetGroupBuyofTenant(string ShortCode,Guid TenantId)
+        public async Task<GroupBuyDto> GetGroupBuyofTenant(string ShortCode, Guid TenantId)
         {
             using (_dataFilter.Disable<IMultiTenant>())
             {
                 var query = await _groupBuyRepository.GetQueryableAsync();
-                var groupbuy = query.Where(x => x.ShortCode == ShortCode && x.TenantId==TenantId).FirstOrDefault();
-                return ObjectMapper.Map<GroupBuy,GroupBuyDto>(groupbuy);
+                var groupbuy = query.Where(x => x.ShortCode == ShortCode && x.TenantId == TenantId).FirstOrDefault();
+                return ObjectMapper.Map<GroupBuy, GroupBuyDto>(groupbuy);
             }
 
         }
