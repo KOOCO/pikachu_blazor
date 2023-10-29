@@ -24,6 +24,8 @@ namespace Kooco.Pikachu.GroupBuys
         Task ChangeGroupBuyAvailability(Guid groupBuyId);
         Task<bool> CheckShortCodeForCreate(string shortCode);
         Task<bool> CheckShortCodeForEdit(string shortCode, Guid Id);
-        Task<GroupBuyDto> GetGroupBuyByShortCode(string ShortCode);
+        Task<List<GroupBuyDto>> GetGroupBuyByShortCode(string ShortCode);
+        Task<GroupBuyDto> GetGroupBuyofTenant(string ShortCode, Guid TenantId);
+        Task<PagedResultDto<GroupBuyReportDto>> GetGroupBuyReportListAsync(GetGroupBuyReportListDto input);
     }
 }

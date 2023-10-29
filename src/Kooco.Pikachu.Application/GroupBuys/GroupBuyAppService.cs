@@ -350,12 +350,43 @@ namespace Kooco.Pikachu.GroupBuys
             return check;
         }
 
-        public async Task<GroupBuyDto> GetGroupBuyByShortCode(string ShortCode)
+        public async Task<List<GroupBuyDto>> GetGroupBuyByShortCode(string ShortCode)
         {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var query = await _groupBuyRepository.GetQueryableAsync();
+                var groupbuy = query.Where(x => x.ShortCode == ShortCode).ToList();
+                return ObjectMapper.Map<List<GroupBuy>, List<GroupBuyDto>>(groupbuy);
+            }
 
-            var query = await _groupBuyRepository.GetQueryableAsync();
-            var groupbuy = query.Where(x => x.ShortCode == ShortCode).FirstOrDefault();
-            return ObjectMapper.Map<GroupBuy, GroupBuyDto>(groupbuy);
+        }
+
+        public async Task<PagedResultDto<GroupBuyReportDto>> GetGroupBuyReportListAsync(GetGroupBuyReportListDto input)
+        {
+            if (input.Sorting.IsNullOrWhiteSpace())
+            {
+                input.Sorting = nameof(GroupBuyReport.GroupBuyName);
+            }
+            var totalCount = await _groupBuyRepository.GetGroupBuyReportCountAsync();
+
+            var items = await _groupBuyRepository.GetGroupBuyReportListAsync(input.SkipCount, input.MaxResultCount, input.Sorting);
+
+            return new PagedResultDto<GroupBuyReportDto>
+            {
+                TotalCount = totalCount,
+                Items = ObjectMapper.Map<List<GroupBuyReport>, List<GroupBuyReportDto>>(items)
+            };
+        }
+
+        public async Task<GroupBuyDto> GetGroupBuyofTenant(string ShortCode, Guid TenantId)
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var query = await _groupBuyRepository.GetQueryableAsync();
+                var groupbuy = query.Where(x => x.ShortCode == ShortCode && x.TenantId == TenantId).FirstOrDefault();
+                return ObjectMapper.Map<GroupBuy, GroupBuyDto>(groupbuy);
+            }
+
         }
     }
 }

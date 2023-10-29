@@ -276,6 +276,14 @@
     "Enum:TenantStatus.0": "Open",
     "Enum:TenantStatus.1": "Closed",
     "Enum:TenantStatus.2": "Warning",
-    "Enum:TenantStatus.3": "Suspend"
+    "Enum:TenantStatus.3": "Suspend",
+
+
+    //Groupbuy Report
+    "GroupbuyReport": "Groupbuy Report",
+    "TotalQuantity": "Total Quantity",
+    "TotalAmount": "Total Amount",
+    "PaidAmount": "Paid Amount",
+    "ReportUrl": "Report Url"
   }
 }

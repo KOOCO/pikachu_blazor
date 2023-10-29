@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.OrderItems;
+﻿using Kooco.Pikachu.GroupBuys;
+using Kooco.Pikachu.OrderItems;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -11,7 +12,6 @@ namespace Kooco.Pikachu.Orders
     {
         Task<OrderDto> GetAsync(Guid id);
         Task<PagedResultDto<OrderDto>> GetListAsync(GetOrderListDto input);
-        Task<PagedResultDto<OrderReportDto>> GetOrderReportAsync(OrderReportDto input);
         Task<OrderDto> CreateAsync(CreateOrderDto input);
         Task<OrderDto> UpdateAsync(Guid id,CreateOrderDto input);
         Task<OrderDto> UpdateShippingDetails(Guid id, CreateOrderDto input);

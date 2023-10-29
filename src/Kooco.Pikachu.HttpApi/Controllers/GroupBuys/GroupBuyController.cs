@@ -103,7 +103,7 @@ public class GroupBuyController : AbpController, IGroupBuyAppService
     }
 
     [HttpGet("get-by-shortcode/{ShortCode}")]
-    public Task<GroupBuyDto> GetGroupBuyByShortCode(string ShortCode)
+    public Task<List<GroupBuyDto>> GetGroupBuyByShortCode(string ShortCode)
     {
         return _groupBuyAppService.GetGroupBuyByShortCode(ShortCode);
     }
@@ -112,5 +112,18 @@ public class GroupBuyController : AbpController, IGroupBuyAppService
     public Task<GroupBuyItemGroupWithCountDto> GetPagedItemGroupAsync(Guid id, int skipCount)
     {
         return _groupBuyAppService.GetPagedItemGroupAsync(id, skipCount);
+    }
+
+
+    [HttpGet("get-groupbuy-for-tenant")]
+    public  Task<GroupBuyDto> GetGroupBuyofTenant(string ShortCode, Guid TenantId)
+    {
+        return _groupBuyAppService.GetGroupBuyofTenant(ShortCode, TenantId);
+    }
+
+    [HttpGet("group-buy-report")]
+    public Task<PagedResultDto<GroupBuyReportDto>> GetGroupBuyReportListAsync(GetGroupBuyReportListDto input)
+    {
+        return _groupBuyAppService.GetGroupBuyReportListAsync(input);
     }
 }

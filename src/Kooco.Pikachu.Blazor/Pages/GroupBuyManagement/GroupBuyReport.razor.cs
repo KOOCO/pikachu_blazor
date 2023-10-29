@@ -1,74 +1,61 @@
-﻿using Blazorise;
-using Blazorise.DataGrid;
+﻿using Blazorise.DataGrid;
 using Blazorise.LoadingIndicator;
-using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.GroupBuys;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Volo.Abp.AspNetCore.Components.Messages;
 
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 {
     public partial class GroupBuyReport
     {
-        public List<OrderReportDto> GroupBuyReportList { get; set; }
-        public bool IsAllSelected { get; private set; } = false;
-
-        private readonly IUiMessageService _uiMessageService;
-
-        private readonly IOrderAppService _orderAppService;
-        int _pageIndex = 1;
-        int _pageSize = 10;
+        public List<GroupBuyReportDto> GroupBuyReportList { get; set; } = new List<GroupBuyReportDto>();
+        int PageIndex = 1;
+        int PageSize = 10;
         int Total = 0;
-        private string Sorting = nameof(OrderReport.GroupBuyName);
+        private string Sorting = nameof(Groupbuys.GroupBuyReport.GroupBuyName);
         private LoadingIndicator loading { get; set; } = new();
+        string? StoreUrl { get; set; }
 
-        public GroupBuyReport(
-            IOrderAppService orderAppService,
-            IUiMessageService messageService
-            )
+        protected override void OnInitialized()
         {
-            _orderAppService = orderAppService;
-            _uiMessageService = messageService;
-            GroupBuyReportList = new List<OrderReportDto>();
+            StoreUrl = $"{_configuration["EntryUrl"]?.TrimEnd('/')}";
+            base.OnInitialized();
         }
+
         private async Task UpdateGroupBuyReport()
         {
-            try
+            int skipCount = PageIndex * PageSize;
+            var result = await _groupBuyAppService.GetGroupBuyReportListAsync(new GetGroupBuyReportListDto
             {
-                int skipCount = _pageIndex * _pageSize;
-                var result = await _orderAppService.GetOrderReportAsync(new OrderReportDto
-                {
-                    Sorting = Sorting,
-                    MaxResultCount = _pageSize,
-                    SkipCount = skipCount
-                });
-                GroupBuyReportList = result.Items.ToList();
-                Total = (int)result.TotalCount;
-            }
-            catch (Exception ex)
-            {
-                await _uiMessageService.Error(ex.GetType()?.ToString());
-                Console.WriteLine(ex.ToString());
-            }
+                Sorting = Sorting,
+                MaxResultCount = PageSize,
+                SkipCount = skipCount
+            });
+            GroupBuyReportList = result.Items.ToList();
+            Total = (int)result.TotalCount;
         }
-        private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<OrderReportDto> e)
+
+        private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<GroupBuyReportDto> e)
         {
             try
             {
                 await loading.Show();
-                _pageIndex = e.Page - 1;
+                PageIndex = e.Page - 1;
                 await UpdateGroupBuyReport();
-                await InvokeAsync(StateHasChanged);
-                await loading.Hide();
+                StateHasChanged();
             }
             catch (Exception ex)
             {
+                await _uiMessageService.Error(ex.GetType().ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
                 await loading.Hide();
-                Console.WriteLine(ex.ToString());
             }
         }
     }
-   
 }

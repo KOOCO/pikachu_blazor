@@ -139,18 +139,6 @@ namespace Kooco.Pikachu.Orders
             };
         }
 
-        public async Task<PagedResultDto<OrderReportDto>> GetOrderReportAsync(OrderReportDto input)
-        {
-            var items = await _orderRepository.GetGroupBuyReport(input.SkipCount, input.MaxResultCount, input.Sorting);
-            var totalCount = items.Count;
-            return new PagedResultDto<OrderReportDto>
-            {
-                TotalCount = totalCount,
-                Items = ObjectMapper.Map<List<OrderReport>, List<OrderReportDto>>(items)
-            };
-
-        }
-
         [Authorize(PikachuPermissions.Orders.AddStoreComment)]
         public async Task AddStoreCommentAsync(Guid id, string comment)
         {

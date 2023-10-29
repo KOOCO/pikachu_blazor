@@ -1,6 +1,8 @@
 ﻿using Kooco.Pikachu.EntityFrameworkCore;
 using Kooco.Pikachu.Groupbuys;
+using Kooco.Pikachu.Orders;
 using Microsoft.EntityFrameworkCore;
+using Polly;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -98,6 +100,28 @@ namespace Kooco.Pikachu.GroupBuys
             };
         }
 
+        public async Task<List<GroupBuyReport>> GetGroupBuyReportListAsync(int skipCount, int maxResultCount, string? sorting)
+        {
+            var dbContext = await GetDbContextAsync();
+            var query = from order in dbContext.Orders
+                        join groupbuy in dbContext.GroupBuys on order.GroupBuyId equals groupbuy.Id
+                        where order.PaymentDate.HasValue
+                        group order by order.GroupBuyId into groupedOrders
+                        select new GroupBuyReport
+                        {
+                            GroupBuyId = groupedOrders.Key,
+                            GroupBuyName = groupedOrders.First().GroupBuy.GroupBuyName,
+                            TotalQuantity = groupedOrders.Sum(order => order.TotalQuantity),
+                            TotalAmount = groupedOrders.Sum(order => order.TotalAmount),
+                            PaidAmount = groupedOrders.Sum(order => order.TotalAmount)
+                        };
+
+            return await query
+                    .OrderBy(sorting)
+                    .PageBy(skipCount, maxResultCount)
+                    .ToListAsync();
+        }
+
         protected virtual IQueryable<GroupBuy> ApplyFilter(
             IQueryable<GroupBuy> query,
             string filterText,
@@ -125,6 +149,19 @@ namespace Kooco.Pikachu.GroupBuys
                     .WhereIf(!string.IsNullOrWhiteSpace(exchangePolicy), e => e.ExchangePolicy.Contains(exchangePolicy))
                     .WhereIf(!string.IsNullOrWhiteSpace(notifyMessage), e => e.NotifyMessage.Contains(notifyMessage))
                     .WhereIf(groupBuyNo.HasValue, e => e.GroupBuyNo == groupBuyNo);
+        }
+
+        public async Task<long> GetGroupBuyReportCountAsync()
+        {
+            var dbContext = await GetDbContextAsync();
+
+            return await (from groupbuy in dbContext.GroupBuys
+                          join orders in dbContext.Orders
+                          on groupbuy.Id equals orders.GroupBuyId
+                          where orders.PaymentDate.HasValue
+                          select groupbuy.Id)
+                          .Distinct()
+                          .CountAsync();
         }
     }
 }
