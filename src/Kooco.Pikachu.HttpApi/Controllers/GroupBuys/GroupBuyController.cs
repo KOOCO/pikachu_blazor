@@ -120,4 +120,10 @@ public class GroupBuyController : AbpController, IGroupBuyAppService
     {
         return _groupBuyAppService.GetGroupBuyofTenant(ShortCode, TenantId);
     }
+
+    [HttpGet("group-buy-report")]
+    public Task<PagedResultDto<GroupBuyReportDto>> GetGroupBuyReportListAsync(GetGroupBuyReportListDto input)
+    {
+        return _groupBuyAppService.GetGroupBuyReportListAsync(input);
+    }
 }

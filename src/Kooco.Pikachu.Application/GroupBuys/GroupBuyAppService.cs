@@ -360,6 +360,24 @@ namespace Kooco.Pikachu.GroupBuys
             }
 
         }
+
+        public async Task<PagedResultDto<GroupBuyReportDto>> GetGroupBuyReportListAsync(GetGroupBuyReportListDto input)
+        {
+            if (input.Sorting.IsNullOrWhiteSpace())
+            {
+                input.Sorting = nameof(GroupBuyReport.GroupBuyName);
+            }
+            var totalCount = await _groupBuyRepository.GetGroupBuyReportCountAsync();
+
+            var items = await _groupBuyRepository.GetGroupBuyReportListAsync(input.SkipCount, input.MaxResultCount, input.Sorting);
+
+            return new PagedResultDto<GroupBuyReportDto>
+            {
+                TotalCount = totalCount,
+                Items = ObjectMapper.Map<List<GroupBuyReport>, List<GroupBuyReportDto>>(items)
+            };
+        }
+
         public async Task<GroupBuyDto> GetGroupBuyofTenant(string ShortCode, Guid TenantId)
         {
             using (_dataFilter.Disable<IMultiTenant>())

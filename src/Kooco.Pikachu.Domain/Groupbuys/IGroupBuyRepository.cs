@@ -91,5 +91,7 @@ namespace Kooco.Pikachu.Groupbuys
 
         Task<GroupBuy> GetWithDetailsAsync(Guid id);
         Task<GroupBuyItemGroupWithCount> GetPagedItemGroupAsync(Guid id, int skipCount);
+        Task<List<GroupBuyReport>> GetGroupBuyReportListAsync(int skipCount, int maxResultCount, string? sorting);
+        Task<long> GetGroupBuyReportCountAsync();
     }
 }
