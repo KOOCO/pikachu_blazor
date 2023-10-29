@@ -273,6 +273,12 @@ namespace Kooco.Pikachu.GroupBuys
             await _groupBuyRepository.UpdateAsync(groupBuy);
         }
 
+        public async Task<GroupBuyItemGroupDto> GetGroupBuyItemGroupAsync(Guid id)
+        {
+            var itemGroup = await _groupBuyRepository.GetGroupBuyItemGroupAsync(id);
+
+            return ObjectMapper.Map<GroupBuyItemGroup, GroupBuyItemGroupDto>(itemGroup);
+        }
 
         /// <summary>
         /// This Method Returns the Desired Result For the Store Front End.
@@ -288,7 +294,7 @@ namespace Kooco.Pikachu.GroupBuys
 
             }
         }
-        
+
         /// <summary>
         /// This Method Returns the Desired Result For the Store Front End.
         /// Do not change unless you want to make changes in the Store Front End Code
@@ -387,6 +393,12 @@ namespace Kooco.Pikachu.GroupBuys
                 return ObjectMapper.Map<GroupBuy, GroupBuyDto>(groupbuy);
             }
 
+        }
+
+        public async Task<GroupBuyDto> GetWithItemGroupsAsync(Guid id)
+        {
+            var groupbuy = await _groupBuyRepository.GetWithItemGroupsAsync(id);
+            return ObjectMapper.Map<GroupBuy, GroupBuyDto>(groupbuy);
         }
     }
 }

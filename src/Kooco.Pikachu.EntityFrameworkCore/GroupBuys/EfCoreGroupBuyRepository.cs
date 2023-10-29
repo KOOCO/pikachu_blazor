@@ -1,8 +1,6 @@
 ﻿using Kooco.Pikachu.EntityFrameworkCore;
 using Kooco.Pikachu.Groupbuys;
-using Kooco.Pikachu.Orders;
 using Microsoft.EntityFrameworkCore;
-using Polly;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,6 +62,34 @@ namespace Kooco.Pikachu.GroupBuys
                     .ThenInclude(i => i.ItemDetails)
                 .Include(x => x.ItemGroups.OrderBy(i => i.SortOrder))
                     .ThenInclude(ig => ig.ItemGroupDetails.OrderBy(i => i.SortOrder))
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<GroupBuy> GetWithItemGroupsAsync(Guid id)
+        {
+            var dbContext = await GetDbContextAsync();
+
+            return await dbContext.GroupBuys
+                .Where(x => x.Id == id)
+                .Include(x => x.ItemGroups.OrderBy(x => x.SortOrder))
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<GroupBuyItemGroup> GetGroupBuyItemGroupAsync(Guid id)
+        {
+            var dbContext = await GetDbContextAsync();
+
+            return await dbContext.GroupBuyItemGroups
+                .Where(x => x.Id == id)
+                .Include(ig => ig.ItemGroupDetails)
+                    .ThenInclude(igd => igd.SetItem)
+                    .ThenInclude(s => s.Images)
+                .Include(ig => ig.ItemGroupDetails)
+                    .ThenInclude(igd => igd.Item)
+                    .ThenInclude(s => s.Images)
+                .Include(ig => ig.ItemGroupDetails)
+                    .ThenInclude(igd => igd.Item)
+                    .ThenInclude(i => i.ItemDetails)
                 .FirstOrDefaultAsync();
         }
 

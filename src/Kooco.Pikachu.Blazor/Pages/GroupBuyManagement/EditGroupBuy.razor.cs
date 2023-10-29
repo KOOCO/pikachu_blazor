@@ -10,11 +10,14 @@ using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
@@ -29,6 +32,8 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         public Guid Id { get; set; }
 
         private const int MaxtextCount = 60;
+
+        private GroupBuyDto GroupBuy { get; set; }
         private GroupBuyUpdateDto EditGroupBuyDto { get; set; }
         private List<CreateImageDto> CarouselImages { get; set; }
         private const int MaxAllowedFilesPerUpload = 5;
@@ -62,7 +67,8 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         private string? PaymentMethodError { get; set; } = null;
         private List<ImageDto> ExistingImages { get; set; } = new();
         private LoadingIndicator loading { get; set; } = new();
-      
+        private bool LoadingItems { get; set; } = true;
+
         public EditGroupBuy(
             IGroupBuyAppService groupBuyAppService,
             IImageAppService imageAppService,
@@ -76,98 +82,70 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             _groupBuyAppService = groupBuyAppService;
             _imageAppService = imageAppService;
             _objectMapper = objectMapper;
-            EditGroupBuyDto = new GroupBuyUpdateDto();
-            CarouselImages = new List<CreateImageDto>();
             _uiMessageService = uiMessageService;
             _imageContainerManager = imageContainerManager;
             _itemAppService = itemAppService;
             _setItemAppService = setItemAppService;
-           
-        }
 
+            EditGroupBuyDto = new GroupBuyUpdateDto();
+            CarouselImages = new List<CreateImageDto>();
+            GroupBuy = new();
+            id ??= "";
+        }
+        protected override async Task OnInitializedAsync()
+        {
+            try
+            {
+                Id = Guid.Parse(id);
+                GroupBuy = await _groupBuyAppService.GetWithItemGroupsAsync(Id);
+
+                EditGroupBuyDto = _objectMapper.Map<GroupBuyDto, GroupBuyUpdateDto>(GroupBuy);
+                EditGroupBuyDto.EntryURL = $"{_configuration["EntryUrl"]?.TrimEnd('/')}/{Id}";
+                LoadItemGroups();
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
+                await JsRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+        }
         protected override async Task OnAfterRenderAsync(bool isFirstRender)
         {
             if (isFirstRender)
             {
                 try
                 {
-                    id ??= "";
-                    Id = Guid.Parse(id);
-                    await loading.Show();
-                    var groupbuy = await _groupBuyAppService.GetWithDetailsAsync(Id);
-                    EditGroupBuyDto = _objectMapper.Map<GroupBuyDto, GroupBuyUpdateDto>(groupbuy);
-                    EditGroupBuyDto.EntryURL = $"{_configuration["EntryUrl"]?.TrimEnd('/')}/{Id}";
-                    ExistingImages = await _imageAppService.GetGroupBuyImagesAsync(Id, ImageType.GroupBuyCarouselImage);
                     List<string> paymentMethotTagArray = EditGroupBuyDto.PaymentMethod?.Split(',')?.ToList() ?? new List<string>();
                     PaymentMethodTags = paymentMethotTagArray != null ? paymentMethotTagArray.ToList() : new List<string>();
                     List<string> excludeShippingMethodArray = EditGroupBuyDto.ExcludeShippingMethod?.Split(',')?.ToList() ?? new();
                     ItemTags = excludeShippingMethodArray != null ? excludeShippingMethodArray.ToList() : new List<string>();
+                    
+                    ExistingImages = await _imageAppService.GetGroupBuyImagesAsync(Id, ImageType.GroupBuyCarouselImage);
                     CarouselImages = _objectMapper.Map<List<ImageDto>, List<CreateImageDto>>(ExistingImages);
+                    
                     ItemsList = await _itemAppService.GetItemsLookupAsync();
                     var setItemsList = await _setItemAppService.GetItemsLookupAsync();
                     ItemsList.AddRange(setItemsList);
-
-                    var itemGroups = groupbuy.ItemGroups;
-                    if (itemGroups.Any())
-                    {
-                        var i = 0;
-                        foreach (var itemGroup in itemGroups)
-                        {
-                            var collapseItem = new CollapseItem
-                            {
-                                Index = i++,
-                                SortOrder = itemGroup.SortOrder,
-                                GroupBuyModuleType = itemGroup.GroupBuyModuleType
-                            };
-                            if (itemGroup.ItemGroupDetails.Any())
-                            {
-                                foreach (var item in itemGroup.ItemGroupDetails)
-                                {
-                                    var itemWithItemType = new ItemWithItemTypeDto
-                                    {
-                                        Id = item.ItemType == ItemType.Item ? item.ItemId.Value : item.SetItemId.Value,
-                                        Name = item.ItemType == ItemType.Item ? item.Item.ItemName : item.SetItem.SetItemName,
-                                        ItemType = item.ItemType,
-                                        Item = item.Item,
-                                        SetItem = item.SetItem
-                                    };
-                                    collapseItem.Selected.Add(itemWithItemType);
-                                }
-
-                                if(itemGroup.GroupBuyModuleType != GroupBuyModuleType.ProductDescriptionModule && itemGroup.ItemGroupDetails.Count < 3)
-                                {
-                                    for(int x = itemGroup.ItemGroupDetails.Count; x < 3; x++)
-                                    {
-                                        collapseItem.Selected.Add(new ItemWithItemTypeDto());
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                collapseItem.Selected = new();
-                            }
-
-                            CollapseItem.Add(collapseItem);
-                        }
-                    }
+                    LoadingItems = false;
                     await LoadHtmlContent();
 
                     StateHasChanged();
-                    await loading.Hide();
-                    await JsRuntime.InvokeVoidAsync("console.log", "Success");
                 }
                 catch (BusinessException ex)
                 {
-                    await loading.Hide();
                     await JsRuntime.InvokeVoidAsync("console.error", ex.ToString());
                     await _uiMessageService.Error(L[ex.Code]);
                 }
                 catch (Exception ex)
                 {
-                    await loading.Hide();
                     await JsRuntime.InvokeVoidAsync("console.error", ex.ToString());
                     await _uiMessageService.Error(ex.GetType().ToString());
-                } 
+                }
+                finally
+                {
+                    LoadingItems = false;
+                }
             }
         }
 
@@ -178,6 +156,92 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             await CustomerInformationHtml.LoadHTMLContent(EditGroupBuyDto.CustomerInformationDescription);
             await ExchangePolicyHtml.LoadHTMLContent(EditGroupBuyDto.ExchangePolicyDescription);
             await NotifyEmailHtml.LoadHTMLContent(EditGroupBuyDto.NotifyMessage);
+        }
+
+        private void LoadItemGroups()
+        {
+            var itemGroups = GroupBuy.ItemGroups;
+            if (itemGroups.Any())
+            {
+                var i = 0;
+                foreach (var itemGroup in itemGroups)
+                {
+                    var collapseItem = new CollapseItem
+                    {
+                        Id = itemGroup.Id,
+                        Index = i++,
+                        SortOrder = itemGroup.SortOrder,
+                        GroupBuyModuleType = itemGroup.GroupBuyModuleType,
+                        Selected = new()
+                    };
+                    
+                    CollapseItem.Add(collapseItem);
+                }
+            }
+        }
+
+        async Task OnCollapseVisibleChanged(CollapseItem collapseItem, bool isVisible)
+        {
+            if(collapseItem.Selected.Count > 0)
+            {
+                return;
+            }
+
+            try
+            {
+                if (isVisible && collapseItem.Id.HasValue)
+                {
+                    await loading.Show();
+
+                    var itemGroup = await _groupBuyAppService.GetGroupBuyItemGroupAsync(collapseItem.Id.Value);
+
+                    int index = CollapseItem.IndexOf(collapseItem);
+
+                    if (itemGroup != null && itemGroup.ItemGroupDetails.Any())
+                    {
+                        while (LoadingItems)
+                        {
+                            await Task.Delay(100);
+                        }
+                        foreach (var item in itemGroup.ItemGroupDetails.OrderBy(x => x.SortOrder))
+                        {
+                            var itemWithItemType = new ItemWithItemTypeDto
+                            {
+                                Id = item.ItemType == ItemType.Item ? item.ItemId.Value : item.SetItemId.Value,
+                                Name = item.ItemType == ItemType.Item ? item.Item.ItemName : item.SetItem.SetItemName,
+                                ItemType = item.ItemType,
+                                Item = item.Item,
+                                SetItem = item.SetItem
+                            };
+                            CollapseItem[index].Selected.Add(itemWithItemType);
+
+                            StateHasChanged();
+                        }
+
+                        if (itemGroup.GroupBuyModuleType != GroupBuyModuleType.ProductDescriptionModule && itemGroup.ItemGroupDetails.Count < 3)
+                        {
+                            for (int x = itemGroup.ItemGroupDetails.Count; x < 3; x++)
+                            {
+                                CollapseItem[index].Selected.Add(new ItemWithItemTypeDto());
+                            }
+                        }
+                    }
+                    else
+                    {
+                        CollapseItem[index].Selected = new();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
+                await JsRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+                StateHasChanged();
+                await loading.Hide();
+            }
         }
 
         void AddProductItem(GroupBuyModuleType groupBuyModuleType)
@@ -590,6 +654,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     {
                         var itemGroup = new GroupBuyItemGroupCreateUpdateDto
                         {
+                            Id = item.Id,
                             SortOrder = i++,
                             GroupBuyModuleType = item.GroupBuyModuleType
                         };
