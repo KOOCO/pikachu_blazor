@@ -3,21 +3,17 @@ using Blazorise;
 using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.AzureStorage.Image;
 using Kooco.Pikachu.EnumValues;
-using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
@@ -120,10 +116,10 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     PaymentMethodTags = paymentMethotTagArray != null ? paymentMethotTagArray.ToList() : new List<string>();
                     List<string> excludeShippingMethodArray = EditGroupBuyDto.ExcludeShippingMethod?.Split(',')?.ToList() ?? new();
                     ItemTags = excludeShippingMethodArray != null ? excludeShippingMethodArray.ToList() : new List<string>();
-                    
+
                     ExistingImages = await _imageAppService.GetGroupBuyImagesAsync(Id, ImageType.GroupBuyCarouselImage);
                     CarouselImages = _objectMapper.Map<List<ImageDto>, List<CreateImageDto>>(ExistingImages);
-                    
+
                     ItemsList = await _itemAppService.GetItemsLookupAsync();
                     var setItemsList = await _setItemAppService.GetItemsLookupAsync();
                     ItemsList.AddRange(setItemsList);
@@ -174,7 +170,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                         GroupBuyModuleType = itemGroup.GroupBuyModuleType,
                         Selected = new()
                     };
-                    
+
                     CollapseItem.Add(collapseItem);
                 }
             }
@@ -182,7 +178,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
         async Task OnCollapseVisibleChanged(CollapseItem collapseItem, bool isVisible)
         {
-            if(collapseItem.Selected.Count > 0)
+            if (collapseItem.Selected.Count > 0)
             {
                 return;
             }
@@ -196,7 +192,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     var itemGroup = await _groupBuyAppService.GetGroupBuyItemGroupAsync(collapseItem.Id.Value);
 
                     int index = CollapseItem.IndexOf(collapseItem);
-
+                    CollapseItem[index].IsModified = true;
                     if (itemGroup != null && itemGroup.ItemGroupDetails.Any())
                     {
                         while (LoadingItems)
@@ -618,8 +614,8 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     await _uiMessageService.Warn(L["Short Code Can't Null"]);
                     return;
                 }
-                var check = await _groupBuyAppService.CheckShortCodeForEdit(EditGroupBuyDto.ShortCode,Id);
-                
+                var check = await _groupBuyAppService.CheckShortCodeForEdit(EditGroupBuyDto.ShortCode, Id);
+
                 if (check)
                 {
                     await _uiMessageService.Warn(L["Short Code Alredy Exist"]);
@@ -643,14 +639,8 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 int i = 1;
                 foreach (var item in CollapseItem)
                 {
-                    if (item.Selected.TrueForAll(s => s.Id == Guid.Empty))
-                    {
-                        await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyModuleCannotBeEmpty]);
-                        return;
-                    }
-
                     int j = 1;
-                    if (item.Selected.Any())
+                    if ((item.IsModified && item.Id.HasValue) || item.Selected.Any(x => x.Id != Guid.Empty))
                     {
                         var itemGroup = new GroupBuyItemGroupCreateUpdateDto
                         {
@@ -745,18 +735,35 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             NavigationManager.NavigateTo("GroupBuyManagement/GroupBuyList");
         }
 
-        private void RemoveCollapseItem(int index)
+        private async void RemoveCollapseItem(int index)
         {
-            var item = CollapseItem.Where(i => i.Index == index).FirstOrDefault();
-            if (item.Id!=null)
+            try
             {
-               Guid GroupBuyId = Guid.Parse(id);
-                _groupBuyAppService.DeleteGroupBuyItemAsync(item.Id.Value, GroupBuyId);
+                var item = CollapseItem.Where(i => i.Index == index).FirstOrDefault();
+                if (item?.Id != null)
+                {
+                    var confirm = await _uiMessageService.Confirm(L["ThisDeleteActionCannotBeReverted"]);
+                    if (!confirm)
+                    {
+                        return;
+                    }
+                    await loading.Show();
+                    Guid GroupBuyId = Guid.Parse(id);
+                    await _groupBuyAppService.DeleteGroupBuyItemAsync(item.Id.Value, GroupBuyId);
+                    StateHasChanged();
+                }
+                CollapseItem.Remove(item);
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
+                await JsRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+                await loading.Hide();
                 StateHasChanged();
             }
-           CollapseItem.Remove(item);
-            
-           
         }
     }
 

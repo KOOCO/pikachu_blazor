@@ -110,7 +110,7 @@ namespace Kooco.Pikachu.GroupBuys
                 : ObjectMapper.Map<GroupBuy, GroupBuyDto>(item);
         }
 
-        public async Task DeleteGroupBuyItemAsync(Guid id,Guid GroupBuyID)
+        public async Task DeleteGroupBuyItemAsync(Guid id, Guid GroupBuyID)
         {
             var groupbuy = await _groupBuyRepository.GetAsync(GroupBuyID);
             await _groupBuyRepository.EnsureCollectionLoadedAsync(groupbuy, i => i.ItemGroups);
@@ -195,12 +195,6 @@ namespace Kooco.Pikachu.GroupBuys
             groupBuy.ExchangePolicyDescription = input.ExchangePolicyDescription;
             groupBuy.ShortCode = input.ShortCode;
 
-            var itemGroupIds = input.ItemGroups?.Select(x => x.Id).ToList();
-            if (itemGroupIds != null && itemGroupIds.Any())
-            {
-                _groupBuyManager.RemoveItemGroups(groupBuy, itemGroupIds);
-            }
-
             if (input?.ItemGroups != null)
             {
                 foreach (var group in input.ItemGroups)
@@ -212,7 +206,10 @@ namespace Kooco.Pikachu.GroupBuys
                         {
                             itemGroup.SortOrder = group.SortOrder;
                             itemGroup.GroupBuyModuleType = group.GroupBuyModuleType;
-
+                            if(group.ItemDetails.Count == 0)
+                            {
+                                groupBuy.ItemGroups.Remove(itemGroup);
+                            }
                             ProcessItemDetails(itemGroup, group.ItemDetails);
                         }
                     }
@@ -234,29 +231,16 @@ namespace Kooco.Pikachu.GroupBuys
         }
         private void ProcessItemDetails(GroupBuyItemGroup itemGroup, ICollection<GroupBuyItemGroupDetailCreateUpdateDto> itemDetails)
         {
+            itemGroup.ItemGroupDetails?.Clear();
             foreach (var item in itemDetails)
             {
-                if (item.Id.HasValue)
-                {
-                    var itemDetail = itemGroup.ItemGroupDetails.FirstOrDefault(x => x.Id == item.Id);
-                    if (itemDetail != null)
-                    {
-                        itemDetail.SortOrder = item.SortOrder;
-                        itemDetail.ItemId = item.ItemId;
-                        itemDetail.SetItemId = item.SetItemId;
-                        itemDetail.ItemType = item.ItemType;
-                    }
-                }
-                else
-                {
-                    _groupBuyManager.AddItemGroupDetail(
-                        itemGroup,
-                        item.SortOrder,
-                        item.ItemId,
-                        item.SetItemId,
-                        item.ItemType
-                    );
-                }
+                _groupBuyManager.AddItemGroupDetail(
+                    itemGroup,
+                    item.SortOrder,
+                    item.ItemId,
+                    item.SetItemId,
+                    item.ItemType
+                );
             }
         }
         public async Task DeleteManyGroupBuyItemsAsync(List<Guid> groupBuyIds)

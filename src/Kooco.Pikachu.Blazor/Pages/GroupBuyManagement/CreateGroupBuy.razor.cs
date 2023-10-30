@@ -562,6 +562,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         public GroupBuyModuleType GroupBuyModuleType { get; set; }
         public int SortOrder { get; set; }
         public List<ItemWithItemTypeDto> Selected { get; set; }
+        public bool IsModified = false;
         public CollapseItem()
         {
             Selected = new();
