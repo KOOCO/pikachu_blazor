@@ -14,5 +14,7 @@ namespace Kooco.Pikachu
         public const string Logo = "LogoUrl";
         public const string Status = "Status";
         public const string BannerUrl = "BannerUrl";
+        public const string ShortCode = "ShortCode";
+        public const string TenantUrl = "TenantUrl";
     }
 }
