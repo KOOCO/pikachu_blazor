@@ -83,24 +83,47 @@ public class GroupBuyController : AbpController, IGroupBuyAppService
     {
         return _groupBuyAppService.GetForStoreAsync(id);
     }
+
     [HttpGet("freebie-store/{groupBuyId}")]
     public Task<List<FreebieDto>> GetFreebieForStoreAsync(Guid groupBuyId)
     {
         return _groupBuyAppService.GetFreebieForStoreAsync(groupBuyId);
     }
+
     [HttpGet("check-shortcode-forcreate/{shortCode}")]
     public Task<bool> CheckShortCodeForCreate(string shortCode)
     {
         return _groupBuyAppService.CheckShortCodeForCreate(shortCode);
     }
+
     [HttpGet("check-shortcode-foredit")]
     public Task<bool> CheckShortCodeForEdit(string shortCode, Guid Id)
     {
        return _groupBuyAppService.CheckShortCodeForEdit(shortCode, Id);
     }
+
     [HttpGet("get-by-shortcode/{ShortCode}")]
-    public Task<GroupBuyDto> GetGroupBuyByShortCode(string ShortCode)
+    public Task<List<GroupBuyDto>> GetGroupBuyByShortCode(string ShortCode)
     {
         return _groupBuyAppService.GetGroupBuyByShortCode(ShortCode);
+    }
+
+    [HttpGet("get-paged-item-group/{id}/{skipCount}")]
+    public Task<GroupBuyItemGroupWithCountDto> GetPagedItemGroupAsync(Guid id, int skipCount)
+    {
+        return _groupBuyAppService.GetPagedItemGroupAsync(id, skipCount);
+    }
+
+
+    [HttpGet("get-groupbuy-for-tenant")]
+    public  Task<GroupBuyDto> GetGroupBuyofTenant(string ShortCode, Guid TenantId)
+    {
+        return _groupBuyAppService.GetGroupBuyofTenant(ShortCode, TenantId);
+    }
+
+    [HttpGet("group-buy-report")]
+    public Task<PagedResultDto<GroupBuyReportDto>> GetGroupBuyReportListAsync(GetGroupBuyReportListDto input)
+    {
+        return _groupBuyAppService.GetGroupBuyReportListAsync(input);
     }
 }

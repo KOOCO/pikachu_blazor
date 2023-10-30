@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.OrderItems;
+﻿using Kooco.Pikachu.GroupBuys;
+using Kooco.Pikachu.OrderItems;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;

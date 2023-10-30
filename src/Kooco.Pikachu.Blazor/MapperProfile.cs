@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Kooco.Pikachu.Freebies.Dtos;
 using Kooco.Pikachu.FreeBies.Dtos;
+using Kooco.Pikachu.Groupbuys;
+using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
@@ -31,7 +33,8 @@ namespace Kooco.Pikachu.Blazor
             CreateMap<FreebieGroupBuysDto, CreateFreebieGroupBuysDto>();
             CreateMap<Order, OrderDto>();
             CreateMap<OrderDto, CreateOrderDto>();
-           
+            CreateMap<GroupBuyReport, GroupBuyReportDto>();
+
         }
         
     }

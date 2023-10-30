@@ -1,4 +1,6 @@
 ﻿using Kooco.Pikachu.EntityFrameworkCore;
+using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Groupbuys;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -36,7 +38,7 @@ namespace Kooco.Pikachu.Orders
                 .ThenInclude(oi => oi.Freebie)
                 .ToListAsync();
         }
-
+        
         private static IQueryable<Order> ApplyFilters(
             IQueryable<Order> queryable,
             string? filter

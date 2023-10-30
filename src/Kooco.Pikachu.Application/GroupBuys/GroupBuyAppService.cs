@@ -54,7 +54,7 @@ namespace Kooco.Pikachu.GroupBuys
                                                         input.IssueInvoice, input.AutoIssueTriplicateInvoice, input.InvoiceNote, input.ProtectPrivacyData, input.InviteCode, input.ProfitShare,
                                                         input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy,
                                                         input.NotifyMessage, input.ExcludeShippingMethod, input.IsDefaultPaymentGateWay, input.PaymentMethod, input.GroupBuyCondition, input.CustomerInformation,
-                                                        input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription,input.ShortCode);
+                                                        input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription, input.ShortCode);
 
             if (input.ItemGroups != null && input.ItemGroups.Any())
             {
@@ -102,7 +102,6 @@ namespace Kooco.Pikachu.GroupBuys
 
             return ObjectMapper.Map<GroupBuy, GroupBuyDto>(item);
         }
-
         public async Task<GroupBuyDto> GetWithDetailsAsync(Guid id)
         {
             var item = await _groupBuyRepository.GetWithDetailsAsync(id);
@@ -186,7 +185,7 @@ namespace Kooco.Pikachu.GroupBuys
             groupBuy.CustomerInformationDescription = input.CustomerInformationDescription;
             groupBuy.GroupBuyConditionDescription = input.GroupBuyConditionDescription;
             groupBuy.ExchangePolicyDescription = input.ExchangePolicyDescription;
-            groupBuy.ShortCode=input.ShortCode;
+            groupBuy.ShortCode = input.ShortCode;
 
             var itemGroupIds = input.ItemGroups?.Select(x => x.Id).ToList();
             if (itemGroupIds != null && itemGroupIds.Any())
@@ -252,7 +251,6 @@ namespace Kooco.Pikachu.GroupBuys
                 }
             }
         }
-
         public async Task DeleteManyGroupBuyItemsAsync(List<Guid> groupBuyIds)
         {
             foreach (var id in groupBuyIds)
@@ -285,10 +283,26 @@ namespace Kooco.Pikachu.GroupBuys
         {
             using (_dataFilter.Disable<IMultiTenant>())
             {
-                var item = await _groupBuyRepository.GetWithDetailsAsync(id);
-                return item is null
-                    ? throw new BusinessException(PikachuDomainErrorCodes.EntityWithGivenIdDoesnotExist)
-                    : ObjectMapper.Map<GroupBuy, GroupBuyDto>(item);
+                var item = await _groupBuyRepository.GetAsync(id);
+                return ObjectMapper.Map<GroupBuy, GroupBuyDto>(item);
+
+            }
+        }
+
+        /// <summary>
+        /// This Method Returns the Desired Result For the Store Front End.
+        /// Do not change unless you want to make changes in the Store Front End Code
+        /// </summary>
+        /// <returns></returns>
+        public async Task<GroupBuyItemGroupWithCountDto> GetPagedItemGroupAsync(Guid id, int skipCount)
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var item = await _groupBuyRepository.GetPagedItemGroupAsync(id, skipCount);
+                return item == null ?
+                    throw new BusinessException(PikachuDomainErrorCodes.EntityWithGivenIdDoesnotExist)
+                    : ObjectMapper.Map<GroupBuyItemGroupWithCount, GroupBuyItemGroupWithCountDto>(item);
+
             }
         }
 
@@ -320,31 +334,59 @@ namespace Kooco.Pikachu.GroupBuys
             }
         }
 
-        public async Task<bool> CheckShortCodeForCreate(string shortCode) {
+        public async Task<bool> CheckShortCodeForCreate(string shortCode)
+        {
 
             var query = await _groupBuyRepository.GetQueryableAsync();
             var check = query.Any(x => x.ShortCode == shortCode);
             return check;
-        
-        
         }
-        public async Task<bool> CheckShortCodeForEdit(string shortCode,Guid Id)
+
+        public async Task<bool> CheckShortCodeForEdit(string shortCode, Guid Id)
         {
 
             var query = await _groupBuyRepository.GetQueryableAsync();
-            var check = query.Any(x => x.ShortCode == shortCode && x.Id!=Id);
+            var check = query.Any(x => x.ShortCode == shortCode && x.Id != Id);
             return check;
-
-
-        }
-        public async Task<GroupBuyDto> GetGroupBuyByShortCode(string ShortCode) {
-        
-          var query = await _groupBuyRepository.GetQueryableAsync();
-            var groupbuy = query.Where(x => x.ShortCode == ShortCode).FirstOrDefault();
-            return ObjectMapper.Map<GroupBuy,GroupBuyDto>(groupbuy);
-
         }
 
+        public async Task<List<GroupBuyDto>> GetGroupBuyByShortCode(string ShortCode)
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var query = await _groupBuyRepository.GetQueryableAsync();
+                var groupbuy = query.Where(x => x.ShortCode == ShortCode).ToList();
+                return ObjectMapper.Map<List<GroupBuy>, List<GroupBuyDto>>(groupbuy);
+            }
 
+        }
+
+        public async Task<PagedResultDto<GroupBuyReportDto>> GetGroupBuyReportListAsync(GetGroupBuyReportListDto input)
+        {
+            if (input.Sorting.IsNullOrWhiteSpace())
+            {
+                input.Sorting = nameof(GroupBuyReport.GroupBuyName);
+            }
+            var totalCount = await _groupBuyRepository.GetGroupBuyReportCountAsync();
+
+            var items = await _groupBuyRepository.GetGroupBuyReportListAsync(input.SkipCount, input.MaxResultCount, input.Sorting);
+
+            return new PagedResultDto<GroupBuyReportDto>
+            {
+                TotalCount = totalCount,
+                Items = ObjectMapper.Map<List<GroupBuyReport>, List<GroupBuyReportDto>>(items)
+            };
+        }
+
+        public async Task<GroupBuyDto> GetGroupBuyofTenant(string ShortCode, Guid TenantId)
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var query = await _groupBuyRepository.GetQueryableAsync();
+                var groupbuy = query.Where(x => x.ShortCode == ShortCode && x.TenantId == TenantId).FirstOrDefault();
+                return ObjectMapper.Map<GroupBuy, GroupBuyDto>(groupbuy);
+            }
+
+        }
     }
 }

@@ -105,7 +105,7 @@ namespace Kooco.Pikachu.Orders
                 await _orderRepository.InsertAsync(order);
                 await UnitOfWorkManager.Current.SaveChangesAsync();
                 await SendEmailAsync(order.Id);
-                
+
                 return ObjectMapper.Map<Order, OrderDto>(order);
             }
         }
@@ -191,7 +191,6 @@ namespace Kooco.Pikachu.Orders
             order.TotalAmount = order.OrderItems.Sum(o => o.TotalAmount);
             await _orderRepository.UpdateAsync(order);
         }
-
         public async Task CancelOrderAsync(Guid id)
         {
             var order = await _orderRepository.GetWithDetailsAsync(id);
@@ -241,19 +240,19 @@ namespace Kooco.Pikachu.Orders
             body = body.Replace("{{ShippingMethod}}", _l[order.DeliveryMethod.ToString()]);
             body = body.Replace("{{DeliveryFee}}", "0");
             body = body.Replace("{{RecipientAddress}}", order.AddressDetails);
-            body = body.Replace("{{ShippingStatus}}", _l[order.ShippingStatus.ToString()]);
+            body = body.Replace("{{ShippingStatus}}", _l[order.OrderStatus.ToString()]);
             body = body.Replace("{{RecipientComments}}", order.Remarks);
 
-            if(order.OrderItems != null)
+            if (order.OrderItems != null)
             {
                 StringBuilder sb = new StringBuilder();
                 foreach (var item in order.OrderItems)
                 {
                     string itemName = "";
-                    if(item.ItemType == ItemType.Item)
+                    if (item.ItemType == ItemType.Item)
                     {
                         itemName = item.Item?.ItemName;
-                    } 
+                    }
                     else if (item.ItemType == ItemType.SetItem)
                     {
                         itemName = item.SetItem?.SetItemName;
@@ -312,17 +311,17 @@ namespace Kooco.Pikachu.Orders
                                     ?? throw new EntityNotFoundException();
 
                     order = await _orderRepository.GetWithDetailsAsync(order.Id);
-                    
+
                     if (paymentResult.CustomField1 != order.CheckMacValue)
                     {
                         throw new Exception();
                     }
-                    
+
                     if (paymentResult.TradeAmt != order.TotalAmount)
                     {
                         throw new Exception();
                     }
-                    
+
                     order.ShippingStatus = ShippingStatus.PrepareShipment;
                     _ = DateTime.TryParse(paymentResult.PaymentDate, out DateTime parsedDate);
                     order.PaymentDate = parsedDate;
