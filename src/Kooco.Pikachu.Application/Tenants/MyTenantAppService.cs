@@ -33,7 +33,8 @@ namespace Kooco.Pikachu.Tenants
         [AllowAnonymous]
         
         public async Task<TenantDto> GetTenantAsync(string shortCode)
-        {
+        {  
+
            var tenant= await _customTenantRepository.FindByShortCodeAsync(shortCode);
             return ObjectMapper.Map<Tenant, TenantDto>(tenant);
         }
