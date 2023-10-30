@@ -110,6 +110,14 @@ namespace Kooco.Pikachu.GroupBuys
                 : ObjectMapper.Map<GroupBuy, GroupBuyDto>(item);
         }
 
+        public async Task DeleteGroupBuyItemAsync(Guid id,Guid GroupBuyID)
+        {
+            var groupbuy = await _groupBuyRepository.GetAsync(GroupBuyID);
+            await _groupBuyRepository.EnsureCollectionLoadedAsync(groupbuy, i => i.ItemGroups);
+            var itemGroup = groupbuy.ItemGroups.Where(i => i.Id == id).First();
+            groupbuy.ItemGroups.Remove(itemGroup);
+            await _groupBuyRepository.UpdateAsync(groupbuy);
+        }
         public async Task<PagedResultDto<GroupBuyDto>> GetListAsync(GetGroupBuyInput input)
         {
             var count = await _groupBuyRepository.GetGroupBuyCountAsync(input.FilterText, input.GroupBuyNo, input.Status, input.GroupBuyName, input.EntryURL, input.EntryURL2, input.SubjectLine

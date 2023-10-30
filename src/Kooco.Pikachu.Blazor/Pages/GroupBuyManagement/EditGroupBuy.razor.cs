@@ -748,7 +748,15 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         private void RemoveCollapseItem(int index)
         {
             var item = CollapseItem.Where(i => i.Index == index).FirstOrDefault();
-            CollapseItem.Remove(item);
+            if (item.Id!=null)
+            {
+               Guid GroupBuyId = Guid.Parse(id);
+                _groupBuyAppService.DeleteGroupBuyItemAsync(item.Id.Value, GroupBuyId);
+                StateHasChanged();
+            }
+           CollapseItem.Remove(item);
+            
+           
         }
     }
 

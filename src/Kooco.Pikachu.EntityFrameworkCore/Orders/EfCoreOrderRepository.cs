@@ -18,12 +18,10 @@ namespace Kooco.Pikachu.Orders
         {
 
         }
-
         public async Task<long> CountAsync(string? filter)
         {
             return await ApplyFilters((await GetQueryableAsync()).Include(o => o.GroupBuy), filter).CountAsync();
         }
-
         public async Task<List<Order>> GetListAsync(int skipCount, int maxResultCount, string? sorting, string? filter)
         {
             return await ApplyFilters(await GetQueryableAsync(), filter)
@@ -38,7 +36,6 @@ namespace Kooco.Pikachu.Orders
                 .ThenInclude(oi => oi.Freebie)
                 .ToListAsync();
         }
-        
         private static IQueryable<Order> ApplyFilters(
             IQueryable<Order> queryable,
             string? filter
@@ -51,13 +48,11 @@ namespace Kooco.Pikachu.Orders
                 || (x.CustomerEmail != null && x.CustomerEmail.Contains(filter))
                 );
         }
-
         public async Task<Order> MaxByOrderNumberAsync()
         {
             var orders = await (await GetQueryableAsync()).ToListAsync();
             return orders.OrderByDescending(x => long.Parse(x.OrderNo[^9..])).FirstOrDefault();
         }
-
         public async Task<Order> GetWithDetailsAsync(Guid id)
         {
             return await (await GetQueryableAsync())

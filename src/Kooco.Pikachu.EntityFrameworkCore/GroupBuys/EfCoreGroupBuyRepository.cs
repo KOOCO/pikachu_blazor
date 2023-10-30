@@ -64,11 +64,9 @@ namespace Kooco.Pikachu.GroupBuys
                     .ThenInclude(ig => ig.ItemGroupDetails.OrderBy(i => i.SortOrder))
                 .FirstOrDefaultAsync();
         }
-
         public async Task<GroupBuy> GetWithItemGroupsAsync(Guid id)
         {
             var dbContext = await GetDbContextAsync();
-
             return await dbContext.GroupBuys
                 .Where(x => x.Id == id)
                 .Include(x => x.ItemGroups.OrderBy(x => x.SortOrder))
