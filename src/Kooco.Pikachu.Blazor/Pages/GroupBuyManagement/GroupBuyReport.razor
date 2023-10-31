@@ -46,7 +46,7 @@
                 </DataGridColumn>
                 <DataGridColumn Caption="@L["ReportUrl"]" Sortable="false" TextAlignment="TextAlignment.Center">
                     <DisplayTemplate>
-                        <a href="javascript:void(0)"><i class="fa fa-link"></i></a>
+                        <a href="javascript:void(0)" @onclick="() => OnNavigate(context.GroupBuyId)"><i class="fa fa-link"></i></a>
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="GroupBuyReportDto"

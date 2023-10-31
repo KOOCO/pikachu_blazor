@@ -286,6 +286,11 @@
     "TotalQuantity": "Total Quantity",
     "TotalAmount": "Total Amount",
     "PaidAmount": "Paid Amount",
-    "ReportUrl": "Report Url"
+    "ReportUrl": "Report Url",
+    "OrderQuantityPaid/TotalOrderQuantity": "Order Quantity (Paid) / Total Order Quantity",
+    "SalesAmount/SalesAmountExcludingShipping": "Sales Amount / Sales Amount (Excluding Shipping Cost)",
+    "AmountReceived/AmountReceivedExcludingShipping": "Amount Received / Amount Received (Excluding Shipping Cost)",
+    "SalesAmountMinusShippingCosts": "Sales Amount (Minus Shipping Costs)",
+    "BloggersShareProfit": "Bloggers Share Profit"
   }
 }

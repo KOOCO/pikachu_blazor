@@ -392,5 +392,11 @@ namespace Kooco.Pikachu.GroupBuys
             var groupbuy = await _groupBuyRepository.GetWithItemGroupsAsync(id);
             return ObjectMapper.Map<GroupBuy, GroupBuyDto>(groupbuy);
         }
+
+        public async Task<GroupBuyReportDetailsDto> GetGroupBuyReportDetailsAsync(Guid id)
+        {
+            var data = await _groupBuyRepository.GetGroupBuyReportDetailsAsync(id);
+            return ObjectMapper.Map<GroupBuyReportDetails, GroupBuyReportDetailsDto>(data);
+        }
     }
 }

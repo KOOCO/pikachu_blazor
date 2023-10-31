@@ -106,8 +106,6 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         public void NavigateToOrderPrint()
         {
             var selectedOrder = Orders.SingleOrDefault(x => x.IsSelected);
-
-            // var id = Order?.Id;
             NavigationManager.NavigateTo($"Orders/OrderShippingDetails/{selectedOrder.Id}");
         }
 
