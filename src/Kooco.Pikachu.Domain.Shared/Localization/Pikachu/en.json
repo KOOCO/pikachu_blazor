@@ -158,6 +158,8 @@
     "Pikachu:CanNotAddMoreThan20Modules": "Can not add more than 20 modules",
     "GroupBuyList": "Group Buy List",
     "uploadUpto5Images": "Upload upto 5 images",
+    "ThisDeleteActionCannotBeReverted": "This Action Cannot Be Reverted. Are You Sure To Delete It?",
+
 
     //SetItem
     "SetItem": "Set Item",

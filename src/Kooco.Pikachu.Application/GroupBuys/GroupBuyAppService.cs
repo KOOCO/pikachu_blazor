@@ -110,6 +110,14 @@ namespace Kooco.Pikachu.GroupBuys
                 : ObjectMapper.Map<GroupBuy, GroupBuyDto>(item);
         }
 
+        public async Task DeleteGroupBuyItemAsync(Guid id, Guid GroupBuyID)
+        {
+            var groupbuy = await _groupBuyRepository.GetAsync(GroupBuyID);
+            await _groupBuyRepository.EnsureCollectionLoadedAsync(groupbuy, i => i.ItemGroups);
+            var itemGroup = groupbuy.ItemGroups.Where(i => i.Id == id).First();
+            groupbuy.ItemGroups.Remove(itemGroup);
+            await _groupBuyRepository.UpdateAsync(groupbuy);
+        }
         public async Task<PagedResultDto<GroupBuyDto>> GetListAsync(GetGroupBuyInput input)
         {
             var count = await _groupBuyRepository.GetGroupBuyCountAsync(input.FilterText, input.GroupBuyNo, input.Status, input.GroupBuyName, input.EntryURL, input.EntryURL2, input.SubjectLine
@@ -187,12 +195,6 @@ namespace Kooco.Pikachu.GroupBuys
             groupBuy.ExchangePolicyDescription = input.ExchangePolicyDescription;
             groupBuy.ShortCode = input.ShortCode;
 
-            var itemGroupIds = input.ItemGroups?.Select(x => x.Id).ToList();
-            if (itemGroupIds != null && itemGroupIds.Any())
-            {
-                _groupBuyManager.RemoveItemGroups(groupBuy, itemGroupIds);
-            }
-
             if (input?.ItemGroups != null)
             {
                 foreach (var group in input.ItemGroups)
@@ -204,7 +206,10 @@ namespace Kooco.Pikachu.GroupBuys
                         {
                             itemGroup.SortOrder = group.SortOrder;
                             itemGroup.GroupBuyModuleType = group.GroupBuyModuleType;
-
+                            if(group.ItemDetails.Count == 0)
+                            {
+                                groupBuy.ItemGroups.Remove(itemGroup);
+                            }
                             ProcessItemDetails(itemGroup, group.ItemDetails);
                         }
                     }
@@ -226,29 +231,16 @@ namespace Kooco.Pikachu.GroupBuys
         }
         private void ProcessItemDetails(GroupBuyItemGroup itemGroup, ICollection<GroupBuyItemGroupDetailCreateUpdateDto> itemDetails)
         {
+            itemGroup.ItemGroupDetails?.Clear();
             foreach (var item in itemDetails)
             {
-                if (item.Id.HasValue)
-                {
-                    var itemDetail = itemGroup.ItemGroupDetails.FirstOrDefault(x => x.Id == item.Id);
-                    if (itemDetail != null)
-                    {
-                        itemDetail.SortOrder = item.SortOrder;
-                        itemDetail.ItemId = item.ItemId;
-                        itemDetail.SetItemId = item.SetItemId;
-                        itemDetail.ItemType = item.ItemType;
-                    }
-                }
-                else
-                {
-                    _groupBuyManager.AddItemGroupDetail(
-                        itemGroup,
-                        item.SortOrder,
-                        item.ItemId,
-                        item.SetItemId,
-                        item.ItemType
-                    );
-                }
+                _groupBuyManager.AddItemGroupDetail(
+                    itemGroup,
+                    item.SortOrder,
+                    item.ItemId,
+                    item.SetItemId,
+                    item.ItemType
+                );
             }
         }
         public async Task DeleteManyGroupBuyItemsAsync(List<Guid> groupBuyIds)
@@ -273,6 +265,12 @@ namespace Kooco.Pikachu.GroupBuys
             await _groupBuyRepository.UpdateAsync(groupBuy);
         }
 
+        public async Task<GroupBuyItemGroupDto> GetGroupBuyItemGroupAsync(Guid id)
+        {
+            var itemGroup = await _groupBuyRepository.GetGroupBuyItemGroupAsync(id);
+
+            return ObjectMapper.Map<GroupBuyItemGroup, GroupBuyItemGroupDto>(itemGroup);
+        }
 
         /// <summary>
         /// This Method Returns the Desired Result For the Store Front End.
@@ -387,6 +385,12 @@ namespace Kooco.Pikachu.GroupBuys
                 return ObjectMapper.Map<GroupBuy, GroupBuyDto>(groupbuy);
             }
 
+        }
+
+        public async Task<GroupBuyDto> GetWithItemGroupsAsync(Guid id)
+        {
+            var groupbuy = await _groupBuyRepository.GetWithItemGroupsAsync(id);
+            return ObjectMapper.Map<GroupBuy, GroupBuyDto>(groupbuy);
         }
     }
 }

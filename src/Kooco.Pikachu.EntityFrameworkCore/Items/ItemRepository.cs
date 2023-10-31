@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Kooco.Pikachu.EntityFrameworkCore;
+using Kooco.Pikachu.EnumValues;
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -35,16 +36,22 @@ public class ItemRepository : EfCoreRepository<PikachuDbContext, Item, Guid>, II
             .TakeIf<Item, IQueryable<Item>>(maxResultCount.HasValue, maxResultCount.Value);
     }
 
-    public override async Task<IQueryable<Item>> WithDetailsAsync()
-    {
-        return (await GetQueryableAsync()).IncludeDetails();
-    }
     public async Task DeleteManyAsync(List<Guid> ids)
     {
         var dbContext = await GetDbContextAsync();
         dbContext.Items.RemoveRange(dbContext.Items.Where(item => ids.Contains(item.Id)));
         dbContext.GroupBuyItemGroupDetails.RemoveRange(dbContext.GroupBuyItemGroupDetails.Where(gd => ids.Contains(gd.ItemId ?? Guid.Empty)));
-    
+    }
 
+    public async Task<List<ItemWithItemType>> GetItemsLookupAsync()
+    {
+        return await (await GetQueryableAsync())
+            .Where(x => x.IsItemAvaliable)
+            .Select(x => new ItemWithItemType
+            {
+                Id = x.Id,
+                Name = x.ItemName,
+                ItemType = ItemType.Item
+            }).ToListAsync();
     }
 }

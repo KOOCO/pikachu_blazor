@@ -1,6 +1,5 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using System;
-using System.Xml.Linq;
 
 namespace Kooco.Pikachu.Items.Dtos;
 

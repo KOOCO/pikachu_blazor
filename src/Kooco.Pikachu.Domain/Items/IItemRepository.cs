@@ -15,5 +15,5 @@ public interface IItemRepository : IRepository<Item, Guid>
     Task<Item> FindBySKUAsync(string SKU);
     Task<IQueryable<Item>> GetWithImagesAsync(int? maxResultCount = null);
     Task DeleteManyAsync(List<Guid> ids);
-    
+    Task<List<ItemWithItemType>> GetItemsLookupAsync();
 }

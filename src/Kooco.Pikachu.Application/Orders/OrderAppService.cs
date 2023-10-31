@@ -214,7 +214,6 @@ namespace Kooco.Pikachu.Orders
             await SendEmailAsync(order.Id);
             return ObjectMapper.Map<Order, OrderDto>(order);
         }
-
         private async Task SendEmailAsync(Guid id, OrderStatus? orderStatus = null)
         {
             var order = await _orderRepository.GetWithDetailsAsync(id);

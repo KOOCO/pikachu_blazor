@@ -1,8 +1,7 @@
 ﻿using Kooco.Pikachu.EntityFrameworkCore;
+using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
-using Kooco.Pikachu.Orders;
 using Microsoft.EntityFrameworkCore;
-using Polly;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,6 +65,32 @@ namespace Kooco.Pikachu.GroupBuys
                     .ThenInclude(ig => ig.ItemGroupDetails.OrderBy(i => i.SortOrder))
                 .FirstOrDefaultAsync();
         }
+        public async Task<GroupBuy> GetWithItemGroupsAsync(Guid id)
+        {
+            var dbContext = await GetDbContextAsync();
+            return await dbContext.GroupBuys
+                .Where(x => x.Id == id)
+                .Include(x => x.ItemGroups.OrderBy(x => x.SortOrder))
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<GroupBuyItemGroup> GetGroupBuyItemGroupAsync(Guid id)
+        {
+            var dbContext = await GetDbContextAsync();
+
+            return await dbContext.GroupBuyItemGroups
+                .Where(x => x.Id == id)
+                .Include(ig => ig.ItemGroupDetails)
+                    .ThenInclude(igd => igd.SetItem)
+                    .ThenInclude(s => s.Images)
+                .Include(ig => ig.ItemGroupDetails)
+                    .ThenInclude(igd => igd.Item)
+                    .ThenInclude(s => s.Images)
+                .Include(ig => ig.ItemGroupDetails)
+                    .ThenInclude(igd => igd.Item)
+                    .ThenInclude(i => i.ItemDetails)
+                .FirstOrDefaultAsync();
+        }
 
         public async Task<GroupBuyItemGroupWithCount> GetPagedItemGroupAsync(Guid id, int skipCount)
         {
@@ -105,15 +130,14 @@ namespace Kooco.Pikachu.GroupBuys
             var dbContext = await GetDbContextAsync();
             var query = from order in dbContext.Orders
                         join groupbuy in dbContext.GroupBuys on order.GroupBuyId equals groupbuy.Id
-                        where order.PaymentDate.HasValue
                         group order by order.GroupBuyId into groupedOrders
                         select new GroupBuyReport
                         {
                             GroupBuyId = groupedOrders.Key,
                             GroupBuyName = groupedOrders.First().GroupBuy.GroupBuyName,
                             TotalQuantity = groupedOrders.Sum(order => order.TotalQuantity),
-                            TotalAmount = groupedOrders.Sum(order => order.TotalAmount),
-                            PaidAmount = groupedOrders.Sum(order => order.TotalAmount)
+                            TotalAmount = groupedOrders.Where(x => x.OrderStatus == OrderStatus.Open && x.ShippingStatus == ShippingStatus.WaitingForPayment).Sum(order => order.TotalAmount),
+                            PaidAmount = groupedOrders.Where(x => x.OrderStatus == OrderStatus.Open && x.ShippingStatus == ShippingStatus.PrepareShipment).Sum(order => order.TotalAmount)
                         };
 
             return await query

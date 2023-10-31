@@ -71,15 +71,12 @@
             <div class="col-9">
                
                 <Validation UsePattern>
-
-    <TextEdit Pattern="^[A-Za-z0-9]{8}$"  MaxLength="8" @bind-Text="@EditGroupBuyDto.ShortCode">
-
-        <Feedback>
-            
-            <ValidationError>Pattern does not match!</ValidationError>
-        </Feedback>
-    </TextEdit>
-</Validation>
+                    <TextEdit Pattern="^[A-Za-z]{8}$"  MaxLength="8" @bind-Text="@EditGroupBuyDto.ShortCode">
+                        <Feedback>
+                            <ValidationError>Pattern does not match!</ValidationError>
+                        </Feedback>
+                    </TextEdit>
+                </Validation>
 
             </div>
             <div class="col-1">
@@ -526,7 +523,7 @@
             <div class="row">
                 <div class="col-12">
                     <Accordion>
-                        <Collapse>
+                        <Collapse VisibleChanged="(e) => OnCollapseVisibleChanged(module, e)">
                             <CollapseHeader>
                                 <AccordionToggle>
                                     <i class="fa fa-trash text-danger me-2" @onclick="@(()=>RemoveCollapseItem(@module.Index))"></i>
@@ -589,7 +586,7 @@
 
                                                     @if(firstImage != null)
                                                     {
-                                                        <div>
+                                                        <div class="text-center">
                                                             <img src="@firstImage" class="img-fluid" />
                                                             @if(module.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule)
                                                             {

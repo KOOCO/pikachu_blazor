@@ -418,8 +418,6 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         {
             try
             {
-               
-
                 if (CreateGroupBuyDto.GroupBuyName.IsNullOrWhiteSpace())
                 {
                     await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyNameCannotBeNull]);
@@ -437,12 +435,6 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     await _uiMessageService.Warn(L["Short Code Alredy Exist"]);
                     return;
                 }
-                //if (CollapseItem.Any(c => c.Selected.Any(s => s.Id == Guid.Empty)))
-                //{
-                //    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyModuleCannotBeEmpty]);
-                //    return;
-                //}
-
                 CreateGroupBuyDto.GroupBuyNo = 0;
                 CreateGroupBuyDto.Status = "New";
                 if (ItemTags.Any())
@@ -565,10 +557,12 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
     public class CollapseItem
     {
+        public Guid? Id { get; set; }
         public int Index { get; set; }
         public GroupBuyModuleType GroupBuyModuleType { get; set; }
         public int SortOrder { get; set; }
         public List<ItemWithItemTypeDto> Selected { get; set; }
+        public bool IsModified = false;
         public CollapseItem()
         {
             Selected = new();
