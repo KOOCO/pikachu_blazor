@@ -235,7 +235,7 @@
                     </div>
                     <div class="col-4">
                         <select class="form-control form-control-sm"
-                        @bind="FreebieCreateDto.FreebieOrderReach">
+ @bind="FreebieCreateDto.FreebieOrderReach">
                             @foreach (var enumValue in Enum.GetValues(typeof(FreebieOrderReach)))
                             {
                                 <option value="@enumValue">@L[enumValue.ToString()]</option>

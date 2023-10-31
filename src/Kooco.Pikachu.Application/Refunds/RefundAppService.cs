@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.Orders;
+﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Permissions;
 using Microsoft.AspNetCore.Authorization;
 using System;
@@ -8,6 +9,7 @@ using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using static Kooco.Pikachu.Permissions.PikachuPermissions;
 
 namespace Kooco.Pikachu.Refunds
 {
@@ -30,7 +32,7 @@ namespace Kooco.Pikachu.Refunds
         public async Task CreateAsync(Guid orderId)
         {
             var existing = await _refundRepository.FindAsync(x => x.OrderId == orderId);
-            if(existing != null)
+            if (existing != null)
             {
                 throw new BusinessException(PikachuDomainErrorCodes.RefundForSameOrderAlreadyExists);
             }
@@ -49,7 +51,6 @@ namespace Kooco.Pikachu.Refunds
             {
                 input.Sorting = $"{nameof(Refund.CreationTime)} desc";
             }
-
             var totalCount = await _refundRepository.GetCountAsync(input.Filter);
             var items = await _refundRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter);
 
@@ -58,6 +59,14 @@ namespace Kooco.Pikachu.Refunds
                 TotalCount = totalCount,
                 Items = ObjectMapper.Map<List<Refund>, List<RefundDto>>(items)
             };
+        }
+        public async Task<RefundDto> UpdateRefundReviewAsync(Guid id, RefundReviewStatus input)
+        {
+            var refund = await _refundRepository.GetAsync(id);
+            refund.RefundReview = input;
+            await _refundRepository.UpdateAsync(refund);
+            return ObjectMapper.Map<Refund, RefundDto>(refund);
+
         }
     }
 }

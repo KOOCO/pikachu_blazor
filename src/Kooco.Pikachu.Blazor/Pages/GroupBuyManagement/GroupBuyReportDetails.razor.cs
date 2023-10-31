@@ -26,7 +26,6 @@ public partial class GroupBuyReportDetails
     private string? Filter { get; set; }
 
     private readonly HashSet<Guid> ExpandedRows = new();
-
     protected override async Task OnInitializedAsync()
     {
         try
@@ -39,14 +38,12 @@ public partial class GroupBuyReportDetails
             await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
         }
     }
-
     private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<OrderDto> e)
     {
         PageIndex = e.Page - 1;
         await UpdateItemList();
         await InvokeAsync(StateHasChanged);
     }
-
     private async Task UpdateItemList()
     {
         try
@@ -62,7 +59,6 @@ public partial class GroupBuyReportDetails
             });
             Orders = result?.Items.ToList() ?? new List<OrderDto>();
             TotalCount = (int?)result?.TotalCount ?? 0;
-
         }
         catch (Exception ex)
         {
@@ -70,19 +66,16 @@ public partial class GroupBuyReportDetails
             await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
         }
     }
-
     async Task OnSearch()
     {
         PageIndex = 0;
         await UpdateItemList();
     }
-
     async void OnSortChange(DataGridSortChangedEventArgs e)
     {
         Sorting = e.FieldName + " " + (e.SortDirection != SortDirection.Default ? e.SortDirection : "");
         await UpdateItemList();
     }
-
     void ToggleRow(DataGridRowMouseEventArgs<OrderDto> e)
     {
         if (ExpandedRows.Contains(e.Item.Id))

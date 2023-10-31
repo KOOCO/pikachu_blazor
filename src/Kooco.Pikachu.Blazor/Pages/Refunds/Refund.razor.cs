@@ -1,6 +1,7 @@
 ﻿using Blazorise;
 using Blazorise.DataGrid;
 using Blazorise.LoadingIndicator;
+using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Refunds;
 using Microsoft.JSInterop;
@@ -14,12 +15,13 @@ namespace Kooco.Pikachu.Blazor.Pages.Refunds
 {
     public partial class Refund
     {
+
         private List<RefundDto> Refunds = new List<RefundDto>();
         private LoadingIndicator loading { get; set; }
 
         int PageIndex { get; set; }
         int PageSize { get; set; } = 10;
-        string? Sorting { get;set; }
+        string? Sorting { get; set; }
         string? Filter { get; set; }
         int TotalCount { get; set; }
 
@@ -29,7 +31,6 @@ namespace Kooco.Pikachu.Blazor.Pages.Refunds
             await UpdateItemList();
             await InvokeAsync(StateHasChanged);
         }
-
         private async Task UpdateItemList()
         {
             try
@@ -59,6 +60,25 @@ namespace Kooco.Pikachu.Blazor.Pages.Refunds
             {
                 await loading.Hide();
             }
+        }
+        private async Task RefundReviewChanged(RefundReviewStatus selectedValue, RefundDto rowData)
+        {
+            try
+            {
+                await loading.Show();
+                await _refundAppService.UpdateRefundReviewAsync(rowData.Id, selectedValue);
+                await UpdateItemList();
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
+                await JSRunTime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+                await loading.Hide();
+            }
+
         }
         async void OnSortChange(DataGridSortChangedEventArgs e)
         {
