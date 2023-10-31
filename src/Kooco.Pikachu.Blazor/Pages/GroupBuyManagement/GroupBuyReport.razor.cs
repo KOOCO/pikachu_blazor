@@ -57,5 +57,10 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 await loading.Hide();
             }
         }
+
+        private void OnNavigate(Guid id)
+        {
+            NavigationManager.NavigateTo("/GroupBuyManagement/GroupBuyReportDetails/" + id);
+        }
     }
 }

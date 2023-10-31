@@ -128,9 +128,9 @@ namespace Kooco.Pikachu.Orders
                 input.Sorting = $"{nameof(Order.CreationTime)} desc";
             }
 
-            var totalCount = await _orderRepository.CountAsync(input.Filter);
+            var totalCount = await _orderRepository.CountAsync(input.Filter, input.GroupBuyId);
 
-            var items = await _orderRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter);
+            var items = await _orderRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.GroupBuyId);
 
             return new PagedResultDto<OrderDto>
             {

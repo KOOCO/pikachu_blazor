@@ -2,10 +2,12 @@
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
@@ -186,6 +188,28 @@ namespace Kooco.Pikachu.GroupBuys
                           select groupbuy.Id)
                           .Distinct()
                           .CountAsync();
+        }
+
+        public async Task<GroupBuyReportDetails> GetGroupBuyReportDetailsAsync(Guid id)
+        {
+            var dbContext = await GetDbContextAsync();
+            var query = await (from order in dbContext.Orders
+                        join groupbuy in dbContext.GroupBuys.Where(g => g.Id == id) on order.GroupBuyId equals groupbuy.Id
+                        group order by order.GroupBuyId into groupedOrders
+                        select new GroupBuyReportDetails
+                        {
+                            GroupBuyName = groupedOrders.First().GroupBuy.GroupBuyName,
+                            OrderQuantityPaid = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open && order.ShippingStatus == ShippingStatus.PrepareShipment).Sum(order => order.TotalQuantity),
+                            TotalOrderQuantity = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(order => order.TotalQuantity),
+                            SalesAmount = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(order => order.TotalAmount),
+                            SalesAmountExclShipping = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(order => order.TotalAmount) - 200,
+                            AmountReceived = groupedOrders.Where(x => x.OrderStatus == OrderStatus.Open && x.ShippingStatus == ShippingStatus.PrepareShipment).Sum(order => order.TotalAmount),
+                            AmountReceivedExclShipping = groupedOrders.Where(x => x.OrderStatus == OrderStatus.Open && x.ShippingStatus == ShippingStatus.PrepareShipment).Sum(order => order.TotalAmount) - 200,
+                            SalesAmountMinusShipping = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(order => order.TotalAmount) - 200,
+                            BloggersProfit = 999
+                        }).FirstOrDefaultAsync();
+
+            return query;
         }
     }
 }

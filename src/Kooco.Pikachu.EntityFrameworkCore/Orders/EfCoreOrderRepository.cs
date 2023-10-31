@@ -18,13 +18,13 @@ namespace Kooco.Pikachu.Orders
         {
 
         }
-        public async Task<long> CountAsync(string? filter)
+        public async Task<long> CountAsync(string? filter, Guid? groupBuyId)
         {
-            return await ApplyFilters((await GetQueryableAsync()).Include(o => o.GroupBuy), filter).CountAsync();
+            return await ApplyFilters((await GetQueryableAsync()).Include(o => o.GroupBuy), filter, groupBuyId).CountAsync();
         }
-        public async Task<List<Order>> GetListAsync(int skipCount, int maxResultCount, string? sorting, string? filter)
+        public async Task<List<Order>> GetListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId)
         {
-            return await ApplyFilters(await GetQueryableAsync(), filter)
+            return await ApplyFilters(await GetQueryableAsync(), filter, groupBuyId)
                 .OrderBy(sorting)
                 .PageBy(skipCount, maxResultCount)
                 .Include(o => o.GroupBuy)
@@ -38,10 +38,12 @@ namespace Kooco.Pikachu.Orders
         }
         private static IQueryable<Order> ApplyFilters(
             IQueryable<Order> queryable,
-            string? filter
+            string? filter,
+            Guid? groupBuyId
             )
         {
             return queryable
+                .WhereIf(groupBuyId.HasValue, x => x.GroupBuyId == groupBuyId)
                 .WhereIf(!filter.IsNullOrWhiteSpace(),
                 x => x.OrderNo.Contains(filter)
                 || (x.CustomerName != null && x.CustomerName.Contains(filter))
