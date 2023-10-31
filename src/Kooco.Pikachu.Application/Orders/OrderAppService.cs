@@ -22,7 +22,7 @@ using Volo.Abp.MultiTenancy;
 
 namespace Kooco.Pikachu.Orders
 {
-    [Authorize(PikachuPermissions.Orders.Default)]
+    //[Authorize(PikachuPermissions.Orders.Default)]
     public class OrderAppService : ApplicationService, IOrderAppService
     {
         private readonly IOrderRepository _orderRepository;
@@ -98,7 +98,8 @@ namespace Kooco.Pikachu.Orders
                             item.Spec,
                             item.ItemPrice,
                             item.TotalAmount,
-                            item.Quantity
+                            item.Quantity,
+                            item.SKU
                             );
                     }
                 }

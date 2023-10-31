@@ -268,7 +268,6 @@ namespace Kooco.Pikachu.GroupBuys
         public async Task<GroupBuyItemGroupDto> GetGroupBuyItemGroupAsync(Guid id)
         {
             var itemGroup = await _groupBuyRepository.GetGroupBuyItemGroupAsync(id);
-
             return ObjectMapper.Map<GroupBuyItemGroup, GroupBuyItemGroupDto>(itemGroup);
         }
 

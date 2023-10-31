@@ -20,5 +20,6 @@ namespace Kooco.Pikachu.OrderItems
         public decimal ItemPrice { get; set; }
         public decimal TotalAmount { get; set; }
         public int Quantity { get; set; }
+        public string? SKU { get; set; }
     }
 }
