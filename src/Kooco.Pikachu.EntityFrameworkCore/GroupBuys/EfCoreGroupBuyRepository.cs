@@ -1,4 +1,5 @@
 ﻿using Kooco.Pikachu.EntityFrameworkCore;
+using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -129,15 +130,14 @@ namespace Kooco.Pikachu.GroupBuys
             var dbContext = await GetDbContextAsync();
             var query = from order in dbContext.Orders
                         join groupbuy in dbContext.GroupBuys on order.GroupBuyId equals groupbuy.Id
-                        where order.PaymentDate.HasValue
                         group order by order.GroupBuyId into groupedOrders
                         select new GroupBuyReport
                         {
                             GroupBuyId = groupedOrders.Key,
                             GroupBuyName = groupedOrders.First().GroupBuy.GroupBuyName,
                             TotalQuantity = groupedOrders.Sum(order => order.TotalQuantity),
-                            TotalAmount = groupedOrders.Sum(order => order.TotalAmount),
-                            PaidAmount = groupedOrders.Sum(order => order.TotalAmount)
+                            TotalAmount = groupedOrders.Where(x => x.OrderStatus == OrderStatus.Open && x.ShippingStatus == ShippingStatus.WaitingForPayment).Sum(order => order.TotalAmount),
+                            PaidAmount = groupedOrders.Where(x => x.OrderStatus == OrderStatus.Open && x.ShippingStatus == ShippingStatus.PrepareShipment).Sum(order => order.TotalAmount)
                         };
 
             return await query
