@@ -5,6 +5,7 @@
 @using Kooco.Pikachu.Orders;
 @using Microsoft.Extensions.Localization;
 @using Volo.Abp.AspNetCore.Components.Messages;
+@using Blazorise.LoadingIndicator;
 
 @inject IStringLocalizer<PikachuResource> L;
 @inject IGroupBuyAppService _groupBuyAppService;
@@ -22,18 +23,15 @@
     }
 
     .tbl tr:nth-child(even) {
-        background-color: dimgrey;
+        background-color: #E0E0E0;
 
     }
 
     .tbl tr:nth-child(odd) {
-        background-color: lightgrey; /* Even rows background color */
+        background-color: #F5F5F5; /* Even rows background color */
     }
-    /* Custom CSS class to set the height */
-.custom-detail-row {
-    height: 50px; /* Set the desired height in pixels */
-}
 </style>
+<LoadingIndicator @ref="loading" FullScreen></LoadingIndicator>
 @if (ReportDetails != null)
 {
     <h3>@ReportDetails?.GroupBuyName</h3>
@@ -128,7 +126,7 @@
                                 @foreach (var item in orderItems)
                                 {
                                     <tr>
-                                        <td>SKU</td>
+                                        <td>@item.SKU</td>
                                         @if (item.ItemType == ItemType.Item)
                                         {
                                             <td>@item.Item?.ItemName</td>

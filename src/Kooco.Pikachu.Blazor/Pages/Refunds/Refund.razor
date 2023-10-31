@@ -65,7 +65,9 @@
                  <DataGridColumn TItem="RefundDto"
                                  Caption="@L["RefundReview"]">
                      <DisplayTemplate>
-                         <Select TValue="RefundReviewStatus" Class="form-select" SelectedValue="@context.RefundReview" SelectedValueChanged="@(e => RefundReviewChanged(e, context))">
+                         <Select TValue="RefundReviewStatus" Class="form-select form-select-sm" 
+                                    SelectedValue="@context.RefundReview" 
+                                    SelectedValueChanged="@(e => RefundReviewChanged(e, context))">
                              @foreach (var enumValue in Enum.GetValues(typeof(RefundReviewStatus)))
                             {
                                 <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>

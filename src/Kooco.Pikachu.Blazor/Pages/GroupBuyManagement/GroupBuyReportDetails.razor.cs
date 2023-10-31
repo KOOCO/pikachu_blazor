@@ -1,5 +1,4 @@
 ﻿using Blazorise.DataGrid;
-using Blazorise.LoadingIndicator;
 using Blazorise;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Orders;
@@ -9,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using Blazorise.LoadingIndicator;
 
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
 
@@ -26,6 +26,8 @@ public partial class GroupBuyReportDetails
     private string? Filter { get; set; }
 
     private readonly HashSet<Guid> ExpandedRows = new();
+    private LoadingIndicator loading { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -48,6 +50,7 @@ public partial class GroupBuyReportDetails
     {
         try
         {
+            await loading.Show();
             int skipCount = PageIndex * PageSize;
             var result = await _orderAppService.GetListAsync(new GetOrderListDto
             {
@@ -59,23 +62,25 @@ public partial class GroupBuyReportDetails
             });
             Orders = result?.Items.ToList() ?? new List<OrderDto>();
             TotalCount = (int?)result?.TotalCount ?? 0;
+            StateHasChanged();
         }
         catch (Exception ex)
         {
             await _uiMessageService.Error(ex.GetType().ToString());
             await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
         }
+        finally
+        {
+            await loading.Hide();
+        }
     }
-    async Task OnSearch()
-    {
-        PageIndex = 0;
-        await UpdateItemList();
-    }
+    
     async void OnSortChange(DataGridSortChangedEventArgs e)
     {
         Sorting = e.FieldName + " " + (e.SortDirection != SortDirection.Default ? e.SortDirection : "");
         await UpdateItemList();
     }
+
     void ToggleRow(DataGridRowMouseEventArgs<OrderDto> e)
     {
         if (ExpandedRows.Contains(e.Item.Id))

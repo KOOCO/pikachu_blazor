@@ -121,7 +121,8 @@ namespace Kooco.Pikachu.Orders
             string? spec,
             decimal itemPrice,
             decimal totalAmount,
-            int quantity
+            int quantity,
+            string? sku
             )
         {
             OrderItems.Add(new OrderItem(
@@ -134,7 +135,8 @@ namespace Kooco.Pikachu.Orders
                     spec,
                     itemPrice,
                     totalAmount,
-                    quantity
+                    quantity,
+                    sku
                     ));
         }
 
