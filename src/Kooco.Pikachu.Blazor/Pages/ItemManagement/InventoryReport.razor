@@ -1,6 +1,82 @@
 ﻿@page "/Items/InventoryReport"
-<h3>This Page is Under Process</h3>
+@using Volo.Abp.Application.Dtos
+@using Kooco.Pikachu.Items.Dtos
+@using Kooco.Pikachu.Items
+@using Kooco.Pikachu.Localization
+@using Microsoft.Extensions.Localization
+@using Volo.Abp
+@using System.Text.Json;
+@using System.ComponentModel
+@using Blazorise.Components
+@inject IStringLocalizer<PikachuResource> L
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 
+<div class="row">
+    <div class="col-6">
+        <h3>@L["庫存報表"]</h3>
+    </div>
+    <div class="col-6 text-lg-end">
+       
+        <Button Type="@ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="DownloadExcel" >
+            <i class="fa fa-excel"></i>
+            @L["Excel"]
+        </Button>
+     
+    </div>
+</div>
+<Card>
+    <CardBody>
+        <DataGrid TItem="ItemDetailsDto"
+                  Data="InventroyList"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="Total"
+                  ShowPager="true"
+                  PageSize="PageSize"
+                  
+                  SortChanged="OnSortChange">
+            <DataGridColumns>
+             
+                <DataGridColumn TItem="ItemDetailsDto"
+                                Field="@nameof(ItemDetailsDto.SKU)"
+                                Caption="@L["ItemName"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="ItemDetailsDto"
+                                Field="@nameof(ItemDetailsDto.StockOnHand)"
+                                Caption="@L["Current Stock"]">
+                </DataGridColumn>
+       
+                <DataGridColumn TItem="ItemDetailsDto"
+                                Field="@nameof(ItemDetailsDto.SaleableQuantity)"
+                                Caption="@L["Available Stock"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="ItemDetailsDto"
+                                Field="@nameof(ItemDetailsDto.PreOrderableQuantity)"
+                                Caption="@L["Preorder Quantity"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="ItemDetailsDto"
+                                Field="@nameof(ItemDetailsDto.SaleablePreOrderQuantity)"
+                                Caption="@L["Available Preorder Quantity"]">
+                </DataGridColumn>
+             
+   
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
 @code {
 
 }
+<script>
+    window.downloadFile = function (data) {
+        debugger;
+        var blob = new Blob([new Uint8Array(data.byteArray)], { type: data.contentType });
+        var url = window.URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = data.fileName;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+    }
+</script>

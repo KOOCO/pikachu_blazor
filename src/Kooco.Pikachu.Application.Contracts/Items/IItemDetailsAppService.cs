@@ -1,7 +1,9 @@
 using System;
+using System.Threading.Tasks;
 using Kooco.Pikachu.Items.Dtos;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Content;
 
 namespace Kooco.Pikachu.Items;
 
@@ -17,5 +19,6 @@ public interface IItemDetailsAppService :
         CreateItemDetailsDto,
         CreateItemDetailsDto>
 {
-
+    Task<IRemoteStreamContent> GetListAsExcelFileAsync(InventroyExcelDownloadDto input);
+    
 }
