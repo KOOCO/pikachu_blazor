@@ -32,5 +32,6 @@ namespace Kooco.Pikachu.Orders
         public int TotalQuantity { get; set; }
         public decimal TotalAmount { get; set; }
         public List<OrderItemsCreateDto> OrderItems { get; set; }
+        public OrderReturnStatus? ReturnStatus { get; set; }
     }
 }

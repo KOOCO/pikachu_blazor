@@ -73,5 +73,26 @@ namespace Kooco.Pikachu.Orders
                     .ThenInclude(c => c.User)
                 .FirstOrDefaultAsync();
         }
+
+        public async Task<long> ReturnOrderCountAsync(string? filter, Guid? groupBuyId)
+        {
+            return await ApplyFilters((await GetQueryableAsync()).Include(o => o.GroupBuy), filter, groupBuyId).Where(x => x.OrderStatus == OrderStatus.Returned || x.OrderStatus == OrderStatus.Exchange).CountAsync();
+        }
+        public async Task<List<Order>> GetReturnListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId)
+        {
+            return await ApplyFilters(await GetQueryableAsync(), filter, groupBuyId)
+                .Where(x=>x.OrderStatus==OrderStatus.Returned || x.OrderStatus == OrderStatus.Exchange)
+                .OrderBy(sorting)
+                .PageBy(skipCount, maxResultCount)
+                .Include(o => o.GroupBuy)
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Item)
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.SetItem)
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Freebie)
+                .ToListAsync();
+        }
+
     }
 }

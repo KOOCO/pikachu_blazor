@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.GroupBuys;
+﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.OrderItems;
 using System;
 using System.Collections.Generic;
@@ -22,5 +23,7 @@ namespace Kooco.Pikachu.Orders
         Task AddCheckMacValueAsync(Guid id, string checkMacValue);
         Task UpdateOrderItemsAsync(Guid id, List<UpdateOrderItemDto> orderItems);
         Task CancelOrderAsync(Guid id);
+        Task<PagedResultDto<OrderDto>> GetReturnListAsync(GetOrderListDto input);
+        Task ChangeReturnStatusAsync(Guid id, OrderReturnStatus? orderReturnStatus);
     }
 }

@@ -81,7 +81,8 @@ namespace Kooco.Pikachu.Orders
                         input.Remarks,
                         input.ReceivingTime,
                         input.TotalQuantity,
-                        input.TotalAmount
+                        input.TotalAmount,
+                        input.ReturnStatus
                         );
 
                 if (input.OrderItems != null)
@@ -139,7 +140,23 @@ namespace Kooco.Pikachu.Orders
                 Items = ObjectMapper.Map<List<Order>, List<OrderDto>>(items)
             };
         }
+        public async Task<PagedResultDto<OrderDto>> GetReturnListAsync(GetOrderListDto input)
+        {
+            if (input.Sorting.IsNullOrEmpty())
+            {
+                input.Sorting = $"{nameof(Order.CreationTime)} desc";
+            }
 
+            var totalCount = await _orderRepository.ReturnOrderCountAsync(input.Filter, input.GroupBuyId);
+
+            var items = await _orderRepository.GetReturnListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.GroupBuyId);
+
+            return new PagedResultDto<OrderDto>
+            {
+                TotalCount = totalCount,
+                Items = ObjectMapper.Map<List<Order>, List<OrderDto>>(items)
+            };
+        }
         [Authorize(PikachuPermissions.Orders.AddStoreComment)]
         public async Task AddStoreCommentAsync(Guid id, string comment)
         {
@@ -174,7 +191,14 @@ namespace Kooco.Pikachu.Orders
             await _orderRepository.UpdateAsync(order);
             return ObjectMapper.Map<Order, OrderDto>(order);
         }
-
+        public async Task ChangeReturnStatusAsync(Guid id, OrderReturnStatus? orderReturnStatus)
+        { 
+        var order= await _orderRepository.GetAsync(id);
+            order.ReturnStatus = orderReturnStatus;
+            await _orderRepository.UpdateAsync(order);
+        
+        
+        }
         public async Task UpdateOrderItemsAsync(Guid id, List<UpdateOrderItemDto> orderItems)
         {
             var order = await _orderRepository.GetAsync(id);

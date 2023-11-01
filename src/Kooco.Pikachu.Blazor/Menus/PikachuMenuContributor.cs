@@ -122,7 +122,7 @@ public class PikachuMenuContributor : IMenuContributor
             name: "FreebieManagement",
             icon: "fas fa-truck-loading",
             displayName: "退換貨列表",
-            url: "/GroupBuyManagement/GroupBuyReport2")
+            url: "/Orders/ReturnAndExchangeOrder")
             )
             .AddItem(new ApplicationMenuItem(
             name: "Refund",

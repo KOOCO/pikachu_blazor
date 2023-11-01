@@ -49,6 +49,7 @@ namespace Kooco.Pikachu.Orders
         public DateTime? ShippingDate { get; set; }
         public DateTime? CancellationDate { get; set; }
         public OrderStatus OrderStatus { get; set; }
+        public OrderReturnStatus? ReturnStatus { get; set; }
         public ICollection<OrderItem> OrderItems { get; set; }
         public ICollection<StoreComment> StoreComments { get; set; }
         public bool IsRefunded { get; set; }
@@ -78,7 +79,8 @@ namespace Kooco.Pikachu.Orders
             string? remarks,
             ReceivingTime? receivingTime,
             int totalQuantity,
-            decimal totalAmount
+            decimal totalAmount,
+            OrderReturnStatus? orderReturnStatus
          )
         {
             Id = id;
@@ -110,6 +112,7 @@ namespace Kooco.Pikachu.Orders
             OrderItems = new List<OrderItem>();
             StoreComments = new List<StoreComment>();
             IsRefunded = false;
+            ReturnStatus = orderReturnStatus;
         }
 
         public void AddOrderItem(

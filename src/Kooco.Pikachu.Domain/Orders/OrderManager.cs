@@ -49,7 +49,8 @@ namespace Kooco.Pikachu.Orders
              string remarks,
              ReceivingTime? receivingTime,
              int totalQuantity,
-             decimal totalAmount
+             decimal totalAmount,
+             OrderReturnStatus? orderReturnStatus
              )
         {
             //string orderNo = await GenerateOrderNoAsync(groupBuyId);
@@ -81,7 +82,9 @@ namespace Kooco.Pikachu.Orders
                 remarks,
                 receivingTime,
                 totalQuantity,
-                totalAmount
+                totalAmount,
+                orderReturnStatus
+
                 );
         }
 
