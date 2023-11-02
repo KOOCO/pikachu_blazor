@@ -11,6 +11,7 @@ using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.StoreComments;
 using Kooco.Pikachu.Refunds;
+using Kooco.Pikachu.PaymentGateways;
 
 namespace Kooco.Pikachu;
 
@@ -75,5 +76,10 @@ public class PikachuApplicationAutoMapperProfile : Profile
 
 
         CreateMap<Refund, RefundDto>();
+
+        CreateMap<PaymentGateway, PaymentGatewayDto>();
+        CreateMap<PaymentGatewayDto, UpdateLinePayDto>();
+        CreateMap<PaymentGatewayDto, UpdateChinaTrustDto>();
+        CreateMap<PaymentGatewayDto, UpdateEcPayDto>();
     }
 }
