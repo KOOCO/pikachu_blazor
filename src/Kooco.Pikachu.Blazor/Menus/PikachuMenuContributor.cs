@@ -149,10 +149,10 @@ public class PikachuMenuContributor : IMenuContributor
             url: "/Temp/Temp2")
             )
                         .AddItem(new ApplicationMenuItem(
-            name: "FreebieManagement",
+            name: "ElectronicInvoiceSetting",
             icon: "fas fa-receipt",
             displayName: "電子發票設定",
-            url: "/GroupBuyManagement/GroupBuyReport4")
+            url: "/CashFlowManagement/ElectronicInvoiceSetting")
             )
                               .AddItem(new ApplicationMenuItem(
             name: "FreebieManagement",

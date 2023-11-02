@@ -11,6 +11,7 @@ using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.StoreComments;
 using Kooco.Pikachu.Refunds;
+using Kooco.Pikachu.ElectronicInvoiceSettings;
 
 namespace Kooco.Pikachu;
 
@@ -75,5 +76,8 @@ public class PikachuApplicationAutoMapperProfile : Profile
 
 
         CreateMap<Refund, RefundDto>();
+
+        CreateMap<ElectronicInvoiceSetting, ElectronicInvoiceSettingDto>();
+        CreateMap<ElectronicInvoiceSettingDto, CreateUpdateElectronicInvoiceDto>();
     }
 }

@@ -1,0 +1,153 @@
+﻿@page "/CashFlowManagement/ElectronicInvoiceSetting"
+@using Kooco.Pikachu.EnumValues;
+@using Kooco.Pikachu.ElectronicInvoiceSettings;
+@using Pikachu.Items;
+@using Pikachu.Localization;
+@using Microsoft.Extensions.Localization;
+@using System.ComponentModel
+@using Blazorise.Components;
+
+
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<PikachuResource> L
+@inject IMessageService _message
+
+
+<style>
+    .row {
+        margin-top: 10px;
+    }
+
+    .site-tag-plus {
+        background: #fff;
+        border-style: dashed;
+    }
+    /* you can make up upload button and sample style by using stylesheets */
+    .ant-upload-select-picture-card i {
+        color: #999;
+        font-size: 32px;
+    }
+
+    .ant-upload-select-picture-card .ant-upload-text {
+        margin-top: 8px;
+        color: #666;
+    }
+
+    .anticon {
+        vertical-align: 0.1em !important
+    }
+
+</style>
+
+
+<div class="col-12">
+    <div>
+        <h3>@L["電子發票設定"]</h3>
+    </div>
+    <Card>
+        <CardBody>
+            <div>
+                  <Validations @ref="@CreateValidationsRef" Model="@CreateUpdateElectronicInvoiceDto" ValidateOnLoad="false">
+                <div class=" col-12 row mb-3">
+                    <div class="col-3">
+                        <label>@L["Enable/Disable"]</label>
+                    </div>
+                    <div class="col-9">
+                        <Switch TValue="bool" @bind-Checked="@CreateUpdateElectronicInvoiceDto.IsEnable"  ></Switch>
+                    </div>
+                    
+                </div>
+                 <div class=" col-12 row mb-3">
+                    <div class="col-3">
+                        <label>@L["StoreName"]</label>
+                    </div>
+                    <div class="col-9">
+                        <Validation >
+                        <TextEdit class="form-control"  @bind-Text="@CreateUpdateElectronicInvoiceDto.StoreCode"  >
+                            <Feedback>
+            <ValidationError></ValidationError>
+        </Feedback>
+    </TextEdit>
+</Validation>
+                    </div>
+                    
+                </div>
+                   <div class=" col-12 row mb-3">
+                    <div class="col-3">
+                        <label>@L["HashKey"]</label>
+                    </div>
+                    <div class="col-9">
+                        <Validation>
+                        <TextEdit class="form-control"  @bind-Text="@CreateUpdateElectronicInvoiceDto.HashKey"  >
+                                        <Feedback>
+            <ValidationError></ValidationError>
+        </Feedback>
+    </TextEdit>
+</Validation>
+                    </div>
+                    
+                </div>
+                  <div class=" col-12 row mb-3">
+                    <div class="col-3">
+                        <label>@L["HashIV"]</label>
+                    </div>
+                    <div class="col-9">
+                        <Validation>
+                        <TextEdit class="form-control"  @bind-Text="@CreateUpdateElectronicInvoiceDto.HashIV"  >
+                                        <Feedback>
+            <ValidationError></ValidationError>
+        </Feedback>
+    </TextEdit>
+</Validation>
+                    </div>
+                    
+                </div>
+                  <div class=" col-12 row mb-3">
+                    <div class="col-3">
+                        <label>@L["InvoiceNameDisplay"]</label>
+                    </div>
+                    <div class="col-9">
+                        <Validation>
+                        <TextEdit class="form-control"  @bind-Text="@CreateUpdateElectronicInvoiceDto.DisplayInvoiceName"  >
+                                            <Feedback>
+            <ValidationError></ValidationError>
+        </Feedback>
+    </TextEdit>
+</Validation>
+                    </div>
+                    
+                </div>
+                <div class=" col-12 row mb-3">
+                    <div class="col-3">
+                        <label>@L["DaysAfterShipmentToGenerateInvoice"]</label>
+                    </div>
+                    <div class="col-9">
+                        <Validation>
+                        <NumericEdit TValue="int" class="form-control"  @bind-Value="@CreateUpdateElectronicInvoiceDto.DaysAfterShipmentGenerateInvoice"  >
+                                        <Feedback>
+            <ValidationError></ValidationError>
+        </Feedback>
+    </NumericEdit>
+</Validation>
+                    </div>
+                    
+                </div>
+                  </Validations>
+                </div>
+            
+        </CardBody>
+    </Card>
+</div>
+<div class="row">
+    <div class="col-12 text-lg-end">
+       
+        <Button Type="@ButtonType.Button" class="btn btn-primary" Clicked="CreateEntityAsync">
+            <i class="fa fa-check"></i>
+            @L["Save"]
+        </Button>
+    </div>
+</div>
+
+@code {
+
+}
