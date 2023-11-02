@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Content;
 
 namespace Kooco.Pikachu.Orders
 {
@@ -26,6 +27,7 @@ namespace Kooco.Pikachu.Orders
         Task CancelOrderAsync(Guid id);
         Task<PagedResultDto<OrderDto>> GetReturnListAsync(GetOrderListDto input);
         Task ChangeReturnStatusAsync(Guid id, OrderReturnStatus? orderReturnStatus);
+        Task<IRemoteStreamContent> GetListAsExcelFileAsync(GetOrderListDto input);
         Task<PaymentGatewayDto> GetPaymentGatewayConfigurationsAsync(Guid id);
     }
 }

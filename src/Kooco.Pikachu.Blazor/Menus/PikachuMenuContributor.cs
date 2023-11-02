@@ -155,10 +155,10 @@ public class PikachuMenuContributor : IMenuContributor
             url: "/CashFlowManagement/ElectronicInvoiceSetting")
             )
                               .AddItem(new ApplicationMenuItem(
-            name: "FreebieManagement",
+            name: "CashFlowReconciliationStatement",
             icon: "fas fa-file-invoice",
             displayName: "金流對帳表",
-            url: "/GroupBuyManagement/GroupBuyReport5")
+            url: "/CashFlowManagement/CashFlowReconciliationStatement")
             )
         );
 
