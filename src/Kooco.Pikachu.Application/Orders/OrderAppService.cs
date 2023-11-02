@@ -1,11 +1,14 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
+using Kooco.Pikachu.Items.Dtos;
+using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Permissions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Localization;
+using MiniExcelLibs;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,11 +17,16 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Content;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
 using Volo.Abp.MultiTenancy;
+using Microsoft.VisualBasic;
+using static Kooco.Pikachu.Permissions.PikachuPermissions;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using Volo.Abp.ObjectMapping;
 
 namespace Kooco.Pikachu.Orders
 {
@@ -355,6 +363,48 @@ namespace Kooco.Pikachu.Orders
                     await SendEmailAsync(order.Id);
                 }
             }
+        }
+        [AllowAnonymous]
+        public async Task<IRemoteStreamContent> GetListAsExcelFileAsync(GetOrderListDto input)
+        {
+
+            //var downloadToken = await _excelDownloadTokenCache.GetAsync(input.DownloadToken);
+            //if (downloadToken == null || input.DownloadToken != downloadToken.Token)
+            //{
+            //    throw new AbpAuthorizationException("Invalid download token: " + input.DownloadToken);
+            //}
+            var items = await _orderRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting,input.Filter,input.GroupBuyId);
+            var Results = ObjectMapper.Map<List<Order>, List<OrderDto>>(items);
+            var excelContent = Results.Select(x =>new
+            {
+                OrderNumber=x.OrderNo,
+                OrderDate=x.CreationTime, 
+                CustomerName=x.CustomerName, 
+                Email=x.CustomerEmail, 
+               
+                RecipientInformation=x.RecipientName+"/"+x.RecipientPhone, 
+                ShippingMethod=x.DeliveryMethod,
+                Address=x.AddressDetails,
+                Notes=x.Remarks,
+                MerchantNotes=x.Remarks,
+                OrderedItems = string.Join(", ", x.OrderItems.Select(item =>
+        (item.ItemType == ItemType.Item) ? $"{item.Item?.ItemName} x {item.Quantity}" :
+        (item.ItemType == ItemType.SetItem) ? $"{item.SetItem?.SetItemName} x {item.Quantity}" :
+        (item.ItemType == ItemType.Freebie) ? $"{item.Freebie?.ItemName} x {item.Quantity}" : "")
+    ),
+                InvoiceStatus=x.InvoiceStatus,
+                ShippingStatus=x.ShippingStatus,
+                PaymentMethod = x.PaymentMethod,
+                CheckoutAmount=x.TotalAmount
+
+
+
+
+            });
+            var memoryStream = new MemoryStream();
+            await memoryStream.SaveAsAsync(excelContent);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            return new RemoteStreamContent(memoryStream, "InventroyReport.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         }
     }
 }

@@ -53,6 +53,7 @@ namespace Kooco.Pikachu.Orders
         public ICollection<OrderItem> OrderItems { get; set; }
         public ICollection<StoreComment> StoreComments { get; set; }
         public bool IsRefunded { get; set; }
+        public InvoiceStatus InvoiceStatus { get; set; }
         public Order() { }
 
         public Order(
