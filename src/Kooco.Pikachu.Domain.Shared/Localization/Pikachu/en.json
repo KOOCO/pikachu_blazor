@@ -291,6 +291,23 @@
     "SalesAmount/SalesAmountExcludingShipping": "Sales Amount / Sales Amount (Excluding Shipping Cost)",
     "AmountReceived/AmountReceivedExcludingShipping": "Amount Received / Amount Received (Excluding Shipping Cost)",
     "SalesAmountMinusShippingCosts": "Sales Amount (Minus Shipping Costs)",
-    "BloggersShareProfit": "Bloggers Share Profit"
+    "BloggersShareProfit": "Bloggers Share Profit",
+
+
+
+    //Cash Flow Settings
+    "CashFlowDealerSettings": "Cash Flow Dealer Settings",
+    "GreenSector": "Green Sector",
+    "ChinaTrust": "China Trust",
+    "Enable/Disable": "Enable/Disable",
+    "ChannelId": "Channel ID",
+    "ChannelSecretKey": "Channel Secret Key",
+    "Code": "Code",
+    "MerchantId": "Merchant ID",
+    "TerminalCode": "Terminal Code",
+    "CodeValue": "Code Value",
+    "HashKey": "Hash Key",
+    "HashIV": "Hash IV",
+    "TradeDescription": "Trade Description"
   }
 }

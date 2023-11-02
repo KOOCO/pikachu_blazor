@@ -1,6 +1,7 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.OrderItems;
+using Kooco.Pikachu.PaymentGateways;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -25,5 +26,6 @@ namespace Kooco.Pikachu.Orders
         Task CancelOrderAsync(Guid id);
         Task<PagedResultDto<OrderDto>> GetReturnListAsync(GetOrderListDto input);
         Task ChangeReturnStatusAsync(Guid id, OrderReturnStatus? orderReturnStatus);
+        Task<PaymentGatewayDto> GetPaymentGatewayConfigurationsAsync(Guid id);
     }
 }

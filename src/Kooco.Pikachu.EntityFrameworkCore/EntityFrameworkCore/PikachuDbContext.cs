@@ -24,6 +24,7 @@ using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.StoreComments;
 using Kooco.Pikachu.Refunds;
+using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.ElectronicInvoiceSettings;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
@@ -81,6 +82,7 @@ public class PikachuDbContext :
     public DbSet<Order> Orders { get; set; }
     public DbSet<StoreComment> StoreComments { get; set; }
     public DbSet<Refund> Refunds { get; set; }
+    public DbSet<PaymentGateway> PaymentGateways { get; set; }
     public DbSet<ElectronicInvoiceSetting> ElectronicInvoiceSettings { get; set; }
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
@@ -219,6 +221,12 @@ public class PikachuDbContext :
             b.ToTable(PikachuConsts.DbTablePrefix + "Refunds", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
             b.HasOne(x => x.Order).WithMany().HasForeignKey(x => x.OrderId);
+        });
+
+        builder.Entity<PaymentGateway>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "PaymentGateways", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
         });
         builder.Entity<ElectronicInvoiceSetting>(b =>
         {

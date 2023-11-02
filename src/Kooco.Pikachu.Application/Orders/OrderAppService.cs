@@ -3,6 +3,7 @@ using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.OrderItems;
+using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.Permissions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Localization;
@@ -10,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
@@ -19,6 +21,7 @@ using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
 using Volo.Abp.MultiTenancy;
+using Volo.Abp.Security.Encryption;
 
 namespace Kooco.Pikachu.Orders
 {
@@ -30,6 +33,8 @@ namespace Kooco.Pikachu.Orders
         private readonly IDataFilter _dataFilter;
         private readonly IGroupBuyRepository _groupBuyRepository;
         private readonly IEmailSender _emailSender;
+        private readonly IRepository<PaymentGateway, Guid> _paymentGatewayRepository;
+        private readonly IStringEncryptionService _stringEncryptionService;
         private readonly IStringLocalizer<PikachuResource> _l;
         public OrderAppService(
             IOrderRepository orderRepository,
@@ -37,6 +42,8 @@ namespace Kooco.Pikachu.Orders
             IDataFilter dataFilter,
             IGroupBuyRepository groupBuyRepository,
             IEmailSender emailSender,
+            IRepository<PaymentGateway, Guid> paymentGatewayRepository,
+            IStringEncryptionService stringEncryptionService,
             IStringLocalizer<PikachuResource> l
             )
         {
@@ -45,6 +52,8 @@ namespace Kooco.Pikachu.Orders
             _dataFilter = dataFilter;
             _groupBuyRepository = groupBuyRepository;
             _emailSender = emailSender;
+            _paymentGatewayRepository = paymentGatewayRepository;
+            _stringEncryptionService = stringEncryptionService;
             _l = l;
         }
 
@@ -192,12 +201,12 @@ namespace Kooco.Pikachu.Orders
             return ObjectMapper.Map<Order, OrderDto>(order);
         }
         public async Task ChangeReturnStatusAsync(Guid id, OrderReturnStatus? orderReturnStatus)
-        { 
-        var order= await _orderRepository.GetAsync(id);
+        {
+            var order = await _orderRepository.GetAsync(id);
             order.ReturnStatus = orderReturnStatus;
             await _orderRepository.UpdateAsync(order);
-        
-        
+
+
         }
         public async Task UpdateOrderItemsAsync(Guid id, List<UpdateOrderItemDto> orderItems)
         {
@@ -354,6 +363,36 @@ namespace Kooco.Pikachu.Orders
 
                     await SendEmailAsync(order.Id);
                 }
+            }
+        }
+
+        public async Task<PaymentGatewayDto> GetPaymentGatewayConfigurationsAsync(Guid id)
+        {
+            GroupBuy groupBuy = new();
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                groupBuy = await _groupBuyRepository.GetAsync(id);
+            }
+            using (CurrentTenant.Change(groupBuy.TenantId))
+            {
+                var paymentGateway = await _paymentGatewayRepository.FirstOrDefaultAsync(x => x.PaymentIntegrationType == PaymentIntegrationType.EcPay);
+                var paymentGatewayDto = ObjectMapper.Map<PaymentGateway, PaymentGatewayDto>(paymentGateway);
+                
+                var properties = typeof(PaymentGatewayDto).GetProperties();
+                foreach (var property in properties)
+                {
+                    if (property.PropertyType == typeof(string))
+                    {
+                        var value = (string?)property.GetValue(paymentGatewayDto);
+                        if (!string.IsNullOrEmpty(value))
+                        {
+                            var decryptedValue = _stringEncryptionService.Decrypt(value);
+                            property.SetValue(paymentGatewayDto, decryptedValue);
+                        }
+                    }
+                }
+
+                return paymentGatewayDto;
             }
         }
     }

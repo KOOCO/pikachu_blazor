@@ -142,11 +142,11 @@ public class PikachuMenuContributor : IMenuContributor
                 icon: "fas fa-funnel-dollar",
                 order: 4
             )
-                  .AddItem(new ApplicationMenuItem(
-            name: "FreebieManagement",
+            .AddItem(new ApplicationMenuItem(
+            name: "CashFlowDealerSettings",
             icon: "fas fa-hand-holding-usd",
-            displayName: "金流商設定",
-            url: "/Temp/Temp2")
+            displayName: l["CashFlowDealerSettings"],
+            url: "/CashFlowDealerSettings")
             )
                         .AddItem(new ApplicationMenuItem(
             name: "ElectronicInvoiceSetting",

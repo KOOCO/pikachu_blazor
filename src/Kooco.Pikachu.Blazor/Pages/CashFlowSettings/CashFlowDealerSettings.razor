@@ -1,0 +1,216 @@
+﻿@page "/CashFlowDealerSettings"
+@using Kooco.Pikachu.Localization;
+@using Kooco.Pikachu.PaymentGateways;
+@using Microsoft.Extensions.Localization;
+@using Volo.Abp.AspNetCore.Components.Messages;
+@using Volo.Abp.ObjectMapping;
+@using Blazorise.LoadingIndicator;
+
+@inject IPaymentGatewayAppService _paymentGatewayAppService;
+@inject IUiMessageService _uiMessageService;
+@inject IJSRuntime JSRuntime;
+@inject IObjectMapper ObjectMapper;
+@inject IStringLocalizer<PikachuResource> L;
+
+<LoadingIndicator @ref="Loading" FullScreen>
+
+</LoadingIndicator>
+
+<h3>@L["CashFlowDealerSettings"]</h3>
+
+<Card>
+    <CardHeader>
+        <h4>@L["LinePay"]</h4>
+    </CardHeader>
+    <CardBody>
+        <EditForm Model="@LinePay" OnValidSubmit="UpdateLinePayAsync">
+            <DataAnnotationsValidator />
+            <div class="row justify-content-center mb-2">
+                <div class="col-2">
+                    <label class="form-label" for="l-enable-disable-switch">
+                        @L["Enable/Disable"]
+                    </label>
+                </div>
+                <div class="col-6">
+                    <Switch TValue="bool" id="l-enable-disable-switch" @bind-Checked="LinePay.IsEnabled"></Switch>
+                </div>
+            </div>
+            <div class="row justify-content-center mb-2">
+                <div class="col-2">
+                    <label class="form-label" for="channel-id">
+                        @L["ChannelId"]
+                        <span class="text-danger"> *</span>
+                    </label>
+                </div>
+                <div class="col-6">
+                    <InputText id="channel-id" class="form-control form-control" @bind-Value="LinePay.ChannelId"></InputText>
+                    <ValidationMessage For="@(() => LinePay.ChannelId)" />
+                </div>
+            </div>
+            <div class="row justify-content-center mb-2">
+                <div class="col-2">
+                    <label class="form-label" for="channel-secret-key">
+                        @L["ChannelSecretKey"]
+                        <span class="text-danger"> *</span>
+                    </label>
+                </div>
+                <div class="col-6">
+                    <InputText id="channel-secret-key" class="form-control" @bind-Value="LinePay.ChannelSecretKey"></InputText>
+                    <ValidationMessage For="@(() => LinePay.ChannelSecretKey)" />
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
+                        <i class="fa fa-check me-1"></i>
+                        @L["SaveChanges"]
+                    </Button>
+                </div>
+            </div>
+        </EditForm>
+    </CardBody>
+</Card>
+
+<Card>
+    <CardHeader>
+        <h4>@L["ChinaTrust"]</h4>
+    </CardHeader>
+    <CardBody>
+        <EditForm Model="@ChinaTrust" OnValidSubmit="UpdateChinaTrustAsync">
+            <DataAnnotationsValidator />
+            <div class="row justify-content-center mb-2">
+                <div class="col-2">
+                    <label class="form-label" for="c-enable-disable-switch"></label>
+                    @L["Enable/Disable"]
+                </div>
+                <div class="col-6">
+                    <Switch TValue="bool" id="c-enable-disable-switch" @bind-Checked="ChinaTrust.IsEnabled"></Switch>
+                </div>
+            </div>
+            <div class="row justify-content-center mb-2">
+                <div class="col-2">
+                    <label class="form-label" for="code"></label>
+                    @L["Code"]
+                    <span class="text-danger"> *</span>
+                </div>
+                <div class="col-6">
+                    <InputText id="code" class="form-control" @bind-Value="ChinaTrust.Code"></InputText>
+                    <ValidationMessage For="@(() => ChinaTrust.Code)" />
+                </div>
+            </div>
+            <div class="row justify-content-center mb-2">
+                <div class="col-2">
+                    <label class="form-label" for="c-merchant-id"></label>
+                    @L["MerchantId"]
+                    <span class="text-danger"> *</span>
+                </div>
+                <div class="col-6">
+                    <InputText id="c-merchant-id" class="form-control" @bind-Value="ChinaTrust.MerchantId"></InputText>
+                    <ValidationMessage For="@(() => ChinaTrust.MerchantId)" />
+                </div>
+            </div>
+            <div class="row justify-content-center mb-2">
+                <div class="col-2">
+                    <label class="form-label" for="terminal-code"></label>
+                    @L["TerminalCode"]
+                    <span class="text-danger"> *</span>
+                </div>
+                <div class="col-6">
+                    <InputText id="terminal-code" class="form-control" @bind-Value="ChinaTrust.TerminalCode"></InputText>
+                    <ValidationMessage For="@(() => ChinaTrust.TerminalCode)" />
+                </div>
+            </div>
+            <div class="row justify-content-center mb-2">
+                <div class="col-2">
+                    <label class="form-label" for="code-value"></label>
+                    @L["CodeValue"]
+                    <span class="text-danger"> *</span>
+                </div>
+                <div class="col-6">
+                    <InputText id="code-value" class="form-control" @bind-Value="ChinaTrust.CodeValue"></InputText>
+                    <ValidationMessage For="@(() => ChinaTrust.CodeValue)" />
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
+                        <i class="fa fa-check me-1"></i>
+                        @L["SaveChanges"]
+                    </Button>
+                </div>
+            </div>
+        </EditForm>
+    </CardBody>
+</Card>
+
+<Card>
+    <CardHeader>
+        <h4>@L["GreenSector"]</h4>
+    </CardHeader>
+    <CardBody>
+        <EditForm Model="@EcPay" OnValidSubmit="UpdateEcPayAsync">
+            <DataAnnotationsValidator />
+            <div class="row justify-content-center mb-2">
+                <div class="col-2">
+                    <label class="form-label" for="g-enable-disable-switch"></label>
+                    @L["Enable/Disable"]
+                </div>
+                <div class="col-6">
+                    <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="EcPay.IsEnabled"></Switch>
+                </div>
+            </div>
+            <div class="row justify-content-center mb-2">
+                <div class="col-2">
+                    <label class="form-label" for="g-merchant-id"></label>
+                    @L["MerchantId"]
+                    <span class="text-danger"> *</span>
+                </div>
+                <div class="col-6">
+                    <InputText id="g-merchant-id" class="form-control" @bind-Value="EcPay.MerchantId"></InputText>
+                    <ValidationMessage For="@(() => EcPay.MerchantId)" />
+                </div>
+            </div>
+            <div class="row justify-content-center mb-2">
+                <div class="col-2">
+                    <label class="form-label" for="hash-key"></label>
+                    @L["HashKey"]
+                    <span class="text-danger"> *</span>
+                </div>
+                <div class="col-6">
+                    <InputText id="hash-key" class="form-control" @bind-Value="EcPay.HashKey"></InputText>
+                    <ValidationMessage For="@(() => EcPay.HashKey)" />
+                </div>
+            </div>
+            <div class="row justify-content-center mb-2">
+                <div class="col-2">
+                    <label class="form-label" for="hash-iv"></label>
+                    @L["HashIV"]
+                    <span class="text-danger"> *</span>
+                </div>
+                <div class="col-6">
+                    <InputText id="hash-iv" class="form-control" @bind-Value="EcPay.HashIV"></InputText>
+                    <ValidationMessage For="@(() => EcPay.HashIV)" />
+                </div>
+            </div>
+            <div class="row justify-content-center mb-2">
+                <div class="col-2">
+                    <label class="form-label" for="trade-description"></label>
+                    @L["TradeDescription"]
+                    <span class="text-danger"> *</span>
+                </div>
+                <div class="col-6">
+                    <InputText id="trade-description" class="form-control" @bind-Value="EcPay.TradeDescription"></InputText>
+                    <ValidationMessage For="@(() => EcPay.TradeDescription)" />
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
+                        <i class="fa fa-check me-1"></i>
+                        @L["SaveChanges"]
+                    </Button>
+                </div>
+            </div>
+        </EditForm>
+    </CardBody>
+</Card>
