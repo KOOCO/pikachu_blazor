@@ -308,6 +308,13 @@
     "CodeValue": "Code Value",
     "HashKey": "Hash Key",
     "HashIV": "Hash IV",
-    "TradeDescription": "Trade Description"
+    "TradeDescription": "Trade Description",
+
+
+    //Email Settings
+    "EmailSettings": "Email Settings",
+    "SenderName": "Sender Name",
+    "Greetings": "Greetings",
+    "Footer": "Footer"
   }
 }

@@ -1,0 +1,73 @@
+﻿@page "/EmailSettings"
+
+@using Kooco.Pikachu.Localization;
+@using Kooco.Pikachu.TenantEmailing;
+@using Microsoft.Extensions.Localization;
+@using Volo.Abp.AspNetCore.Components.Messages;
+@using Volo.Abp.ObjectMapping;
+@using Blazorise.LoadingIndicator;
+
+@inject ITenantEmailSettingsAppService _tenantEmailSettingsAppService;
+@inject IUiMessageService _uiMessageService;
+@inject IJSRuntime JSRuntime;
+@inject IObjectMapper ObjectMapper;
+@inject IStringLocalizer<PikachuResource> L;
+
+<h3>@L["EmailSettings"]</h3>
+<LoadingIndicator @ref="Loading" FullScreen></LoadingIndicator>
+
+<Card>
+    <CardBody>
+        <EditForm Model="@EmailSettings" OnValidSubmit="UpdateEmailSettingsAsync">
+            <DataAnnotationsValidator />
+            <div class="row justify-content-center mb-2">
+                <div class="col-2">
+                    @L["SenderName"]
+                    <span class="text-danger"> *</span>
+                </div>
+                <div class="col-7">
+                    <InputText class="form-control" @bind-Value="EmailSettings.SenderName"></InputText>
+                    <ValidationMessage For="@(() => EmailSettings.SenderName)" />
+                </div>
+            </div>
+            <div class="row justify-content-center mb-2">
+                <div class="col-2">
+                    @L["Subject"]
+                    <span class="text-danger"> *</span>
+                </div>
+                <div class="col-7">
+                    <InputText class="form-control" @bind-Value="EmailSettings.Subject"></InputText>
+                    <ValidationMessage For="@(() => EmailSettings.Subject)" />
+                </div>
+            </div>
+            <div class="row justify-content-center mb-2">
+                <div class="col-2">
+                    @L["Greetings"]
+                    <span class="text-danger"> *</span>
+                </div>
+                <div class="col-7">
+                    <InputTextArea class="form-control" @bind-Value="EmailSettings.Greetings" rows="5"></InputTextArea>
+                    <ValidationMessage For="@(() => EmailSettings.Greetings)" />
+                </div>
+            </div>
+            <div class="row justify-content-center mb-2">
+                <div class="col-2">
+                    @L["Footer"]
+                    <span class="text-danger"> *</span>
+                </div>
+                <div class="col-7">
+                    <InputTextArea class="form-control" @bind-Value="EmailSettings.Footer" rows="5"></InputTextArea>
+                    <ValidationMessage For="@(() => EmailSettings.Footer)" />
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <Button Type="ButtonType.Submit" Class="btn btn-primary">
+                        <i class="fa fa-check me-1"></i>
+                        @L["Save"]
+                    </Button>
+                </div>
+            </div>
+        </EditForm>
+    </CardBody>
+</Card>

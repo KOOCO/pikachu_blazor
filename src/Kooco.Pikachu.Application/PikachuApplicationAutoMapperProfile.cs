@@ -13,6 +13,7 @@ using Kooco.Pikachu.StoreComments;
 using Kooco.Pikachu.Refunds;
 using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.ElectronicInvoiceSettings;
+using Kooco.Pikachu.TenantEmailing;
 
 namespace Kooco.Pikachu;
 
@@ -85,5 +86,8 @@ public class PikachuApplicationAutoMapperProfile : Profile
 
         CreateMap<ElectronicInvoiceSetting, ElectronicInvoiceSettingDto>();
         CreateMap<ElectronicInvoiceSettingDto, CreateUpdateElectronicInvoiceDto>();
+
+        CreateMap<TenantEmailSettings, TenantEmailSettingsDto>();
+        CreateMap<TenantEmailSettingsDto, CreateUpdateTenantEmailSettingsDto>();
     }
 }

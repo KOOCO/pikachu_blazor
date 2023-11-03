@@ -1,8 +1,6 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
-using Kooco.Pikachu.Items.Dtos;
-using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.PaymentGateways;
@@ -14,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
@@ -26,10 +23,7 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Security.Encryption;
-using Microsoft.VisualBasic;
-using static Kooco.Pikachu.Permissions.PikachuPermissions;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Volo.Abp.ObjectMapping;
+using Kooco.Pikachu.TenantEmailing;
 
 namespace Kooco.Pikachu.Orders
 {
@@ -43,6 +37,7 @@ namespace Kooco.Pikachu.Orders
         private readonly IEmailSender _emailSender;
         private readonly IRepository<PaymentGateway, Guid> _paymentGatewayRepository;
         private readonly IStringEncryptionService _stringEncryptionService;
+        private readonly IRepository<TenantEmailSettings, Guid> _tenantEmailSettingsRepository;
         private readonly IStringLocalizer<PikachuResource> _l;
         public OrderAppService(
             IOrderRepository orderRepository,
@@ -52,6 +47,7 @@ namespace Kooco.Pikachu.Orders
             IEmailSender emailSender,
             IRepository<PaymentGateway, Guid> paymentGatewayRepository,
             IStringEncryptionService stringEncryptionService,
+            IRepository<TenantEmailSettings, Guid> tenantEmailSettingsRepository,
             IStringLocalizer<PikachuResource> l
             )
         {
@@ -62,6 +58,7 @@ namespace Kooco.Pikachu.Orders
             _emailSender = emailSender;
             _paymentGatewayRepository = paymentGatewayRepository;
             _stringEncryptionService = stringEncryptionService;
+            _tenantEmailSettingsRepository = tenantEmailSettingsRepository;
             _l = l;
         }
 
@@ -260,8 +257,10 @@ namespace Kooco.Pikachu.Orders
         {
             var order = await _orderRepository.GetWithDetailsAsync(id);
             var groupbuy = await _groupBuyRepository.GetAsync(g => g.Id == order.GroupBuyId);
+            var emailSettings = await _tenantEmailSettingsRepository.FirstOrDefaultAsync();
             string status = orderStatus == null ? _l[order.ShippingStatus.ToString()] : _l[orderStatus.ToString()];
             string subject = $"{groupbuy.GroupBuyName} 訂單#{order.OrderNo} {status}";
+
             string body = File.ReadAllText("wwwroot/EmailTemplates/email.html");
             DateTime creationTime = order.CreationTime;
             TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById("China Standard Time"); // UTC+8
