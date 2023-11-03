@@ -24,6 +24,8 @@ using Volo.Abp.Emailing;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Security.Encryption;
 using Kooco.Pikachu.TenantEmailing;
+using System.Net.Mail;
+using Volo.Abp.SettingManagement;
 
 namespace Kooco.Pikachu.Orders
 {
@@ -38,6 +40,7 @@ namespace Kooco.Pikachu.Orders
         private readonly IRepository<PaymentGateway, Guid> _paymentGatewayRepository;
         private readonly IStringEncryptionService _stringEncryptionService;
         private readonly IRepository<TenantEmailSettings, Guid> _tenantEmailSettingsRepository;
+        private readonly ISettingManager _settingManager;
         private readonly IStringLocalizer<PikachuResource> _l;
         public OrderAppService(
             IOrderRepository orderRepository,
@@ -48,6 +51,7 @@ namespace Kooco.Pikachu.Orders
             IRepository<PaymentGateway, Guid> paymentGatewayRepository,
             IStringEncryptionService stringEncryptionService,
             IRepository<TenantEmailSettings, Guid> tenantEmailSettingsRepository,
+            ISettingManager settingManager,
             IStringLocalizer<PikachuResource> l
             )
         {
@@ -59,6 +63,7 @@ namespace Kooco.Pikachu.Orders
             _paymentGatewayRepository = paymentGatewayRepository;
             _stringEncryptionService = stringEncryptionService;
             _tenantEmailSettingsRepository = tenantEmailSettingsRepository;
+            _settingManager = settingManager;
             _l = l;
         }
 
@@ -258,14 +263,39 @@ namespace Kooco.Pikachu.Orders
             var order = await _orderRepository.GetWithDetailsAsync(id);
             var groupbuy = await _groupBuyRepository.GetAsync(g => g.Id == order.GroupBuyId);
             var emailSettings = await _tenantEmailSettingsRepository.FirstOrDefaultAsync();
+
             string status = orderStatus == null ? _l[order.ShippingStatus.ToString()] : _l[orderStatus.ToString()];
+
             string subject = $"{groupbuy.GroupBuyName} 訂單#{order.OrderNo} {status}";
+
+            if (emailSettings != null && !string.IsNullOrEmpty(emailSettings.Subject))
+            {
+                subject = emailSettings.Subject;
+            }
 
             string body = File.ReadAllText("wwwroot/EmailTemplates/email.html");
             DateTime creationTime = order.CreationTime;
             TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById("China Standard Time"); // UTC+8
             DateTimeOffset creationTimeInTimeZone = TimeZoneInfo.ConvertTime(creationTime, tz);
             string formattedTime = creationTimeInTimeZone.ToString("yyyy-MM-dd HH:mm:ss");
+            
+            if(emailSettings != null)
+            {
+                if (!string.IsNullOrEmpty(emailSettings.Greetings))
+                {
+                    body = body.Replace("{{Greetings}}", emailSettings.Greetings);
+                }
+                else
+                {
+                    body = body.Replace("{{Greetings}}", "");
+                }
+
+                if (!string.IsNullOrEmpty(emailSettings.Footer))
+                {
+                    body = body.Replace("{{Footer}}", emailSettings.Footer);
+                }
+            }
+
             body = body.Replace("{{NotifyMessage}}", groupbuy.NotifyMessage);
             body = body.Replace("{{GroupBuyName}}", groupbuy.GroupBuyName);
             body = body.Replace("{{OrderNo}}", order.OrderNo);
@@ -320,12 +350,19 @@ namespace Kooco.Pikachu.Orders
             body = body.Replace("{{DeliveryFee}}", "$0");
             body = body.Replace("{{TotalAmount}}", $"${order.TotalAmount:N0}");
 
+            var defaultFromEmail = await _settingManager.GetOrNullGlobalAsync("Abp.Mailing.DefaultFromAddress");
+            var defaultFromName = await _settingManager.GetOrNullGlobalAsync("Abp.Mailing.DefaultFromDisplayName");
+            MailAddress from = new(defaultFromEmail, emailSettings?.SenderName ?? defaultFromName);
+            MailAddress to = new(order.CustomerEmail);
 
-            await _emailSender.SendAsync(
-                order.CustomerEmail,
-                subject,
-                body
-                );
+            MailMessage mailMessage = new(from, to)
+            {
+                Subject = subject,
+                Body = body,
+                IsBodyHtml = true
+            };
+
+            await _emailSender.SendAsync(mailMessage);
         }
 
         [AllowAnonymous]
