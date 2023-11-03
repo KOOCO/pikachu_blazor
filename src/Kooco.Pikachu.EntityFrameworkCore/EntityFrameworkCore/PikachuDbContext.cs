@@ -26,6 +26,7 @@ using Kooco.Pikachu.StoreComments;
 using Kooco.Pikachu.Refunds;
 using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.ElectronicInvoiceSettings;
+using Kooco.Pikachu.TenantEmailing;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -84,6 +85,7 @@ public class PikachuDbContext :
     public DbSet<Refund> Refunds { get; set; }
     public DbSet<PaymentGateway> PaymentGateways { get; set; }
     public DbSet<ElectronicInvoiceSetting> ElectronicInvoiceSettings { get; set; }
+    public DbSet<TenantEmailSettings> TenantEmailSettings { get; set; }
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
     {
@@ -228,11 +230,17 @@ public class PikachuDbContext :
             b.ToTable(PikachuConsts.DbTablePrefix + "PaymentGateways", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
         });
+        
         builder.Entity<ElectronicInvoiceSetting>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "ElectronicInvoiceSettings", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
-         
+        });
+
+        builder.Entity<TenantEmailSettings>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "TenantEmailSettings", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
         });
     }
 }

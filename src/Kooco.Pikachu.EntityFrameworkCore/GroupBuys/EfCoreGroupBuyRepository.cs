@@ -120,6 +120,17 @@ namespace Kooco.Pikachu.GroupBuys
                 .PageBy(skipCount, 1)
                 .FirstOrDefaultAsync();
 
+            // Filter the items to include only those that are available
+            if (itemGroup != null)
+            {
+                itemGroup.ItemGroupDetails = itemGroup.ItemGroupDetails
+                    .Select(igd =>
+                    {
+                        igd.Item = igd.Item.IsItemAvaliable ? igd.Item : null;
+                        return igd;
+                    }).ToList();
+            }
+
             return new GroupBuyItemGroupWithCount
             {
                 TotalCount = itemGroups.Count(),
