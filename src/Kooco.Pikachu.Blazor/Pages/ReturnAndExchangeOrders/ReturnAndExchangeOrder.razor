@@ -63,15 +63,33 @@
                     <DataGridColumn Field="@nameof(OrderDto.CustomerName)" Caption="@L["CustomerName"]" />
                     <DataGridColumn   Field="@nameof(OrderDto.ReturnStatus)" Caption="@L["ReturnStatus"]">
                              <DisplayTemplate>
-                                 <Select TValue="OrderReturnStatus" Class="form-select form-select-sm"
-                                         SelectedValue="@context.ReturnStatus"
-                                         SelectedValueChanged="@(e => ReturnStatusChanged(e, context))">
-                                 <SelectItem></SelectItem>
-                                 @foreach (var enumValue in Enum.GetValues(typeof(OrderReturnStatus)))
+                             @if (context.ReturnStatus == OrderReturnStatus.WaitingForApprove)
+                            {
+                                <Select TValue="OrderReturnStatus" Class="form-select form-select-sm"
+                                SelectedValue="@context.ReturnStatus"
+                                SelectedValueChanged="@(e => ReturnStatusChanged(e, context))">
+                                    <SelectItem></SelectItem>
+                                    @foreach (var enumValue in Enum.GetValues(typeof(OrderReturnStatus)))
                                     {
-                                    <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                        <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
                                     }
                                 </Select>
+                            }
+                            else
+                            {
+
+                                <Select Disabled TValue="OrderReturnStatus" Class="form-select form-select-sm"
+                                        SelectedValue="@context.ReturnStatus"
+                                        SelectedValueChanged="@(e => ReturnStatusChanged(e, context))">
+                                    <SelectItem></SelectItem>
+                                    @foreach (var enumValue in Enum.GetValues(typeof(OrderReturnStatus)))
+                                    {
+                                        <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                    }
+                                </Select>
+
+
+}
                         </DisplayTemplate>
                         </DataGridColumn>
                     <DataGridColumn Field="@nameof(OrderDto.OrderStatus)" Caption="@L["OrderStatus"]">

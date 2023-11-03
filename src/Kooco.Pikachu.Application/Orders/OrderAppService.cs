@@ -212,6 +212,11 @@ namespace Kooco.Pikachu.Orders
         {
             var order = await _orderRepository.GetAsync(id);
             order.ReturnStatus = orderReturnStatus;
+            if (orderReturnStatus == OrderReturnStatus.Reject)
+            {
+                order.OrderStatus = OrderStatus.Open;
+            
+            }
             await _orderRepository.UpdateAsync(order);
 
 
