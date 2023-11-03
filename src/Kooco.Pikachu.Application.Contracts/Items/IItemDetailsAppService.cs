@@ -20,5 +20,7 @@ public interface IItemDetailsAppService :
         CreateItemDetailsDto>
 {
     Task<IRemoteStreamContent> GetListAsExcelFileAsync(InventroyExcelDownloadDto input);
-    
+    Task<PagedResultDto<ItemDetailsDto>> GetInventroyReport(GetInventroyInputDto input);
+
+
 }

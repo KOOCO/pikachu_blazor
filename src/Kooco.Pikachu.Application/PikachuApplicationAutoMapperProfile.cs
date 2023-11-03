@@ -37,7 +37,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<ItemWithItemType, ItemWithItemTypeDto>();
 
         // ItemDetailDto EntityMapping
-        CreateMap<ItemDetails, ItemDetailsDto>();
+        CreateMap<ItemDetails, ItemDetailsDto>(MemberList.Source);
         CreateMap<CreateItemDetailsDto, ItemDetails>();
 
         //EnumValue EntityMapping
