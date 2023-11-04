@@ -14,6 +14,10 @@ using Volo.Abp.MultiTenancy;
 using Kooco.Pikachu.Freebies.Dtos;
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Items;
+using Volo.Abp.Content;
+using System.IO;
+using Kooco.Pikachu.Orders;
+using MiniExcelLibs;
 
 namespace Kooco.Pikachu.GroupBuys
 {
@@ -26,6 +30,7 @@ namespace Kooco.Pikachu.GroupBuys
         private readonly IFreebieRepository _freebieRepository;
         private readonly IDataFilter _dataFilter;
         private readonly ISetItemRepository _setItemRepository;
+        private readonly IOrderRepository _orderRepository;
 
         public GroupBuyAppService(
             IGroupBuyRepository groupBuyRepository,
@@ -34,7 +39,8 @@ namespace Kooco.Pikachu.GroupBuys
             IFreebieRepository freebieRepository,
             IRepository<Image, Guid> imageRepository,
             IDataFilter dataFilter,
-            ISetItemRepository setItemRepository
+            ISetItemRepository setItemRepository,
+            IOrderRepository orderRepository
             )
         {
             _groupBuyManager = groupBuyManager;
@@ -44,6 +50,7 @@ namespace Kooco.Pikachu.GroupBuys
             _dataFilter = dataFilter;
             _freebieRepository = freebieRepository;
             _setItemRepository = setItemRepository;
+            _orderRepository = orderRepository;
         }
 
         public async Task<GroupBuyDto> CreateAsync(GroupBuyCreateDto input)
@@ -396,6 +403,28 @@ namespace Kooco.Pikachu.GroupBuys
         {
             var data = await _groupBuyRepository.GetGroupBuyReportDetailsAsync(id);
             return ObjectMapper.Map<GroupBuyReportDetails, GroupBuyReportDetailsDto>(data);
+        }
+
+        public async Task<IRemoteStreamContent> GetListAsExcelFileAsync(Guid id)
+        {
+
+            var items = await _orderRepository.GetListAsync(0, int.MaxValue, nameof(Order.CreationTime), null, id);
+            var excelData = items.Select(x => new
+            {
+                x.OrderNo,
+                OrderDate = x.CreationTime.ToString("MM/d/yyyy h:mm:ss tt"),
+                x.CustomerName,
+                Email = x.CustomerEmail,
+                OrderStatus = L[x.OrderStatus.ToString()],
+                ShippingStatus = L[x.ShippingStatus.ToString()],
+                PaymentMethod = L[x.PaymentMethod.ToString()],
+                CheckoutAmount = "$ " + x.TotalAmount.ToString("N2")
+            });
+
+            var memoryStream = new MemoryStream();
+            await memoryStream.SaveAsAsync(excelData);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            return new RemoteStreamContent(memoryStream, "InventroyReport.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         }
     }
 }

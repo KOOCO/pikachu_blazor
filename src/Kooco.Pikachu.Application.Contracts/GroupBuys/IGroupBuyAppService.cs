@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
-
+using Volo.Abp.Content;
 
 namespace Kooco.Pikachu.GroupBuys
 {
@@ -31,5 +31,6 @@ namespace Kooco.Pikachu.GroupBuys
         Task<GroupBuyItemGroupDto> GetGroupBuyItemGroupAsync(Guid id);
         Task DeleteGroupBuyItemAsync(Guid id, Guid GroupBuyID);
         Task<GroupBuyReportDetailsDto> GetGroupBuyReportDetailsAsync(Guid id);
+        Task<IRemoteStreamContent> GetListAsExcelFileAsync(Guid id);
     }
 }

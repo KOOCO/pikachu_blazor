@@ -1,4 +1,5 @@
-﻿using Blazorise.DataGrid;
+﻿using Blazorise;
+using Blazorise.DataGrid;
 using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.GroupBuys;
 using Microsoft.JSInterop;
@@ -58,9 +59,24 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             }
         }
 
-        private void OnNavigate(Guid id)
+        async void OnSortChange(DataGridSortChangedEventArgs e)
         {
-            NavigationManager.NavigateTo("/GroupBuyManagement/GroupBuyReportDetails/" + id);
+            try
+            {
+                await loading.Show();
+                Sorting = e.FieldName + " " + (e.SortDirection != SortDirection.Default ? e.SortDirection : "");
+                await UpdateGroupBuyReport();
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+                await loading.Hide();
+            }
         }
     }
 }

@@ -213,11 +213,11 @@ namespace Kooco.Pikachu.GroupBuys
                             OrderQuantityPaid = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open && order.ShippingStatus == ShippingStatus.PrepareShipment).Sum(order => order.TotalQuantity),
                             TotalOrderQuantity = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(order => order.TotalQuantity),
                             SalesAmount = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(order => order.TotalAmount),
-                            SalesAmountExclShipping = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(order => order.TotalAmount) - 200,
+                            SalesAmountExclShipping = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(order => order.TotalAmount) - groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Count() * 200,
                             AmountReceived = groupedOrders.Where(x => x.OrderStatus == OrderStatus.Open && x.ShippingStatus == ShippingStatus.PrepareShipment).Sum(order => order.TotalAmount),
-                            AmountReceivedExclShipping = groupedOrders.Where(x => x.OrderStatus == OrderStatus.Open && x.ShippingStatus == ShippingStatus.PrepareShipment).Sum(order => order.TotalAmount) - 200,
-                            SalesAmountMinusShipping = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(order => order.TotalAmount) - 200,
-                            BloggersProfit = 999
+                            AmountReceivedExclShipping = groupedOrders.Where(x => x.OrderStatus == OrderStatus.Open && x.ShippingStatus == ShippingStatus.PrepareShipment).Sum(order => order.TotalAmount) - groupedOrders.Where(x => x.OrderStatus == OrderStatus.Open && x.ShippingStatus == ShippingStatus.PrepareShipment).Count() * 200,
+                            SalesAmountMinusShipping = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(order => order.TotalAmount) - groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Count() * 200,
+                            BloggersProfit = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(order => order.TotalAmount) * groupedOrders.First().GroupBuy.ProfitShare
                         }).FirstOrDefaultAsync();
 
             return query;
