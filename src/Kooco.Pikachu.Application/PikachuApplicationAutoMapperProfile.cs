@@ -14,6 +14,7 @@ using Kooco.Pikachu.Refunds;
 using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.ElectronicInvoiceSettings;
 using Kooco.Pikachu.TenantEmailing;
+using Kooco.Pikachu.AutomaticEmails;
 
 namespace Kooco.Pikachu;
 
@@ -89,5 +90,9 @@ public class PikachuApplicationAutoMapperProfile : Profile
 
         CreateMap<TenantEmailSettings, TenantEmailSettingsDto>();
         CreateMap<TenantEmailSettingsDto, CreateUpdateTenantEmailSettingsDto>();
+
+        CreateMap<AutomaticEmail, AutomaticEmailDto>();
+        CreateMap<AutomaticEmailGroupBuys, AutomaticEmailGroupBuysDto>();
+        CreateMap<AutomaticEmailDto, AutomaticEmailCreateUpdateDto>();
     }
 }

@@ -242,11 +242,17 @@ public class PikachuMenuContributor : IMenuContributor
 
         administration.SetSubItemOrder(IdentityMenuNames.GroupName, 2);
         administration.SetSubItemOrder(SettingManagementMenus.GroupName, 3);
-        administration.AddItem(new ApplicationMenuItem(
+        administration
+            .AddItem(new ApplicationMenuItem(
             name: "EmailSettings",
             icon: "fas fa-envelope-open-text",
             displayName: l["EmailSettings"],
             url: "/EmailSettings")
+            ).AddItem(new ApplicationMenuItem(
+            name: "AutomaticEmailing",
+            icon: "fas fa-envelope-open-text",
+            displayName: l["AutomaticEmailing"],
+            url: "/AutomaticEmailing")
             );
         //remove administration item from menu
         //context.Menu.Items.Remove( administration );

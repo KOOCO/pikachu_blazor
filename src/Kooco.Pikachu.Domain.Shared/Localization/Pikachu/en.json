@@ -315,6 +315,20 @@
     "EmailSettings": "Email Settings",
     "SenderName": "Sender Name",
     "Greetings": "Greetings",
-    "Footer": "Footer"
+    "Footer": "Footer",
+    "AutomaticEmailing": "Automatic Emailing",
+    "TradeName": "Trade Name",
+    "ReceipientMailbox": "Receipient Mailbox",
+    "SendInterval": "Send Interval",
+    "SendTime": "Send Time",
+    "CreateAutomaticEmails": "Create Automatic Emails",
+    "RecipientMailbox": "Recipient Mailbox",
+    "InvalidTradeName": "Invalid Trade Name",
+    "InvalidRecipients": "Invalid Recipients",
+    "InvalidStartDate": "Invalid Start Date",
+    "InvalidEndDate": "Invalid End Date",
+    "InvalidSendTime": "Invalid Send Time",
+    "InvalidGroupBuys": "Please Select Group Buys",
+    "EditAutomaticEmails": "Edit Automatic Emails"
   }
 }

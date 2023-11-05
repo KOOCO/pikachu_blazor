@@ -18,6 +18,7 @@ using Volo.Abp.Content;
 using System.IO;
 using Kooco.Pikachu.Orders;
 using MiniExcelLibs;
+using Kooco.Pikachu.Items.Dtos;
 
 namespace Kooco.Pikachu.GroupBuys
 {
@@ -276,6 +277,14 @@ namespace Kooco.Pikachu.GroupBuys
         {
             var itemGroup = await _groupBuyRepository.GetGroupBuyItemGroupAsync(id);
             return ObjectMapper.Map<GroupBuyItemGroup, GroupBuyItemGroupDto>(itemGroup);
+        }
+
+        public async Task<List<KeyValueDto>> GetGroupBuyLookupAsync()
+        {
+            var groupbuys = (await _groupBuyRepository.GetListAsync())
+                            .Where(g => g.IsGroupBuyAvaliable)
+                            .ToList();
+            return ObjectMapper.Map<List<GroupBuy>, List<KeyValueDto>>(groupbuys);
         }
 
         /// <summary>

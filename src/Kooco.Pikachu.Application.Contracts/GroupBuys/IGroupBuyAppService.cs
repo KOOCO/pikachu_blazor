@@ -1,4 +1,5 @@
 ﻿using Kooco.Pikachu.Freebies.Dtos;
+using Kooco.Pikachu.Items.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -32,5 +33,6 @@ namespace Kooco.Pikachu.GroupBuys
         Task DeleteGroupBuyItemAsync(Guid id, Guid GroupBuyID);
         Task<GroupBuyReportDetailsDto> GetGroupBuyReportDetailsAsync(Guid id);
         Task<IRemoteStreamContent> GetListAsExcelFileAsync(Guid id);
+        Task<List<KeyValueDto>> GetGroupBuyLookupAsync();
     }
 }
