@@ -297,8 +297,8 @@
 
     //Cash Flow Settings
     "CashFlowDealerSettings": "Cash Flow Dealer Settings",
-    "GreenSector": "Green Sector",
-    "ChinaTrust": "China Trust",
+    "EcPay": "Ecpay",
+    "ChinaTrust": "CTBC Bank Co., Ltd",
     "Enable/Disable": "Enable/Disable",
     "ChannelId": "Channel ID",
     "ChannelSecretKey": "Channel Secret Key",

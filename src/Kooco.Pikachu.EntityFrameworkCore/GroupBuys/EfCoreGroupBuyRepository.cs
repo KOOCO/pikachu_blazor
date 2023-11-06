@@ -126,7 +126,13 @@ namespace Kooco.Pikachu.GroupBuys
                 itemGroup.ItemGroupDetails = itemGroup.ItemGroupDetails
                     .Select(igd =>
                     {
-                        igd.Item = igd.Item.IsItemAvaliable ? igd.Item : null;
+                        igd.Item = igd.Item != null && igd.Item.IsItemAvaliable ? igd.Item : null;
+                        if (igd.SetItem != null)
+                        {
+                            igd.SetItem.SetItemDetails = igd.SetItem.SetItemDetails
+                                .Where(sid => sid.Item != null && sid.Item.IsItemAvaliable)
+                                .ToList();
+                        }
                         return igd;
                     }).ToList();
             }
@@ -217,7 +223,7 @@ namespace Kooco.Pikachu.GroupBuys
                             AmountReceived = groupedOrders.Where(x => x.OrderStatus == OrderStatus.Open && x.ShippingStatus == ShippingStatus.PrepareShipment).Sum(order => order.TotalAmount),
                             AmountReceivedExclShipping = groupedOrders.Where(x => x.OrderStatus == OrderStatus.Open && x.ShippingStatus == ShippingStatus.PrepareShipment).Sum(order => order.TotalAmount) - groupedOrders.Where(x => x.OrderStatus == OrderStatus.Open && x.ShippingStatus == ShippingStatus.PrepareShipment).Count() * 200,
                             SalesAmountMinusShipping = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(order => order.TotalAmount) - groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Count() * 200,
-                            BloggersProfit = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(order => order.TotalAmount) * groupedOrders.First().GroupBuy.ProfitShare
+                            BloggersProfit = (groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(order => order.TotalAmount) - groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Count() * 200) * (groupedOrders.First().GroupBuy.ProfitShare / 100.0M)
                         }).FirstOrDefaultAsync();
 
             return query;
