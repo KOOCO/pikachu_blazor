@@ -217,18 +217,17 @@ public class PikachuMenuContributor : IMenuContributor
             //.RequirePermissions("MyProject.Crm.Orders")
             )
             .AddItem(new ApplicationMenuItem(
-            name: "FreebieManagement",
+            name: "EmailSettings",
             icon: "fas fa-mail-bulk",
-            displayName: "寄送信設定",
-            url: "/GroupBuyManagement/GroupBuyReport7")
+            displayName: l["EmailSettings"],
+            url: "/EmailSettings")
             )
             .AddItem(new ApplicationMenuItem(
-            name: "FreebieManagement",
+            name: "AutomaticEmailing",
             icon: "fas fa-envelope-open-text",
-            displayName: "自動發送報表",
-            url: "/GroupBuyManagement/GroupBuyReport8")
+            displayName: l["AutomaticEmailing"],
+            url: "/AutomaticEmailing")
             )
-
         );
 
         if (MultiTenancyConsts.IsEnabled)
@@ -242,18 +241,6 @@ public class PikachuMenuContributor : IMenuContributor
 
         administration.SetSubItemOrder(IdentityMenuNames.GroupName, 2);
         administration.SetSubItemOrder(SettingManagementMenus.GroupName, 3);
-        administration
-            .AddItem(new ApplicationMenuItem(
-            name: "EmailSettings",
-            icon: "fas fa-envelope-open-text",
-            displayName: l["EmailSettings"],
-            url: "/EmailSettings")
-            ).AddItem(new ApplicationMenuItem(
-            name: "AutomaticEmailing",
-            icon: "fas fa-envelope-open-text",
-            displayName: l["AutomaticEmailing"],
-            url: "/AutomaticEmailing")
-            );
         //remove administration item from menu
         //context.Menu.Items.Remove( administration );
 

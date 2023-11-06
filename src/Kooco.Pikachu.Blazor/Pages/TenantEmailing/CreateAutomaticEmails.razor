@@ -17,11 +17,11 @@
 @inject NavigationManager NavigationManager;
 @inject IStringLocalizer<PikachuResource> L;
 
-    <style>
-        .tag-input{
-            width: 250px !important;
-        }
-    </style>
+<style>
+    .tag-input {
+        width: 250px !important;
+    }
+</style>
 
 <h3>@L["CreateAutomaticEmails"]</h3>
 <LoadingIndicator @ref="Loading" FullScreen></LoadingIndicator>
@@ -29,92 +29,91 @@
  <Card>
      <CardBody>
          <div class="container">
-                <div class="row justify-content-center mb-2">
-                    <div class="col-2">
-                        @L["TradeName"]
-                        <span class="text-danger"> *</span>
-                    </div>
-                    <div class="col-7">
-                        <InputText class="form-control" @bind-Value="Model.TradeName"></InputText>
-                    </div>
-                </div>
-                <div class="row justify-content-center mb-2">
-                    <div class="col-2">
-                        @L["RecipientMailbox"]
-                        <span class="text-danger"> *</span>
-                    </div>
-                    <div class="col-7">
-                        <div class="form-control">
-                        <div class="input-container d-block mb-2">
-                            <InputText class="form-control tag-input" id="tagInput" @bind-Value="Recipient" 
-                            placeholder="abc@xyz.com"
-                            @onkeyup="HandleRecipientInputKeyUp"></InputText>
-                            <i class="tag-input-placeholder-icon fa fa-plus"></i>
-                        </div>
+             <div class="row justify-content-center mb-2">
+                 <div class="col-2 pt-2 text-end">
+                     @L["TradeName"]
+                     <span class="text-danger"> *</span>
+                 </div>
+                 <div class="col-7">
+                     <InputText class="form-control" @bind-Value="Model.TradeName"></InputText>
+                 </div>
+             </div>
+             <div class="row justify-content-center mb-2">
+                 <div class="col-2 pt-2 text-end">
+                     @L["RecipientMailbox"]
+                     <span class="text-danger"> *</span>
+                 </div>
+                 <div class="col-7">
+                     <div class="form-control">
+                         <div class="input-container d-block mb-2">
+                             <InputText class="form-control tag-input" id="tagInput" @bind-Value="Recipient"
+                                        placeholder="abc@xyz.com"
+                             @onkeyup="HandleRecipientInputKeyUp"></InputText>
+                             <i class="tag-input-placeholder-icon fa fa-plus"></i>
+                         </div>
 
-                        @foreach (var item in Model.RecipientsList)
+                         @foreach (var item in Model.RecipientsList)
                         {
                             <Badge class="item-tags" CloseClicked="@(() => HandleRecipientDelete(item))">@item</Badge>
                         }
                     </div>
-                    </div>
                 </div>
-                <div class="row justify-content-center mb-2">
-                    <div class="col-2">
-                        @L["SendInterval"]
-                        <span class="text-danger"> *</span>
-                    </div>
-                    <div class="col-3">
-                        <InputDate class="form-control" @bind-Value="Model.StartDate" min="@DateTime.Now.ToString("yyyy-MM-dd")" DisplayName="Start Date"></InputDate>
-                    </div>
-                    <div class="col-1 text-center">
-                        <p class="fw-bold fs-large m-0" style="font-size: large; padding: 0.675rem 1.25rem">@L["To"]</p>
-                    </div>
-                    <div class="col-3">
-                        <InputDate class="form-control" @bind-Value="Model.EndDate" min="@DateTime.Now.ToString("yyyy-MM-dd")" DisplayName="End Date"></InputDate>
-                    </div>
+            </div>
+            <div class="row justify-content-center mb-2">
+                <div class="col-2 pt-2 text-end">
+                    @L["SendInterval"]
+                    <span class="text-danger"> *</span>
                 </div>
-                <div class="row justify-content-center mb-2">
-                    <div class="col-2">
-                        @L["SendTime"]
-                        <span class="text-danger"> *</span>
-                    </div>
-                    <div class="col-3">
-                        <input type="time" class="form-control" @bind-value="Model.SendTime"/>
-                    </div>
-                    <div class="col-1"></div>
-                    <div class="col-3"></div>
+                <div class="col-3">
+                    <InputDate class="form-control" @bind-Value="Model.StartDate" min="@DateTime.Now.ToString("yyyy-MM-dd")" DisplayName="Start Date"></InputDate>
                 </div>
-                <div class="row justify-content-center mb-2">
-                    <div class="col-2">
-                        @L["SelectGroupBuys"]
-                        <span class="text-danger"> *</span>
-                    </div>
-                    <div class="col-7">
-                        <Autocomplete
-                                TItem="KeyValueDto"
-                                    TValue="Guid"
-                                    Data="@GroupBuys"
-                                    TextField="@(( item ) => item.Name)"
-                                    ValueField="@(( item ) => item.Id)"
-                                    Placeholder="Search..."
-                                    Filter="AutocompleteFilter.StartsWith"
-                                    CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
-                                    HighlightSearch
-                                    Immediate="true"
-                                    SelectionMode="AutocompleteSelectionMode.Multiple"
-                                    @bind-SelectedValues="Model.GroupBuyIds">
-                    </Autocomplete>
-                    </div>
+                <div class="col-1 text-center">
+                    <p class="fw-bold fs-large m-0" style="font-size: large; padding: 0.675rem 1.25rem">@L["To"]</p>
                 </div>
-                <div class="row mt-3">
-                    <div class="col-12 text-center">
-                        <Button Type="ButtonType.Button" Class="btn btn-primary" Clicked="CreateAutomaticEmailAsync">
-                            <i class="fa fa-check"></i>
-                            @L["Save"]
-                        </Button>
-                    </div>
+                <div class="col-3">
+                    <InputDate class="form-control" @bind-Value="Model.EndDate" min="@DateTime.Now.ToString("yyyy-MM-dd")" DisplayName="End Date"></InputDate>
                 </div>
+            </div>
+            <div class="row justify-content-center mb-2">
+                <div class="col-2 pt-2 text-end">
+                    @L["SendTime"]
+                    <span class="text-danger"> *</span>
+                </div>
+                <div class="col-3">
+                    <input type="time" class="form-control" @bind-value="Model.SendTime" />
+                </div>
+                <div class="col-1"></div>
+                <div class="col-3"></div>
+            </div>
+            <div class="row justify-content-center mb-2">
+                <div class="col-2 pt-2 text-end">
+                    @L["SelectGroupBuys"]
+                    <span class="text-danger"> *</span>
+                </div>
+                <div class="col-7">
+                    <Autocomplete TItem="KeyValueDto"
+                                  TValue="Guid"
+                                  Data="@GroupBuys"
+                                  TextField="@(( item ) => item.Name)"
+                                  ValueField="@(( item ) => item.Id)"
+                                  Placeholder="Search..."
+                                  Filter="AutocompleteFilter.StartsWith"
+                                  CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                                                HighlightSearch
+                                   Immediate="true"
+                                   SelectionMode="AutocompleteSelectionMode.Multiple"
+                     @bind-SelectedValues="Model.GroupBuyIds">
+                     </Autocomplete>
+                 </div>
+             </div>
+             <div class="row mt-3">
+                 <div class="col-12 text-center">
+                     <Button Type="ButtonType.Button" Class="btn btn-primary" Clicked="CreateAutomaticEmailAsync">
+                         <i class="fa fa-check"></i>
+                         @L["Save"]
+                     </Button>
+                 </div>
+             </div>
          </div>
      </CardBody>
  </Card>

@@ -26,7 +26,7 @@
         <EditForm Model="@LinePay" OnValidSubmit="UpdateLinePayAsync">
             <DataAnnotationsValidator />
             <div class="row justify-content-center mb-2">
-                <div class="col-2">
+                <div class="col-2 text-end">
                     <label class="form-label" for="l-enable-disable-switch">
                         @L["Enable/Disable"]
                     </label>
@@ -36,7 +36,7 @@
                 </div>
             </div>
             <div class="row justify-content-center mb-2">
-                <div class="col-2">
+                <div class="col-2 pt-2 text-end">
                     <label class="form-label" for="channel-id">
                         @L["ChannelId"]
                         <span class="text-danger"> *</span>
@@ -48,7 +48,7 @@
                 </div>
             </div>
             <div class="row justify-content-center mb-2">
-                <div class="col-2">
+                <div class="col-2 pt-2 text-end">
                     <label class="form-label" for="channel-secret-key">
                         @L["ChannelSecretKey"]
                         <span class="text-danger"> *</span>
@@ -79,7 +79,7 @@
         <EditForm Model="@ChinaTrust" OnValidSubmit="UpdateChinaTrustAsync">
             <DataAnnotationsValidator />
             <div class="row justify-content-center mb-2">
-                <div class="col-2">
+                <div class="col-2 text-end">
                     <label class="form-label" for="c-enable-disable-switch"></label>
                     @L["Enable/Disable"]
                 </div>
@@ -88,7 +88,7 @@
                 </div>
             </div>
             <div class="row justify-content-center mb-2">
-                <div class="col-2">
+                <div class="col-2 pt-2 text-end">
                     <label class="form-label" for="code"></label>
                     @L["Code"]
                     <span class="text-danger"> *</span>
@@ -99,7 +99,7 @@
                 </div>
             </div>
             <div class="row justify-content-center mb-2">
-                <div class="col-2">
+                <div class="col-2 pt-2 text-end">
                     <label class="form-label" for="c-merchant-id"></label>
                     @L["MerchantId"]
                     <span class="text-danger"> *</span>
@@ -110,7 +110,7 @@
                 </div>
             </div>
             <div class="row justify-content-center mb-2">
-                <div class="col-2">
+                <div class="col-2 pt-2 text-end">
                     <label class="form-label" for="terminal-code"></label>
                     @L["TerminalCode"]
                     <span class="text-danger"> *</span>
@@ -121,7 +121,7 @@
                 </div>
             </div>
             <div class="row justify-content-center mb-2">
-                <div class="col-2">
+                <div class="col-2 pt-2 text-end">
                     <label class="form-label" for="code-value"></label>
                     @L["CodeValue"]
                     <span class="text-danger"> *</span>
@@ -145,13 +145,13 @@
 
 <Card>
     <CardHeader>
-        <h4>@L["GreenSector"]</h4>
+        <h4>@L["EcPay"]</h4>
     </CardHeader>
     <CardBody>
         <EditForm Model="@EcPay" OnValidSubmit="UpdateEcPayAsync">
             <DataAnnotationsValidator />
             <div class="row justify-content-center mb-2">
-                <div class="col-2">
+                <div class="col-2 text-end">
                     <label class="form-label" for="g-enable-disable-switch"></label>
                     @L["Enable/Disable"]
                 </div>
@@ -160,7 +160,7 @@
                 </div>
             </div>
             <div class="row justify-content-center mb-2">
-                <div class="col-2">
+                <div class="col-2 pt-2 text-end">
                     <label class="form-label" for="g-merchant-id"></label>
                     @L["MerchantId"]
                     <span class="text-danger"> *</span>
@@ -171,7 +171,7 @@
                 </div>
             </div>
             <div class="row justify-content-center mb-2">
-                <div class="col-2">
+                <div class="col-2 pt-2 text-end">
                     <label class="form-label" for="hash-key"></label>
                     @L["HashKey"]
                     <span class="text-danger"> *</span>
@@ -182,7 +182,7 @@
                 </div>
             </div>
             <div class="row justify-content-center mb-2">
-                <div class="col-2">
+                <div class="col-2 pt-2 text-end">
                     <label class="form-label" for="hash-iv"></label>
                     @L["HashIV"]
                     <span class="text-danger"> *</span>
@@ -193,7 +193,7 @@
                 </div>
             </div>
             <div class="row justify-content-center mb-2">
-                <div class="col-2">
+                <div class="col-2 pt-2 text-end">
                     <label class="form-label" for="trade-description"></label>
                     @L["TradeDescription"]
                     <span class="text-danger"> *</span>
