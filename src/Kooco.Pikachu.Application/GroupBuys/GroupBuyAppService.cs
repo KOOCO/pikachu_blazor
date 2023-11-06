@@ -416,8 +416,9 @@ namespace Kooco.Pikachu.GroupBuys
 
         public async Task<IRemoteStreamContent> GetListAsExcelFileAsync(Guid id)
         {
-
-            var items = await _orderRepository.GetListAsync(0, int.MaxValue, nameof(Order.CreationTime), null, id);
+            List<Guid> ids = new List<Guid>();
+            ids.Add(id);
+            var items = await _orderRepository.GetListAsync(0, int.MaxValue, nameof(Order.CreationTime),null, null, ids);
             var excelData = items.Select(x => new
             {
                 x.OrderNo,
