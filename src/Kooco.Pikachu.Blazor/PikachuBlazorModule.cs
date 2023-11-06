@@ -40,12 +40,10 @@ using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite.Bundling;
 using Blazorise.RichTextEdit;
 using Microsoft.AspNetCore.SignalR;
-using System.Linq;
 using Microsoft.AspNetCore.Cors;
-using Autofac.Core;
 using Kooco.Pikachu.Blazor.Pages.TenantManagement;
-using Microsoft.EntityFrameworkCore.Internal;
-using Volo.Abp.TenantManagement.Blazor.Pages.TenantManagement;
+using Volo.Abp.BackgroundJobs.Hangfire;
+using Hangfire;
 
 namespace Kooco.Pikachu.Blazor;
 
@@ -61,7 +59,8 @@ namespace Kooco.Pikachu.Blazor;
     typeof(AbpAspNetCoreMvcUiLeptonXLiteThemeModule),
     typeof(AbpIdentityBlazorServerModule),
     typeof(AbpTenantManagementBlazorServerModule),
-    typeof(AbpSettingManagementBlazorServerModule)
+    typeof(AbpSettingManagementBlazorServerModule),
+    typeof(AbpBackgroundJobsHangfireModule)
    )]
 public class PikachuBlazorModule : AbpModule
 {
@@ -211,6 +210,7 @@ public class PikachuBlazorModule : AbpModule
         ConfigureRouter(context);
         ConfigureMenu(context);
         ConfigureSignalRHubOptions();
+        ConfigureHangfire(context, configuration);
         context.Services.AddScoped<CustomTenantManagement>();
         context.Services.AddCors(options =>
         {
@@ -223,6 +223,18 @@ public class PikachuBlazorModule : AbpModule
                     .AllowAnyHeader()
                     .AllowAnyMethod();
             });
+        });
+    }
+    private void ConfigureHangfire(ServiceConfigurationContext context, IConfiguration configuration)
+    {
+        context.Services.AddHangfire(config =>
+        {
+            config.UseSqlServerStorage(configuration.GetConnectionString("Default"));
+        });
+
+        context.Services.AddHangfireServer(options =>
+        {
+            options.Queues = new[] { "automatic-emails-job" };
         });
     }
 
@@ -371,6 +383,8 @@ public class PikachuBlazorModule : AbpModule
         {
             options.SwaggerEndpoint("/swagger/v1/swagger.json", "Pikachu API");
         });
+
+        app.UseHangfireDashboard();
         app.UseConfiguredEndpoints();
     
     }
