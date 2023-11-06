@@ -149,7 +149,7 @@ namespace Kooco.Pikachu.Orders
 
             var totalCount = await _orderRepository.CountAsync(input.Filter, input.GroupBuyId);
 
-            var items = await _orderRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.GroupBuyId);
+            var items = await _orderRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.GroupBuyId, input.OrderIds);
 
             return new PagedResultDto<OrderDto>
             {
@@ -408,7 +408,7 @@ namespace Kooco.Pikachu.Orders
                 return paymentGatewayDto;
             }
         }
-        [AllowAnonymous]
+      
         public async Task<IRemoteStreamContent> GetListAsExcelFileAsync(GetOrderListDto input)
         {
 
@@ -417,7 +417,7 @@ namespace Kooco.Pikachu.Orders
             //{
             //    throw new AbpAuthorizationException("Invalid download token: " + input.DownloadToken);
             //}
-            var items = await _orderRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting,input.Filter,input.GroupBuyId);
+            var items = await _orderRepository.GetListAsync(0, int.MaxValue, input.Sorting,input.Filter,input.GroupBuyId,input.OrderIds);
             var Results = ObjectMapper.Map<List<Order>, List<OrderDto>>(items);
             var excelContent = Results.Select(x =>new
             {

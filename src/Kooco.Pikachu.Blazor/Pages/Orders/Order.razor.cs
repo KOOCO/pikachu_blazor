@@ -6,8 +6,10 @@ using Kooco.Pikachu.Orders;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form;
@@ -107,6 +109,52 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         {
             var selectedOrder = Orders.SingleOrDefault(x => x.IsSelected);
             NavigationManager.NavigateTo($"Orders/OrderShippingDetails/{selectedOrder.Id}");
+        }
+        async Task DownloadExcel()
+        {
+            try
+            {
+                int skipCount = PageIndex * PageSize;
+                var orderIds = Orders.Where(x => x.IsSelected).Select(x=>x.Id).ToList();
+                Sorting = Sorting != null ? Sorting : "OrderNo Ascending";
+
+
+                var remoteStreamContent = await _orderAppService.GetListAsExcelFileAsync(new GetOrderListDto
+                {
+                    Sorting = Sorting,
+                    MaxResultCount = PageSize,
+                    SkipCount = skipCount,
+                    Filter = Filter,
+                    OrderIds=orderIds,
+                });
+                using (var responseStream = remoteStreamContent.GetStream())
+                {
+                    // Create Excel file from the stream
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await responseStream.CopyToAsync(memoryStream);
+                        memoryStream.Seek(0, SeekOrigin.Begin);
+
+                        // Convert MemoryStream to byte array
+                        var excelData = memoryStream.ToArray();
+
+                        // Trigger the download using JavaScript interop
+                        await JSRuntime.InvokeVoidAsync("downloadFile", new
+                        {
+                            ByteArray = excelData,
+                            FileName = "ReconciliationStatement.xlsx",
+                            ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        });
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+
+                throw e;
+            }
+
+
         }
 
     }

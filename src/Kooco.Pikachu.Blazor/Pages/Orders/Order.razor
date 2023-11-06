@@ -12,6 +12,7 @@
 @inject NavigationManager NavigationManager;
 @inject IUiMessageService _uiMessageService;
 @inject IOrderAppService _orderAppService;
+@inject IJSRuntime JSRuntime;
 <LoadingIndicator @ref="loading" FullScreen FadeIn>
     <div class="row">
         <div class="col-3">
@@ -45,7 +46,7 @@
                     @L["Print"]
                 </Button>
             }
-
+            <Button Type="ButtonType.Button" Class="btn btn-sm btn-outline-dark" Clicked="DownloadExcel"><i class="fa fa-arrow-down"></i></Button>
         </div>
     </div>
     <Card>
@@ -168,6 +169,19 @@
         </CardBody>
     </Card>
 </LoadingIndicator>
+<script>
+    window.downloadFile = function (data) {
+        debugger;
+        var blob = new Blob([new Uint8Array(data.byteArray)], { type: data.contentType });
+        var url = window.URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = data.fileName;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+    }
+</script>
 @code {
 
 }

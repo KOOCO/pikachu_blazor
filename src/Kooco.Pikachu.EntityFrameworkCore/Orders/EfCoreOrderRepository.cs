@@ -20,11 +20,11 @@ namespace Kooco.Pikachu.Orders
         }
         public async Task<long> CountAsync(string? filter, Guid? groupBuyId)
         {
-            return await ApplyFilters((await GetQueryableAsync()).Include(o => o.GroupBuy), filter, groupBuyId).CountAsync();
+            return await ApplyFilters((await GetQueryableAsync()).Include(o => o.GroupBuy), filter, groupBuyId,null).CountAsync();
         }
-        public async Task<List<Order>> GetListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId)
+        public async Task<List<Order>> GetListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId,List<Guid>orderId)
         {
-            return await ApplyFilters(await GetQueryableAsync(), filter, groupBuyId)
+            return await ApplyFilters(await GetQueryableAsync(), filter, groupBuyId,orderId)
                 .OrderBy(sorting)
                 .PageBy(skipCount, maxResultCount)
                 .Include(o => o.GroupBuy)
@@ -39,7 +39,8 @@ namespace Kooco.Pikachu.Orders
         private static IQueryable<Order> ApplyFilters(
             IQueryable<Order> queryable,
             string? filter,
-            Guid? groupBuyId
+            Guid? groupBuyId,
+            List<Guid>orderIds
             )
         {
             return queryable
@@ -48,7 +49,7 @@ namespace Kooco.Pikachu.Orders
                 x => x.OrderNo.Contains(filter)
                 || (x.CustomerName != null && x.CustomerName.Contains(filter))
                 || (x.CustomerEmail != null && x.CustomerEmail.Contains(filter))
-                );
+                ).WhereIf(orderIds != null && orderIds.Any(), x => orderIds.Contains(x.Id));
         }
         public async Task<Order> MaxByOrderNumberAsync()
         {
@@ -76,11 +77,11 @@ namespace Kooco.Pikachu.Orders
 
         public async Task<long> ReturnOrderCountAsync(string? filter, Guid? groupBuyId)
         {
-            return await ApplyFilters((await GetQueryableAsync()).Include(o => o.GroupBuy), filter, groupBuyId).Where(x => x.OrderStatus == OrderStatus.Returned || x.OrderStatus == OrderStatus.Exchange).CountAsync();
+            return await ApplyFilters((await GetQueryableAsync()).Include(o => o.GroupBuy), filter, groupBuyId,null).Where(x => x.OrderStatus == OrderStatus.Returned || x.OrderStatus == OrderStatus.Exchange).CountAsync();
         }
         public async Task<List<Order>> GetReturnListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId)
         {
-            return await ApplyFilters(await GetQueryableAsync(), filter, groupBuyId)
+            return await ApplyFilters(await GetQueryableAsync(), filter, groupBuyId,null)
                 .Where(x=>x.OrderStatus==OrderStatus.Returned || x.OrderStatus == OrderStatus.Exchange)
                 .OrderBy(sorting)
                 .PageBy(skipCount, maxResultCount)
