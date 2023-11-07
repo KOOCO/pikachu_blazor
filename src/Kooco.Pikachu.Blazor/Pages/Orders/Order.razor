@@ -31,7 +31,15 @@
                 <input type="checkbox" class="form-check-input" checked="@IsAllSelected" @onchange="HandleSelectAllChange"></input>
                 <Label Class="form-label">@L["SelectAll"]</Label>
             </div>
-            <Button Type="@ButtonType.Button" Class="btn btn-sm btn-secondary">@L["CombineOrders"]</Button>
+            @if (ShowCombineButton())
+            {
+                <Button Type="@ButtonType.Button" Clicked="MergeOrders" Class="btn btn-sm btn-secondary">@L["CombineOrders"]</Button>
+            }
+            else{
+
+                <Button Disabled Type="@ButtonType.Button" Class="btn btn-sm btn-secondary">@L["CombineOrders"]</Button>
+            }
+          
             @if (Orders.Where(x => x.IsSelected).Count() != 1)
             {
                 <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
@@ -67,7 +75,7 @@
                      <DataGridCommandColumn />
                      <DataGridColumn Caption="@L["Select"]" Width="30px">
                          <DisplayTemplate>
-                             <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
+                             <InputCheckbox  class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
                          </DisplayTemplate>
                      </DataGridColumn>
                      <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">

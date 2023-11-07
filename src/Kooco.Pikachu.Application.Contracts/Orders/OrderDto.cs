@@ -47,5 +47,6 @@ namespace Kooco.Pikachu.Orders
         public bool IsRefunded { get; set; }
         public OrderReturnStatus ReturnStatus { get; set; }
         public InvoiceStatus InvoiceStatus { get; set; }
+        public OrderType? OrderType { get; set; }
     }
 }

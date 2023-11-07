@@ -2,6 +2,7 @@
 using Blazorise.DataGrid;
 using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.Blazor.Pages.ItemManagement;
+using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Orders;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,7 +28,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         private int PageSize { get; set; } = 10;
         private string? Sorting { get; set; }
         private string? Filter { get; set; }
-
+        private bool isOrderCombine { get; set; } = false;
         private readonly HashSet<Guid> ExpandedRows = new();
         private LoadingIndicator loading { get; set; }
         private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<OrderDto> e)
@@ -67,7 +69,8 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
             PageIndex = 0;
             await UpdateItemList();
         }
-
+      
+  
         void HandleSelectAllChange(ChangeEventArgs e)
         {
             IsAllSelected = e.Value != null ? (bool)e.Value : false;
@@ -87,7 +90,54 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
 
             await loading.Hide();
         }
+        bool ShowCombineButton()
+        {
+            var selectedOrders = Orders.Where(x => x.IsSelected).ToList();
 
+            if (selectedOrders.Count>1)
+            {
+                var firstSelectedOrder = selectedOrders.First();
+                bool allMatch = true;
+
+                foreach (var order in selectedOrders)
+                {
+                    if (order.GroupBuyId != firstSelectedOrder.GroupBuyId ||
+                        order.CustomerName != firstSelectedOrder.CustomerName ||
+                        order.CustomerEmail != firstSelectedOrder.CustomerEmail ||
+                        order.RecipientName != firstSelectedOrder.RecipientName ||
+                        order.DeliveryMethod != firstSelectedOrder.DeliveryMethod ||
+                        order.PaymentMethod != firstSelectedOrder.PaymentMethod||
+                        order.OrderType!=null
+                        || order.OrderStatus!=OrderStatus.Open)
+                    {
+                        // If any property doesn't match, set allMatch to false and break the loop
+                        allMatch = false;
+                        break;
+                    }
+                }
+
+                if (allMatch)
+                {
+                    // All selected orders have the same values for the specified properties
+                    Console.WriteLine("All selected orders have the same values.");
+                    return true;
+                }
+                else
+                {
+                    // Not all selected orders have the same values for the specified properties
+                    Console.WriteLine("Selected orders have different values for the specified properties.");
+                    return false;
+                }
+            }
+            else
+            {
+                // No selected orders found
+                Console.WriteLine("No selected orders found.");
+                return false;
+            }
+
+
+        }
         async void OnSortChange(DataGridSortChangedEventArgs e)
         {
             Sorting = e.FieldName + " " + (e.SortDirection != SortDirection.Default ? e.SortDirection : "");
@@ -104,7 +154,16 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
             {
                 ExpandedRows.Add(e.Item.Id);
             }
+
+           
         }
+        private async void MergeOrders() {
+            var orderIds = Orders.Where(x => x.IsSelected).Select(x => x.Id).ToList();
+            await _orderAppService.MergeOrdersAsync(orderIds);
+           await UpdateItemList();
+
+        }
+
         public void NavigateToOrderPrint()
         {
             var selectedOrder = Orders.SingleOrDefault(x => x.IsSelected);

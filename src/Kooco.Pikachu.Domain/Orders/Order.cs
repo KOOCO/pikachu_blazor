@@ -54,6 +54,7 @@ namespace Kooco.Pikachu.Orders
         public ICollection<StoreComment> StoreComments { get; set; }
         public bool IsRefunded { get; set; }
         public InvoiceStatus InvoiceStatus { get; set; }
+        public OrderType? OrderType { get; set; }
         public Order() { }
 
         public Order(
@@ -81,7 +82,8 @@ namespace Kooco.Pikachu.Orders
             ReceivingTime? receivingTime,
             int totalQuantity,
             decimal totalAmount,
-            OrderReturnStatus? orderReturnStatus
+            OrderReturnStatus? orderReturnStatus,
+            OrderType? orderType
          )
         {
             Id = id;
@@ -114,6 +116,7 @@ namespace Kooco.Pikachu.Orders
             StoreComments = new List<StoreComment>();
             IsRefunded = false;
             ReturnStatus = orderReturnStatus;
+            OrderType = orderType;
         }
 
         public void AddOrderItem(

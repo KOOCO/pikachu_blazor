@@ -29,5 +29,6 @@ namespace Kooco.Pikachu.Orders
         Task ChangeReturnStatusAsync(Guid id, OrderReturnStatus? orderReturnStatus);
         Task<IRemoteStreamContent> GetListAsExcelFileAsync(GetOrderListDto input);
         Task<PaymentGatewayDto> GetPaymentGatewayConfigurationsAsync(Guid id);
+        Task<OrderDto> MergeOrdersAsync(List<Guid> Ids);
     }
 }
