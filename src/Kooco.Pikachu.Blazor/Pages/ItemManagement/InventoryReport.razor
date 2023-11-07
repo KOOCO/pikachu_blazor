@@ -43,10 +43,14 @@
                   
                   SortChanged="OnSortChange">
             <DataGridColumns>
-             
+                <DataGridColumn TItem="ItemDetailsDto"
+                                Field="@nameof(ItemDetailsDto.ItemName)"
+                                Caption="@L["ItemName"]">
+
+                </DataGridColumn>
                 <DataGridColumn TItem="ItemDetailsDto"
                                 Field="@nameof(ItemDetailsDto.SKU)"
-                                Caption="@L["ItemName"]">
+                                Caption="@L["SKU"]">
                    
                 </DataGridColumn>
                 <DataGridColumn TItem="ItemDetailsDto"

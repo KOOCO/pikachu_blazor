@@ -54,8 +54,8 @@ public class ItemDetailsAppService : CrudAppService<ItemDetails, ItemDetailsDto,
         //}
         var items = await _repository.GetListAsync(input.SkipCount, int.MaxValue, input.Sorting, input.FilterText);
         var excelData = items.Select(x => new
-        {
-            ItemName=x.SKU,
+        {ItemName=x.ItemName,
+            SKU=x.SKU,
             SellingPrice=x.SellingPrice,
             GroupBuyPrice=x.GroupBuyPrice,
             CurrentStock=x.StockOnHand,
