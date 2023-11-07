@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
-using Volo.Abp.BackgroundJobs;
 using Volo.Abp.Domain.Repositories;
 
 namespace Kooco.Pikachu.AutomaticEmails
@@ -15,15 +14,12 @@ namespace Kooco.Pikachu.AutomaticEmails
     public class AutomaticEmailAppService : ApplicationService, IAutomaticEmailAppService
     {
         private readonly IAutomaticEmailRepository _automaticEmailRepository;
-        private readonly IBackgroundJobManager _backgroundJobManager;
 
         public AutomaticEmailAppService(
-            IAutomaticEmailRepository automaticEmailRepository,
-            IBackgroundJobManager backgroundJobManager
+            IAutomaticEmailRepository automaticEmailRepository
             )
         {
             _automaticEmailRepository = automaticEmailRepository;
-            _backgroundJobManager = backgroundJobManager;
         }
         public async Task CreateAsync(AutomaticEmailCreateUpdateDto input)
         {

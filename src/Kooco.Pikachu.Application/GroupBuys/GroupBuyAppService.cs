@@ -416,8 +416,8 @@ namespace Kooco.Pikachu.GroupBuys
 
         public async Task<IRemoteStreamContent> GetListAsExcelFileAsync(Guid id)
         {
-
-            var items = await _orderRepository.GetListAsync(0, int.MaxValue, nameof(Order.CreationTime), null, id);
+            var groupBuy = await _groupBuyRepository.FirstOrDefaultAsync(x => x.Id == id);
+            var items = await _orderRepository.GetListAsync(x => x.GroupBuyId == id);
             var excelData = items.Select(x => new
             {
                 x.OrderNo,
@@ -433,7 +433,9 @@ namespace Kooco.Pikachu.GroupBuys
             var memoryStream = new MemoryStream();
             await memoryStream.SaveAsAsync(excelData);
             memoryStream.Seek(0, SeekOrigin.Begin);
-            return new RemoteStreamContent(memoryStream, "InventroyReport.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+            string fileName = groupBuy?.GroupBuyName ?? "GroupBuyReport";
+            return new RemoteStreamContent(memoryStream, $"{fileName}.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         }
     }
 }

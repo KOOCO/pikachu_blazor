@@ -113,7 +113,7 @@ public partial class GroupBuyReportDetails
             await JSRuntime.InvokeVoidAsync("downloadFile", new
             {
                 ByteArray = excelData,
-                FileName = "GroupBuyReport.xlsx",
+                remoteStreamContent.FileName,
                 ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             });
         }

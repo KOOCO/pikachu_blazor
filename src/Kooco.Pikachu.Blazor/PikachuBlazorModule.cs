@@ -312,8 +312,6 @@ public class PikachuBlazorModule : AbpModule
             .AddFontAwesomeIcons();
     }
 
-
-
     private void ConfigureMenu(ServiceConfigurationContext context)
     {
         Configure<AbpNavigationOptions>(options =>
@@ -384,7 +382,11 @@ public class PikachuBlazorModule : AbpModule
             options.SwaggerEndpoint("/swagger/v1/swagger.json", "Pikachu API");
         });
 
-        app.UseHangfireDashboard();
+        app.UseHangfireDashboard("/hangfire", new DashboardOptions
+        {
+            Authorization = new[] { new HangfireAuthorizationFilter() }
+        });
+
         app.UseConfiguredEndpoints();
     
     }
