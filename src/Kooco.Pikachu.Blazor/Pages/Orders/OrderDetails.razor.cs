@@ -386,6 +386,14 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
             }
         }
 
+        async void ExchangeOrder()
+        {
+
+            await _orderAppService.ExchangeOrderAsync(Order.Id);
+            NavigationManager.NavigateTo("Orders");
+
+        }
+
         void CalculateTotal(UpdateOrderItemDto item)
         {
             var index = EditingItems.IndexOf(item);

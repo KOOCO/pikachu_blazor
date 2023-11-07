@@ -283,7 +283,10 @@
                     {
                         <Button Type="ButtonType.Button" @onclick="CancelOrder" Class="btn btn-sm btn-danger">@L["CancelOrder"]</Button>
                     }
-                    <Button Type="ButtonType.Button" Class="btn btn-sm btn-secondary me-1">@L["ExchangeItem"]</Button>
+                    @if (Order?.OrderStatus != OrderStatus.Returned && Order?.OrderStatus != OrderStatus.Exchange)
+                    {
+                        <Button Type="ButtonType.Button" Clicked="ExchangeOrder" Class="btn btn-sm btn-secondary me-1">@L["ExchangeItem"]</Button>
+                    }
                 </div>
                 <div class="col-md-6 col-sm-12 text-lg-end">
                     @if (Order.ShippingStatus == ShippingStatus.PrepareShipment && Order.OrderItems.Any(x => x.IsSelected == true) && Order.OrderType==null)

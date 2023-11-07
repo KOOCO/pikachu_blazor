@@ -410,6 +410,16 @@ namespace Kooco.Pikachu.Orders
 
 
         }
+        public async Task ExchangeOrderAsync(Guid id)
+        {
+            var order = await _orderRepository.GetAsync(id);
+            order.ReturnStatus = OrderReturnStatus.WaitingForApprove;
+            order.OrderStatus = OrderStatus.Returned;
+            
+            await _orderRepository.UpdateAsync(order);
+
+
+        }
         public async Task UpdateOrderItemsAsync(Guid id, List<UpdateOrderItemDto> orderItems)
         {
             var order = await _orderRepository.GetAsync(id);
