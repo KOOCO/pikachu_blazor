@@ -116,7 +116,7 @@ namespace Kooco.Pikachu.Blazor.Pages.CashFlowReconciliationStatements
                 var remoteStreamContent = await _orderAppService.GetListAsExcelFileAsync(new GetOrderListDto
                 {
                     Sorting = Sorting,
-                    MaxResultCount = int.MaxValue,
+                    MaxResultCount =PageSize,
                     SkipCount = 0,
                     Filter = Filter
                 });
