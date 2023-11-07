@@ -7,19 +7,23 @@ using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.MultiTenancy;
 
 namespace Kooco.Pikachu.AutomaticEmails
 {
     public class AutomaticEmailAppService : ApplicationService, IAutomaticEmailAppService
     {
         private readonly IAutomaticEmailRepository _automaticEmailRepository;
-
+        private readonly IDataFilter _dataFilter;
         public AutomaticEmailAppService(
-            IAutomaticEmailRepository automaticEmailRepository
+            IAutomaticEmailRepository automaticEmailRepository,
+            IDataFilter dataFilter
             )
         {
             _automaticEmailRepository = automaticEmailRepository;
+            _dataFilter = dataFilter;
         }
         public async Task CreateAsync(AutomaticEmailCreateUpdateDto input)
         {
@@ -51,7 +55,7 @@ namespace Kooco.Pikachu.AutomaticEmails
 
             RecurringJob.AddOrUpdate<AutomaticEmailsJob>(
                     dto.Id.ToString(),
-                    job => job.ExecuteAsync(dto),
+                    job => job.ExecuteAsync(dto.Id),
                     cronExpression);
         }
 
@@ -77,6 +81,16 @@ namespace Kooco.Pikachu.AutomaticEmails
                 TotalCount = totalCount,
                 Items = ObjectMapper.Map<List<AutomaticEmail>, List<AutomaticEmailDto>>(items)
             };
+        }
+
+        public async Task<AutomaticEmailDto> GetWithDetailsByIdAsync(Guid id)
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var item = await _automaticEmailRepository.GetAsync(id);
+                await _automaticEmailRepository.EnsureCollectionLoadedAsync(item, a => a.GroupBuys);
+                return ObjectMapper.Map<AutomaticEmail, AutomaticEmailDto>(item);
+            }
         }
 
         public async Task UpdateAsync(Guid id, AutomaticEmailCreateUpdateDto input)
@@ -121,8 +135,18 @@ namespace Kooco.Pikachu.AutomaticEmails
 
             RecurringJob.AddOrUpdate<AutomaticEmailsJob>(
                     dto.Id.ToString(),
-                    job => job.ExecuteAsync(dto),
+                    job => job.ExecuteAsync(dto.Id),
                     cronExpression);
+        }
+
+        public async Task UpdateJobStatusAsync(Guid id, JobStatus status, Guid? tenantId)
+        {
+            using (CurrentTenant.Change(tenantId))
+            {
+                var job = await _automaticEmailRepository.GetAsync(id);
+                job.LastJobStatus = status;
+                await _automaticEmailRepository.UpdateAsync(job);
+            }
         }
     }
 }

@@ -17,6 +17,7 @@ namespace Kooco.Pikachu.AutomaticEmails
         public DateTime EndDate { get; set; }
         public DateTime SendTime { get; set; }
         public RecurrenceType RecurrenceType { get; set; }
+        public JobStatus LastJobStatus { get; set; }
         public List<AutomaticEmailGroupBuys> GroupBuys { get; set; }
 
         [NotMapped]

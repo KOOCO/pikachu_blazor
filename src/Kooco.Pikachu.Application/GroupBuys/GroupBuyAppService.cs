@@ -437,5 +437,13 @@ namespace Kooco.Pikachu.GroupBuys
             string fileName = groupBuy?.GroupBuyName ?? "GroupBuyReport";
             return new RemoteStreamContent(memoryStream, $"{fileName}.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         }
+
+        public async Task<IRemoteStreamContent> GetAttachmentAsync(Guid id, Guid? tenantId)
+        {
+            using (CurrentTenant.Change(tenantId))
+            {
+                return await GetListAsExcelFileAsync(id);
+            }
+        }
     }
 }

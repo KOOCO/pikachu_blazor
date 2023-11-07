@@ -44,6 +44,7 @@ using Microsoft.AspNetCore.Cors;
 using Kooco.Pikachu.Blazor.Pages.TenantManagement;
 using Volo.Abp.BackgroundJobs.Hangfire;
 using Hangfire;
+using Volo.Abp.BackgroundJobs;
 
 namespace Kooco.Pikachu.Blazor;
 
@@ -124,9 +125,6 @@ public class PikachuBlazorModule : AbpModule
             builder.AddSigningCertificate(
                 GetSigningCertificate(hostingEnvironment, context.Services.GetConfiguration()));
         });
-
-
-
     }
 
     private X509Certificate2 GetEncryptionCertificate(IWebHostEnvironment environment, IConfiguration config)
@@ -223,6 +221,10 @@ public class PikachuBlazorModule : AbpModule
                     .AllowAnyHeader()
                     .AllowAnyMethod();
             });
+        });
+        Configure<AbpBackgroundJobOptions>(options =>
+        {
+            options.IsJobExecutionEnabled = false;
         });
     }
     private void ConfigureHangfire(ServiceConfigurationContext context, IConfiguration configuration)
