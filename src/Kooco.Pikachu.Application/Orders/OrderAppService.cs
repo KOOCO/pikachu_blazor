@@ -26,6 +26,7 @@ using Volo.Abp.Security.Encryption;
 using Kooco.Pikachu.TenantEmailing;
 using System.Net.Mail;
 using Volo.Abp.SettingManagement;
+using static Kooco.Pikachu.Permissions.PikachuPermissions;
 
 namespace Kooco.Pikachu.Orders
 {
@@ -101,7 +102,8 @@ namespace Kooco.Pikachu.Orders
                         input.ReceivingTime,
                         input.TotalQuantity,
                         input.TotalAmount,
-                        input.ReturnStatus
+                        input.ReturnStatus,
+                        input.OrderType
                         );
 
                 if (input.OrderItems != null)
@@ -135,7 +137,94 @@ namespace Kooco.Pikachu.Orders
         {
             return ObjectMapper.Map<Order, OrderDto>(await _orderRepository.GetAsync(id));
         }
+        public async Task<OrderDto> MergeOrdersAsync(List<Guid> Ids) {
 
+            decimal TotalAmount = 0;
+            int TotalQuantity = 0;
+            var ord = await _orderRepository.GetWithDetailsAsync(Ids[0]);
+            GroupBuy groupBuy = new();
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                groupBuy = await _groupBuyRepository.GetAsync(ord.GroupBuyId);
+            }
+            List<OrderItemsCreateDto> orderItems = new List<OrderItemsCreateDto>();
+            using (CurrentTenant.Change(groupBuy?.TenantId))
+            {
+                foreach (var id in Ids)
+                {
+
+                    var order = await _orderRepository.GetWithDetailsAsync(id);
+                    TotalAmount += order.TotalAmount;
+                    TotalQuantity += order.TotalQuantity;
+                    order.OrderType = OrderType.MargeToNew;
+                    await _orderRepository.UpdateAsync(order);
+                    foreach (var item in order.OrderItems)
+                    {
+                        OrderItemsCreateDto orderItem = new OrderItemsCreateDto();
+                        orderItem.ItemId = item.ItemId;
+                        orderItem.SetItemId = item.SetItemId;
+                        orderItem.FreebieId = item.FreebieId;
+                        orderItem.ItemType = item.ItemType;
+
+                        orderItem.Spec = item.Spec;
+                        orderItem.ItemPrice = item.ItemPrice;
+                        orderItem.TotalAmount = item.TotalAmount;
+                        orderItem.Quantity = item.Quantity;
+                        orderItem.SKU = item.SKU;
+                        orderItems.Add(orderItem);
+
+                    }
+
+                }
+                var order1 = await _orderManager.CreateAsync(
+                          ord.GroupBuyId,
+                          ord.IsIndividual,
+                          ord.CustomerName,
+                          ord.CustomerPhone,
+                          ord.CustomerEmail,
+                          ord.PaymentMethod,
+                          ord.InvoiceType,
+                          ord.InvoiceNumber,
+                          ord.UniformNumber,
+                          ord.IsAsSameBuyer,
+                          ord.RecipientName,
+                          ord.RecipientPhone,
+                          ord.RecipientEmail,
+                          ord.DeliveryMethod,
+                          ord.City,
+                          ord.District,
+                          ord.Road,
+                          ord.AddressDetails,
+                          ord.Remarks,
+                          ord.ReceivingTime,
+                          TotalQuantity,
+                          TotalAmount,
+                          ord.ReturnStatus,
+                          OrderType.NewMarge
+                          );
+                
+                foreach (var item in orderItems)
+                {
+                    _orderManager.AddOrderItem(
+                                   order1,
+                                   item.ItemId,
+                                   item.SetItemId,
+                                   item.FreebieId,
+                                   item.ItemType,
+                                   order1.Id,
+                                   item.Spec,
+                                   item.ItemPrice,
+                                   item.TotalAmount,
+                                   item.Quantity,
+                                   item.SKU
+                                   );
+
+                }
+                await _orderRepository.InsertAsync(order1);
+                return ObjectMapper.Map<Order, OrderDto>(order1);
+            }
+           
+        }
         public async Task<OrderDto> GetWithDetailsAsync(Guid id)
         {
             var order = await _orderRepository.GetWithDetailsAsync(id);
