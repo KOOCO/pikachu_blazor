@@ -286,7 +286,15 @@
                     <Button Type="ButtonType.Button" Class="btn btn-sm btn-secondary me-1">@L["ExchangeItem"]</Button>
                 </div>
                 <div class="col-md-6 col-sm-12 text-lg-end">
-                    <Button Type="ButtonType.Button" Class="btn btn-sm btn-secondary">@L["SplitOrder"]</Button>
+                    @if (Order.ShippingStatus == ShippingStatus.PrepareShipment && Order.OrderItems.Any(x => x.IsSelected == true) && Order.OrderType==null)
+                    {
+                        <Button Clicked="SplitOrder" Type="ButtonType.Button" Class="btn btn-sm btn-secondary">@L["SplitOrder"]</Button>
+                    }
+                    else
+                    {
+                    
+                     <Button Type="ButtonType.Button" Disabled Class="btn btn-sm btn-secondary">@L["SplitOrder"]</Button>
+                    }
                     <Button Type="ButtonType.Button" @onclick="NavigateToOrderShipmentDetails" Class="btn btn-sm btn-primary">
                         <Icon Class="fa fa-print"></Icon>
                         @L["PrintOrder"]

@@ -317,7 +317,13 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 await loading.Hide();
             }
         }
+        private async void SplitOrder()
+        {
+            var orderItemIds = Order?.OrderItems.Where(x => x.IsSelected).Select(x => x.Id).ToList();
+            await _orderAppService.SplitOrderAsync(orderItemIds, Order.Id);
+            NavigationManager.NavigateTo("Orders");
 
+        }
         async void SubmitOrderItemChanges()
         {
             bool isValid = true;

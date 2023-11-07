@@ -50,7 +50,7 @@ namespace Kooco.Pikachu.Orders
                 || (x.CustomerName != null && x.CustomerName.Contains(filter))
                 || (x.CustomerEmail != null && x.CustomerEmail.Contains(filter))
                 ).WhereIf(orderIds != null && orderIds.Any(), x => orderIds.Contains(x.Id)
-                ).Where(x => x.OrderType != OrderType.MargeToNew && x.OrderType != OrderType.SplitToNew); 
+                ).Where(x => x.OrderType != OrderType.MargeToNew ); 
         }
         public async Task<Order> MaxByOrderNumberAsync()
         {

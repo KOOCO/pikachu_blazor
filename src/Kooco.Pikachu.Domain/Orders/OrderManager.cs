@@ -51,7 +51,8 @@ namespace Kooco.Pikachu.Orders
              int totalQuantity,
              decimal totalAmount,
              OrderReturnStatus? orderReturnStatus,
-             OrderType? orderType
+             OrderType? orderType,
+             Guid? splitFromId=null
              )
         {
             //string orderNo = await GenerateOrderNoAsync(groupBuyId);
@@ -85,7 +86,8 @@ namespace Kooco.Pikachu.Orders
                 totalQuantity,
                 totalAmount,
                 orderReturnStatus,
-                orderType
+                orderType,
+                splitFromId
 
                 );
         }

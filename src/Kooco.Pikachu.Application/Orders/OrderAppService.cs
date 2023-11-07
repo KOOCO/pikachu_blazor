@@ -42,6 +42,7 @@ namespace Kooco.Pikachu.Orders
         private readonly IStringEncryptionService _stringEncryptionService;
         private readonly IRepository<TenantEmailSettings, Guid> _tenantEmailSettingsRepository;
         private readonly ISettingManager _settingManager;
+        private readonly IRepository<OrderItem, Guid> _orderItemRepository;
         private readonly IStringLocalizer<PikachuResource> _l;
         public OrderAppService(
             IOrderRepository orderRepository,
@@ -53,7 +54,8 @@ namespace Kooco.Pikachu.Orders
             IStringEncryptionService stringEncryptionService,
             IRepository<TenantEmailSettings, Guid> tenantEmailSettingsRepository,
             ISettingManager settingManager,
-            IStringLocalizer<PikachuResource> l
+            IStringLocalizer<PikachuResource> l,
+            IRepository<OrderItem, Guid> orderItemRepository
             )
         {
             _orderRepository = orderRepository;
@@ -66,6 +68,7 @@ namespace Kooco.Pikachu.Orders
             _tenantEmailSettingsRepository = tenantEmailSettingsRepository;
             _settingManager = settingManager;
             _l = l;
+            _orderItemRepository = orderItemRepository;
         }
 
         [AllowAnonymous]
@@ -225,6 +228,101 @@ namespace Kooco.Pikachu.Orders
             }
            
         }
+        public async Task<OrderDto> SplitOrderAsync(List<Guid> OrderItemIds, Guid OrderId)
+        {
+
+            var ord = await _orderRepository.GetWithDetailsAsync(OrderId);
+            decimal TotalAmount = ord.TotalAmount;
+            int TotalQuantity = ord.TotalQuantity;
+            GroupBuy groupBuy = new();
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                groupBuy = await _groupBuyRepository.GetAsync(ord.GroupBuyId);
+            }
+            List<OrderItemsCreateDto> orderItems = new List<OrderItemsCreateDto>();
+            using (CurrentTenant.Change(groupBuy?.TenantId))
+            {
+
+
+
+                foreach (var item in ord.OrderItems)
+                {
+                    OrderItemsCreateDto orderItem = new OrderItemsCreateDto();
+                    orderItem.ItemId = item.ItemId;
+                    orderItem.SetItemId = item.SetItemId;
+                    orderItem.FreebieId = item.FreebieId;
+                    orderItem.ItemType = item.ItemType;
+
+                    orderItem.Spec = item.Spec;
+                    orderItem.ItemPrice = item.ItemPrice;
+                    orderItem.TotalAmount = item.TotalAmount;
+                    orderItem.Quantity = item.Quantity;
+                    orderItem.SKU = item.SKU;
+
+                    TotalAmount -= item.TotalAmount;
+                    TotalQuantity -= item.Quantity;
+                    await _orderItemRepository.DeleteAsync(item.Id);
+                    var order1 = await _orderManager.CreateAsync(
+                     ord.GroupBuyId,
+                     ord.IsIndividual,
+                     ord.CustomerName,
+                     ord.CustomerPhone,
+                     ord.CustomerEmail,
+                     ord.PaymentMethod,
+                     ord.InvoiceType,
+                     ord.InvoiceNumber,
+                     ord.UniformNumber,
+                     ord.IsAsSameBuyer,
+                     ord.RecipientName,
+                     ord.RecipientPhone,
+                     ord.RecipientEmail,
+                     ord.DeliveryMethod,
+                     ord.City,
+                     ord.District,
+                     ord.Road,
+                     ord.AddressDetails,
+                     ord.Remarks,
+                     ord.ReceivingTime,
+                     orderItem.Quantity,
+                     orderItem.TotalAmount,
+                     ord.ReturnStatus,
+                     OrderType.SplitToNew,
+                     ord.Id
+                     );
+                    order1.ShippingStatus = ord.ShippingStatus;
+
+                    _orderManager.AddOrderItem(
+                                   order1,
+                                   orderItem.ItemId,
+                                   orderItem.SetItemId,
+                                   orderItem.FreebieId,
+                                   orderItem.ItemType,
+                                   order1.Id,
+                                   orderItem.Spec,
+                                   orderItem.ItemPrice,
+                                   orderItem.TotalAmount,
+                                   orderItem.Quantity,
+                                   orderItem.SKU
+
+                                   );
+                    await _orderRepository.InsertAsync(order1);
+
+
+                }
+
+                ord.TotalAmount = TotalAmount;
+                ord.TotalQuantity = TotalQuantity;
+                ord.OrderType = OrderType.SplitToNew;
+                await _orderRepository.UpdateAsync(ord);
+
+
+
+                return ObjectMapper.Map<Order, OrderDto>(ord);
+
+
+            }
+        }
+
         public async Task<OrderDto> GetWithDetailsAsync(Guid id)
         {
             var order = await _orderRepository.GetWithDetailsAsync(id);

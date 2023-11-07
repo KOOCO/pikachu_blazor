@@ -38,6 +38,7 @@ namespace Kooco.Pikachu.Orders
         public string? Remarks { get; set; }
         public ReceivingTime? ReceivingTime { get; set; }
         public Guid GroupBuyId { get; set; }
+        public Guid? SplitFromId { get; set; }
 
         [ForeignKey(nameof(GroupBuyId))]
         public GroupBuy GroupBuy { get; set; }
@@ -83,7 +84,8 @@ namespace Kooco.Pikachu.Orders
             int totalQuantity,
             decimal totalAmount,
             OrderReturnStatus? orderReturnStatus,
-            OrderType? orderType
+            OrderType? orderType,
+            Guid? splitFromId=null
          )
         {
             Id = id;
@@ -117,6 +119,7 @@ namespace Kooco.Pikachu.Orders
             IsRefunded = false;
             ReturnStatus = orderReturnStatus;
             OrderType = orderType;
+            SplitFromId = splitFromId;
         }
 
         public void AddOrderItem(

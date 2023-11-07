@@ -30,5 +30,6 @@ namespace Kooco.Pikachu.Orders
         Task<IRemoteStreamContent> GetListAsExcelFileAsync(GetOrderListDto input);
         Task<PaymentGatewayDto> GetPaymentGatewayConfigurationsAsync(Guid id);
         Task<OrderDto> MergeOrdersAsync(List<Guid> Ids);
+        Task<OrderDto> SplitOrderAsync(List<Guid> OrderItemIds, Guid OrderId);
     }
 }
