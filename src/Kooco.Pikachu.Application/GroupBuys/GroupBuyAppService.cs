@@ -214,7 +214,7 @@ namespace Kooco.Pikachu.GroupBuys
                         {
                             itemGroup.SortOrder = group.SortOrder;
                             itemGroup.GroupBuyModuleType = group.GroupBuyModuleType;
-                            if(group.ItemDetails.Count == 0)
+                            if (group.ItemDetails.Count == 0)
                             {
                                 groupBuy.ItemGroups.Remove(itemGroup);
                             }
@@ -440,42 +440,6 @@ namespace Kooco.Pikachu.GroupBuys
                 return ObjectMapper.Map<GroupBuyReportDetails, GroupBuyReportDetailsDto>(data);
             }
         }
-        public async Task<IRemoteStreamContent> GetListAsExcelFileAsync(Guid id)
-        {
-            var groupBuy = await _groupBuyRepository.FirstOrDefaultAsync(x => x.Id == id);
-            var items = await _orderRepository.GetListAsync(x => x.GroupBuyId == id);
-            var excelData = items.Select(x => new
-            {
-                x.OrderNo,
-                OrderDate = x.CreationTime.ToString("MM/d/yyyy h:mm:ss tt"),
-                x.CustomerName,
-                Email = x.CustomerEmail,
-                OrderStatus = L[x.OrderStatus.ToString()],
-                ShippingStatus = L[x.ShippingStatus.ToString()],
-                PaymentMethod = L[x.PaymentMethod.ToString()],
-                CheckoutAmount = "$ " + x.TotalAmount.ToString("N2")
-            });
-            List<Guid> ids = new List<Guid>();
-            ids.Add(id);
-            var items = await _orderRepository.GetListAsync(0, int.MaxValue, nameof(Order.CreationTime),null, null, ids);
-            var excelData = items.Select(x => new
-            {
-                x.OrderNo,
-                OrderDate = x.CreationTime.ToString("MM/d/yyyy h:mm:ss tt"),
-                x.CustomerName,
-                Email = x.CustomerEmail,
-                OrderStatus = L[x.OrderStatus.ToString()],
-                ShippingStatus = L[x.ShippingStatus.ToString()],
-                PaymentMethod = L[x.PaymentMethod.ToString()],
-                CheckoutAmount = "$ " + x.TotalAmount.ToString("N2")
-            });
-
-            var memoryStream = new MemoryStream();
-            await memoryStream.SaveAsAsync(excelData);
-            memoryStream.Seek(0, SeekOrigin.Begin);
-            return new RemoteStreamContent(memoryStream, "InventroyReport.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        }
-
         public async Task<IRemoteStreamContent> GetTenantsListAsExcelFileAsync(Guid id)
         {
             using (_dataFilter.Disable<IMultiTenant>())
@@ -492,6 +456,28 @@ namespace Kooco.Pikachu.GroupBuys
                     PaymentMethod = L[x.PaymentMethod.ToString()],
                     CheckoutAmount = "$ " + x.TotalAmount.ToString("N2")
                 });
+                var memoryStream = new MemoryStream();
+                await memoryStream.SaveAsAsync(excelData);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                return new RemoteStreamContent(memoryStream, "InventroyReport.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            }
+        }
+
+        public async Task<IRemoteStreamContent> GetListAsExcelFileAsync(Guid id)
+        {
+            var groupBuy = await _groupBuyRepository.FirstOrDefaultAsync(x => x.Id == id);
+            var items = await _orderRepository.GetListAsync(x => x.GroupBuyId == id);
+            var excelData = items.Select(x => new
+            {
+                x.OrderNo,
+                OrderDate = x.CreationTime.ToString("MM/d/yyyy h:mm:ss tt"),
+                x.CustomerName,
+                Email = x.CustomerEmail,
+                OrderStatus = L[x.OrderStatus.ToString()],
+                ShippingStatus = L[x.ShippingStatus.ToString()],
+                PaymentMethod = L[x.PaymentMethod.ToString()],
+                CheckoutAmount = "$ " + x.TotalAmount.ToString("N2")
+            });
 
             var memoryStream = new MemoryStream();
             await memoryStream.SaveAsAsync(excelData);
