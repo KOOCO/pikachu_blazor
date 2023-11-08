@@ -4,6 +4,7 @@ using Kooco.Pikachu.AzureStorage.Image;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Freebies.Dtos;
+using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components;
@@ -32,17 +33,20 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
         private readonly IUiMessageService _uiMessageService;
         private readonly ImageContainerManager _imageContainerManager;
         private readonly IFreebieAppService _freebieAppService;
+        private readonly IGroupBuyAppService _groupBuyAppService;
 
         private FreebieCreateDto FreebieCreateDto { get; set; } = new();
         public CreateFreebie(
             IUiMessageService uiMessageService,
             ImageContainerManager imageContainerManager,
-            IFreebieAppService freebieAppService
+            IFreebieAppService freebieAppService,
+            IGroupBuyAppService groupBuyAppService
             )
         {
             _uiMessageService = uiMessageService;
             _imageContainerManager = imageContainerManager;
             _freebieAppService = freebieAppService;
+            _groupBuyAppService = groupBuyAppService;
             ImageList = new List<CreateImageDto>();
         }
 
@@ -50,7 +54,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
         {
             try
             {
-                GroupBuyList = await _freebieAppService.GetGroupBuyLookupAsync();
+                GroupBuyList = await _groupBuyAppService.GetGroupBuyLookupAsync();
                 FreebieCreateDto.FreebieOrderReach = FreebieOrderReach.MinimumAmount;
             }
             catch (Exception ex)

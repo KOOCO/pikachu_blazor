@@ -34,7 +34,8 @@
                   ReadData="OnDataGridReadAsync"
                   TotalItems="Total"
                   ShowPager="true"
-                  PageSize="PageSize">
+                  PageSize="PageSize"
+                SortChanged="OnSortChange">
             <DataGridColumns>
                 <DataGridColumn TItem="GroupBuyReportDto"
                                 Field="@nameof(GroupBuyReportDto.GroupBuyName)"
@@ -46,7 +47,7 @@
                 </DataGridColumn>
                 <DataGridColumn Caption="@L["ReportUrl"]" Sortable="false" TextAlignment="TextAlignment.Center">
                     <DisplayTemplate>
-                        <a href="javascript:void(0)" @onclick="() => OnNavigate(context.GroupBuyId)"><i class="fa fa-link"></i></a>
+                        <a href="/GroupBuyManagement/GroupBuyReportDetails/@context.GroupBuyId" target="_blank"><i class="fa fa-link"></i></a>
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="GroupBuyReportDto"

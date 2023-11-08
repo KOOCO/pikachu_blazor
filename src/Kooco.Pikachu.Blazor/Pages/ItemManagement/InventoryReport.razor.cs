@@ -20,6 +20,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         int PageIndex = 1;
         int PageSize = 10;
         int Total = 0;
+        string? FilterText = null;
         string Sorting = nameof(ItemDetailsDto.ItemName);
 
         private readonly IUiMessageService _uiMessageService;
@@ -47,8 +48,9 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             try
             {
                 int skipCount = PageIndex * PageSize;
-                var result = await _itemDetailAppService.GetListAsync(new PagedAndSortedResultRequestDto
+                var result = await _itemDetailAppService.GetInventroyReport(new GetInventroyInputDto
                 {
+                    FilterText=FilterText,
                     Sorting = Sorting,
                     MaxResultCount = PageSize,
                     SkipCount = skipCount
@@ -99,6 +101,11 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             }
 
 
+        }
+        async Task OnSearch()
+        {
+            PageIndex = 0;
+            await UpdateItemList();
         }
 
     }

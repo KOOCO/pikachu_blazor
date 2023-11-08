@@ -3,9 +3,11 @@ using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.OrderItems;
+using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.Permissions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Localization;
+using MiniExcelLibs;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,11 +16,17 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Content;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
 using Volo.Abp.MultiTenancy;
+using Volo.Abp.Security.Encryption;
+using Kooco.Pikachu.TenantEmailing;
+using System.Net.Mail;
+using Volo.Abp.SettingManagement;
+using static Kooco.Pikachu.Permissions.PikachuPermissions;
 
 namespace Kooco.Pikachu.Orders
 {
@@ -30,6 +38,11 @@ namespace Kooco.Pikachu.Orders
         private readonly IDataFilter _dataFilter;
         private readonly IGroupBuyRepository _groupBuyRepository;
         private readonly IEmailSender _emailSender;
+        private readonly IRepository<PaymentGateway, Guid> _paymentGatewayRepository;
+        private readonly IStringEncryptionService _stringEncryptionService;
+        private readonly IRepository<TenantEmailSettings, Guid> _tenantEmailSettingsRepository;
+        private readonly ISettingManager _settingManager;
+        private readonly IRepository<OrderItem, Guid> _orderItemRepository;
         private readonly IStringLocalizer<PikachuResource> _l;
         public OrderAppService(
             IOrderRepository orderRepository,
@@ -37,7 +50,12 @@ namespace Kooco.Pikachu.Orders
             IDataFilter dataFilter,
             IGroupBuyRepository groupBuyRepository,
             IEmailSender emailSender,
-            IStringLocalizer<PikachuResource> l
+            IRepository<PaymentGateway, Guid> paymentGatewayRepository,
+            IStringEncryptionService stringEncryptionService,
+            IRepository<TenantEmailSettings, Guid> tenantEmailSettingsRepository,
+            ISettingManager settingManager,
+            IStringLocalizer<PikachuResource> l,
+            IRepository<OrderItem, Guid> orderItemRepository
             )
         {
             _orderRepository = orderRepository;
@@ -45,7 +63,12 @@ namespace Kooco.Pikachu.Orders
             _dataFilter = dataFilter;
             _groupBuyRepository = groupBuyRepository;
             _emailSender = emailSender;
+            _paymentGatewayRepository = paymentGatewayRepository;
+            _stringEncryptionService = stringEncryptionService;
+            _tenantEmailSettingsRepository = tenantEmailSettingsRepository;
+            _settingManager = settingManager;
             _l = l;
+            _orderItemRepository = orderItemRepository;
         }
 
         [AllowAnonymous]
@@ -82,7 +105,8 @@ namespace Kooco.Pikachu.Orders
                         input.ReceivingTime,
                         input.TotalQuantity,
                         input.TotalAmount,
-                        input.ReturnStatus
+                        input.ReturnStatus,
+                        input.OrderType
                         );
 
                 if (input.OrderItems != null)
@@ -116,6 +140,188 @@ namespace Kooco.Pikachu.Orders
         {
             return ObjectMapper.Map<Order, OrderDto>(await _orderRepository.GetAsync(id));
         }
+        public async Task<OrderDto> MergeOrdersAsync(List<Guid> Ids) {
+
+            decimal TotalAmount = 0;
+            int TotalQuantity = 0;
+            var ord = await _orderRepository.GetWithDetailsAsync(Ids[0]);
+            GroupBuy groupBuy = new();
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                groupBuy = await _groupBuyRepository.GetAsync(ord.GroupBuyId);
+            }
+            List<OrderItemsCreateDto> orderItems = new List<OrderItemsCreateDto>();
+            using (CurrentTenant.Change(groupBuy?.TenantId))
+            {
+                foreach (var id in Ids)
+                {
+
+                    var order = await _orderRepository.GetWithDetailsAsync(id);
+                    TotalAmount += order.TotalAmount;
+                    TotalQuantity += order.TotalQuantity;
+                    order.OrderType = OrderType.MargeToNew;
+                    await _orderRepository.UpdateAsync(order);
+                    foreach (var item in order.OrderItems)
+                    {
+                        OrderItemsCreateDto orderItem = new OrderItemsCreateDto();
+                        orderItem.ItemId = item.ItemId;
+                        orderItem.SetItemId = item.SetItemId;
+                        orderItem.FreebieId = item.FreebieId;
+                        orderItem.ItemType = item.ItemType;
+
+                        orderItem.Spec = item.Spec;
+                        orderItem.ItemPrice = item.ItemPrice;
+                        orderItem.TotalAmount = item.TotalAmount;
+                        orderItem.Quantity = item.Quantity;
+                        orderItem.SKU = item.SKU;
+                        orderItems.Add(orderItem);
+
+                    }
+
+                }
+                var order1 = await _orderManager.CreateAsync(
+                          ord.GroupBuyId,
+                          ord.IsIndividual,
+                          ord.CustomerName,
+                          ord.CustomerPhone,
+                          ord.CustomerEmail,
+                          ord.PaymentMethod,
+                          ord.InvoiceType,
+                          ord.InvoiceNumber,
+                          ord.UniformNumber,
+                          ord.IsAsSameBuyer,
+                          ord.RecipientName,
+                          ord.RecipientPhone,
+                          ord.RecipientEmail,
+                          ord.DeliveryMethod,
+                          ord.City,
+                          ord.District,
+                          ord.Road,
+                          ord.AddressDetails,
+                          ord.Remarks,
+                          ord.ReceivingTime,
+                          TotalQuantity,
+                          TotalAmount,
+                          ord.ReturnStatus,
+                          OrderType.NewMarge
+                          );
+                
+                foreach (var item in orderItems)
+                {
+                    _orderManager.AddOrderItem(
+                                   order1,
+                                   item.ItemId,
+                                   item.SetItemId,
+                                   item.FreebieId,
+                                   item.ItemType,
+                                   order1.Id,
+                                   item.Spec,
+                                   item.ItemPrice,
+                                   item.TotalAmount,
+                                   item.Quantity,
+                                   item.SKU
+                                   );
+
+                }
+                await _orderRepository.InsertAsync(order1);
+                return ObjectMapper.Map<Order, OrderDto>(order1);
+            }
+           
+        }
+        public async Task<OrderDto> SplitOrderAsync(List<Guid> OrderItemIds, Guid OrderId)
+        {
+
+            var ord = await _orderRepository.GetWithDetailsAsync(OrderId);
+            decimal TotalAmount = ord.TotalAmount;
+            int TotalQuantity = ord.TotalQuantity;
+            GroupBuy groupBuy = new();
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                groupBuy = await _groupBuyRepository.GetAsync(ord.GroupBuyId);
+            }
+            List<OrderItemsCreateDto> orderItems = new List<OrderItemsCreateDto>();
+            using (CurrentTenant.Change(groupBuy?.TenantId))
+            {
+
+
+
+                foreach (var item in ord.OrderItems)
+                {
+                    OrderItemsCreateDto orderItem = new OrderItemsCreateDto();
+                    orderItem.ItemId = item.ItemId;
+                    orderItem.SetItemId = item.SetItemId;
+                    orderItem.FreebieId = item.FreebieId;
+                    orderItem.ItemType = item.ItemType;
+
+                    orderItem.Spec = item.Spec;
+                    orderItem.ItemPrice = item.ItemPrice;
+                    orderItem.TotalAmount = item.TotalAmount;
+                    orderItem.Quantity = item.Quantity;
+                    orderItem.SKU = item.SKU;
+
+                    TotalAmount -= item.TotalAmount;
+                    TotalQuantity -= item.Quantity;
+                    await _orderItemRepository.DeleteAsync(item.Id);
+                    var order1 = await _orderManager.CreateAsync(
+                     ord.GroupBuyId,
+                     ord.IsIndividual,
+                     ord.CustomerName,
+                     ord.CustomerPhone,
+                     ord.CustomerEmail,
+                     ord.PaymentMethod,
+                     ord.InvoiceType,
+                     ord.InvoiceNumber,
+                     ord.UniformNumber,
+                     ord.IsAsSameBuyer,
+                     ord.RecipientName,
+                     ord.RecipientPhone,
+                     ord.RecipientEmail,
+                     ord.DeliveryMethod,
+                     ord.City,
+                     ord.District,
+                     ord.Road,
+                     ord.AddressDetails,
+                     ord.Remarks,
+                     ord.ReceivingTime,
+                     orderItem.Quantity,
+                     orderItem.TotalAmount,
+                     ord.ReturnStatus,
+                     OrderType.SplitToNew,
+                     ord.Id
+                     );
+                    order1.ShippingStatus = ord.ShippingStatus;
+
+                    _orderManager.AddOrderItem(
+                                   order1,
+                                   orderItem.ItemId,
+                                   orderItem.SetItemId,
+                                   orderItem.FreebieId,
+                                   orderItem.ItemType,
+                                   order1.Id,
+                                   orderItem.Spec,
+                                   orderItem.ItemPrice,
+                                   orderItem.TotalAmount,
+                                   orderItem.Quantity,
+                                   orderItem.SKU
+
+                                   );
+                    await _orderRepository.InsertAsync(order1);
+
+
+                }
+
+                ord.TotalAmount = TotalAmount;
+                ord.TotalQuantity = TotalQuantity;
+                ord.OrderType = OrderType.SplitToNew;
+                await _orderRepository.UpdateAsync(ord);
+
+
+
+                return ObjectMapper.Map<Order, OrderDto>(ord);
+
+
+            }
+        }
 
         public async Task<OrderDto> GetWithDetailsAsync(Guid id)
         {
@@ -132,7 +338,7 @@ namespace Kooco.Pikachu.Orders
 
             var totalCount = await _orderRepository.CountAsync(input.Filter, input.GroupBuyId);
 
-            var items = await _orderRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.GroupBuyId);
+            var items = await _orderRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.GroupBuyId, input.OrderIds);
 
             return new PagedResultDto<OrderDto>
             {
@@ -212,12 +418,27 @@ namespace Kooco.Pikachu.Orders
             return ObjectMapper.Map<Order, OrderDto>(order);
         }
         public async Task ChangeReturnStatusAsync(Guid id, OrderReturnStatus? orderReturnStatus)
-        { 
-        var order= await _orderRepository.GetAsync(id);
+        {
+            var order = await _orderRepository.GetAsync(id);
             order.ReturnStatus = orderReturnStatus;
+            if (orderReturnStatus == OrderReturnStatus.Reject)
+            {
+                order.OrderStatus = OrderStatus.Open;
+            
+            }
             await _orderRepository.UpdateAsync(order);
-        
-        
+
+
+        }
+        public async Task ExchangeOrderAsync(Guid id)
+        {
+            var order = await _orderRepository.GetAsync(id);
+            order.ReturnStatus = OrderReturnStatus.WaitingForApprove;
+            order.OrderStatus = OrderStatus.Returned;
+            
+            await _orderRepository.UpdateAsync(order);
+
+
         }
         public async Task UpdateOrderItemsAsync(Guid id, List<UpdateOrderItemDto> orderItems)
         {
@@ -263,13 +484,40 @@ namespace Kooco.Pikachu.Orders
         {
             var order = await _orderRepository.GetWithDetailsAsync(id);
             var groupbuy = await _groupBuyRepository.GetAsync(g => g.Id == order.GroupBuyId);
+            var emailSettings = await _tenantEmailSettingsRepository.FirstOrDefaultAsync();
+
             string status = orderStatus == null ? _l[order.ShippingStatus.ToString()] : _l[orderStatus.ToString()];
+
             string subject = $"{groupbuy.GroupBuyName} 訂單#{order.OrderNo} {status}";
+
+            if (emailSettings != null && !string.IsNullOrEmpty(emailSettings.Subject))
+            {
+                subject = emailSettings.Subject;
+            }
+
             string body = File.ReadAllText("wwwroot/EmailTemplates/email.html");
             DateTime creationTime = order.CreationTime;
             TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById("China Standard Time"); // UTC+8
             DateTimeOffset creationTimeInTimeZone = TimeZoneInfo.ConvertTime(creationTime, tz);
             string formattedTime = creationTimeInTimeZone.ToString("yyyy-MM-dd HH:mm:ss");
+            
+            if(emailSettings != null)
+            {
+                if (!string.IsNullOrEmpty(emailSettings.Greetings))
+                {
+                    body = body.Replace("{{Greetings}}", emailSettings.Greetings);
+                }
+                else
+                {
+                    body = body.Replace("{{Greetings}}", "");
+                }
+
+                if (!string.IsNullOrEmpty(emailSettings.Footer))
+                {
+                    body = body.Replace("{{Footer}}", emailSettings.Footer);
+                }
+            }
+
             body = body.Replace("{{NotifyMessage}}", groupbuy.NotifyMessage);
             body = body.Replace("{{GroupBuyName}}", groupbuy.GroupBuyName);
             body = body.Replace("{{OrderNo}}", order.OrderNo);
@@ -324,12 +572,19 @@ namespace Kooco.Pikachu.Orders
             body = body.Replace("{{DeliveryFee}}", "$0");
             body = body.Replace("{{TotalAmount}}", $"${order.TotalAmount:N0}");
 
+            var defaultFromEmail = await _settingManager.GetOrNullGlobalAsync("Abp.Mailing.DefaultFromAddress");
+            var defaultFromName = await _settingManager.GetOrNullGlobalAsync("Abp.Mailing.DefaultFromDisplayName");
+            MailAddress from = new(defaultFromEmail, emailSettings?.SenderName ?? defaultFromName);
+            MailAddress to = new(order.CustomerEmail);
 
-            await _emailSender.SendAsync(
-                order.CustomerEmail,
-                subject,
-                body
-                );
+            MailMessage mailMessage = new(from, to)
+            {
+                Subject = subject,
+                Body = body,
+                IsBodyHtml = true
+            };
+
+            await _emailSender.SendAsync(mailMessage);
         }
 
         [AllowAnonymous]
@@ -375,6 +630,78 @@ namespace Kooco.Pikachu.Orders
                     await SendEmailAsync(order.Id);
                 }
             }
+        }
+
+        public async Task<PaymentGatewayDto> GetPaymentGatewayConfigurationsAsync(Guid id)
+        {
+            GroupBuy groupBuy = new();
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                groupBuy = await _groupBuyRepository.GetAsync(id);
+            }
+            using (CurrentTenant.Change(groupBuy.TenantId))
+            {
+                var paymentGateway = await _paymentGatewayRepository.FirstOrDefaultAsync(x => x.PaymentIntegrationType == PaymentIntegrationType.EcPay);
+                var paymentGatewayDto = ObjectMapper.Map<PaymentGateway, PaymentGatewayDto>(paymentGateway);
+                
+                var properties = typeof(PaymentGatewayDto).GetProperties();
+                foreach (var property in properties)
+                {
+                    if (property.PropertyType == typeof(string))
+                    {
+                        var value = (string?)property.GetValue(paymentGatewayDto);
+                        if (!string.IsNullOrEmpty(value))
+                        {
+                            var decryptedValue = _stringEncryptionService.Decrypt(value);
+                            property.SetValue(paymentGatewayDto, decryptedValue);
+                        }
+                    }
+                }
+
+                return paymentGatewayDto;
+            }
+        }
+      
+        public async Task<IRemoteStreamContent> GetListAsExcelFileAsync(GetOrderListDto input)
+        {
+
+            //var downloadToken = await _excelDownloadTokenCache.GetAsync(input.DownloadToken);
+            //if (downloadToken == null || input.DownloadToken != downloadToken.Token)
+            //{
+            //    throw new AbpAuthorizationException("Invalid download token: " + input.DownloadToken);
+            //}
+            var items = await _orderRepository.GetListAsync(0, int.MaxValue, input.Sorting,input.Filter,input.GroupBuyId,input.OrderIds);
+            var Results = ObjectMapper.Map<List<Order>, List<OrderDto>>(items);
+            var excelContent = Results.Select(x =>new
+            {
+                OrderNumber=x.OrderNo,
+                OrderDate=x.CreationTime, 
+                CustomerName=x.CustomerName, 
+                Email=x.CustomerEmail, 
+               
+                RecipientInformation=x.RecipientName+"/"+x.RecipientPhone, 
+                ShippingMethod=x.DeliveryMethod,
+                Address=x.AddressDetails,
+                Notes=x.Remarks,
+                MerchantNotes=x.Remarks,
+                OrderedItems = string.Join(", ", x.OrderItems.Select(item =>
+        (item.ItemType == ItemType.Item) ? $"{item.Item?.ItemName} x {item.Quantity}" :
+        (item.ItemType == ItemType.SetItem) ? $"{item.SetItem?.SetItemName} x {item.Quantity}" :
+        (item.ItemType == ItemType.Freebie) ? $"{item.Freebie?.ItemName} x {item.Quantity}" : "")
+    ),
+                InvoiceStatus=x.InvoiceStatus,
+                ShippingStatus=x.ShippingStatus,
+                PaymentMethod = x.PaymentMethod,
+                CheckoutAmount=x.TotalAmount
+
+
+
+
+            });
+            var memoryStream = new MemoryStream();
+            await memoryStream.SaveAsAsync(excelContent);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            return new RemoteStreamContent(memoryStream, "InventroyReport.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         }
     }
 }

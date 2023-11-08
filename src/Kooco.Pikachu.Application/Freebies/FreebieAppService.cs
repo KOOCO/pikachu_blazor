@@ -12,7 +12,6 @@ using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
-using Volo.Abp.ObjectMapping;
 
 namespace Kooco.Pikachu.Freebies
 {
@@ -21,18 +20,15 @@ namespace Kooco.Pikachu.Freebies
 
         private readonly FreebieManager _freebieManager;
         private readonly IFreebieRepository _freebieRepository;
-        private readonly IGroupBuyRepository _groupBuyRepository;
         private readonly ImageContainerManager _imageContainerManager;
         public FreebieAppService(
             FreebieManager freebieManager,
             IFreebieRepository freebieRepository,
-            IGroupBuyRepository groupBuyRepository,
             ImageContainerManager imageContainerManager
             ) : base(freebieRepository)
         {
             _freebieManager = freebieManager;
             _freebieRepository = freebieRepository;
-            _groupBuyRepository = groupBuyRepository;
             _imageContainerManager = imageContainerManager;
         }
 
@@ -83,13 +79,6 @@ namespace Kooco.Pikachu.Freebies
         {
             var data = await _freebieRepository.GetListAsync();
             return ObjectMapper.Map<List<Freebie>, List<FreebieDto>>(data);
-        }
-        public async Task<List<KeyValueDto>> GetGroupBuyLookupAsync()
-        {
-            var groupbuys = (await _groupBuyRepository.GetListAsync())
-                            .Where(g => g.IsGroupBuyAvaliable)
-                            .ToList();
-            return ObjectMapper.Map<List<GroupBuy>, List<KeyValueDto>>(groupbuys);
         }
         public async Task<FreebieDto> GetAsync(Guid id, bool includeDetails = false)
         {

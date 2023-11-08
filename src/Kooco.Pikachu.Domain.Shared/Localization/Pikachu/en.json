@@ -291,6 +291,44 @@
     "SalesAmount/SalesAmountExcludingShipping": "Sales Amount / Sales Amount (Excluding Shipping Cost)",
     "AmountReceived/AmountReceivedExcludingShipping": "Amount Received / Amount Received (Excluding Shipping Cost)",
     "SalesAmountMinusShippingCosts": "Sales Amount (Minus Shipping Costs)",
-    "BloggersShareProfit": "Bloggers Share Profit"
+    "BloggersShareProfit": "Bloggers Share Profit",
+    "DownloadExcel": "Download Excel",
+
+
+    //Cash Flow Settings
+    "CashFlowDealerSettings": "Cash Flow Dealer Settings",
+    "EcPay": "Ecpay",
+    "ChinaTrust": "CTBC Bank Co., Ltd",
+    "Enable/Disable": "Enable/Disable",
+    "ChannelId": "Channel ID",
+    "ChannelSecretKey": "Channel Secret Key",
+    "Code": "Code",
+    "MerchantId": "Merchant ID",
+    "TerminalCode": "Terminal Code",
+    "CodeValue": "Code Value",
+    "HashKey": "Hash Key",
+    "HashIV": "Hash IV",
+    "TradeDescription": "Trade Description",
+
+
+    //Email Settings
+    "EmailSettings": "Email Settings",
+    "SenderName": "Sender Name",
+    "Greetings": "Greetings",
+    "Footer": "Footer",
+    "AutomaticEmailing": "Automatic Emailing",
+    "TradeName": "Trade Name",
+    "ReceipientMailbox": "Receipient Mailbox",
+    "SendInterval": "Send Interval",
+    "SendTime": "Send Time",
+    "CreateAutomaticEmails": "Create Automatic Emails",
+    "RecipientMailbox": "Recipient Mailbox",
+    "InvalidTradeName": "Invalid Trade Name",
+    "InvalidRecipients": "Invalid Recipients",
+    "InvalidStartDate": "Invalid Start Date",
+    "InvalidEndDate": "Invalid End Date",
+    "InvalidSendTime": "Invalid Send Time",
+    "InvalidGroupBuys": "Please Select Group Buys",
+    "EditAutomaticEmails": "Edit Automatic Emails"
   }
 }

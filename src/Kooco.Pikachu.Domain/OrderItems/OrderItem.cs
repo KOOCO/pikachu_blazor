@@ -25,6 +25,7 @@ namespace Kooco.Pikachu.OrderItems
         public decimal ItemPrice { get; set; }
         public decimal TotalAmount { get; set; }
         public string? SKU { get; set; }
+        public int? DiscountPercentage { get; set; }
         public OrderItem()
         {
 
@@ -40,7 +41,8 @@ namespace Kooco.Pikachu.OrderItems
             decimal itemPrice,
             decimal totalAmount,
             int quantity,
-            string? sku
+            string? sku,
+            int? discountPercentage=null
             ) : base(id)
         {
             ItemId = itemId;
@@ -53,6 +55,7 @@ namespace Kooco.Pikachu.OrderItems
             TotalAmount = totalAmount;
             Quantity = quantity;
             SKU = sku;
+            DiscountPercentage = discountPercentage;
         }
     }
 }

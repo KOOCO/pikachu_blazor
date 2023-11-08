@@ -13,7 +13,8 @@ namespace Kooco.Pikachu.Orders
             int maxResultCount,
             string? sorting,
             string? filter,
-            Guid? groupBuyId
+            Guid? groupBuyId,
+            List<Guid>orderId
             );
         Task<Order> MaxByOrderNumberAsync();
         Task<Order> GetWithDetailsAsync(Guid id);

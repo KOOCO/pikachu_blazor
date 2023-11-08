@@ -142,11 +142,11 @@ public class PikachuMenuContributor : IMenuContributor
                 icon: "fas fa-funnel-dollar",
                 order: 4
             )
-                  .AddItem(new ApplicationMenuItem(
-            name: "FreebieManagement",
+            .AddItem(new ApplicationMenuItem(
+            name: "CashFlowDealerSettings",
             icon: "fas fa-hand-holding-usd",
-            displayName: "金流商設定",
-            url: "/Temp/Temp2")
+            displayName: l["CashFlowDealerSettings"],
+            url: "/CashFlowDealerSettings")
             )
                         .AddItem(new ApplicationMenuItem(
             name: "ElectronicInvoiceSetting",
@@ -155,10 +155,10 @@ public class PikachuMenuContributor : IMenuContributor
             url: "/CashFlowManagement/ElectronicInvoiceSetting")
             )
                               .AddItem(new ApplicationMenuItem(
-            name: "FreebieManagement",
+            name: "CashFlowReconciliationStatement",
             icon: "fas fa-file-invoice",
             displayName: "金流對帳表",
-            url: "/GroupBuyManagement/GroupBuyReport5")
+            url: "/CashFlowManagement/CashFlowReconciliationStatement")
             )
         );
 
@@ -217,16 +217,16 @@ public class PikachuMenuContributor : IMenuContributor
             //.RequirePermissions("MyProject.Crm.Orders")
             )
             .AddItem(new ApplicationMenuItem(
-            name: "FreebieManagement",
+            name: "EmailSettings",
             icon: "fas fa-mail-bulk",
-            displayName: "寄送信設定",
-            url: "/GroupBuyManagement/GroupBuyReport7")
+            displayName: l["EmailSettings"],
+            url: "/EmailSettings")
             )
             .AddItem(new ApplicationMenuItem(
-            name: "FreebieManagement",
+            name: "AutomaticEmailing",
             icon: "fas fa-envelope-open-text",
-            displayName: "自動發送報表",
-            url: "/GroupBuyManagement/GroupBuyReport8")
+            displayName: l["AutomaticEmailing"],
+            url: "/AutomaticEmailing")
             )
               .AddItem(new ApplicationMenuItem(
             name: "多商戶管理-商戶賬單報表",
@@ -247,7 +247,6 @@ public class PikachuMenuContributor : IMenuContributor
 
         administration.SetSubItemOrder(IdentityMenuNames.GroupName, 2);
         administration.SetSubItemOrder(SettingManagementMenus.GroupName, 3);
-
         //remove administration item from menu
         //context.Menu.Items.Remove( administration );
 

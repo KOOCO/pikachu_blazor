@@ -17,7 +17,14 @@
         <h3>@L["庫存報表"]</h3>
     </div>
     <div class="col-6 text-lg-end">
-       
+        <div class="d-inline-block me-1">
+        <div class="input-group">
+            <InputText class="form-control form-control-sm search-bar" @bind-Value="@FilterText" placeholder="@L["Search"]"></InputText>
+            <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="OnSearch">
+                <i class="fa fa-search"></i>
+            </Button>
+        </div>
+        </div>
         <Button Type="@ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="DownloadExcel" >
             <i class="fa fa-excel"></i>
             @L["Excel"]
@@ -36,10 +43,15 @@
                   
                   SortChanged="OnSortChange">
             <DataGridColumns>
-             
+                <DataGridColumn TItem="ItemDetailsDto"
+                                Field="@nameof(ItemDetailsDto.ItemName)"
+                                Caption="@L["ItemName"]">
+
+                </DataGridColumn>
                 <DataGridColumn TItem="ItemDetailsDto"
                                 Field="@nameof(ItemDetailsDto.SKU)"
-                                Caption="@L["ItemName"]">
+                                Caption="@L["SKU"]">
+                   
                 </DataGridColumn>
                 <DataGridColumn TItem="ItemDetailsDto"
                                 Field="@nameof(ItemDetailsDto.StockOnHand)"

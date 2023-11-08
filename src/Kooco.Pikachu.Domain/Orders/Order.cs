@@ -38,6 +38,7 @@ namespace Kooco.Pikachu.Orders
         public string? Remarks { get; set; }
         public ReceivingTime? ReceivingTime { get; set; }
         public Guid GroupBuyId { get; set; }
+        public Guid? SplitFromId { get; set; }
 
         [ForeignKey(nameof(GroupBuyId))]
         public GroupBuy GroupBuy { get; set; }
@@ -53,6 +54,8 @@ namespace Kooco.Pikachu.Orders
         public ICollection<OrderItem> OrderItems { get; set; }
         public ICollection<StoreComment> StoreComments { get; set; }
         public bool IsRefunded { get; set; }
+        public InvoiceStatus InvoiceStatus { get; set; }
+        public OrderType? OrderType { get; set; }
         public Order() { }
 
         public Order(
@@ -80,7 +83,9 @@ namespace Kooco.Pikachu.Orders
             ReceivingTime? receivingTime,
             int totalQuantity,
             decimal totalAmount,
-            OrderReturnStatus? orderReturnStatus
+            OrderReturnStatus? orderReturnStatus,
+            OrderType? orderType,
+            Guid? splitFromId=null
          )
         {
             Id = id;
@@ -113,6 +118,8 @@ namespace Kooco.Pikachu.Orders
             StoreComments = new List<StoreComment>();
             IsRefunded = false;
             ReturnStatus = orderReturnStatus;
+            OrderType = orderType;
+            SplitFromId = splitFromId;
         }
 
         public void AddOrderItem(

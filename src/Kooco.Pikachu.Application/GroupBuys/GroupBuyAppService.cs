@@ -14,6 +14,11 @@ using Volo.Abp.MultiTenancy;
 using Kooco.Pikachu.Freebies.Dtos;
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Items;
+using Volo.Abp.Content;
+using System.IO;
+using Kooco.Pikachu.Orders;
+using MiniExcelLibs;
+using Kooco.Pikachu.Items.Dtos;
 
 namespace Kooco.Pikachu.GroupBuys
 {
@@ -26,6 +31,7 @@ namespace Kooco.Pikachu.GroupBuys
         private readonly IFreebieRepository _freebieRepository;
         private readonly IDataFilter _dataFilter;
         private readonly ISetItemRepository _setItemRepository;
+        private readonly IOrderRepository _orderRepository;
 
         public GroupBuyAppService(
             IGroupBuyRepository groupBuyRepository,
@@ -34,7 +40,8 @@ namespace Kooco.Pikachu.GroupBuys
             IFreebieRepository freebieRepository,
             IRepository<Image, Guid> imageRepository,
             IDataFilter dataFilter,
-            ISetItemRepository setItemRepository
+            ISetItemRepository setItemRepository,
+            IOrderRepository orderRepository
             )
         {
             _groupBuyManager = groupBuyManager;
@@ -44,6 +51,7 @@ namespace Kooco.Pikachu.GroupBuys
             _dataFilter = dataFilter;
             _freebieRepository = freebieRepository;
             _setItemRepository = setItemRepository;
+            _orderRepository = orderRepository;
         }
 
         public async Task<GroupBuyDto> CreateAsync(GroupBuyCreateDto input)
@@ -269,6 +277,14 @@ namespace Kooco.Pikachu.GroupBuys
         {
             var itemGroup = await _groupBuyRepository.GetGroupBuyItemGroupAsync(id);
             return ObjectMapper.Map<GroupBuyItemGroup, GroupBuyItemGroupDto>(itemGroup);
+        }
+
+        public async Task<List<KeyValueDto>> GetGroupBuyLookupAsync()
+        {
+            var groupbuys = (await _groupBuyRepository.GetListAsync())
+                            .Where(g => g.IsGroupBuyAvaliable)
+                            .ToList();
+            return ObjectMapper.Map<List<GroupBuy>, List<KeyValueDto>>(groupbuys);
         }
 
         /// <summary>

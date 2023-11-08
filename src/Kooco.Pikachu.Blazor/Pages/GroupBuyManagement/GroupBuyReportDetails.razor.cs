@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using Blazorise.LoadingIndicator;
+using System.IO;
 
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
 
@@ -90,6 +91,40 @@ public partial class GroupBuyReportDetails
         else
         {
             ExpandedRows.Add(e.Item.Id);
+        }
+    }
+
+    async Task DownloadExcel()
+    {
+        try
+        {
+            await loading.Show();
+            var remoteStreamContent = await _groupBuyAppService.GetListAsExcelFileAsync(Guid.Parse(Id));
+            using var responseStream = remoteStreamContent.GetStream();
+            // Create Excel file from the stream
+            using var memoryStream = new MemoryStream();
+            await responseStream.CopyToAsync(memoryStream);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+
+            // Convert MemoryStream to byte array
+            var excelData = memoryStream.ToArray();
+
+            // Trigger the download using JavaScript interop
+            await JSRuntime.InvokeVoidAsync("downloadFile", new
+            {
+                ByteArray = excelData,
+                FileName = "GroupBuyReport.xlsx",
+                ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            });
+        }
+        catch (Exception ex)
+        {
+            await _uiMessageService.Error(ex.GetType().ToString());
+            await JSRuntime.InvokeVoidAsync(ex.ToString());
+        }
+        finally
+        {
+            await loading.Hide();
         }
     }
 }

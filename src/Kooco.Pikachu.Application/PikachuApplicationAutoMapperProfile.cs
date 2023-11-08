@@ -11,7 +11,10 @@ using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.StoreComments;
 using Kooco.Pikachu.Refunds;
+using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.ElectronicInvoiceSettings;
+using Kooco.Pikachu.TenantEmailing;
+using Kooco.Pikachu.AutomaticEmails;
 
 namespace Kooco.Pikachu;
 
@@ -36,7 +39,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<ItemWithItemType, ItemWithItemTypeDto>();
 
         // ItemDetailDto EntityMapping
-        CreateMap<ItemDetails, ItemDetailsDto>();
+        CreateMap<ItemDetails, ItemDetailsDto>(MemberList.Source);
         CreateMap<CreateItemDetailsDto, ItemDetails>();
 
         //EnumValue EntityMapping
@@ -77,7 +80,19 @@ public class PikachuApplicationAutoMapperProfile : Profile
 
         CreateMap<Refund, RefundDto>();
 
+        CreateMap<PaymentGateway, PaymentGatewayDto>();
+        CreateMap<PaymentGatewayDto, UpdateLinePayDto>();
+        CreateMap<PaymentGatewayDto, UpdateChinaTrustDto>();
+        CreateMap<PaymentGatewayDto, UpdateEcPayDto>();
+
         CreateMap<ElectronicInvoiceSetting, ElectronicInvoiceSettingDto>();
         CreateMap<ElectronicInvoiceSettingDto, CreateUpdateElectronicInvoiceDto>();
+
+        CreateMap<TenantEmailSettings, TenantEmailSettingsDto>();
+        CreateMap<TenantEmailSettingsDto, CreateUpdateTenantEmailSettingsDto>();
+
+        CreateMap<AutomaticEmail, AutomaticEmailDto>();
+        CreateMap<AutomaticEmailGroupBuys, AutomaticEmailGroupBuysDto>();
+        CreateMap<AutomaticEmailDto, AutomaticEmailCreateUpdateDto>();
     }
 }

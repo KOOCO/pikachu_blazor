@@ -24,7 +24,10 @@ using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.StoreComments;
 using Kooco.Pikachu.Refunds;
+using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.ElectronicInvoiceSettings;
+using Kooco.Pikachu.TenantEmailing;
+using Kooco.Pikachu.AutomaticEmails;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -81,7 +84,11 @@ public class PikachuDbContext :
     public DbSet<Order> Orders { get; set; }
     public DbSet<StoreComment> StoreComments { get; set; }
     public DbSet<Refund> Refunds { get; set; }
+    public DbSet<PaymentGateway> PaymentGateways { get; set; }
     public DbSet<ElectronicInvoiceSetting> ElectronicInvoiceSettings { get; set; }
+    public DbSet<TenantEmailSettings> TenantEmailSettings { get; set; }
+    public DbSet<AutomaticEmail> AutomaticEmails { get; set; }
+    public DbSet<AutomaticEmailGroupBuys> AutomaticEmailGroupBuys { get; set; }
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
     {
@@ -220,11 +227,40 @@ public class PikachuDbContext :
             b.ConfigureByConvention();
             b.HasOne(x => x.Order).WithMany().HasForeignKey(x => x.OrderId);
         });
+
+        builder.Entity<PaymentGateway>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "PaymentGateways", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+        });
+        
         builder.Entity<ElectronicInvoiceSetting>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "ElectronicInvoiceSettings", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
-         
+        });
+
+        builder.Entity<TenantEmailSettings>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "TenantEmailSettings", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+        });
+
+        builder.Entity<AutomaticEmail>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "AutomaticEmails", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+
+            b.Ignore(x => x.RecipientsList);
+            b.HasMany(x => x.GroupBuys).WithOne().HasForeignKey(x => x.AutomaticEmailId);
+        });
+
+        builder.Entity<AutomaticEmailGroupBuys>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "AutomaticEmailGroupBuys", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+
+            b.HasOne(x => x.GroupBuy).WithMany().IsRequired(false);
         });
     }
 }

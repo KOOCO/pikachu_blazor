@@ -1,4 +1,6 @@
-﻿using Kooco.Pikachu.Orders;
+﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.PaymentGateways;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -17,6 +19,7 @@ namespace Kooco.Pikachu.Controllers.Orders
     public class OrderController : AbpController
     {
         private readonly IOrderAppService _ordersAppService;
+
         public OrderController(
             IOrderAppService ordersAppService)
         {
@@ -80,6 +83,12 @@ namespace Kooco.Pikachu.Controllers.Orders
         public Task AddCheckMacValueAsync(Guid id, string checkMacValue)
         {
             return _ordersAppService.AddCheckMacValueAsync(id, checkMacValue);
+        }
+
+        [HttpPost("payment-gateway-configuration")]
+        public Task<PaymentGatewayDto> GetPaymentGatewayConfigurationsAsync([FromBody] Guid id)
+        {
+            return _ordersAppService.GetPaymentGatewayConfigurationsAsync(id);
         }
     }
 }
