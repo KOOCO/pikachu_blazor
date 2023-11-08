@@ -19,7 +19,7 @@ public class PikachuMenuContributor : IMenuContributor
         }
     }
 
-    private Task ConfigureMainMenuAsync(MenuConfigurationContext context)
+    private async Task ConfigureMainMenuAsync(MenuConfigurationContext context)
     {
         var administration = context.Menu.GetAdministration();
         var l = context.GetLocalizer<PikachuResource>();
@@ -35,149 +35,172 @@ public class PikachuMenuContributor : IMenuContributor
             )
         );
 
-        context.Menu.Items.Insert(
-            1,
-            new ApplicationMenuItem(
-                PikachuMenus.GroupBuyManagement,
-                "團購管理",
-                url: "/GroupBuyManagement",
-                icon: "fas fa-store",
-                order: 1
-            )
-            .AddItem(new ApplicationMenuItem(
+        var groupMangment = new ApplicationMenuItem(
+                 PikachuMenus.GroupBuyManagement,
+                 "團購管理",
+
+                 icon: "fas fa-store",
+                 order: 1
+             );
+        context.Menu.AddItem(groupMangment);
+        if (await context.IsGrantedAsync(PikachuPermissions.GroupBuyList))
+        {
+            groupMangment.AddItem(new ApplicationMenuItem(
             name: "GroupBuyListView",
             displayName: "團購列表",
             icon: "fas fa-list",
-            url: "/GroupBuyManagement/GroupBuyList")
-            )
-            .AddItem(new ApplicationMenuItem(
-            name: "GroupBuyReports",
-            icon: "fas fa-newspaper",
-            displayName: "團購報表",
-            url: "/GroupBuyManagement/GroupBuyReport")
-            )
-            .AddItem(new ApplicationMenuItem(
-            name: "GroupBuyPageConfig",
-            icon: "fas fa-chalkboard-teacher",
-            displayName: "團購頁面設定",
-            url: "/GroupBuyManagement/GroupBuyPageConfig")
-            )
-            
-        );
+            url: "/GroupBuyManagement/GroupBuyList"
+            ));
+        };
+        if (await context.IsGrantedAsync(PikachuPermissions.GroupBuyReport))
+        {
+            groupMangment.AddItem(new ApplicationMenuItem(
+                name: "GroupBuyReports",
+                icon: "fas fa-newspaper",
+                displayName: "團購報表",
+                url: "/GroupBuyManagement/GroupBuyReport"
+                ));
+        }
+        if (await context.IsGrantedAsync(PikachuPermissions.GroupBuyReport))
+        {
+            groupMangment.AddItem(new ApplicationMenuItem(
+                name: "GroupBuyPageConfig",
+                icon: "fas fa-chalkboard-teacher",
+                displayName: "團購頁面設定",
+                url: "/GroupBuyManagement/GroupBuyPageConfig"
+                )
 
-        context.Menu.Items.Insert(
-            2,
-            new ApplicationMenuItem(
-                PikachuMenus.ProductManagement,
-                "商品設定",
-                url: "/ProductManagement",
-                icon: "fas fa-tags",
-                order: 2
-            )
-            .AddItem(new ApplicationMenuItem(
+            );
+        }
+
+        var productmangment =
+         new ApplicationMenuItem(
+             PikachuMenus.ProductManagement,
+             "商品設定",
+
+             icon: "fas fa-tags",
+             order: 2
+         );
+        context.Menu.AddItem(productmangment);
+        if (await context.IsGrantedAsync(PikachuPermissions.GoodsList))
+        {
+            productmangment.AddItem(new ApplicationMenuItem(
             name: "GoodsList",
             icon: "fas fa-list",
             displayName: "商品列表",
-            url: "/Items")
-            )
-            .AddItem(new ApplicationMenuItem(
+            url: "/Items"
+            ));
+        }
+        if (await context.IsGrantedAsync(PikachuPermissions.SetItem.Default))
+        {
+            productmangment.AddItem(new ApplicationMenuItem(
             name: "GroupGoodsManagement",
             icon: "fas fa-object-group",
             displayName: "組合商品設定",
-            url: "/SetItem")
-            )
-            .AddItem(new ApplicationMenuItem(
+            url: "/SetItem"
+            ));
+        }
+        if (await context.IsGrantedAsync(PikachuPermissions.InventoryReport))
+        {
+            productmangment.AddItem(new ApplicationMenuItem(
             name: "InventoryReport",
             icon: "fas fa-newspaper",
             displayName: "庫存報表",
             url: "/Items/InventoryReport")
-            )
-            .AddItem(new ApplicationMenuItem(
-            name: "FreebieManagement",
-            icon: "fas fa-gifts",
-            displayName: "贈品設定",
-            url: "/Freebie/FreebieList")
-            )
-
+            );
+        }
+        if (await context.IsGrantedAsync(PikachuPermissions.FreebieSetting))
+        {
+            productmangment.AddItem(new ApplicationMenuItem(
+        name: "FreebieManagement",
+        icon: "fas fa-gifts",
+        displayName: "贈品設定",
+        url: "/Freebie/FreebieList")
         );
+        }
 
-        context.Menu.Items.Insert(
-            3,
-            new ApplicationMenuItem(
-                PikachuMenus.OrderManagement,
-                "訂單管理",
-                url: "/OrderManagement",
-                icon: "fas fa-cart-plus",
-                order: 3
-            )
-            .AddItem(new ApplicationMenuItem(
+
+
+        var orderMangment = new ApplicationMenuItem(
+               PikachuMenus.OrderManagement,
+               "訂單管理",
+
+               icon: "fas fa-cart-plus",
+               order: 3
+           );
+        context.Menu.AddItem(orderMangment);
+        orderMangment.AddItem(new ApplicationMenuItem(
             "Orders",
             icon: "fas fa-list",
             displayName: l["Menu:Orders"],
             url: "/Orders",
             requiredPermissionName: PikachuPermissions.Orders.Default
             )
-            )
-            .AddItem(new ApplicationMenuItem(
-            name: "FreebieManagement",
-            icon: "fas fa-truck-loading",
-            displayName: "退換貨列表",
-            url: "/Orders/ReturnAndExchangeOrder")
-            )
-            .AddItem(new ApplicationMenuItem(
-            name: "Refund",
-            icon: "fas fa-stamp",
-            displayName: l["Refund"],
-            url: "/Refund",
-            requiredPermissionName: PikachuPermissions.Orders.Default)
-            )
+            );
+        orderMangment.AddItem(new ApplicationMenuItem(
+        name: "FreebieManagement",
+        icon: "fas fa-truck-loading",
+        displayName: "退換貨列表",
+        url: "/Orders/ReturnAndExchangeOrder",
+         requiredPermissionName: PikachuPermissions.ReturnExchangeOrder)
+        );
+        orderMangment.AddItem(new ApplicationMenuItem(
+        name: "Refund",
+        icon: "fas fa-stamp",
+        displayName: l["Refund"],
+        url: "/Refund",
+        requiredPermissionName: PikachuPermissions.Orders.Default)
         );
 
-        context.Menu.Items.Insert(
-            4,
-            new ApplicationMenuItem(
+        var paymentManagement = new ApplicationMenuItem(
                 PikachuMenus.PaymentManagement,
                 "金流設定",
-                url: "/PaymentManagement",
+
                 icon: "fas fa-funnel-dollar",
                 order: 4
-            )
-            .AddItem(new ApplicationMenuItem(
+            );
+
+        context.Menu.AddItem(paymentManagement);
+        paymentManagement.AddItem(new ApplicationMenuItem(
             name: "CashFlowDealerSettings",
             icon: "fas fa-hand-holding-usd",
             displayName: l["CashFlowDealerSettings"],
-            url: "/CashFlowDealerSettings")
-            )
-                        .AddItem(new ApplicationMenuItem(
-            name: "ElectronicInvoiceSetting",
-            icon: "fas fa-receipt",
-            displayName: "電子發票設定",
-            url: "/CashFlowManagement/ElectronicInvoiceSetting")
-            )
-                              .AddItem(new ApplicationMenuItem(
-            name: "CashFlowReconciliationStatement",
-            icon: "fas fa-file-invoice",
-            displayName: "金流對帳表",
-            url: "/CashFlowManagement/CashFlowReconciliationStatement")
-            )
-        );
+            url: "/CashFlowDealerSettings",
+            requiredPermissionName: PikachuPermissions.CashFlowDealerSettings)
 
-        context.Menu.Items.Insert(
-            5,
-            new ApplicationMenuItem(
+            );
+        paymentManagement.AddItem(new ApplicationMenuItem(
+name: "ElectronicInvoiceSetting",
+icon: "fas fa-receipt",
+displayName: "電子發票設定",
+url: "/CashFlowManagement/ElectronicInvoiceSetting",
+requiredPermissionName: PikachuPermissions.InvoiceSetting)
+);
+        paymentManagement.AddItem(new ApplicationMenuItem(
+name: "CashFlowReconciliationStatement",
+icon: "fas fa-file-invoice",
+displayName: "金流對帳表",
+url: "/CashFlowManagement/CashFlowReconciliationStatement",
+requiredPermissionName: PikachuPermissions.CashFlowReconciliationStatement)
+);
+
+        var logisticsManagment =
+     new ApplicationMenuItem(
                 PikachuMenus.LogisticsManagement,
                 "物流設定",
-                url: "/LogisticsManagement",
+                
                 icon: "fas fa-truck",
                 order: 5
-            )
-            .AddItem(new ApplicationMenuItem(
+            );
+        logisticsManagment.AddItem(new ApplicationMenuItem(
             name: "FreebieManagement",
             icon: "fas fa-shipping-fast",
             displayName: "物流商設定",
-            url: "/GroupBuyManagement/GroupBuyReport6")
+            url: "/GroupBuyManagement/GroupBuyReport6",
+            requiredPermissionName: PikachuPermissions.LogisticsSetting
             )
-        );
+            );
+        
 
         //context.Menu.Items.Insert(
         //    6,
@@ -201,40 +224,45 @@ public class PikachuMenuContributor : IMenuContributor
         //)
         //);
 
-        context.Menu.Items.Insert(
-            7,
+        var systemManagment =
             new ApplicationMenuItem(
                 PikachuMenus.SystemManagement,
                 "系統管理",
-                url: "/SystemManagement",
+                
                 icon: "fas fa-user",
                 order: 7
-            ).AddItem(new ApplicationMenuItem(
+            );
+        context.Menu.AddItem(systemManagment);
+        systemManagment.AddItem(new ApplicationMenuItem(
                 name: "Permission",
                 displayName: "權限管理",
                 icon: "fas fa-user-lock",
-                url: "/Identify/Users")
-            //.RequirePermissions("MyProject.Crm.Orders")
-            )
-            .AddItem(new ApplicationMenuItem(
+                url: "/Identify/Users",
+                requiredPermissionName:PikachuPermissions.PermissionSetting)
+            
+            );
+            systemManagment.AddItem(new ApplicationMenuItem(
             name: "EmailSettings",
             icon: "fas fa-mail-bulk",
             displayName: l["EmailSettings"],
-            url: "/EmailSettings")
-            )
-            .AddItem(new ApplicationMenuItem(
+            url: "/EmailSettings",
+            requiredPermissionName:PikachuPermissions.EmailSettings)
+            );
+            systemManagment.AddItem(new ApplicationMenuItem(
             name: "AutomaticEmailing",
             icon: "fas fa-envelope-open-text",
             displayName: l["AutomaticEmailing"],
-            url: "/AutomaticEmailing")
-            )
-              .AddItem(new ApplicationMenuItem(
+            url: "/AutomaticEmailing",
+            requiredPermissionName:PikachuPermissions.AutomaticEmailing)
+            );
+              systemManagment.AddItem(new ApplicationMenuItem(
             name: "多商戶管理-商戶賬單報表",
             icon: "fas fa-newspaper",
             displayName: l["多商戶管理-商戶賬單報表"],
-            url: "/TenantBillingReport")
-            )
-        );
+            url: "/TenantBillingReport",
+            requiredPermissionName:PikachuPermissions.TenentBillReport)
+            );
+        
 
         if (MultiTenancyConsts.IsEnabled)
         {
@@ -250,6 +278,6 @@ public class PikachuMenuContributor : IMenuContributor
         //remove administration item from menu
         //context.Menu.Items.Remove( administration );
 
-        return Task.CompletedTask;
+
     }
 }
