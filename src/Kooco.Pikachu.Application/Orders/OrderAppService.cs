@@ -140,6 +140,26 @@ namespace Kooco.Pikachu.Orders
                 Items = ObjectMapper.Map<List<Order>, List<OrderDto>>(items)
             };
         }
+        public async Task<PagedResultDto<OrderDto>> GetTenantOrderListAsync(GetOrderListDto input)
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                if (input.Sorting.IsNullOrEmpty())
+                {
+                    input.Sorting = $"{nameof(Order.CreationTime)} desc";
+                }
+
+                var totalCount = await _orderRepository.CountAsync(input.Filter, input.GroupBuyId);
+
+                var items = await _orderRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.GroupBuyId, input.OrderIds);
+
+                return new PagedResultDto<OrderDto>
+                {
+                    TotalCount = totalCount,
+                    Items = ObjectMapper.Map<List<Order>, List<OrderDto>>(items)
+                };
+            }
+        }
         public async Task<PagedResultDto<OrderDto>> GetReturnListAsync(GetOrderListDto input)
         {
             if (input.Sorting.IsNullOrEmpty())

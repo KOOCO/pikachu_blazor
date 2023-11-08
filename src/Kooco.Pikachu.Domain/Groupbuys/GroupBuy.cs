@@ -198,6 +198,7 @@ namespace Kooco.Pikachu.GroupBuys
         public string? CustomerInformation { get; set; }
         public string? CustomerInformationDescription { get; set; }
         public bool IsGroupBuyAvaliable { get; set; }
+        public decimal? SalesAmount { get; set; }
         /// <summary>
         /// 預設使用的發貨倉庫 Default Warehouse used for shipping
         /// </summary>
@@ -252,6 +253,7 @@ namespace Kooco.Pikachu.GroupBuys
           string? groupBuyConditionDescription,
           string? exchangePolicyDescription,
           string shortCode
+          
 
 
 

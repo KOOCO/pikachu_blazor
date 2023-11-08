@@ -374,6 +374,25 @@ namespace Kooco.Pikachu.GroupBuys
                 Items = ObjectMapper.Map<List<GroupBuyReport>, List<GroupBuyReportDto>>(items)
             };
         }
+        public async Task<PagedResultDto<GroupBuyReportDto>> GetGroupBuyTenantReportListAsync(GetGroupBuyReportListDto input)
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                if (input.Sorting.IsNullOrWhiteSpace())
+                {
+                    input.Sorting = nameof(GroupBuyReport.GroupBuyName);
+                }
+                var totalCount = await _groupBuyRepository.GetGroupBuyTenantReportCountAsync();
+
+                var items = await _groupBuyRepository.GetGroupBuyTenantReportListAsync(input.SkipCount, input.MaxResultCount, input.Sorting);
+
+                return new PagedResultDto<GroupBuyReportDto>
+                {
+                    TotalCount = totalCount,
+                    Items = ObjectMapper.Map<List<GroupBuyReport>, List<GroupBuyReportDto>>(items)
+                };
+            }
+        }
 
         public async Task<GroupBuyDto> GetGroupBuyofTenant(string ShortCode, Guid TenantId)
         {
@@ -396,6 +415,60 @@ namespace Kooco.Pikachu.GroupBuys
         {
             var data = await _groupBuyRepository.GetGroupBuyReportDetailsAsync(id);
             return ObjectMapper.Map<GroupBuyReportDetails, GroupBuyReportDetailsDto>(data);
+        }
+        public async Task<GroupBuyReportDetailsDto> GetGroupBuyTenantReportDetailsAsync(Guid id)
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var data = await _groupBuyRepository.GetGroupBuyReportDetailsAsync(id);
+                return ObjectMapper.Map<GroupBuyReportDetails, GroupBuyReportDetailsDto>(data);
+            }
+        }
+        public async Task<IRemoteStreamContent> GetListAsExcelFileAsync(Guid id)
+        {
+            List<Guid> ids = new List<Guid>();
+            ids.Add(id);
+            var items = await _orderRepository.GetListAsync(0, int.MaxValue, nameof(Order.CreationTime),null, null, ids);
+            var excelData = items.Select(x => new
+            {
+                x.OrderNo,
+                OrderDate = x.CreationTime.ToString("MM/d/yyyy h:mm:ss tt"),
+                x.CustomerName,
+                Email = x.CustomerEmail,
+                OrderStatus = L[x.OrderStatus.ToString()],
+                ShippingStatus = L[x.ShippingStatus.ToString()],
+                PaymentMethod = L[x.PaymentMethod.ToString()],
+                CheckoutAmount = "$ " + x.TotalAmount.ToString("N2")
+            });
+
+            var memoryStream = new MemoryStream();
+            await memoryStream.SaveAsAsync(excelData);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            return new RemoteStreamContent(memoryStream, "InventroyReport.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        }
+
+        public async Task<IRemoteStreamContent> GetTenantsListAsExcelFileAsync(Guid id)
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var items = await _orderRepository.GetListAsync(0, int.MaxValue, nameof(Order.CreationTime), null, id, new List<Guid>());
+                var excelData = items.Select(x => new
+                {
+                    x.OrderNo,
+                    OrderDate = x.CreationTime.ToString("MM/d/yyyy h:mm:ss tt"),
+                    x.CustomerName,
+                    Email = x.CustomerEmail,
+                    OrderStatus = L[x.OrderStatus.ToString()],
+                    ShippingStatus = L[x.ShippingStatus.ToString()],
+                    PaymentMethod = L[x.PaymentMethod.ToString()],
+                    CheckoutAmount = "$ " + x.TotalAmount.ToString("N2")
+                });
+
+                var memoryStream = new MemoryStream();
+                await memoryStream.SaveAsAsync(excelData);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                return new RemoteStreamContent(memoryStream, "InventroyReport.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            }
         }
     }
 }

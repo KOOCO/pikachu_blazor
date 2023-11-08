@@ -1,0 +1,85 @@
+﻿@page "/TenantBillingReport"
+@using Kooco.Pikachu.GroupBuys;
+@using Microsoft.Extensions.Configuration;
+@using Volo.Abp.AspNetCore.Components.Messages;
+@using Volo.Abp.MultiTenancy
+@using Volo.Abp.Application.Dtos
+@using Kooco.Pikachu.Orders;
+@using Kooco.Pikachu.Localization
+@using Microsoft.Extensions.Localization
+@using Volo.Abp
+@using System.Text.Json;
+@using System.ComponentModel;
+@using Blazorise.LoadingIndicator;
+
+@inject IGroupBuyAppService _groupBuyAppService;
+@inject IUiMessageService _uiMessageService;
+@inject IStringLocalizer<PikachuResource> L
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime;
+@inject IConfiguration _configuration;
+
+<LoadingIndicator @ref="loading" FullScreen FadeIn>
+</LoadingIndicator>
+
+<div class="row">
+    <div class="col-6">
+        <h3>@L["GroupbuyReport"]</h3>
+    </div>
+</div>
+<Card>
+    <CardBody>
+        <DataGrid TItem="GroupBuyReportDto"
+                  Data="GroupBuyReportList"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="Total"
+                  ShowPager="true"
+                  PageSize="PageSize"
+                  SortChanged="OnSortChange">
+            <DataGridColumns>
+                <DataGridColumn TItem="GroupBuyReportDto"
+                                Field="@nameof(GroupBuyReportDto.GroupBuyName)"
+                                Caption="@L["GroupBuyName"]"
+                                Width="50%">
+                    <DisplayTemplate>
+                        <a href="@StoreUrl/@context.GroupBuyId" target="_blank">@context.GroupBuyName</a>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn Caption="@L["ReportUrl"]" Sortable="false" TextAlignment="TextAlignment.Center">
+                    <DisplayTemplate>
+                        <a href="/TenantBillingReport/TenantBillingReportDetails/@context.GroupBuyId" target="_blank"><i class="fa fa-link"></i></a>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="GroupBuyReportDto"
+                                Field="@nameof(GroupBuyReportDto.TenantName)"
+                                Caption="@L["Tenant Name"]"
+                                TextAlignment="TextAlignment.Center">
+                </DataGridColumn>
+                <DataGridColumn TItem="GroupBuyReportDto"
+                                Field="@nameof(GroupBuyReportDto.TotalOrder)"
+                                Caption="@L["Total Order"]"
+                                TextAlignment="TextAlignment.Center">
+                </DataGridColumn>
+                <DataGridColumn TItem="GroupBuyReportDto" Field="@nameof(GroupBuyReportDto.SalesAmount)"
+                                Caption="@L["Sales Amount"]"
+                                TextAlignment="TextAlignment.Center">
+                    <DisplayTemplate>
+                        $@context.SalesAmount.ToString("N0")
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="GroupBuyReportDto" Field="@nameof(GroupBuyReportDto.AmountReceived)"
+                                Caption="@L["Amount Received"]"
+                                TextAlignment="TextAlignment.Center">
+                    <DisplayTemplate>
+                        $@context.AmountReceived.ToString("N0")
+                    </DisplayTemplate>
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
+
+    </CardBody>
+</Card>
+@code {
+
+}
+

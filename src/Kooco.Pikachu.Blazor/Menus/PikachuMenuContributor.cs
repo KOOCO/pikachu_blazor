@@ -228,7 +228,12 @@ public class PikachuMenuContributor : IMenuContributor
             displayName: "自動發送報表",
             url: "/GroupBuyManagement/GroupBuyReport8")
             )
-
+              .AddItem(new ApplicationMenuItem(
+            name: "多商戶管理-商戶賬單報表",
+            icon: "fas fa-newspaper",
+            displayName: l["多商戶管理-商戶賬單報表"],
+            url: "/TenantBillingReport")
+            )
         );
 
         if (MultiTenancyConsts.IsEnabled)

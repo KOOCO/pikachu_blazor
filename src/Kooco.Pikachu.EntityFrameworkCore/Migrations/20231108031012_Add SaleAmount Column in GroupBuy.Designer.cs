@@ -4,6 +4,7 @@ using Kooco.Pikachu.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    partial class PikachuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231108031012_Add SaleAmount Column in GroupBuy")]
+    partial class AddSaleAmountColumninGroupBuy
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -23,6 +26,101 @@ namespace Kooco.Pikachu.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Kooco.Pikachu.AutomaticEmails.AutomaticEmail", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)")
+                        .HasColumnName("ConcurrencyStamp");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ExtraProperties");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<string>("Recipients")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("SendTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("TenantId");
+
+                    b.Property<string>("TradeName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AppAutomaticEmails", null, t =>
+                        {
+                            t.HasComment("");
+                        });
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.AutomaticEmails.AutomaticEmailGroupBuys", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AutomaticEmailId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("GroupBuyId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AutomaticEmailId");
+
+                    b.HasIndex("GroupBuyId");
+
+                    b.ToTable("AppAutomaticEmailGroupBuys", null, t =>
+                        {
+                            t.HasComment("");
+                        });
+                });
 
             modelBuilder.Entity("Kooco.Pikachu.ElectronicInvoiceSettings.ElectronicInvoiceSetting", b =>
                 {
@@ -1146,6 +1244,9 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int?>("DiscountPercentage")
+                        .HasColumnType("int");
+
                     b.Property<Guid?>("FreebieId")
                         .HasColumnType("uniqueidentifier");
 
@@ -1256,6 +1357,9 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<string>("InvoiceNumber")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("InvoiceStatus")
+                        .HasColumnType("int");
+
                     b.Property<int?>("InvoiceType")
                         .HasColumnType("int");
 
@@ -1287,6 +1391,9 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("OrderStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OrderType")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("PaymentDate")
@@ -1325,6 +1432,9 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<int>("ShippingStatus")
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("SplitFromId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("TenantId");
@@ -1343,6 +1453,96 @@ namespace Kooco.Pikachu.Migrations
                     b.HasIndex("GroupBuyId");
 
                     b.ToTable("AppOrders", null, t =>
+                        {
+                            t.HasComment("");
+                        });
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.PaymentGateways.PaymentGateway", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ChannelId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ChannelSecretKey")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CodeValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)")
+                        .HasColumnName("ConcurrencyStamp");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ExtraProperties");
+
+                    b.Property<string>("HashIV")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HashKey")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<bool>("IsEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<string>("MerchantId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PaymentIntegrationType")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("TenantId");
+
+                    b.Property<string>("TerminalCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TradeDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AppPaymentGateways", null, t =>
                         {
                             t.HasComment("");
                         });
@@ -1453,6 +1653,75 @@ namespace Kooco.Pikachu.Migrations
                     b.HasIndex("OrderId");
 
                     b.ToTable("AppStoreComments", null, t =>
+                        {
+                            t.HasComment("");
+                        });
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.TenantEmailing.TenantEmailSettings", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)")
+                        .HasColumnName("ConcurrencyStamp");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<string>("ExtraProperties")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ExtraProperties");
+
+                    b.Property<string>("Footer")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Greetings")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<string>("SenderName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Subject")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("TenantId");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AppTenantEmailSettings", null, t =>
                         {
                             t.HasComment("");
                         });
@@ -3118,6 +3387,21 @@ namespace Kooco.Pikachu.Migrations
                     b.ToTable("AbpTenantConnectionStrings", (string)null);
                 });
 
+            modelBuilder.Entity("Kooco.Pikachu.AutomaticEmails.AutomaticEmailGroupBuys", b =>
+                {
+                    b.HasOne("Kooco.Pikachu.AutomaticEmails.AutomaticEmail", null)
+                        .WithMany("GroupBuys")
+                        .HasForeignKey("AutomaticEmailId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Kooco.Pikachu.GroupBuys.GroupBuy", "GroupBuy")
+                        .WithMany()
+                        .HasForeignKey("GroupBuyId");
+
+                    b.Navigation("GroupBuy");
+                });
+
             modelBuilder.Entity("Kooco.Pikachu.Freebies.FreebieGroupBuys", b =>
                 {
                     b.HasOne("Kooco.Pikachu.Freebies.Freebie", null)
@@ -3423,6 +3707,11 @@ namespace Kooco.Pikachu.Migrations
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.AutomaticEmails.AutomaticEmail", b =>
+                {
+                    b.Navigation("GroupBuys");
                 });
 
             modelBuilder.Entity("Kooco.Pikachu.Freebies.Freebie", b =>
