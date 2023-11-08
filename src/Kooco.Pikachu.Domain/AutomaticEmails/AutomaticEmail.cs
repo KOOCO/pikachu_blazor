@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Kooco.Pikachu.EnumValues;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -15,6 +16,8 @@ namespace Kooco.Pikachu.AutomaticEmails
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public DateTime SendTime { get; set; }
+        public RecurrenceType RecurrenceType { get; set; }
+        public JobStatus LastJobStatus { get; set; }
         public List<AutomaticEmailGroupBuys> GroupBuys { get; set; }
 
         [NotMapped]
@@ -34,7 +37,8 @@ namespace Kooco.Pikachu.AutomaticEmails
             string? recipients,
             DateTime startDate,
             DateTime endDate,
-            DateTime sendTime
+            DateTime sendTime,
+            RecurrenceType recurrenceType
             ) : base(id)
         {
             TradeName = tradeName;
@@ -42,6 +46,7 @@ namespace Kooco.Pikachu.AutomaticEmails
             StartDate = startDate;
             EndDate = endDate;
             SendTime = sendTime;
+            RecurrenceType = recurrenceType;
             GroupBuys = new List<AutomaticEmailGroupBuys>();
         }
 

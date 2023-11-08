@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kooco.Pikachu.EnumValues;
+using System;
 using System.Collections.Generic;
 
 namespace Kooco.Pikachu.AutomaticEmails
@@ -12,6 +13,7 @@ namespace Kooco.Pikachu.AutomaticEmails
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public DateTime SendTime { get; set; }
+        public RecurrenceType RecurrenceType { get; set; }
 
         public List<string> RecipientsList { get; set; }
         public List<AutomaticEmailGroupBuysDto> GroupBuys { get; set; }

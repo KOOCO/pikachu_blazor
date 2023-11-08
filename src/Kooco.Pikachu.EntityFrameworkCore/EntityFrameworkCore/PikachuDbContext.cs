@@ -260,7 +260,7 @@ public class PikachuDbContext :
             b.ToTable(PikachuConsts.DbTablePrefix + "AutomaticEmailGroupBuys", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
 
-            b.HasOne(x => x.GroupBuy).WithMany().IsRequired(false);
+            b.HasOne(x => x.GroupBuy).WithMany().IsRequired(false).OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

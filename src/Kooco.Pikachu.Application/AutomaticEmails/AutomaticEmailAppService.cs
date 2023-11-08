@@ -1,23 +1,29 @@
-﻿using Newtonsoft.Json;
+﻿using Hangfire;
+using Kooco.Pikachu.EnumValues;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
-using Volo.Abp.Uow;
+using Volo.Abp.MultiTenancy;
 
 namespace Kooco.Pikachu.AutomaticEmails
 {
     public class AutomaticEmailAppService : ApplicationService, IAutomaticEmailAppService
     {
         private readonly IAutomaticEmailRepository _automaticEmailRepository;
-
-        public AutomaticEmailAppService(IAutomaticEmailRepository automaticEmailRepository)
+        private readonly IDataFilter _dataFilter;
+        public AutomaticEmailAppService(
+            IAutomaticEmailRepository automaticEmailRepository,
+            IDataFilter dataFilter
+            )
         {
             _automaticEmailRepository = automaticEmailRepository;
+            _dataFilter = dataFilter;
         }
         public async Task CreateAsync(AutomaticEmailCreateUpdateDto input)
         {
@@ -27,7 +33,8 @@ namespace Kooco.Pikachu.AutomaticEmails
                 JsonConvert.SerializeObject(input.RecipientsList),
                 input.StartDate.Value,
                 input.EndDate.Value,
-                input.SendTime.Value
+                input.SendTime.Value,
+                input.RecurrenceType
                 );
 
             if (input.GroupBuyIds != null)
@@ -39,6 +46,17 @@ namespace Kooco.Pikachu.AutomaticEmails
             }
 
             await _automaticEmailRepository.InsertAsync(automaticEmail);
+            
+            var dto = ObjectMapper.Map<AutomaticEmail, AutomaticEmailDto>(automaticEmail);
+
+            DateTime utcTime = dto.SendTime.ToUniversalTime();
+
+            var cronExpression = $"{utcTime.Minute} {utcTime.Hour} * * {(input.RecurrenceType == RecurrenceType.Weekly ? 0 : "*")}";
+
+            RecurringJob.AddOrUpdate<AutomaticEmailsJob>(
+                    dto.Id.ToString(),
+                    job => job.ExecuteAsync(dto.Id),
+                    cronExpression);
         }
 
         public async Task<AutomaticEmailDto> GetAsync(Guid id)
@@ -65,6 +83,16 @@ namespace Kooco.Pikachu.AutomaticEmails
             };
         }
 
+        public async Task<AutomaticEmailDto> GetWithDetailsByIdAsync(Guid id)
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var item = await _automaticEmailRepository.GetAsync(id);
+                await _automaticEmailRepository.EnsureCollectionLoadedAsync(item, a => a.GroupBuys);
+                return ObjectMapper.Map<AutomaticEmail, AutomaticEmailDto>(item);
+            }
+        }
+
         public async Task UpdateAsync(Guid id, AutomaticEmailCreateUpdateDto input)
         {
             var automaticEmail = await _automaticEmailRepository.GetAsync(id);
@@ -75,7 +103,8 @@ namespace Kooco.Pikachu.AutomaticEmails
             automaticEmail.StartDate = input.StartDate.Value;
             automaticEmail.EndDate = input.EndDate.Value;
             automaticEmail.SendTime = input.SendTime.Value;
-            
+            automaticEmail.RecurrenceType = input.RecurrenceType;
+
             var itemsToRemove = automaticEmail.GroupBuys
                 .Where(groupBuy => !input.GroupBuyIds.Contains(groupBuy.GroupBuyId))
                 .ToList();
@@ -94,6 +123,29 @@ namespace Kooco.Pikachu.AutomaticEmails
                         automaticEmail.AddGroupBuy(GuidGenerator.Create(), groupBuyId);
                     }
                 }
+            }
+
+            await _automaticEmailRepository.UpdateAsync(automaticEmail);
+
+            var dto = ObjectMapper.Map<AutomaticEmail, AutomaticEmailDto>(automaticEmail);
+
+            DateTime utcTime = dto.SendTime.ToUniversalTime();
+
+            var cronExpression = $"{utcTime.Minute} {utcTime.Hour} * * {(input.RecurrenceType == RecurrenceType.Weekly ? 0 : "*")}";
+
+            RecurringJob.AddOrUpdate<AutomaticEmailsJob>(
+                    dto.Id.ToString(),
+                    job => job.ExecuteAsync(dto.Id),
+                    cronExpression);
+        }
+
+        public async Task UpdateJobStatusAsync(Guid id, JobStatus status, Guid? tenantId)
+        {
+            using (CurrentTenant.Change(tenantId))
+            {
+                var job = await _automaticEmailRepository.GetAsync(id);
+                job.LastJobStatus = status;
+                await _automaticEmailRepository.UpdateAsync(job);
             }
         }
     }

@@ -4,6 +4,7 @@ using Kooco.Pikachu.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    partial class PikachuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231107223935_AddedJobStatusToEmail")]
+    partial class AddedJobStatusToEmail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -532,9 +535,6 @@ namespace Kooco.Pikachu.Migrations
 
                     b.Property<bool>("ProtectPrivacyData")
                         .HasColumnType("bit");
-
-                    b.Property<decimal?>("SalesAmount")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ShortCode")
                         .IsRequired()
@@ -1247,9 +1247,6 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("DiscountPercentage")
-                        .HasColumnType("int");
-
                     b.Property<Guid?>("FreebieId")
                         .HasColumnType("uniqueidentifier");
 
@@ -1396,9 +1393,6 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<int>("OrderStatus")
                         .HasColumnType("int");
 
-                    b.Property<int?>("OrderType")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("PaymentDate")
                         .HasColumnType("datetime2");
 
@@ -1434,9 +1428,6 @@ namespace Kooco.Pikachu.Migrations
 
                     b.Property<int>("ShippingStatus")
                         .HasColumnType("int");
-
-                    b.Property<Guid?>("SplitFromId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uniqueidentifier")

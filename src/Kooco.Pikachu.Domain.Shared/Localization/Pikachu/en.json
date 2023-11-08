@@ -329,6 +329,9 @@
     "InvalidEndDate": "Invalid End Date",
     "InvalidSendTime": "Invalid Send Time",
     "InvalidGroupBuys": "Please Select Group Buys",
-    "EditAutomaticEmails": "Edit Automatic Emails"
+    "EditAutomaticEmails": "Edit Automatic Emails",
+    "Daily": "Daily",
+    "Weekly": "Weekly",
+    "RecurrenceType" :"Recurrence Type"
   }
 }

@@ -442,6 +442,19 @@ namespace Kooco.Pikachu.GroupBuys
         }
         public async Task<IRemoteStreamContent> GetListAsExcelFileAsync(Guid id)
         {
+            var groupBuy = await _groupBuyRepository.FirstOrDefaultAsync(x => x.Id == id);
+            var items = await _orderRepository.GetListAsync(x => x.GroupBuyId == id);
+            var excelData = items.Select(x => new
+            {
+                x.OrderNo,
+                OrderDate = x.CreationTime.ToString("MM/d/yyyy h:mm:ss tt"),
+                x.CustomerName,
+                Email = x.CustomerEmail,
+                OrderStatus = L[x.OrderStatus.ToString()],
+                ShippingStatus = L[x.ShippingStatus.ToString()],
+                PaymentMethod = L[x.PaymentMethod.ToString()],
+                CheckoutAmount = "$ " + x.TotalAmount.ToString("N2")
+            });
             List<Guid> ids = new List<Guid>();
             ids.Add(id);
             var items = await _orderRepository.GetListAsync(0, int.MaxValue, nameof(Order.CreationTime),null, null, ids);
@@ -480,10 +493,19 @@ namespace Kooco.Pikachu.GroupBuys
                     CheckoutAmount = "$ " + x.TotalAmount.ToString("N2")
                 });
 
-                var memoryStream = new MemoryStream();
-                await memoryStream.SaveAsAsync(excelData);
-                memoryStream.Seek(0, SeekOrigin.Begin);
-                return new RemoteStreamContent(memoryStream, "InventroyReport.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            var memoryStream = new MemoryStream();
+            await memoryStream.SaveAsAsync(excelData);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+
+            string fileName = groupBuy?.GroupBuyName ?? "GroupBuyReport";
+            return new RemoteStreamContent(memoryStream, $"{fileName}.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        }
+
+        public async Task<IRemoteStreamContent> GetAttachmentAsync(Guid id, Guid? tenantId)
+        {
+            using (CurrentTenant.Change(tenantId))
+            {
+                return await GetListAsExcelFileAsync(id);
             }
         }
     }

@@ -37,12 +37,10 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantEmailing
 
         void HandleRecipientInputKeyUp(KeyboardEventArgs e)
         {
-            if (e.Key == "Enter" || e.Key == ",")
+            if (e.Key == "Enter")
             {
                 if (!Recipient.IsNullOrWhiteSpace() && !Model.RecipientsList.Any(x => x == Recipient))
                 {
-                    Recipient = Recipient?.TrimEnd(',');
-
                     var email = new EmailAddressAttribute();
                     if (!email.IsValid(Recipient))
                     {
