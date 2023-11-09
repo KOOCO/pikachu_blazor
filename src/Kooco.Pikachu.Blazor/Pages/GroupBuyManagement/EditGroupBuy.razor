@@ -26,6 +26,7 @@
   <h3>@L["EditGroupBuy"]</h3>
 <LoadingIndicator @ref="loading" FullScreen FadeIn></LoadingIndicator>
 <Card >
+    
  <CardBody>
         <div class="row">
             <div class="col-12">
@@ -64,6 +65,7 @@
                 </span>
             </div>
         </div>
+         <Validations @ref="@EditValidationsRef" Model="@EditGroupBuyDto" ValidateOnLoad="false">
           <div class="row">
             <div class="col-2">
                 <label>@L["ShortCode"]</label>
@@ -85,6 +87,7 @@
                 </span>
             </div>
         </div>
+        </Validations>
         <div class="row">
             <div class="col-2">
                 <label>@L["Subject"]</label>
@@ -852,6 +855,7 @@
              </div>
         </div>
     </CardBody>
+    
 </Card>
 <div class="row">
     <div class="col-12 text-lg-end">

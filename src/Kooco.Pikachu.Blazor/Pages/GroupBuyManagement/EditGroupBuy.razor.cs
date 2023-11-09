@@ -8,6 +8,7 @@ using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using System;
@@ -52,7 +53,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         private BlazoredTextEditor CustomerInformationHtml { get; set; }
         private BlazoredTextEditor ExchangePolicyHtml { get; set; }
         private BlazoredTextEditor NotifyEmailHtml { get; set; }
-
+        protected Validations EditValidationsRef;
         private FilePicker LogoPickerCustom { get; set; }
         private FilePicker BannerPickerCustom { get; set; }
         private FilePicker CarouselPickerCustom { get; set; }
@@ -64,6 +65,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         private List<ImageDto> ExistingImages { get; set; } = new();
         private LoadingIndicator loading { get; set; } = new();
         private bool LoadingItems { get; set; } = true;
+      
 
         public EditGroupBuy(
             IGroupBuyAppService groupBuyAppService,
@@ -98,7 +100,12 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 EditGroupBuyDto = _objectMapper.Map<GroupBuyDto, GroupBuyUpdateDto>(GroupBuy);
                 EditGroupBuyDto.EntryURL = $"{_configuration["EntryUrl"]?.TrimEnd('/')}/{Id}";
                 LoadItemGroups();
+                if (EditValidationsRef != null)
+                {
+                    await EditValidationsRef.ClearAll();
+                }
                 StateHasChanged();
+              
             }
             catch (Exception ex)
             {
