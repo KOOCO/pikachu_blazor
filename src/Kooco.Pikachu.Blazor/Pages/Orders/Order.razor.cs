@@ -3,11 +3,13 @@ using Blazorise.DataGrid;
 using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.Blazor.Pages.ItemManagement;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Orders;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.JSInterop;
+using NUglify.Html;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -26,18 +28,30 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         private OrderDto SelectedOrder { get; set; }
         private int PageIndex { get; set; } = 1;
         private int PageSize { get; set; } = 10;
+        private Guid? SelectedGroupBuy { get; set; }
+        private DateTime? StartDate { get; set; }
+        private DateTime? EndDate { get; set; }
         private string? Sorting { get; set; }
         private string? Filter { get; set; }
         private bool isOrderCombine { get; set; } = false;
         private readonly HashSet<Guid> ExpandedRows = new();
         private LoadingIndicator loading { get; set; }
+        private List<KeyValueDto> GroupBuyList { get; set; } = new();
         private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<OrderDto> e)
         {
             PageIndex = e.Page - 1;
             await UpdateItemList();
+            await GetGroupBuyList();
             await InvokeAsync(StateHasChanged);
+            await JSRuntime.InvokeVoidAsync("removeSelectClass", "mySelectElement");
+            await JSRuntime.InvokeVoidAsync("removeInputClass", "startDate");
+            await JSRuntime.InvokeVoidAsync("removeInputClass", "endDate");
         }
+        private async Task GetGroupBuyList() {
 
+            GroupBuyList = await _groupBuyAppService.GetGroupBuyLookupAsync();
+        
+        }
         private async Task UpdateItemList()
         {
             try
@@ -49,7 +63,10 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                     Sorting = Sorting,
                     MaxResultCount = PageSize,
                     SkipCount = skipCount,
-                    Filter = Filter
+                    Filter = Filter,
+                    GroupBuyId=SelectedGroupBuy,
+                    StartDate=StartDate,
+                    EndDate=EndDate
                 });
                 Orders = result?.Items.ToList() ?? new List<OrderDto>();
                 TotalCount = (int?)result?.TotalCount ?? 0;

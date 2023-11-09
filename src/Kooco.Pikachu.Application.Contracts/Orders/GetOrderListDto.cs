@@ -9,6 +9,7 @@ namespace Kooco.Pikachu.Orders
         public string? Filter { get; set; }
         public Guid? GroupBuyId { get; set; }
         public List<Guid>? OrderIds { get; set; }=new List<Guid>();
-    
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
     }
 }

@@ -2,24 +2,37 @@
 @using Kooco.Pikachu.EnumValues;
 @using Kooco.Pikachu.Localization;
 @using Kooco.Pikachu.OrderItems;
+@using Kooco.Pikachu.GroupBuys;
 @using Kooco.Pikachu.Orders;
 @using Microsoft.Extensions.Localization;
 @using Blazorise;
 @using Volo.Abp.AspNetCore.Components.Messages;
 @using Blazorise.LoadingIndicator;
-
+@using Kooco.Pikachu.Items.Dtos;
 @inject IStringLocalizer<PikachuResource> L;
 @inject NavigationManager NavigationManager;
 @inject IUiMessageService _uiMessageService;
 @inject IOrderAppService _orderAppService;
+@inject IGroupBuyAppService _groupBuyAppService;
 @inject IJSRuntime JSRuntime;
 <LoadingIndicator @ref="loading" FullScreen FadeIn>
     <div class="row">
-        <div class="col-3">
+        <div class="col-1">
             <h3>@L["Order"]</h3>
         </div>
-        <div class="col-9 text-lg-end">
+        <div class="col-11 text-lg-end">
+            <Blazorise.Components.SelectList TItem="KeyValueDto"
+            TValue="Guid?"
+                        Data="@GroupBuyList"
+            TextField="@((item)=>item.Name)"
+            ValueField="@((item)=>item.Id)"
+            @bind-SelectedValue="@SelectedGroupBuy"
+            Size="Size.Small"
+                                             id="mySelectElement"
+            DefaultItemText="Choose your GroupBuy" />
+            <DateEdit id="startDate" @bind-Date="@StartDate" TValue="DateTime?" Size="Size.Small" />-<DateEdit id="endDate" @bind-Date="@EndDate" TValue="DateTime?" Size="Size.Small" />
             <div class="d-inline-block me-1">
+              
                 <div class="input-group">
                     <InputText class="form-control form-control-sm search-bar" @bind-Value="@Filter" placeholder="@L["Search"]"></InputText>
                     <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="OnSearch">
@@ -178,6 +191,18 @@
     </Card>
 </LoadingIndicator>
 <script>
+    window.removeSelectClass = function (elementId) {
+        var element = document.getElementById(elementId);
+        if (element) {
+            element.classList.remove("form-select");
+        }
+    };
+    window.removeInputClass = function (elementId) {
+        var element = document.getElementById(elementId);
+        if (element) {
+            element.classList.remove("form-control");
+        }
+    };
     window.downloadFile = function (data) {
         debugger;
         var blob = new Blob([new Uint8Array(data.byteArray)], { type: data.contentType });
@@ -191,5 +216,5 @@
     }
 </script>
 @code {
-
+    bool isSmall = true;
 }
