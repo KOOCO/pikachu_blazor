@@ -1,9 +1,16 @@
 ﻿@page "/LogisticsProviderSettings";
 
 @using Kooco.Pikachu.Localization;
+@using Kooco.Pikachu.LogisticsProviders;
 @using Microsoft.Extensions.Localization;
 @using Blazorise.LoadingIndicator;
+@using Volo.Abp.AspNetCore.Components.Messages;
+@using Volo.Abp.ObjectMapping;
 
+@inject ILogisticsProvidersAppService _logisticProvidersAppService;
+@inject IUiMessageService _uiMessageService;
+@inject IJSRuntime JSRuntime;
+@inject IObjectMapper ObjectMapper;
 @inject IStringLocalizer<PikachuResource> L;
 
 <style>
@@ -95,7 +102,7 @@
                                 SelectedValueChanged="@OnSelectedValueChanged"
                                 id="logistics-type">
                         <option value="" selected disabled></option>
-                        @foreach (var value in LogisticsTypes)
+                        @foreach (var value in LogisticsConsts.LogisticsTypes)
                         {
                             <SelectItem Value="@value">@L[value.ToString()]</SelectItem>
                         }
@@ -122,7 +129,7 @@
                     <label for="g-threshold" class="form-label">@L["FreeShippingThreshold"]<span class="text-danger"> *</span></label>
                 </div>
                 <div class="col-8">
-                    <InputText id="g-threshold" class="form-control" @bind-Value="GreenWorld.FreeShippingThreshold"></InputText>
+                    <InputNumber id="g-threshold" class="form-control" @bind-Value="GreenWorld.FreeShippingThreshold" min="0" DisplayName="Free Shipping Threshold"></InputNumber>
                     <ValidationMessage For="@(() => GreenWorld.FreeShippingThreshold)" />
                 </div>
             </div>
@@ -131,7 +138,7 @@
                     <label for="g-freight" class="form-label">@L["Freight"]<span class="text-danger"> *</span></label>
                 </div>
                 <div class="col-8">
-                    <InputText id="g-freight" class="form-control" @bind-Value="GreenWorld.Freight"></InputText>
+                    <InputNumber id="g-freight" class="form-control" @bind-Value="GreenWorld.Freight" min="0"></InputNumber>
                     <ValidationMessage For="@(() => GreenWorld.Freight)" />
                 </div>
             </div>
@@ -176,12 +183,15 @@
                     <label class="form-label">@L["MainIslands"]<span class="text-danger"> *</span></label>
                 </div>
                 <div class="col-8">
-                    @foreach(var island in MainIslands)
+                    @if (LogisticsConsts.MainIslands != null)
                     {
-                        <label for="@island" class="form-label me-2">
-                            <input type="checkbox" class="form-check-input me-1" id="@island" />
-                            @L[island]
-                        </label>
+                        @foreach(var island in LogisticsConsts.MainIslands)
+                        {
+                            <label for="@island" class="form-label me-2">
+                                <input type="checkbox" class="form-check-input me-1" id="@island" checked="@(HomeDelivery.MainIslands != null && HomeDelivery.MainIslands.Contains(island))" @onchange="(value) => OnMainIslandCheckedChange(island, value)" />
+                                @L[island]
+                            </label>
+                        }
                     }
                 </div>
             </div>
@@ -190,12 +200,15 @@
                     <label class="form-label">@L["OuterIslands"]<span class="text-danger"> *</span></label>
                 </div>
                 <div class="col-8">
-                    @foreach(var island in OuterIslands)
+                    @if (LogisticsConsts.OuterIslands != null)
                     {
-                        <label for="@island" class="form-label me-2">
-                            <input type="checkbox" class="form-check-input me-1" id="@island" />
-                            @L[island]
-                        </label>
+                        @foreach(var island in LogisticsConsts.OuterIslands)
+                        {
+                            <label for="@island" class="form-label me-2">
+                                <input type="checkbox" class="form-check-input me-1" id="@island" checked="@(HomeDelivery?.OuterIslands != null && HomeDelivery.OuterIslands.Contains(island))" @onchange="(value) => OnOuterIslandCheckedChange(island, value)" />
+                                @L[island]
+                            </label>
+                        }
                     }
                 </div>
             </div>
@@ -204,7 +217,7 @@
                     <label for="h-threshold" class="form-label">@L["FreeShippingThreshold"]<span class="text-danger"> *</span></label>
                 </div>
                 <div class="col-8">
-                    <InputText id="h-threshold" class="form-control" @bind-Value="HomeDelivery.FreeShippingThreshold"></InputText>
+                    <InputNumber id="h-threshold" class="form-control" @bind-Value="HomeDelivery.FreeShippingThreshold" min="0" DisplayName="Free Shipping Threshold"></InputNumber>
                     <ValidationMessage For="@(() => HomeDelivery.FreeShippingThreshold)" />
                 </div>
             </div>
@@ -213,7 +226,7 @@
                     <label for="h-freight" class="form-label">@L["Freight"]<span class="text-danger"> *</span></label>
                 </div>
                 <div class="col-8">
-                    <InputText id="h-freight" class="form-control" @bind-Value="HomeDelivery.Freight"></InputText>
+                    <InputNumber id="h-freight" class="form-control" @bind-Value="HomeDelivery.Freight" min="0"></InputNumber>
                     <ValidationMessage For="@(() => HomeDelivery.Freight)" />
                 </div>
             </div>

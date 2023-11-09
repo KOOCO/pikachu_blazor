@@ -15,6 +15,7 @@ using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.ElectronicInvoiceSettings;
 using Kooco.Pikachu.TenantEmailing;
 using Kooco.Pikachu.AutomaticEmails;
+using Kooco.Pikachu.LogisticsProviders;
 
 namespace Kooco.Pikachu;
 
@@ -94,5 +95,10 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<AutomaticEmail, AutomaticEmailDto>();
         CreateMap<AutomaticEmailGroupBuys, AutomaticEmailGroupBuysDto>();
         CreateMap<AutomaticEmailDto, AutomaticEmailCreateUpdateDto>();
+
+
+        CreateMap<LogisticsProviderSettings, LogisticsProviderSettingsDto>();
+        CreateMap<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>();
+        CreateMap<LogisticsProviderSettingsDto, HomeDeliveryCreateUpdateDto>();
     }
 }
