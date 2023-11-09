@@ -1,36 +1,136 @@
 ﻿using Blazorise.LoadingIndicator;
-using Microsoft.Identity.Client;
+using Kooco.Pikachu.LogisticsProviders;
+using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Kooco.Pikachu.Blazor.Pages.LogisticsManagement
 {
     public partial class LogisticsProviderSettings
     {
-        GreenWorldLogistics GreenWorld { get; set; } = new();
-        HomeDelivery HomeDelivery { get; set; } = new();
+        GreenWorldLogisticsCreateUpdateDto GreenWorld { get; set; }
+        HomeDeliveryCreateUpdateDto HomeDelivery { get; set; }
         LoadingIndicator Loading { get; set; }
 
-        readonly List<string> LogisticsTypes = new() { "B2C", "C2C" };
-        readonly List<string> LogisticsSubTypes = new() { "711", "全家" };
-        readonly List<string> MainIslands = new() { "Taipei", "Taoyuan", "Hsinchu", "Taichung", "Tainan", "Kaohsiung" };
-        readonly List<string> OuterIslands = new() { "Penghu", "Kinmen", "Mazu"};
-        void UpdateGreenWorldLogisticsAsync()
+        public LogisticsProviderSettings()
         {
-
+            GreenWorld = new();
+            HomeDelivery = new();   
         }
-        void UpdateHomeDeliveryAsync()
-        {
 
+        protected override async Task OnInitializedAsync()
+        {
+            try
+            {
+                await GetAllAsync();
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+        }
+
+        async Task GetAllAsync()
+        {
+            var providers = await _logisticProvidersAppService.GetAllAsync();
+            
+            var greenWorld = providers.Where(p => p.LogisticProvider == EnumValues.LogisticProviders.GreenWorldLogistics).FirstOrDefault();
+            if(greenWorld != null)
+            {
+                GreenWorld = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorld);
+            }
+
+            var homeDelivery = providers.Where(p => p.LogisticProvider == EnumValues.LogisticProviders.HomeDelivery).FirstOrDefault();
+            if (homeDelivery != null)
+            {
+                HomeDelivery = ObjectMapper.Map<LogisticsProviderSettingsDto, HomeDeliveryCreateUpdateDto>(homeDelivery);
+            }
+        }
+
+        async Task UpdateGreenWorldLogisticsAsync()
+        {
+            try
+            {
+                var confirm = await _uiMessageService.Confirm(L["AreYouSureToUpdateGreenWorld?"]);
+                if (!confirm)
+                    return;
+                await Loading.Show();
+                await _logisticProvidersAppService.UpdateGreenWorldAsync(GreenWorld);
+                await GetAllAsync();
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+                await Loading.Hide();
+            }
+        }
+        async Task UpdateHomeDeliveryAsync()
+        {
+            try
+            {
+                var confirm = await _uiMessageService.Confirm(L["AreYouSureToUpdateHomeDelivery?"]);
+                if (!confirm)
+                    return;
+                await Loading.Show();
+                await _logisticProvidersAppService.UpdateHomeDeliveryAsync(HomeDelivery);
+                await GetAllAsync();
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+                await Loading.Hide();
+            }
+        }
+
+        void OnMainIslandCheckedChange(string island, ChangeEventArgs e)
+        {
+            var value = (bool)(e?.Value ?? false);
+            if (value)
+            {
+                HomeDelivery.MainIslandsList.Add(island);
+            }
+            else
+            {
+                HomeDelivery.MainIslandsList.Remove(island);
+            }
+
+            HomeDelivery.MainIslands = JsonConvert.SerializeObject(HomeDelivery.MainIslandsList);
+        }
+
+        void OnOuterIslandCheckedChange(string island, ChangeEventArgs e)
+        {
+            var value = (bool)(e?.Value ?? false);
+            if (value)
+            {
+                HomeDelivery.OuterIslandsList.Add(island);
+            }
+            else
+            {
+                HomeDelivery.OuterIslandsList.Remove(island);
+            }
+
+            HomeDelivery.OuterIslands = JsonConvert.SerializeObject(HomeDelivery.OuterIslandsList);
         }
 
         void HandleTagDelete(string item)
         {
             GreenWorld.LogisticsSubTypesList.Remove(item);
-            if(GreenWorld.LogisticsSubTypesList.Count > 0)
+            if (GreenWorld.LogisticsSubTypesList.Count > 0)
             {
-                GreenWorld.LogisticsSubTypes = JsonConvert.SerializeObject(GreenWorld.LogisticsSubTypes);
+                GreenWorld.LogisticsSubTypes = JsonConvert.SerializeObject(GreenWorld.LogisticsSubTypesList);
             }
             else
             {
@@ -42,62 +142,8 @@ namespace Kooco.Pikachu.Blazor.Pages.LogisticsManagement
         {
             GreenWorld.LogisticsType = value;
             GreenWorld.LogisticsSubTypesList = new();
-            LogisticsSubTypes.ForEach(item => GreenWorld.LogisticsSubTypesList.Add($"{item}({value})"));
-            GreenWorld.LogisticsSubTypes = JsonConvert.SerializeObject(GreenWorld.LogisticsSubTypes);
+            LogisticsConsts.LogisticsSubTypes.ForEach(item => GreenWorld.LogisticsSubTypesList.Add($"{item}({value})"));
+            GreenWorld.LogisticsSubTypes = JsonConvert.SerializeObject(GreenWorld.LogisticsSubTypesList);
         }
-    }
-
-    public class GreenWorldLogistics
-    {
-        public bool IsEnabled { get; set; }
-
-        [Required(ErrorMessage = "This Field Is Required")]
-        public string StoreCode { get; set; }
-
-        [Required(ErrorMessage = "This Field Is Required")]
-        public string HashKey { get; set; }
-
-        [Required(ErrorMessage = "This Field Is Required")]
-        public string HashIV { get; set; }
-
-        [Required(ErrorMessage = "This Field Is Required")]
-        public string SenderName { get; set; }
-
-        [Required(ErrorMessage = "This Field Is Required")]
-        public string SenderPhoneNumber { get; set; }
-
-        [Required(ErrorMessage = "This Field Is Required")]
-        public string LogisticsType { get; set; }
-
-        [Required(ErrorMessage = "This Field Is Required")]
-        public string LogisticsSubTypes { get; set; }
-
-        [Required(ErrorMessage = "This Field Is Required")]
-        public List<string> LogisticsSubTypesList { get; set; }
-
-        [Required(ErrorMessage = "This Field Is Required")]
-        public string FreeShippingThreshold { get; set; }
-
-        [Required(ErrorMessage = "This Field Is Required")]
-        public string Freight { get; set; }
-
-        public GreenWorldLogistics()
-        {
-            LogisticsSubTypesList = new();
-        }
-    }
-
-    public class HomeDelivery
-    {
-        public bool IsEnabled { get; set; }
-
-        [Required(ErrorMessage = "This Field Is Required")]
-        public string CustomTitle { get; set; }
-
-        [Required(ErrorMessage = "This Field Is Required")]
-        public string FreeShippingThreshold { get; set; }
-
-        [Required(ErrorMessage = "This Field Is Required")]
-        public string Freight { get; set; }
     }
 }

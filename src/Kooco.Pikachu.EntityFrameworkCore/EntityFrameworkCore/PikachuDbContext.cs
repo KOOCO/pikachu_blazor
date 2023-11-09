@@ -28,6 +28,7 @@ using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.ElectronicInvoiceSettings;
 using Kooco.Pikachu.TenantEmailing;
 using Kooco.Pikachu.AutomaticEmails;
+using Kooco.Pikachu.LogisticsProviders;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -89,6 +90,7 @@ public class PikachuDbContext :
     public DbSet<TenantEmailSettings> TenantEmailSettings { get; set; }
     public DbSet<AutomaticEmail> AutomaticEmails { get; set; }
     public DbSet<AutomaticEmailGroupBuys> AutomaticEmailGroupBuys { get; set; }
+    public DbSet<LogisticsProviderSettings> LogisticsProviderSettings { get; set; }
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
     {
@@ -261,6 +263,16 @@ public class PikachuDbContext :
             b.ConfigureByConvention();
 
             b.HasOne(x => x.GroupBuy).WithMany().IsRequired(false).OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        builder.Entity<LogisticsProviderSettings>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "LogisticsProviderSettings", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+
+            b.Ignore(x => x.LogisticsSubTypesList);
+            b.Ignore(x => x.MainIslandsList);
+            b.Ignore(x => x.OuterIslandsList);
         });
     }
 }
