@@ -94,7 +94,49 @@ namespace Kooco.Pikachu.GroupBuys
 
             return ObjectMapper.Map<GroupBuy, GroupBuyDto>(result);
         }
+        public async Task<GroupBuyDto> CopyAsync(Guid Id)
+        {
+            var input = await _groupBuyRepository.GetWithDetailsAsync(Id);
+           var Name = input.GroupBuyName + "(" + 1 + ")";
+            var ShortCode = "";
+            var result = await _groupBuyManager.CreateAsync(input.GroupBuyNo, input.Status, Name, input.EntryURL, input.EntryURL2, input.SubjectLine,
+                                                        input.ShortName, input.LogoURL, input.BannerURL, input.StartTime, input.EndTime, input.FreeShipping, input.AllowShipToOuterTaiwan,
+                                                        input.AllowShipOversea, input.ExpectShippingDateFrom, input.ExpectShippingDateTo, input.MoneyTransferValidDayBy, input.MoneyTransferValidDays,
+                                                        input.IssueInvoice, input.AutoIssueTriplicateInvoice, input.InvoiceNote, input.ProtectPrivacyData, input.InviteCode, input.ProfitShare,
+                                                        input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy,
+                                                        input.NotifyMessage, input.ExcludeShippingMethod, input.IsDefaultPaymentGateWay, input.PaymentMethod, input.GroupBuyCondition, input.CustomerInformation,
+                                                        input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription, ShortCode);
 
+            if (input.ItemGroups != null && input.ItemGroups.Any())
+            {
+                foreach (var group in input.ItemGroups)
+                {
+                    var itemGroup = _groupBuyManager.AddItemGroup(
+                        result,
+                        group.SortOrder,
+                        group.GroupBuyModuleType
+                        );
+
+                    if (group.ItemGroupDetails != null && group.ItemGroupDetails.Any())
+                    {
+                        foreach (var item in group.ItemGroupDetails)
+                        {
+                            _groupBuyManager.AddItemGroupDetail(
+                                itemGroup,
+                                item.SortOrder,
+                                item.ItemId,
+                                item.SetItemId,
+                                item.ItemType
+                                );
+                        }
+                    }
+                }
+            }
+
+            await _groupBuyRepository.InsertAsync(result);
+
+            return ObjectMapper.Map<GroupBuy, GroupBuyDto>(result);
+        }
         public async Task DeleteAsync(Guid id)
         {
             await _groupBuyRepository.DeleteAsync(id);

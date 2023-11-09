@@ -21,11 +21,30 @@
             <input type="checkbox" class="form-check-input" checked="@IsAllSelected" @onchange="HandleSelectAllChange"></input>
             <Label Class="form-label">@L["SelectAll"]</Label>
         </div>
-        <Button Type="@ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="CreateNewItem">
-            <i class="fa fa-plus"></i>
-            @L["NewGroupBuy"]
-        </Button>
-        <Button Type="@ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="DeleteSelectedAsync">
+       
+
+                <Button Type="@ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="CreateNewItem">
+                    <i class="fa fa-plus"></i>
+                    @L["NewGroupBuy"]
+                </Button>
+
+           
+         
+             @if (GroupBuyListItem.Count(x => x.IsSelected == true) == 1)
+            {
+                <Button Type="@ButtonType.Button" Clicked="CopyAsync" Class="btn btn-sm btn-primary">
+                <i class="fa fa-plus"></i>
+                @L["CopyGroupBuy"]
+                 </Button>
+            }
+            else
+            {
+                <Button Disabled Type="@ButtonType.Button" Class="btn btn-sm btn-primary">
+                     <i class="fa fa-plus"></i>
+                     @L["CopyGroupBuy"]
+                 </Button>
+            }
+            <Button Type="@ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="DeleteSelectedAsync">
             @L["DeleteSelected"]
         </Button>
     </div>

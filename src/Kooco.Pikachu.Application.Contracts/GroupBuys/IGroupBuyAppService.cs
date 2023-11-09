@@ -38,5 +38,6 @@ namespace Kooco.Pikachu.GroupBuys
         Task<PagedResultDto<GroupBuyReportDto>> GetGroupBuyTenantReportListAsync(GetGroupBuyReportListDto input);
         Task<GroupBuyReportDetailsDto> GetGroupBuyTenantReportDetailsAsync(Guid id);
         Task<IRemoteStreamContent> GetTenantsListAsExcelFileAsync(Guid id);
+        Task<GroupBuyDto> CopyAsync(Guid Id);
     }
 }

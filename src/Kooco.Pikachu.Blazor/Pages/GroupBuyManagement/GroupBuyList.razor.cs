@@ -67,6 +67,16 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             }
         }
 
+        private async Task CopyAsync() {
+
+            var id = GroupBuyListItem.Where(x => x.IsSelected == true).Select(x => x.Id).FirstOrDefault();
+
+            await _groupBuyAppService.CopyAsync(id);
+           await UpdateGroupBuyList();
+
+
+        }
+
         private async Task DeleteSelectedAsync()
         {
             try
