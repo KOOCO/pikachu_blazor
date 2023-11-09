@@ -332,6 +332,30 @@
     "EditAutomaticEmails": "Edit Automatic Emails",
     "Daily": "Daily",
     "Weekly": "Weekly",
-    "RecurrenceType" :"Recurrence Type"
+    "RecurrenceType": "Recurrence Type",
+
+
+    //LogisticsManagement
+    "LogisticsProviderSettings": "Logistics Provider Settings",
+    "GreenWorldLogistics": "Green World Logistics",
+    "SenderPhoneNumber": "Sender Phone Number",
+    "LogisticsType": "Logistics Type",
+    "LogisticsSubType": "Logistics Sub Type",
+    "FreeShippingThreshold": "Free Shipping Threshold",
+    "Freight": "Freight",
+    "StoreCode": "Store Code",
+    "SaveSettings": "Save Settings",
+    "CustomTitle": "Custom Title",
+    "MainIslands": "Main Islands",
+    "OuterIslands": "Outer Islands",
+    "Taipei": "Taipei",
+    "Taoyuan": "Taoyuan",
+    "Hsinchu": "Hsinchu",
+    "Taichung": "Taichung",
+    "Tainan": "Tainan",
+    "Kaohsiung": "Kaohsiung",
+    "Penghu": "Penghu",
+    "Kinmen": "Kinmen",
+    "Mazu": "Mazu"
   }
 }

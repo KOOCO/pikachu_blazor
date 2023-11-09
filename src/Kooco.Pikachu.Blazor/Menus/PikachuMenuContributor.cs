@@ -170,38 +170,38 @@ public class PikachuMenuContributor : IMenuContributor
 
             );
         paymentManagement.AddItem(new ApplicationMenuItem(
-name: "ElectronicInvoiceSetting",
-icon: "fas fa-receipt",
-displayName: "電子發票設定",
-url: "/CashFlowManagement/ElectronicInvoiceSetting",
-requiredPermissionName: PikachuPermissions.InvoiceSetting)
-);
-        paymentManagement.AddItem(new ApplicationMenuItem(
-name: "CashFlowReconciliationStatement",
-icon: "fas fa-file-invoice",
-displayName: "金流對帳表",
-url: "/CashFlowManagement/CashFlowReconciliationStatement",
-requiredPermissionName: PikachuPermissions.CashFlowReconciliationStatement)
-);
+            name: "ElectronicInvoiceSetting",
+            icon: "fas fa-receipt",
+            displayName: "電子發票設定",
+            url: "/CashFlowManagement/ElectronicInvoiceSetting",
+            requiredPermissionName: PikachuPermissions.InvoiceSetting)
+            );
+                    paymentManagement.AddItem(new ApplicationMenuItem(
+            name: "CashFlowReconciliationStatement",
+            icon: "fas fa-file-invoice",
+            displayName: "金流對帳表",
+            url: "/CashFlowManagement/CashFlowReconciliationStatement",
+            requiredPermissionName: PikachuPermissions.CashFlowReconciliationStatement)
+            );
 
         var logisticsManagment =
      new ApplicationMenuItem(
                 PikachuMenus.LogisticsManagement,
                 "物流設定",
-                
+
                 icon: "fas fa-truck",
                 order: 5
             );
         logisticsManagment.AddItem(new ApplicationMenuItem(
-            name: "FreebieManagement",
+            name: l["LogisticsProviderSettings"],
             icon: "fas fa-shipping-fast",
             displayName: "物流商設定",
-            url: "/GroupBuyManagement/GroupBuyReport6",
+            url: "/LogisticsProviderSettings",
             requiredPermissionName: PikachuPermissions.LogisticsSetting
             )
             );
-        
 
+        context.Menu.AddItem(logisticsManagment);
         //context.Menu.Items.Insert(
         //    6,
         //    new ApplicationMenuItem(
@@ -228,7 +228,7 @@ requiredPermissionName: PikachuPermissions.CashFlowReconciliationStatement)
             new ApplicationMenuItem(
                 PikachuMenus.SystemManagement,
                 "系統管理",
-                
+
                 icon: "fas fa-user",
                 order: 7
             );
@@ -238,31 +238,31 @@ requiredPermissionName: PikachuPermissions.CashFlowReconciliationStatement)
                 displayName: "權限管理",
                 icon: "fas fa-user-lock",
                 url: "/Identify/Users",
-                requiredPermissionName:PikachuPermissions.PermissionSetting)
-            
+                requiredPermissionName: PikachuPermissions.PermissionSetting)
+
             );
-            systemManagment.AddItem(new ApplicationMenuItem(
-            name: "EmailSettings",
-            icon: "fas fa-mail-bulk",
-            displayName: l["EmailSettings"],
-            url: "/EmailSettings",
-            requiredPermissionName:PikachuPermissions.EmailSettings)
-            );
-            systemManagment.AddItem(new ApplicationMenuItem(
-            name: "AutomaticEmailing",
-            icon: "fas fa-envelope-open-text",
-            displayName: l["AutomaticEmailing"],
-            url: "/AutomaticEmailing",
-            requiredPermissionName:PikachuPermissions.AutomaticEmailing)
-            );
-              systemManagment.AddItem(new ApplicationMenuItem(
-            name: "多商戶管理-商戶賬單報表",
-            icon: "fas fa-newspaper",
-            displayName: l["多商戶管理-商戶賬單報表"],
-            url: "/TenantBillingReport",
-            requiredPermissionName:PikachuPermissions.TenentBillReport)
-            );
-        
+        systemManagment.AddItem(new ApplicationMenuItem(
+        name: "EmailSettings",
+        icon: "fas fa-mail-bulk",
+        displayName: l["EmailSettings"],
+        url: "/EmailSettings",
+        requiredPermissionName: PikachuPermissions.EmailSettings)
+        );
+        systemManagment.AddItem(new ApplicationMenuItem(
+        name: "AutomaticEmailing",
+        icon: "fas fa-envelope-open-text",
+        displayName: l["AutomaticEmailing"],
+        url: "/AutomaticEmailing",
+        requiredPermissionName: PikachuPermissions.AutomaticEmailing)
+        );
+        systemManagment.AddItem(new ApplicationMenuItem(
+      name: "多商戶管理-商戶賬單報表",
+      icon: "fas fa-newspaper",
+      displayName: l["多商戶管理-商戶賬單報表"],
+      url: "/TenantBillingReport",
+      requiredPermissionName: PikachuPermissions.TenentBillReport)
+      );
+
 
         if (MultiTenancyConsts.IsEnabled)
         {

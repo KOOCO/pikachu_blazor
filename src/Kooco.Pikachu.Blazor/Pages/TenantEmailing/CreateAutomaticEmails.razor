@@ -117,10 +117,10 @@
                         <Select TValue="RecurrenceType" Class="form-select"
                                 @bind-SelectedValue="@Model.RecurrenceType">
                             @foreach (var enumValue in Enum.GetValues(typeof(RecurrenceType)))
-                        {
-                            <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
-                        }
-                    </Select>
+                            {
+                                <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                            }
+                        </Select>
                     </div>
                 </div>
                 <div class="row mt-3">

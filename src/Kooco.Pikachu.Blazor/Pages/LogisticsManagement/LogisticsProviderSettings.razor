@@ -1,0 +1,230 @@
+﻿@page "/LogisticsProviderSettings";
+
+@using Kooco.Pikachu.Localization;
+@using Microsoft.Extensions.Localization;
+@using Blazorise.LoadingIndicator;
+
+@inject IStringLocalizer<PikachuResource> L;
+
+<style>
+    .row{
+        margin-bottom: 0.675rem;
+    }
+
+    .row > div:first-child {
+        text-align: right;
+    }
+
+    .form-label{
+        padding-top: 0.675rem;
+    }
+
+</style>
+
+<LoadingIndicator @ref="Loading" FullScreen></LoadingIndicator>
+
+<h3>@L["LogisticsProviderSettings"]</h3>
+
+<Card>
+    <CardHeader>
+        <h4>@L["GreenWorldLogistics"]</h4>
+    </CardHeader>
+    <CardBody>
+        <EditForm Model="@GreenWorld" OnValidSubmit="UpdateGreenWorldLogisticsAsync">
+            <DataAnnotationsValidator />
+            <div class="row">
+                <div class="col-3">
+                    <label for="g-enable-disable-switch" class="form-label pt-0">@L["Enable/Disable"]</label>
+                </div>
+                <div class="col-8">
+                    <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="GreenWorld.IsEnabled"></Switch>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <label for="store-code" class="form-label">@L["StoreCode"]<span class="text-danger"> *</span></label>
+                </div>
+                <div class="col-8">
+                    <InputText id="store-code" class="form-control" @bind-Value="GreenWorld.StoreCode"></InputText>
+                    <ValidationMessage For="@(() => GreenWorld.StoreCode)" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <label for="hash-key" class="form-label">@L["HashKey"]<span class="text-danger"> *</span></label>
+                </div>
+                <div class="col-8">
+                    <InputText id="hash-key" class="form-control" @bind-Value="GreenWorld.HashKey"></InputText>
+                    <ValidationMessage For="@(() => GreenWorld.HashKey)" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <label for="hash-iv" class="form-label">@L["HashIV"]<span class="text-danger"> *</span></label>
+                </div>
+                <div class="col-8">
+                    <InputText id="hash-iv" class="form-control" @bind-Value="GreenWorld.HashIV"></InputText>
+                    <ValidationMessage For="@(() => GreenWorld.HashIV)" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <label for="sender-name" class="form-label">@L["SenderName"]<span class="text-danger"> *</span></label>
+                </div>
+                <div class="col-8">
+                    <InputText id="sender-name" class="form-control" @bind-Value="GreenWorld.SenderName"></InputText>
+                    <ValidationMessage For="@(() => GreenWorld.SenderName)" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <label for="sender-phone-number" class="form-label">@L["SenderPhoneNumber"]<span class="text-danger"> *</span></label>
+                </div>
+                <div class="col-8">
+                    <InputText id="sender-phone-number" class="form-control" @bind-Value="GreenWorld.SenderPhoneNumber"></InputText>
+                    <ValidationMessage For="@(() => GreenWorld.SenderPhoneNumber)" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <label for="logistics-type" class="form-label">@L["LogisticsType"]<span class="text-danger"> *</span></label>
+                </div>
+                <div class="col-8">
+                    <Select TValue="string" Class="form-select"
+                                SelectedValue="@GreenWorld.LogisticsType" 
+                                SelectedValueChanged="@OnSelectedValueChanged"
+                                id="logistics-type">
+                        <option value="" selected disabled></option>
+                        @foreach (var value in LogisticsTypes)
+                        {
+                            <SelectItem Value="@value">@L[value.ToString()]</SelectItem>
+                        }
+                    </Select>
+                    <ValidationMessage For="@(() => GreenWorld.LogisticsType)" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <label for="logistics-sub-type" class="form-label">@L["LogisticsSubType"]<span class="text-danger"> *</span></label>
+                </div>
+                <div class="col-8">
+                    <div class="form-control" style="min-height: 44.2px;">
+                        @foreach (var item in GreenWorld.LogisticsSubTypesList)
+                        {
+                            <Badge class="item-tags" CloseClicked="@(() => HandleTagDelete(item))">@item</Badge>
+                        }
+                    </div>
+                    <ValidationMessage For="@(() => GreenWorld.LogisticsSubTypes)" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <label for="g-threshold" class="form-label">@L["FreeShippingThreshold"]<span class="text-danger"> *</span></label>
+                </div>
+                <div class="col-8">
+                    <InputText id="g-threshold" class="form-control" @bind-Value="GreenWorld.FreeShippingThreshold"></InputText>
+                    <ValidationMessage For="@(() => GreenWorld.FreeShippingThreshold)" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <label for="g-freight" class="form-label">@L["Freight"]<span class="text-danger"> *</span></label>
+                </div>
+                <div class="col-8">
+                    <InputText id="g-freight" class="form-control" @bind-Value="GreenWorld.Freight"></InputText>
+                    <ValidationMessage For="@(() => GreenWorld.Freight)" />
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
+                        <i class="fa fa-check"></i>
+                        @L["SaveSettings"]
+                    </Button>
+                </div>
+            </div>
+        </EditForm>
+    </CardBody>
+</Card>
+
+<Card>
+    <CardHeader>
+        <h4>@L["HomeDelivery"]</h4>
+    </CardHeader>
+    <CardBody>
+        <EditForm Model="@HomeDelivery" OnValidSubmit="UpdateHomeDeliveryAsync">
+            <DataAnnotationsValidator />
+            <div class="row">
+                <div class="col-3">
+                    <label for="h-enable-disable-switch" class="form-label pt-0">@L["Enable/Disable"]</label>
+                </div>
+                <div class="col-8">
+                    <Switch TValue="bool" id="h-enable-disable-switch" @bind-Checked="HomeDelivery.IsEnabled"></Switch>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <label for="custom-title" class="form-label">@L["CustomTitle"]<span class="text-danger"> *</span></label>
+                </div>
+                <div class="col-8">
+                    <InputText id="custom-title" class="form-control" @bind-Value="HomeDelivery.CustomTitle"></InputText>
+                    <ValidationMessage For="@(() => HomeDelivery.CustomTitle)" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <label class="form-label">@L["MainIslands"]<span class="text-danger"> *</span></label>
+                </div>
+                <div class="col-8">
+                    @foreach(var island in MainIslands)
+                    {
+                        <label for="@island" class="form-label me-2">
+                            <input type="checkbox" class="form-check-input me-1" id="@island" />
+                            @L[island]
+                        </label>
+                    }
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <label class="form-label">@L["OuterIslands"]<span class="text-danger"> *</span></label>
+                </div>
+                <div class="col-8">
+                    @foreach(var island in OuterIslands)
+                    {
+                        <label for="@island" class="form-label me-2">
+                            <input type="checkbox" class="form-check-input me-1" id="@island" />
+                            @L[island]
+                        </label>
+                    }
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <label for="h-threshold" class="form-label">@L["FreeShippingThreshold"]<span class="text-danger"> *</span></label>
+                </div>
+                <div class="col-8">
+                    <InputText id="h-threshold" class="form-control" @bind-Value="HomeDelivery.FreeShippingThreshold"></InputText>
+                    <ValidationMessage For="@(() => HomeDelivery.FreeShippingThreshold)" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <label for="h-freight" class="form-label">@L["Freight"]<span class="text-danger"> *</span></label>
+                </div>
+                <div class="col-8">
+                    <InputText id="h-freight" class="form-control" @bind-Value="HomeDelivery.Freight"></InputText>
+                    <ValidationMessage For="@(() => HomeDelivery.Freight)" />
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
+                        <i class="fa fa-check"></i>
+                        @L["SaveSettings"]
+                    </Button>
+                </div>
+            </div>
+        </EditForm>
+    </CardBody>
+</Card>
