@@ -89,44 +89,37 @@ stages:
 
 - stage: Dev
   jobs:
-  - deployment: DeployDev
+  - job: DeployDev
     pool:
       vmImage: 'windows-latest'
     condition: and(succeeded('Build'), eq(variables['Build.SourceBranch'], 'refs/heads/devdevdevdde'))
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - download: current
-            artifact: 'webapp'
-          - task: AzureWebApp@1
-            inputs:
-              azureSubscription: 'Azure 訂用帳戶 1 (3817e394-8d25-45fe-af63-3f5f209dedc8)'
-              appType: 'webApp'
-              appName: ${{ variables.AZURE_WEBAPP_NAME }}
-              package: $(Pipeline.Workspace)/webapp
+    steps:
+    - download: current
+      artifact: 'webapp'
+    - task: AzureWebApp@1
+      inputs:
+        azureSubscription: 'Azure 訂用帳戶 1 (3817e394-8d25-45fe-af63-3f5f209dedc8)'
+        appType: 'webApp'
+        appName: ${{ variables.AZURE_WEBAPP_NAME }}
+        package: $(Pipeline.Workspace)/webapp
 
 - stage: Prod
   jobs:
-  - deployment: DeployProd
+  - job: DeployProd
     pool:
       vmImage: 'windows-latest'
     dependsOn: Dev
     condition: and(succeeded('Dev'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - download: current
-            artifact: 'webapp'
-          # - task: AzureWebApp@1
-          #   inputs:
-          #     azureSubscription: 'Azure 訂用帳戶 1 (3817e394-8d25-45fe-af63-3f5f209dedc8)'
-          #     appType: 'webApp'
-          #     appName: ${{ variables.AZURE_WEBAPP_NAME }}
-          #     package: $(Pipeline.Workspace)/webapp
-
-          - script: write-host "this is prod"
-            displayName: 'Publish'
+    steps:
+    - download: current
+      artifact: 'webapp'
+    # - task: AzureWebApp@1
+    #   inputs:
+    #     azureSubscription: 'Azure 訂用帳戶 1 (3817e394-8d25-45fe-af63-3f5f209dedc8)'
+    #     appType: 'webApp'
+    #     appName: ${{ variables.AZURE_WEBAPP_NAME }}
+    #     package: $(Pipeline.Workspace)/weba
+    - script: write-host "this is prod"
+      displayName: 'Publish'
 
 
