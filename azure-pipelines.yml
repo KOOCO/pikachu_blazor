@@ -75,9 +75,10 @@ jobs:
   # - script: dotnet test "${{ variables.WORKING_DIRECTORY }}" --no-build
   #   displayName: 'Test'
   - script: |
-      cd src/Kooco.Pikachu.EntityFrameworkCore 
+      cd src/Kooco.Pikachu.EntityFrameworkCore
+      ls 
       update-database
-          displayName: 'Run EF Core Migrations'
+    displayName: 'Run EF Core Migrations'
   - script: dotnet publish "${{ variables.WORKING_DIRECTORY }}" --configuration ${{ variables.CONFIGURATION }} --no-build --output "${{ variables.AZURE_WEBAPP_PACKAGE_PATH }}"
     displayName: 'Publish'
   - task: PublishBuildArtifacts@1
