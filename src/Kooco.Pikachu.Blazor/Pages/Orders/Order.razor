@@ -21,21 +21,24 @@
             <h3>@L["Order"]</h3>
         </div>
         <div class="col-11 text-lg-end">
-            <Blazorise.Components.SelectList TItem="KeyValueDto"
+            <Select 
             TValue="Guid?"
-                        Data="@GroupBuyList"
-            TextField="@((item)=>item.Name)"
-            ValueField="@((item)=>item.Id)"
-            @bind-SelectedValue="@SelectedGroupBuy"
+            SelectedValue="@SelectedGroupBuy"
             Size="Size.Small"
-                                             id="mySelectElement"
-            DefaultItemText="Choose your GroupBuy" />
-            <DateEdit id="startDate" @bind-Date="@StartDate" TValue="DateTime?" Size="Size.Small" />-<DateEdit id="endDate" @bind-Date="@EndDate" TValue="DateTime?" Size="Size.Small" />
+             id="mySelectElement"
+             SelectedValueChanged="@(e=>OnSearch(e))">
+              <SelectItem >Select GroupBuy</SelectItem>
+                @foreach (var item in GroupBuyList)
+                {
+                    <SelectItem Value="@item.Id">@item.Name</SelectItem>
+                }
+             </Select>
+            <DateEdit id="startDate" KeyDown="@(e=>OnSearch())" @bind-Date="@StartDate" TValue="DateTime?" Size="Size.Small" />-<DateEdit KeyDown="(e=>OnSearch())" id="endDate" @bind-Date="@EndDate" TValue="DateTime?" Size="Size.Small" />
             <div class="d-inline-block me-1">
               
                 <div class="input-group">
                     <InputText class="form-control form-control-sm search-bar" @bind-Value="@Filter" placeholder="@L["Search"]"></InputText>
-                    <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="OnSearch">
+                    <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="(e=>OnSearch())">
                         <i class="fa fa-search"></i>
                     </Button>
                 </div>
