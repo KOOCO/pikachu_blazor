@@ -383,6 +383,24 @@ namespace Kooco.Pikachu.Orders
                 Items = ObjectMapper.Map<List<Order>, List<OrderDto>>(items)
             };
         }
+
+        public async Task<PagedResultDto<OrderDto>> GetReconciliationListAsync(GetOrderListDto input)
+        {
+            if (input.Sorting.IsNullOrEmpty())
+            {
+                input.Sorting = $"{nameof(Order.CreationTime)} desc";
+            }
+
+            var totalCount = await _orderRepository.CountReconciliationAsync(input.Filter, input.GroupBuyId, input.StartDate, input.EndDate);
+
+            var items = await _orderRepository.GetReconciliationListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.GroupBuyId, input.OrderIds, input.StartDate, input.EndDate);
+
+            return new PagedResultDto<OrderDto>
+            {
+                TotalCount = totalCount,
+                Items = ObjectMapper.Map<List<Order>, List<OrderDto>>(items)
+            };
+        }
         [Authorize(PikachuPermissions.Orders.AddStoreComment)]
         public async Task AddStoreCommentAsync(Guid id, string comment)
         {
@@ -693,6 +711,50 @@ namespace Kooco.Pikachu.Orders
                 ShippingStatus=x.ShippingStatus,
                 PaymentMethod = x.PaymentMethod,
                 CheckoutAmount=x.TotalAmount
+
+
+
+
+            });
+            var memoryStream = new MemoryStream();
+            await memoryStream.SaveAsAsync(excelContent);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            return new RemoteStreamContent(memoryStream, "InventroyReport.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        }
+        public async Task<IRemoteStreamContent> GetReconciliationListAsExcelFileAsync(GetOrderListDto input)
+        {
+
+            //var downloadToken = await _excelDownloadTokenCache.GetAsync(input.DownloadToken);
+            //if (downloadToken == null || input.DownloadToken != downloadToken.Token)
+            //{
+            //    throw new AbpAuthorizationException("Invalid download token: " + input.DownloadToken);
+            //}
+            var items = await _orderRepository.GetReconciliationListAsync(0, int.MaxValue, input.Sorting, input.Filter, input.GroupBuyId, input.OrderIds);
+            var Results = ObjectMapper.Map<List<Order>, List<OrderDto>>(items);
+            var excelContent = Results.Select(x => new
+            {
+                OrderNumber = x.OrderNo,
+                OrderDate = x.CreationTime,
+                CustomerName = x.CustomerName,
+                Email = x.CustomerEmail,
+
+                RecipientInformation = x.RecipientName + "/" + x.RecipientPhone,
+                ShippingMethod = x.DeliveryMethod,
+                Address = x.AddressDetails,
+                Notes = x.Remarks,
+                MerchantNotes = x.Remarks,
+                OrderedItems = string.Join(", ", x.OrderItems.Select(item =>
+        (item.ItemType == ItemType.Item) ? $"{item.Item?.ItemName} x {item.Quantity}" :
+        (item.ItemType == ItemType.SetItem) ? $"{item.SetItem?.SetItemName} x {item.Quantity}" :
+        (item.ItemType == ItemType.Freebie) ? $"{item.Freebie?.ItemName} x {item.Quantity}" : "")
+    ),
+                InvoiceStatus = x.InvoiceStatus,
+                ShippingStatus = x.ShippingStatus,
+                PaymentMethod = x.PaymentMethod,
+                CheckoutAmount = x.TotalAmount,
+            DeliveryMethod=x.DeliveryMethod,
+
+
 
 
 

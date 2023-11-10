@@ -39,7 +39,7 @@ namespace Kooco.Pikachu.Blazor.Pages.CashFlowReconciliationStatements
             {
                 await loading.Show();
                 int skipCount = PageIndex * PageSize;
-                var result = await _orderAppService.GetListAsync(new GetOrderListDto
+                var result = await _orderAppService.GetReconciliationListAsync(new GetOrderListDto
                 {
                     Sorting = Sorting,
                     MaxResultCount = PageSize,
@@ -113,12 +113,14 @@ namespace Kooco.Pikachu.Blazor.Pages.CashFlowReconciliationStatements
             {
                 int skipCount = PageIndex * PageSize;
                 Sorting = Sorting != null ? Sorting : "OrderNo Ascending";
-                var remoteStreamContent = await _orderAppService.GetListAsExcelFileAsync(new GetOrderListDto
+                var selectedOrder = Orders.Where(x => x.IsSelected).Select(x=>x.Id).ToList();
+                var remoteStreamContent = await _orderAppService.GetReconciliationListAsExcelFileAsync(new GetOrderListDto
                 {
                     Sorting = Sorting,
                     MaxResultCount =PageSize,
                     SkipCount = 0,
-                    Filter = Filter
+                    Filter = Filter,
+                    OrderIds=selectedOrder
                 });
                 using (var responseStream = remoteStreamContent.GetStream())
                 {
