@@ -91,4 +91,4 @@ jobs:
       azureSubscription: 'Azure 訂用帳戶 1 (3817e394-8d25-45fe-af63-3f5f209dedc8)'
       appType: 'webApp'
       appName: ${{ variables.AZURE_WEBAPP_NAME }}
-      package: $(Pipeline.Workspace)/webapp/**/*.zip
+      package: $(Pipeline.Workspace)/webapp
