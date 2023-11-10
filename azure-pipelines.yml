@@ -92,3 +92,7 @@ jobs:
       appType: 'webApp'
       appName: ${{ variables.AZURE_WEBAPP_NAME }}
       package: $(Pipeline.Workspace)/webapp
+    
+  # - script: |
+  #     dotnet ef database update --project Kooco.Pikachu.DbMigrator --startup-project Kooco.Pikachu.DbMigrator --verbose
+  #   displayName: 'Run EF Core Migrations'
