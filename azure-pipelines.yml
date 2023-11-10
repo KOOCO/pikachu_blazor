@@ -103,9 +103,9 @@ stages:
         appName: ${{ variables.AZURE_WEBAPP_NAME }}
         package: $(Pipeline.Workspace)/webapp
 
-- stage: Prod
+- stage: Produ
   jobs:
-  - job: DeployProd
+  - job: DeployProduction
     pool:
       vmImage: 'windows-latest'
     dependsOn: Dev
