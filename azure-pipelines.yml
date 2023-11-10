@@ -1,105 +1,134 @@
-# # ASP.NET Core (.NET Framework)
-# # Build and test ASP.NET Core projects targeting the full .NET Framework.
-# # Add steps that publish symbols, save build artifacts, and more:
-# # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
-# trigger:
-# - main
-
-# pool:
-#   vmImage: 'windows-latest'
+# name: Build and Deploy .NET Core Application to Azure Web App - pikachu-dev
 
 # variables:
-#   solution: 'src/Kooco.Pikachu.Blazor/Kooco.Pikachu.Blazor.csproj'
-#   buildPlatform: 'Any CPU'
-#   buildConfiguration: 'Release'
+#   - name: AZURE_WEBAPP_NAME
+#     value: pikachu-dev
+#   - name: AZURE_WEBAPP_PACKAGE_PATH
+#     value: 'src\Kooco.Pikachu.Blazor\published'
+#   - name: CONFIGURATION
+#     value: Release
+#   - name: DOTNET_CORE_VERSION
+#     value: '7.0.x'
+#   - name: WORKING_DIRECTORY
+#     value: 'src\Kooco.Pikachu.Blazor'
 
-# steps:
-# - task: NuGetToolInstaller@1
-#   displayName: 'Use NuGet'
-#   inputs:
-#     checkLatest: true
-# - task: NuGetCommand@2
+# jobs:
+# - job: build
+#   pool:
+#     vmImage: 'windows-latest'
+#   steps:
+#   - checkout: self
+#   - task: UseDotNet@2
+#     inputs:
+#       version: ${{ variables.DOTNET_CORE_VERSION }}
+#   - script: dotnet restore "${{ variables.WORKING_DIRECTORY }}"
+#     displayName: 'Restore'
+#   - script: dotnet build "${{ variables.WORKING_DIRECTORY }}" --configuration ${{ variables.CONFIGURATION }} --no-restore
+#     displayName: 'Build'
+#   - script: dotnet test "${{ variables.WORKING_DIRECTORY }}" --no-build
+#     displayName: 'Test'
+#   - script: |
+#       dotnet tool install --global dotnet-ef
+#       cd src/Kooco.Pikachu.EntityFrameworkCore
+#       dotnet ef database update
+#     displayName: 'Run EF Core Migrations'
+#   - script: dotnet publish "${{ variables.WORKING_DIRECTORY }}" --configuration ${{ variables.CONFIGURATION }} --no-build --output "${{ variables.AZURE_WEBAPP_PACKAGE_PATH }}"
+#     displayName: 'Publish'
+#   - task: PublishBuildArtifacts@1
+#     inputs:
+#       pathtoPublish: '${{ variables.AZURE_WEBAPP_PACKAGE_PATH }}'
+#       artifactName: 'webapp'
 
-
-# - task: VSBuild@1
-#   inputs:
-#     solution: '$(solution)'
-#     msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
-#     platform: '$(buildPlatform)'
-#     configuration: '$(buildConfiguration)'
-
-# # - task: VSTest@2
-# #   inputs:
-# #     platform: '$(buildPlatform)'
-# #     configuration: '$(buildConfiguration)'
-
-# - task: AzureRmWebAppDeployment@4
-#   inputs:
-#     ConnectionType: 'AzureRM'
-#     azureSubscription: 'Azure 訂用帳戶 1 (3817e394-8d25-45fe-af63-3f5f209dedc8)'
-#     appType: 'webApp'
-#     WebAppName: 'pikachu-dev'
-#     packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+# - job: deploy
+#   pool:
+#     vmImage: 'windows-latest'
+#   dependsOn: build
+#   steps:
+#   - download: current
+#     artifact: 'webapp'
+#   - task: AzureWebApp@1
+#     inputs:
+#       azureSubscription: 'Azure 訂用帳戶 1 (3817e394-8d25-45fe-af63-3f5f209dedc8)'
+#       appType: 'webApp'
+#       appName: ${{ variables.AZURE_WEBAPP_NAME }}
+#       package: $(Pipeline.Workspace)/webapp
+    
+  
 
 name: Build and Deploy .NET Core Application to Azure Web App - pikachu-dev
 
+stages:
+- stage: Build
+  jobs:
+  - job: build
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+    - checkout: self
+    - task: UseDotNet@2
+      inputs:
+        version: ${{ variables.DOTNET_CORE_VERSION }}
+    - script: dotnet restore "${{ variables.WORKING_DIRECTORY }}"
+      displayName: 'Restore'
+    - script: dotnet build "${{ variables.WORKING_DIRECTORY }}" --configuration ${{ variables.CONFIGURATION }} --no-restore
+      displayName: 'Build'
+    - script: dotnet test "${{ variables.WORKING_DIRECTORY }}" --no-build
+      displayName: 'Test'
+    - script: |
+        dotnet tool install --global dotnet-ef
+        cd src/Kooco.Pikachu.EntityFrameworkCore
+        dotnet ef database update
+      displayName: 'Run EF Core Migrations'
+    - script: dotnet publish "${{ variables.WORKING_DIRECTORY }}" --configuration ${{ variables.CONFIGURATION }} --no-build --output "${{ variables.AZURE_WEBAPP_PACKAGE_PATH }}"
+      displayName: 'Publish'
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathtoPublish: '${{ variables.AZURE_WEBAPP_PACKAGE_PATH }}'
+        artifactName: 'webapp'
 
-variables:
-  - name: AZURE_WEBAPP_NAME
-    value: pikachu-dev
-  - name: AZURE_WEBAPP_PACKAGE_PATH
-    value: 'src\Kooco.Pikachu.Blazor\published'
-  - name: CONFIGURATION
-    value: Release
-  - name: DOTNET_CORE_VERSION
-    value: '7.0.x'
-  - name: WORKING_DIRECTORY
-    value: 'src\Kooco.Pikachu.Blazor'
-  - name: WORKING_DIRECTORY_MIGRATION
-    value: 'src\Kooco.Pikachu.EntityFrameworkCore'
+- stage: Dev
+  jobs:
+  - deployment: DeployDev
+    pool:
+      vmImage: 'windows-latest'
+    condition: and(succeeded('Build'), eq(variables['Build.SourceBranch'], 'refs/heads/devdevdevdde'))
+    #environment: 'dev'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: 'webapp'
+          - task: AzureWebApp@1
+            inputs:
+              azureSubscription: 'Azure 訂用帳戶 1 (3817e394-8d25-45fe-af63-3f5f209dedc8)'
+              appType: 'webApp'
+              appName: ${{ variables.AZURE_WEBAPP_NAME }}
+              package: $(Pipeline.Workspace)/webapp
 
-jobs:
-- job: build
-  pool:
-    vmImage: 'windows-latest'
-  steps:
-  - checkout: self
-  - task: UseDotNet@2
-    inputs:
-      version: ${{ variables.DOTNET_CORE_VERSION }}
-  - script: dotnet restore "${{ variables.WORKING_DIRECTORY }}"
-    displayName: 'Restore'
-  - script: dotnet build "${{ variables.WORKING_DIRECTORY }}" --configuration ${{ variables.CONFIGURATION }} --no-restore
-    displayName: 'Build'
-  - script: dotnet test "${{ variables.WORKING_DIRECTORY }}" --no-build
-    displayName: 'Test'
-  - script: |
-      dotnet tool install --global dotnet-ef
-      cd src/Kooco.Pikachu.EntityFrameworkCore
-      dotnet ef database update
-    displayName: 'Run EF Core Migrations'
-  - script: dotnet publish "${{ variables.WORKING_DIRECTORY }}" --configuration ${{ variables.CONFIGURATION }} --no-build --output "${{ variables.AZURE_WEBAPP_PACKAGE_PATH }}"
-    displayName: 'Publish'
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathtoPublish: '${{ variables.AZURE_WEBAPP_PACKAGE_PATH }}'
-      artifactName: 'webapp'
+- stage: Prod
+  jobs:
+  - deployment: DeployProd
+    pool:
+      vmImage: 'windows-latest'
+    dependsOn: Dev
+    condition: and(succeeded('Dev'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    #environment: 'prod'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: 'webapp'
+          # - task: AzureWebApp@1
+          #   inputs:
+          #     azureSubscription: 'Azure 訂用帳戶 1 (3817e394-8d25-45fe-af63-3f5f209dedc8)'
+          #     appType: 'webApp'
+          #     appName: ${{ variables.AZURE_WEBAPP_NAME }}
+          #     package: $(Pipeline.Workspace)/webapp
 
-- job: deploy
-  pool:
-    vmImage: 'windows-latest'
-  dependsOn: build
-  steps:
-  - download: current
-    artifact: 'webapp'
-  - task: AzureWebApp@1
-    inputs:
-      azureSubscription: 'Azure 訂用帳戶 1 (3817e394-8d25-45fe-af63-3f5f209dedc8)'
-      appType: 'webApp'
-      appName: ${{ variables.AZURE_WEBAPP_NAME }}
-      package: $(Pipeline.Workspace)/webapp
-    
-  # - script: |
-  #     dotnet ef database update --project Kooco.Pikachu.DbMigrator --startup-project Kooco.Pikachu.DbMigrator --verbose
-  #   displayName: 'Run EF Core Migrations'
+          - script: write-host "this is prod"
+            displayName: 'Publish'
+
+
