@@ -108,7 +108,7 @@ stages:
   - job: DeployProduction
     pool:
       vmImage: 'windows-latest'
-    dependsOn: Dev
+    #dependsOn: Dev
     condition: and(succeeded('Dev'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
     steps:
     - download: current
