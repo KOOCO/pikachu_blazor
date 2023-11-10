@@ -56,6 +56,8 @@ variables:
     value: '7.0.x'
   - name: WORKING_DIRECTORY
     value: 'src\Kooco.Pikachu.Blazor'
+  - name: WORKING_DIRECTORY_MIGRATION
+    value: 'src\Kooco.Pikachu.EntityFrameworkCore'
 
 jobs:
 - job: build
@@ -66,12 +68,16 @@ jobs:
   - task: UseDotNet@2
     inputs:
       version: ${{ variables.DOTNET_CORE_VERSION }}
-  - script: dotnet restore "${{ variables.WORKING_DIRECTORY }}"
-    displayName: 'Restore'
-  - script: dotnet build "${{ variables.WORKING_DIRECTORY }}" --configuration ${{ variables.CONFIGURATION }} --no-restore
-    displayName: 'Build'
-  - script: dotnet test "${{ variables.WORKING_DIRECTORY }}" --no-build
-    displayName: 'Test'
+  # - script: dotnet restore "${{ variables.WORKING_DIRECTORY }}"
+  #   displayName: 'Restore'
+  # - script: dotnet build "${{ variables.WORKING_DIRECTORY }}" --configuration ${{ variables.CONFIGURATION }} --no-restore
+  #   displayName: 'Build'
+  # - script: dotnet test "${{ variables.WORKING_DIRECTORY }}" --no-build
+  #   displayName: 'Test'
+  - script: |
+      cd src/Kooco.Pikachu.EntityFrameworkCore 
+      update-database
+          displayName: 'Run EF Core Migrations'
   - script: dotnet publish "${{ variables.WORKING_DIRECTORY }}" --configuration ${{ variables.CONFIGURATION }} --no-build --output "${{ variables.AZURE_WEBAPP_PACKAGE_PATH }}"
     displayName: 'Publish'
   - task: PublishBuildArtifacts@1
