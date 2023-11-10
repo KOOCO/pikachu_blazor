@@ -60,6 +60,11 @@
                                 Caption="@L["Total Order"]"
                                 TextAlignment="TextAlignment.Center">
                 </DataGridColumn>
+                <DataGridColumn TItem="GroupBuyReportDto"
+                                Field="@nameof(GroupBuyReportDto.WatingForShipment)"
+                                Caption="@L["Wating For Shipment"]"
+                                TextAlignment="TextAlignment.Center">
+                </DataGridColumn>
                 <DataGridColumn TItem="GroupBuyReportDto" Field="@nameof(GroupBuyReportDto.SalesAmount)"
                                 Caption="@L["Sales Amount"]"
                                 TextAlignment="TextAlignment.Center">

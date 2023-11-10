@@ -183,7 +183,7 @@ namespace Kooco.Pikachu.GroupBuys
                             PaidAmount = groupedOrders.Where(x => x.OrderStatus == OrderStatus.Open && x.ShippingStatus == ShippingStatus.PrepareShipment).Sum(order => order.TotalAmount),
                         TotalOrder = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Count(),
                             SalesAmount = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(order => order.TotalAmount),
-                           
+                          WatingForShipment=groupedOrders.Where(x=>x.OrderStatus==OrderStatus.Open && x.ShippingStatus==ShippingStatus.PrepareShipment).Count(),
                             AmountReceived = groupedOrders.Where(x => x.OrderStatus == OrderStatus.Open && x.ShippingStatus == ShippingStatus.PrepareShipment).Sum(order => order.TotalAmount),
 
                         };

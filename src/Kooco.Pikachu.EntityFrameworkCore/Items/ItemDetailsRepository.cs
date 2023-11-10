@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
+using System.Security.Cryptography;
 
 namespace Kooco.Pikachu.Items;
 
@@ -27,6 +28,8 @@ public class ItemDetailsRepository : EfCoreRepository<PikachuDbContext, ItemDeta
     }
     public async Task<List<ItemDetails>> GetListAsync(int skipCount, int maxResultCount, string? sorting, string? filter)
     {
+     
+
         return await ApplyFilters(await GetQueryableAsync(), filter)
             .OrderBy(sorting)
             .PageBy(skipCount, maxResultCount)

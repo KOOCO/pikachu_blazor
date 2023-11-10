@@ -13,5 +13,6 @@ namespace Kooco.Pikachu.GroupBuys
         public int TotalOrder { get; set; }
         public decimal SalesAmount { get; set; }
         public decimal AmountReceived { get; set; }
+        public int WatingForShipment { get; set; }
     }
 }
