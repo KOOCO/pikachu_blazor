@@ -113,12 +113,12 @@ stages:
     steps:
     - download: current
       artifact: 'webapp'
-    # - task: AzureWebApp@1
-    #   inputs:
-    #     azureSubscription: 'Azure 訂用帳戶 1 (3817e394-8d25-45fe-af63-3f5f209dedc8)'
-    #     appType: 'webApp'
-    #     appName: ${{ variables.AZURE_WEBAPP_NAME }}
-    #     package: $(Pipeline.Workspace)/weba
+    - task: AzureWebApp@1
+      inputs:
+        azureSubscription: 'Azure 訂用帳戶 1 (3817e394-8d25-45fe-af63-3f5f209dedc8)'
+        appType: 'webApp'
+        appName: ${{ variables.AZURE_WEBAPP_NAME }}
+        package: $(Pipeline.Workspace)/weba
     - script: write-host "this is prod"
       displayName: 'Publish'
 
