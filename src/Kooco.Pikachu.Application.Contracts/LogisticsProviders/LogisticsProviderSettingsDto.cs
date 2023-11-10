@@ -1,4 +1,5 @@
 ﻿using Kooco.Pikachu.EnumValues;
+using System;
 using System.Collections.Generic;
 
 namespace Kooco.Pikachu.LogisticsProviders
@@ -38,5 +39,7 @@ namespace Kooco.Pikachu.LogisticsProviders
         public List<string>? OuterIslandsList { get; set; }
 
         public LogisticProviders LogisticProvider { get; set; }
+
+        public Guid? TenantId { get; set; }
     }
 }

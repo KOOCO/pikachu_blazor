@@ -3,6 +3,7 @@ using Kooco.Pikachu.AutomaticEmails;
 using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantEmailing
         AutomaticEmailCreateUpdateDto Model { get; set; }
         List<KeyValueDto> GroupBuys { get; set; }
         string? Recipient { get; set; }
-
+        List<string> SelectedTexts { get; set; } = new();
         public EditAutomaticEmails()
         {
             Model = new();
@@ -52,6 +53,20 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantEmailing
                 }
                 Recipient = string.Empty;
             }
+        }
+
+        void HandleRecipientBlur()
+        {
+            if (!Recipient.IsNullOrWhiteSpace() && !Model.RecipientsList.Any(x => x == Recipient))
+            {
+                var email = new EmailAddressAttribute();
+                if (!email.IsValid(Recipient))
+                {
+                    return;
+                }
+                Model.RecipientsList.Add(Recipient);
+            }
+            Recipient = string.Empty;
         }
 
         private void HandleRecipientDelete(string item)
