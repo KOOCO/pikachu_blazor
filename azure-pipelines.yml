@@ -68,12 +68,12 @@ jobs:
   - task: UseDotNet@2
     inputs:
       version: ${{ variables.DOTNET_CORE_VERSION }}
-  # - script: dotnet restore "${{ variables.WORKING_DIRECTORY }}"
-  #   displayName: 'Restore'
-  # - script: dotnet build "${{ variables.WORKING_DIRECTORY }}" --configuration ${{ variables.CONFIGURATION }} --no-restore
-  #   displayName: 'Build'
-  # - script: dotnet test "${{ variables.WORKING_DIRECTORY }}" --no-build
-  #   displayName: 'Test'
+  - script: dotnet restore "${{ variables.WORKING_DIRECTORY }}"
+    displayName: 'Restore'
+  - script: dotnet build "${{ variables.WORKING_DIRECTORY }}" --configuration ${{ variables.CONFIGURATION }} --no-restore
+    displayName: 'Build'
+  - script: dotnet test "${{ variables.WORKING_DIRECTORY }}" --no-build
+    displayName: 'Test'
   - script: |
       dotnet tool install --global dotnet-ef
       cd src/Kooco.Pikachu.EntityFrameworkCore
