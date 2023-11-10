@@ -23,6 +23,15 @@
         .tag-input{
             width: 250px !important;
         }
+        .row{
+            margin-bottom: 0.675rem;
+            justify-content: center;
+        }
+
+        .row > div:first-child {
+            text-align: right;
+            padding-top: 0.675rem;
+        }
     </style>
 
 <h3>@L["EditAutomaticEmails"]</h3>
@@ -31,8 +40,8 @@
  <Card>
      <CardBody>
          <div class="container">
-                <div class="row justify-content-center mb-2">
-                    <div class="col-2 pt-2 text-end">
+                <div class="row">
+                    <div class="col-2">
                         @L["TradeName"]
                         <span class="text-danger"> *</span>
                     </div>
@@ -40,8 +49,8 @@
                         <InputText class="form-control" @bind-Value="Model.TradeName"></InputText>
                     </div>
                 </div>
-                <div class="row justify-content-center mb-2">
-                    <div class="col-2 pt-2 text-end">
+                <div class="row">
+                    <div class="col-2">
                         @L["RecipientMailbox"]
                         <span class="text-danger"> *</span>
                     </div>
@@ -50,7 +59,7 @@
                         <div class="input-container d-block mb-2">
                             <InputText class="form-control tag-input" id="tagInput" @bind-Value="Recipient" 
                             placeholder="abc@xyz.com"
-                            @onkeyup="HandleRecipientInputKeyUp"></InputText>
+                            @onkeyup="HandleRecipientInputKeyUp" @onblur="() => HandleRecipientBlur()"></InputText>
                             <i class="tag-input-placeholder-icon fa fa-plus"></i>
                         </div>
 
@@ -61,8 +70,8 @@
                     </div>
                     </div>
                 </div>
-                <div class="row justify-content-center mb-2">
-                    <div class="col-2 pt-2 text-end">
+                <div class="row">
+                    <div class="col-2">
                         @L["SendInterval"]
                         <span class="text-danger"> *</span>
                     </div>
@@ -76,8 +85,8 @@
                         <InputDate class="form-control" @bind-Value="Model.EndDate" min="@DateTime.Now.ToString("yyyy-MM-dd")" DisplayName="End Date"></InputDate>
                     </div>
                 </div>
-                <div class="row justify-content-center mb-2">
-                    <div class="col-2 pt-2 text-end">
+                <div class="row">
+                    <div class="col-2">
                         @L["SendTime"]
                         <span class="text-danger"> *</span>
                     </div>
@@ -87,8 +96,8 @@
                     <div class="col-1"></div>
                     <div class="col-3"></div>
                 </div>
-                <div class="row justify-content-center mb-2">
-                    <div class="col-2 pt-2 text-end">
+                <div class="row">
+                    <div class="col-2">
                         @L["SelectGroupBuys"]
                         <span class="text-danger"> *</span>
                     </div>
@@ -101,15 +110,15 @@
                                     ValueField="@(( item ) => item.Id)"
                                     Placeholder="Search..."
                                     Filter="AutocompleteFilter.StartsWith"
-                                    CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
-                                    HighlightSearch
+                                    CustomFilter="@(( item, searchValue ) => item.Name != null && item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
                                     Immediate="true"
                                     SelectionMode="AutocompleteSelectionMode.Multiple"
+                                    @bind-SelectedTexts="SelectedTexts"
                                     @bind-SelectedValues="Model.GroupBuyIds">
-                    </Autocomplete>
+                        </Autocomplete>
                     </div>
                 </div>
-                <div class="row justify-content-center mb-2">
+                <div class="row">
                     <div class="col-2">
                         @L["RecurrenceType"]
                         <span class="text-danger"> *</span>

@@ -4,11 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using Volo.Abp.Domain.Entities.Auditing;
+using Volo.Abp.MultiTenancy;
 
 namespace Kooco.Pikachu.LogisticsProviders
 {
-    public class LogisticsProviderSettings : FullAuditedAggregateRoot<Guid>
+    public class LogisticsProviderSettings : FullAuditedAggregateRoot<Guid>, IMultiTenant
     {
+        public Guid? TenantId { get; set; }
+
         public bool IsEnabled { get; set; }
 
         public string? StoreCode { get; set; }

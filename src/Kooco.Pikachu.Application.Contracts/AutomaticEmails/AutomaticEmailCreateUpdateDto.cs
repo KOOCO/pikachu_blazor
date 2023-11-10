@@ -13,7 +13,7 @@ namespace Kooco.Pikachu.AutomaticEmails
         public RecurrenceType RecurrenceType { get; set; }
 
         public List<string> RecipientsList { get; set; }
-        public List<Guid> GroupBuyIds { get; set; }
+        public List<Guid> GroupBuyIds { get; set; } = new List<Guid>();
 
         public AutomaticEmailCreateUpdateDto()
         {
