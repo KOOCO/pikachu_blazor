@@ -93,7 +93,7 @@ stages:
     pool:
       vmImage: 'windows-latest'
     condition: and(succeeded('Build'), eq(variables['Build.SourceBranch'], 'refs/heads/devdevdevdde'))
-    #environment: 'dev'
+    environment: 'dev'
     strategy:
       runOnce:
         deploy:
@@ -114,7 +114,7 @@ stages:
       vmImage: 'windows-latest'
     dependsOn: Dev
     condition: and(succeeded('Dev'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-    #environment: 'prod'
+    environment: 'produu'
     strategy:
       runOnce:
         deploy:
