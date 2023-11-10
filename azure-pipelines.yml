@@ -77,7 +77,7 @@ jobs:
   - script: |
       dotnet tool install --global dotnet-ef
       cd src/Kooco.Pikachu.EntityFrameworkCore
-      update-database
+      dotnet ef database update
     displayName: 'Run EF Core Migrations'
   - script: dotnet publish "${{ variables.WORKING_DIRECTORY }}" --configuration ${{ variables.CONFIGURATION }} --no-build --output "${{ variables.AZURE_WEBAPP_PACKAGE_PATH }}"
     displayName: 'Publish'
