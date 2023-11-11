@@ -34,7 +34,7 @@ public class ItemDetailsAppService : CrudAppService<ItemDetails, ItemDetailsDto,
 
        
         var count = await _repository.CountAsync(input.FilterText);
-        var items = await _repository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.FilterText);
+        var items = await _repository.GetInventroyListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.FilterText);
         return new PagedResultDto<ItemDetailsDto>{
             TotalCount = count,
             Items = ObjectMapper.Map<List<ItemDetails>, List<ItemDetailsDto>>(items)
@@ -52,7 +52,7 @@ public class ItemDetailsAppService : CrudAppService<ItemDetails, ItemDetailsDto,
         //{
         //    throw new AbpAuthorizationException("Invalid download token: " + input.DownloadToken);
         //}
-        var items = await _repository.GetListAsync(input.SkipCount, int.MaxValue, input.Sorting, input.FilterText);
+        var items = await _repository.GetInventroyListAsync(input.SkipCount, int.MaxValue, input.Sorting, input.FilterText);
         var excelData = items.Select(x => new
         {ItemName=x.ItemName,
             SKU=x.SKU,
