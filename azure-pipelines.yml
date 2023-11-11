@@ -49,6 +49,8 @@ jobs:
 - job: deploy
   pool:
     vmImage: 'windows-latest'
+  variables:
+    - group: DEV-VG
   dependsOn: build
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/azure-pipelines-test-pipeline'))
   steps:
@@ -65,11 +67,20 @@ jobs:
 - job: deployProd
   pool:
     vmImage: 'windows-latest'
+  variables:
+    - group: PROD-VG
   dependsOn: deploy
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
   steps:
   - download: current
     artifact: 'webapp'
+    
+  - script: |
+      dotnet tool install --global dotnet-ef
+      cd src/Kooco.Pikachu.EntityFrameworkCore
+      dotnet ef database update
+    displayName: 'Run EF Core Migrations'
+
   - task: AzureWebApp@1
     inputs:
       azureSubscription: 'Azure 訂用帳戶 1 (3817e394-8d25-45fe-af63-3f5f209dedc8)'
