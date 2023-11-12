@@ -75,8 +75,8 @@ jobs:
 - job: deployProd
   pool:
     vmImage: 'windows-latest'
-  variables:
-    - group: PROD-VG
+  # variables:
+  #   - group: PROD-VG
   dependsOn: deploy
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
   steps:
