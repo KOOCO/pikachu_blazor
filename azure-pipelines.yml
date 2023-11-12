@@ -63,16 +63,17 @@ jobs:
       folderPath: '$(Pipeline.Workspace)/webapp'
       fileType: 'json'
       targetFiles: 'appsettings.json'
-  - task: PowerShell@2
-    inputs:
-      targetType: 'inline'
-      script: |
-        Get-ChildItem '${{ variables.AZURE_WEBAPP_PACKAGE_PATH }}'
+      
+  # - task: PowerShell@2
+  #   inputs:
+  #     targetType: 'inline'
+  #     script: |
+  #       Get-ChildItem '${{ variables.AZURE_WEBAPP_PACKAGE_PATH }}'
 
-        write-host 'webapp details'
-        Get-ChildItem '${{ variables.AZURE_WEBAPP_PACKAGE_PATH }}/webapp'
-        write-host 'pipeline location'
-        Get-ChildItem '$(Pipeline.Workspace)/webapp'
+  #       write-host 'webapp details'
+  #       Get-ChildItem '${{ variables.AZURE_WEBAPP_PACKAGE_PATH }}/webapp'
+  #       write-host 'pipeline location'
+  #       Get-ChildItem '$(Pipeline.Workspace)/webapp'
   - task: AzureWebApp@1
     inputs:
       azureSubscription: 'Azure 訂用帳戶 1 (3817e394-8d25-45fe-af63-3f5f209dedc8)'
