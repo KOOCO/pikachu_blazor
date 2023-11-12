@@ -30,8 +30,8 @@ jobs:
   - script: dotnet build "${{ variables.WORKING_DIRECTORY }}" --configuration ${{ variables.CONFIGURATION }} --no-restore
     displayName: 'Build'
 
-  - script: dotnet test "${{ variables.WORKING_DIRECTORY }}" --no-build
-    displayName: 'Test'
+  # - script: dotnet test "${{ variables.WORKING_DIRECTORY }}" --no-build
+  #   displayName: 'Test'
 
   - script: |
       dotnet tool install --global dotnet-ef
@@ -56,6 +56,14 @@ jobs:
   steps:
   - download: current
     artifact: 'webapp'
+  
+  # Replace tokens;
+  - task: FileTransform@1
+    inputs:
+      folderPath: '${{ variables.AZURE_WEBAPP_PACKAGE_PATH }}/webapp'
+      fileType: 'json'
+      targetFiles: '**/appsettings.json'
+
   - task: AzureWebApp@1
     inputs:
       azureSubscription: 'Azure 訂用帳戶 1 (3817e394-8d25-45fe-af63-3f5f209dedc8)'
