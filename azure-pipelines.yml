@@ -71,6 +71,8 @@ jobs:
 
         write-host 'webapp details'
         Get-ChildItem '${{ variables.AZURE_WEBAPP_PACKAGE_PATH }}/webapp'
+        write-host 'pipeline location'
+        Get-ChildItem '$(Pipeline.Workspace)/webapp'
   - task: AzureWebApp@1
     inputs:
       azureSubscription: 'Azure 訂用帳戶 1 (3817e394-8d25-45fe-af63-3f5f209dedc8)'
