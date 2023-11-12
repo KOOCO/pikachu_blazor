@@ -60,7 +60,7 @@ jobs:
   # Replace tokens;
   - task: FileTransform@1
     inputs:
-      folderPath: '${{ variables.AZURE_WEBAPP_PACKAGE_PATH }}/webapp'
+      folderPath: '$(Pipeline.Workspace)/webapp'
       fileType: 'json'
       targetFiles: 'appsettings.json'
   - task: PowerShell@2
@@ -68,7 +68,7 @@ jobs:
       targetType: 'inline'
       script: |
         Get-ChildItem '${{ variables.AZURE_WEBAPP_PACKAGE_PATH }}'
-        
+
         write-host 'webapp details'
         Get-ChildItem '${{ variables.AZURE_WEBAPP_PACKAGE_PATH }}/webapp'
   - task: AzureWebApp@1
