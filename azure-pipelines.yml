@@ -81,7 +81,7 @@ jobs:
   variables:
     - group: PROD-VG
   dependsOn: build
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/release'))
   steps:
   - download: current
     artifact: 'webapp'
