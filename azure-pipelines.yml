@@ -78,7 +78,7 @@ jobs:
     vmImage: 'windows-latest'
   variables:
     - group: PROD-VG
-  dependsOn: deploy
+  dependsOn: build
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
   steps:
   - download: current
