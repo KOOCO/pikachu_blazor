@@ -30,8 +30,8 @@ jobs:
   - script: dotnet build "${{ variables.WORKING_DIRECTORY }}" --configuration ${{ variables.CONFIGURATION }} --no-restore
     displayName: 'Build'
 
-  # - script: dotnet test "${{ variables.WORKING_DIRECTORY }}" --no-build
-  #   displayName: 'Test'
+  - script: dotnet test "${{ variables.WORKING_DIRECTORY }}" --no-build
+    displayName: 'Test'
 
   - script: |
       dotnet tool install --global dotnet-ef
