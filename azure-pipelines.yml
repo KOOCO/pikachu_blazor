@@ -1,7 +1,7 @@
 name: Build and Deploy .NET Core Application to Azure Web App - pikachu-dev and pikachu-production
 
 trigger:
-- dev
+- main
 
 variables:
   - name: AZURE_WEBAPP_NAME
