@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Blazored.TextEditor;
 using Blazorise;
+using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.AzureStorage.Image;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Images;
@@ -8,6 +9,7 @@ using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -50,6 +52,8 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         private readonly IUiMessageService _uiMessageService;
         private readonly ImageContainerManager _imageContainerManager;
 
+        LoadingIndicator Loading { get; set; }
+
         public EditItem(
             IEnumValueAppService enumValueService,
             IItemAppService itemAppService,
@@ -69,6 +73,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             {
                 try
                 {
+                    await Loading.Show();
                     EditingId = Guid.Parse(Id);
                     ExistingItem = await _itemAppService.GetAsync(EditingId, true);
 
@@ -130,8 +135,12 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.ToString());
                     await _uiMessageService.Error(ex.Message.ToString());
+                    await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+                }
+                finally
+                {
+                    await Loading.Hide();
                 }
             }
         }
@@ -146,6 +155,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         {
             try
             {
+                await Loading.Show();
                 ValidateForm();
                 GenerateAttributesForItemDetails();
 
@@ -158,13 +168,17 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             }
             catch (BusinessException ex)
             {
-                Console.WriteLine(ex.ToString());
                 await _uiMessageService.Error(ex.Code.ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
                 await _uiMessageService.Error(ex.GetType().ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+                await Loading.Hide();
             }
         }
 
@@ -185,6 +199,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             var count = 0;
             try
             {
+                await Loading.Show();
                 foreach (var file in e.Files)
                 {
                     if (!ValidFileExtensions.Contains(Path.GetExtension(file.Name).ToLower()))
@@ -230,6 +245,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                     finally
                     {
                         stream.Close();
+                        await Loading.Hide();
                     }
                 }
                 if (count > 0)
@@ -237,10 +253,14 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                     await _uiMessageService.Error(count + ' ' + L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
                 }
             }
-            catch (Exception exc)
+            catch (Exception ex)
             {
-                Console.WriteLine(exc.Message);
                 await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+                await Loading.Hide();
             }
         }
 
@@ -251,6 +271,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 var confirmed = await _uiMessageService.Confirm(L[PikachuDomainErrorCodes.AreYouSureToDeleteImage]);
                 if (confirmed)
                 {
+                    await Loading.Show();
                     confirmed = await _imageContainerManager.DeleteAsync(blobImageName);
                     await _itemAppService.DeleteSingleImageAsync(EditingId, blobImageName);
 
@@ -259,8 +280,12 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
                 await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWentWrongWhileDeletingImage]);
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+                await Loading.Hide();
             }
         }
 

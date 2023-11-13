@@ -87,6 +87,8 @@ namespace Kooco.Pikachu.Items
         public string? Attribute2Name { get; set; }
         public string? Attribute3Name { get; set; }
 
+        public ItemStorageTemperature? ItemStorageTemperature { get; set; }
+
         public Item() { }
         public Item(
             Guid id,
@@ -126,7 +128,9 @@ namespace Kooco.Pikachu.Items
 
             string? attribute1Name,
             string? attribute2Name,
-            string? attribute3Name
+            string? attribute3Name,
+
+            ItemStorageTemperature? itemTemperature
             ) : base(id)
         {
             SetItemName(itemName);
@@ -165,6 +169,8 @@ namespace Kooco.Pikachu.Items
             Attribute1Name = attribute1Name;
             Attribute2Name = attribute2Name;
             Attribute3Name = attribute3Name;
+
+            ItemStorageTemperature = itemTemperature;
 
             ItemDetails = new Collection<ItemDetails>();
             Images = new Collection<Image>();

@@ -7,16 +7,26 @@
 @using Microsoft.Extensions.Localization;
 @using Volo.Abp.AspNetCore.Components.Web;
 @using Blazorise.Components;
+@using Blazorise.LoadingIndicator;
+
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<PikachuResource> L
 @inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
+@inject IJSRuntime JSRuntime;
 
+<style>
+    .row {
+        margin-top: 10px;
+    }
+</style>
+
+<LoadingIndicator @ref="Loading" FullScreen></LoadingIndicator>
 <div>
     <h3>@L["EditItem"]</h3>
 </div>
 <Card>
     <CardBody>
-        <div class=" col-12 row">
+        <div class="row">
             <div class="col-2">
                 <label>@L["ItemName"]</label>
             </div>
@@ -29,7 +39,7 @@
                 </span>
             </div>
         </div>
-        <div class="col-12 row mt-2">
+        <div class="row">
             <div class="col-2">
                 <label>@L["ItemImage"]</label>
             </div>
@@ -81,7 +91,7 @@
 
         @if (UpdateItemDto?.Images != null && UpdateItemDto.Images.Count > 0)
         {
-            <div Class="col-12 row mt-2">
+            <div Class="row">
                 <div class="col-2"></div>
                 <div class="col-10">
                     <div class="image-list-container">
@@ -99,7 +109,7 @@
             </div>
         }
 
-        <div class=" col-12 row mt-2">
+        <div class=" row">
             <div class="col-2">
                 <fieldLabel>@L["ItemDescription"]</fieldLabel>
             </div>
@@ -152,7 +162,7 @@
                 </span>
             </div>
         </div>
-        <div class="col-12 row mt-2">
+        <div class="row">
             <div class="col-2">
                 <fieldLabel>@L["ItemTags"]</fieldLabel>
             </div>
@@ -172,7 +182,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-12 row mt-2">
+        <div class="row">
             <div class="col-2">
                 <label>@L["ItemStyle"]</label>
             </div>
@@ -205,7 +215,7 @@
         </div>
         @if (Attributes == null || Attributes.Count < 3)
         {
-            <div class="col-12 row">
+            <div class="row">
                 <div class="col-2"></div>
                 <div class="col-10">
                     <Button Class="btn btn-sm btn-outline-primary w-100" @onclick="AddAttribute">@L["AddItemStyleButton"]</Button>
@@ -213,7 +223,7 @@
             </div>
         }
         <Divider></Divider>
-        <div class="col-12 row">
+        <div class="row">
             <div class="col-2">
                 <label>@L["PriceAndInventory"]</label>
             </div>
@@ -317,12 +327,12 @@
             </div>
         </div>
         <Divider></Divider>
-        <div class="col-12 row mt-2">
+        <div class="row">
             <div class="col-2">
                 <label>@L["CommodityAttributes"]</label>
             </div>
             <div class="col-10">
-                <div class="col-12 row mt-2">
+                <div class="row">
                     <div class="col-3">
                         <label>@L["TimeLimitPeriod"]</label>
                     </div>
@@ -333,7 +343,7 @@
                         <DateEdit @bind-Date="UpdateItemDto.LimitAvaliableTimeEnd" Style="width:100%" Placeholder="@L["EndDate"].ToString()" TValue="DateTime" />
                     </div>
                 </div>
-                <div class="col-12 row mt-2">
+                <div class="row">
                     <div class="col-3">
                         <label>@L["ShareProfit"]</label>
                     </div>
@@ -341,7 +351,7 @@
                         <InputNumber class="form-control" TValue="float" @bind-Value="@UpdateItemDto.ShareProfit" />
                     </div>
                 </div>
-                <div class="col-12 row mt-2">
+                <div class="row">
                     <div class="col-3">
                         <label>@L["FreeShipping"]</label>
                     </div>
@@ -349,7 +359,7 @@
                         <Switch TValue="bool" @bind-Checked="@UpdateItemDto.IsFreeShipping"></Switch>
                     </div>
                 </div>
-                <div class="col-12 row mt-2">
+                <div class="row">
                     <div class="col-3">
                         <label>@L["Returnable"]</label>
                     </div>
@@ -357,7 +367,7 @@
                         <Switch TValue="bool" @bind-Checked="UpdateItemDto.IsReturnable"></Switch>
                     </div>
                 </div>
-                <div class="col-12 row mt-2">
+                <div class="row">
                     <div class="col-3">
                         <label>@L["ShippingMethod"]</label>
                     </div>
@@ -370,7 +380,7 @@
                         @bind-SelectedValue="@UpdateItemDto.ShippingMethodId" />
                     </div>
                 </div>
-                <div class="col-12 row mt-2">
+                <div class="row">
                     <div class="col-3">
                         <label>@L["TaxType"]</label>
                     </div>
@@ -381,6 +391,20 @@
                                     TextField="@((item)=>item.Text)"
                                     ValueField="@((item)=>item.Id)"
                         @bind-SelectedValue="@UpdateItemDto.TaxTypeId" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-3">
+                        <label>@L["ItemTemperature"]</label>
+                    </div>
+                    <div class="col-3">
+                        <Select TValue="ItemStorageTemperature?" Class="form-select"
+                        @bind-SelectedValue="@UpdateItemDto.ItemStorageTemperature">
+                            @foreach (var enumValue in Enum.GetValues(typeof(ItemStorageTemperature)))
+                            {
+                                <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                            }
+                        </Select>
                     </div>
                 </div>
             </div>

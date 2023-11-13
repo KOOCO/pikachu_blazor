@@ -111,6 +111,11 @@
     "NotFound": "Not Found",
     "EditSetItem": "Edit Set Item",
     "Pikachu:EntityWithGivenIdDoesnotExist": "Entity With Given Id Does not Exist",
+    "ItemTemperature": "Item Temperature",
+    "Normal": "Normal",
+    "Freeze": "Freeze",
+    "Frozen": "Frozen",
+
 
     //GroupBuy
     "NewGroupBuy": "New Group Buy",

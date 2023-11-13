@@ -15,6 +15,8 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
 using Kooco.Pikachu.Images;
+using Blazorise.LoadingIndicator;
+using Microsoft.JSInterop;
 
 namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 {
@@ -41,7 +43,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         private readonly IEnumValueAppService _enumValueService;
         private readonly IUiMessageService _uiMessageService;
         private readonly ImageContainerManager _imageContainerManager;
-
+        LoadingIndicator Loading { get; set; }
         public CreateItem(
             IEnumValueAppService enumValueService,
             IItemAppService itemAppService,
@@ -96,6 +98,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             var count = 0;
             try
             {
+                await Loading.Show();
                 foreach (var file in e.Files)
                 {
                     if (!ValidFileExtensions.Contains(Path.GetExtension(file.Name).ToLower()))
@@ -141,6 +144,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                     finally
                     {
                         stream.Close();
+                        await Loading.Hide();
                     }
                 }
                 if (count > 0)
@@ -148,10 +152,14 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                     await _uiMessageService.Error(count + ' ' + L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
                 }
             }
-            catch (Exception exc)
+            catch (Exception ex)
             {
-                Console.WriteLine(exc.Message);
                 await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+                await Loading.Hide();
             }
         }
 
@@ -162,6 +170,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 var confirmed = await _uiMessageService.Confirm(L[PikachuDomainErrorCodes.AreYouSureToDeleteImage]);
                 if (confirmed)
                 {
+                    await Loading.Show();
                     confirmed = await _imageContainerManager.DeleteAsync(blobImageName);
                     if (confirmed)
                     {
@@ -176,8 +185,12 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
                 await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWentWrongWhileDeletingImage]);
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+                await Loading.Hide();
             }
         }
 
@@ -246,7 +259,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 Attributes.Add(new Attributes
                 {
                     Id = attribute == null ? 1 : +attribute.Id + 1,
-                    Name = "ItemStyle"+ (attribute == null ? 1 : +attribute.Id + 1),
+                    Name = "ItemStyle" + (attribute == null ? 1 : +attribute.Id + 1),
                     ItemTags = new List<string>()
                 });
             }
@@ -296,6 +309,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         {
             try
             {
+                await Loading.Show();
                 ValidateForm();
                 GenerateAttributesForItemDetails();
 
@@ -311,10 +325,16 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             catch (BusinessException ex)
             {
                 await _uiMessageService.Error(ex.Code?.ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
             }
             catch (Exception ex)
             {
                 await _uiMessageService.Error(ex.GetType().ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+                await Loading.Hide();
             }
         }
 

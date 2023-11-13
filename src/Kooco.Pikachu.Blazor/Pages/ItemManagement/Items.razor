@@ -9,10 +9,13 @@
 @using System.Text.Json;
 @using System.ComponentModel
 @using Blazorise.Components
+@using Blazorise.LoadingIndicator;
 
 @inject IStringLocalizer<PikachuResource> L
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime;
 
+<LoadingIndicator @ref="Loading" FullScreen></LoadingIndicator>
 <div class="row">
     <div class="col-6">
         <h3>@L["Items"]</h3>

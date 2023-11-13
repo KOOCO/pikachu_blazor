@@ -11,6 +11,8 @@ using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
 using Blazorise;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
+using Blazorise.LoadingIndicator;
 
 namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 {
@@ -25,7 +27,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 
         private readonly IUiMessageService _uiMessageService;
         private readonly IItemAppService _itemAppService;
-
+        LoadingIndicator Loading { get; set; }
         public Items(
             IItemAppService itemAppService, 
             IUiMessageService messageService
@@ -48,6 +50,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         {
             try
             {
+                await Loading.Show();
                 int skipCount = PageIndex * PageSize;
                 var result = await _itemAppService.GetListAsync(new PagedAndSortedResultRequestDto
                 {
@@ -61,7 +64,11 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             catch (Exception ex)
             {
                 await _uiMessageService.Error(ex.GetType().ToString());
-                Console.WriteLine(ex.ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+                await Loading.Hide();
             }
         }
 
@@ -69,6 +76,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         {
             try
             {
+                await Loading.Show();
                 var item = ItemList.Where(x => x.Id == id).First();
                 item.IsItemAvaliable = !item.IsItemAvaliable;
                 await _itemAppService.ChangeItemAvailability(id);
@@ -78,12 +86,16 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             catch (BusinessException ex)
             {
                 await _uiMessageService.Error(ex.Code.ToString());
-                Console.WriteLine(ex.ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
             }
             catch (Exception ex)
             {
                 await _uiMessageService.Error(ex.GetType().ToString());
-                Console.WriteLine(ex.ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+                await Loading.Hide();
             }
         }
         private void HandleSelectAllChange(ChangeEventArgs e)
@@ -97,16 +109,29 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         }
         private async Task DeleteSelectedAsync()
         {
-            var itemIds = ItemList.Where(x => x.IsSelected).Select(x => x.Id).ToList();
-            if(itemIds.Count > 0)
+            try
             {
-                var confirmed = await _uiMessageService.Confirm(L["AreYouSureToDeleteSelectedItem"]);
-                if (confirmed)
+                var itemIds = ItemList.Where(x => x.IsSelected).Select(x => x.Id).ToList();
+                if (itemIds.Count > 0)
                 {
-                    await _itemAppService.DeleteManyItemsAsync(itemIds);
-                    await UpdateItemList();
-                    IsAllSelected = false;
+                    var confirmed = await _uiMessageService.Confirm(L["AreYouSureToDeleteSelectedItem"]);
+                    if (confirmed)
+                    {
+                        await Loading.Show();
+                        await _itemAppService.DeleteManyItemsAsync(itemIds);
+                        await UpdateItemList();
+                        IsAllSelected = false;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+                await Loading.Hide();
             }
         }
         public void CreateNewItem()

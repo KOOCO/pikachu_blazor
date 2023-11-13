@@ -67,7 +67,8 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
             input.CustomField10Name,
             input.Attribute1Name,
             input.Attribute2Name,
-            input.Attribute3Name
+            input.Attribute3Name,
+            input.ItemStorageTemperature
             );
 
         if (input.ItemDetails != null && input.ItemDetails.Any())
@@ -165,6 +166,7 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
         item.Attribute2Name = input.Attribute2Name;
         item.Attribute3Name = input.Attribute3Name;
 
+        item.ItemStorageTemperature = input.ItemStorageTemperature;
 
         var itemDetailsIds = input.ItemDetails.Select(x => x.Id).ToList();
         _itemManager.RemoveItemDetailsAsync(item, itemDetailsIds);

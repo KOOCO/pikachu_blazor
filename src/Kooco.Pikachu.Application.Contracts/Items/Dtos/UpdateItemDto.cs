@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Images;
 
 namespace Kooco.Pikachu.Items.Dtos
@@ -45,5 +46,7 @@ namespace Kooco.Pikachu.Items.Dtos
         public string? Attribute1Name { get; set; }
         public string? Attribute2Name { get; set; }
         public string? Attribute3Name { get; set; }
+
+        public ItemStorageTemperature? ItemStorageTemperature { get; set; }
     }
 }
