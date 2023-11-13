@@ -1,6 +1,9 @@
 
 name: Build and Deploy .NET Core Application to Azure Web App - pikachu-dev
 
+trigger:
+- dev
+
 variables:
   - name: AZURE_WEBAPP_NAME
     value: pikachu-dev
