@@ -83,6 +83,12 @@ jobs:
   steps:
   - download: current
     artifact: 'webapp'
+  
+  - task: FileTransform@1
+    inputs:
+      folderPath: '$(Pipeline.Workspace)/webapp'
+      fileType: 'json'
+      targetFiles: 'appsettings.json'
     
   - script: |
       dotnet tool install --global dotnet-ef
