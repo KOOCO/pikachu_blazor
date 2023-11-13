@@ -1,4 +1,4 @@
-name: Build and Deploy .NET Core Application to Azure Web App - pikachu-dev and pikachu-production
+name: Build and Deploy .NET Core Application to Azure Web App - pikachu-dev and pikachu-production.
 
 trigger:
 - dev
