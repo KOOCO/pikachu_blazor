@@ -61,7 +61,7 @@ public class PikachuMenuContributor : IMenuContributor
                 url: "/GroupBuyManagement/GroupBuyReport"
                 ));
         }
-        if (await context.IsGrantedAsync(PikachuPermissions.GroupBuyReport))
+        if (await context.IsGrantedAsync(PikachuPermissions.GroupBuyPageConfig))
         {
             groupMangment.AddItem(new ApplicationMenuItem(
                 name: "GroupBuyPageConfig",
