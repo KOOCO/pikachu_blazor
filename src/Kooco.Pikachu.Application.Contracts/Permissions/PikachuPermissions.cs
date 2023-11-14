@@ -2,7 +2,12 @@ namespace Kooco.Pikachu.Permissions;
 
 public static class PikachuPermissions
 {
-    public const string GroupName = "GroupBuySetting";
+    public const string GroupBuyManagement = "GroupBuyManagement";
+    public const string ProductManagement = "ProductManagement";
+    public const string OrderManagement = "OrderManagement";
+    public const string PaymentManagement = "PaymentManagement";
+    public const string LogisticsManagement = "LogisticsManagement";
+    public const string SystemManagement = "SystemManagement";
 
     //Add your own permission names. Example:
     //public const string MyPermission1 = GroupName + ".MyPermission1";
@@ -33,7 +38,7 @@ public static class PikachuPermissions
     /// </summary>
     public class Item
     {
-        public const string Default = GroupName + ".Item";
+        public const string Default = ProductManagement + ".Item";
         public const string Update = Default + ".Update";
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
@@ -43,7 +48,7 @@ public static class PikachuPermissions
     /// </summary>
     public class SetItem
     {
-        public const string Default = GroupName + ".SetItem";
+        public const string Default = ProductManagement + ".SetItem";
         public const string Update = Default + ".Update";
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
@@ -53,7 +58,7 @@ public static class PikachuPermissions
     /// </summary>
     public class SetItemDetails
     {
-        public const string Default = GroupName + ".SetItemDetails";
+        public const string Default = ProductManagement + ".SetItemDetails";
         public const string Update = Default + ".Update";
         public const string Create = Default + ".Create";
         public const string Delete = Default + ".Delete";
@@ -61,13 +66,13 @@ public static class PikachuPermissions
 
     public class Orders
     {
-        public const string Default = GroupName + ".Orders";
-        public const string AddStoreComment = GroupName + ".AddStoreComments";
+        public const string Default = OrderManagement + ".Orders";
+        public const string AddStoreComment = OrderManagement + ".AddStoreComments";
     }
 
     public class Refund
     {
-        public const string Default = GroupName + ".Refunds";
+        public const string Default = OrderManagement + ".Refunds";
         public const string Create = Default + ".Create";
     }
 }
