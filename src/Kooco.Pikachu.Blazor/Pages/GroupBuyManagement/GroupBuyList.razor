@@ -7,16 +7,44 @@
 @using Volo.Abp
 @using System.Text.Json;
 @using System.ComponentModel;
+@using Blazorise.Components;
 @using Blazorise.LoadingIndicator;
+@using Kooco.Pikachu.Items.Dtos;
 @inject IStringLocalizer<PikachuResource> L
 @inject NavigationManager NavigationManager
 
 <LoadingIndicator @ref="loading" FullScreen FadeIn>
 <div class="row">
-    <div class="col-4">
+    <div class="col-3">
         <h3>@L["GroupBuyList"]</h3>
     </div>
-    <div class="col-8 text-lg-end">
+        <div Class="col-3 text-lg-end">
+            <div class="input-group">
+            <Autocomplete Size="Size.Small" TItem="KeyValueDto"
+                          TValue="Guid?"
+                          Data="@ItemsList"
+                          TextField="@(( item ) => item.Name)"
+                          ValueField="@(( item ) => item.Id)"
+                          @bind-SelectedText="SelectedAutoCompleteText"
+                          Placeholder="Search..."
+                          Filter="AutocompleteFilter.StartsWith"
+                          CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                                    HighlightSearch
+                           Immediate="true"
+             @ref="AutocompleteField">
+                 <NotFoundContent> @L["NotFound"] </NotFoundContent>
+             </Autocomplete>
+        
+             <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="OnSearch">
+                 <i class="fa fa-search"></i>
+             </Button>
+             </div>
+         </div>
+    <div class="col-6 text-lg-end">
+
+         
+
+
             <div class="custom-check-group me-1">
             <input type="checkbox" class="form-check-input" checked="@IsAllSelected" @onchange="HandleSelectAllChange"></input>
             <Label Class="form-label">@L["SelectAll"]</Label>
@@ -31,8 +59,10 @@
             <Button Type="@ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="DeleteSelectedAsync">
             @L["DeleteSelected"]
         </Button>
+         
     </div>
 </div>
+
 <Card>
     <CardBody>
         <DataGrid TItem="GroupBuyDto"
