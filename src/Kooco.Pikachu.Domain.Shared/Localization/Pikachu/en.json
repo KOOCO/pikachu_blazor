@@ -157,6 +157,7 @@
     "ProductDescriptionModule": "Product Description Module",
     "ProductGroupModule": "Product Group Module",
     "SelectModule": "Select Module",
+    "IndexAnchor": "Index Anchor",
     "Pikachu:GroupBuyModuleCannotBeEmpty": "Group Buy Module Can Not Be Empty",
     "Gateway": "Gateway",
     "InvalidFileType": "Invalid File Type",

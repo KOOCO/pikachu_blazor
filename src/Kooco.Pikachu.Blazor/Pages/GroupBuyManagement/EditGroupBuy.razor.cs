@@ -221,7 +221,9 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                             StateHasChanged();
                         }
 
-                        if (itemGroup.GroupBuyModuleType != GroupBuyModuleType.ProductDescriptionModule && itemGroup.ItemGroupDetails.Count < 3)
+                        if (itemGroup.GroupBuyModuleType != GroupBuyModuleType.ProductDescriptionModule
+                            && itemGroup.GroupBuyModuleType != GroupBuyModuleType.IndexAnchor
+                            && itemGroup.ItemGroupDetails.Count < 3)
                         {
                             for (int x = itemGroup.ItemGroupDetails.Count; x < 3; x++)
                             {
@@ -257,7 +259,8 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 return;
             }
 
-            if (groupBuyModuleType == GroupBuyModuleType.ProductDescriptionModule)
+            if (groupBuyModuleType == GroupBuyModuleType.ProductDescriptionModule
+                || groupBuyModuleType == GroupBuyModuleType.IndexAnchor)
             {
                 collapseItem = new()
                 {
