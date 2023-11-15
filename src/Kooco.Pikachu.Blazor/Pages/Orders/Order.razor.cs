@@ -83,11 +83,14 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
 
         async Task OnSearch(Guid? e=null)
         {
-            if (e != null)
+            if (e == Guid.Empty)
             {
-                SelectedGroupBuy = e;
-            
+                SelectedGroupBuy = null;
             }
+            else { SelectedGroupBuy = e; }
+                
+            
+          
             PageIndex = 0;
             await UpdateItemList();
         }
