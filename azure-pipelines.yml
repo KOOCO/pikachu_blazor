@@ -20,7 +20,9 @@ variables:
 jobs:
 - job: build
   pool:
-    vmImage: 'windows-latest'
+    name: KOOCO Build Agent
+  #pool:
+   # vmImage: 'windows-latest'
   steps:
   - checkout: self
   - task: UseDotNet@2
