@@ -36,7 +36,7 @@ jobs:
     displayName: 'Test'
 
   - script: |
-      dotnet tool install --global dotnet-ef
+      dotnet tool install --global dotnet-ef --version 7.0.0
       cd src/Kooco.Pikachu.EntityFrameworkCore
       dotnet ef database update
     displayName: 'Run EF Core Migrations'
@@ -93,7 +93,7 @@ jobs:
       targetFiles: 'appsettings.json'
     
   - script: |
-      dotnet tool install --global dotnet-ef
+      dotnet tool install --global dotnet-ef --version 7.0.0
       cd src/Kooco.Pikachu.EntityFrameworkCore
       dotnet ef database update
     displayName: 'Run EF Core Migrations'
