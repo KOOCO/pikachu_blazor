@@ -80,8 +80,8 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
             var id = GroupBuyListItem.Where(x => x.IsSelected == true).Select(x => x.Id).FirstOrDefault();
 
-            await _groupBuyAppService.CopyAsync(id);
-           await UpdateGroupBuyList();
+           var copy= await _groupBuyAppService.CopyAsync(id);
+            NavigationManager.NavigateTo("/GroupBuyManagement/GroupBuyList/Edit/" + copy.Id);
 
 
         }

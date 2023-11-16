@@ -96,8 +96,10 @@ namespace Kooco.Pikachu.GroupBuys
         }
         public async Task<GroupBuyDto> CopyAsync(Guid Id)
         {
+            var query = await _groupBuyRepository.GetQueryableAsync();
             var input = await _groupBuyRepository.GetWithDetailsAsync(Id);
-           var Name = input.GroupBuyName + "(" + 1 + ")";
+            var count = query.Where(x => x.GroupBuyName.Contains(input.GroupBuyName)).Count();
+           var Name = input.GroupBuyName + "(" + count + ")";
             var ShortCode = "";
             var result = await _groupBuyManager.CreateAsync(input.GroupBuyNo, input.Status, Name, input.EntryURL, input.EntryURL2, input.SubjectLine,
                                                         input.ShortName, input.LogoURL, input.BannerURL, input.StartTime, input.EndTime, input.FreeShipping, input.AllowShipToOuterTaiwan,
