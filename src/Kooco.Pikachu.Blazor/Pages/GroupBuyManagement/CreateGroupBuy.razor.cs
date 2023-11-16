@@ -335,11 +335,12 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 collapseItem = new()
                 {
                     Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                    SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
                     GroupBuyModuleType = groupBuyModuleType,
-                    Selected = new()
-                    {
+                    Selected =
+                    [
                         new ItemWithItemTypeDto()
-                    }
+                    ]
                 };
             }
             else
@@ -347,13 +348,14 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 collapseItem = new()
                 {
                     Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                    SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
                     GroupBuyModuleType = groupBuyModuleType,
-                    Selected = new()
-                    {
+                    Selected =
+                    [
                         new ItemWithItemTypeDto(),
                         new ItemWithItemTypeDto(),
                         new ItemWithItemTypeDto()
-                    }
+                    ]
                 };
             }
             CollapseItem.Add(collapseItem);
@@ -453,7 +455,6 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
                 CreateGroupBuyDto.ItemGroups = new List<GroupBuyItemGroupCreateUpdateDto>();
 
-                int i = 1;
                 foreach (var item in CollapseItem)
                 {
                     if (item.Selected.Any(s => s.Id == Guid.Empty && item.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor && s.Name.IsNullOrEmpty()))
@@ -467,7 +468,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     {
                         var itemGroup = new GroupBuyItemGroupCreateUpdateDto
                         {
-                            SortOrder = i++,
+                            SortOrder = item.SortOrder,
                             GroupBuyModuleType = item.GroupBuyModuleType
                         };
 
@@ -478,8 +479,8 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                                 itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
                                 {
                                     SortOrder = j++,
-                                    ItemId = itemDetail.ItemType == ItemType.Item && itemGroup.GroupBuyModuleType != GroupBuyModuleType.IndexAnchor ? itemDetail.Id : null,
-                                    SetItemId = itemDetail.ItemType == ItemType.SetItem && itemGroup.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor ? itemDetail.Id : null,
+                                    ItemId = itemDetail.ItemType == ItemType.Item && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
+                                    SetItemId = itemDetail.ItemType == ItemType.SetItem && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
                                     ItemType = itemDetail.ItemType,
                                     DisplayText = itemGroup.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor ? itemDetail.Name : null
                                 });
@@ -566,7 +567,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         public bool IsModified = false;
         public CollapseItem()
         {
-            Selected = new();
+            Selected = [];
         }
     }
 }

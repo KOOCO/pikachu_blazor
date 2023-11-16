@@ -10,7 +10,6 @@ public class ItemWithItemTypeDto
     public ItemType ItemType { get; set; }
     public ItemDto? Item { get; set; }
     public SetItemDto? SetItem { get; set; }
-    public bool IsEdit { get; set; } = false;
     public ItemWithItemTypeDto()
     { 
 

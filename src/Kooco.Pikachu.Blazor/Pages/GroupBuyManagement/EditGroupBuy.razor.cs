@@ -8,7 +8,6 @@ using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using System;
@@ -86,7 +85,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             _setItemAppService = setItemAppService;
 
             EditGroupBuyDto = new GroupBuyUpdateDto();
-            CarouselImages = new List<CreateImageDto>();
+            CarouselImages = [];
             GroupBuy = new();
             id ??= "";
         }
@@ -175,7 +174,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                         Index = i++,
                         SortOrder = itemGroup.SortOrder,
                         GroupBuyModuleType = itemGroup.GroupBuyModuleType,
-                        Selected = new()
+                        Selected = []
                     };
 
                     CollapseItem.Add(collapseItem);
@@ -200,7 +199,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
                     int index = CollapseItem.IndexOf(collapseItem);
                     CollapseItem[index].IsModified = true;
-                    if (itemGroup != null && itemGroup.ItemGroupDetails.Any())
+                    if (itemGroup != null)
                     {
                         while (LoadingItems)
                         {
@@ -212,7 +211,11 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                             {
                                 var itemWithItemType = new ItemWithItemTypeDto
                                 {
-                                    Name = item.DisplayText
+                                    Id = item.ItemId ?? Guid.Empty,
+                                    Name = item.DisplayText,
+                                    ItemType = item.ItemType,
+                                    Item = item.Item,
+                                    SetItem = item.SetItem
                                 };
                                 CollapseItem[index].Selected.Add(itemWithItemType);
                             }
@@ -244,7 +247,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     }
                     else
                     {
-                        CollapseItem[index].Selected = new();
+                        CollapseItem[index].Selected = [];
                     }
                 }
             }
@@ -276,13 +279,11 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 collapseItem = new()
                 {
                     Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                    SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
                     GroupBuyModuleType = groupBuyModuleType,
                     Selected =
                     [
-                        new ItemWithItemTypeDto
-                        {
-                            IsEdit = true
-                        }
+                        new ItemWithItemTypeDto()
                     ]
                 };
             }
@@ -292,6 +293,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 collapseItem = new()
                 {
                     Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                    SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
                     GroupBuyModuleType = groupBuyModuleType,
                     Selected =
                     [
@@ -660,7 +662,6 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
                 EditGroupBuyDto.ItemGroups = new List<GroupBuyItemGroupCreateUpdateDto>();
 
-                int i = 1;
                 foreach (var item in CollapseItem)
                 {
                     int j = 1;
@@ -671,7 +672,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                         var itemGroup = new GroupBuyItemGroupCreateUpdateDto
                         {
                             Id = item.Id,
-                            SortOrder = i++,
+                            SortOrder = item.SortOrder,
                             GroupBuyModuleType = item.GroupBuyModuleType
                         };
 
@@ -682,8 +683,8 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                                 itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
                                 {
                                     SortOrder = j++,
-                                    ItemId = itemDetail.ItemType == ItemType.Item && itemGroup.GroupBuyModuleType != GroupBuyModuleType.IndexAnchor ? itemDetail.Id : null,
-                                    SetItemId = itemDetail.ItemType == ItemType.SetItem && itemGroup.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor ? itemDetail.Id : null,
+                                    ItemId = itemDetail.ItemType == ItemType.Item && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
+                                    SetItemId = itemDetail.ItemType == ItemType.SetItem && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
                                     ItemType = itemDetail.ItemType,
                                     DisplayText = itemGroup.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor ? itemDetail.Name : null
                                 });
@@ -748,7 +749,10 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 }
                 else
                 {
-                    collapseItem.Selected[index] = new();
+                    if(collapseItem.GroupBuyModuleType != GroupBuyModuleType.IndexAnchor)
+                    {
+                        collapseItem.Selected[index] = new();
+                    }
                 }
             }
             catch (Exception ex)
@@ -797,8 +801,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         {
             var index = CollapseItem.IndexOf(module);
 
-            CollapseItem[index].Selected[0].IsEdit = true;
-            CollapseItem[index].Selected[0].Name = null;
+            CollapseItem[index].Selected[0].Name = string.Empty;
         }
     }
 
