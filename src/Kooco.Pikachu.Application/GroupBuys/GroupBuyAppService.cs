@@ -83,7 +83,8 @@ namespace Kooco.Pikachu.GroupBuys
                                 item.SortOrder,
                                 item.ItemId,
                                 item.SetItemId,
-                                item.ItemType
+                                item.ItemType,
+                                item.DisplayText
                                 );
                         }
                     }
@@ -128,7 +129,8 @@ namespace Kooco.Pikachu.GroupBuys
                                 item.SortOrder,
                                 item.ItemId,
                                 item.SetItemId,
-                                item.ItemType
+                                item.ItemType,
+                                item.DisplayText
                                 );
                         }
                     }
@@ -291,7 +293,8 @@ namespace Kooco.Pikachu.GroupBuys
                     item.SortOrder,
                     item.ItemId,
                     item.SetItemId,
-                    item.ItemType
+                    item.ItemType,
+                    item.DisplayText
                 );
             }
         }

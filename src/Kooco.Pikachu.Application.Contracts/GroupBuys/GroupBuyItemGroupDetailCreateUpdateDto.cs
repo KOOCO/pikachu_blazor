@@ -12,5 +12,6 @@ namespace Kooco.Pikachu.GroupBuys
         public Guid? SetItemId { get; set; }
         public ItemType ItemType { get; set; }
         public int SortOrder { get; set; }
+        public string? DisplayText { get; set; }
     }
 }

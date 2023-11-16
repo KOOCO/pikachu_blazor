@@ -556,22 +556,49 @@
                                     @foreach(var selectedItem in module.Selected)
                                     {
                                         <div class="col-@(12 / module.Selected.Count)">
-                                            <Autocomplete 
-                                                        TItem="ItemWithItemTypeDto"
-                                                        TValue="Guid?"
-                                                        Data="@ItemsList"
-                                                        TextField="@(( item ) => item.Name)"
-                                                        ValueField="@(( item ) => item.Id)"
-                                                        Placeholder="Search..."
-                                                        Filter="AutocompleteFilter.StartsWith"
-                                                        CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
-                                                        HighlightSearch
-                                                        Immediate="true"
-                                                        SelectedValue="selectedItem.Id"
-                                                        SelectedValueChanged="(id) => OnSelectedValueChanged(id, module, selectedItem)">
-                                                    <NotFoundContent> @L["NotFound"] </NotFoundContent>
-                                            </Autocomplete>
-                                            @if (selectedItem.Id != null)
+                                            @if(module.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor)
+                                            {
+                                                <Autocomplete 
+                                                            TItem="ItemWithItemTypeDto"
+                                                            TValue="Guid?"
+                                                            Data="@ItemsList"
+                                                            TextField="@(( item ) => item.Name)"
+                                                            ValueField="@(( item ) => item.Id)"
+                                                            Placeholder="Search..."
+                                                            Filter="AutocompleteFilter.StartsWith"
+                                                            CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                                                            HighlightSearch
+                                                            Immediate="true"
+                                                            SelectedValue="selectedItem.Id"
+                                                            @bind-SelectedText="@selectedItem.Name"
+                                                            SelectedValueChanged="(id) => OnSelectedValueChanged(id, module, selectedItem)"
+                                                            FreeTyping>
+                                                        <NotFoundContent> @L["NotFound"] </NotFoundContent>
+                                                </Autocomplete>
+                                                @if(selectedItem.Id == Guid.Empty)
+                                                {
+                                                    <h4 class="p-2">@selectedItem.Name</h4>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <Autocomplete 
+                                                            TItem="ItemWithItemTypeDto"
+                                                            TValue="Guid?"
+                                                            Data="@ItemsList"
+                                                            TextField="@(( item ) => item.Name)"
+                                                            ValueField="@(( item ) => item.Id)"
+                                                            Placeholder="Search..."
+                                                            Filter="AutocompleteFilter.StartsWith"
+                                                            CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                                                            HighlightSearch
+                                                            Immediate="true"
+                                                            SelectedValue="selectedItem.Id"
+                                                            SelectedValueChanged="(id) => OnSelectedValueChanged(id, module, selectedItem)">
+                                                        <NotFoundContent> @L["NotFound"] </NotFoundContent>
+                                                </Autocomplete>
+                                            }
+                                            @if (selectedItem.Id != Guid.Empty)
                                             {
                                                 string? firstImage;
                                                 if (selectedItem.ItemType == ItemType.Item)
