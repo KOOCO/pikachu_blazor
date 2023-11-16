@@ -83,7 +83,8 @@ namespace Kooco.Pikachu.GroupBuys
                                 item.SortOrder,
                                 item.ItemId,
                                 item.SetItemId,
-                                item.ItemType
+                                item.ItemType,
+                                item.DisplayText
                                 );
                         }
                     }
@@ -97,7 +98,7 @@ namespace Kooco.Pikachu.GroupBuys
         public async Task<GroupBuyDto> CopyAsync(Guid Id)
         {
             var input = await _groupBuyRepository.GetWithDetailsAsync(Id);
-           var Name = input.GroupBuyName + "(" + 1 + ")";
+            var Name = input.GroupBuyName + "(" + 1 + ")";
             var ShortCode = "";
             var result = await _groupBuyManager.CreateAsync(input.GroupBuyNo, input.Status, Name, input.EntryURL, input.EntryURL2, input.SubjectLine,
                                                         input.ShortName, input.LogoURL, input.BannerURL, input.StartTime, input.EndTime, input.FreeShipping, input.AllowShipToOuterTaiwan,
@@ -126,7 +127,8 @@ namespace Kooco.Pikachu.GroupBuys
                                 item.SortOrder,
                                 item.ItemId,
                                 item.SetItemId,
-                                item.ItemType
+                                item.ItemType,
+                                item.DisplayText
                                 );
                         }
                     }
@@ -289,7 +291,8 @@ namespace Kooco.Pikachu.GroupBuys
                     item.SortOrder,
                     item.ItemId,
                     item.SetItemId,
-                    item.ItemType
+                    item.ItemType,
+                    item.DisplayText
                 );
             }
         }

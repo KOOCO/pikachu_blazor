@@ -106,7 +106,8 @@ namespace Kooco.Pikachu.Groupbuys
             int sortOrder,
             Guid? itemId,
             Guid? setItemId,
-            ItemType itemType
+            ItemType itemType,
+            string displayText
             ) 
         {
             itemGroup.GroupBuyItemGroupDetails(
@@ -115,7 +116,8 @@ namespace Kooco.Pikachu.Groupbuys
                 sortOrder,
                 itemId,
                 setItemId,
-                itemType
+                itemType,
+                displayText
                 );
         }
         public GroupBuyItemGroup AddItemGroup(
