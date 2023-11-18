@@ -1,4 +1,6 @@
-﻿using Kooco.Pikachu.Freebies.Dtos;
+﻿using Kooco.Pikachu.DeliveryTemperatureCosts;
+using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Freebies.Dtos;
 using Kooco.Pikachu.Items.Dtos;
 using System;
 using System.Collections.Generic;
@@ -40,5 +42,6 @@ namespace Kooco.Pikachu.GroupBuys
         Task<IRemoteStreamContent> GetTenantsListAsExcelFileAsync(Guid id);
         Task<GroupBuyDto> CopyAsync(Guid Id);
         Task<List<KeyValueDto>> GetAllGroupBuyLookupAsync();
+        Task<DeliveryTemperatureCostDto> GetTemperatureCostAsync(ItemStorageTemperature itemStorageTemperature);
     }
 }

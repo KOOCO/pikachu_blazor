@@ -1,4 +1,6 @@
-﻿using Kooco.Pikachu.Freebies.Dtos;
+﻿using Kooco.Pikachu.DeliveryTemperatureCosts;
+using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Freebies.Dtos;
 using Kooco.Pikachu.GroupBuys;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -131,5 +133,10 @@ public class GroupBuyController : AbpController
     public Task<GroupBuyDto> GetWithItemGroupsAsync(Guid id)
     {
         return _groupBuyAppService.GetWithItemGroupsAsync(id);
+    }
+    [HttpGet("get-temperature-cost/{temperature}")]
+    public Task<DeliveryTemperatureCostDto> GetTemperatureCostAsync(ItemStorageTemperature temp)
+    {
+        return _groupBuyAppService.GetTemperatureCostAsync(temp);
     }
 }

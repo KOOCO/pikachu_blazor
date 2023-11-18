@@ -19,6 +19,9 @@ using System.IO;
 using Kooco.Pikachu.Orders;
 using MiniExcelLibs;
 using Kooco.Pikachu.Items.Dtos;
+using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.DeliveryTempratureCosts;
+using Kooco.Pikachu.DeliveryTemperatureCosts;
 
 namespace Kooco.Pikachu.GroupBuys
 {
@@ -32,6 +35,7 @@ namespace Kooco.Pikachu.GroupBuys
         private readonly IDataFilter _dataFilter;
         private readonly ISetItemRepository _setItemRepository;
         private readonly IOrderRepository _orderRepository;
+        private readonly IRepository<DeliveryTemperatureCost, Guid> _temperatureRepositroy;
 
         public GroupBuyAppService(
             IGroupBuyRepository groupBuyRepository,
@@ -41,7 +45,8 @@ namespace Kooco.Pikachu.GroupBuys
             IRepository<Image, Guid> imageRepository,
             IDataFilter dataFilter,
             ISetItemRepository setItemRepository,
-            IOrderRepository orderRepository
+            IOrderRepository orderRepository,
+            IRepository<DeliveryTemperatureCost, Guid> temperatureRepositroy
             )
         {
             _groupBuyManager = groupBuyManager;
@@ -52,6 +57,7 @@ namespace Kooco.Pikachu.GroupBuys
             _freebieRepository = freebieRepository;
             _setItemRepository = setItemRepository;
             _orderRepository = orderRepository;
+            _temperatureRepositroy = temperatureRepositroy;
         }
 
         public async Task<GroupBuyDto> CreateAsync(GroupBuyCreateDto input)
@@ -541,6 +547,13 @@ namespace Kooco.Pikachu.GroupBuys
             {
                 return await GetListAsExcelFileAsync(id);
             }
+        }
+        public async Task<DeliveryTemperatureCostDto> GetTemperatureCostAsync(ItemStorageTemperature itemStorageTemperature)
+        {
+            var query = await _temperatureRepositroy.GetQueryableAsync();
+            var cost = query.Where(x => x.Temperature == itemStorageTemperature).FirstOrDefault();
+            return ObjectMapper.Map<DeliveryTemperatureCost, DeliveryTemperatureCostDto>(cost);
+        
         }
     }
 }

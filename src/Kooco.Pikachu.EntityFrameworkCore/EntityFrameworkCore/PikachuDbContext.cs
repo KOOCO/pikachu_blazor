@@ -29,6 +29,7 @@ using Kooco.Pikachu.ElectronicInvoiceSettings;
 using Kooco.Pikachu.TenantEmailing;
 using Kooco.Pikachu.AutomaticEmails;
 using Kooco.Pikachu.LogisticsProviders;
+using Kooco.Pikachu.DeliveryTempratureCosts;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -91,6 +92,7 @@ public class PikachuDbContext :
     public DbSet<AutomaticEmail> AutomaticEmails { get; set; }
     public DbSet<AutomaticEmailGroupBuys> AutomaticEmailGroupBuys { get; set; }
     public DbSet<LogisticsProviderSettings> LogisticsProviderSettings { get; set; }
+    public DbSet<DeliveryTemperatureCost> DeliveryTemperatureCosts { get; set; }
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
     {
@@ -141,7 +143,11 @@ public class PikachuDbContext :
             b.ToTable(PikachuConsts.DbTablePrefix + "Images", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
         });
-
+        builder.Entity<DeliveryTemperatureCost>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "DeliveryTemperatureCosts", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+        });
         builder.Entity<SetItem>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "SetItems", PikachuConsts.DbSchema, table => table.HasComment(""));

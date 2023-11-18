@@ -4,6 +4,7 @@ using Kooco.Pikachu.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    partial class PikachuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231116071840_Add Delivery Cost Table")]
+    partial class AddDeliveryCostTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -125,7 +128,7 @@ namespace Kooco.Pikachu.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Kooco.Pikachu.DeliveryTempratureCosts.DeliveryTemperatureCost", b =>
+            modelBuilder.Entity("Kooco.Pikachu.DeliveryTempratureCosts.DeliveryTempratureCost", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -182,10 +185,7 @@ namespace Kooco.Pikachu.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AppDeliveryTemperatureCosts", null, t =>
-                        {
-                            t.HasComment("");
-                        });
+                    b.ToTable("DeliveryTempratureCosts");
                 });
 
             modelBuilder.Entity("Kooco.Pikachu.ElectronicInvoiceSettings.ElectronicInvoiceSetting", b =>
@@ -1411,12 +1411,6 @@ namespace Kooco.Pikachu.Migrations
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("DeliveryTemperature")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("DeliveryTemperatureCost")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("DiscountPercentage")
                         .HasColumnType("int");

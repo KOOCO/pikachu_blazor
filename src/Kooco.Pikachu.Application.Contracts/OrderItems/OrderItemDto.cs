@@ -22,5 +22,8 @@ namespace Kooco.Pikachu.OrderItems
         public decimal TotalAmount { get; set; }
         public string? SKU { get; set; }
         public bool IsSelected { get; set; } = false;
+        public decimal DeliveryTemperatureCost { get; set; }
+        public ItemStorageTemperature DeliveryTemperature { get; set; }
+
     }
 }

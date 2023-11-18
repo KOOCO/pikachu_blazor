@@ -124,7 +124,9 @@ namespace Kooco.Pikachu.Orders
                             item.ItemPrice,
                             item.TotalAmount,
                             item.Quantity,
-                            item.SKU
+                            item.SKU,
+                            item.DeliveryTemperature,
+                            item.DeliveryTemperatureCost
                             );
                     }
                 }
@@ -219,7 +221,9 @@ namespace Kooco.Pikachu.Orders
                                    item.ItemPrice,
                                    item.TotalAmount,
                                    item.Quantity,
-                                   item.SKU
+                                   item.SKU,
+                                   item.DeliveryTemperature,
+                                   item.DeliveryTemperatureCost
                                    );
 
                 }
@@ -302,7 +306,8 @@ namespace Kooco.Pikachu.Orders
                                    orderItem.ItemPrice,
                                    orderItem.TotalAmount,
                                    orderItem.Quantity,
-                                   orderItem.SKU
+                                   orderItem.SKU,orderItem.DeliveryTemperature,
+                                   orderItem.DeliveryTemperatureCost
 
                                    );
                     await _orderRepository.InsertAsync(order1);
