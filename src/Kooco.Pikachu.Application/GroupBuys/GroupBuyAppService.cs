@@ -545,5 +545,22 @@ namespace Kooco.Pikachu.GroupBuys
                 return await GetListAsExcelFileAsync(id);
             }
         }
+
+        public async Task UpdateSortOrderAsync(Guid id, List<GroupBuyItemGroupCreateUpdateDto> itemGroups)
+        {
+            var groupbuy = await _groupBuyRepository.GetAsync(id);
+            await _groupBuyRepository.EnsureCollectionLoadedAsync(groupbuy, g => g.ItemGroups);
+
+            foreach(var item in itemGroups)
+            {
+                var itemGroup = groupbuy.ItemGroups.FirstOrDefault(x => x.Id == item.Id);
+                if(itemGroup != null)
+                {
+                    itemGroup.SortOrder = item.SortOrder;
+                }
+            }
+
+            await _groupBuyRepository.UpdateAsync(groupbuy);
+        }
     }
 }

@@ -165,7 +165,10 @@
     "GroupBuyList": "Group Buy List",
     "uploadUpto5Images": "Upload upto 5 images",
     "ThisDeleteActionCannotBeReverted": "This Action Cannot Be Reverted. Are You Sure To Delete It?",
-
+    "EnableDragDrop": "Enable Drag Drop",
+    "SaveSortOrder": "Save Sort Order",
+    "AreYouSureToUpdateSortOrder": "Are You Sure You Want To Update Sort Order?",
+    "ChangesInSortOrderHaveNotBeenSaved": "Remember, your changes to the sort order haven't been saved yet. If you'd like to keep them, please cancel this action and save your sort order first to avoid any loss.",
 
     //SetItem
     "SetItem": "Set Item",

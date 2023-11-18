@@ -8,6 +8,7 @@ using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,13 +30,13 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         public List<CreateImageDto> CarouselImages { get; set; }
         private string TagInputValue { get; set; }
 
-        private List<string> ItemTags { get; set; } = new List<string>(); //used for store item tags 
+        private List<string> ItemTags { get; set; } = []; //used for store item tags 
         private string? SelectedAutoCompleteText { get; set; }
-        private List<ItemWithItemTypeDto> ItemsList { get; set; } = new();
-        private List<ItemWithItemTypeDto> SetItemList { get; set; } = new();
-        private List<string> PaymentMethodTags { get; set; } = new List<string>(); //used for store item tags 
+        private List<ItemWithItemTypeDto> ItemsList { get; set; } = [];
+        private List<ItemWithItemTypeDto> SetItemList { get; set; } = [];
+        private List<string> PaymentMethodTags { get; set; } = []; 
         private string PaymentTagInputValue { get; set; }
-        private List<CollapseItem> CollapseItem = new();
+        private List<CollapseItem> CollapseItem = [];
         string logoBlobName;
         string bannerBlobName;
         private BlazoredTextEditor NotifyEmailHtml { get; set; }
@@ -54,9 +55,10 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         private readonly ISetItemAppService _setItemAppService;
         private readonly IUiMessageService _uiMessageService;
         private readonly ImageContainerManager _imageContainerManager;
-        private readonly List<string> ValidFileExtensions = new() { ".jpg", ".png", ".svg", ".jpeg", ".webp" };
-        public readonly List<string> ValidPaymentMethods = new() { "ALL", "Credit", "WebATM", "ATM", "CVS", "BARCODE", "Alipay", "Tenpay", "TopUpUsed", "GooglePay" };
+        private readonly List<string> ValidFileExtensions = [".jpg", ".png", ".svg", ".jpeg", ".webp"];
+        public readonly List<string> ValidPaymentMethods = ["ALL", "Credit", "WebATM", "ATM", "CVS", "BARCODE", "Alipay", "Tenpay", "TopUpUsed", "GooglePay"];
         private string? PaymentMethodError { get; set; } = null;
+        int CurrentIndex { get; set; }
         public CreateGroupBuy(
             IGroupBuyAppService groupBuyAppService,
             IImageAppService imageAppService,
@@ -555,6 +557,32 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             NavigationManager.NavigateTo("GroupBuyManagement/GroupBuyList");
         }
 
+        void StartDrag(CollapseItem item)
+        {
+            CurrentIndex = CollapseItem.IndexOf(item);
+        }
+
+        void Drop(CollapseItem item)
+        {
+            if (item != null)
+            {
+                var index = CollapseItem.IndexOf(item);
+
+                var current = CollapseItem[CurrentIndex];
+
+                CollapseItem.RemoveAt(CurrentIndex);
+                CollapseItem.Insert(index, current);
+
+                CurrentIndex = index;
+
+                for (int i = 0; i < CollapseItem.Count; i++)
+                {
+                    CollapseItem[i].Index = i;
+                    CollapseItem[i].SortOrder = i + 1;
+                }
+                StateHasChanged();
+            }
+        }
     }
 
     public class CollapseItem
