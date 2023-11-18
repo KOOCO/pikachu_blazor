@@ -261,8 +261,16 @@ public class PikachuMenuContributor : IMenuContributor
       displayName: l["多商戶管理-商戶賬單報表"],
       url: "/TenantBillingReport",
       requiredPermissionName: PikachuPermissions.TenentBillReport)
-      );
 
+      );
+        systemManagment.AddItem(new ApplicationMenuItem(
+    name: "Delivery Temperature Cost",
+    icon: "fas fa-temperature-low",
+    displayName: l["DeliveryTemperatureCost"],
+    url: "/DeliveryTemperatureCost",
+    requiredPermissionName: PikachuPermissions.DeliveryTemperatureCost)
+
+    );
 
         if (MultiTenancyConsts.IsEnabled)
         {

@@ -33,6 +33,7 @@ public static class PikachuPermissions
     public const string CashFlowReconciliationStatement = "金流對帳表";
     public const string EmailSettings = "EmailSettings";
     public const string AutomaticEmailing = "AutomaticEmailing";
+    public const string DeliveryTemperatureCost = "DeliveryTemperatureCost";
     /// <summary>
     /// 
     /// </summary>

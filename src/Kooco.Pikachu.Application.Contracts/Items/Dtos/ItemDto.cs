@@ -28,7 +28,7 @@ public class ItemDto : FullAuditedEntityDto<Guid>
     public string? Attribute2Name { get; set; }
     public string? Attribute3Name { get; set; }
 
-    public ItemStorageTemperature? ItemStorageTemperature { get; set; }
+    public ItemStorageTemperature ItemStorageTemperature { get; set; }
 
     public virtual ICollection<ItemDetailsDto> ItemDetails { get; set; }
     public virtual ICollection<ImageDto> Images { get; set; }

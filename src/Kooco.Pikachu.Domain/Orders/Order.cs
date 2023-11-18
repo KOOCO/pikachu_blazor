@@ -132,7 +132,9 @@ namespace Kooco.Pikachu.Orders
             decimal itemPrice,
             decimal totalAmount,
             int quantity,
-            string? sku
+            string? sku,
+            ItemStorageTemperature temperature,
+            decimal temperatureCost
             )
         {
             OrderItems.Add(new OrderItem(
@@ -146,7 +148,9 @@ namespace Kooco.Pikachu.Orders
                     itemPrice,
                     totalAmount,
                     quantity,
-                    sku
+                    sku,
+                    temperature,
+                    temperatureCost
                     ));
         }
 

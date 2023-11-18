@@ -47,6 +47,7 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
         myGroup5.AddPermission(PikachuPermissions.EmailSettings, L("Permission:EmailSettings"));
         myGroup5.AddPermission(PikachuPermissions.AutomaticEmailing, L("Permission:AutomaticEmailing"));
         myGroup5.AddPermission(PikachuPermissions.PaymentGatewaySetting, L("Permission:PaymentSetting"));
+        myGroup5.AddPermission(PikachuPermissions.DeliveryTemperatureCost, L("Permission:DeliveryTemperatureCost"));
       
         
         myGroup5.AddPermission(PikachuPermissions.TenentList, L("Permission:TenentList"));

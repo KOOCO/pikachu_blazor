@@ -1,4 +1,6 @@
-﻿using Kooco.Pikachu.Freebies.Dtos;
+﻿using Kooco.Pikachu.DeliveryTemperatureCosts;
+using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Freebies.Dtos;
 using Kooco.Pikachu.Items.Dtos;
 using System;
 using System.Collections.Generic;
@@ -41,5 +43,6 @@ namespace Kooco.Pikachu.GroupBuys
         Task<GroupBuyDto> CopyAsync(Guid Id);
         Task<List<KeyValueDto>> GetAllGroupBuyLookupAsync();
         Task UpdateSortOrderAsync(Guid id, List<GroupBuyItemGroupCreateUpdateDto> itemGroups);
+        Task<DeliveryTemperatureCostDto> GetTemperatureCostAsync(ItemStorageTemperature itemStorageTemperature);
     }
 }
