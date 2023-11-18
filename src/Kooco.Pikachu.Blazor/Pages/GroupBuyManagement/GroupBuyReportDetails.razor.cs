@@ -26,8 +26,8 @@ public partial class GroupBuyReportDetails
     private string? Sorting { get; set; }
     private string? Filter { get; set; }
 
-    private readonly HashSet<Guid> ExpandedRows = new();
-    private LoadingIndicator loading { get; set; }
+    private readonly HashSet<Guid> ExpandedRows = [];
+    private LoadingIndicator Loading { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -41,17 +41,19 @@ public partial class GroupBuyReportDetails
             await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
         }
     }
+
     private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<OrderDto> e)
     {
         PageIndex = e.Page - 1;
         await UpdateItemList();
         await InvokeAsync(StateHasChanged);
     }
+
     private async Task UpdateItemList()
     {
         try
         {
-            await loading.Show();
+            await Loading.Show();
             int skipCount = PageIndex * PageSize;
             var result = await _orderAppService.GetListAsync(new GetOrderListDto
             {
@@ -72,7 +74,7 @@ public partial class GroupBuyReportDetails
         }
         finally
         {
-            await loading.Hide();
+            await Loading.Hide();
         }
     }
     
@@ -98,7 +100,7 @@ public partial class GroupBuyReportDetails
     {
         try
         {
-            await loading.Show();
+            await Loading.Show();
             var remoteStreamContent = await _groupBuyAppService.GetListAsExcelFileAsync(Guid.Parse(Id));
             using var responseStream = remoteStreamContent.GetStream();
             // Create Excel file from the stream
@@ -124,7 +126,7 @@ public partial class GroupBuyReportDetails
         }
         finally
         {
-            await loading.Hide();
+            await Loading.Hide();
         }
     }
 }

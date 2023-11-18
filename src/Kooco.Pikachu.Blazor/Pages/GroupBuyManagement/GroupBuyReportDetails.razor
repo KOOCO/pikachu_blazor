@@ -35,7 +35,7 @@
         background-color: #F5F5F5; /* Even rows background color */
     }
 </style>
-<LoadingIndicator @ref="loading" FullScreen></LoadingIndicator>
+<LoadingIndicator @ref="Loading" FullScreen></LoadingIndicator>
 <div class="container">
     @if (ReportDetails != null)
     {
@@ -172,16 +172,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    window.downloadFile = function (data) {
-        var blob = new Blob([new Uint8Array(data.byteArray)], { type: data.contentType });
-        var url = window.URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = data.fileName;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-    }
-</script>
