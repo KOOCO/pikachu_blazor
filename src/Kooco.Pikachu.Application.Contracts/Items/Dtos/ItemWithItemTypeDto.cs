@@ -10,6 +10,7 @@ public class ItemWithItemTypeDto
     public ItemType ItemType { get; set; }
     public ItemDto? Item { get; set; }
     public SetItemDto? SetItem { get; set; }
+    public bool IsFirstLoad { get; set; }
     public ItemWithItemTypeDto()
     { 
 
