@@ -35,7 +35,11 @@
             <div class="row">
                 <div class="col-1"></div>
                 <div class="col-2">
-                    <label>@L["SalesURL1"]</label>
+                    <label>@L["SalesURL1"]
+                        <a href="@EditGroupBuyDto.EntryURL" target="_blank" class="text-primary">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </label>
                 </div>
                 <div class="col-7">
                     <TextEdit @bind-Text="@EditGroupBuyDto.EntryURL" ReadOnly />
@@ -187,7 +191,6 @@
             <div class="col-10">
                 <Field>
                     <FilePicker @ref="BannerPickerCustom"
-                                       
                                 Changed="OnBannerUploadAsync"
                                 ShowMode="FilePickerShowMode.List"
                                 Accept=".jpg, .png, .svg ,.jpeg,.webp">
@@ -598,10 +601,6 @@
                                                     @if(selectedItem.Id == Guid.Empty)
                                                     {
                                                         <h4 class="p-2 d-inline-block">@selectedItem.Name</h4>
-                                                        @if (!selectedItem.Name.IsNullOrEmpty())
-                                                        {
-                                                            <i class="text-info cursor-pointer fa fa-pencil" @onclick="() => EditIndexAnchor(module)"></i>
-                                                        }
                                                     }
                                                 }
                                                 else
@@ -637,7 +636,7 @@
 
                                                         @if(firstImage != null)
                                                         {
-                                                            <div class="text-center">
+                                                            <div class="col-12 text-center">
                                                                 <img src="@firstImage" class="img-fluid" />
                                                                 @if(module.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule)
                                                                 {
@@ -645,39 +644,40 @@
                                                                         <h4 class="text-center mt-2">
                                                                             <strong>@selectedItem.Name</strong>
                                                                         </h4>
-                                                                          @if (selectedItem.Item != null)
+                                                                        @if (selectedItem.Item != null)
                                                                         {
-                                                                            @if (!selectedItem.Item.Attribute1Name.IsNullOrEmpty() && selectedItem.Item.ItemDetails != null)
+                                                                            var itemDetails = selectedItem.Item?.ItemDetails;
+                                                                            @if (itemDetails != null && itemDetails.Where(x => x.Attribute1Value != null).Count() > 0)
                                                                             {
                                                                                 <div class="mt-2">
                                                                                     <select class="form-control dropdown">
-                                                                                        @foreach (var item in selectedItem.Item?.ItemDetails.DistinctBy(i => i.Attribute1Value))
+                                                                                        @foreach (var item in itemDetails.DistinctBy(i => i.Attribute1Value))
                                                                                         {
                                                                                             <option>
                                                                                                 @item.Attribute1Value
                                                                                             </option>
                                                                                         }
-                                                                                    </select class="form-control dropdown">
+                                                                                    </select>
                                                                                 </div>
                                                                             }
-                                                                            @if (!selectedItem.Item.Attribute2Name.IsNullOrEmpty() && selectedItem.Item.ItemDetails != null)
+                                                                            @if (itemDetails != null && itemDetails.Where(x => x.Attribute2Value != null).Count() > 0)
                                                                             {
                                                                                 <div class="mt-2">
                                                                                     <select class="form-control dropdown">
-                                                                                        @foreach (var item in selectedItem.Item?.ItemDetails.DistinctBy(i => i.Attribute2Value))
+                                                                                        @foreach (var item in itemDetails.DistinctBy(i => i.Attribute2Value))
                                                                                         {
                                                                                             <option>
                                                                                                 @item.Attribute2Value
                                                                                             </option>
                                                                                         }
-                                                                                    </select class="form-control dropdown">
+                                                                                    </select>
                                                                                 </div>
                                                                             }
-                                                                            @if (!selectedItem.Item.Attribute3Name.IsNullOrEmpty() && selectedItem.Item.ItemDetails != null)
+                                                                            @if (itemDetails != null && itemDetails.Where(x => x.Attribute3Value != null).Count() > 0)
                                                                             {
                                                                                 <div class="mt-2">
                                                                                     <select class="form-control dropdown">
-                                                                                        @foreach (var item in selectedItem.Item?.ItemDetails.DistinctBy(i => i.Attribute3Value))
+                                                                                        @foreach (var item in itemDetails.DistinctBy(i => i.Attribute3Value))
                                                                                         {
                                                                                             <option>
                                                                                                 @item.Attribute3Value

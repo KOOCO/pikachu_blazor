@@ -216,7 +216,8 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                                     Name = item.DisplayText,
                                     ItemType = item.ItemType,
                                     Item = item.Item,
-                                    SetItem = item.SetItem
+                                    SetItem = item.SetItem,
+                                    IsFirstLoad = item.ItemId == null && item.SetItemId == null
                                 };
                                 CollapseItem[index].Selected.Add(itemWithItemType);
                             }
@@ -762,6 +763,14 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     {
                         collapseItem.Selected[index] = new();
                     }
+                    else if(!collapseItem.Selected[index].IsFirstLoad)
+                    {
+                        collapseItem.Selected[index] = new();
+                    }
+                    else
+                    {
+                        collapseItem.Selected[index].IsFirstLoad = false;
+                    }
                 }
             }
             catch (Exception ex)
@@ -804,13 +813,6 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 await Loading.Hide();
                 StateHasChanged();
             }
-        }
-
-        void EditIndexAnchor(CollapseItem module)
-        {
-            var index = CollapseItem.IndexOf(module);
-
-            CollapseItem[index].Selected[0].Name = string.Empty;
         }
 
         void StartDrag(CollapseItem item)
