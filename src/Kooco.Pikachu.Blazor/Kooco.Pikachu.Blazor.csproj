@@ -72,6 +72,7 @@
     <Content Remove="Logs\**" />
     <EmbeddedResource Remove="Logs\**" />
     <None Remove="Logs\**" />
+    <Content Remove="wwwroot\order.js" />
       <Content Include="encryption-certificate.pfx">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -79,6 +80,12 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Remove="Pages\ItemManagement\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\order.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

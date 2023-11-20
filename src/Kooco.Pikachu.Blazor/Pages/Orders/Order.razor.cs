@@ -26,6 +26,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         private List<OrderDto> Orders { get; set; } = new();
         private int TotalCount { get; set; }
         private OrderDto SelectedOrder { get; set; }
+        private Guid? GroupBuyFilter { get; set; }
         private int PageIndex { get; set; } = 1;
         private int PageSize { get; set; } = 10;
         private Guid? SelectedGroupBuy { get; set; }
@@ -64,7 +65,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                     MaxResultCount = PageSize,
                     SkipCount = skipCount,
                     Filter = Filter,
-                    GroupBuyId=SelectedGroupBuy,
+                    GroupBuyId=GroupBuyFilter,
                     StartDate=StartDate,
                     EndDate=EndDate
                 });
@@ -85,9 +86,9 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         {
             if (e == Guid.Empty)
             {
-                SelectedGroupBuy = null;
+                GroupBuyFilter = null;
             }
-            else { SelectedGroupBuy = e; }
+            else { GroupBuyFilter = e; }
                 
             
           
