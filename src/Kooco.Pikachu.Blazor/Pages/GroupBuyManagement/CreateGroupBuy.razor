@@ -20,6 +20,18 @@
     .row {
         margin-top: 10px;
     }
+
+    .drag-drop-span{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        max-height: 55px !important;
+    }
+
+    .drag-drop-span i{
+        cursor: pointer;
+    }
 </style>
 <h3>@L["NewGroupBuy"]</h3>
 <Card>
@@ -531,10 +543,8 @@
         <div ondragover="event.preventDefault();">
             @foreach (var module in CollapseItem)
             {
-                <div class="row" draggable="true"                 
-                    @ondrop="@(()=> Drop(module))" 
-                    @ondrag="@(()=> StartDrag(module))">
-                    <div class="col-12">
+                <div class="d-flex">
+                    <div class="p-2 flex-grow-1">
                         <Accordion>
                             <Collapse>
                                 <CollapseHeader>
@@ -615,7 +625,7 @@
                                                     <div class="d-flex mt-3">
                                                         @if(firstImage != null)
                                                         {
-                                                            <div class="col-12 text-center">
+                                                            <div class="w-100 text-center">
                                                                 <img src="@firstImage" class="img-fluid" />
                                                                 @if(module.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule)
                                                                 {
@@ -693,6 +703,15 @@
                                 </CollapseBody>
                             </Collapse>
                         </Accordion>
+                    </div>
+                    <div class="py-2"
+                            draggable="true"                 
+                            @ondrop="@(()=> Drop(module))" 
+                            @ondrag="@(()=> StartDrag(module))"
+                            >
+                        <span class="drag-drop-span">
+                            <i class="fa-solid fa-bars fa-2xl"></i>
+                        </span>
                     </div>
                 </div>
             }

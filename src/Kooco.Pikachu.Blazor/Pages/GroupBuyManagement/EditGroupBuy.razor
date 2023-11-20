@@ -22,6 +22,17 @@
     .row {
         margin-top: 10px;
     }
+    .drag-drop-span{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        max-height: 55px !important;
+    }
+
+    .drag-drop-span i{
+        cursor: pointer;
+    }
 </style>
   <h3>@L["EditGroupBuy"]</h3>
 <LoadingIndicator @ref="Loading" FullScreen FadeIn></LoadingIndicator>
@@ -523,28 +534,12 @@
                     </Dropdown>
                 }
             </div>
-            <div class="col-7 text-end">
-                @if(IsDragDropEnabled)
-                {
-                    <Button Type="ButtonType.Button" Class="btn btn-danger" Clicked="UpdateSortOrderAsync">
-                        @L["SaveSortOrder"]
-                    </Button>
-                }
-                else
-                {
-                    <Button Type="ButtonType.Button" Class="btn btn-success" Clicked="EnableDragDrop">
-                        @L["EnableDragDrop"]
-                    </Button>
-                }
-            </div>
         </div>
         <div ondragover="event.preventDefault();">
             @foreach (var module in CollapseItem)
             {
-                <div class="row" @attributes="DraggableAttributes"                
-                    @ondrop="@(()=> Drop(module))" 
-                    @ondrag="@(()=> StartDrag(module))">
-                    <div class="col-12">
+                <div class="d-flex">
+                    <div class="p-2 flex-grow-1">
                         <Accordion>
                             <Collapse VisibleChanged="(e) => OnCollapseVisibleChanged(module, e)">
                                 <CollapseHeader>
@@ -636,7 +631,7 @@
 
                                                         @if(firstImage != null)
                                                         {
-                                                            <div class="col-12 text-center">
+                                                            <div class="w-100 text-center">
                                                                 <img src="@firstImage" class="img-fluid" />
                                                                 @if(module.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule)
                                                                 {
@@ -714,6 +709,15 @@
                                 </CollapseBody>
                             </Collapse>
                         </Accordion>
+                    </div>
+                    <div class="py-2"
+                            draggable="true"
+                            @ondrop="@(()=> Drop(module))" 
+                            @ondrag="@(()=> StartDrag(module))"
+                            >
+                        <span class="drag-drop-span">
+                            <i class="fa-solid fa-bars fa-2xl"></i>
+                        </span>
                     </div>
                 </div>
             }

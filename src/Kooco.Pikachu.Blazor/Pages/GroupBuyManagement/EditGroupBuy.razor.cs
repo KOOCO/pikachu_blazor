@@ -64,9 +64,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         private List<ImageDto> ExistingImages { get; set; } = [];
         private LoadingIndicator Loading { get; set; } = new();
         private bool LoadingItems { get; set; } = true;
-        private bool IsDragDropEnabled { get; set; } = false;
         private int CurrentIndex { get; set; }
-        private Dictionary<string, object> DraggableAttributes { get; set; } = [];
         public EditGroupBuy(
             IGroupBuyAppService groupBuyAppService,
             IImageAppService imageAppService,
@@ -632,14 +630,6 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         {
             try
             {
-                if (IsDragDropEnabled)
-                {
-                    var confirm = await _uiMessageService.Confirm(L["ChangesInSortOrderHaveNotBeenSaved"]);
-                    if (!confirm)
-                    {
-                        return;
-                    }
-                }
                 if (EditGroupBuyDto.GroupBuyName.IsNullOrWhiteSpace())
                 {
                     await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyNameCannotBeNull]);
@@ -759,11 +749,11 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 }
                 else
                 {
-                    if(collapseItem.GroupBuyModuleType != GroupBuyModuleType.IndexAnchor)
+                    if (collapseItem.GroupBuyModuleType != GroupBuyModuleType.IndexAnchor)
                     {
                         collapseItem.Selected[index] = new();
                     }
-                    else if(!collapseItem.Selected[index].IsFirstLoad)
+                    else if (!collapseItem.Selected[index].IsFirstLoad)
                     {
                         collapseItem.Selected[index] = new();
                     }
@@ -820,7 +810,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             CurrentIndex = CollapseItem.IndexOf(item);
         }
 
-        void Drop(CollapseItem item)
+        async void Drop(CollapseItem item)
         {
             if (item != null)
             {
@@ -838,51 +828,35 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     CollapseItem[i].Index = i;
                     CollapseItem[i].SortOrder = i + 1;
                 }
+                await UpdateSortOrderAsync();
                 StateHasChanged();
             }
         }
 
-        void EnableDragDrop()
-        {
-            IsDragDropEnabled = true;
-            DraggableAttributes.Clear();
-            if (IsDragDropEnabled)
-            {
-                DraggableAttributes.Add("draggable", "true");
-            }
-            StateHasChanged();
-        }
-
         async Task UpdateSortOrderAsync()
         {
-            var confirm = await _uiMessageService.Confirm(L["AreYouSureToUpdateSortOrder"]);
-            if (confirm)
+            await Loading.Show();
+            try
             {
-                await Loading.Show();
-                try
+                var itemGroups = new List<GroupBuyItemGroupCreateUpdateDto>();
+                CollapseItem.ForEach(item =>
                 {
-                    var itemGroups = new List<GroupBuyItemGroupCreateUpdateDto>();
-                    CollapseItem.ForEach(item =>
+                    itemGroups.Add(new GroupBuyItemGroupCreateUpdateDto
                     {
-                        itemGroups.Add(new GroupBuyItemGroupCreateUpdateDto
-                        {
-                            Id = item.Id,
-                            SortOrder = item.SortOrder
-                        });
+                        Id = item.Id,
+                        SortOrder = item.SortOrder
                     });
-                    await _groupBuyAppService.UpdateSortOrderAsync(Id, itemGroups);
-                    IsDragDropEnabled = false;
-                    DraggableAttributes.Clear();
-                }
-                catch (Exception ex)
-                {
-                    await _uiMessageService.Error(ex.GetType().ToString());
-                    await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
-                }
-                finally
-                {
-                    await Loading.Hide();
-                }
+                });
+                await _groupBuyAppService.UpdateSortOrderAsync(Id, itemGroups);
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+                await Loading.Hide();
             }
         }
     }
