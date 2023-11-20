@@ -17,6 +17,7 @@ variables:
   - name: AZURE_WEBAPP_NAME_PRODUCTION
     value: 'pikachu-production'
 
+
 jobs:
 - job: build
   pool:
