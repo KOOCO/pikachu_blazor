@@ -13,6 +13,7 @@ namespace Kooco.Pikachu.AutomaticEmails
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public DateTime SendTime { get; set; }
+        public DateTime SendTimeUTC { get; set; }
         public RecurrenceType RecurrenceType { get; set; }
 
         public List<string> RecipientsList { get; set; }

@@ -26,16 +26,23 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantEmailing
         public EditAutomaticEmails()
         {
             Model = new();
-            GroupBuys = new();
+            GroupBuys = [];
         }
 
         protected override async Task OnInitializedAsync()
         {
-            var data = await _automaticEmailAppService.GetAsync(Guid.Parse(Id));
-            Model = ObjectMapper.Map<AutomaticEmailDto, AutomaticEmailCreateUpdateDto>(data);
-            GroupBuys = await _groupBuyAppService.GetGroupBuyLookupAsync();
-            Model.GroupBuyIds = data.GroupBuys.Select(x => x.GroupBuyId).ToList();
-            await base.OnInitializedAsync();
+            try
+            {
+                var data = await _automaticEmailAppService.GetAsync(Guid.Parse(Id));
+                Model = ObjectMapper.Map<AutomaticEmailDto, AutomaticEmailCreateUpdateDto>(data);
+                GroupBuys = await _groupBuyAppService.GetGroupBuyLookupAsync();
+                Model.GroupBuyIds = data.GroupBuys.Select(x => x.GroupBuyId).ToList();
+                await base.OnInitializedAsync();
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
+            }
         }
 
         void HandleRecipientInputKeyUp(KeyboardEventArgs e)
@@ -86,6 +93,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantEmailing
                 }
 
                 await Loading.Show();
+                Model.SendTimeUTC = Model.SendTime?.ToUniversalTime();
                 await _automaticEmailAppService.UpdateAsync(Guid.Parse(Id), Model);
                 NavigationManager.NavigateTo("/AutomaticEmailing");
             }

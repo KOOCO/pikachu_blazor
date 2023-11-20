@@ -83,6 +83,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantEmailing
                 }
 
                 await Loading.Show();
+                Model.SendTimeUTC = Model.SendTime?.ToUniversalTime();
                 await _automaticEmailAppService.CreateAsync(Model);
                 NavigationManager.NavigateTo("/AutomaticEmailing");
             }

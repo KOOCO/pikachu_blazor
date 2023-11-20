@@ -63,8 +63,8 @@ namespace Kooco.Pikachu.AutomaticEmails
                     }
 
                     TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById("China Standard Time"); // UTC+8
-                    DateTimeOffset creationTimeInTimeZone = TimeZoneInfo.ConvertTime(args.SendTime, tz);
-                    string formattedTime = creationTimeInTimeZone.ToString("hh:mm tt");
+                    DateTimeOffset sendTimeInChinaTime = TimeZoneInfo.ConvertTime(args.SendTime, tz);
+                    string formattedTime = sendTimeInChinaTime.ToString("hh:mm tt");
 
                     var mailMessage = new MailMessage
                     {

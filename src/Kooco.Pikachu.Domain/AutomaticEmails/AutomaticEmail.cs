@@ -16,6 +16,7 @@ namespace Kooco.Pikachu.AutomaticEmails
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public DateTime SendTime { get; set; }
+        public DateTime SendTimeUTC { get; set; }
         public RecurrenceType RecurrenceType { get; set; }
         public JobStatus LastJobStatus { get; set; }
         public List<AutomaticEmailGroupBuys> GroupBuys { get; set; }
@@ -38,6 +39,7 @@ namespace Kooco.Pikachu.AutomaticEmails
             DateTime startDate,
             DateTime endDate,
             DateTime sendTime,
+            DateTime sendTimeUTC,
             RecurrenceType recurrenceType
             ) : base(id)
         {
@@ -46,8 +48,9 @@ namespace Kooco.Pikachu.AutomaticEmails
             StartDate = startDate;
             EndDate = endDate;
             SendTime = sendTime;
+            SendTimeUTC = sendTimeUTC;
             RecurrenceType = recurrenceType;
-            GroupBuys = new List<AutomaticEmailGroupBuys>();
+            GroupBuys = [];
         }
 
         public void AddGroupBuy(Guid id, Guid groupBuyId)

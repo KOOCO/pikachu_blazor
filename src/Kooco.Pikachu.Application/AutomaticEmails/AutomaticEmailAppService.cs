@@ -34,6 +34,7 @@ namespace Kooco.Pikachu.AutomaticEmails
                 input.StartDate.Value,
                 input.EndDate.Value,
                 input.SendTime.Value,
+                input.SendTimeUTC.Value,
                 input.RecurrenceType
                 );
 
@@ -49,8 +50,7 @@ namespace Kooco.Pikachu.AutomaticEmails
             
             var dto = ObjectMapper.Map<AutomaticEmail, AutomaticEmailDto>(automaticEmail);
 
-            DateTime utcTime = dto.SendTime.ToUniversalTime();
-
+            DateTime utcTime = dto.SendTimeUTC;
             var cronExpression = $"{utcTime.Minute} {utcTime.Hour} * * {(input.RecurrenceType == RecurrenceType.Weekly ? 0 : "*")}";
 
             RecurringJob.AddOrUpdate<AutomaticEmailsJob>(
@@ -103,6 +103,7 @@ namespace Kooco.Pikachu.AutomaticEmails
             automaticEmail.StartDate = input.StartDate.Value;
             automaticEmail.EndDate = input.EndDate.Value;
             automaticEmail.SendTime = input.SendTime.Value;
+            automaticEmail.SendTimeUTC = input.SendTimeUTC.Value;
             automaticEmail.RecurrenceType = input.RecurrenceType;
 
             var itemsToRemove = automaticEmail.GroupBuys
@@ -129,7 +130,7 @@ namespace Kooco.Pikachu.AutomaticEmails
 
             var dto = ObjectMapper.Map<AutomaticEmail, AutomaticEmailDto>(automaticEmail);
 
-            DateTime utcTime = dto.SendTime.ToUniversalTime();
+            DateTime utcTime = input.SendTimeUTC.Value;
 
             var cronExpression = $"{utcTime.Minute} {utcTime.Hour} * * {(input.RecurrenceType == RecurrenceType.Weekly ? 0 : "*")}";
 
