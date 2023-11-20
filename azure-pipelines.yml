@@ -28,7 +28,10 @@ jobs:
   - checkout: self
   - task: UseDotNet@2
     inputs:
+      packageType: 'sdk'
+      includePreviewVersions: true
       version: ${{ variables.DOTNET_CORE_VERSION }}
+      
   - script: dotnet restore "${{ variables.WORKING_DIRECTORY }}"
     displayName: 'Restore'
 
