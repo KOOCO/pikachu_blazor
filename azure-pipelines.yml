@@ -1,4 +1,4 @@
-name: Build and Deploy to Dev Environment
+name: Build Pikachu
 
 trigger:
 - main
