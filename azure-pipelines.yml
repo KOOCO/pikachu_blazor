@@ -35,7 +35,7 @@ jobs:
   - script: dotnet restore "${{ variables.WORKING_DIRECTORY }}"
     displayName: 'Restore'
 
-  - script: dotnet build -p:Version=17.8.x "${{ variables.WORKING_DIRECTORY }}" --configuration ${{ variables.CONFIGURATION }} --no-restore 
+  - script: dotnet build "${{ variables.WORKING_DIRECTORY }}" --configuration ${{ variables.CONFIGURATION }} --no-restore 
     displayName: 'Build'
   #- task: MSBuild@1
    # inputs:
