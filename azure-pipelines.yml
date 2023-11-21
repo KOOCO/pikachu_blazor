@@ -11,7 +11,7 @@ variables:
   - name: CONFIGURATION
     value: Release
   - name: DOTNET_CORE_VERSION
-    value: '7.0.x'
+    value: '7.x'
   - name: WORKING_DIRECTORY
     value: 'src\Kooco.Pikachu.Blazor'
   - name: AZURE_WEBAPP_NAME_PRODUCTION
@@ -29,7 +29,7 @@ jobs:
   - task: UseDotNet@2
     inputs:
       packageType: 'sdk'
-      includePreviewVersions: true
+      includePreviewVersions: false
       version: ${{ variables.DOTNET_CORE_VERSION }}
       
   - script: dotnet restore "${{ variables.WORKING_DIRECTORY }}"
