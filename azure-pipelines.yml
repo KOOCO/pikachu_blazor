@@ -35,13 +35,13 @@ jobs:
   - script: dotnet restore "${{ variables.WORKING_DIRECTORY }}"
     displayName: 'Restore'
 
-  #- script: dotnet build "${{ variables.WORKING_DIRECTORY }}" --configuration ${{ variables.CONFIGURATION }} --no-restore
-    #displayName: 'Build'
-  - task: MSBuild@1
-    inputs:
-      solution: "${{ variables.WORKING_DIRECTORY }}"
-      msbuildArchitecture: 'x64'
-      msbuildVersion: 'latest' 
+  - script: dotnet build "${{ variables.WORKING_DIRECTORY }}" --configuration ${{ variables.CONFIGURATION }} --no-restore -p:Version=17.8.x
+    displayName: 'Build'
+  #- task: MSBuild@1
+   # inputs:
+    #  solution: "${{ variables.WORKING_DIRECTORY }}"
+     # msbuildArchitecture: 'x64'
+      #msbuildVersion: 'latest' 
 
 
   - script: dotnet test "${{ variables.WORKING_DIRECTORY }}" --no-build
