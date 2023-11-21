@@ -27,6 +27,7 @@ using Kooco.Pikachu.TenantEmailing;
 using System.Net.Mail;
 using Volo.Abp.SettingManagement;
 using static Kooco.Pikachu.Permissions.PikachuPermissions;
+using Kooco.Pikachu.OrderDeliveries;
 
 namespace Kooco.Pikachu.Orders
 {
@@ -36,6 +37,7 @@ namespace Kooco.Pikachu.Orders
         private readonly IOrderRepository _orderRepository;
         private readonly OrderManager _orderManager;
         private readonly IDataFilter _dataFilter;
+        private readonly IRepository<OrderDelivery,Guid> _orderDeliveryRepository;
         private readonly IGroupBuyRepository _groupBuyRepository;
         private readonly IEmailSender _emailSender;
         private readonly IRepository<PaymentGateway, Guid> _paymentGatewayRepository;
@@ -55,7 +57,8 @@ namespace Kooco.Pikachu.Orders
             IRepository<TenantEmailSettings, Guid> tenantEmailSettingsRepository,
             ISettingManager settingManager,
             IStringLocalizer<PikachuResource> l,
-            IRepository<OrderItem, Guid> orderItemRepository
+            IRepository<OrderItem, Guid> orderItemRepository,
+            IRepository<OrderDelivery, Guid> orderDeliveryRepository
             )
         {
             _orderRepository = orderRepository;
@@ -69,6 +72,7 @@ namespace Kooco.Pikachu.Orders
             _settingManager = settingManager;
             _l = l;
             _orderItemRepository = orderItemRepository;
+            _orderDeliveryRepository = orderDeliveryRepository;
         }
 
         [AllowAnonymous]
@@ -617,6 +621,8 @@ namespace Kooco.Pikachu.Orders
             {
                 var order = await _orderRepository.GetAsync(id);
                 order.CheckMacValue = checkMacValue;
+             
+               
                 await _orderRepository.UpdateAsync(order);
             }
         }
@@ -647,7 +653,24 @@ namespace Kooco.Pikachu.Orders
                     order.ShippingStatus = ShippingStatus.PrepareShipment;
                     _ = DateTime.TryParse(paymentResult.PaymentDate, out DateTime parsedDate);
                     order.PaymentDate = parsedDate;
-
+                    if (order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Normal).Any())
+                    {
+                        var OrderDelivery = new OrderDelivery(Guid.NewGuid(),order.DeliveryMethod.Value, DeliveryStatus.Proccesing, null, null, order.Id);
+                        OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                        order.UpdateOrderItem(order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Normal).ToList(), OrderDelivery.Id);
+                    }
+                    if (order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze).Any())
+                    {
+                        var OrderDelivery = new OrderDelivery(Guid.NewGuid(),order.DeliveryMethod.Value, DeliveryStatus.Proccesing, null, null, order.Id);
+                        OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                        order.UpdateOrderItem(order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze).ToList(), OrderDelivery.Id);
+                    }
+                    if (order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen).Any())
+                    {
+                        var OrderDelivery = new OrderDelivery(Guid.NewGuid(),order.DeliveryMethod.Value, DeliveryStatus.Proccesing, null, null, order.Id);
+                        OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                        order.UpdateOrderItem(order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen).ToList(), OrderDelivery.Id);
+                    }
                     await _orderRepository.UpdateAsync(order);
 
                     await SendEmailAsync(order.Id);

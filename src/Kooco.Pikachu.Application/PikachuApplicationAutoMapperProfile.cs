@@ -18,6 +18,8 @@ using Kooco.Pikachu.AutomaticEmails;
 using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.DeliveryTemperatureCosts;
 using Kooco.Pikachu.DeliveryTempratureCosts;
+using Kooco.Pikachu.OrderDeliveries;
+using System.Collections.Generic;
 
 namespace Kooco.Pikachu;
 
@@ -105,5 +107,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
 
         CreateMap<DeliveryTemperatureCost, DeliveryTemperatureCostDto>();
         CreateMap<DeliveryTemperatureCostDto, UpdateDeliveryTemperatureCostDto>();
+
+        CreateMap<OrderDelivery, OrderDeliveryDto > ();
     }
 }

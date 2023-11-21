@@ -1,6 +1,8 @@
 ﻿using Blazorise;
+using Blazorise.DataGrid;
 using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
 using Microsoft.AspNetCore.Components;
@@ -29,6 +31,9 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         private Modal CreateShipmentModal { get; set; }
         private LoadingIndicator loading { get; set; } = new();
         private bool IsItemsEditMode { get; set; } = false;
+        private List<OrderDeliveryDto> OrderDeliveries { get; set; }
+        private readonly HashSet<Guid> ExpandedRows = new();
+        private OrderDeliveryDto SelectedOrder { get; set; }
         public OrderDetails()
         {
             Order = new();
@@ -53,10 +58,23 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 }
             }
         }
+        void ToggleRow(DataGridRowMouseEventArgs<OrderDeliveryDto> e)
+        {
+            if (ExpandedRows.Contains(e.Item.Id))
+            {
+                ExpandedRows.Remove(e.Item.Id);
+            }
+            else
+            {
+                ExpandedRows.Add(e.Item.Id);
+            }
 
+
+        }
         async Task GetOrderDetailsAsync()
         {
             Order = await _orderAppService.GetWithDetailsAsync(OrderId);
+            OrderDeliveries = await _orderDeliveryAppService.GetListByOrderAsync(OrderId);
             await InvokeAsync(StateHasChanged);
         }
 
