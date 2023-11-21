@@ -3,6 +3,7 @@ name: Build Pikachu
 trigger:
 - main
 
+
 variables:
   - name: AZURE_WEBAPP_NAME
     value: pikachu-dev
