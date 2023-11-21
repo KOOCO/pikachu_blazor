@@ -153,7 +153,20 @@ namespace Kooco.Pikachu.Orders
                     temperatureCost
                     ));
         }
+        public void UpdateOrderItem(
+          List<OrderItem> items,Guid DeliveryOrderId
 
+         
+          )
+        {
+           foreach ( OrderItem item in items )
+            {
+
+                item.DeliveryOrderId = DeliveryOrderId;
+
+
+            }
+        }
         internal void AddStoreComment(
             [NotNull] string comment
             )

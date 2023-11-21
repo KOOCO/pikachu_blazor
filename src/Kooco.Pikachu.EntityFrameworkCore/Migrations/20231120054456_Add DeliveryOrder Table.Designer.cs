@@ -4,6 +4,7 @@ using Kooco.Pikachu.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    partial class PikachuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231120054456_Add DeliveryOrder Table")]
+    partial class AddDeliveryOrderTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -82,9 +85,6 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("SendTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("SendTimeUTC")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("StartDate")
@@ -1419,6 +1419,7 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int?>("CarrierId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -1470,9 +1471,6 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("LastModifierId");
 
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("TenantId");
@@ -1480,8 +1478,6 @@ namespace Kooco.Pikachu.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CarrierId");
-
-                    b.HasIndex("OrderId");
 
                     b.ToTable("AppOrderDeliveries", null, t =>
                         {
@@ -3771,11 +3767,7 @@ namespace Kooco.Pikachu.Migrations
                 {
                     b.HasOne("Kooco.Pikachu.EnumValues.EnumValue", "Carrier")
                         .WithMany()
-                        .HasForeignKey("CarrierId");
-
-                    b.HasOne("Kooco.Pikachu.Orders.Order", null)
-                        .WithMany()
-                        .HasForeignKey("OrderId")
+                        .HasForeignKey("CarrierId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

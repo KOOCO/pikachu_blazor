@@ -30,6 +30,7 @@ using Kooco.Pikachu.TenantEmailing;
 using Kooco.Pikachu.AutomaticEmails;
 using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.DeliveryTempratureCosts;
+using Kooco.Pikachu.OrderDeliveries;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -93,6 +94,7 @@ public class PikachuDbContext :
     public DbSet<AutomaticEmailGroupBuys> AutomaticEmailGroupBuys { get; set; }
     public DbSet<LogisticsProviderSettings> LogisticsProviderSettings { get; set; }
     public DbSet<DeliveryTemperatureCost> DeliveryTemperatureCosts { get; set; }
+    public DbSet<OrderDelivery> OrderDeliveries { get; set; }
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
     {
@@ -210,12 +212,22 @@ public class PikachuDbContext :
             b.HasMany(o => o.StoreComments).WithOne();
             b.Property(o => o.TotalAmount).HasColumnType("money");
         });
+        builder.Entity<OrderDelivery>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "OrderDeliveries", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+           
+            b.HasMany(o => o.Items).WithOne().HasForeignKey(d => d.DeliveryOrderId);
+            b.HasOne(x => x.Carrier).WithMany().HasForeignKey(d => d.CarrierId).IsRequired(false);
+            b.HasOne<Order>().WithMany().HasForeignKey(d => d.OrderId);
 
+        });
         builder.Entity<OrderItem>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "OrderItems", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
             b.HasOne(x => x.Item).WithMany().IsRequired(false).HasForeignKey(x => x.ItemId);
+
             b.HasOne(x => x.SetItem).WithMany().IsRequired(false).HasForeignKey(x => x.SetItemId);
             b.HasOne(x => x.Freebie).WithMany().IsRequired(false).HasForeignKey(x => x.FreebieId);
             b.Property(x => x.ItemPrice).HasColumnType("money");
