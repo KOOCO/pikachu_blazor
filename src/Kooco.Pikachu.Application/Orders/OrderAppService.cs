@@ -353,7 +353,11 @@ namespace Kooco.Pikachu.Orders
 
             if (hideCredentials)
             {
-                dtos.HideCredentials();
+                var groupbuy = await _groupBuyRepository.GetAsync(input.GroupBuyId.Value);
+                if (groupbuy.ProtectPrivacyData)
+                {
+                    dtos.HideCredentials();
+                }
             }
 
             return new PagedResultDto<OrderDto>

@@ -527,7 +527,11 @@ namespace Kooco.Pikachu.GroupBuys
                             && (!startDate.HasValue || startDate.Value <= x.CreationTime)
                             && (!endDate.HasValue || endDate.Value > x.CreationTime));
             var data = ObjectMapper.Map<List<Order>, List<OrderDto>>(items);
-            data = data.HideCredentials();
+            
+            if (groupBuy.ProtectPrivacyData)
+            {
+                data = data.HideCredentials();
+            }
 
             var excelData = data.Select(x => new
             {
