@@ -342,6 +342,7 @@
     "Daily": "Daily",
     "Weekly": "Weekly",
     "RecurrenceType": "Recurrence Type",
+    "WeeklyEmailsAreSentOutOnSundaySpecifiedTime": "Weekly Emails Are Sent Out On Sunday Specified Time",
 
 
     //LogisticsManagement

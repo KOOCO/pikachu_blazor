@@ -122,6 +122,12 @@
                     <div class="col-2">
                         @L["RecurrenceType"]
                         <span class="text-danger"> *</span>
+                        @if(Model.RecurrenceType == RecurrenceType.Weekly)
+                        {
+                            <Tooltip Text="@L["WeeklyEmailsAreSentOutOnSundaySpecifiedTime"]" Class="d-inline-block">
+                                <Icon class="fa-question-circle "></Icon>
+                            </Tooltip>
+                        }
                     </div>
                     <div class="col-7">
                         <Select TValue="RecurrenceType" Class="form-select"
