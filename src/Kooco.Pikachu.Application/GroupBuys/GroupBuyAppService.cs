@@ -520,11 +520,16 @@ namespace Kooco.Pikachu.GroupBuys
             }
         }
 
-        public async Task<IRemoteStreamContent> GetListAsExcelFileAsync(Guid id)
+        public async Task<IRemoteStreamContent> GetListAsExcelFileAsync(Guid id, DateTime? startDate = null, DateTime? endDate = null)
         {
             var groupBuy = await _groupBuyRepository.FirstOrDefaultAsync(x => x.Id == id);
-            var items = await _orderRepository.GetListAsync(x => x.GroupBuyId == id);
-            var excelData = items.Select(x => new
+            var items = await _orderRepository.GetListAsync(x => x.GroupBuyId == id
+                            && (!startDate.HasValue || startDate.Value <= x.CreationTime)
+                            && (!endDate.HasValue || endDate.Value > x.CreationTime));
+            var data = ObjectMapper.Map<List<Order>, List<OrderDto>>(items);
+            data = data.HideCredentials();
+
+            var excelData = data.Select(x => new
             {
                 x.OrderNo,
                 OrderDate = x.CreationTime.ToString("MM/d/yyyy h:mm:ss tt"),
@@ -544,11 +549,19 @@ namespace Kooco.Pikachu.GroupBuys
             return new RemoteStreamContent(memoryStream, $"{fileName}.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         }
 
-        public async Task<IRemoteStreamContent> GetAttachmentAsync(Guid id, Guid? tenantId)
+        public async Task<IRemoteStreamContent> GetAttachmentAsync(Guid id, Guid? tenantId, DateTime sendTime, RecurrenceType recurrenceType)
         {
             using (CurrentTenant.Change(tenantId))
             {
-                return await GetListAsExcelFileAsync(id);
+                var date = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, sendTime.Hour, sendTime.Minute, sendTime.Second);
+                DateTime endDate = date.AddMinutes(-1);
+                var startDate = recurrenceType switch
+                {
+                    RecurrenceType.Daily => date.AddDays(-1),
+                    RecurrenceType.Weekly => date.AddDays(-7),
+                    _ => throw new ArgumentException("Invalid RecurrenceType"),
+                };
+                return await GetListAsExcelFileAsync(id, startDate, endDate);
             }
         }
 

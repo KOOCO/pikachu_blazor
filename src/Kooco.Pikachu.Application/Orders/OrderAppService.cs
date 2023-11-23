@@ -338,7 +338,7 @@ namespace Kooco.Pikachu.Orders
             return ObjectMapper.Map<Order, OrderDto>(order);
         }
 
-        public async Task<PagedResultDto<OrderDto>> GetListAsync(GetOrderListDto input)
+        public async Task<PagedResultDto<OrderDto>> GetListAsync(GetOrderListDto input, bool hideCredentials = false)
         {
             if (input.Sorting.IsNullOrEmpty())
             {
@@ -349,10 +349,17 @@ namespace Kooco.Pikachu.Orders
 
             var items = await _orderRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.GroupBuyId, input.OrderIds, input.StartDate, input.EndDate);
 
+            var dtos = ObjectMapper.Map<List<Order>, List<OrderDto>>(items);
+
+            if (hideCredentials)
+            {
+                dtos.HideCredentials();
+            }
+
             return new PagedResultDto<OrderDto>
             {
                 TotalCount = totalCount,
-                Items = ObjectMapper.Map<List<Order>, List<OrderDto>>(items)
+                Items = dtos
             };
         }
         public async Task<PagedResultDto<OrderDto>> GetTenantOrderListAsync(GetOrderListDto input)

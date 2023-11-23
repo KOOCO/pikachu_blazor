@@ -34,8 +34,8 @@ namespace Kooco.Pikachu.GroupBuys
         Task<GroupBuyItemGroupDto> GetGroupBuyItemGroupAsync(Guid id);
         Task DeleteGroupBuyItemAsync(Guid id, Guid GroupBuyID);
         Task<GroupBuyReportDetailsDto> GetGroupBuyReportDetailsAsync(Guid id);
-        Task<IRemoteStreamContent> GetListAsExcelFileAsync(Guid id);
-        Task<IRemoteStreamContent> GetAttachmentAsync(Guid id, Guid? tenantId);
+        Task<IRemoteStreamContent> GetListAsExcelFileAsync(Guid id, DateTime? startDate = null, DateTime? endDate = null);
+        Task<IRemoteStreamContent> GetAttachmentAsync(Guid id, Guid? tenantId, DateTime sendTime, RecurrenceType recurrenceType);
         Task<List<KeyValueDto>> GetGroupBuyLookupAsync();
         Task<PagedResultDto<GroupBuyReportDto>> GetGroupBuyTenantReportListAsync(GetGroupBuyReportListDto input);
         Task<GroupBuyReportDetailsDto> GetGroupBuyTenantReportDetailsAsync(Guid id);

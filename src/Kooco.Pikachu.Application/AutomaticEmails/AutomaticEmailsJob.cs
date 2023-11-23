@@ -48,7 +48,7 @@ namespace Kooco.Pikachu.AutomaticEmails
 
                     foreach (var groupBuy in args.GroupBuys)
                     {
-                        var data = await _groupBuyAppService.GetAttachmentAsync(groupBuy.GroupBuyId, args.TenantId);
+                        var data = await _groupBuyAppService.GetAttachmentAsync(groupBuy.GroupBuyId, args.TenantId, args.SendTime, args.RecurrenceType);
                         MemoryStream memoryStream = new();
                         await data.GetStream().CopyToAsync(memoryStream);
                         memoryStream.Seek(0, SeekOrigin.Begin);

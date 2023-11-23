@@ -90,7 +90,7 @@
                 <CardBody>
                     <DataGrid TItem="OrderDto"
                               Data="@Orders"
-                    @bind-SelectedRow="@SelectedOrder"
+                            @bind-SelectedRow="@SelectedOrder"
                               ReadData="OnDataGridReadAsync"
                               TotalItems="TotalCount"
                               DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.Id == SelectedOrder?.Id)"

@@ -14,7 +14,7 @@ namespace Kooco.Pikachu.Orders
     public interface IOrderAppService: IApplicationService
     {
         Task<OrderDto> GetAsync(Guid id);
-        Task<PagedResultDto<OrderDto>> GetListAsync(GetOrderListDto input);
+        Task<PagedResultDto<OrderDto>> GetListAsync(GetOrderListDto input, bool hideCredentials = false);
         Task<OrderDto> CreateAsync(CreateOrderDto input);
         Task<OrderDto> UpdateAsync(Guid id,CreateOrderDto input);
         Task<OrderDto> UpdateShippingDetails(Guid id, CreateOrderDto input);

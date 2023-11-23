@@ -62,8 +62,8 @@ public partial class GroupBuyReportDetails
                 SkipCount = skipCount,
                 Filter = Filter,
                 GroupBuyId = Guid.Parse(Id)
-            });
-            Orders = result?.Items.ToList() ?? new List<OrderDto>();
+            }, true);
+            Orders = result?.Items.ToList() ?? [];
             TotalCount = (int?)result?.TotalCount ?? 0;
             StateHasChanged();
         }
