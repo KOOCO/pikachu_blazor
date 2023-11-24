@@ -10,6 +10,7 @@ using Volo.Abp.Domain.Repositories;
 
 namespace Kooco.Pikachu.Items;
 
+[RemoteService(IsEnabled = false)]
 public class SetItemAppService : CrudAppService<SetItem, SetItemDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateSetItemDto>, ISetItemAppService
 {
     private readonly ISetItemRepository _setItemRepository;

@@ -2,11 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 
 namespace Kooco.Pikachu.LogisticsProviders
 {
+    [RemoteService(IsEnabled = false)]
     public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvidersAppService
     {
         private readonly IRepository<LogisticsProviderSettings, Guid> _logisticsProviderRepository;

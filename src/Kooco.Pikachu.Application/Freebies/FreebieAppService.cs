@@ -1,9 +1,6 @@
 ﻿using Kooco.Pikachu.AzureStorage.Image;
 using Kooco.Pikachu.Freebies.Dtos;
 using Kooco.Pikachu.FreeBies.Dtos;
-using Kooco.Pikachu.Groupbuys;
-using Kooco.Pikachu.GroupBuys;
-using Kooco.Pikachu.Items.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +12,7 @@ using Volo.Abp.Domain.Repositories;
 
 namespace Kooco.Pikachu.Freebies
 {
+    [RemoteService(IsEnabled = false)]
     public class FreebieAppService : CrudAppService<Freebie, FreebieDto, Guid, PagedAndSortedResultRequestDto, FreebieCreateDto, UpdateFreebieDto>, IFreebieAppService
     {
 

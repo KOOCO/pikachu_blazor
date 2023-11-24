@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 
 namespace Kooco.Pikachu.TenantEmailing
 {
+    [RemoteService(IsEnabled = false)]
     public class TenantEmailSettingsAppService : ApplicationService, ITenantEmailSettingsAppService
     {
         private readonly IRepository<TenantEmailSettings, Guid> _emailSettingsRepository;

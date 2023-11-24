@@ -3,13 +3,11 @@ using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.Items.Dtos;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp;
 
 namespace Kooco.Pikachu.Items;
 
-
-/// <summary>
-/// 
-/// </summary>
+[RemoteService(IsEnabled = false)]
 public class SetItemDetailsAppService : CrudAppService<SetItemDetails, SetItemDetailsDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateSetItemDetailsDto, CreateUpdateSetItemDetailsDto>,
     ISetItemDetailsAppService
 {

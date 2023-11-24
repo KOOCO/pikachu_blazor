@@ -25,6 +25,7 @@ using Kooco.Pikachu.DeliveryTemperatureCosts;
 
 namespace Kooco.Pikachu.GroupBuys
 {
+    [RemoteService(IsEnabled = false)]
     public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     {
         private readonly IGroupBuyRepository _groupBuyRepository;

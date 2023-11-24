@@ -2,6 +2,7 @@
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies.Dtos;
 using Kooco.Pikachu.GroupBuys;
+using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.AspNetCore.Mvc;
+using Volo.Abp.Content;
 
 namespace Kooco.Pikachu.Controllers.GroupBuys;
 
@@ -16,16 +18,10 @@ namespace Kooco.Pikachu.Controllers.GroupBuys;
 [ControllerName("GroupBuy")]
 [Area("app")]
 [Route("api/app/group-buy")]
-public class GroupBuyController : AbpController
+public class GroupBuyController(
+    IGroupBuyAppService _groupBuyAppService
+        ) : AbpController, IGroupBuyAppService
 {
-    private readonly IGroupBuyAppService _groupBuyAppService;
-    public GroupBuyController(
-        IGroupBuyAppService groupBuyAppService
-        )
-    {
-        _groupBuyAppService = groupBuyAppService;
-    }
-
     [HttpPost]
     public Task<GroupBuyDto> CreateAsync(GroupBuyCreateDto input)
     {
@@ -101,7 +97,7 @@ public class GroupBuyController : AbpController
     [HttpGet("check-shortcode-foredit")]
     public Task<bool> CheckShortCodeForEdit(string shortCode, Guid Id)
     {
-       return _groupBuyAppService.CheckShortCodeForEdit(shortCode, Id);
+        return _groupBuyAppService.CheckShortCodeForEdit(shortCode, Id);
     }
 
     [HttpGet("get-by-shortcode/{ShortCode}")]
@@ -118,7 +114,7 @@ public class GroupBuyController : AbpController
 
 
     [HttpGet("get-groupbuy-for-tenant")]
-    public  Task<GroupBuyDto> GetGroupBuyofTenant(string ShortCode, Guid TenantId)
+    public Task<GroupBuyDto> GetGroupBuyofTenant(string ShortCode, Guid TenantId)
     {
         return _groupBuyAppService.GetGroupBuyofTenant(ShortCode, TenantId);
     }
@@ -138,5 +134,77 @@ public class GroupBuyController : AbpController
     public Task<DeliveryTemperatureCostDto> GetTemperatureCostAsync(ItemStorageTemperature temp)
     {
         return _groupBuyAppService.GetTemperatureCostAsync(temp);
+    }
+
+    [HttpGet("get-groupbuy-item-group")]
+    public Task<GroupBuyItemGroupDto> GetGroupBuyItemGroupAsync(Guid id)
+    {
+        return _groupBuyAppService.GetGroupBuyItemGroupAsync(id);
+    }
+
+    [HttpDelete("delete-group-buy-item/{id}/{GroupBuyID}")]
+    public Task DeleteGroupBuyItemAsync(Guid id, Guid GroupBuyID)
+    {
+        return _groupBuyAppService.DeleteGroupBuyItemAsync(id, GroupBuyID);
+    }
+
+    [HttpGet("get-groupbuy-report-details/{id}")]
+    public Task<GroupBuyReportDetailsDto> GetGroupBuyReportDetailsAsync(Guid id)
+    {
+        return _groupBuyAppService.GetGroupBuyReportDetailsAsync(id);
+    }
+
+    [HttpGet("get-as-excel/{id}")]
+    public Task<IRemoteStreamContent> GetListAsExcelFileAsync(Guid id, DateTime? startDate = null, DateTime? endDate = null)
+    {
+        return _groupBuyAppService.GetListAsExcelFileAsync(id, startDate, endDate);
+    }
+
+    [HttpGet("get-attachment/{id}/{tenantId}/{sendTime}/{recurrenceType}")]
+    public Task<IRemoteStreamContent> GetAttachmentAsync(Guid id, Guid? tenantId, DateTime sendTime, RecurrenceType recurrenceType)
+    {
+        return _groupBuyAppService.GetAttachmentAsync(id, tenantId, sendTime, recurrenceType);
+    }
+
+    [HttpGet("get-groupbuy-lookup")]
+    public Task<List<KeyValueDto>> GetGroupBuyLookupAsync()
+    {
+        return _groupBuyAppService.GetGroupBuyLookupAsync();
+    }
+
+    [HttpGet("get-groupbuy-tenant-report")]
+    public Task<PagedResultDto<GroupBuyReportDto>> GetGroupBuyTenantReportListAsync(GetGroupBuyReportListDto input)
+    {
+        return _groupBuyAppService.GetGroupBuyTenantReportListAsync(input);
+    }
+
+    [HttpGet("get-groupbuy-tenant-report-details/{id}")]
+    public Task<GroupBuyReportDetailsDto> GetGroupBuyTenantReportDetailsAsync(Guid id)
+    {
+        return _groupBuyAppService.GetGroupBuyTenantReportDetailsAsync(id);
+    }
+
+    [HttpGet("get-tenants-list-as-excel/{id}")]
+    public Task<IRemoteStreamContent> GetTenantsListAsExcelFileAsync(Guid id)
+    {
+        return _groupBuyAppService.GetTenantsListAsExcelFileAsync(id);
+    }
+
+    [HttpPost("copy-groupbuy/{id}")]
+    public Task<GroupBuyDto> CopyAsync(Guid Id)
+    {
+        return _groupBuyAppService.CopyAsync(Id);
+    }
+
+    [HttpGet("get-all-groupbuy-lookup")]
+    public Task<List<KeyValueDto>> GetAllGroupBuyLookupAsync()
+    {
+        return _groupBuyAppService.GetAllGroupBuyLookupAsync();
+    }
+
+    [HttpPut("update-sort-order/{id}")]
+    public Task UpdateSortOrderAsync(Guid id, List<GroupBuyItemGroupCreateUpdateDto> itemGroups)
+    {
+        return _groupBuyAppService.UpdateSortOrderAsync(id, itemGroups);
     }
 }

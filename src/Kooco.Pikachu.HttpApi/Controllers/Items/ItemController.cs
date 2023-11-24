@@ -3,101 +3,91 @@ using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.AspNetCore.Mvc;
 
-namespace Kooco.Pikachu.Controllers.Items
+namespace Kooco.Pikachu.Controllers.Items;
+
+[RemoteService(IsEnabled = true)]
+[ControllerName("Item")]
+[Area("app")]
+[Route("api/app/item")]
+public class ItemController(
+    IItemAppService _itemAppService
+        ) : AbpController, IItemAppService
 {
-    [RemoteService(IsEnabled = true)]
-    [ControllerName("Item")]
-    [Area("app")]
-    [Route("api/app/item")]
-    public class ItemController : AbpController, IItemAppService
+    [HttpPost("change-availability")]
+    public Task ChangeItemAvailability(Guid itemId)
     {
-        private readonly IItemAppService _itemAppService;
+        return _itemAppService.ChangeItemAvailability(itemId);
+    }
 
-        public ItemController(
-            IItemAppService itemAppService
-            )
-        {
-            _itemAppService = itemAppService;
-        }
+    [HttpPost]
+    public Task<ItemDto> CreateAsync(CreateItemDto input)
+    {
+        return _itemAppService.CreateAsync(input);
+    }
 
-        [HttpPost("change-availability")]
-        public Task ChangeItemAvailability(Guid itemId)
-        {
-            return _itemAppService.ChangeItemAvailability(itemId);
-        }
+    [HttpDelete("{id}")]
+    public Task DeleteAsync(Guid id)
+    {
+        return _itemAppService.DeleteAsync(id);
+    }
 
-        [HttpPost]
-        public Task<ItemDto> CreateAsync(CreateItemDto input)
-        {
-            return _itemAppService.CreateAsync(input);
-        }
+    [HttpDelete("delete-many")]
+    public Task DeleteManyItemsAsync(List<Guid> itemIds)
+    {
+        return _itemAppService.DeleteManyItemsAsync(itemIds);
+    }
 
-        [HttpDelete("{id}")]
-        public Task DeleteAsync(Guid id)
-        {
-            return _itemAppService.DeleteAsync(id);
-        }
+    [HttpDelete("delete-single-image")]
+    public Task DeleteSingleImageAsync(Guid itemId, string blobImageName)
+    {
+        return _itemAppService.DeleteSingleImageAsync(itemId, blobImageName);
+    }
 
-        [HttpDelete("delete-many")]
-        public Task DeleteManyItemsAsync(List<Guid> itemIds)
-        {
-            return _itemAppService.DeleteManyItemsAsync(itemIds);
-        }
+    [HttpGet("{id}")]
+    public Task<ItemDto> GetAsync(Guid id, bool includeDetails = false)
+    {
+        return _itemAppService.GetAsync(id, includeDetails);
+    }
 
-        [HttpDelete("delete-single-image")]
-        public Task DeleteSingleImageAsync(Guid itemId, string blobImageName)
-        {
-            return _itemAppService.DeleteSingleImageAsync(itemId, blobImageName);
-        }
+    [HttpGet("get-single")]
+    public Task<ItemDto> GetAsync(Guid id)
+    {
+        return ((IReadOnlyAppService<ItemDto, ItemDto, Guid, PagedAndSortedResultRequestDto>)_itemAppService).GetAsync(id);
+    }
 
-        [HttpGet("{id}")]
-        public Task<ItemDto> GetAsync(Guid id, bool includeDetails = false)
-        {
-            return _itemAppService.GetAsync(id, includeDetails);
-        }
+    [HttpGet("get-first-image-url/{id}")]
+    public Task<string?> GetFirstImageUrlAsync(Guid id)
+    {
+        return _itemAppService.GetFirstImageUrlAsync(id);
+    }
 
-        [HttpGet("get-single")]
-        public Task<ItemDto> GetAsync(Guid id)
-        {
-            return ((IReadOnlyAppService<ItemDto, ItemDto, Guid, PagedAndSortedResultRequestDto>)_itemAppService).GetAsync(id);
-        }
+    [HttpGet]
+    public Task<PagedResultDto<ItemDto>> GetListAsync(PagedAndSortedResultRequestDto input)
+    {
+        return _itemAppService.GetListAsync(input);
+    }
 
-        [HttpGet("get-first-image-url/{id}")]
-        public Task<string?> GetFirstImageUrlAsync(Guid id)
-        {
-            return _itemAppService.GetFirstImageUrlAsync(id);
-        }
+    [HttpGet("get-list-for-store")]
+    public Task<List<ItemDto>> GetListForStoreAsync()
+    {
+        return _itemAppService.GetListForStoreAsync();
+    }
 
-        [HttpGet]
-        public Task<PagedResultDto<ItemDto>> GetListAsync(PagedAndSortedResultRequestDto input)
-        {
-            return _itemAppService.GetListAsync(input);
-        }
+    [HttpPut("{id}")]
+    public Task<ItemDto> UpdateAsync(Guid id, UpdateItemDto input)
+    {
+        return _itemAppService.UpdateAsync(id, input);
+    }
 
-        [HttpGet("get-list-for-store")]
-        public Task<List<ItemDto>> GetListForStoreAsync()
-        {
-            return _itemAppService.GetListForStoreAsync();
-        }
-
-        [HttpPut("{id}")]
-        public Task<ItemDto> UpdateAsync(Guid id, UpdateItemDto input)
-        {
-            return _itemAppService.UpdateAsync(id, input);
-        }
-
-        [HttpGet("get-items-lookup")]
-        public Task<List<ItemWithItemTypeDto>> GetItemsLookupAsync()
-        {
-            return _itemAppService.GetItemsLookupAsync();
-        }
+    [HttpGet("get-items-lookup")]
+    public Task<List<ItemWithItemTypeDto>> GetItemsLookupAsync()
+    {
+        return _itemAppService.GetItemsLookupAsync();
     }
 }

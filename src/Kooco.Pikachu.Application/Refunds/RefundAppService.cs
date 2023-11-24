@@ -8,11 +8,10 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
-using Volo.Abp.Domain.Repositories;
-using static Kooco.Pikachu.Permissions.PikachuPermissions;
 
 namespace Kooco.Pikachu.Refunds
 {
+    [RemoteService(IsEnabled = false)]
     [Authorize(PikachuPermissions.Refund.Default)]
     public class RefundAppService : ApplicationService, IRefundAppService
     {
@@ -60,13 +59,13 @@ namespace Kooco.Pikachu.Refunds
                 Items = ObjectMapper.Map<List<Refund>, List<RefundDto>>(items)
             };
         }
+
         public async Task<RefundDto> UpdateRefundReviewAsync(Guid id, RefundReviewStatus input)
         {
             var refund = await _refundRepository.GetAsync(id);
             refund.RefundReview = input;
             await _refundRepository.UpdateAsync(refund);
             return ObjectMapper.Map<Refund, RefundDto>(refund);
-
         }
     }
 }

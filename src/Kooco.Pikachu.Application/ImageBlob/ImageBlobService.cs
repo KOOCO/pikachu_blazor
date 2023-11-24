@@ -19,7 +19,7 @@ namespace Kooco.Pikachu.ImageBlob
             _configuration = configuration;
             _currentUser = currentUser;
             _pathPrefix = (_currentUser.TenantId != null && _currentUser.TenantId != Guid.Empty) ? _currentUser.TenantId + "/" : "";
-           _accessKey = _configuration.GetValue<string>("ConnectionStrings:AzureStorage");
+            _accessKey = _configuration.GetValue<string>("ConnectionStrings:AzureStorage");
         }
 
         public async Task<string> UploadFileToBlob(string strFileName, byte[] fileData, string fileMimeType, string dirName)

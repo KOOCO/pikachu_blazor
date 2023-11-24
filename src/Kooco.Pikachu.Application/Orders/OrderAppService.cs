@@ -26,12 +26,13 @@ using Volo.Abp.Security.Encryption;
 using Kooco.Pikachu.TenantEmailing;
 using System.Net.Mail;
 using Volo.Abp.SettingManagement;
-using static Kooco.Pikachu.Permissions.PikachuPermissions;
 using Kooco.Pikachu.OrderDeliveries;
+using Volo.Abp;
 
 namespace Kooco.Pikachu.Orders
 {
-    //[Authorize(PikachuPermissions.Orders.Default)]
+    [Authorize(PikachuPermissions.Orders.Default)]
+    [RemoteService(IsEnabled = false)]
     public class OrderAppService : ApplicationService, IOrderAppService
     {
         private readonly IOrderRepository _orderRepository;

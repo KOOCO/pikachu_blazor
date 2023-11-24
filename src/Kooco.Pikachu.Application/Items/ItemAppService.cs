@@ -7,10 +7,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp;
-using System.Transactions;
 
 namespace Kooco.Pikachu.Items;
 
+[RemoteService(IsEnabled = false)]
 public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSortedResultRequestDto, CreateItemDto, UpdateItemDto>,
     IItemAppService
 {

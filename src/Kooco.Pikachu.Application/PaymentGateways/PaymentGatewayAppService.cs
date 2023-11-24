@@ -2,12 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Security.Encryption;
 
 namespace Kooco.Pikachu.PaymentGateways
 {
+    [RemoteService(IsEnabled = false)]
     public class PaymentGatewayAppService : ApplicationService, IPaymentGatewayAppService
     {
         private readonly IRepository<PaymentGateway, Guid> _paymentGatewayRepository;

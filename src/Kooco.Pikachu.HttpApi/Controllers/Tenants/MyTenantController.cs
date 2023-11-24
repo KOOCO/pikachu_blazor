@@ -1,0 +1,36 @@
+﻿using Kooco.Pikachu.Tenants;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading.Tasks;
+using Volo.Abp;
+using Volo.Abp.AspNetCore.Mvc;
+using Volo.Abp.TenantManagement;
+
+namespace Kooco.Pikachu.Controllers.Tenants;
+
+[RemoteService(IsEnabled = true)]
+[ControllerName("MyTenant")]
+[Area("app")]
+[Route("api/app/my-tenant")]
+public class MyTenantController(
+    IMyTenantAppService _myTenantAppService
+    ) : AbpController, IMyTenantAppService
+{
+    [HttpGet("check-short-code/{shortCode}")]
+    public Task<bool> CheckShortCodeForCreateAsync(string shortCode)
+    {
+        return _myTenantAppService.CheckShortCodeForCreateAsync(shortCode);
+    }
+
+    [HttpGet("check-short-code/{shortCode}/{id}")]
+    public Task<bool> CheckShortCodeForUpdate(string shortCode, Guid Id)
+    {
+        return _myTenantAppService.CheckShortCodeForUpdate(shortCode, Id);
+    }
+
+    [HttpGet("get-by-name/{name}")]
+    public Task<TenantDto> GetTenantAsync(string name)
+    {
+        return _myTenantAppService.GetTenantAsync(name);
+    }
+}
