@@ -168,7 +168,7 @@
     "EnableDragDrop": "Enable Drag Drop",
     "SaveSortOrder": "Save Sort Order",
     "AreYouSureToUpdateSortOrder": "Are You Sure You Want To Update Sort Order?",
-    "ChangesInSortOrderHaveNotBeenSaved": "Remember, your changes to the sort order haven't been saved yet. If you'd like to keep them, please cancel this action and save your sort order first to avoid any loss.",
+    "EnterprisePurchase": "Enterprise Purchase",
 
     //SetItem
     "SetItem": "Set Item",

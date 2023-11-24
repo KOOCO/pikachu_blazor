@@ -203,7 +203,7 @@ namespace Kooco.Pikachu.GroupBuys
         /// 預設使用的發貨倉庫 Default Warehouse used for shipping
         /// </summary>
         //public Warehouse DefaultWarehouse { get; set; }
-
+        public bool IsEnterprise { get; set; }
         public ICollection<GroupBuyItemGroup> ItemGroups { get; set; }
 
         public GroupBuy()
@@ -249,14 +249,11 @@ namespace Kooco.Pikachu.GroupBuys
             string? paymentMethod,
             string? groupbuyCondition,
             string? customerInformation,
-          string? customerInformationDescription,
-          string? groupBuyConditionDescription,
-          string? exchangePolicyDescription,
-          string shortCode
-          
-
-
-
+            string? customerInformationDescription,
+            string? groupBuyConditionDescription,
+            string? exchangePolicyDescription,
+            string shortCode,
+            bool isEnterprise
             )
         {
             Id = id;
@@ -303,6 +300,7 @@ namespace Kooco.Pikachu.GroupBuys
             GroupBuyConditionDescription = groupBuyConditionDescription;
             ExchangePolicyDescription = exchangePolicyDescription;
             ShortCode = shortCode;
+            IsEnterprise = isEnterprise;
 
             ItemGroups = new List<GroupBuyItemGroup>();
         }

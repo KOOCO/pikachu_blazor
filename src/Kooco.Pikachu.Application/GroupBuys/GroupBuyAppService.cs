@@ -68,7 +68,7 @@ namespace Kooco.Pikachu.GroupBuys
                                                         input.IssueInvoice, input.AutoIssueTriplicateInvoice, input.InvoiceNote, input.ProtectPrivacyData, input.InviteCode, input.ProfitShare,
                                                         input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy,
                                                         input.NotifyMessage, input.ExcludeShippingMethod, input.IsDefaultPaymentGateWay, input.PaymentMethod, input.GroupBuyCondition, input.CustomerInformation,
-                                                        input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription, input.ShortCode);
+                                                        input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription, input.ShortCode, input.IsEnterprise);
 
             if (input.ItemGroups != null && input.ItemGroups.Any())
             {
@@ -106,7 +106,7 @@ namespace Kooco.Pikachu.GroupBuys
             var query = await _groupBuyRepository.GetQueryableAsync();
             var input = await _groupBuyRepository.GetWithDetailsAsync(Id);
             var count = query.Where(x => x.GroupBuyName.Contains(input.GroupBuyName)).Count();
-           var Name = input.GroupBuyName + "(" + count + ")";
+            var Name = input.GroupBuyName + "(" + count + ")";
             var ShortCode = "";
             var result = await _groupBuyManager.CreateAsync(input.GroupBuyNo, input.Status, Name, input.EntryURL, input.EntryURL2, input.SubjectLine,
                                                         input.ShortName, input.LogoURL, input.BannerURL, input.StartTime, input.EndTime, input.FreeShipping, input.AllowShipToOuterTaiwan,
@@ -114,7 +114,7 @@ namespace Kooco.Pikachu.GroupBuys
                                                         input.IssueInvoice, input.AutoIssueTriplicateInvoice, input.InvoiceNote, input.ProtectPrivacyData, input.InviteCode, input.ProfitShare,
                                                         input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy,
                                                         input.NotifyMessage, input.ExcludeShippingMethod, input.IsDefaultPaymentGateWay, input.PaymentMethod, input.GroupBuyCondition, input.CustomerInformation,
-                                                        input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription, ShortCode);
+                                                        input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription, ShortCode, input.IsEnterprise);
 
             if (input.ItemGroups != null && input.ItemGroups.Any())
             {
@@ -254,6 +254,7 @@ namespace Kooco.Pikachu.GroupBuys
             groupBuy.GroupBuyConditionDescription = input.GroupBuyConditionDescription;
             groupBuy.ExchangePolicyDescription = input.ExchangePolicyDescription;
             groupBuy.ShortCode = input.ShortCode;
+            groupBuy.IsEnterprise = input.IsEnterprise;
 
             if (input?.ItemGroups != null)
             {
@@ -527,7 +528,7 @@ namespace Kooco.Pikachu.GroupBuys
                             && (!startDate.HasValue || startDate.Value <= x.CreationTime)
                             && (!endDate.HasValue || endDate.Value > x.CreationTime));
             var data = ObjectMapper.Map<List<Order>, List<OrderDto>>(items);
-            
+
             if (groupBuy.ProtectPrivacyData)
             {
                 data = data.HideCredentials();
@@ -574,10 +575,10 @@ namespace Kooco.Pikachu.GroupBuys
             var groupbuy = await _groupBuyRepository.GetAsync(id);
             await _groupBuyRepository.EnsureCollectionLoadedAsync(groupbuy, g => g.ItemGroups);
 
-            foreach(var item in itemGroups)
+            foreach (var item in itemGroups)
             {
                 var itemGroup = groupbuy.ItemGroups.FirstOrDefault(x => x.Id == item.Id);
-                if(itemGroup != null)
+                if (itemGroup != null)
                 {
                     itemGroup.SortOrder = item.SortOrder;
                 }
@@ -590,7 +591,7 @@ namespace Kooco.Pikachu.GroupBuys
             var query = await _temperatureRepositroy.GetQueryableAsync();
             var cost = query.Where(x => x.Temperature == itemStorageTemperature).FirstOrDefault();
             return ObjectMapper.Map<DeliveryTemperatureCost, DeliveryTemperatureCostDto>(cost);
-        
+
         }
     }
 }

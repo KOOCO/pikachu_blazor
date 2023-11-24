@@ -66,7 +66,8 @@ namespace Kooco.Pikachu.Groupbuys
             string? customerInformationDescription,
             string? groupBuyConditionDescription,
             string? exchangePolicyDescription,
-            string shortCode
+            string shortCode,
+            bool isEnterprise
             )
         {
             var sameName = await _groupBuyRepository.FirstOrDefaultAsync(x => x.GroupBuyName == groupBuyName);
@@ -80,7 +81,7 @@ namespace Kooco.Pikachu.Groupbuys
                 allowShipToOuterTaiwan, allowShipOversea, expectShippingDateFrom, expectShippingDateTo, moneyTransferValidDayBy, moneyTransferValidDays,
                 issueInvoice, autoIssueTriplicateInvoice, invoiceNote, protectPrivacyData, inviteCode, profitShare, metaPixelNo, fBID, iGID, lineID, gAID, gTM,
                 warningMessage, orderContactInfo, exchangePolicy, notifyMessage, excludeShippingMethod, isDefaultPaymentGateway, paymentMethod, groupbuyCondition, 
-                customerInformation,customerInformationDescription,groupBuyConditionDescription,exchangePolicyDescription,shortCode);
+                customerInformation,customerInformationDescription,groupBuyConditionDescription,exchangePolicyDescription,shortCode, isEnterprise);
         }
 
 
