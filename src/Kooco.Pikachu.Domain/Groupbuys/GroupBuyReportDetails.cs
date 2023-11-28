@@ -1,4 +1,6 @@
 ﻿
+using System;
+
 namespace Kooco.Pikachu.Groupbuys;
 
 public class GroupBuyReportDetails
@@ -12,4 +14,6 @@ public class GroupBuyReportDetails
     public decimal AmountReceivedExclShipping { get; set; }
     public decimal SalesAmountMinusShipping { get; set; }
     public decimal BloggersProfit { get; set; }
+    public DateTime? StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
 }

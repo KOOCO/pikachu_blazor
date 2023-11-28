@@ -2,12 +2,10 @@
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
@@ -248,15 +246,20 @@ namespace Kooco.Pikachu.GroupBuys
                           .CountAsync();
         }
 
-        public async Task<GroupBuyReportDetails> GetGroupBuyReportDetailsAsync(Guid id)
+        public async Task<GroupBuyReportDetails> GetGroupBuyReportDetailsAsync(Guid id, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null)
         {
             var dbContext = await GetDbContextAsync();
             var query = await (from order in dbContext.Orders
+                        .WhereIf(startDate.HasValue, x => x.CreationTime >= startDate)
+                        .WhereIf(endDate.HasValue, x => x.CreationTime < endDate)
+                        .WhereIf(orderStatus.HasValue, x => x.OrderStatus == orderStatus)
                         join groupbuy in dbContext.GroupBuys.Where(g => g.Id == id) on order.GroupBuyId equals groupbuy.Id
                         group order by order.GroupBuyId into groupedOrders
                         select new GroupBuyReportDetails
                         {
                             GroupBuyName = groupedOrders.First().GroupBuy.GroupBuyName,
+                            StartDate = startDate ?? groupedOrders.First().GroupBuy.CreationTime,
+                            EndDate = endDate ?? DateTime.Now,
                             OrderQuantityPaid = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open && order.ShippingStatus == ShippingStatus.PrepareShipment).Sum(order => order.TotalQuantity),
                             TotalOrderQuantity = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(order => order.TotalQuantity),
                             SalesAmount = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(order => order.TotalAmount),
@@ -266,6 +269,17 @@ namespace Kooco.Pikachu.GroupBuys
                             SalesAmountMinusShipping = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(order => order.TotalAmount) - groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Count() * 200,
                             BloggersProfit = (groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(order => order.TotalAmount) - groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Count() * 200) * (groupedOrders.First().GroupBuy.ProfitShare / 100.0M)
                         }).FirstOrDefaultAsync();
+
+            if(query == null)
+            {
+                var groupBuy = await dbContext.GroupBuys.FirstOrDefaultAsync(x => x.Id == id);
+                query = new GroupBuyReportDetails
+                {
+                    GroupBuyName = groupBuy?.GroupBuyName,
+                    StartDate = startDate,
+                    EndDate = endDate
+                };
+            }
 
             return query;
         }

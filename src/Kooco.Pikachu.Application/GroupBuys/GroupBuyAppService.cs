@@ -486,9 +486,9 @@ namespace Kooco.Pikachu.GroupBuys
             return ObjectMapper.Map<GroupBuy, GroupBuyDto>(groupbuy);
         }
 
-        public async Task<GroupBuyReportDetailsDto> GetGroupBuyReportDetailsAsync(Guid id)
+        public async Task<GroupBuyReportDetailsDto> GetGroupBuyReportDetailsAsync(Guid id, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null)
         {
-            var data = await _groupBuyRepository.GetGroupBuyReportDetailsAsync(id);
+            var data = await _groupBuyRepository.GetGroupBuyReportDetailsAsync(id, startDate, endDate, orderStatus);
             return ObjectMapper.Map<GroupBuyReportDetails, GroupBuyReportDetailsDto>(data);
         }
         public async Task<GroupBuyReportDetailsDto> GetGroupBuyTenantReportDetailsAsync(Guid id)

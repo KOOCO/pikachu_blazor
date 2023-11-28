@@ -1,20 +1,24 @@
-﻿using System;
+﻿using Kooco.Pikachu.EnumValues;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories;
 
 namespace Kooco.Pikachu.Orders
 {
-    public interface IOrderRepository: IRepository<Order, Guid>
+    public interface IOrderRepository : IRepository<Order, Guid>
     {
-        Task<long> CountAsync(string? filter, Guid? groupBuyId, DateTime? startDate = null, DateTime? endDate = null);
+        Task<long> CountAsync(string? filter, Guid? groupBuyId, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null);
         Task<List<Order>> GetListAsync(
             int skipCount,
             int maxResultCount,
             string? sorting,
             string? filter,
             Guid? groupBuyId,
-            List<Guid>orderId, DateTime? startDate = null, DateTime? endDate = null
+            List<Guid> orderId, 
+            DateTime? startDate = null, 
+            DateTime? endDate = null,
+            OrderStatus? orderStatus = null
             );
         Task<Order> MaxByOrderNumberAsync();
         Task<Order> GetWithDetailsAsync(Guid id);

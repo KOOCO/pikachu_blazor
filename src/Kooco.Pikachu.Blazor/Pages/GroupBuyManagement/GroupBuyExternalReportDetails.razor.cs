@@ -1,20 +1,20 @@
 ﻿using Blazorise.DataGrid;
+using Blazorise.LoadingIndicator;
 using Blazorise;
+using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Orders;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
-using Blazorise.LoadingIndicator;
 using System.IO;
-using Kooco.Pikachu.EnumValues;
+using System.Threading.Tasks;
+using System;
+using System.Linq;
 
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
 
-public partial class GroupBuyReportDetails
+public partial class GroupBuyExternalReportDetails
 {
     [Parameter]
     public string Id { get; set; }
@@ -76,7 +76,7 @@ public partial class GroupBuyReportDetails
                 StartDate = StartDate,
                 EndDate = EndDate,
                 OrderStatus = OrderStatus
-            }, false);
+            }, true);
             Orders = result?.Items.ToList() ?? [];
             TotalCount = (int?)result?.TotalCount ?? 0;
             StateHasChanged();
@@ -91,7 +91,7 @@ public partial class GroupBuyReportDetails
             await Loading.Hide();
         }
     }
-    
+
     async void OnSortChange(DataGridSortChangedEventArgs e)
     {
         Sorting = e.FieldName + " " + (e.SortDirection != SortDirection.Default ? e.SortDirection : "");

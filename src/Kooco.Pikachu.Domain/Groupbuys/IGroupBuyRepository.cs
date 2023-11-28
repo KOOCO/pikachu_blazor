@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.GroupBuys;
+﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.GroupBuys;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -97,6 +98,6 @@ namespace Kooco.Pikachu.Groupbuys
         Task<long> GetGroupBuyReportCountAsync();
         Task<GroupBuy> GetWithItemGroupsAsync(Guid id);
         Task<GroupBuyItemGroup> GetGroupBuyItemGroupAsync(Guid id);
-        Task<GroupBuyReportDetails> GetGroupBuyReportDetailsAsync(Guid id);
+        Task<GroupBuyReportDetails> GetGroupBuyReportDetailsAsync(Guid id, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null);
     }
 }

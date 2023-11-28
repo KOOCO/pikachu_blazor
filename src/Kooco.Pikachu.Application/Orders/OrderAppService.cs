@@ -38,7 +38,7 @@ namespace Kooco.Pikachu.Orders
         private readonly IOrderRepository _orderRepository;
         private readonly OrderManager _orderManager;
         private readonly IDataFilter _dataFilter;
-        private readonly IRepository<OrderDelivery,Guid> _orderDeliveryRepository;
+        private readonly IRepository<OrderDelivery, Guid> _orderDeliveryRepository;
         private readonly IGroupBuyRepository _groupBuyRepository;
         private readonly IEmailSender _emailSender;
         private readonly IRepository<PaymentGateway, Guid> _paymentGatewayRepository;
@@ -147,8 +147,9 @@ namespace Kooco.Pikachu.Orders
         {
             return ObjectMapper.Map<Order, OrderDto>(await _orderRepository.GetAsync(id));
         }
-        public async Task<OrderDto> MergeOrdersAsync(List<Guid> Ids) {
 
+        public async Task<OrderDto> MergeOrdersAsync(List<Guid> Ids)
+        {
             decimal TotalAmount = 0;
             int TotalQuantity = 0;
             var ord = await _orderRepository.GetWithDetailsAsync(Ids[0]);
@@ -212,7 +213,7 @@ namespace Kooco.Pikachu.Orders
                           ord.ReturnStatus,
                           OrderType.NewMarge
                           );
-                
+
                 foreach (var item in orderItems)
                 {
                     _orderManager.AddOrderItem(
@@ -235,11 +236,10 @@ namespace Kooco.Pikachu.Orders
                 await _orderRepository.InsertAsync(order1);
                 return ObjectMapper.Map<Order, OrderDto>(order1);
             }
-           
         }
+
         public async Task<OrderDto> SplitOrderAsync(List<Guid> OrderItemIds, Guid OrderId)
         {
-
             var ord = await _orderRepository.GetWithDetailsAsync(OrderId);
             decimal TotalAmount = ord.TotalAmount;
             int TotalQuantity = ord.TotalQuantity;
@@ -251,9 +251,6 @@ namespace Kooco.Pikachu.Orders
             List<OrderItemsCreateDto> orderItems = new List<OrderItemsCreateDto>();
             using (CurrentTenant.Change(groupBuy?.TenantId))
             {
-
-
-
                 foreach (var item in ord.OrderItems)
                 {
                     OrderItemsCreateDto orderItem = new OrderItemsCreateDto();
@@ -311,13 +308,11 @@ namespace Kooco.Pikachu.Orders
                                    orderItem.ItemPrice,
                                    orderItem.TotalAmount,
                                    orderItem.Quantity,
-                                   orderItem.SKU,orderItem.DeliveryTemperature,
+                                   orderItem.SKU, orderItem.DeliveryTemperature,
                                    orderItem.DeliveryTemperatureCost
 
                                    );
                     await _orderRepository.InsertAsync(order1);
-
-
                 }
 
                 ord.TotalAmount = TotalAmount;
@@ -325,11 +320,7 @@ namespace Kooco.Pikachu.Orders
                 ord.OrderType = OrderType.SplitToNew;
                 await _orderRepository.UpdateAsync(ord);
 
-
-
                 return ObjectMapper.Map<Order, OrderDto>(ord);
-
-
             }
         }
 
@@ -346,9 +337,9 @@ namespace Kooco.Pikachu.Orders
                 input.Sorting = $"{nameof(Order.CreationTime)} desc";
             }
 
-            var totalCount = await _orderRepository.CountAsync(input.Filter, input.GroupBuyId,input.StartDate,input.EndDate);
+            var totalCount = await _orderRepository.CountAsync(input.Filter, input.GroupBuyId, input.StartDate, input.EndDate, input.OrderStatus);
 
-            var items = await _orderRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.GroupBuyId, input.OrderIds, input.StartDate, input.EndDate);
+            var items = await _orderRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.GroupBuyId, input.OrderIds, input.StartDate, input.EndDate, input.OrderStatus);
 
             var dtos = ObjectMapper.Map<List<Order>, List<OrderDto>>(items);
 
@@ -463,7 +454,7 @@ namespace Kooco.Pikachu.Orders
             if (orderReturnStatus == OrderReturnStatus.Reject)
             {
                 order.OrderStatus = OrderStatus.Open;
-            
+
             }
             await _orderRepository.UpdateAsync(order);
 
@@ -474,7 +465,7 @@ namespace Kooco.Pikachu.Orders
             var order = await _orderRepository.GetAsync(id);
             order.ReturnStatus = OrderReturnStatus.WaitingForApprove;
             order.OrderStatus = OrderStatus.Returned;
-            
+
             await _orderRepository.UpdateAsync(order);
 
 
@@ -539,8 +530,8 @@ namespace Kooco.Pikachu.Orders
             TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById("China Standard Time"); // UTC+8
             DateTimeOffset creationTimeInTimeZone = TimeZoneInfo.ConvertTime(creationTime, tz);
             string formattedTime = creationTimeInTimeZone.ToString("yyyy-MM-dd HH:mm:ss");
-            
-            if(emailSettings != null)
+
+            if (emailSettings != null)
             {
                 if (!string.IsNullOrEmpty(emailSettings.Greetings))
                 {
@@ -633,8 +624,8 @@ namespace Kooco.Pikachu.Orders
             {
                 var order = await _orderRepository.GetAsync(id);
                 order.CheckMacValue = checkMacValue;
-             
-               
+
+
                 await _orderRepository.UpdateAsync(order);
             }
         }
@@ -667,19 +658,19 @@ namespace Kooco.Pikachu.Orders
                     order.PaymentDate = parsedDate;
                     if (order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Normal).Any())
                     {
-                        var OrderDelivery = new OrderDelivery(Guid.NewGuid(),order.DeliveryMethod.Value, DeliveryStatus.Proccesing, null, null, order.Id);
+                        var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order.DeliveryMethod.Value, DeliveryStatus.Proccesing, null, null, order.Id);
                         OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
                         order.UpdateOrderItem(order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Normal).ToList(), OrderDelivery.Id);
                     }
                     if (order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze).Any())
                     {
-                        var OrderDelivery = new OrderDelivery(Guid.NewGuid(),order.DeliveryMethod.Value, DeliveryStatus.Proccesing, null, null, order.Id);
+                        var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order.DeliveryMethod.Value, DeliveryStatus.Proccesing, null, null, order.Id);
                         OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
                         order.UpdateOrderItem(order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze).ToList(), OrderDelivery.Id);
                     }
                     if (order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen).Any())
                     {
-                        var OrderDelivery = new OrderDelivery(Guid.NewGuid(),order.DeliveryMethod.Value, DeliveryStatus.Proccesing, null, null, order.Id);
+                        var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order.DeliveryMethod.Value, DeliveryStatus.Proccesing, null, null, order.Id);
                         OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
                         order.UpdateOrderItem(order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen).ToList(), OrderDelivery.Id);
                     }
@@ -701,7 +692,7 @@ namespace Kooco.Pikachu.Orders
             {
                 var paymentGateway = await _paymentGatewayRepository.FirstOrDefaultAsync(x => x.PaymentIntegrationType == PaymentIntegrationType.EcPay);
                 var paymentGatewayDto = ObjectMapper.Map<PaymentGateway, PaymentGatewayDto>(paymentGateway);
-                
+
                 var properties = typeof(PaymentGatewayDto).GetProperties();
                 foreach (var property in properties)
                 {
@@ -719,7 +710,7 @@ namespace Kooco.Pikachu.Orders
                 return paymentGatewayDto;
             }
         }
-      
+
         public async Task<IRemoteStreamContent> GetListAsExcelFileAsync(GetOrderListDto input)
         {
 
@@ -728,29 +719,29 @@ namespace Kooco.Pikachu.Orders
             //{
             //    throw new AbpAuthorizationException("Invalid download token: " + input.DownloadToken);
             //}
-            var items = await _orderRepository.GetListAsync(0, int.MaxValue, input.Sorting,input.Filter,input.GroupBuyId,input.OrderIds);
+            var items = await _orderRepository.GetListAsync(0, int.MaxValue, input.Sorting, input.Filter, input.GroupBuyId, input.OrderIds);
             var Results = ObjectMapper.Map<List<Order>, List<OrderDto>>(items);
-            var excelContent = Results.Select(x =>new
+            var excelContent = Results.Select(x => new
             {
-                OrderNumber=x.OrderNo,
-                OrderDate=x.CreationTime, 
-                CustomerName=x.CustomerName, 
-                Email=x.CustomerEmail, 
-               
-                RecipientInformation=x.RecipientName+"/"+x.RecipientPhone, 
-                ShippingMethod=x.DeliveryMethod,
-                Address=x.AddressDetails,
-                Notes=x.Remarks,
-                MerchantNotes=x.Remarks,
+                OrderNumber = x.OrderNo,
+                OrderDate = x.CreationTime,
+                CustomerName = x.CustomerName,
+                Email = x.CustomerEmail,
+
+                RecipientInformation = x.RecipientName + "/" + x.RecipientPhone,
+                ShippingMethod = x.DeliveryMethod,
+                Address = x.AddressDetails,
+                Notes = x.Remarks,
+                MerchantNotes = x.Remarks,
                 OrderedItems = string.Join(", ", x.OrderItems.Select(item =>
         (item.ItemType == ItemType.Item) ? $"{item.Item?.ItemName} x {item.Quantity}" :
         (item.ItemType == ItemType.SetItem) ? $"{item.SetItem?.SetItemName} x {item.Quantity}" :
         (item.ItemType == ItemType.Freebie) ? $"{item.Freebie?.ItemName} x {item.Quantity}" : "")
     ),
-                InvoiceStatus=x.InvoiceStatus,
-                ShippingStatus=x.ShippingStatus,
+                InvoiceStatus = x.InvoiceStatus,
+                ShippingStatus = x.ShippingStatus,
                 PaymentMethod = x.PaymentMethod,
-                CheckoutAmount=x.TotalAmount
+                CheckoutAmount = x.TotalAmount
 
 
 
@@ -792,7 +783,7 @@ namespace Kooco.Pikachu.Orders
                 ShippingStatus = x.ShippingStatus,
                 PaymentMethod = x.PaymentMethod,
                 CheckoutAmount = x.TotalAmount,
-            DeliveryMethod=x.DeliveryMethod,
+                DeliveryMethod = x.DeliveryMethod,
 
 
 

@@ -149,9 +149,9 @@ public class GroupBuyController(
     }
 
     [HttpGet("get-groupbuy-report-details/{id}")]
-    public Task<GroupBuyReportDetailsDto> GetGroupBuyReportDetailsAsync(Guid id)
+    public Task<GroupBuyReportDetailsDto> GetGroupBuyReportDetailsAsync(Guid id, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null)
     {
-        return _groupBuyAppService.GetGroupBuyReportDetailsAsync(id);
+        return _groupBuyAppService.GetGroupBuyReportDetailsAsync(id, startDate, endDate, orderStatus);
     }
 
     [HttpGet("get-as-excel/{id}")]
