@@ -358,6 +358,7 @@ namespace Kooco.Pikachu.Orders
                 Items = dtos
             };
         }
+
         public async Task<PagedResultDto<OrderDto>> GetTenantOrderListAsync(GetOrderListDto input)
         {
             using (_dataFilter.Disable<IMultiTenant>())
@@ -378,6 +379,7 @@ namespace Kooco.Pikachu.Orders
                 };
             }
         }
+
         public async Task<PagedResultDto<OrderDto>> GetReturnListAsync(GetOrderListDto input)
         {
             if (input.Sorting.IsNullOrEmpty())
@@ -447,6 +449,7 @@ namespace Kooco.Pikachu.Orders
             await _orderRepository.UpdateAsync(order);
             return ObjectMapper.Map<Order, OrderDto>(order);
         }
+
         public async Task ChangeReturnStatusAsync(Guid id, OrderReturnStatus? orderReturnStatus)
         {
             var order = await _orderRepository.GetAsync(id);
@@ -457,9 +460,8 @@ namespace Kooco.Pikachu.Orders
 
             }
             await _orderRepository.UpdateAsync(order);
-
-
         }
+
         public async Task ExchangeOrderAsync(Guid id)
         {
             var order = await _orderRepository.GetAsync(id);
@@ -510,20 +512,15 @@ namespace Kooco.Pikachu.Orders
             await SendEmailAsync(order.Id);
             return ObjectMapper.Map<Order, OrderDto>(order);
         }
+
         private async Task SendEmailAsync(Guid id, OrderStatus? orderStatus = null)
         {
             var order = await _orderRepository.GetWithDetailsAsync(id);
             var groupbuy = await _groupBuyRepository.GetAsync(g => g.Id == order.GroupBuyId);
-            var emailSettings = await _tenantEmailSettingsRepository.FirstOrDefaultAsync();
 
             string status = orderStatus == null ? _l[order.ShippingStatus.ToString()] : _l[orderStatus.ToString()];
 
             string subject = $"{groupbuy.GroupBuyName} 訂單#{order.OrderNo} {status}";
-
-            if (emailSettings != null && !string.IsNullOrEmpty(emailSettings.Subject))
-            {
-                subject = emailSettings.Subject;
-            }
 
             string body = File.ReadAllText("wwwroot/EmailTemplates/email.html");
             DateTime creationTime = order.CreationTime;
@@ -531,22 +528,8 @@ namespace Kooco.Pikachu.Orders
             DateTimeOffset creationTimeInTimeZone = TimeZoneInfo.ConvertTime(creationTime, tz);
             string formattedTime = creationTimeInTimeZone.ToString("yyyy-MM-dd HH:mm:ss");
 
-            if (emailSettings != null)
-            {
-                if (!string.IsNullOrEmpty(emailSettings.Greetings))
-                {
-                    body = body.Replace("{{Greetings}}", emailSettings.Greetings);
-                }
-                else
-                {
-                    body = body.Replace("{{Greetings}}", "");
-                }
-
-                if (!string.IsNullOrEmpty(emailSettings.Footer))
-                {
-                    body = body.Replace("{{Footer}}", emailSettings.Footer);
-                }
-            }
+            body = body.Replace("{{Greetings}}", "");
+            body = body.Replace("{{Footer}}", "");
 
             body = body.Replace("{{NotifyMessage}}", groupbuy.NotifyMessage);
             body = body.Replace("{{GroupBuyName}}", groupbuy.GroupBuyName);
@@ -559,15 +542,15 @@ namespace Kooco.Pikachu.Orders
             body = body.Replace("{{RecipientPhone}}", order.RecipientPhone);
             body = body.Replace("{{PaymentMethod}}", _l[order.PaymentMethod.ToString()]);
             body = body.Replace("{{PaymentStatus}}", _l[order.OrderStatus.ToString()]);
-            body = body.Replace("{{ShippingMethod}}", _l[order.DeliveryMethod.ToString()]);
+            body = body.Replace("{{ShippingMethod}}", $"{_l[order.DeliveryMethod.ToString()]} {order.ShippingNumber}");
             body = body.Replace("{{DeliveryFee}}", "0");
             body = body.Replace("{{RecipientAddress}}", order.AddressDetails);
-            body = body.Replace("{{ShippingStatus}}", _l[order.OrderStatus.ToString()]);
+            body = body.Replace("{{ShippingStatus}}", _l[order.ShippingStatus.ToString()]);
             body = body.Replace("{{RecipientComments}}", order.Remarks);
 
             if (order.OrderItems != null)
             {
-                StringBuilder sb = new StringBuilder();
+                StringBuilder sb = new();
                 foreach (var item in order.OrderItems)
                 {
                     string itemName = "";
@@ -602,19 +585,7 @@ namespace Kooco.Pikachu.Orders
             body = body.Replace("{{DeliveryFee}}", "$0");
             body = body.Replace("{{TotalAmount}}", $"${order.TotalAmount:N0}");
 
-            var defaultFromEmail = await _settingManager.GetOrNullGlobalAsync("Abp.Mailing.DefaultFromAddress");
-            var defaultFromName = await _settingManager.GetOrNullGlobalAsync("Abp.Mailing.DefaultFromDisplayName");
-            MailAddress from = new(defaultFromEmail, emailSettings?.SenderName ?? defaultFromName);
-            MailAddress to = new(order.CustomerEmail);
-
-            MailMessage mailMessage = new(from, to)
-            {
-                Subject = subject,
-                Body = body,
-                IsBodyHtml = true
-            };
-
-            await _emailSender.SendAsync(mailMessage);
+            await _emailSender.SendAsync(order.CustomerEmail, subject, body);
         }
 
         [AllowAnonymous]
@@ -624,7 +595,6 @@ namespace Kooco.Pikachu.Orders
             {
                 var order = await _orderRepository.GetAsync(id);
                 order.CheckMacValue = checkMacValue;
-
 
                 await _orderRepository.UpdateAsync(order);
             }
@@ -681,6 +651,7 @@ namespace Kooco.Pikachu.Orders
             }
         }
 
+        [AllowAnonymous]
         public async Task<PaymentGatewayDto> GetPaymentGatewayConfigurationsAsync(Guid id)
         {
             GroupBuy groupBuy = new();
