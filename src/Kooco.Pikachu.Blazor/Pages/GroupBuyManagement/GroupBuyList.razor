@@ -14,92 +14,86 @@
 @inject NavigationManager NavigationManager
 
 <LoadingIndicator @ref="loading" FullScreen FadeIn>
-<div class="row">
-    <div class="col-4">
-        <h3>@L["GroupBuyList"]</h3>
-    </div>
-        <div Class="col-3 text-lg-end">
-            <div class="input-group" style="margin-left: 150px;">
-            <Autocomplete Size="Size.Small" TItem="KeyValueDto"
-                          TValue="Guid?"
-                          Data="@ItemsList"
-                          TextField="@(( item ) => item.Name)"
-                          ValueField="@(( item ) => item.Id)"
-                          @bind-SelectedText="SelectedAutoCompleteText"
-                          Placeholder="Search..."
-                          Filter="AutocompleteFilter.StartsWith"
-                          CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
-                                    HighlightSearch
-                           Immediate="true"
-             @ref="AutocompleteField">
-                 <NotFoundContent> @L["NotFound"] </NotFoundContent>
-             </Autocomplete>
-        
-             <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="OnSearch">
-                 <i class="fa fa-search"></i>
-             </Button>
-             </div>
-         </div>
-    <div class="col-5 text-end">
-        <div class="custom-check-group me-1">
-            <input type="checkbox" class="form-check-input" checked="@IsAllSelected" @onchange="HandleSelectAllChange"></input>
-            <Label Class="form-label">@L["SelectAll"]</Label>
+    <div class="row">
+        <div class="col-4">
+            <h3>@L["GroupBuyList"]</h3>
         </div>
-          <Button Type="@ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="CreateNewItem">
-                    <i class="fa fa-plus"></i>
-                    @L["NewGroupBuy"]
-                </Button>
+        <div class="col-8 text-end">
+            <div class="d-inline-block">
+                <div class="input-group">
+                    <Autocomplete Size="Size.Small" TItem="KeyValueDto"
+                                  TValue="Guid?"
+                                  Data="@ItemsList"
+                                  TextField="@(( item ) => item.Name)"
+                                  ValueField="@(( item ) => item.Id)"
+                                  @bind-SelectedText="SelectedAutoCompleteText"
+                                  Placeholder="Search..."
+                                  Filter="AutocompleteFilter.StartsWith"
+                                  CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                                                    HighlightSearch
+                                   Immediate="true"
+                                   @ref="AutocompleteField">
+                         <NotFoundContent> @L["NotFound"] </NotFoundContent>
+                    </Autocomplete>
+                    <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="OnSearch">
+                        <i class="fa fa-search"></i>
+                    </Button>
+                </div>
+            </div>
+            <div class="custom-check-group me-1">
+                <input type="checkbox" class="form-check-input" checked="@IsAllSelected" @onchange="HandleSelectAllChange" />
+                <Label Class="form-label">@L["SelectAll"]</Label>
+            </div>
+            <Button Type="@ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="CreateNewItem">
+                <i class="fa fa-plus"></i>
+                @L["NewGroupBuy"]
+            </Button>
             <Button Color="Color.Secondary" Size="Size.Small" Clicked="CopyAsync" Disabled="@(GroupBuyListItem.Count(x => x.IsSelected) != 1)">
                 @L["Copy"]
             </Button>
             <Button Type="@ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="DeleteSelectedAsync">
-            @L["DeleteSelected"]
-        </Button>
-         
+                @L["DeleteSelected"]
+            </Button>
+        </div>
     </div>
-</div>
 
-<Card>
-    <CardBody>
-        <DataGrid TItem="GroupBuyDto"
-                  Data="GroupBuyListItem"
-                  ReadData="OnDataGridReadAsync"
-                  TotalItems="Total"
-                  ShowPager="true"
-                  PageSize="_pageSize"
-                  RowDoubleClicked="OnEditItem"
-                  SortChanged="OnSortChange">
-            <DataGridColumns>
-
-                <DataGridColumn TItem="GroupBuyDto" Caption="@L["Select"]" Width="30px">
-                    <DisplayTemplate>
-                        <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
-                    </DisplayTemplate>
-                </DataGridColumn>
-
-                <DataGridColumn TItem="GroupBuyDto"
-                                Field="@nameof(GroupBuyDto.GroupBuyName)"
-                                Caption="@L["GroupBuyName"]">
-                </DataGridColumn>
-                <DataGridColumn TItem="GroupBuyDto"
-                                Field="@nameof(GroupBuyDto.CreationTime)"
-                                Caption="@L["CreatedTime"]">
-                    <DisplayTemplate>
-                        @context.CreationTime.ToShortDateString()
-                    </DisplayTemplate>
-                </DataGridColumn>
-                <DataGridColumn TItem="GroupBuyDto" Field="@nameof(GroupBuyDto.IsGroupBuyAvaliable)"
-                                Caption="@L["Availability"]">
-                    <DisplayTemplate>
-                        <Switch TValue="bool" Checked="@context.IsGroupBuyAvaliable" CheckedChanged="@(() => OnGroupBuyAvaliablityChanged(context.Id))"></Switch>
-                    </DisplayTemplate>
-                </DataGridColumn>
-               
-
-            </DataGridColumns>
-        </DataGrid>
-    </CardBody>
-</Card>
+    <Card>
+        <CardBody>
+            <DataGrid TItem="GroupBuyDto"
+                      Data="GroupBuyListItem"
+                      ReadData="OnDataGridReadAsync"
+                      TotalItems="Total"
+                      ShowPager="true"
+                      PageSize="_pageSize"
+                      RowDoubleClicked="OnEditItem"
+                      SortChanged="OnSortChange">
+                <DataGridColumns>
+                    <DataGridColumn TItem="GroupBuyDto" Caption="@L["Select"]" Width="30px">
+                        <DisplayTemplate>
+                            <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn TItem="GroupBuyDto"
+                                    Field="@nameof(GroupBuyDto.GroupBuyName)"
+                                    Caption="@L["GroupBuyName"]">
+                    </DataGridColumn>
+                    <DataGridColumn TItem="GroupBuyDto"
+                                    Field="@nameof(GroupBuyDto.CreationTime)"
+                                    Caption="@L["CreatedTime"]">
+                        <DisplayTemplate>
+                            @context.CreationTime.ToShortDateString()
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn TItem="GroupBuyDto" Field="@nameof(GroupBuyDto.IsGroupBuyAvaliable)"
+                                    Caption="@L["Availability"]">
+                        <DisplayTemplate>
+                            <Switch TValue="bool" Checked="@context.IsGroupBuyAvaliable" CheckedChanged="@(() => OnGroupBuyAvaliablityChanged(context.Id))"></Switch>
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                </DataGridColumns>
+            </DataGrid>
+        </CardBody>
+    </Card>
 </LoadingIndicator>
 
 @code {
