@@ -34,6 +34,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         private List<OrderDeliveryDto> OrderDeliveries { get; set; }
         private readonly HashSet<Guid> ExpandedRows = new();
         private OrderDeliveryDto SelectedOrder { get; set; }
+        private Guid OrderDeliveryId { get; set; }
         public OrderDetails()
         {
             Order = new();
@@ -299,12 +300,13 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
             }
         }
 
-        private void OpenShipmentModal()
+        private  void OpenShipmentModal(OrderDeliveryDto deliveryOrder)
         {
+          OrderDeliveryId=deliveryOrder.Id;
             shipments = new Shipments
             {
-                ShippingMethod = Order.DeliveryMethod ?? DeliveryMethod.PickupTheGoodsWithoutPayment,
-                ShippingNumber = Order.ShippingNumber
+                ShippingMethod = deliveryOrder?.DeliveryMethod ?? DeliveryMethod.PickupTheGoodsWithoutPayment,
+                ShippingNumber = deliveryOrder.DeliveryNo
             };
 
             CreateShipmentModal.Show();
@@ -320,7 +322,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 await loading.Show();
                 UpdateOrder.ShippingNumber = shipments.ShippingNumber;
                 UpdateOrder.DeliveryMethod = shipments.ShippingMethod;
-                await _orderAppService.UpdateShippingDetails(OrderId, UpdateOrder);
+                await _orderDeliveryAppService.UpdateShippingDetails(OrderDeliveryId, UpdateOrder);
                 await CreateShipmentModal.Hide();
                 await GetOrderDetailsAsync();
                 await InvokeAsync(StateHasChanged);

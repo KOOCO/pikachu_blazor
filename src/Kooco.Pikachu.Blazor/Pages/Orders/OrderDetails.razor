@@ -92,9 +92,9 @@
                         </div>
                         <div class="row">
                             <div class="col-12 text-end">
-                                <Button Type="ButtonType.Button" @onclick="OpenShipmentModal" Class="btn btn-sm btn-primary me-1">
+                              @*   <Button Type="ButtonType.Button" @onclick="OpenShipmentModal" Class="btn btn-sm btn-primary me-1">
                                     @L["ShipmentNotify"]
-                                </Button>
+                                </Button> *@
                                 @if (Order.PaymentMethod == PaymentMethods.CreditCard && Order.IsRefunded == false)
                                 {
                                     <Button Type="ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="ApplyRefund">
@@ -559,6 +559,19 @@
                              
                         </DisplayTemplate>
                     </DataGridColumn>
+                     <DataGridColumn Width="150px"
+                                            TItem="OrderDeliveryDto"
+                                            Field="@nameof(OrderDeliveryDto.Id)"
+                                Sortable="false"
+                                Caption="@L["Actions"]">
+                        <DisplayTemplate>
+                        
+                                    <Button Type="ButtonType.Button" Clicked="() => OpenShipmentModal(context)" Class="btn btn-sm btn-primary me-1">
+                                    @L["ShipmentNotify"]
+                                </Button>
+                              
+                                </DisplayTemplate>
+                            </DataGridColumn>
                 </DataGridColumns>
                 <DetailRowTemplate>
                  
