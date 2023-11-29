@@ -536,7 +536,10 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 }
                 else
                 {
-                    collapseItem.Selected[index] = new();
+                    if (collapseItem.GroupBuyModuleType != GroupBuyModuleType.IndexAnchor || collapseItem.Selected[index].Id != Guid.Empty)
+                    {
+                        collapseItem.Selected[index] = new();
+                    }
                 }
             }
             catch (Exception ex)

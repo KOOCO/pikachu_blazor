@@ -749,18 +749,18 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 }
                 else
                 {
-                    if (collapseItem.GroupBuyModuleType != GroupBuyModuleType.IndexAnchor)
+                    if (collapseItem.GroupBuyModuleType != GroupBuyModuleType.IndexAnchor || collapseItem.Selected[index].Id != Guid.Empty)
                     {
                         collapseItem.Selected[index] = new();
                     }
-                    else if (!collapseItem.Selected[index].IsFirstLoad)
-                    {
-                        collapseItem.Selected[index] = new();
-                    }
-                    else
-                    {
-                        collapseItem.Selected[index].IsFirstLoad = false;
-                    }
+                    //else if (!collapseItem.Selected[index].IsFirstLoad)
+                    //{
+                    //    collapseItem.Selected[index] = new();
+                    //}
+                    //else
+                    //{
+                    //    collapseItem.Selected[index].IsFirstLoad = false;
+                    //}
                 }
             }
             catch (Exception ex)
