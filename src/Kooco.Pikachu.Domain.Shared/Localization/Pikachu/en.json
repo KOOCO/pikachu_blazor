@@ -1,6 +1,7 @@
 {
   "culture": "en",
   "texts": {
+    "GoodPoint": "Good Point",
     "Menu:Home": "Home",
     "Menu:GroupBuyManagement": "Group Buy Management",
     "Menu:GroupBuyListView": "Group Buy ListView",

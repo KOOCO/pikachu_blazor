@@ -1,11 +1,14 @@
 ﻿@page "/"
 @namespace Kooco.Pikachu.Blazor.Pages
 @using System.Globalization
+@using Kooco.Pikachu.Localization
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.Extensions.Localization
 @using Volo.Abp.AspNetCore.Mvc.UI.Bundling.TagHelpers
 @using Volo.Abp.Localization
 @using Volo.Abp.AspNetCore.Components.Web.LeptonXLiteTheme.Themes.LeptonXLite
 @using Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme.Bundling
+@inject IStringLocalizer<PikachuResource> L
 @{
     Layout = null;
     var rtl = CultureHelper.IsRtl ? "rtl" : string.Empty;
@@ -16,7 +19,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>點點</title>
+    <title>@L["GoodPoint"]</title>
     <base href="~/" />
     <link href="~/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
     <link href="~/libs/bootstrap/css/bootstrap.rtl.min.css" rel="stylesheet" />
