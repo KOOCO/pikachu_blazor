@@ -220,13 +220,18 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
                 if (!item.Images.Any(x => x.BlobImageName == image.BlobImageName))
                 {
                     _itemManager.AddItemImage(
-                    item,
-                    image.Name,
-                    image.BlobImageName,
-                    image.ImageUrl,
-                    image.ImageType,
-                    image.SortNo
-                    );
+                        item,
+                        image.Name,
+                        image.BlobImageName,
+                        image.ImageUrl,
+                        image.ImageType,
+                        image.SortNo
+                        );
+                }
+                else
+                {
+                    var itemImage = item.Images.First(x => x.BlobImageName == image.BlobImageName);
+                    itemImage.SortNo = image.SortNo;
                 }
             }
         }

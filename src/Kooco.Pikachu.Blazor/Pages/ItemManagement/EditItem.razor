@@ -18,6 +18,10 @@
     .row {
         margin-top: 10px;
     }
+
+    .drag-drop-span i{
+        cursor: pointer;
+    }
 </style>
 
 <LoadingIndicator @ref="Loading" FullScreen></LoadingIndicator>
@@ -94,15 +98,26 @@
             <div Class="row">
                 <div class="col-2"></div>
                 <div class="col-10">
-                    <div class="image-list-container">
+                    <div class="image-list-container" ondragover="event.preventDefault();">
                         @foreach (var image in UpdateItemDto.Images)
                         {
-                            <div class="image-container">
-                                <Image class="blur-image" Source="@image.ImageUrl" Text="Item Image" Fluid />
-                                 <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName)">
-                                     <i class="fa fa-trash"></i>
-                                 </button>
-                             </div>
+                            <div class="d-flex flex-column align-items-center justify-content-center mb-2">
+                                <div class="image-container">
+                                    <Image class="blur-image" Source="@image.ImageUrl" Text="Item Image" Fluid />
+                                     <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName)">
+                                         <i class="fa fa-trash"></i>
+                                     </button>
+                                 </div>
+                                 <div class="w-100 text-center"
+                                                draggable="true"                 
+                                                @ondrop="@(()=> Drop(image))" 
+                                                @ondrag="@(()=> StartDrag(image))"
+                                                >
+                                    <span class="drag-drop-span pb-2">
+                                        <i class="fa-solid fa-bars fa-xl"></i>
+                                    </span>
+                                </div>
+                            </div>
                         }
                     </div>
                 </div>

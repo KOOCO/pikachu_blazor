@@ -20,25 +20,9 @@
         margin-top: 10px;
     }
 
-    .site-tag-plus {
-        background: #fff;
-        border-style: dashed;
+    .drag-drop-span i{
+        cursor: pointer;
     }
-    /* you can make up upload button and sample style by using stylesheets */
-    .ant-upload-select-picture-card i {
-        color: #999;
-        font-size: 32px;
-    }
-
-    .ant-upload-select-picture-card .ant-upload-text {
-        margin-top: 8px;
-        color: #666;
-    }
-
-    .anticon {
-        vertical-align: 0.1em !important
-    }
-
 </style>
 
 <LoadingIndicator @ref="Loading" FullScreen></LoadingIndicator>
@@ -116,14 +100,25 @@
                 <div Class="row">
                     <div class="col-2"></div>
                     <div class="col-10">
-                        <div class="image-list-container">
-                            @foreach (var image in CreateItemDto.ItemImages)
+                        <div class="image-list-container" ondragover="event.preventDefault();">
+                            @foreach (var image in CreateItemDto.ItemImages.OrderBy(x => x.SortNo))
                             {
-                                <div class="image-container">
-                                    <Image class="blur-image" Source="@image.ImageUrl" Text="Item Image" Fluid />
-                                    <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName)">
-                                        <i class="fa fa-trash"></i>
-                                    </button>
+                                <div class="d-flex flex-column align-items-center justify-content-center mb-2">
+                                    <div class="image-container">
+                                        <Image class="blur-image" Source="@image.ImageUrl" Text="Item Image" Fluid />
+                                        <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName)">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </div>
+                                    <div class="w-100 text-center"
+                                            draggable="true"                 
+                                            @ondrop="@(()=> Drop(image))" 
+                                            @ondrag="@(()=> StartDrag(image))"
+                                            >
+                                        <span class="drag-drop-span pb-2">
+                                            <i class="fa-solid fa-bars fa-xl"></i>
+                                        </span>
+                                    </div>
                                 </div>
                             }
                         </div>

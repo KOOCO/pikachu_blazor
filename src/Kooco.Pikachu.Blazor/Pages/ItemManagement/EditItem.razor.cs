@@ -40,7 +40,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         private BlazoredTextEditor QuillHtml; //Item Discription Html
         private List<CreateItemDetailsDto> ItemDetailsList { get; set; } = new(); // List of CreateItemDetail dto to store PriceAndInventory
         private UpdateItemDto UpdateItemDto = new();
-        private List<Attributes> Attributes = new();
+        private List<Attributes> Attributes = [];
         private string TagInputValue { get; set; }
         private Modal GenerateSKUModal { get; set; }
         private SKUModel SKUModel { get; set; } = new();
@@ -53,6 +53,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         private readonly ImageContainerManager _imageContainerManager;
 
         LoadingIndicator Loading { get; set; }
+        int CurrentIndex { get; set; }
 
         public EditItem(
             IEnumValueAppService enumValueService,
@@ -90,7 +91,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                     UpdateItemDto = mapper.Map<UpdateItemDto>(ExistingItem);
                     UpdateItemDto.Images = UpdateItemDto.Images.OrderBy(x => x.SortNo).ToList();
                     ItemDetailsList = mapper.Map<List<CreateItemDetailsDto>>(ExistingItem.ItemDetails);
-                    ItemTags = ExistingItem.ItemTags?.Split(',').ToList() ?? new List<string>();
+                    ItemTags = ExistingItem.ItemTags?.Split(',').ToList() ?? [];
                     if (!ExistingItem.Attribute1Name.IsNullOrWhiteSpace())
                     {
                         Attributes.Add(
@@ -127,7 +128,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                         {
                             Id = 1,
                             Name = "ItemStyle1",
-                            ItemTags = new List<string>()
+                            ItemTags = []
                         });
                     }
                     await LoadHtmlContent();
@@ -739,6 +740,32 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         private void CancelToItemList()
         {
             NavigationManager.NavigateTo("Items");
+        }
+
+        void StartDrag(CreateImageDto image)
+        {
+            CurrentIndex = UpdateItemDto.Images.IndexOf(image);
+        }
+
+        void Drop(CreateImageDto image)
+        {
+            if (image != null)
+            {
+                var index = UpdateItemDto.Images.IndexOf(image);
+
+                var current = UpdateItemDto.Images[CurrentIndex];
+
+                UpdateItemDto.Images.RemoveAt(CurrentIndex);
+                UpdateItemDto.Images.Insert(index, current);
+
+                CurrentIndex = index;
+
+                for (int i = 0; i < UpdateItemDto.Images.Count; i++)
+                {
+                    UpdateItemDto.Images[i].SortNo = i + 1;
+                }
+                StateHasChanged();
+            }
         }
     }
 }
