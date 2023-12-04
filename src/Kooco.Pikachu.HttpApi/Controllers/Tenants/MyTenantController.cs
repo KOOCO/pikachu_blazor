@@ -28,9 +28,9 @@ public class MyTenantController(
         return _myTenantAppService.CheckShortCodeForUpdate(shortCode, Id);
     }
 
-    [HttpGet("get-by-name/{name}")]
-    public Task<TenantDto> GetTenantAsync(string name)
+    [HttpGet("get-by-shortcode/{shortcode}")]
+    public Task<TenantDto> GetTenantAsync(string shortcode)
     {
-        return _myTenantAppService.GetTenantAsync(name);
+        return _myTenantAppService.GetTenantAsync(shortcode);
     }
 }
