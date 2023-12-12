@@ -45,7 +45,6 @@
     "Save": "儲存",
     "Upload": "上傳",
     "SelectAll": "全選",
-    "NewGroupBuy": "建立新團購",
 
     //items
     "NewItem": "建立新商品",
@@ -121,6 +120,10 @@
     "NotFound": "查無此物",
     "EditSetItem": "編輯商品組",
     "Pikachu:EntityWithGivenIdDoesnotExist": "查無此ID的物件",
+    "ItemTemperature": "商品溫層",
+    "Normal": "常溫",
+    "Freeze": "冷藏",
+    "Frozen": "冷凍",
 
     //GroupBuy
     "NewGroupBuy": "建立新團購",
@@ -168,6 +171,15 @@
     "GroupBuyList": "團購列表",
     "AVAILABILITY": "上/下架",
     "Select": "選取",
+    "IndexAnchor": "段落錨點",
+    "Pikachu:GroupBuyModuleCannotBeEmpty": "團購模組不能為空",
+    "InvalidFileType": "無效檔案類型",
+    "Pikachu:CanNotAddMoreThan20Modules": "無法新增超過20個模組",
+    "ThisDeleteActionCannotBeReverted": "這個行為無法回復,確定要進行刪除?",
+    "EnableDragDrop": "開啟拖曳",
+    "SaveSortOrder": "儲存排列順序",
+    "AreYouSureToUpdateSortOrder": "你確定你要更新排列順序?",
+    "EnterprisePurchase": "企業採購",
 
 
     //SetItem
@@ -271,7 +283,6 @@
     "ShippingNumber": "派送單號",
     "AreYouSureToCancelOrder?": "你確定要取消訂單?",
 
-
     //Refund
     "Pikachu:RefundForSameOrderAlreadyExists": "同一訂單已存在退款",
     "Pikachu:RefundIsOnlyAvailableForCreditCardPayments": "退款僅適用於信用卡付款",
@@ -288,9 +299,9 @@
     "Enum:TenantStatus.2": "警示",
     "Enum:TenantStatus.3": "暫停",
 
-    "DeliveryTemperatureCost": "Delivery Temperature Cost",
-    "Cost": "Cost",
-    "CostUpdateSuccessfully": "Cost Update Successfully",
+    "DeliveryTemperatureCost": "溫層運費成本Delivery Temperature Cost",
+    "Cost": "成本",
+    "CostUpdateSuccessfully": "成功更新成本",
 
 
     //Groupbuy Report
