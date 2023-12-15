@@ -237,7 +237,7 @@ public class PikachuMenuContributor : IMenuContributor
                 name: "Permission",
                 displayName: "權限管理",
                 icon: "fas fa-user-lock",
-                url: "/Identify/Users",
+                url: "/identity/users",
                 requiredPermissionName: PikachuPermissions.PermissionSetting)
 
             );

@@ -31,7 +31,6 @@ using Volo.Abp;
 
 namespace Kooco.Pikachu.Orders
 {
-    [Authorize(PikachuPermissions.Orders.Default)]
     [RemoteService(IsEnabled = false)]
     public class OrderAppService : ApplicationService, IOrderAppService
     {
