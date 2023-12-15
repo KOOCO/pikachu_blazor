@@ -65,27 +65,13 @@
                     <TextEdit @bind-Text="@EditGroupBuyDto.EntryURL2" />
                 </div>
             </div>
-        </div>
-        <Divider></Divider>
-         <div class="row">
-            <div class="col-2">
-                <label>@L["GroupBuyName"]</label>
-            </div>
-            <div class="col-9">
-                <TextEdit  MaxLength="@MaxtextCount" @bind-Text="@EditGroupBuyDto.GroupBuyName" />
-            </div>
-            <div class="col-1">
-                <span>
-                    @(string.IsNullOrWhiteSpace(EditGroupBuyDto.GroupBuyName) ? 60 : (MaxtextCount - EditGroupBuyDto.GroupBuyName.Count()))/@MaxtextCount
-                </span>
-            </div>
-        </div>
-         <Validations @ref="@EditValidationsRef" Model="@EditGroupBuyDto" ValidateOnLoad="false">
+            <Validations @ref="@EditValidationsRef" Model="@EditGroupBuyDto" ValidateOnLoad="false">
           <div class="row">
+              <div class="col-1"></div>
             <div class="col-2">
                 <label>@L["ShortCode"]</label>
             </div>
-            <div class="col-9">
+            <div class="col-7">
                
                 <Validation UsePattern>
                     <TextEdit Pattern="^[A-Za-z]{8}$"  MaxLength="8" @bind-Text="@EditGroupBuyDto.ShortCode">
@@ -103,6 +89,21 @@
             </div>
         </div>
         </Validations>
+        </div>
+        <Divider></Divider>
+         <div class="row">
+            <div class="col-2">
+                <label>@L["GroupBuyName"]</label>
+            </div>
+            <div class="col-9">
+                <TextEdit  MaxLength="@MaxtextCount" @bind-Text="@EditGroupBuyDto.GroupBuyName" />
+            </div>
+            <div class="col-1">
+                <span>
+                    @(string.IsNullOrWhiteSpace(EditGroupBuyDto.GroupBuyName) ? 60 : (MaxtextCount - EditGroupBuyDto.GroupBuyName.Count()))/@MaxtextCount
+                </span>
+            </div>
+        </div>
         <div class="row">
             <div class="col-2">
                 <label>@L["Subject"]</label>
