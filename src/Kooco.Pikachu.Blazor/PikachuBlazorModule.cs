@@ -1,50 +1,52 @@
-using System;
-using System.IO;
+using Blazorise.Bootstrap5;
+using Blazorise.Icons.FontAwesome;
+using Blazorise.RichTextEdit;
+using Hangfire;
+using Kooco.Pikachu.Blazor.Menus;
+using Kooco.Pikachu.Blazor.Pages.TenantManagement;
+using Kooco.Pikachu.EntityFrameworkCore;
+using Kooco.Pikachu.Localization;
+using Kooco.Pikachu.MultiTenancy;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Kooco.Pikachu.Blazor.Menus;
-using Kooco.Pikachu.EntityFrameworkCore;
-using Kooco.Pikachu.Localization;
-using Kooco.Pikachu.MultiTenancy;
 using OpenIddict.Validation.AspNetCore;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using Volo.Abp;
 using Volo.Abp.Account.Web;
+using Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme;
+using Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme.Bundling;
 using Volo.Abp.AspNetCore.Components.Web.Theming.Routing;
 using Volo.Abp.AspNetCore.Mvc;
 using Volo.Abp.AspNetCore.Mvc.Localization;
 using Volo.Abp.AspNetCore.Mvc.UI.Bundling;
+using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite;
+using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite.Bundling;
 using Volo.Abp.AspNetCore.Serilog;
 using Volo.Abp.Autofac;
 using Volo.Abp.AutoMapper;
+using Volo.Abp.BackgroundJobs;
+using Volo.Abp.BackgroundJobs.Hangfire;
 using Volo.Abp.Identity.Blazor.Server;
 using Volo.Abp.Modularity;
+using Volo.Abp.OpenIddict;
 using Volo.Abp.SettingManagement.Blazor.Server;
 using Volo.Abp.Swashbuckle;
 using Volo.Abp.TenantManagement.Blazor.Server;
 using Volo.Abp.UI.Navigation;
 using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.VirtualFileSystem;
-using Volo.Abp.OpenIddict;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-using Blazorise.Bootstrap5;
-using Blazorise.Icons.FontAwesome;
-using Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme;
-using Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme.Bundling;
-using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite;
-using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite.Bundling;
-using Blazorise.RichTextEdit;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.AspNetCore.Cors;
-using Kooco.Pikachu.Blazor.Pages.TenantManagement;
-using Volo.Abp.BackgroundJobs.Hangfire;
-using Hangfire;
-using Volo.Abp.BackgroundJobs;
 
 namespace Kooco.Pikachu.Blazor;
 
@@ -351,7 +353,15 @@ public class PikachuBlazorModule : AbpModule
         var env = context.GetEnvironment();
         var app = context.GetApplicationBuilder();
 
-        app.UseAbpRequestLocalization();
+        app.UseAbpRequestLocalization(options =>
+        {
+            options.DefaultRequestCulture = new RequestCulture("zh-Hant");
+            options.RequestCultureProviders = new List<IRequestCultureProvider>
+            {
+                new QueryStringRequestCultureProvider(),
+                new CookieRequestCultureProvider()
+            };
+        });
 
         if (env.IsDevelopment())
         {
