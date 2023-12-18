@@ -77,7 +77,6 @@ public class PikachuMenuContributor : IMenuContributor
          new ApplicationMenuItem(
              PikachuMenus.ProductManagement,
              "商品設定",
-
              icon: "fas fa-tags",
              order: 2
          );
@@ -155,7 +154,6 @@ public class PikachuMenuContributor : IMenuContributor
         var paymentManagement = new ApplicationMenuItem(
                 PikachuMenus.PaymentManagement,
                 "金流設定",
-
                 icon: "fas fa-funnel-dollar",
                 order: 4
             );
@@ -233,14 +231,7 @@ public class PikachuMenuContributor : IMenuContributor
                 order: 7
             );
         context.Menu.AddItem(systemManagment);
-        systemManagment.AddItem(new ApplicationMenuItem(
-                name: "Permission",
-                displayName: "權限管理",
-                icon: "fas fa-user-lock",
-                url: "/identity/users",
-                requiredPermissionName: PikachuPermissions.PermissionSetting)
-
-            );
+        
         systemManagment.AddItem(new ApplicationMenuItem(
         name: "EmailSettings",
         icon: "fas fa-mail-bulk",
