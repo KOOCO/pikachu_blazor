@@ -74,7 +74,7 @@
             <div class="col-7">
                
                 <Validation UsePattern>
-                    <TextEdit Pattern="^[A-Za-z]{8}$"  MaxLength="8" @bind-Text="@EditGroupBuyDto.ShortCode">
+                    <TextEdit Pattern="^[A-Za-z0-9]{8}$" MaxLength="8" @bind-Text="@EditGroupBuyDto.ShortCode">
                         <Feedback>
                             <ValidationError>Pattern does not match!</ValidationError>
                         </Feedback>
