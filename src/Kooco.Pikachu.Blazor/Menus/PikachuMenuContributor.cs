@@ -61,17 +61,6 @@ public class PikachuMenuContributor : IMenuContributor
                 url: "/GroupBuyManagement/GroupBuyReport"
                 ));
         }
-        if (await context.IsGrantedAsync(PikachuPermissions.GroupBuyPageConfig))
-        {
-            groupMangment.AddItem(new ApplicationMenuItem(
-                name: "GroupBuyPageConfig",
-                icon: "fas fa-chalkboard-teacher",
-                displayName: "團購頁面設定",
-                url: "/GroupBuyManagement/GroupBuyPageConfig"
-                )
-
-            );
-        }
 
         var productmangment =
          new ApplicationMenuItem(
