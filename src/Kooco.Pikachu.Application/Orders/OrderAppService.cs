@@ -2,6 +2,7 @@
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Localization;
+using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.Permissions;
@@ -14,6 +15,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Content;
@@ -23,11 +25,6 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Security.Encryption;
-using Kooco.Pikachu.TenantEmailing;
-using System.Net.Mail;
-using Volo.Abp.SettingManagement;
-using Kooco.Pikachu.OrderDeliveries;
-using Volo.Abp;
 
 namespace Kooco.Pikachu.Orders
 {
@@ -42,8 +39,6 @@ namespace Kooco.Pikachu.Orders
         private readonly IEmailSender _emailSender;
         private readonly IRepository<PaymentGateway, Guid> _paymentGatewayRepository;
         private readonly IStringEncryptionService _stringEncryptionService;
-        private readonly IRepository<TenantEmailSettings, Guid> _tenantEmailSettingsRepository;
-        private readonly ISettingManager _settingManager;
         private readonly IRepository<OrderItem, Guid> _orderItemRepository;
         private readonly IStringLocalizer<PikachuResource> _l;
         public OrderAppService(
@@ -54,8 +49,6 @@ namespace Kooco.Pikachu.Orders
             IEmailSender emailSender,
             IRepository<PaymentGateway, Guid> paymentGatewayRepository,
             IStringEncryptionService stringEncryptionService,
-            IRepository<TenantEmailSettings, Guid> tenantEmailSettingsRepository,
-            ISettingManager settingManager,
             IStringLocalizer<PikachuResource> l,
             IRepository<OrderItem, Guid> orderItemRepository,
             IRepository<OrderDelivery, Guid> orderDeliveryRepository
@@ -68,11 +61,9 @@ namespace Kooco.Pikachu.Orders
             _emailSender = emailSender;
             _paymentGatewayRepository = paymentGatewayRepository;
             _stringEncryptionService = stringEncryptionService;
-            _tenantEmailSettingsRepository = tenantEmailSettingsRepository;
-            _settingManager = settingManager;
-            _l = l;
             _orderItemRepository = orderItemRepository;
             _orderDeliveryRepository = orderDeliveryRepository;
+            _l = l;
         }
 
         [AllowAnonymous]

@@ -305,7 +305,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
           OrderDeliveryId=deliveryOrder.Id;
             shipments = new Shipments
             {
-                ShippingMethod = deliveryOrder?.DeliveryMethod ?? DeliveryMethod.PickupTheGoodsWithoutPayment,
+                ShippingMethod = deliveryOrder?.DeliveryMethod ?? DeliveryMethod.PostOffice,
                 ShippingNumber = deliveryOrder.DeliveryNo
             };
 
