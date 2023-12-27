@@ -187,6 +187,14 @@ public class PikachuMenuContributor : IMenuContributor
             requiredPermissionName: PikachuPermissions.LogisticsSetting
             )
             );
+        logisticsManagment.AddItem(new ApplicationMenuItem(
+            name: "Delivery Temperature Cost",
+            icon: "fas fa-temperature-low",
+            displayName: l["DeliveryTemperatureCost"],
+            url: "/DeliveryTemperatureCost",
+            requiredPermissionName: PikachuPermissions.DeliveryTemperatureCost)
+
+);
 
         context.Menu.AddItem(logisticsManagment);
         //context.Menu.Items.Insert(
@@ -243,14 +251,7 @@ public class PikachuMenuContributor : IMenuContributor
       requiredPermissionName: PikachuPermissions.TenentBillReport)
 
       );
-        systemManagment.AddItem(new ApplicationMenuItem(
-    name: "Delivery Temperature Cost",
-    icon: "fas fa-temperature-low",
-    displayName: l["DeliveryTemperatureCost"],
-    url: "/DeliveryTemperatureCost",
-    requiredPermissionName: PikachuPermissions.DeliveryTemperatureCost)
-
-    );
+ 
 
         if (MultiTenancyConsts.IsEnabled)
         {
