@@ -1,6 +1,8 @@
 ﻿using Blazorise;
+using Blazorise.DataGrid;
 using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
 using Microsoft.AspNetCore.Components;
@@ -29,6 +31,10 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         private Modal CreateShipmentModal { get; set; }
         private LoadingIndicator loading { get; set; } = new();
         private bool IsItemsEditMode { get; set; } = false;
+        private List<OrderDeliveryDto> OrderDeliveries { get; set; }
+        private readonly HashSet<Guid> ExpandedRows = new();
+        private OrderDeliveryDto SelectedOrder { get; set; }
+        private Guid OrderDeliveryId { get; set; }
         public OrderDetails()
         {
             Order = new();
@@ -53,10 +59,23 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 }
             }
         }
+        void ToggleRow(DataGridRowMouseEventArgs<OrderDeliveryDto> e)
+        {
+            if (ExpandedRows.Contains(e.Item.Id))
+            {
+                ExpandedRows.Remove(e.Item.Id);
+            }
+            else
+            {
+                ExpandedRows.Add(e.Item.Id);
+            }
 
+
+        }
         async Task GetOrderDetailsAsync()
         {
             Order = await _orderAppService.GetWithDetailsAsync(OrderId);
+            OrderDeliveries = await _orderDeliveryAppService.GetListByOrderAsync(OrderId);
             await InvokeAsync(StateHasChanged);
         }
 
@@ -281,12 +300,13 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
             }
         }
 
-        private void OpenShipmentModal()
+        private  void OpenShipmentModal(OrderDeliveryDto deliveryOrder)
         {
+          OrderDeliveryId=deliveryOrder.Id;
             shipments = new Shipments
             {
-                ShippingMethod = Order.DeliveryMethod ?? DeliveryMethod.PickupTheGoodsWithoutPayment,
-                ShippingNumber = Order.ShippingNumber
+                ShippingMethod = deliveryOrder?.DeliveryMethod ?? DeliveryMethod.PostOffice,
+                ShippingNumber = deliveryOrder.DeliveryNo
             };
 
             CreateShipmentModal.Show();
@@ -302,7 +322,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 await loading.Show();
                 UpdateOrder.ShippingNumber = shipments.ShippingNumber;
                 UpdateOrder.DeliveryMethod = shipments.ShippingMethod;
-                await _orderAppService.UpdateShippingDetails(OrderId, UpdateOrder);
+                await _orderDeliveryAppService.UpdateShippingDetails(OrderDeliveryId, UpdateOrder);
                 await CreateShipmentModal.Hide();
                 await GetOrderDetailsAsync();
                 await InvokeAsync(StateHasChanged);
@@ -317,7 +337,13 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 await loading.Hide();
             }
         }
+        private async void SplitOrder()
+        {
+            var orderItemIds = Order?.OrderItems.Where(x => x.IsSelected).Select(x => x.Id).ToList();
+            await _orderAppService.SplitOrderAsync(orderItemIds, Order.Id);
+            NavigationManager.NavigateTo("Orders");
 
+        }
         async void SubmitOrderItemChanges()
         {
             bool isValid = true;
@@ -378,6 +404,14 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 IsItemsEditMode = true;
                 await InvokeAsync(StateHasChanged);
             }
+        }
+
+        async void ExchangeOrder()
+        {
+
+            await _orderAppService.ExchangeOrderAsync(Order.Id);
+            NavigationManager.NavigateTo("Orders");
+
         }
 
         void CalculateTotal(UpdateOrderItemDto item)

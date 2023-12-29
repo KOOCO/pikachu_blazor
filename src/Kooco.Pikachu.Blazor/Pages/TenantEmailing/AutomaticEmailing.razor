@@ -1,0 +1,63 @@
+﻿@page "/AutomaticEmailing"
+@using Blazorise.LoadingIndicator
+@using Kooco.Pikachu.AutomaticEmails;
+@using Kooco.Pikachu.Localization;
+@using Microsoft.Extensions.Localization;
+@using Volo.Abp.AspNetCore.Components.Messages;
+
+@inject IAutomaticEmailAppService _automaticEmailAppService;
+@inject IUiMessageService _uiMessageService;
+@inject IJSRuntime JSRuntime;
+@inject NavigationManager NavigationManager;
+@inject IStringLocalizer<PikachuResource> L;
+
+<Div Class="row">
+    <Div Class="col-md-6 col-sm-12">
+        <h3>@L["AutomaticEmailing"]</h3>
+    </Div>
+    <Div Class="col-md-6 col-sm-12 text-end">
+        <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="CreateNew">
+            <i class="fa fa-plus"></i>
+            @L["New"]
+        </Button>
+    </Div>
+</Div>
+
+<LoadingIndicator @ref="Loading" FullScreen></LoadingIndicator>
+
+<Card>
+    <CardBody>
+        <DataGrid TItem="AutomaticEmailDto"
+                  Data="Items"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="Total"
+                  ShowPager="true"
+                  PageSize="_pageSize"
+                  RowDoubleClicked="OnEditItem"
+                  SortChanged="OnSortChange">
+            <DataGridColumns>
+                 <DataGridColumn Field="@nameof(AutomaticEmailDto.TradeName)"
+                                Caption="@L["TradeName"]">
+                </DataGridColumn>
+                 <DataGridColumn Field="@nameof(AutomaticEmailDto.StartDate)"
+                                Caption="@L["StartDate"]">
+                    <DisplayTemplate>
+                        @context.StartDate.ToLongDateString()
+                    </DisplayTemplate>
+                </DataGridColumn>
+                 <DataGridColumn Field="@nameof(AutomaticEmailDto.EndDate)"
+                                 Caption="@L["EndDate"]">
+                     <DisplayTemplate>
+                         @context.EndDate.ToLongDateString()
+                     </DisplayTemplate>
+                 </DataGridColumn>
+                 <DataGridColumn Field="@nameof(AutomaticEmailDto.SendTime)"
+                                 Caption="@L["SendTime"]">
+                     <DisplayTemplate>
+                         @context.SendTime.ToShortTimeString()
+                     </DisplayTemplate>
+                 </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>

@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Components;
 using AutoMapper;
 using Kooco.Pikachu.FreeBies.Dtos;
 using Blazored.TextEditor;
+using Kooco.Pikachu.GroupBuys;
 
 namespace Kooco.Pikachu.Blazor.Pages.Freebies
 {
@@ -33,18 +34,22 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
         private readonly IUiMessageService _uiMessageService;
         private readonly ImageContainerManager _imageContainerManager;
         private readonly IFreebieAppService _freebieAppService;
+        private readonly IGroupBuyAppService _groupBuyAppService;
+
         private UpdateFreebieDto UpdateFreebieDto = new();
         public Guid EditingId { get; private set; }
 
         public EditFreebie(
             IUiMessageService uiMessageService,
             ImageContainerManager imageContainerManager,
-            IFreebieAppService freebieAppService
+            IFreebieAppService freebieAppService,
+            IGroupBuyAppService groupBuyAppService
             )
         {
             _uiMessageService = uiMessageService;
             _imageContainerManager = imageContainerManager;
             _freebieAppService = freebieAppService;
+            _groupBuyAppService = groupBuyAppService;
         }
 
         protected override async Task OnAfterRenderAsync(bool isFirstRender)
@@ -65,7 +70,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
                     UpdateFreebieDto = mapper.Map<UpdateFreebieDto>(ExistingItem);
                     UpdateFreebieDto.Images = UpdateFreebieDto.Images.OrderBy(x => x.SortNo).ToList();
 
-                    GroupBuyList = await _freebieAppService.GetGroupBuyLookupAsync();
+                    GroupBuyList = await _groupBuyAppService.GetGroupBuyLookupAsync();
                     await LoadHtmlContent();
                     StateHasChanged();
                 }

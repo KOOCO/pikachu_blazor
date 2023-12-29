@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kooco.Pikachu.EnumValues;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,5 +12,5 @@ namespace Kooco.Pikachu.Refunds
     {
         Task<long> GetCountAsync(string? filter);
         Task<List<Refund>> GetListAsync(int skipCount, int maxResultCount, string sorting, string? filter);
-    }
+     }
 }

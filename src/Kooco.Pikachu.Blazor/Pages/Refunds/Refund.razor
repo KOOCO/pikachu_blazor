@@ -1,4 +1,5 @@
 ﻿@page "/Refund"
+@using Kooco.Pikachu.EnumValues;
 @using Kooco.Pikachu.Localization;
 @using Kooco.Pikachu.Orders;
 @using Kooco.Pikachu.Refunds;
@@ -64,7 +65,14 @@
                  <DataGridColumn TItem="RefundDto"
                                  Caption="@L["RefundReview"]">
                      <DisplayTemplate>
-                         @L[context.RefundReview.ToString()]
+                         <Select TValue="RefundReviewStatus" Class="form-select form-select-sm" 
+                                    SelectedValue="@context.RefundReview" 
+                                    SelectedValueChanged="@(e => RefundReviewChanged(e, context))">
+                             @foreach (var enumValue in Enum.GetValues(typeof(RefundReviewStatus)))
+                            {
+                                <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                            }
+                        </Select>
                      </DisplayTemplate>
                  </DataGridColumn>
                  <DataGridColumn TItem="RefundDto"

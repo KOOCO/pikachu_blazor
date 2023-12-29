@@ -1,170 +1,183 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <style>
-      html {
-        font-family: Arial, sans-serif;
-        padding: 5vh 20vw;
-      }
+        html {
+            font-family: Arial, sans-serif;
+            padding: 5vh 20vw;
+        }
 
-      body {
-        padding-bottom: 50px;
-      }
+        body {
+            padding-bottom: 50px;
+        }
 
-      .text-center {
-        text-align: center !important;
-      }
+        .text-center {
+            text-align: center !important;
+        }
 
-      table {
-        border-collapse: collapse;
-        width: 100%;
-      }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
 
-      .first-table td {
-        padding: 1em;
-        border: 1px solid lightgrey;
-      }
+        .first-table td {
+            padding: 1em;
+            border: 1px solid lightgrey;
+        }
 
-      p {
-        margin: 0.5em;
-      }
+        p {
+            margin: 0.5em;
+        }
 
-      .spacer {
-        display: block;
-        height: 10px;
-      }
+        .spacer {
+            display: block;
+            height: 10px;
+        }
 
-      .second-table thead,
-      .second-table tbody {
-        border: 1px solid lightgrey;
-        text-align: center;
-      }
+        .second-table thead,
+        .second-table tbody {
+            border: 1px solid lightgrey;
+            text-align: center;
+        }
 
-      .second-table th,
-      .second-table td {
-        padding: 1em 0.5em;
-      }
+        .second-table th,
+        .second-table td {
+            padding: 1em 0.5em;
+        }
 
-      .second-table tr th:first-child,
-      .second-table tr td:first-child {
-        text-align: left;
-        width: 60%;
-      }
+        .second-table tr th:first-child,
+        .second-table tr td:first-child {
+            text-align: left;
+            width: 60%;
+        }
 
-      .second-table tr {
-        border-bottom: 1px solid lightgrey;
-      }
+        .second-table tr {
+            border-bottom: 1px solid lightgrey;
+        }
 
-      .second-table tr:last-child td:first-child {
-        text-align: right;
-      }
+            .second-table tr:last-child td:first-child {
+                text-align: right;
+            }
+
+        footer {
+            background-color: #22242b;
+            padding: 10px;
+            color: #fff;
+        }
     </style>
-  </head>
-  <body>
-    <header>{{NotifyMessage}}</header>
+</head>
+<body>
+    <header>{{Greetings}}</header>
+    <div class="spacer"></div>
+    <div>{{NotifyMessage}}</div>
     <span class="spacer"></span>
     <section>
-      <div class="text-center">
-        <h4>
-          親愛的 {{CustomerName}} 先生/小姐，您在 {{GroupBuyName}} 的訂單 #
-          {{OrderNo}} 狀態為 {{ShippingStatus}}
-        </h4>
-      </div>
+        <div class="text-center">
+            <h4>
+                親愛的 {{CustomerName}} 先生/小姐，您在 {{GroupBuyName}} 的訂單 #
+                {{OrderNo}} 狀態為 {{ShippingStatus}}
+            </h4>
+        </div>
     </section>
 
     <table class="first-table">
-      <tbody>
-        <tr>
-          <td colspan="2">
-            <p>訂購日期</p>
-            <p>{{OrderDate}}</p>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <p>顧客姓名</p>
-            <p>{{CustomerName}}</p>
-            <span class="spacer"></span>
-            <p>電子郵件</p>
-            <p>{{CustomerEmail}}</p>
-            <span class="spacer"></span>
-            <p>電話</p>
-            <p>{{CustomerPhone}}</p>
-          </td>
-          <td>
-              <p>收件人</p>
-            <p>{{RecipientName}}</p>
-            <span class="spacer"></span>
-            <p>收件人電話號碼</p>
-            <p>{{RecipientPhone}}</p>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <p>付款方式</p>
-            <p>{{PaymentMethod}}</p>
-            <span class="spacer"></span>
-            <p>支付狀態</p>
-            <p>{{PaymentStatus}}</p>
-          </td>
-          <td>
-              <p>寄送方式</p>
-            <p>{{ShippingMethod}}</p>
-            <span class="spacer"></span>
-            <p>運費</p>
-            <p>{{DeliveryFee}}</p>
-            <span class="spacer"></span>
-            <p>收件者地址</p>
-            <p>{{RecipientAddress}}</p>
-            <span class="spacer"></span>
-            <p>出貨狀態</p>
-            <p>{{ShippingStatus}}</p>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2">
-              <p>訂單備註</p>
-            <p>{{RecipientComments}}</p>
-          </td>
-        </tr>
-      </tbody>
+        <tbody>
+            <tr>
+                <td colspan="2">
+                    <p>訂購日期</p>
+                    <p>{{OrderDate}}</p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>顧客姓名</p>
+                    <p>{{CustomerName}}</p>
+                    <span class="spacer"></span>
+                    <p>電子郵件</p>
+                    <p>{{CustomerEmail}}</p>
+                    <span class="spacer"></span>
+                    <p>電話</p>
+                    <p>{{CustomerPhone}}</p>
+                </td>
+                <td>
+                    <p>收件人</p>
+                    <p>{{RecipientName}}</p>
+                    <span class="spacer"></span>
+                    <p>收件人電話號碼</p>
+                    <p>{{RecipientPhone}}</p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p>付款方式</p>
+                    <p>{{PaymentMethod}}</p>
+                    <span class="spacer"></span>
+                    <p>支付狀態</p>
+                    <p>{{PaymentStatus}}</p>
+                </td>
+                <td>
+                    <p>寄送方式</p>
+                    <p>{{ShippingMethod}}</p>
+                    <span class="spacer"></span>
+                    <p>運費</p>
+                    <p>{{DeliveryFee}}</p>
+                    <span class="spacer"></span>
+                    <p>收件者地址</p>
+                    <p>{{RecipientAddress}}</p>
+                    <span class="spacer"></span>
+                    <p>出貨狀態</p>
+                    <p>{{ShippingStatus}}</p>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <p>訂單備註</p>
+                    <p>{{RecipientComments}}</p>
+                </td>
+            </tr>
+        </tbody>
     </table>
     <span class="spacer"></span>
     <table class="second-table">
-      <thead>
-        <tr>
-          <!-- ItemName -->
-            <th>品名</th>
-          <!-- UnitPrice -->
-          <th>單價</th>
-          <!-- Quantity -->
-          <th>數量</th>
-          <!-- SubTotal -->
-          <th>小計</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{OrderItems}}
-        <tr>
-            <td colspan="3" style="text-align: right;">
-                <!-- DeliveryFee -->
-                運費 :
-                <span class="spacer"></span>
-                <!-- Total -->
-                合計 :
-            </td>
-          <td>
-            {{DeliveryFee}}
-            <span class="spacer"></span>
-            {{TotalAmount}}
-          </td>
-        </tr>
-      </tbody>
+        <thead>
+            <tr>
+                <!-- ItemName -->
+                <th>品名</th>
+                <!-- UnitPrice -->
+                <th>單價</th>
+                <!-- Quantity -->
+                <th>數量</th>
+                <!-- SubTotal -->
+                <th>小計</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{OrderItems}}
+            <tr>
+                <td colspan="3" style="text-align: right;">
+                    <!-- DeliveryFee -->
+                    運費 :
+                    <span class="spacer"></span>
+                    <!-- Total -->
+                    合計 :
+                </td>
+                <td>
+                    {{DeliveryFee}}
+                    <span class="spacer"></span>
+                    {{TotalAmount}}
+                </td>
+            </tr>
+        </tbody>
     </table>
-  </body>
-  <footer>
-    <span class="spacer"></span>
-    <span style="font-size:20px;">若有任何與訂單相關的問題，可透過商店下方的聯絡我們與 {{GroupBuyName}}
-      連繫。</span>
-  </footer>
+
+    <div class="spacer"></div>
+    <div>{{Footer}}</div>
+
+    <footer>
+        <span class="spacer"></span>
+        <span style="font-size:20px;">
+            若有任何與訂單相關的問題，可透過商店下方的聯絡我們與 {{GroupBuyName}} 連繫。
+        </span>
+    </footer>
+</body>
 </html>

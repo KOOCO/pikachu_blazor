@@ -1,10 +1,13 @@
-﻿using Kooco.Pikachu.Freebies.Dtos;
+﻿using Kooco.Pikachu.DeliveryTemperatureCosts;
+using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Freebies.Dtos;
+using Kooco.Pikachu.Items.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
-
+using Volo.Abp.Content;
 
 namespace Kooco.Pikachu.GroupBuys
 {
@@ -27,5 +30,19 @@ namespace Kooco.Pikachu.GroupBuys
         Task<List<GroupBuyDto>> GetGroupBuyByShortCode(string ShortCode);
         Task<GroupBuyDto> GetGroupBuyofTenant(string ShortCode, Guid TenantId);
         Task<PagedResultDto<GroupBuyReportDto>> GetGroupBuyReportListAsync(GetGroupBuyReportListDto input);
+        Task<GroupBuyDto> GetWithItemGroupsAsync(Guid id);
+        Task<GroupBuyItemGroupDto> GetGroupBuyItemGroupAsync(Guid id);
+        Task DeleteGroupBuyItemAsync(Guid id, Guid GroupBuyID);
+        Task<GroupBuyReportDetailsDto> GetGroupBuyReportDetailsAsync(Guid id, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null);
+        Task<IRemoteStreamContent> GetListAsExcelFileAsync(Guid id, DateTime? startDate = null, DateTime? endDate = null);
+        Task<IRemoteStreamContent> GetAttachmentAsync(Guid id, Guid? tenantId, DateTime sendTime, RecurrenceType recurrenceType);
+        Task<List<KeyValueDto>> GetGroupBuyLookupAsync();
+        Task<PagedResultDto<GroupBuyReportDto>> GetGroupBuyTenantReportListAsync(GetGroupBuyReportListDto input);
+        Task<GroupBuyReportDetailsDto> GetGroupBuyTenantReportDetailsAsync(Guid id);
+        Task<IRemoteStreamContent> GetTenantsListAsExcelFileAsync(Guid id);
+        Task<GroupBuyDto> CopyAsync(Guid Id);
+        Task<List<KeyValueDto>> GetAllGroupBuyLookupAsync();
+        Task UpdateSortOrderAsync(Guid id, List<GroupBuyItemGroupCreateUpdateDto> itemGroups);
+        Task<DeliveryTemperatureCostDto> GetTemperatureCostAsync(ItemStorageTemperature itemStorageTemperature);
     }
 }

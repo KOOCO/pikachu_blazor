@@ -1,7 +1,9 @@
 ﻿using Blazorise;
+using Blazorise.Components;
 using Blazorise.DataGrid;
 using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.GroupBuys;
+using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
@@ -23,8 +25,12 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         int _pageIndex = 1;
         int _pageSize = 10;
         int Total = 0;
+        public DateTime? CreatedDate { get; set; }
         private string Sorting = nameof(GroupBuy.GroupBuyName);
         private LoadingIndicator loading { get; set; } = new();
+        private Autocomplete<KeyValueDto, Guid?> AutocompleteField { get; set; }
+        private string? SelectedAutoCompleteText { get; set; }
+        private List<KeyValueDto> ItemsList { get; set; } = new();
 
         public GroupBuyList(
             IGroupBuyAppService groupBuyAppService,
@@ -44,6 +50,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 item.IsSelected = IsAllSelected;
             });
             StateHasChanged();
+           
         }
 
         private async Task UpdateGroupBuyList()
@@ -55,10 +62,12 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 {
                     Sorting = Sorting,
                     MaxResultCount = _pageSize,
-                    SkipCount = skipCount
+                    SkipCount = skipCount,
+                    FilterText= SelectedAutoCompleteText
                 });
                 GroupBuyListItem = result.Items.ToList();
                 Total = (int)result.TotalCount;
+                ItemsList = await _groupBuyAppService.GetAllGroupBuyLookupAsync();
             }
             catch (Exception ex)
             {
@@ -67,6 +76,20 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             }
         }
 
+        private async Task CopyAsync() {
+
+            var id = GroupBuyListItem.Where(x => x.IsSelected == true).Select(x => x.Id).FirstOrDefault();
+
+           var copy= await _groupBuyAppService.CopyAsync(id);
+            NavigationManager.NavigateTo("/GroupBuyManagement/GroupBuyList/Edit/" + copy.Id);
+
+
+        }
+        async Task OnSearch()
+        {
+            _pageIndex = 0;
+            await UpdateGroupBuyList();
+        }
         private async Task DeleteSelectedAsync()
         {
             try

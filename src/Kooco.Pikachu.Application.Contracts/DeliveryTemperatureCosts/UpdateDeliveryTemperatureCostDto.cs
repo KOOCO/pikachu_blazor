@@ -1,0 +1,15 @@
+﻿using Kooco.Pikachu.EnumValues;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Kooco.Pikachu.DeliveryTemperatureCosts
+{
+    public class UpdateDeliveryTemperatureCostDto
+    {
+        public Guid Id { get; set; }
+        public ItemStorageTemperature Temperature { get; set; }
+        public decimal Cost { get; set; }
+
+    }
+}

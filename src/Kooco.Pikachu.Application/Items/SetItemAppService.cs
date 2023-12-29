@@ -10,6 +10,7 @@ using Volo.Abp.Domain.Repositories;
 
 namespace Kooco.Pikachu.Items;
 
+[RemoteService(IsEnabled = false)]
 public class SetItemAppService : CrudAppService<SetItem, SetItemDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateSetItemDto>, ISetItemAppService
 {
     private readonly ISetItemRepository _setItemRepository;
@@ -155,6 +156,7 @@ public class SetItemAppService : CrudAppService<SetItem, SetItemDto, Guid, Paged
     }
     public async Task<List<ItemWithItemTypeDto>> GetItemsLookupAsync()
     {
-        return ObjectMapper.Map<List<SetItem>, List<ItemWithItemTypeDto>>(await _setItemRepository.GetListAsync());
+        var setItems = await _setItemRepository.GetItemsLookupAsync();
+        return ObjectMapper.Map<List<ItemWithItemType>, List<ItemWithItemTypeDto>>(setItems);
     }
 }

@@ -15,6 +15,7 @@
 @using Kooco.Pikachu.Localization;
 @using Microsoft.Extensions.Localization;
 @using Volo.Abp.Identity;
+@using Microsoft.Extensions.Configuration;
 
 
 @* @page "/tenant-management/tenants" *@
@@ -24,6 +25,7 @@
   @attribute [ExposeServices(typeof(Volo.Abp.TenantManagement.Blazor.Pages.TenantManagement.TenantManagement),typeof(CustomTenantManagement))]
    @attribute [Dependency(ReplaceServices = true)]
 @inject IStringLocalizer<PikachuResource> Lo
+@inject IConfiguration _configuration
 @inject AbpBlazorMessageLocalizerHelper<AbpTenantManagementResource> LH
 @inherits  Volo.Abp.TenantManagement.Blazor.Pages.TenantManagement.TenantManagement
 <Card>
@@ -43,7 +45,8 @@
                                ShowPager="true"
                                PageSize="@PageSize"
                                CurrentPage="@CurrentPage"
-                               Columns="@TenantManagementTableColumns">
+                               Columns="@TenantManagementTableColumns"
+                               Responsive="true">
         </AbpExtensibleDataGrid>
     </CardBody>
 </Card>
@@ -231,6 +234,18 @@
                         <FieldLabel>@L["ShareProfit%"]</FieldLabel>
                         <NumericEdit @bind-Value="@ShareProfitPercentage" />
                     </Field>
+                     <Field>
+                         <FieldLabel>@L["ShortCode"]</FieldLabel>
+                               <Validation UsePattern>
+    <TextEdit Pattern="^[A-Za-z0-9]{8}$"  MaxLength="8" @bind-Text="@ShortCode">
+        <Feedback>
+            
+            <ValidationError>Pattern does not match!</ValidationError>
+        </Feedback>
+    </TextEdit>
+</Validation>
+ </Field>
+
                         <Field>
                             <FieldLabel>@L["Status"]</FieldLabel>
                             <Select TValue="TenantStatus" @bind-SelectedValue="@Status">
@@ -407,6 +422,17 @@
                         <FieldLabel>@L["ShareProfit%"]</FieldLabel>
                         <NumericEdit @bind-Value="@ShareProfitPercentage" />
                     </Field>
+                      <Field>
+                         <FieldLabel>@L["ShortCode"]</FieldLabel>
+                               <Validation UsePattern>
+    <TextEdit Pattern="^[A-Za-z0-9]{8}$"  MaxLength="8" @bind-Text="@ShortCode">
+        <Feedback>
+            
+            <ValidationError>Pattern does not match!</ValidationError>
+        </Feedback>
+    </TextEdit>
+</Validation>
+ </Field>
                         <Field>
                             <FieldLabel>@L["Status"]</FieldLabel>
                             <Select TValue="TenantStatus" @bind-SelectedValue="@Status">

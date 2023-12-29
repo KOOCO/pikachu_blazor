@@ -49,7 +49,10 @@ namespace Kooco.Pikachu.Orders
              string remarks,
              ReceivingTime? receivingTime,
              int totalQuantity,
-             decimal totalAmount
+             decimal totalAmount,
+             OrderReturnStatus? orderReturnStatus,
+             OrderType? orderType,
+             Guid? splitFromId=null
              )
         {
             //string orderNo = await GenerateOrderNoAsync(groupBuyId);
@@ -81,7 +84,11 @@ namespace Kooco.Pikachu.Orders
                 remarks,
                 receivingTime,
                 totalQuantity,
-                totalAmount
+                totalAmount,
+                orderReturnStatus,
+                orderType,
+                splitFromId
+
                 );
         }
 
@@ -95,7 +102,9 @@ namespace Kooco.Pikachu.Orders
             string? spec,
             decimal itemPrice,
             decimal totalAmount,
-            int quantity
+            int quantity,
+            string? sku,ItemStorageTemperature temperature,
+            decimal temperatureCost
             )
         {
             order.AddOrderItem(
@@ -107,7 +116,10 @@ namespace Kooco.Pikachu.Orders
                 spec,
                 itemPrice,
                 totalAmount,
-                quantity
+                quantity,
+                sku,
+                temperature,
+                temperatureCost
                 );
         }
 

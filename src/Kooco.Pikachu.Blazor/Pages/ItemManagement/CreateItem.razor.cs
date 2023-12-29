@@ -15,6 +15,8 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
 using Kooco.Pikachu.Images;
+using Blazorise.LoadingIndicator;
+using Microsoft.JSInterop;
 
 namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 {
@@ -24,14 +26,14 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         private const int MaxAllowedFilesPerUpload = 10;
         private const int TotalMaxAllowedFiles = 50;
         private const int MaxAllowedFileSize = 1024 * 1024 * 10;
-        private readonly List<string> ValidFileExtensions = new() { ".jpg", ".png", ".svg", ".jpeg", ".webp" };
-        private List<string> ItemTags { get; set; } = new List<string>(); //used for store item tags 
+        private readonly List<string> ValidFileExtensions = [".jpg", ".png", ".svg", ".jpeg", ".webp"];
+        private List<string> ItemTags { get; set; } = []; //used for store item tags 
         private List<EnumValueDto> ShippingMethods { get; set; } // for bind all shippingMethods
         private List<EnumValueDto> TaxTypes { get; set; } // for bind all taxTypes
         private BlazoredTextEditor QuillHtml; //Item Discription Html
         private List<CreateItemDetailsDto> ItemDetailsList { get; set; } // List of CreateItemDetail dto to store PriceAndInventory
         private CreateItemDto CreateItemDto = new(); //Item Dto
-        private List<Attributes> Attributes = new();
+        private List<Attributes> Attributes = [];
         private string TagInputValue { get; set; }
         private Modal GenerateSKUModal { get; set; }
         private SKUModel SKUModel { get; set; } = new();
@@ -41,6 +43,8 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         private readonly IEnumValueAppService _enumValueService;
         private readonly IUiMessageService _uiMessageService;
         private readonly ImageContainerManager _imageContainerManager;
+        LoadingIndicator Loading { get; set; }
+        int CurrentIndex { get; set; }
 
         public CreateItem(
             IEnumValueAppService enumValueService,
@@ -64,24 +68,23 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                                                          })).ToList();
             TaxTypes = enumValues.Where(x => x.EnumType == EnumType.TaxType).ToList();
             CreateItemDto.TaxTypeId = TaxTypes.First().Id;
-            //CreateItemDto.Attribute1Name = "ItemStyle1";
 
             ShippingMethods = enumValues.Where(x => x.EnumType == EnumType.ShippingMethod).ToList();
             CreateItemDto.ShippingMethodId = ShippingMethods.First().Id;
 
-            ItemDetailsList = new List<CreateItemDetailsDto>();
-            CreateItemDto.ItemImages = new List<CreateImageDto>();
+            ItemDetailsList = [];
+            CreateItemDto.ItemImages = [];
             Attributes.Add(new Attributes
             {
                 Id = 1,
                 Name = "ItemStyle1",
-                ItemTags = new List<string>()
+                ItemTags = []
             });
         }
 
         async Task OnFileUploadAsync(FileChangedEventArgs e)
         {
-            if (e.Files.Count() > MaxAllowedFilesPerUpload)
+            if (e.Files.Length > MaxAllowedFilesPerUpload)
             {
                 await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesExceedMaxAllowedPerUpload]);
                 await FilePickerCustom.Clear();
@@ -96,6 +99,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             var count = 0;
             try
             {
+                await Loading.Show();
                 foreach (var file in e.Files)
                 {
                     if (!ValidFileExtensions.Contains(Path.GetExtension(file.Name).ToLower()))
@@ -141,6 +145,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                     finally
                     {
                         stream.Close();
+                        await Loading.Hide();
                     }
                 }
                 if (count > 0)
@@ -148,10 +153,14 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                     await _uiMessageService.Error(count + ' ' + L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
                 }
             }
-            catch (Exception exc)
+            catch (Exception ex)
             {
-                Console.WriteLine(exc.Message);
                 await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+                await Loading.Hide();
             }
         }
 
@@ -162,6 +171,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 var confirmed = await _uiMessageService.Confirm(L[PikachuDomainErrorCodes.AreYouSureToDeleteImage]);
                 if (confirmed)
                 {
+                    await Loading.Show();
                     confirmed = await _imageContainerManager.DeleteAsync(blobImageName);
                     if (confirmed)
                     {
@@ -176,8 +186,12 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
                 await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWentWrongWhileDeletingImage]);
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+                await Loading.Hide();
             }
         }
 
@@ -246,8 +260,8 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 Attributes.Add(new Attributes
                 {
                     Id = attribute == null ? 1 : +attribute.Id + 1,
-                    Name = "ItemStyle"+ (attribute == null ? 1 : +attribute.Id + 1),
-                    ItemTags = new List<string>()
+                    Name = "ItemStyle" + (attribute == null ? 1 : +attribute.Id + 1),
+                    ItemTags = []
                 });
             }
         }
@@ -296,6 +310,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         {
             try
             {
+                await Loading.Show();
                 ValidateForm();
                 GenerateAttributesForItemDetails();
 
@@ -311,10 +326,16 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             catch (BusinessException ex)
             {
                 await _uiMessageService.Error(ex.Code?.ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
             }
             catch (Exception ex)
             {
                 await _uiMessageService.Error(ex.GetType().ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+                await Loading.Hide();
             }
         }
 
@@ -444,14 +465,11 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             {
                 if (ItemDetailsList != null && ItemDetailsList.Count > 0)
                 {
-                    if (ItemDetailsList != null && ItemDetailsList.Count > 0)
+                    var prop = typeof(CreateItemDetailsDto).GetProperty(propertyName);
+                    var firstItemValue = prop.GetValue(ItemDetailsList[0]);
+                    foreach (var item in ItemDetailsList)
                     {
-                        var prop = typeof(CreateItemDetailsDto).GetProperty(propertyName);
-                        var firstItemValue = prop.GetValue(ItemDetailsList[0]);
-                        foreach (var item in ItemDetailsList)
-                        {
-                            typeof(CreateItemDetailsDto).GetProperty(propertyName).SetValue(item, firstItemValue, null);
-                        }
+                        typeof(CreateItemDetailsDto).GetProperty(propertyName).SetValue(item, firstItemValue, null);
                     }
                 }
             }
@@ -479,9 +497,8 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 }
             }
             GeneratePreview();
-
-
         }
+
         private void CloseGenerateSKUModal()
         {
             GenerateSKUModal.Hide();
@@ -657,6 +674,32 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         private void CancelToItemList()
         {
             NavigationManager.NavigateTo("Items");
+        }
+
+        void StartDrag(CreateImageDto image)
+        {
+            CurrentIndex = CreateItemDto.ItemImages.IndexOf(image);
+        }
+
+        void Drop(CreateImageDto image)
+        {
+            if (image != null)
+            {
+                var index = CreateItemDto.ItemImages.IndexOf(image);
+
+                var current = CreateItemDto.ItemImages[CurrentIndex];
+
+                CreateItemDto.ItemImages.RemoveAt(CurrentIndex);
+                CreateItemDto.ItemImages.Insert(index, current);
+
+                CurrentIndex = index;
+
+                for (int i = 0; i < CreateItemDto.ItemImages.Count; i++)
+                {
+                    CreateItemDto.ItemImages[i].SortNo = i + 1;
+                }
+                StateHasChanged();
+            }
         }
     }
 

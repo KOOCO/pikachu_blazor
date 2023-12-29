@@ -1,14 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.ComponentModel;
 
-namespace Kooco.Pikachu.EnumValues
+namespace Kooco.Pikachu.EnumValues;
+
+public enum DeliveryMethod
 {
-    public enum DeliveryMethod
-    {
-        PickupTheGoodsWithoutPayment,
-        AllHandOverTheGoodsWithoutPayment,
-        BlackCatHomeDelivery,
-        HomeDelivery
-    }
+    [Description("郵局")]
+    PostOffice,
+
+    [Description("自取")]
+    SelfPickup,
+
+    [Description("黑貓")]
+    BlackCat,
+
+    [Description("親送")]
+    HomeDelivery
 }

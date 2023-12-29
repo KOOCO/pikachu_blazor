@@ -2,26 +2,45 @@
 @using Kooco.Pikachu.EnumValues;
 @using Kooco.Pikachu.Localization;
 @using Kooco.Pikachu.OrderItems;
+@using Kooco.Pikachu.GroupBuys;
 @using Kooco.Pikachu.Orders;
 @using Microsoft.Extensions.Localization;
 @using Blazorise;
 @using Volo.Abp.AspNetCore.Components.Messages;
 @using Blazorise.LoadingIndicator;
-
+@using Kooco.Pikachu.Items.Dtos;
 @inject IStringLocalizer<PikachuResource> L;
 @inject NavigationManager NavigationManager;
 @inject IUiMessageService _uiMessageService;
 @inject IOrderAppService _orderAppService;
+@inject IGroupBuyAppService _groupBuyAppService;
+@using Microsoft.JSInterop;
+@inject IJSRuntime JSRuntime;
+
 <LoadingIndicator @ref="loading" FullScreen FadeIn>
     <div class="row">
-        <div class="col-3">
+        <div class="col-1">
             <h3>@L["Order"]</h3>
         </div>
-        <div class="col-9 text-lg-end">
+        <div class="col-11 text-lg-end">
+            <Select 
+            TValue="Guid?"
+            SelectedValue="@SelectedGroupBuy"
+            Size="Size.Small"
+             id="mySelectElement"
+             SelectedValueChanged="@(e=>OnSearch(e))">
+              <SelectItem Value="@Guid.Empty" >Select GroupBuy</SelectItem>
+                @foreach (var item in GroupBuyList)
+                {
+                    <SelectItem Value="@item.Id">@item.Name</SelectItem>
+                }
+             </Select>
+            <DateEdit id="startDate" KeyDown="@(e=>OnSearch())" @bind-Date="@StartDate" TValue="DateTime?" Size="Size.Small" />-<DateEdit KeyDown="(e=>OnSearch())" id="endDate" @bind-Date="@EndDate" TValue="DateTime?" Size="Size.Small" />
             <div class="d-inline-block me-1">
+              
                 <div class="input-group">
                     <InputText class="form-control form-control-sm search-bar" @bind-Value="@Filter" placeholder="@L["Search"]"></InputText>
-                    <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="OnSearch">
+                    <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="(e=>OnSearch())">
                         <i class="fa fa-search"></i>
                     </Button>
                 </div>
@@ -30,22 +49,30 @@
                 <input type="checkbox" class="form-check-input" checked="@IsAllSelected" @onchange="HandleSelectAllChange"></input>
                 <Label Class="form-label">@L["SelectAll"]</Label>
             </div>
-            <Button Type="@ButtonType.Button" Class="btn btn-sm btn-secondary">@L["CombineOrders"]</Button>
-            @if(Orders.Where(x => x.IsSelected).Count() != 1)
+            @if (ShowCombineButton())
             {
-            <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
-                <i class="fa fa-print"></i>
-                @L["Print"]
-            </Button>
-            }else
+                <Button Type="@ButtonType.Button" Clicked="MergeOrders" Class="btn btn-sm btn-secondary">@L["CombineOrders"]</Button>
+            }
+            else{
+
+                <Button Disabled Type="@ButtonType.Button" Class="btn btn-sm btn-secondary">@L["CombineOrders"]</Button>
+            }
+          
+            @if (Orders.Where(x => x.IsSelected).Count() != 1)
             {
-                <Button Type="@ButtonType.Button" onclick="@NavigateToOrderPrint" Class="ms-1 btn btn-sm btn-primary">
+                <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
                     <i class="fa fa-print"></i>
                     @L["Print"]
                 </Button>
-
             }
-
+            else
+            {
+                <Button Type="@ButtonType.Button" @onclick="NavigateToOrderPrint" Class="ms-1 btn btn-sm btn-primary">
+                    <i class="fa fa-print"></i>
+                    @L["Print"]
+                </Button>
+            }
+            <Button Type="ButtonType.Button" Class="btn btn-sm btn-outline-dark" Clicked="DownloadExcel"><i class="fa fa-arrow-down"></i></Button>
         </div>
     </div>
     <Card>
@@ -66,7 +93,7 @@
                      <DataGridCommandColumn />
                      <DataGridColumn Caption="@L["Select"]" Width="30px">
                          <DisplayTemplate>
-                             <InputCheckbox class="form-check-input"  @bind-Value="@context.IsSelected"></InputCheckbox>
+                             <InputCheckbox  class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
                          </DisplayTemplate>
                      </DataGridColumn>
                      <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
@@ -107,13 +134,6 @@
                     @{
                         var orderItems = (context as OrderDto).OrderItems;
                         <div class="mx-2 px-3 py-2 border">
-                            <div class="row">
-                                <div class="col-12">
-                                    <span class="fw-bold me-3">@context.GroupBuy.GroupBuyName</span>
-                                </div>
-                            </div>
-                        
-                            <Divider Class="m-1"></Divider>
                             <table>
                                 <tbody>
                                     <tr>
@@ -142,25 +162,25 @@
                                         <td>
                                             @foreach (var item in orderItems)
                                             {
-                                                @if(item.ItemType == ItemType.Item)
+                                                @if (item.ItemType == ItemType.Item)
                                                 {
                                                     <div mb-1>
                                                         <span>@item.Spec</span>
-                                                        <span>@item.Item.ItemName x @item.Quantity</span>
+                                                        <span>@item.Item?.ItemName x @item.Quantity</span>
                                                     </div>
                                                 }
                                                 @if (item.ItemType == ItemType.SetItem)
                                                 {
                                                     <div mb-1>
                                                         <span>@item.Spec</span>
-                                                        <span>@item.SetItem.SetItemName x @item.Quantity</span>
+                                                        <span>@item.SetItem?.SetItemName x @item.Quantity</span>
                                                     </div>
                                                 }
                                                 @if (item.ItemType == ItemType.Freebie)
                                                 {
                                                     <div mb-1>
                                                         <span>@item.Spec</span>
-                                                        <span>@item.Freebie.ItemName x @item.Quantity</span>
+                                                        <span>@item.Freebie?.ItemName x @item.Quantity</span>
                                                     </div>
                                                 }
                                             }
@@ -175,6 +195,7 @@
         </CardBody>
     </Card>
 </LoadingIndicator>
-@code {
 
+@code {
+    bool isSmall = true;
 }

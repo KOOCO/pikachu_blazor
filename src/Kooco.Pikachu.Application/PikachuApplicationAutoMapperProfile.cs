@@ -11,6 +11,15 @@ using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.StoreComments;
 using Kooco.Pikachu.Refunds;
+using Kooco.Pikachu.PaymentGateways;
+using Kooco.Pikachu.ElectronicInvoiceSettings;
+using Kooco.Pikachu.TenantEmailing;
+using Kooco.Pikachu.AutomaticEmails;
+using Kooco.Pikachu.LogisticsProviders;
+using Kooco.Pikachu.DeliveryTemperatureCosts;
+using Kooco.Pikachu.DeliveryTempratureCosts;
+using Kooco.Pikachu.OrderDeliveries;
+using System.Collections.Generic;
 
 namespace Kooco.Pikachu;
 
@@ -32,9 +41,10 @@ public class PikachuApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.Name, src => src.MapFrom(x => x.ItemName))
             .ForMember(dest => dest.ItemType, opt => opt.MapFrom(src => ItemType.Item));
 
+        CreateMap<ItemWithItemType, ItemWithItemTypeDto>();
 
         // ItemDetailDto EntityMapping
-        CreateMap<ItemDetails, ItemDetailsDto>();
+        CreateMap<ItemDetails, ItemDetailsDto>(MemberList.Source);
         CreateMap<CreateItemDetailsDto, ItemDetails>();
 
         //EnumValue EntityMapping
@@ -63,6 +73,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<GroupBuyItemGroupDetails, GroupBuyItemGroupDetailsDto>();
         CreateMap<GroupBuy, KeyValueDto>().ForMember(dest => dest.Name, src => src.MapFrom(s => s.GroupBuyName));
         CreateMap<GroupBuyItemGroupWithCount, GroupBuyItemGroupWithCountDto>();
+        CreateMap<GroupBuyReportDetails, GroupBuyReportDetailsDto>();
 
         CreateMap<Freebie, FreebieDto>();
         CreateMap<FreebieGroupBuys, FreebieGroupBuysDto>();
@@ -73,5 +84,30 @@ public class PikachuApplicationAutoMapperProfile : Profile
 
 
         CreateMap<Refund, RefundDto>();
+
+        CreateMap<PaymentGateway, PaymentGatewayDto>();
+        CreateMap<PaymentGatewayDto, UpdateLinePayDto>();
+        CreateMap<PaymentGatewayDto, UpdateChinaTrustDto>();
+        CreateMap<PaymentGatewayDto, UpdateEcPayDto>();
+
+        CreateMap<ElectronicInvoiceSetting, ElectronicInvoiceSettingDto>();
+        CreateMap<ElectronicInvoiceSettingDto, CreateUpdateElectronicInvoiceDto>();
+
+        CreateMap<TenantEmailSettings, TenantEmailSettingsDto>();
+        CreateMap<TenantEmailSettingsDto, CreateUpdateTenantEmailSettingsDto>();
+
+        CreateMap<AutomaticEmail, AutomaticEmailDto>();
+        CreateMap<AutomaticEmailGroupBuys, AutomaticEmailGroupBuysDto>();
+        CreateMap<AutomaticEmailDto, AutomaticEmailCreateUpdateDto>();
+
+
+        CreateMap<LogisticsProviderSettings, LogisticsProviderSettingsDto>();
+        CreateMap<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>();
+        CreateMap<LogisticsProviderSettingsDto, HomeDeliveryCreateUpdateDto>();
+
+        CreateMap<DeliveryTemperatureCost, DeliveryTemperatureCostDto>();
+        CreateMap<DeliveryTemperatureCostDto, UpdateDeliveryTemperatureCostDto>();
+
+        CreateMap<OrderDelivery, OrderDeliveryDto > ();
     }
 }

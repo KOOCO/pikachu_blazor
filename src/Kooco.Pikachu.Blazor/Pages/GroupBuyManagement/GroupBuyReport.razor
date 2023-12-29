@@ -17,9 +17,8 @@
 @inject IStringLocalizer<PikachuResource> L
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime;
-@inject IConfiguration _configuration;
 
-<LoadingIndicator @ref="loading" FullScreen FadeIn>
+<LoadingIndicator @ref="Loading" FullScreen FadeIn>
 </LoadingIndicator>
 
 <div class="row">
@@ -34,19 +33,20 @@
                   ReadData="OnDataGridReadAsync"
                   TotalItems="Total"
                   ShowPager="true"
-                  PageSize="PageSize">
+                  PageSize="PageSize"
+                SortChanged="OnSortChange">
             <DataGridColumns>
                 <DataGridColumn TItem="GroupBuyReportDto"
                                 Field="@nameof(GroupBuyReportDto.GroupBuyName)"
                                 Caption="@L["GroupBuyName"]"
                                 Width="50%">
                     <DisplayTemplate>
-                        <a href="@StoreUrl/@context.GroupBuyId" target="_blank">@context.GroupBuyName</a>
+                        <a href="/GroupBuyManagement/GroupBuyReportDetails/@context.GroupBuyId" target="_blank">@context.GroupBuyName</a>
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn Caption="@L["ReportUrl"]" Sortable="false" TextAlignment="TextAlignment.Center">
                     <DisplayTemplate>
-                        <a href="javascript:void(0)"><i class="fa fa-link"></i></a>
+                        <a href="/GroupBuyManagement/GroupBuyExternalReportDetails/@context.GroupBuyId" target="_blank"><i class="fa fa-link"></i></a>
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="GroupBuyReportDto"

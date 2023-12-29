@@ -1,4 +1,5 @@
-﻿using Blazorise.DataGrid;
+﻿using Blazorise;
+using Blazorise.DataGrid;
 using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.GroupBuys;
 using Microsoft.JSInterop;
@@ -11,19 +12,12 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 {
     public partial class GroupBuyReport
     {
-        public List<GroupBuyReportDto> GroupBuyReportList { get; set; } = new List<GroupBuyReportDto>();
+        public List<GroupBuyReportDto> GroupBuyReportList { get; set; } = [];
         int PageIndex = 1;
-        int PageSize = 10;
+        readonly int PageSize = 10;
         int Total = 0;
         private string Sorting = nameof(Groupbuys.GroupBuyReport.GroupBuyName);
-        private LoadingIndicator loading { get; set; } = new();
-        string? StoreUrl { get; set; }
-
-        protected override void OnInitialized()
-        {
-            StoreUrl = $"{_configuration["EntryUrl"]?.TrimEnd('/')}";
-            base.OnInitialized();
-        }
+        private LoadingIndicator Loading { get; set; } = new();
 
         private async Task UpdateGroupBuyReport()
         {
@@ -42,7 +36,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         {
             try
             {
-                await loading.Show();
+                await Loading.Show();
                 PageIndex = e.Page - 1;
                 await UpdateGroupBuyReport();
                 StateHasChanged();
@@ -54,7 +48,27 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             }
             finally
             {
-                await loading.Hide();
+                await Loading.Hide();
+            }
+        }
+
+        async void OnSortChange(DataGridSortChangedEventArgs e)
+        {
+            try
+            {
+                await Loading.Show();
+                Sorting = e.FieldName + " " + (e.SortDirection != SortDirection.Default ? e.SortDirection : "");
+                await UpdateGroupBuyReport();
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+                await Loading.Hide();
             }
         }
     }

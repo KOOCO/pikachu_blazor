@@ -24,6 +24,13 @@ using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.StoreComments;
 using Kooco.Pikachu.Refunds;
+using Kooco.Pikachu.PaymentGateways;
+using Kooco.Pikachu.ElectronicInvoiceSettings;
+using Kooco.Pikachu.TenantEmailing;
+using Kooco.Pikachu.AutomaticEmails;
+using Kooco.Pikachu.LogisticsProviders;
+using Kooco.Pikachu.DeliveryTempratureCosts;
+using Kooco.Pikachu.OrderDeliveries;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -80,6 +87,14 @@ public class PikachuDbContext :
     public DbSet<Order> Orders { get; set; }
     public DbSet<StoreComment> StoreComments { get; set; }
     public DbSet<Refund> Refunds { get; set; }
+    public DbSet<PaymentGateway> PaymentGateways { get; set; }
+    public DbSet<ElectronicInvoiceSetting> ElectronicInvoiceSettings { get; set; }
+    public DbSet<TenantEmailSettings> TenantEmailSettings { get; set; }
+    public DbSet<AutomaticEmail> AutomaticEmails { get; set; }
+    public DbSet<AutomaticEmailGroupBuys> AutomaticEmailGroupBuys { get; set; }
+    public DbSet<LogisticsProviderSettings> LogisticsProviderSettings { get; set; }
+    public DbSet<DeliveryTemperatureCost> DeliveryTemperatureCosts { get; set; }
+    public DbSet<OrderDelivery> OrderDeliveries { get; set; }
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
     {
@@ -122,7 +137,7 @@ public class PikachuDbContext :
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "ItemDetails", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
-            //b.HasOne(x => x.Item).WithMany(d => d.ItemDetails).HasForeignKey(i => i.ItemId);
+           
         });
 
         builder.Entity<Image>(b =>
@@ -130,7 +145,11 @@ public class PikachuDbContext :
             b.ToTable(PikachuConsts.DbTablePrefix + "Images", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
         });
-
+        builder.Entity<DeliveryTemperatureCost>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "DeliveryTemperatureCosts", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+        });
         builder.Entity<SetItem>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "SetItems", PikachuConsts.DbSchema, table => table.HasComment(""));
@@ -193,12 +212,22 @@ public class PikachuDbContext :
             b.HasMany(o => o.StoreComments).WithOne();
             b.Property(o => o.TotalAmount).HasColumnType("money");
         });
+        builder.Entity<OrderDelivery>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "OrderDeliveries", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+           
+            b.HasMany(o => o.Items).WithOne().HasForeignKey(d => d.DeliveryOrderId);
+            b.HasOne(x => x.Carrier).WithMany().HasForeignKey(d => d.CarrierId).IsRequired(false);
+            b.HasOne<Order>().WithMany().HasForeignKey(d => d.OrderId);
 
+        });
         builder.Entity<OrderItem>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "OrderItems", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
             b.HasOne(x => x.Item).WithMany().IsRequired(false).HasForeignKey(x => x.ItemId);
+
             b.HasOne(x => x.SetItem).WithMany().IsRequired(false).HasForeignKey(x => x.SetItemId);
             b.HasOne(x => x.Freebie).WithMany().IsRequired(false).HasForeignKey(x => x.FreebieId);
             b.Property(x => x.ItemPrice).HasColumnType("money");
@@ -217,6 +246,51 @@ public class PikachuDbContext :
             b.ToTable(PikachuConsts.DbTablePrefix + "Refunds", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
             b.HasOne(x => x.Order).WithMany().HasForeignKey(x => x.OrderId);
+        });
+
+        builder.Entity<PaymentGateway>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "PaymentGateways", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+        });
+        
+        builder.Entity<ElectronicInvoiceSetting>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "ElectronicInvoiceSettings", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+        });
+
+        builder.Entity<TenantEmailSettings>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "TenantEmailSettings", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+        });
+
+        builder.Entity<AutomaticEmail>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "AutomaticEmails", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+
+            b.Ignore(x => x.RecipientsList);
+            b.HasMany(x => x.GroupBuys).WithOne().HasForeignKey(x => x.AutomaticEmailId);
+        });
+
+        builder.Entity<AutomaticEmailGroupBuys>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "AutomaticEmailGroupBuys", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+
+            b.HasOne(x => x.GroupBuy).WithMany().IsRequired(false).OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        builder.Entity<LogisticsProviderSettings>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "LogisticsProviderSettings", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+
+            b.Ignore(x => x.LogisticsSubTypesList);
+            b.Ignore(x => x.MainIslandsList);
+            b.Ignore(x => x.OuterIslandsList);
         });
     }
 }

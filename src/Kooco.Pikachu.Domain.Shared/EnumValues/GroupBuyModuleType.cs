@@ -6,6 +6,7 @@ namespace Kooco.Pikachu.EnumValues
     {
         ProductDescriptionModule,
         ProductImageModule,
-        ProductGroupModule
+        ProductGroupModule,
+        IndexAnchor
     }
 }

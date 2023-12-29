@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.Images;
+﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Localization;
 using Microsoft.Extensions.Localization;
 using System;
@@ -61,7 +62,9 @@ namespace Kooco.Pikachu.Items
 
             string? attribute1Name,
             string? attribute2Name,
-            string? attribute3Name
+            string? attribute3Name,
+
+            ItemStorageTemperature? itemTemperature
             )
         {
             if (itemName.IsNullOrWhiteSpace())
@@ -114,7 +117,9 @@ namespace Kooco.Pikachu.Items
 
                 attribute1Name,
                 attribute2Name,
-                attribute3Name
+                attribute3Name,
+
+                itemTemperature
                 );
         }
 

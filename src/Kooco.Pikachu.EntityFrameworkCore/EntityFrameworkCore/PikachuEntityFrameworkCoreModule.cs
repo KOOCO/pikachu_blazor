@@ -13,6 +13,7 @@ using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
+using Kooco.Pikachu.OrderItems;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -45,6 +46,7 @@ public class PikachuEntityFrameworkCoreModule : AbpModule
             options.AddRepository<Item, ItemRepository>();
             options.AddRepository<ItemDetails, ItemDetailsRepository>();
             options.AddRepository<SetItem, SetItemRepository>();
+            options.AddDefaultRepository<OrderItem>();
             options.AddRepository<SetItemDetails, SetItemDetailsRepository>();
         });
 

@@ -203,5 +203,6 @@ namespace Kooco.Pikachu.GroupBuys
         public bool IsSelected { get; set; } = false;
         public bool IsGroupBuyAvaliable { get; set; }
         public DateTime CreationTime { get; set; }
+        public bool IsEnterprise { get; set; }
     }
 }

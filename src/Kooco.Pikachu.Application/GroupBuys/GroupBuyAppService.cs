@@ -14,9 +14,18 @@ using Volo.Abp.MultiTenancy;
 using Kooco.Pikachu.Freebies.Dtos;
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Items;
+using Volo.Abp.Content;
+using System.IO;
+using Kooco.Pikachu.Orders;
+using MiniExcelLibs;
+using Kooco.Pikachu.Items.Dtos;
+using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.DeliveryTempratureCosts;
+using Kooco.Pikachu.DeliveryTemperatureCosts;
 
 namespace Kooco.Pikachu.GroupBuys
 {
+    [RemoteService(IsEnabled = false)]
     public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     {
         private readonly IGroupBuyRepository _groupBuyRepository;
@@ -26,6 +35,8 @@ namespace Kooco.Pikachu.GroupBuys
         private readonly IFreebieRepository _freebieRepository;
         private readonly IDataFilter _dataFilter;
         private readonly ISetItemRepository _setItemRepository;
+        private readonly IOrderRepository _orderRepository;
+        private readonly IRepository<DeliveryTemperatureCost, Guid> _temperatureRepositroy;
 
         public GroupBuyAppService(
             IGroupBuyRepository groupBuyRepository,
@@ -34,7 +45,9 @@ namespace Kooco.Pikachu.GroupBuys
             IFreebieRepository freebieRepository,
             IRepository<Image, Guid> imageRepository,
             IDataFilter dataFilter,
-            ISetItemRepository setItemRepository
+            ISetItemRepository setItemRepository,
+            IOrderRepository orderRepository,
+            IRepository<DeliveryTemperatureCost, Guid> temperatureRepositroy
             )
         {
             _groupBuyManager = groupBuyManager;
@@ -44,6 +57,8 @@ namespace Kooco.Pikachu.GroupBuys
             _dataFilter = dataFilter;
             _freebieRepository = freebieRepository;
             _setItemRepository = setItemRepository;
+            _orderRepository = orderRepository;
+            _temperatureRepositroy = temperatureRepositroy;
         }
 
         public async Task<GroupBuyDto> CreateAsync(GroupBuyCreateDto input)
@@ -54,7 +69,7 @@ namespace Kooco.Pikachu.GroupBuys
                                                         input.IssueInvoice, input.AutoIssueTriplicateInvoice, input.InvoiceNote, input.ProtectPrivacyData, input.InviteCode, input.ProfitShare,
                                                         input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy,
                                                         input.NotifyMessage, input.ExcludeShippingMethod, input.IsDefaultPaymentGateWay, input.PaymentMethod, input.GroupBuyCondition, input.CustomerInformation,
-                                                        input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription, input.ShortCode);
+                                                        input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription, input.ShortCode, input.IsEnterprise);
 
             if (input.ItemGroups != null && input.ItemGroups.Any())
             {
@@ -75,7 +90,8 @@ namespace Kooco.Pikachu.GroupBuys
                                 item.SortOrder,
                                 item.ItemId,
                                 item.SetItemId,
-                                item.ItemType
+                                item.ItemType,
+                                item.DisplayText
                                 );
                         }
                     }
@@ -86,7 +102,52 @@ namespace Kooco.Pikachu.GroupBuys
 
             return ObjectMapper.Map<GroupBuy, GroupBuyDto>(result);
         }
+        public async Task<GroupBuyDto> CopyAsync(Guid Id)
+        {
+            var query = await _groupBuyRepository.GetQueryableAsync();
+            var input = await _groupBuyRepository.GetWithDetailsAsync(Id);
+            var count = query.Where(x => x.GroupBuyName.Contains(input.GroupBuyName)).Count();
+            var Name = input.GroupBuyName + "(" + count + ")";
+            var ShortCode = "";
+            var result = await _groupBuyManager.CreateAsync(input.GroupBuyNo, input.Status, Name, input.EntryURL, input.EntryURL2, input.SubjectLine,
+                                                        input.ShortName, input.LogoURL, input.BannerURL, input.StartTime, input.EndTime, input.FreeShipping, input.AllowShipToOuterTaiwan,
+                                                        input.AllowShipOversea, input.ExpectShippingDateFrom, input.ExpectShippingDateTo, input.MoneyTransferValidDayBy, input.MoneyTransferValidDays,
+                                                        input.IssueInvoice, input.AutoIssueTriplicateInvoice, input.InvoiceNote, input.ProtectPrivacyData, input.InviteCode, input.ProfitShare,
+                                                        input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy,
+                                                        input.NotifyMessage, input.ExcludeShippingMethod, input.IsDefaultPaymentGateWay, input.PaymentMethod, input.GroupBuyCondition, input.CustomerInformation,
+                                                        input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription, ShortCode, input.IsEnterprise);
 
+            if (input.ItemGroups != null && input.ItemGroups.Any())
+            {
+                foreach (var group in input.ItemGroups)
+                {
+                    var itemGroup = _groupBuyManager.AddItemGroup(
+                        result,
+                        group.SortOrder,
+                        group.GroupBuyModuleType
+                        );
+
+                    if (group.ItemGroupDetails != null && group.ItemGroupDetails.Any())
+                    {
+                        foreach (var item in group.ItemGroupDetails)
+                        {
+                            _groupBuyManager.AddItemGroupDetail(
+                                itemGroup,
+                                item.SortOrder,
+                                item.ItemId,
+                                item.SetItemId,
+                                item.ItemType,
+                                item.DisplayText
+                                );
+                        }
+                    }
+                }
+            }
+
+            await _groupBuyRepository.InsertAsync(result);
+
+            return ObjectMapper.Map<GroupBuy, GroupBuyDto>(result);
+        }
         public async Task DeleteAsync(Guid id)
         {
             await _groupBuyRepository.DeleteAsync(id);
@@ -110,6 +171,14 @@ namespace Kooco.Pikachu.GroupBuys
                 : ObjectMapper.Map<GroupBuy, GroupBuyDto>(item);
         }
 
+        public async Task DeleteGroupBuyItemAsync(Guid id, Guid GroupBuyID)
+        {
+            var groupbuy = await _groupBuyRepository.GetAsync(GroupBuyID);
+            await _groupBuyRepository.EnsureCollectionLoadedAsync(groupbuy, i => i.ItemGroups);
+            var itemGroup = groupbuy.ItemGroups.Where(i => i.Id == id).First();
+            groupbuy.ItemGroups.Remove(itemGroup);
+            await _groupBuyRepository.UpdateAsync(groupbuy);
+        }
         public async Task<PagedResultDto<GroupBuyDto>> GetListAsync(GetGroupBuyInput input)
         {
             var count = await _groupBuyRepository.GetGroupBuyCountAsync(input.FilterText, input.GroupBuyNo, input.Status, input.GroupBuyName, input.EntryURL, input.EntryURL2, input.SubjectLine
@@ -186,12 +255,7 @@ namespace Kooco.Pikachu.GroupBuys
             groupBuy.GroupBuyConditionDescription = input.GroupBuyConditionDescription;
             groupBuy.ExchangePolicyDescription = input.ExchangePolicyDescription;
             groupBuy.ShortCode = input.ShortCode;
-
-            var itemGroupIds = input.ItemGroups?.Select(x => x.Id).ToList();
-            if (itemGroupIds != null && itemGroupIds.Any())
-            {
-                _groupBuyManager.RemoveItemGroups(groupBuy, itemGroupIds);
-            }
+            groupBuy.IsEnterprise = input.IsEnterprise;
 
             if (input?.ItemGroups != null)
             {
@@ -204,7 +268,10 @@ namespace Kooco.Pikachu.GroupBuys
                         {
                             itemGroup.SortOrder = group.SortOrder;
                             itemGroup.GroupBuyModuleType = group.GroupBuyModuleType;
-
+                            if (group.ItemDetails.Count == 0)
+                            {
+                                groupBuy.ItemGroups.Remove(itemGroup);
+                            }
                             ProcessItemDetails(itemGroup, group.ItemDetails);
                         }
                     }
@@ -226,29 +293,17 @@ namespace Kooco.Pikachu.GroupBuys
         }
         private void ProcessItemDetails(GroupBuyItemGroup itemGroup, ICollection<GroupBuyItemGroupDetailCreateUpdateDto> itemDetails)
         {
+            itemGroup.ItemGroupDetails?.Clear();
             foreach (var item in itemDetails)
             {
-                if (item.Id.HasValue)
-                {
-                    var itemDetail = itemGroup.ItemGroupDetails.FirstOrDefault(x => x.Id == item.Id);
-                    if (itemDetail != null)
-                    {
-                        itemDetail.SortOrder = item.SortOrder;
-                        itemDetail.ItemId = item.ItemId;
-                        itemDetail.SetItemId = item.SetItemId;
-                        itemDetail.ItemType = item.ItemType;
-                    }
-                }
-                else
-                {
-                    _groupBuyManager.AddItemGroupDetail(
-                        itemGroup,
-                        item.SortOrder,
-                        item.ItemId,
-                        item.SetItemId,
-                        item.ItemType
-                    );
-                }
+                _groupBuyManager.AddItemGroupDetail(
+                    itemGroup,
+                    item.SortOrder,
+                    item.ItemId,
+                    item.SetItemId,
+                    item.ItemType,
+                    item.DisplayText
+                );
             }
         }
         public async Task DeleteManyGroupBuyItemsAsync(List<Guid> groupBuyIds)
@@ -273,7 +328,24 @@ namespace Kooco.Pikachu.GroupBuys
             await _groupBuyRepository.UpdateAsync(groupBuy);
         }
 
+        public async Task<GroupBuyItemGroupDto> GetGroupBuyItemGroupAsync(Guid id)
+        {
+            var itemGroup = await _groupBuyRepository.GetGroupBuyItemGroupAsync(id);
+            return ObjectMapper.Map<GroupBuyItemGroup, GroupBuyItemGroupDto>(itemGroup);
+        }
 
+        public async Task<List<KeyValueDto>> GetGroupBuyLookupAsync()
+        {
+            var groupbuys = (await _groupBuyRepository.GetListAsync())
+                            .Where(g => g.IsGroupBuyAvaliable)
+                            .ToList();
+            return ObjectMapper.Map<List<GroupBuy>, List<KeyValueDto>>(groupbuys);
+        }
+        public async Task<List<KeyValueDto>> GetAllGroupBuyLookupAsync()
+        {
+            var groupbuys = (await _groupBuyRepository.GetListAsync()).ToList();
+            return ObjectMapper.Map<List<GroupBuy>, List<KeyValueDto>>(groupbuys);
+        }
         /// <summary>
         /// This Method Returns the Desired Result For the Store Front End.
         /// Do not change unless you want to make changes in the Store Front End Code
@@ -377,6 +449,25 @@ namespace Kooco.Pikachu.GroupBuys
                 Items = ObjectMapper.Map<List<GroupBuyReport>, List<GroupBuyReportDto>>(items)
             };
         }
+        public async Task<PagedResultDto<GroupBuyReportDto>> GetGroupBuyTenantReportListAsync(GetGroupBuyReportListDto input)
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                if (input.Sorting.IsNullOrWhiteSpace())
+                {
+                    input.Sorting = nameof(GroupBuyReport.GroupBuyName);
+                }
+                var totalCount = await _groupBuyRepository.GetGroupBuyTenantReportCountAsync();
+
+                var items = await _groupBuyRepository.GetGroupBuyTenantReportListAsync(input.SkipCount, input.MaxResultCount, input.Sorting);
+
+                return new PagedResultDto<GroupBuyReportDto>
+                {
+                    TotalCount = totalCount,
+                    Items = ObjectMapper.Map<List<GroupBuyReport>, List<GroupBuyReportDto>>(items)
+                };
+            }
+        }
 
         public async Task<GroupBuyDto> GetGroupBuyofTenant(string ShortCode, Guid TenantId)
         {
@@ -386,6 +477,121 @@ namespace Kooco.Pikachu.GroupBuys
                 var groupbuy = query.Where(x => x.ShortCode == ShortCode && x.TenantId == TenantId).FirstOrDefault();
                 return ObjectMapper.Map<GroupBuy, GroupBuyDto>(groupbuy);
             }
+
+        }
+
+        public async Task<GroupBuyDto> GetWithItemGroupsAsync(Guid id)
+        {
+            var groupbuy = await _groupBuyRepository.GetWithItemGroupsAsync(id);
+            return ObjectMapper.Map<GroupBuy, GroupBuyDto>(groupbuy);
+        }
+
+        public async Task<GroupBuyReportDetailsDto> GetGroupBuyReportDetailsAsync(Guid id, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null)
+        {
+            var data = await _groupBuyRepository.GetGroupBuyReportDetailsAsync(id, startDate, endDate, orderStatus);
+            return ObjectMapper.Map<GroupBuyReportDetails, GroupBuyReportDetailsDto>(data);
+        }
+        public async Task<GroupBuyReportDetailsDto> GetGroupBuyTenantReportDetailsAsync(Guid id)
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var data = await _groupBuyRepository.GetGroupBuyReportDetailsAsync(id);
+                return ObjectMapper.Map<GroupBuyReportDetails, GroupBuyReportDetailsDto>(data);
+            }
+        }
+        public async Task<IRemoteStreamContent> GetTenantsListAsExcelFileAsync(Guid id)
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                var items = await _orderRepository.GetListAsync(0, int.MaxValue, nameof(Order.CreationTime), null, id, new List<Guid>());
+                var excelData = items.Select(x => new
+                {
+                    x.OrderNo,
+                    OrderDate = x.CreationTime.ToString("MM/d/yyyy h:mm:ss tt"),
+                    x.CustomerName,
+                    Email = x.CustomerEmail,
+                    OrderStatus = L[x.OrderStatus.ToString()],
+                    ShippingStatus = L[x.ShippingStatus.ToString()],
+                    PaymentMethod = L[x.PaymentMethod.ToString()],
+                    CheckoutAmount = "$ " + x.TotalAmount.ToString("N2")
+                });
+                var memoryStream = new MemoryStream();
+                await memoryStream.SaveAsAsync(excelData);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                return new RemoteStreamContent(memoryStream, "InventroyReport.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            }
+        }
+
+        public async Task<IRemoteStreamContent> GetListAsExcelFileAsync(Guid id, DateTime? startDate = null, DateTime? endDate = null)
+        {
+            var groupBuy = await _groupBuyRepository.FirstOrDefaultAsync(x => x.Id == id);
+            var items = await _orderRepository.GetListAsync(x => x.GroupBuyId == id
+                            && (!startDate.HasValue || startDate.Value <= x.CreationTime)
+                            && (!endDate.HasValue || endDate.Value > x.CreationTime));
+            var data = ObjectMapper.Map<List<Order>, List<OrderDto>>(items);
+
+            if (groupBuy.ProtectPrivacyData)
+            {
+                data = data.HideCredentials();
+            }
+
+            var excelData = data.Select(x => new
+            {
+                x.OrderNo,
+                OrderDate = x.CreationTime.ToString("MM/d/yyyy h:mm:ss tt"),
+                x.CustomerName,
+                Email = x.CustomerEmail,
+                OrderStatus = L[x.OrderStatus.ToString()],
+                ShippingStatus = L[x.ShippingStatus.ToString()],
+                PaymentMethod = L[x.PaymentMethod.ToString()],
+                CheckoutAmount = "$ " + x.TotalAmount.ToString("N2")
+            });
+
+            var memoryStream = new MemoryStream();
+            await memoryStream.SaveAsAsync(excelData);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+
+            string fileName = groupBuy?.GroupBuyName ?? "GroupBuyReport";
+            return new RemoteStreamContent(memoryStream, $"{fileName}.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        }
+
+        public async Task<IRemoteStreamContent> GetAttachmentAsync(Guid id, Guid? tenantId, DateTime sendTime, RecurrenceType recurrenceType)
+        {
+            using (CurrentTenant.Change(tenantId))
+            {
+                var date = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, sendTime.Hour, sendTime.Minute, sendTime.Second);
+                DateTime endDate = date.AddMinutes(-1);
+                var startDate = recurrenceType switch
+                {
+                    RecurrenceType.Daily => date.AddDays(-1),
+                    RecurrenceType.Weekly => date.AddDays(-7),
+                    _ => throw new ArgumentException("Invalid RecurrenceType"),
+                };
+                return await GetListAsExcelFileAsync(id, startDate, endDate);
+            }
+        }
+
+        public async Task UpdateSortOrderAsync(Guid id, List<GroupBuyItemGroupCreateUpdateDto> itemGroups)
+        {
+            var groupbuy = await _groupBuyRepository.GetAsync(id);
+            await _groupBuyRepository.EnsureCollectionLoadedAsync(groupbuy, g => g.ItemGroups);
+
+            foreach (var item in itemGroups)
+            {
+                var itemGroup = groupbuy.ItemGroups.FirstOrDefault(x => x.Id == item.Id);
+                if (itemGroup != null)
+                {
+                    itemGroup.SortOrder = item.SortOrder;
+                }
+            }
+
+            await _groupBuyRepository.UpdateAsync(groupbuy);
+        }
+        public async Task<DeliveryTemperatureCostDto> GetTemperatureCostAsync(ItemStorageTemperature itemStorageTemperature)
+        {
+            var query = await _temperatureRepositroy.GetQueryableAsync();
+            var cost = query.Where(x => x.Temperature == itemStorageTemperature).FirstOrDefault();
+            return ObjectMapper.Map<DeliveryTemperatureCost, DeliveryTemperatureCostDto>(cost);
 
         }
     }

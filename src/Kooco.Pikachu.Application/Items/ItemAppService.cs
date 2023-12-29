@@ -7,10 +7,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp;
-using System.Transactions;
 
 namespace Kooco.Pikachu.Items;
 
+[RemoteService(IsEnabled = false)]
 public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSortedResultRequestDto, CreateItemDto, UpdateItemDto>,
     IItemAppService
 {
@@ -67,7 +67,8 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
             input.CustomField10Name,
             input.Attribute1Name,
             input.Attribute2Name,
-            input.Attribute3Name
+            input.Attribute3Name,
+            input.ItemStorageTemperature
             );
 
         if (input.ItemDetails != null && input.ItemDetails.Any())
@@ -165,6 +166,7 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
         item.Attribute2Name = input.Attribute2Name;
         item.Attribute3Name = input.Attribute3Name;
 
+        item.ItemStorageTemperature = input.ItemStorageTemperature;
 
         var itemDetailsIds = input.ItemDetails.Select(x => x.Id).ToList();
         _itemManager.RemoveItemDetailsAsync(item, itemDetailsIds);
@@ -218,13 +220,18 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
                 if (!item.Images.Any(x => x.BlobImageName == image.BlobImageName))
                 {
                     _itemManager.AddItemImage(
-                    item,
-                    image.Name,
-                    image.BlobImageName,
-                    image.ImageUrl,
-                    image.ImageType,
-                    image.SortNo
-                    );
+                        item,
+                        image.Name,
+                        image.BlobImageName,
+                        image.ImageUrl,
+                        image.ImageType,
+                        image.SortNo
+                        );
+                }
+                else
+                {
+                    var itemImage = item.Images.First(x => x.BlobImageName == image.BlobImageName);
+                    itemImage.SortNo = image.SortNo;
                 }
             }
         }
@@ -281,9 +288,8 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
 
     public async Task<List<ItemWithItemTypeDto>> GetItemsLookupAsync()
     {
-        var items = await _itemRepository.GetListAsync();
-        items = items.Where(i => i.IsItemAvaliable).ToList();
-        return ObjectMapper.Map<List<Item>, List<ItemWithItemTypeDto>>(items);
+        var items = await _itemRepository.GetItemsLookupAsync();
+        return ObjectMapper.Map<List<ItemWithItemType>, List<ItemWithItemTypeDto>>(items);
     }
 
     /// <summary>
@@ -294,7 +300,6 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
     public async Task<List<ItemDto>> GetListForStoreAsync()
     {
         var data = await _itemRepository.GetWithImagesAsync(3);
-        
         return ObjectMapper.Map<List<Item>, List<ItemDto>>(data.ToList());
     }
 }

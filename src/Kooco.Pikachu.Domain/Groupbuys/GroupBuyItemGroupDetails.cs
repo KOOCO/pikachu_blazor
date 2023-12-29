@@ -12,6 +12,7 @@ namespace Kooco.Pikachu.Groupbuys
         public Guid? ItemId { get; set; }
         public Guid? SetItemId { get; set; }
 
+        public string? DisplayText { get; set; }
         public int SortOrder { get; set; }
 
         [ForeignKey(nameof(ItemId))]
@@ -31,7 +32,8 @@ namespace Kooco.Pikachu.Groupbuys
             int sortOrder,
             Guid? itemId,
             Guid? setItemId,
-            ItemType itemType
+            ItemType itemType,
+            string? displayText
 
             ) : base(id)
         {
@@ -40,6 +42,7 @@ namespace Kooco.Pikachu.Groupbuys
             ItemId = itemId;
             SetItemId = setItemId;
             ItemType = itemType;
+            DisplayText = displayText;
         }
     }
 }

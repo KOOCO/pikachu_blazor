@@ -1,6 +1,7 @@
 ﻿using Kooco.Pikachu.Items.Dtos;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.SymbolStore;
 using System.Text;
 
 namespace Kooco.Pikachu.GroupBuys
@@ -194,5 +195,6 @@ namespace Kooco.Pikachu.GroupBuys
         public string? GroupBuyConditionDescription { get; set; }
         public string? CustomerInformationDescription { get; set; }
         public string? ExchangePolicyDescription { get; set; }
+        public bool IsEnterprise { get; set; }
     }
 }

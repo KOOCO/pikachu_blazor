@@ -1,0 +1,65 @@
+﻿@page "/DeliveryTemperatureCost"
+@using Volo.Abp.MultiTenancy
+@using Volo.Abp.Application.Dtos
+@using Kooco.Pikachu.GroupBuys
+@using Kooco.Pikachu.Localization
+@using Microsoft.Extensions.Localization
+@using Volo.Abp
+@using System.Text.Json;
+@using System.ComponentModel;
+@using Kooco.Pikachu.EnumValues;
+@using Blazorise.Components;
+@using Blazorise.LoadingIndicator;
+@using Kooco.Pikachu.Items.Dtos;
+@inject IStringLocalizer<PikachuResource> L
+@inject NavigationManager NavigationManager
+<h3>@L["DeliveryTemperatureCost"]</h3>
+<Card>
+    <CardBody>
+        @foreach(var item in temperatureCosts)
+        {
+        <div class=" col-12 row mb-3 ">
+            <div class="col-1 text-lg-end ">
+                <label>@L["Temperature"]</label>
+            </div>
+            <div class="col-5">
+
+                <Select Disabled TValue="ItemStorageTemperature"
+                    Class="form-select form-select-sm"
+                            SelectedValue="@item.Temperature">
+                    <SelectItem Value="-1"></SelectItem>
+                    @foreach (var enumValue in Enum.GetValues(typeof(ItemStorageTemperature)))
+                    {
+                        <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                    }
+                </Select>
+               
+            </div>
+            <div class="col-1 text-lg-end ">
+                <label>@L["Cost"]</label>
+            </div>
+            <div class="col-5">
+
+                <NumericEdit TValue="decimal" @bind-Value="item.Cost" class="form-control-sm" />
+
+             
+
+            </div>
+
+        </div>
+        }
+        <div class="row">
+            <div class="col-12 text-lg-end">
+
+                <Button Type="@ButtonType.Button" class="btn btn-primary" Clicked="UpdateCostAsync">
+                    <i class="fa fa-check"></i>
+                    @L["Save"]
+                </Button>
+            </div>
+        </div>
+        </CardBody>
+        </Card>
+
+@code {
+
+}

@@ -7,6 +7,7 @@ using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
+using Kooco.Pikachu.Tenants;
 using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
@@ -47,12 +48,17 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement
         public int ShareProfitPercentage { get; set; }
         public string LogoUrl { get; set; }
         public string BannerUrl { get; set; }
+        public string ShortCode { get; set; }
+        public string EntryUrl { get; set; }
+        public string TenantUrl { get; set; }
         private readonly IUiMessageService _uiMessageService;
         private readonly ImageContainerManager _imageContainerManager;
         private readonly IIdentityUserAppService _identityUserAppService;
+        private readonly IMyTenantAppService _myTenantAppService;
         public CustomTenantManagement(IUiMessageService uiMessageService,
             ImageContainerManager imageContainerManager,
-            IIdentityUserAppService identityUserAppService)
+            IIdentityUserAppService identityUserAppService,
+            IMyTenantAppService myTenantAppService)
         {
             LocalizationResource = typeof(AbpTenantManagementResource);
             ObjectMapperContext = typeof(AbpTenantManagementBlazorModule);
@@ -65,10 +71,12 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement
             _uiMessageService = uiMessageService;
             _imageContainerManager = imageContainerManager;
             _identityUserAppService = identityUserAppService;
+            _myTenantAppService = myTenantAppService;
         }
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
+            EntryUrl = _configuration["EntryUrl"]?.TrimEnd('/');
             var users=  await _identityUserAppService.GetListAsync(new GetIdentityUsersInput() {MaxResultCount=1000,SkipCount=0 });
             UsersList = users?.Items.ToList();
         
@@ -79,12 +87,31 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement
             base.NewEntity.SetProperty("TenantOwner", TenantOwnerId);
             base.NewEntity.SetProperty("Status", Status);
             base.NewEntity.SetProperty("BannerUrl", BannerUrl);
+            if (ShortCode == null)
+            {
+                await _uiMessageService.Warn(L["Short Code Can't Null"]);
+                return;
+
+            }
+            var check = await _myTenantAppService.CheckShortCodeForCreateAsync(ShortCode);
+            if (check)
+            {
+
+                await _uiMessageService.Warn(L["Short Code Already Exsist"]);
+                return;
+
+            }
+
+            base.NewEntity.SetProperty("ShortCode", ShortCode);
+            TenantUrl = EntryUrl+"/ShortCode=" + ShortCode ;
+            base.NewEntity.SetProperty("TenantUrl", TenantUrl);
             await base.CreateEntityAsync();
             LogoUrl = null;
             ShareProfitPercentage = 0;
             TenantOwnerId = null;
             Status = 0;
             BannerUrl = null;
+            ShortCode = null;
            
         }
         protected override ValueTask SetTableColumnsAsync()
@@ -132,11 +159,24 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement
                        ///*Data*/=columns[0].Data,
                         Component=typeof(OwnerNameTableColumn)
                     },
+
                       new TableColumn
                     {
                         Title ="Share Profit %" ,
                         Sortable = true,
                        Data=columns[1].Data,
+                    },
+                          new TableColumn
+                    {
+                        Title ="Link" ,
+                        Sortable = true,
+                       Data=columns[6].Data,
+                    },
+                        new TableColumn
+                    {
+                        Title ="ShortCode" ,
+                        Sortable = true,
+                       Data=columns[5].Data,
                     },
                         new TableColumn
                     {
@@ -153,33 +193,55 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement
 
 
         }
-        protected override Task OpenCreateModalAsync()
+        protected override  Task OpenCreateModalAsync()
         {
             LogoUrl = null;
             ShareProfitPercentage = 0;
             TenantOwnerId = null;
             Status = 0;
             BannerUrl = null;
+            ShortCode = null;
            return base.OpenCreateModalAsync();
         
         }
-        protected override  Task UpdateEntityAsync()
+        protected  override async  Task UpdateEntityAsync()
         {
+            if (ShortCode == null)
+            {
+                await _uiMessageService.Warn(L["Short Code Can't Null"]);
+                return;
+
+            }
+            var check = await _myTenantAppService.CheckShortCodeForUpdate(ShortCode,base.EditingEntityId);
+            if (check)
+            {
+
+                await _uiMessageService.Warn(L["Short Code Already Exsist"]);
+                return;
+
+            }
             base.EditingEntity.ExtraProperties.Remove("LogoUrl") ;
             base.EditingEntity.ExtraProperties.Remove("ShareProfitPercent");
             base.EditingEntity.ExtraProperties.Remove("TenantOwner");
             base.EditingEntity.ExtraProperties.Remove("Status");
             base.EditingEntity.ExtraProperties.Remove("BannerUrl");
+
+
+            base.EditingEntity.ExtraProperties.Remove("ShortCode");
+            base.EditingEntity.ExtraProperties.Remove("TenantUrl");
             base.EditingEntity.SetProperty("LogoUrl", LogoUrl);
             base.EditingEntity.SetProperty("ShareProfitPercent", ShareProfitPercentage);
             base.EditingEntity.SetProperty("TenantOwner", TenantOwnerId);
             base.EditingEntity.SetProperty("Status", Status);
             base.EditingEntity.SetProperty("BannerUrl",BannerUrl);
+            base.EditingEntity.SetProperty("ShortCode", ShortCode);
+            TenantUrl = EntryUrl+"/ShortCode=" + ShortCode;
+            base.EditingEntity.SetProperty("TenantUrl", TenantUrl);
             LogoUrl = null;
             ShareProfitPercentage = 0;
             TenantOwnerId = null;
             Status = 0;
-            return  base.UpdateEntityAsync();
+             await base.UpdateEntityAsync();
            
 
         }
@@ -190,6 +252,8 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement
             LogoUrl = row.GetProperty<string>("LogoUrl");
             Status = row.GetProperty<TenantStatus>("Status");
             BannerUrl = row.GetProperty<string>("BannerUrl");
+            ShortCode = row.GetProperty<string>("ShortCode");
+            TenantUrl = row.GetProperty<string>("TenantUrl");
             return base.OpenEditModalAsync(row);
         
         }

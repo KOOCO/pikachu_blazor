@@ -38,6 +38,7 @@ namespace Kooco.Pikachu.Orders
         public string? Remarks { get; set; }
         public ReceivingTime? ReceivingTime { get; set; }
         public Guid GroupBuyId { get; set; }
+        public Guid? SplitFromId { get; set; }
 
         [ForeignKey(nameof(GroupBuyId))]
         public GroupBuy GroupBuy { get; set; }
@@ -49,9 +50,12 @@ namespace Kooco.Pikachu.Orders
         public DateTime? ShippingDate { get; set; }
         public DateTime? CancellationDate { get; set; }
         public OrderStatus OrderStatus { get; set; }
+        public OrderReturnStatus? ReturnStatus { get; set; }
         public ICollection<OrderItem> OrderItems { get; set; }
         public ICollection<StoreComment> StoreComments { get; set; }
         public bool IsRefunded { get; set; }
+        public InvoiceStatus InvoiceStatus { get; set; }
+        public OrderType? OrderType { get; set; }
         public Order() { }
 
         public Order(
@@ -78,7 +82,10 @@ namespace Kooco.Pikachu.Orders
             string? remarks,
             ReceivingTime? receivingTime,
             int totalQuantity,
-            decimal totalAmount
+            decimal totalAmount,
+            OrderReturnStatus? orderReturnStatus,
+            OrderType? orderType,
+            Guid? splitFromId=null
          )
         {
             Id = id;
@@ -110,6 +117,9 @@ namespace Kooco.Pikachu.Orders
             OrderItems = new List<OrderItem>();
             StoreComments = new List<StoreComment>();
             IsRefunded = false;
+            ReturnStatus = orderReturnStatus;
+            OrderType = orderType;
+            SplitFromId = splitFromId;
         }
 
         public void AddOrderItem(
@@ -121,7 +131,10 @@ namespace Kooco.Pikachu.Orders
             string? spec,
             decimal itemPrice,
             decimal totalAmount,
-            int quantity
+            int quantity,
+            string? sku,
+            ItemStorageTemperature temperature,
+            decimal temperatureCost
             )
         {
             OrderItems.Add(new OrderItem(
@@ -134,10 +147,26 @@ namespace Kooco.Pikachu.Orders
                     spec,
                     itemPrice,
                     totalAmount,
-                    quantity
+                    quantity,
+                    sku,
+                    temperature,
+                    temperatureCost
                     ));
         }
+        public void UpdateOrderItem(
+          List<OrderItem> items,Guid DeliveryOrderId
 
+         
+          )
+        {
+           foreach ( OrderItem item in items )
+            {
+
+                item.DeliveryOrderId = DeliveryOrderId;
+
+
+            }
+        }
         internal void AddStoreComment(
             [NotNull] string comment
             )
