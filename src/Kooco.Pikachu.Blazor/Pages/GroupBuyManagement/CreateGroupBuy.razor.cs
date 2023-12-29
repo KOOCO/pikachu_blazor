@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
@@ -33,11 +34,12 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         private string? SelectedAutoCompleteText { get; set; }
         private List<ItemWithItemTypeDto> ItemsList { get; set; } = [];
         private List<ItemWithItemTypeDto> SetItemList { get; set; } = [];
-        private List<string> PaymentMethodTags { get; set; } = []; 
+        private List<string> PaymentMethodTags { get; set; } = [];
         private string PaymentTagInputValue { get; set; }
         private List<CollapseItem> CollapseItem = [];
         string logoBlobName;
         string bannerBlobName;
+        protected Validations EditValidationsRef;
         private BlazoredTextEditor NotifyEmailHtml { get; set; }
         private BlazoredTextEditor GroupBuyHtml { get; set; }
         private BlazoredTextEditor CustomerInformationHtml { get; set; }
@@ -426,9 +428,14 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyNameCannotBeNull]);
                     return;
                 }
-                if (CreateGroupBuyDto.ShortCode.IsNullOrWhiteSpace())
+
+                string shortCode = CreateGroupBuyDto.ShortCode;
+                string pattern = @"^[A-Za-z0-9]{4,12}$";
+                bool isPatternValid = Regex.IsMatch(shortCode, pattern);
+
+                if (!isPatternValid)
                 {
-                    await _uiMessageService.Warn(L["Short Code Can't Null"]);
+                    await _uiMessageService.Warn(L["ShortCodePatternDoesnotMatch"]);
                     return;
                 }
                 var check = await _groupBuyAppService.CheckShortCodeForCreate(CreateGroupBuyDto.ShortCode);

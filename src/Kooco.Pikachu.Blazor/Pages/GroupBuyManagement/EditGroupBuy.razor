@@ -66,29 +66,27 @@
                 </div>
             </div>
             <Validations @ref="@EditValidationsRef" Model="@EditGroupBuyDto" ValidateOnLoad="false">
-          <div class="row">
-              <div class="col-1"></div>
-            <div class="col-2">
-                <label>@L["ShortCode"]</label>
-            </div>
-            <div class="col-7">
-               
-                <Validation UsePattern>
-                    <TextEdit Pattern="^[A-Za-z0-9]{8}$" MaxLength="8" @bind-Text="@EditGroupBuyDto.ShortCode">
-                        <Feedback>
-                            <ValidationError>Pattern does not match!</ValidationError>
-                        </Feedback>
-                    </TextEdit>
-                </Validation>
-
-            </div>
-            <div class="col-1">
-                <span>
-                    @((string.IsNullOrWhiteSpace(EditGroupBuyDto.ShortCode) ? 0 : (0 + EditGroupBuyDto.ShortCode.Count())))/@(8)
-                </span>
-            </div>
-        </div>
-        </Validations>
+                <div class="row">
+                      <div class="col-1"></div>
+                    <div class="col-2">
+                        <label>@L["ShortCode"]</label>
+                    </div>
+                    <div class="col-7">
+                        <Validation UsePattern>
+                            <TextEdit Pattern="^[A-Za-z0-9]{4,12}$" MaxLength="12" @bind-Text="@EditGroupBuyDto.ShortCode">
+                                <Feedback>
+                                    <ValidationError>@L["ShortCodePatternDoesnotMatch"]</ValidationError>
+                                </Feedback>
+                            </TextEdit>
+                        </Validation>
+                    </div>
+                    <div class="col-1">
+                        <span>
+                            @((string.IsNullOrWhiteSpace(EditGroupBuyDto.ShortCode) ? 0 : (0 + EditGroupBuyDto.ShortCode.Count())))/@(12)
+                        </span>
+                    </div>
+                </div>
+            </Validations>
         </div>
         <Divider></Divider>
          <div class="row">

@@ -65,25 +65,27 @@
                     <label>@L["ShortCode"]</label>
                 </div>
                 <div class="col-7">
-                    <Validation UsePattern>
-                        <TextEdit Pattern="^[A-Za-z0-9]{8}$" MaxLength="8" @bind-Text="@CreateGroupBuyDto.ShortCode">
-                            <Feedback>
-                                <ValidationError>Pattern does not match!</ValidationError>
-                            </Feedback>
-                        </TextEdit>
-                    </Validation>
-                </div>
-                <div class="col-1">
-                    <span>
-                        @((string.IsNullOrWhiteSpace(CreateGroupBuyDto.ShortCode) ? 0 : (0 + CreateGroupBuyDto.ShortCode.Count())))/@(8)
-                    </span>
-                </div>
-            </div>
-        </div>
-        <Divider></Divider>
-        <div class="row">
-            <div class="col-2">
-                <label>@L["GroupBuyName"]</label>
+                    <Validations @ref="@EditValidationsRef" Model="@CreateGroupBuyDto" ValidateOnLoad="false">
+                        <Validation UsePattern>
+                             <TextEdit Pattern="^[A-Za-z0-9]{4,12}$" MaxLength="12" @bind-Text="@CreateGroupBuyDto.ShortCode">
+                                 <Feedback>
+                                    <ValidationError>@L["ShortCodePatternDoesnotMatch"]</ValidationError>
+                                 </Feedback>
+                             </TextEdit>
+                         </Validation>
+                    </Validations>
+                 </div>
+                 <div class="col-1">
+                     <span>
+                         @((string.IsNullOrWhiteSpace(CreateGroupBuyDto.ShortCode) ? 0 : (0 + CreateGroupBuyDto.ShortCode.Count())))/@(12)
+                     </span>
+                 </div>
+             </div>
+         </div>
+         <Divider></Divider>
+         <div class="row">
+             <div class="col-2">
+                 <label>@L["GroupBuyName"]</label>
             </div>
             <div class="col-9">
                 <TextEdit MaxLength="@maxtextCount" @bind-Text="@CreateGroupBuyDto.GroupBuyName" />

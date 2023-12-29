@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
@@ -635,9 +636,14 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyNameCannotBeNull]);
                     return;
                 }
-                if (EditGroupBuyDto.ShortCode.IsNullOrWhiteSpace())
+
+                string shortCode = EditGroupBuyDto.ShortCode;
+                string pattern = @"^[A-Za-z0-9]{4,12}$";
+                bool isPatternValid = Regex.IsMatch(shortCode, pattern);
+
+                if (!isPatternValid)
                 {
-                    await _uiMessageService.Warn(L["Short Code Can't Null"]);
+                    await _uiMessageService.Warn(L["ShortCodePatternDoesnotMatch"]);
                     return;
                 }
                 var check = await _groupBuyAppService.CheckShortCodeForEdit(EditGroupBuyDto.ShortCode, Id);
