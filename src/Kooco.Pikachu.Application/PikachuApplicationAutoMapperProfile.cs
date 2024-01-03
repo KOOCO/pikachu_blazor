@@ -33,6 +33,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
 
         //Item Dto EntityMapping
         CreateMap<Item, ItemDto>();
+        CreateMap<ItemListViewModel, ItemListDto>();
         CreateMap<ItemDto, UpdateItemDto>();
         CreateMap<UpdateItemDto, Item>();
         CreateMap<CreateItemDto, Item>();

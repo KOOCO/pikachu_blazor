@@ -37,7 +37,7 @@
 </div>
 <Card>
     <CardBody>
-        <DataGrid TItem="ItemDto"
+        <DataGrid TItem="ItemListDto"
                   Data="ItemList"
                   ReadData="OnDataGridReadAsync"
                   TotalItems="Total"
@@ -46,35 +46,30 @@
                   RowDoubleClicked="OnEditItem"
                   SortChanged="OnSortChange">
             <DataGridColumns>
-                <DataGridColumn TItem="ItemDto" Caption="@L["Select"]" Width="30px">
+                <DataGridColumn Caption="@L["Select"]" Width="30px">
                     <DisplayTemplate>
                         <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
                     </DisplayTemplate>
                 </DataGridColumn>
-                <DataGridColumn TItem="ItemDto"
-                                Field="@nameof(ItemDto.ItemName)"
+                <DataGridColumn Field="@nameof(ItemListDto.ItemName)"
                                 Caption="@L["ItemName"]">
                 </DataGridColumn>
-                <DataGridColumn TItem="ItemDto"
-                                Field="@nameof(ItemDto.ItemDescriptionTitle)"
+                <DataGridColumn Field="@nameof(ItemListDto.ItemDescriptionTitle)"
                                 Caption="@L["ItemDescription"]">
                 </DataGridColumn>
-                <DataGridColumn TItem="ItemDto"
-                                Caption="@L["TimeLimitPeriod"]"
+                <DataGridColumn Caption="@L["TimeLimitPeriod"]"
                                 Sortable="false">
                                 <DisplayTemplate>
                                     @context.LimitAvaliableTimeStart.ToShortDateString() - @context.LimitAvaliableTimeEnd.ToShortDateString()
                                 </DisplayTemplate>
                 </DataGridColumn>
-                <DataGridColumn TItem="ItemDto"
-                                Field="@nameof(ItemDto.CreationTime)"
+                <DataGridColumn Field="@nameof(ItemListDto.CreationTime)"
                                 Caption="@L["CreatedTime"]">
                     <DisplayTemplate>
                         @context.CreationTime.ToShortDateString()
                     </DisplayTemplate>
                 </DataGridColumn>
-                <DataGridColumn TItem="ItemDto"
-                                Field="@nameof(ItemDto.IsFreeShipping)"
+                <DataGridColumn Field="@nameof(ItemListDto.IsFreeShipping)"
                                 Caption="@L["FreeShipping"]">
                     <DisplayTemplate>
                         @if (context.IsFreeShipping)
@@ -87,12 +82,10 @@
                         }
                     </DisplayTemplate>
                 </DataGridColumn>
-                <DataGridColumn TItem="ItemDto"
-                                Field="@nameof(ItemDto.ShareProfit)"
+                <DataGridColumn Field="@nameof(ItemListDto.ShareProfit)"
                                 Caption="@L["ShareProfit"]">
                 </DataGridColumn>
-                <DataGridColumn TItem="ItemDto"
-                                Field="@nameof(ItemDto.IsItemAvaliable)"
+                <DataGridColumn Field="@nameof(ItemListDto.IsItemAvaliable)"
                                 Caption="@L["Availability"]">
                         <DisplayTemplate>
                             <Switch TValue="bool" Checked="@context.IsItemAvaliable" CheckedChanged="@(() => OnItemAvaliablityChange(context.Id))"></Switch>

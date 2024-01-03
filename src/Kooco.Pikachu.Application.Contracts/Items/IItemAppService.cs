@@ -21,4 +21,5 @@ public interface IItemAppService :
     Task<List<ItemWithItemTypeDto>> GetItemsLookupAsync();
     Task<string?> GetFirstImageUrlAsync(Guid id);
     Task<List<ItemDto>> GetListForStoreAsync();
+    Task<PagedResultDto<ItemListDto>> GetItemsListAsync(GetItemListDto input);
 }

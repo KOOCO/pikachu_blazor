@@ -302,4 +302,21 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
         var data = await _itemRepository.GetWithImagesAsync(3);
         return ObjectMapper.Map<List<Item>, List<ItemDto>>(data.ToList());
     }
+
+    public async Task<PagedResultDto<ItemListDto>> GetItemsListAsync(GetItemListDto input)
+    {
+        if (input.Sorting.IsNullOrWhiteSpace())
+        {
+            input.Sorting = $"{nameof(ItemListViewModel.CreationTime)} DESC";
+        }
+        var totalCount = await _itemRepository.LongCountAsync();
+
+        var items = await _itemRepository.GetItemsListAsync(input.SkipCount, input.MaxResultCount, input.Sorting);
+
+        return new PagedResultDto<ItemListDto>
+        {
+            TotalCount = totalCount,
+            Items = ObjectMapper.Map<List<ItemListViewModel>, List<ItemListDto>>(items)
+        };
+    }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Kooco.Pikachu.EntityFrameworkCore;
 using Kooco.Pikachu.EnumValues;
@@ -52,6 +53,27 @@ public class ItemRepository : EfCoreRepository<PikachuDbContext, Item, Guid>, II
                 Id = x.Id,
                 Name = x.ItemName,
                 ItemType = ItemType.Item
+            }).ToListAsync();
+    }
+
+    public async Task<List<ItemListViewModel>> GetItemsListAsync(int skipCount, int maxResultCount, string sorting)
+    {
+        var dbContext = await GetDbContextAsync();
+
+        return await dbContext.Items
+            .OrderBy(sorting)
+            .PageBy(skipCount, maxResultCount)
+            .Select(item => new ItemListViewModel
+            {
+                Id = item.Id,
+                ItemName = item.ItemName,
+                ItemDescriptionTitle = item.ItemDescriptionTitle,
+                LimitAvaliableTimeStart = item.LimitAvaliableTimeStart,
+                LimitAvaliableTimeEnd = item.LimitAvaliableTimeEnd,
+                CreationTime = item.CreationTime,
+                ShareProfit = item.ShareProfit,
+                IsFreeShipping = item.IsFreeShipping,
+                IsItemAvaliable = item.IsItemAvaliable
             }).ToListAsync();
     }
 }

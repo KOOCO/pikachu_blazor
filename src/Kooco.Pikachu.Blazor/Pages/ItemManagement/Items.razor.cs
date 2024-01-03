@@ -1,24 +1,22 @@
-﻿using Kooco.Pikachu.Items;
-using Kooco.Pikachu.Items.Dtos;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
-using Volo.Abp.Application.Dtos;
-using System.Linq;
+﻿using Blazorise;
 using Blazorise.DataGrid;
-using Volo.Abp;
-
-using Volo.Abp.AspNetCore.Components.Messages;
-using Blazorise;
+using Blazorise.LoadingIndicator;
+using Kooco.Pikachu.Items;
+using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using Blazorise.LoadingIndicator;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Volo.Abp;
+using Volo.Abp.AspNetCore.Components.Messages;
 
 namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 {
     public partial class Items
     {
-        public List<ItemDto> ItemList;
+        public List<ItemListDto> ItemList;
         public bool IsAllSelected = false;
         int PageIndex = 1;
         int PageSize = 10;
@@ -36,10 +34,10 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             _itemAppService = itemAppService;
             _uiMessageService = messageService;
 
-            ItemList = new List<ItemDto>();
+            ItemList = new List<ItemListDto>();
         }
 
-        private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<ItemDto> e)
+        private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<ItemListDto> e)
         {
             PageIndex = e.Page - 1;
             await UpdateItemList();
@@ -52,7 +50,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             {
                 await Loading.Show();
                 int skipCount = PageIndex * PageSize;
-                var result = await _itemAppService.GetListAsync(new PagedAndSortedResultRequestDto
+                var result = await _itemAppService.GetItemsListAsync(new GetItemListDto
                 {
                     Sorting = Sorting,
                     MaxResultCount = PageSize,
@@ -138,7 +136,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         {
             NavigationManager.NavigateTo("Items/New");
         }
-        public void OnEditItem(DataGridRowMouseEventArgs<ItemDto> e)
+        public void OnEditItem(DataGridRowMouseEventArgs<ItemListDto> e)
         {
             var id = e.Item.Id;
             NavigationManager.NavigateTo($"Items/Edit/{id}");

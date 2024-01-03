@@ -90,4 +90,10 @@ public class ItemController(
     {
         return _itemAppService.GetItemsLookupAsync();
     }
+
+    [HttpGet("get-items-list")]
+    public Task<PagedResultDto<ItemListDto>> GetItemsListAsync(GetItemListDto input)
+    {
+        return _itemAppService.GetItemsListAsync(input);
+    }
 }
