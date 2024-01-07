@@ -30,15 +30,15 @@ public class PikachuMenuContributor : IMenuContributor
                 PikachuMenus.Home,
                 l["Menu:Home"],
                 "~/",
-                icon: "IconType.Outline.Home",
+                icon: "fas fa-home",
                 order: 0
             )
         );
 
         var groupMangment = new ApplicationMenuItem(
                  PikachuMenus.GroupBuyManagement,
-                 "團購管理",
-
+                 displayName: l["Menu:GroupBuyManagement"],
+                 //"團購管理",
                  icon: "fas fa-store",
                  order: 1
              );
@@ -47,7 +47,8 @@ public class PikachuMenuContributor : IMenuContributor
         {
             groupMangment.AddItem(new ApplicationMenuItem(
             name: "GroupBuyListView",
-            displayName: "團購列表",
+            displayName: l["Menu:GroupBuyListView"],
+            //displayName: "團購列表",
             icon: "fas fa-list",
             url: "/GroupBuyManagement/GroupBuyList"
             ));
@@ -57,7 +58,8 @@ public class PikachuMenuContributor : IMenuContributor
             groupMangment.AddItem(new ApplicationMenuItem(
                 name: "GroupBuyReports",
                 icon: "fas fa-newspaper",
-                displayName: "團購報表",
+                displayName: l["Menu:GroupBuyReports"],
+                //displayName: "團購報表",
                 url: "/GroupBuyManagement/GroupBuyReport"
                 ));
         }
@@ -65,7 +67,8 @@ public class PikachuMenuContributor : IMenuContributor
         var productmangment =
          new ApplicationMenuItem(
              PikachuMenus.ProductManagement,
-             "商品設定",
+             displayName: l["Menu:ProductManagement"],
+             //"商品設定",
              icon: "fas fa-tags",
              order: 2
          );
@@ -75,7 +78,8 @@ public class PikachuMenuContributor : IMenuContributor
             productmangment.AddItem(new ApplicationMenuItem(
             name: "GoodsList",
             icon: "fas fa-list",
-            displayName: "商品列表",
+            displayName: l["Menu:GoodsList"],
+            //displayName: "商品列表",
             url: "/Items"
             ));
         }
@@ -84,7 +88,8 @@ public class PikachuMenuContributor : IMenuContributor
             productmangment.AddItem(new ApplicationMenuItem(
             name: "GroupGoodsManagement",
             icon: "fas fa-object-group",
-            displayName: "組合商品設定",
+            displayName: l["Menu:GroupGoodsManagement"],
+            //displayName: "組合商品設定",
             url: "/SetItem"
             ));
         }
@@ -93,26 +98,28 @@ public class PikachuMenuContributor : IMenuContributor
             productmangment.AddItem(new ApplicationMenuItem(
             name: "InventoryReport",
             icon: "fas fa-newspaper",
-            displayName: "庫存報表",
+            displayName: l["Menu:InventoryReport"],
+            //displayName: "庫存報表",
             url: "/Items/InventoryReport")
             );
         }
         if (await context.IsGrantedAsync(PikachuPermissions.FreebieSetting))
         {
             productmangment.AddItem(new ApplicationMenuItem(
-        name: "FreebieManagement",
-        icon: "fas fa-gifts",
-        displayName: "贈品設定",
-        url: "/Freebie/FreebieList")
-        );
+            name: "FreebieManagement",
+            icon: "fas fa-gifts",
+            displayName: l["Menu:FreebiesListView"],
+            //displayName: "贈品設定",
+            url: "/Freebie/FreebieList")
+            );
         }
 
 
 
         var orderMangment = new ApplicationMenuItem(
                PikachuMenus.OrderManagement,
-               "訂單管理",
-
+               displayName: l["Menu:OrderManagement"],
+               //"訂單管理",
                icon: "fas fa-cart-plus",
                order: 3
            );
@@ -128,7 +135,8 @@ public class PikachuMenuContributor : IMenuContributor
         orderMangment.AddItem(new ApplicationMenuItem(
         name: "FreebieManagement",
         icon: "fas fa-truck-loading",
-        displayName: "退換貨列表",
+        displayName: l["Menu:ReturnAndExchangeOrder"],
+        //displayName: "退換貨列表",
         url: "/Orders/ReturnAndExchangeOrder",
          requiredPermissionName: PikachuPermissions.ReturnExchangeOrder)
         );
@@ -142,6 +150,7 @@ public class PikachuMenuContributor : IMenuContributor
 
         var paymentManagement = new ApplicationMenuItem(
                 PikachuMenus.PaymentManagement,
+                displayName: l["Menu:PaymentManagement"],
                 "金流設定",
                 icon: "fas fa-funnel-dollar",
                 order: 4
@@ -159,14 +168,16 @@ public class PikachuMenuContributor : IMenuContributor
         paymentManagement.AddItem(new ApplicationMenuItem(
             name: "ElectronicInvoiceSetting",
             icon: "fas fa-receipt",
-            displayName: "電子發票設定",
+            displayName: l["Menu:ElectronicInvoiceSetting"],
+            //displayName: "電子發票設定",
             url: "/CashFlowManagement/ElectronicInvoiceSetting",
             requiredPermissionName: PikachuPermissions.InvoiceSetting)
             );
         paymentManagement.AddItem(new ApplicationMenuItem(
             name: "CashFlowReconciliationStatement",
             icon: "fas fa-file-invoice",
-            displayName: "金流對帳表",
+            displayName: l["Menu:CashFlowReconciliationStatement"],
+            //displayName: "金流對帳表",
             url: "/CashFlowManagement/CashFlowReconciliationStatement",
             requiredPermissionName: PikachuPermissions.CashFlowReconciliationStatement)
             );
@@ -174,21 +185,23 @@ public class PikachuMenuContributor : IMenuContributor
         var logisticsManagment =
                 new ApplicationMenuItem(
                 PikachuMenus.LogisticsManagement,
-                "物流設定",
+                displayName: l["Menu:LogisticsManagement"],
+                //"物流設定",
                 icon: "fas fa-truck",
                 order: 5
             )
                 .AddItem(new ApplicationMenuItem(
             name: l["LogisticsProviderSettings"],
             icon: "fas fa-shipping-fast",
-            displayName: "物流商設定",
+            displayName: l["Menu:LogisticsProviderSettings"],
+            //displayName: "物流商設定",
             url: "/LogisticsProviderSettings",
             requiredPermissionName: PikachuPermissions.LogisticsSetting)
             )
                 .AddItem(new ApplicationMenuItem(
             name: "Delivery Temperature Cost",
             icon: "fas fa-temperature-low",
-            displayName: l["DeliveryTemperatureCost"],
+            displayName: l["Menu:DeliveryTemperatureCost"],
             url: "/DeliveryTemperatureCost",
             requiredPermissionName: PikachuPermissions.DeliveryTemperatureCost)
             );
@@ -219,8 +232,8 @@ public class PikachuMenuContributor : IMenuContributor
         var systemManagment =
             new ApplicationMenuItem(
                 PikachuMenus.SystemManagement,
-                "系統管理",
-
+                displayName: l["Menu:SystemManagement"],
+                //"系統管理",
                 icon: "fas fa-user",
                 order: 7
             );
@@ -243,7 +256,8 @@ public class PikachuMenuContributor : IMenuContributor
         systemManagment.AddItem(new ApplicationMenuItem(
       name: "多商戶管理-商戶賬單報表",
       icon: "fas fa-newspaper",
-      displayName: l["多商戶管理-商戶賬單報表"],
+      displayName: l["Menu:TenantBillingReport"],
+      //displayName: l["多商戶管理-商戶賬單報表"],
       url: "/TenantBillingReport",
       requiredPermissionName: PikachuPermissions.TenentBillReport)
 

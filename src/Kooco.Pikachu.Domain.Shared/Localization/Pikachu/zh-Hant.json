@@ -31,6 +31,14 @@
     "Menu:OrderManagement": "訂單管理",
     "Menu:PaymentManagement": "金流管理",
     "Menu:LogisticsManagement": "物流管理",
+    "Menu:InventoryReport": "庫存報表",
+    "Menu:ReturnAndExchangeOrder": "退換貨列表",
+    "Menu:ElectronicInvoiceSetting": "電子發票設定",
+    "Menu:CashFlowReconciliationStatement": "金流對帳表",
+    "Menu:LogisticsProviderSettings": "物流商設定",
+    "Menu:DeliveryTemperatureCost": "溫層運費成本",
+    "Menu:SystemManagement": "系統管理",
+    "Menu:TenantBillingReport": "多商戶管理-商戶賬單報表",
     "Permission:GoodsList": "商品列表",
     "Permission:GoodsGroupingSetting": "商品組管理",
     "Permission:POList": "訂單列表",
@@ -302,7 +310,7 @@
     "Enum:TenantStatus.2": "警示",
     "Enum:TenantStatus.3": "暫停",
 
-    "DeliveryTemperatureCost": "溫層運費成本Delivery Temperature Cost",
+    "DeliveryTemperatureCost": "溫層運費成本",
     "Cost": "成本",
     "CostUpdateSuccessfully": "成功更新成本",
 
