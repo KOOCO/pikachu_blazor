@@ -124,7 +124,7 @@
     "Normal": "Normal",
     "Freeze": "Freeze",
     "Frozen": "Frozen",
-
+    "DeliveryTemperatureCost": "Delivery Temperature Cost",
 
     //GroupBuy
     "NewGroupBuy": "New Group Buy",

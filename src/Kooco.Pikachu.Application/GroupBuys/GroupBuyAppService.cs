@@ -587,12 +587,12 @@ namespace Kooco.Pikachu.GroupBuys
 
             await _groupBuyRepository.UpdateAsync(groupbuy);
         }
+
         public async Task<DeliveryTemperatureCostDto> GetTemperatureCostAsync(ItemStorageTemperature itemStorageTemperature)
         {
             var query = await _temperatureRepositroy.GetQueryableAsync();
             var cost = query.Where(x => x.Temperature == itemStorageTemperature).FirstOrDefault();
             return ObjectMapper.Map<DeliveryTemperatureCost, DeliveryTemperatureCostDto>(cost);
-
         }
     }
 }

@@ -130,7 +130,8 @@ public class GroupBuyController(
     {
         return _groupBuyAppService.GetWithItemGroupsAsync(id);
     }
-    [HttpGet("get-temperature-cost/{temperature}")]
+
+    [HttpGet("get-temperature-cost/{temp}")]
     public Task<DeliveryTemperatureCostDto> GetTemperatureCostAsync(ItemStorageTemperature temp)
     {
         return _groupBuyAppService.GetTemperatureCostAsync(temp);
