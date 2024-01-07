@@ -22,6 +22,8 @@ using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.DeliveryTempratureCosts;
 using Kooco.Pikachu.DeliveryTemperatureCosts;
+using Microsoft.Extensions.Localization;
+using Kooco.Pikachu.Localization;
 
 namespace Kooco.Pikachu.GroupBuys
 {
@@ -34,9 +36,9 @@ namespace Kooco.Pikachu.GroupBuys
         private readonly ImageContainerManager _imageContainerManager;
         private readonly IFreebieRepository _freebieRepository;
         private readonly IDataFilter _dataFilter;
-        private readonly ISetItemRepository _setItemRepository;
         private readonly IOrderRepository _orderRepository;
-        private readonly IRepository<DeliveryTemperatureCost, Guid> _temperatureRepositroy;
+        private readonly IRepository<DeliveryTemperatureCost, Guid> _temperatureRepository;
+        private readonly IStringLocalizer<PikachuResource> _l;
 
         public GroupBuyAppService(
             IGroupBuyRepository groupBuyRepository,
@@ -45,9 +47,9 @@ namespace Kooco.Pikachu.GroupBuys
             IFreebieRepository freebieRepository,
             IRepository<Image, Guid> imageRepository,
             IDataFilter dataFilter,
-            ISetItemRepository setItemRepository,
             IOrderRepository orderRepository,
-            IRepository<DeliveryTemperatureCost, Guid> temperatureRepositroy
+            IRepository<DeliveryTemperatureCost, Guid> temperatureRepository,
+            IStringLocalizer<PikachuResource> l
             )
         {
             _groupBuyManager = groupBuyManager;
@@ -56,9 +58,9 @@ namespace Kooco.Pikachu.GroupBuys
             _imageRepository = imageRepository;
             _dataFilter = dataFilter;
             _freebieRepository = freebieRepository;
-            _setItemRepository = setItemRepository;
             _orderRepository = orderRepository;
-            _temperatureRepositroy = temperatureRepositroy;
+            _temperatureRepository = temperatureRepository;
+            _l = l;
         }
 
         public async Task<GroupBuyDto> CreateAsync(GroupBuyCreateDto input)
@@ -491,6 +493,7 @@ namespace Kooco.Pikachu.GroupBuys
             var data = await _groupBuyRepository.GetGroupBuyReportDetailsAsync(id, startDate, endDate, orderStatus);
             return ObjectMapper.Map<GroupBuyReportDetails, GroupBuyReportDetailsDto>(data);
         }
+
         public async Task<GroupBuyReportDetailsDto> GetGroupBuyTenantReportDetailsAsync(Guid id)
         {
             using (_dataFilter.Disable<IMultiTenant>())
@@ -499,22 +502,38 @@ namespace Kooco.Pikachu.GroupBuys
                 return ObjectMapper.Map<GroupBuyReportDetails, GroupBuyReportDetailsDto>(data);
             }
         }
+
         public async Task<IRemoteStreamContent> GetTenantsListAsExcelFileAsync(Guid id)
         {
             using (_dataFilter.Disable<IMultiTenant>())
             {
                 var items = await _orderRepository.GetListAsync(0, int.MaxValue, nameof(Order.CreationTime), null, id, new List<Guid>());
-                var excelData = items.Select(x => new
+
+                // Create a dictionary for localized headers
+                var headers = new Dictionary<string, string>
                 {
-                    x.OrderNo,
-                    OrderDate = x.CreationTime.ToString("MM/d/yyyy h:mm:ss tt"),
-                    x.CustomerName,
-                    Email = x.CustomerEmail,
-                    OrderStatus = L[x.OrderStatus.ToString()],
-                    ShippingStatus = L[x.ShippingStatus.ToString()],
-                    PaymentMethod = L[x.PaymentMethod.ToString()],
-                    CheckoutAmount = "$ " + x.TotalAmount.ToString("N2")
+                    { "OrderNo", _l["OrderNo"] },
+                    { "OrderDate", _l["OrderDate"] },
+                    { "CustomerName", _l["CustomerName"] },
+                    { "Email", _l["Email"] },
+                    { "OrderStatus", _l["OrderStatus"] },
+                    { "ShippingStatus", _l["ShippingStatus"] },
+                    { "PaymentMethod", _l["PaymentMethod"] },
+                    { "CheckoutAmount", _l["CheckoutAmount"] }
+                };
+
+                var excelData = items.Select(x => new Dictionary<string, object>
+                {
+                    { headers["OrderNo"], x.OrderNo },
+                    { headers["OrderDate"], x.CreationTime.ToString("MM/d/yyyy h:mm:ss tt") },
+                    { headers["CustomerName"], x.CustomerName },
+                    { headers["Email"], x.CustomerEmail },
+                    { headers["OrderStatus"], _l[x.OrderStatus.ToString()] },
+                    { headers["ShippingStatus"], _l[x.ShippingStatus.ToString()] },
+                    { headers["PaymentMethod"], _l[x.PaymentMethod.ToString()] },
+                    { headers["CheckoutAmount"], "$ " + x.TotalAmount.ToString("N2") }
                 });
+
                 var memoryStream = new MemoryStream();
                 await memoryStream.SaveAsAsync(excelData);
                 memoryStream.Seek(0, SeekOrigin.Begin);
@@ -535,16 +554,29 @@ namespace Kooco.Pikachu.GroupBuys
                 data = data.HideCredentials();
             }
 
-            var excelData = data.Select(x => new
+            // Create a dictionary for localized headers
+            var headers = new Dictionary<string, string>
             {
-                x.OrderNo,
-                OrderDate = x.CreationTime.ToString("MM/d/yyyy h:mm:ss tt"),
-                x.CustomerName,
-                Email = x.CustomerEmail,
-                OrderStatus = L[x.OrderStatus.ToString()],
-                ShippingStatus = L[x.ShippingStatus.ToString()],
-                PaymentMethod = L[x.PaymentMethod.ToString()],
-                CheckoutAmount = "$ " + x.TotalAmount.ToString("N2")
+                { "OrderNo", _l["OrderNo"] },
+                { "OrderDate", _l["OrderDate"] },
+                { "CustomerName", _l["CustomerName"] },
+                { "Email", _l["Email"] },
+                { "OrderStatus", _l["OrderStatus"] },
+                { "ShippingStatus", _l["ShippingStatus"] },
+                { "PaymentMethod", _l["PaymentMethod"] },
+                { "CheckoutAmount", _l["CheckoutAmount"] }
+            };
+
+            var excelData = data.Select(x => new Dictionary<string, object>
+            {
+                { headers["OrderNo"], x.OrderNo },
+                { headers["OrderDate"], x.CreationTime.ToString("MM/d/yyyy h:mm:ss tt") },
+                { headers["CustomerName"], x.CustomerName },
+                { headers["Email"], x.CustomerEmail },
+                { headers["OrderStatus"], _l[x.OrderStatus.ToString()] },
+                { headers["ShippingStatus"], _l[x.ShippingStatus.ToString()] },
+                { headers["PaymentMethod"], _l[x.PaymentMethod.ToString()] },
+                { headers["CheckoutAmount"], "$ " + x.TotalAmount.ToString("N2") }
             });
 
             var memoryStream = new MemoryStream();
@@ -590,7 +622,7 @@ namespace Kooco.Pikachu.GroupBuys
 
         public async Task<DeliveryTemperatureCostDto> GetTemperatureCostAsync(ItemStorageTemperature itemStorageTemperature)
         {
-            var query = await _temperatureRepositroy.GetQueryableAsync();
+            var query = await _temperatureRepository.GetQueryableAsync();
             var cost = query.Where(x => x.Temperature == itemStorageTemperature).FirstOrDefault();
             return ObjectMapper.Map<DeliveryTemperatureCost, DeliveryTemperatureCostDto>(cost);
         }

@@ -151,7 +151,7 @@ public class PikachuMenuContributor : IMenuContributor
         var paymentManagement = new ApplicationMenuItem(
                 PikachuMenus.PaymentManagement,
                 displayName: l["Menu:PaymentManagement"],
-                "金流設定",
+                //"金流設定",
                 icon: "fas fa-funnel-dollar",
                 order: 4
             );
