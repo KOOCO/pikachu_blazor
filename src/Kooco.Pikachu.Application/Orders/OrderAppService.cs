@@ -128,8 +128,10 @@ namespace Kooco.Pikachu.Orders
                 await _orderRepository.InsertAsync(order);
                 await UnitOfWorkManager.Current.SaveChangesAsync();
 
-                // Asked by Jean to remove email on Order Creation
-                //await SendEmailAsync(order.Id);
+                if (groupBuy?.IsEnterprise == true)
+                {
+                    await SendEmailAsync(order.Id);
+                }
 
                 return ObjectMapper.Map<Order, OrderDto>(order);
             }
