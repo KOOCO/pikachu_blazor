@@ -284,7 +284,13 @@
     "ShippingNumber": "Shipping Number",
     "AreYouSureToCancelOrder?": "Are You Sure To Cancel The Order?",
     "CombineOrders": "Combine Orders",
-
+    "Notes": "Notes",
+    "MerchantNotes": "Merchant Notes",
+    "OrderedItems": "Ordered Items",
+    "InvoiceStatus": "Invoice Status",
+    "CurrentStock": "Current Stock",
+    "AvailableStock": "Available Stock",
+    "AvailablePreorderQuantity": "Available Preorder Quantity",
 
     //Refund
     "Pikachu:RefundForSameOrderAlreadyExists": "Refund For Same Order Already Exists",

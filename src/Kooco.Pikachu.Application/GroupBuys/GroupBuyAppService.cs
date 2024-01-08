@@ -1,29 +1,28 @@
-﻿using Kooco.Pikachu.Groupbuys;
+﻿using Kooco.Pikachu.AzureStorage.Image;
+using Kooco.Pikachu.DeliveryTemperatureCosts;
+using Kooco.Pikachu.DeliveryTempratureCosts;
+using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Freebies;
+using Kooco.Pikachu.Freebies.Dtos;
+using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.Images;
+using Kooco.Pikachu.Items.Dtos;
+using Kooco.Pikachu.Localization;
+using Kooco.Pikachu.Orders;
+using Microsoft.Extensions.Localization;
+using MiniExcelLibs;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
-using Volo.Abp.Domain.Repositories;
-using Kooco.Pikachu.AzureStorage.Image;
-using Volo.Abp.Data;
-using Volo.Abp.MultiTenancy;
-using Kooco.Pikachu.Freebies.Dtos;
-using Kooco.Pikachu.Freebies;
-using Kooco.Pikachu.Items;
 using Volo.Abp.Content;
-using System.IO;
-using Kooco.Pikachu.Orders;
-using MiniExcelLibs;
-using Kooco.Pikachu.Items.Dtos;
-using Kooco.Pikachu.EnumValues;
-using Kooco.Pikachu.DeliveryTempratureCosts;
-using Kooco.Pikachu.DeliveryTemperatureCosts;
-using Microsoft.Extensions.Localization;
-using Kooco.Pikachu.Localization;
+using Volo.Abp.Data;
+using Volo.Abp.Domain.Repositories;
+using Volo.Abp.MultiTenancy;
 
 namespace Kooco.Pikachu.GroupBuys
 {
@@ -541,7 +540,7 @@ namespace Kooco.Pikachu.GroupBuys
             }
         }
 
-        public async Task<IRemoteStreamContent> GetListAsExcelFileAsync(Guid id, DateTime? startDate = null, DateTime? endDate = null)
+        public async Task<IRemoteStreamContent> GetListAsExcelFileAsync(Guid id, DateTime? startDate = null, DateTime? endDate = null, bool isChinese = false)
         {
             var groupBuy = await _groupBuyRepository.FirstOrDefaultAsync(x => x.Id == id);
             var items = await _orderRepository.GetListAsync(x => x.GroupBuyId == id
@@ -555,7 +554,18 @@ namespace Kooco.Pikachu.GroupBuys
             }
 
             // Create a dictionary for localized headers
-            var headers = new Dictionary<string, string>
+            var headers = isChinese ? new Dictionary<string, string>
+            {
+                { "OrderNo", "訂單號" },
+                { "OrderDate", "訂單日期" },
+                { "CustomerName", "客戶名稱" },
+                { "Email", "電子郵件" },
+                { "OrderStatus", "訂單狀態" },
+                { "ShippingStatus", "運輸狀態" },
+                { "PaymentMethod", "付款方式" },
+                { "CheckoutAmount", "結帳金額" }
+            } :
+            new Dictionary<string, string>
             {
                 { "OrderNo", _l["OrderNo"] },
                 { "OrderDate", _l["OrderDate"] },
@@ -599,7 +609,7 @@ namespace Kooco.Pikachu.GroupBuys
                     RecurrenceType.Weekly => date.AddDays(-7),
                     _ => throw new ArgumentException("Invalid RecurrenceType"),
                 };
-                return await GetListAsExcelFileAsync(id, startDate, endDate);
+                return await GetListAsExcelFileAsync(id, startDate, endDate, true);
             }
         }
 

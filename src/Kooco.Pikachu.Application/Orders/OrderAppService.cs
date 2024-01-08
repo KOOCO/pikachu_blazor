@@ -678,40 +678,50 @@ namespace Kooco.Pikachu.Orders
 
         public async Task<IRemoteStreamContent> GetListAsExcelFileAsync(GetOrderListDto input)
         {
-
-            //var downloadToken = await _excelDownloadTokenCache.GetAsync(input.DownloadToken);
-            //if (downloadToken == null || input.DownloadToken != downloadToken.Token)
-            //{
-            //    throw new AbpAuthorizationException("Invalid download token: " + input.DownloadToken);
-            //}
             var items = await _orderRepository.GetListAsync(0, int.MaxValue, input.Sorting, input.Filter, input.GroupBuyId, input.OrderIds);
             var Results = ObjectMapper.Map<List<Order>, List<OrderDto>>(items);
-            var excelContent = Results.Select(x => new
+
+            // Create a dictionary for localized headers
+            var headers = new Dictionary<string, string>
             {
-                OrderNumber = x.OrderNo,
-                OrderDate = x.CreationTime,
-                CustomerName = x.CustomerName,
-                Email = x.CustomerEmail,
+                { "OrderNumber", _l["OrderNo"] },
+                { "OrderDate", _l["OrderDate"] },
+                { "CustomerName", _l["CustomerName"] },
+                { "Email", _l["Email"] },
+                { "RecipientInformation", _l["RecipientInformation"] },
+                { "ShippingMethod", _l["ShippingMethod"] },
+                { "Address", _l["Address"] },
+                { "Notes", _l["Notes"] },
+                { "MerchantNotes", _l["MerchantNotes"] },
+                { "OrderedItems", _l["OrderedItems"] },
+                { "InvoiceStatus", _l["InvoiceStatus"] },
+                { "ShippingStatus", _l["ShippingStatus"] },
+                { "PaymentMethod", _l["PaymentMethod"] },
+                { "CheckoutAmount", _l["CheckoutAmount"] }
+            };
 
-                RecipientInformation = x.RecipientName + "/" + x.RecipientPhone,
-                ShippingMethod = x.DeliveryMethod,
-                Address = x.AddressDetails,
-                Notes = x.Remarks,
-                MerchantNotes = x.Remarks,
-                OrderedItems = string.Join(", ", x.OrderItems.Select(item =>
-        (item.ItemType == ItemType.Item) ? $"{item.Item?.ItemName} x {item.Quantity}" :
-        (item.ItemType == ItemType.SetItem) ? $"{item.SetItem?.SetItemName} x {item.Quantity}" :
-        (item.ItemType == ItemType.Freebie) ? $"{item.Freebie?.ItemName} x {item.Quantity}" : "")
-    ),
-                InvoiceStatus = x.InvoiceStatus,
-                ShippingStatus = x.ShippingStatus,
-                PaymentMethod = x.PaymentMethod,
-                CheckoutAmount = x.TotalAmount
-
-
-
-
+            var excelContent = Results.Select(x => new Dictionary<string, object>
+            {
+                { headers["OrderNumber"], x.OrderNo },
+                { headers["OrderDate"], x.CreationTime.ToString("MM/d/yyyy h:mm:ss tt") },
+                { headers["CustomerName"], x.CustomerName },
+                { headers["Email"], x.CustomerEmail },
+                { headers["RecipientInformation"], x.RecipientName + "/" + x.RecipientPhone },
+                { headers["ShippingMethod"], _l[x.DeliveryMethod.ToString()] },
+                { headers["Address"], x.AddressDetails },
+                { headers["Notes"], x.Remarks },
+                { headers["MerchantNotes"], x.Remarks },
+                { headers["OrderedItems"], string.Join(", ", x.OrderItems.Select(item =>
+                    (item.ItemType == ItemType.Item) ? $"{item.Item?.ItemName} x {item.Quantity}" :
+                    (item.ItemType == ItemType.SetItem) ? $"{item.SetItem?.SetItemName} x {item.Quantity}" :
+                    (item.ItemType == ItemType.Freebie) ? $"{item.Freebie?.ItemName} x {item.Quantity}" : "")
+                )},
+                { headers["InvoiceStatus"], _l[x.InvoiceStatus.ToString()] },
+                { headers["ShippingStatus"], _l[x.ShippingStatus.ToString()] },
+                { headers["PaymentMethod"], _l[x.PaymentMethod.ToString()] },
+                { headers["CheckoutAmount"], "$ " + x.TotalAmount.ToString("N2") }
             });
+
             var memoryStream = new MemoryStream();
             await memoryStream.SaveAsAsync(excelContent);
             memoryStream.Seek(0, SeekOrigin.Begin);

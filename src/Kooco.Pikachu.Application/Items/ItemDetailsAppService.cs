@@ -5,7 +5,9 @@ using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Kooco.Pikachu.Items.Dtos;
+using Kooco.Pikachu.Localization;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Localization;
 using MiniExcelLibs;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
@@ -22,10 +24,12 @@ public class ItemDetailsAppService : CrudAppService<ItemDetails, ItemDetailsDto,
 
     private readonly IItemDetailsRepository _repository;
     private readonly IDistributedCache<InventroyExcelDownloadTokenCacheItem, string> _excelDownloadTokenCache;
+    private readonly IStringLocalizer<PikachuResource> _l;
 
-    public ItemDetailsAppService(IItemDetailsRepository repository) : base(repository)
+    public ItemDetailsAppService(IItemDetailsRepository repository, IStringLocalizer<PikachuResource> l) : base(repository)
     {
         _repository = repository;
+        _l = l;
     }
     public async Task<PagedResultDto<ItemDetailsDto>> GetInventroyReport(GetInventroyInputDto input)
     {
@@ -40,22 +44,31 @@ public class ItemDetailsAppService : CrudAppService<ItemDetails, ItemDetailsDto,
 
     public async Task<IRemoteStreamContent> GetListAsExcelFileAsync(InventroyExcelDownloadDto input)
     {
-        //var downloadToken = await _excelDownloadTokenCache.GetAsync(input.DownloadToken);
-        //if (downloadToken == null || input.DownloadToken != downloadToken.Token)
-        //{
-        //    throw new AbpAuthorizationException("Invalid download token: " + input.DownloadToken);
-        //}
         var items = await _repository.GetInventroyListAsync(input.SkipCount, int.MaxValue, input.Sorting, input.FilterText);
-        var excelData = items.Select(x => new
+
+        // Create a dictionary for localized headers
+        var headers = new Dictionary<string, string>
         {
-            ItemName = x.ItemName,
-            SKU = x.SKU,
-            SellingPrice = x.SellingPrice,
-            GroupBuyPrice = x.GroupBuyPrice,
-            CurrentStock = x.StockOnHand,
-            AvailableStock = x.SaleableQuantity,
-            PreorderQuantity = x.PreOrderableQuantity,
-            AvailablePreorderQuantity = x.SaleablePreOrderQuantity
+            { "ItemName", _l["ItemName"] },
+            { "SKU", _l["SKU"] },
+            { "SellingPrice", _l["SellingPrice"] },
+            { "GroupBuyPrice", _l["GroupBuyPrice"] },
+            { "CurrentStock", _l["CurrentStock"] },
+            { "AvailableStock", _l["AvailableStock"] },
+            { "PreorderQuantity", _l["PreorderQuantity"] },
+            { "AvailablePreorderQuantity", _l["AvailablePreorderQuantity"] }
+        };
+
+        var excelData = items.Select(x => new Dictionary<string, object>
+        {
+            { headers["ItemName"], x.ItemName },
+            { headers["SKU"], x.SKU },
+            { headers["SellingPrice"], x.SellingPrice },
+            { headers["GroupBuyPrice"], x.GroupBuyPrice },
+            { headers["CurrentStock"], x.StockOnHand },
+            { headers["AvailableStock"], x.SaleableQuantity },
+            { headers["PreorderQuantity"], x.PreOrderableQuantity },
+            { headers["AvailablePreorderQuantity"], x.SaleablePreOrderQuantity }
         });
 
         var memoryStream = new MemoryStream();

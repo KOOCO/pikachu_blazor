@@ -293,6 +293,13 @@
     "OrderShippingDetails": "訂單派送細節",
     "ShippingNumber": "派送單號",
     "AreYouSureToCancelOrder?": "你確定要取消訂單?",
+    "Notes": "筆記",
+    "MerchantNotes": "商家須知",
+    "OrderedItems": "訂購的商品",
+    "InvoiceStatus": "發票狀態",
+    "CurrentStock": "當前庫存",
+    "AvailableStock": "可用庫存",
+    "AvailablePreorderQuantity": "可預訂數量",
 
     //Refund
     "Pikachu:RefundForSameOrderAlreadyExists": "同一訂單已存在退款",

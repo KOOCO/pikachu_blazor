@@ -156,7 +156,7 @@ public class GroupBuyController(
     }
 
     [HttpGet("get-as-excel/{id}")]
-    public Task<IRemoteStreamContent> GetListAsExcelFileAsync(Guid id, DateTime? startDate = null, DateTime? endDate = null)
+    public Task<IRemoteStreamContent> GetListAsExcelFileAsync(Guid id, DateTime? startDate = null, DateTime? endDate = null, bool isChinese = false)
     {
         return _groupBuyAppService.GetListAsExcelFileAsync(id, startDate, endDate);
     }
