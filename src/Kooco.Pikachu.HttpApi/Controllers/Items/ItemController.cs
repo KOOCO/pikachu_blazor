@@ -96,4 +96,10 @@ public class ItemController(
     {
         return _itemAppService.GetItemsListAsync(input);
     }
+
+    [HttpGet("get-all-items-lookup")]
+    public Task<List<KeyValueDto>> GetAllItemsLookupAsync()
+    {
+        return _itemAppService.GetAllItemsLookupAsync();
+    }
 }

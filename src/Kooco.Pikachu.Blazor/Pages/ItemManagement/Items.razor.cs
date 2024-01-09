@@ -1,4 +1,5 @@
 ﻿using Blazorise;
+using Blazorise.Components;
 using Blazorise.DataGrid;
 using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.Items;
@@ -14,27 +15,30 @@ using Volo.Abp.AspNetCore.Components.Messages;
 
 namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 {
-    public partial class Items
+    public partial class Items(
+        IItemAppService itemAppService,
+        IUiMessageService messageService
+            )
     {
-        public List<ItemListDto> ItemList;
+        public GetItemListDto Filters { get; set; } = new();
+        public List<ItemListDto> ItemList { get; set; } = [];
+        public List<KeyValueDto> ItemLookup { get; set; } = [];
+        LoadingIndicator Loading { get; set; }
+        Autocomplete<KeyValueDto, Guid?> Autocomplete { get; set; }
+
         public bool IsAllSelected = false;
         int PageIndex = 1;
-        int PageSize = 10;
         int Total = 0;
-        string Sorting = nameof(ItemDto.ItemName);
+        private readonly IUiMessageService _uiMessageService = messageService;
+        private readonly IItemAppService _itemAppService = itemAppService;
 
-        private readonly IUiMessageService _uiMessageService;
-        private readonly IItemAppService _itemAppService;
-        LoadingIndicator Loading { get; set; }
-        public Items(
-            IItemAppService itemAppService, 
-            IUiMessageService messageService
-            )
+        protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            _itemAppService = itemAppService;
-            _uiMessageService = messageService;
-
-            ItemList = new List<ItemListDto>();
+            if (firstRender)
+            {
+                ItemLookup = await _itemAppService.GetAllItemsLookupAsync();
+            }
+            await base.OnAfterRenderAsync(firstRender);
         }
 
         private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<ItemListDto> e)
@@ -49,13 +53,8 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             try
             {
                 await Loading.Show();
-                int skipCount = PageIndex * PageSize;
-                var result = await _itemAppService.GetItemsListAsync(new GetItemListDto
-                {
-                    Sorting = Sorting,
-                    MaxResultCount = PageSize,
-                    SkipCount = skipCount
-                });
+                Filters.SkipCount = PageIndex * Filters.MaxResultCount;
+                var result = await _itemAppService.GetItemsListAsync(Filters);
                 ItemList = result.Items.ToList();
                 Total = (int)result.TotalCount;
             }
@@ -68,6 +67,25 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             {
                 await Loading.Hide();
             }
+        }
+
+        public async Task FilterAsync()
+        {
+            Filters.SkipCount = 0;
+            await UpdateItemList();
+        }
+
+        public async Task ResetAsync()
+        {
+            Filters = new();
+            await Autocomplete?.Clear();
+            await UpdateItemList();
+        }
+
+        public async Task OnPageSizeChanged(int value)
+        {
+            Filters.MaxResultCount = value;
+            await UpdateItemList();
         }
 
         public async Task OnItemAvaliablityChange(Guid id)
@@ -98,7 +116,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         }
         private void HandleSelectAllChange(ChangeEventArgs e)
         {
-            IsAllSelected = (bool)e.Value;
+            IsAllSelected = (bool?)e?.Value ?? false;
             ItemList.ForEach(item =>
             {
                 item.IsSelected = IsAllSelected;
@@ -144,7 +162,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 
         async void OnSortChange(DataGridSortChangedEventArgs e)
         {
-            Sorting = e.FieldName + " " + (e.SortDirection != SortDirection.Default ? e.SortDirection : "");
+            Filters.Sorting = e.FieldName + " " + (e.SortDirection != SortDirection.Default ? e.SortDirection : "");
             await UpdateItemList();
         }
     }

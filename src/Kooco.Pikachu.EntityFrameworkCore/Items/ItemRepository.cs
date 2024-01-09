@@ -56,11 +56,20 @@ public class ItemRepository : EfCoreRepository<PikachuDbContext, Item, Guid>, II
             }).ToListAsync();
     }
 
-    public async Task<List<ItemListViewModel>> GetItemsListAsync(int skipCount, int maxResultCount, string sorting)
+    public async Task<List<ItemListViewModel>> GetItemsListAsync(
+            int skipCount,
+            int maxResultCount,
+            string sorting,
+            Guid? itemId = null,
+            DateTime? minAvailableTime = null,
+            DateTime? maxAvailableTime = null,
+            bool? isFreeShipping = null,
+            bool? isAvailable = null
+            )
     {
-        var dbContext = await GetDbContextAsync();
+        var queryable = await GetQueryableAsync();
 
-        return await dbContext.Items
+        return await ApplyFilters(queryable, itemId, minAvailableTime, maxAvailableTime, isFreeShipping, isAvailable)
             .OrderBy(sorting)
             .PageBy(skipCount, maxResultCount)
             .Select(item => new ItemListViewModel
@@ -75,5 +84,33 @@ public class ItemRepository : EfCoreRepository<PikachuDbContext, Item, Guid>, II
                 IsFreeShipping = item.IsFreeShipping,
                 IsItemAvaliable = item.IsItemAvaliable
             }).ToListAsync();
+    }
+
+    public async Task<long> LongCountAsync(
+        Guid? itemId = null,
+        DateTime? minAvailableTime = null,
+        DateTime? maxAvailableTime = null,
+        bool? isFreeShipping = null,
+        bool? isAvailable = null
+        )
+    {
+        return await ApplyFilters(await GetQueryableAsync(), itemId, minAvailableTime, maxAvailableTime, isFreeShipping, isAvailable).LongCountAsync();
+    }
+
+    private static IQueryable<Item> ApplyFilters(
+        IQueryable<Item> queryable,
+        Guid? itemId,
+        DateTime? minAvailableTime,
+        DateTime? maxAvailableTime,
+        bool? isFreeShipping,
+        bool? isAvailable
+        )
+    {
+        return queryable
+            .WhereIf(itemId.HasValue, x => x.Id == itemId)
+            .WhereIf(minAvailableTime.HasValue, x => x.LimitAvaliableTimeStart >= minAvailableTime || x.LimitAvaliableTimeEnd >= minAvailableTime)
+            .WhereIf(maxAvailableTime.HasValue, x => x.LimitAvaliableTimeStart <= maxAvailableTime || x.LimitAvaliableTimeEnd <= maxAvailableTime)
+            .WhereIf(isFreeShipping.HasValue, x => x.IsFreeShipping == isFreeShipping)
+            .WhereIf(isAvailable.HasValue, x => x.IsItemAvaliable == isAvailable);
     }
 }

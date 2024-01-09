@@ -16,5 +16,21 @@ public interface IItemRepository : IRepository<Item, Guid>
     Task<IQueryable<Item>> GetWithImagesAsync(int? maxResultCount = null);
     Task DeleteManyAsync(List<Guid> ids);
     Task<List<ItemWithItemType>> GetItemsLookupAsync();
-    Task<List<ItemListViewModel>> GetItemsListAsync(int skipCount, int maxResultCount, string sorting);
+    Task<long> LongCountAsync(
+                        Guid? itemId = null,
+                        DateTime? minAvailableTime = null,
+                        DateTime? maxAvailableTime = null,
+                        bool? isFreeShipping = null,
+                        bool? isAvailable = null
+                        );
+    Task<List<ItemListViewModel>> GetItemsListAsync(
+                                int skipCount,
+                                int maxResultCount,
+                                string sorting,
+                                Guid? itemId = null,
+                                DateTime? minAvailableTime = null,
+                                DateTime? maxAvailableTime = null,
+                                bool? isFreeShipping = null,
+                                bool? isAvailable = null
+                                );
 }

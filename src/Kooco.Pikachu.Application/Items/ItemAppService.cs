@@ -97,7 +97,7 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
         {
             foreach (var image in input.ItemImages)
             {
-                if(item.Images.Any(x => x.BlobImageName == image.BlobImageName))
+                if (item.Images.Any(x => x.BlobImageName == image.BlobImageName))
                 {
                     continue;
                 }
@@ -120,7 +120,7 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
     {
         var sameName = await _itemRepository.FindByNameAsync(input.ItemName);
 
-        if(sameName != null && sameName.Id != id)
+        if (sameName != null && sameName.Id != id)
         {
             throw new BusinessException(PikachuDomainErrorCodes.ItemWithSameNameAlreadyExists);
         }
@@ -292,6 +292,12 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
         return ObjectMapper.Map<List<ItemWithItemType>, List<ItemWithItemTypeDto>>(items);
     }
 
+    public async Task<List<KeyValueDto>> GetAllItemsLookupAsync()
+    {
+        var items = await _itemRepository.GetQueryableAsync();
+        return items.Select(x => new KeyValueDto { Id = x.Id, Name = x.ItemName }).ToList();
+    }
+
     /// <summary>
     /// This Method Returns the Desired Result For the Store Front End.
     /// Do not change unless you want to make changes in the Store Front End Code
@@ -309,9 +315,24 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
         {
             input.Sorting = $"{nameof(ItemListViewModel.CreationTime)} DESC";
         }
-        var totalCount = await _itemRepository.LongCountAsync();
+        var totalCount = await _itemRepository.LongCountAsync(
+                                                input.ItemId,
+                                                input.MinAvailableTime,
+                                                input.MaxAvailableTime,
+                                                input.IsFreeShipping,
+                                                input.IsAvailable
+                                                );
 
-        var items = await _itemRepository.GetItemsListAsync(input.SkipCount, input.MaxResultCount, input.Sorting);
+        var items = await _itemRepository.GetItemsListAsync(
+                                                input.SkipCount,
+                                                input.MaxResultCount,
+                                                input.Sorting,
+                                                input.ItemId,
+                                                input.MinAvailableTime,
+                                                input.MaxAvailableTime,
+                                                input.IsFreeShipping,
+                                                input.IsAvailable
+                                                );
 
         return new PagedResultDto<ItemListDto>
         {

@@ -413,6 +413,13 @@
     "Mazu": "馬祖",
     "AreYouSureToUpdateGreenWorld?": "你確定要更新綠界物流設定?",
     "AreYouSureToUpdateHomeDelivery?": "Are You Sure To Update Home Delivery?",
-    "ShortCode": "轉址編號"
+    "ShortCode": "轉址編號",
+    "Search": "搜尋",
+    "MinAvailableTime": "最短可用時間",
+    "MaxAvailableTime": "最長可用時間",
+    "EnterItemName": "輸入商品名稱",
+    "Display": "顯示",
+    "Results": "項結果",
+    "Availability": "上架"
   }
 }
