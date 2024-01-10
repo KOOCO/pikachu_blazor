@@ -420,6 +420,8 @@
     "EnterItemName": "輸入商品名稱",
     "Display": "顯示",
     "Results": "項結果",
-    "Availability": "上架"
+    "Availability": "上架",
+    "Filter": "篩選",
+    "Reset": "重置"
   }
 }

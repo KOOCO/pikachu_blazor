@@ -406,6 +406,8 @@
     "MaxAvailableTime": "Maximum Available Time",
     "EnterItemName": "Enter Item Name",
     "Display": "Display",
-    "Results": "Results"
+    "Results": "Results",
+    "Filter": "Filter",
+    "Reset": "Reset"
   }
 }

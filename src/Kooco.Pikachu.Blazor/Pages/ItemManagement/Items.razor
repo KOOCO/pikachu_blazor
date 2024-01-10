@@ -56,7 +56,7 @@
                               Data="@ItemLookup"
                               TextField="@(( item ) => item.Name)"
                               ValueField="@(( item ) => item.Id)"
-                              Placeholder="Search..."
+                              Placeholder="@L["Search"]"
                               Filter="AutocompleteFilter.StartsWith"
                               CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
                               Immediate="true"
