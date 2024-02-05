@@ -389,7 +389,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 throw new BusinessException(L[PikachuDomainErrorCodes.ItemWithSKUAlreadyExists]);
             }
 
-            if (ItemDetailsList.Any(x => x.SellingPrice <= 0))
+            if (ItemDetailsList.Any(x => x.SellingPrice < 0))
             {
                 throw new BusinessException(L[PikachuDomainErrorCodes.SellingPriceForItemShouldBeGreaterThanZero]);
             }

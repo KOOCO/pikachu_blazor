@@ -99,7 +99,7 @@
     "Pikachu:ItemDetailsCannotBeEmpty": "商品細節不能為空",
     "Pikachu:ItemWithSKUAlreadyExists": "商品SKU不能重複",
     "Pikachu:SKUForItemDetailsCannotBeNull": "SKU for Item Detail Cannot be null",
-    "Pikachu:SellingPriceForItemShouldBeGreaterThanZero": "售價必須大於0",
+    "Pikachu:SellingPriceForItemShouldBeGreaterThanZero": "商品的售價應等於或大於 0",
     "CopyToAll": "複製到全部",
     "SystemIsUnableToCopyAtTheMoment": "System is Unable to Copy at the moment",
     "GenerateSKU": "產生SKU",
