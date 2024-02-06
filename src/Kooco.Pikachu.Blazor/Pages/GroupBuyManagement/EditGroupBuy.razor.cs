@@ -41,6 +41,8 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         private List<string> PaymentMethodTags { get; set; } = new List<string>(); //used for store item tags 
         private string PaymentTagInputValue { get; set; }
         private List<CollapseItem> CollapseItem = new();
+        bool CreditCard { get; set; }
+        bool BankTransfer { get; set; }
 
         public string _ProductPicture = "Product Picture";
         private readonly IGroupBuyAppService _groupBuyAppService;
@@ -95,7 +97,27 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             {
                 Id = Guid.Parse(id);
                 GroupBuy = await _groupBuyAppService.GetWithItemGroupsAsync(Id);
+                if (!GroupBuy.PaymentMethod.IsNullOrEmpty())
+                {
+                    var payments = GroupBuy.PaymentMethod.Split(",");
+                    if (payments.Length > 1)
+                    {
+                        CreditCard = payments[0].Trim() == "Credit Card" ? true : false;
+                        BankTransfer = payments[0].Trim() == "Credit Card" ? true : false;
 
+                    }
+                    else if(GroupBuy.PaymentMethod == "Credit Card") {
+
+                        CreditCard = true;
+                    
+                    }
+                    else if (GroupBuy.PaymentMethod == "Bank Transfer")
+                    {
+
+                        BankTransfer = true;
+
+                    }
+                }
                 EditGroupBuyDto = _objectMapper.Map<GroupBuyDto, GroupBuyUpdateDto>(GroupBuy);
                 EditGroupBuyDto.EntryURL = $"{_configuration["EntryUrl"]?.TrimEnd('/')}/{Id}";
                 LoadItemGroups();
@@ -657,9 +679,30 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 {
                     EditGroupBuyDto.ExcludeShippingMethod = string.Join(",", ItemTags);
                 }
-                if (PaymentMethodTags.Any())
+                //if (PaymentMethodTags.Any())
+                //{
+                //    EditGroupBuyDto.PaymentMethod = string.Join(",", PaymentMethodTags);
+                //}
+                if (CreditCard && CreditCard)
                 {
-                    EditGroupBuyDto.PaymentMethod = string.Join(",", PaymentMethodTags);
+
+                    EditGroupBuyDto.PaymentMethod = "Credit Card , Bank Transfer";
+
+
+                }
+                else if (CreditCard)
+                {
+
+                    EditGroupBuyDto.PaymentMethod = "Credit Card";
+
+
+                }
+                else if (BankTransfer)
+                {
+
+                    EditGroupBuyDto.PaymentMethod = "Bank Transfer";
+
+
                 }
                 EditGroupBuyDto.NotifyMessage = await NotifyEmailHtml.GetHTML();
                 EditGroupBuyDto.GroupBuyConditionDescription = await GroupBuyHtml.GetHTML();

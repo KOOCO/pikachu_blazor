@@ -44,7 +44,8 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         private BlazoredTextEditor GroupBuyHtml { get; set; }
         private BlazoredTextEditor CustomerInformationHtml { get; set; }
         private BlazoredTextEditor ExchangePolicyHtml { get; set; }
-
+        bool CreditCard { get; set; }
+        bool BankTransfer { get; set; }
         public string _ProductPicture = "Product Picture";
         private FilePicker LogoPickerCustom { get; set; }
         private FilePicker BannerPickerCustom { get; set; }
@@ -376,7 +377,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 collapseItem.Selected.Add(new ItemWithItemTypeDto());
             }
         }
-
+    
         private void HandleItemTagInputKeyUp(KeyboardEventArgs e)
         {
             if (e.Key == "Enter")
@@ -451,11 +452,30 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 {
                     CreateGroupBuyDto.ExcludeShippingMethod = string.Join(",", ItemTags);
                 }
-                if (PaymentMethodTags.Any())
+                //if (PaymentMethodTags.Any())
+                //{
+                //    CreateGroupBuyDto.PaymentMethod = string.Join(",", PaymentMethodTags);
+                //}
+                if (CreditCard && BankTransfer)
                 {
-                    CreateGroupBuyDto.PaymentMethod = string.Join(",", PaymentMethodTags);
-                }
 
+                    CreateGroupBuyDto.PaymentMethod = "Credit Card , Bank Transfer";
+
+
+                }
+                else if(CreditCard) {
+
+                    CreateGroupBuyDto.PaymentMethod = "Credit Card";
+
+
+                }
+                else if (BankTransfer)
+                {
+
+                    CreateGroupBuyDto.PaymentMethod = "Bank Transfer";
+
+
+                }
                 CreateGroupBuyDto.NotifyMessage = await NotifyEmailHtml.GetHTML();
                 CreateGroupBuyDto.GroupBuyConditionDescription = await GroupBuyHtml.GetHTML();
                 CreateGroupBuyDto.ExchangePolicyDescription = await ExchangePolicyHtml.GetHTML();

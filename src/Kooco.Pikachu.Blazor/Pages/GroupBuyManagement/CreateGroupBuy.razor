@@ -395,22 +395,27 @@
             <div class="col-2">@L["PaymentMethod"]</div>
             <div class="col-4">
                 <div class="form-check">
-                    <input type="radio" class="form-check-input" name="PaymentGateway" id="payment-gateway-1" checked="@CreateGroupBuyDto.IsDefaultPaymentGateWay" @onclick="() => CreateGroupBuyDto.IsDefaultPaymentGateWay = true" />
+                  @*   <input type="radio" class="form-check-input" name="PaymentGateway" id="payment-gateway-1" checked="@CreateGroupBuyDto.IsDefaultPaymentGateWay" @onclick="() => CreateGroupBuyDto.IsDefaultPaymentGateWay = true" />
                     <label class="form-check-label" for="payment-gateway-1">
                         @L["DefaultPaymentGateWay"]
-                    </label>
+                    </label> *@
+                   <Check TValue="bool" @bind-Checked="@CreditCard">@L["CreditCard"]</Check>
+                   <Check TValue="bool" @bind-Checked="@BankTransfer">@L["BankTransfer"]</Check>
+       @*              <Radio Inline TValue="string" CheckedChanged="@OnCreditCardChecked"   Value="@("CreditCard")">@L["CreditCard"]</Radio>
+                    <Radio Inline TValue="string"  CheckedChanged="@OnTransferChecked"  Value="@("Transfer")">@L["Transfer"]</Radio> *@
+                 
                 </div>
             </div>
         </div>
-        <div class="row">
+     @*    <div class="row">
             <div class="col-2"></div>
             <div class="col-2"></div>
-            <div class="col-1">
+            <div class="col-8">
                 <div class="form-check">
                     <input type="radio" class="form-check-input" name="PaymentGateway" id="payment-gateway-2" checked="@(!CreateGroupBuyDto.IsDefaultPaymentGateWay)" @onclick="() => CreateGroupBuyDto.IsDefaultPaymentGateWay = false" />
                 </div>
             </div>
-            <div class="col-7">
+         @*    <div class="col-7">
                 <div class="col-7 form-control" style="background-color:white">
                     @foreach (var item in PaymentMethodTags)
                     {
@@ -424,8 +429,8 @@
                     </div>
                 </div>
                 <span class="text-danger">@PaymentMethodError</span>
-            </div>
-        </div>
+            </div> *@
+       @*  </div> *@ 
         <div class="row">
             <div class="col-2">@L["Invoice"]</div>
             <div class="col-2">@L["IssueInvoice"]</div>
