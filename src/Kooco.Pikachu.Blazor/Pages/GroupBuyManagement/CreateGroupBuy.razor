@@ -394,17 +394,17 @@
             <div class="col-2">@L["Gateway"]</div>
             <div class="col-2">@L["PaymentMethod"]</div>
             <div class="col-4">
-                <div class="form-check">
+               
                   @*   <input type="radio" class="form-check-input" name="PaymentGateway" id="payment-gateway-1" checked="@CreateGroupBuyDto.IsDefaultPaymentGateWay" @onclick="() => CreateGroupBuyDto.IsDefaultPaymentGateWay = true" />
                     <label class="form-check-label" for="payment-gateway-1">
                         @L["DefaultPaymentGateWay"]
                     </label> *@
-                   <Check TValue="bool" @bind-Checked="@CreditCard">@L["CreditCard"]</Check>
+                   <Check style="margin-left: 0px;" TValue="bool" @bind-Checked="@CreditCard">@L["CreditCard"]</Check>
                    <Check TValue="bool" @bind-Checked="@BankTransfer">@L["BankTransfer"]</Check>
        @*              <Radio Inline TValue="string" CheckedChanged="@OnCreditCardChecked"   Value="@("CreditCard")">@L["CreditCard"]</Radio>
                     <Radio Inline TValue="string"  CheckedChanged="@OnTransferChecked"  Value="@("Transfer")">@L["Transfer"]</Radio> *@
                  
-                </div>
+               
             </div>
         </div>
      @*    <div class="row">

@@ -683,7 +683,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 //{
                 //    EditGroupBuyDto.PaymentMethod = string.Join(",", PaymentMethodTags);
                 //}
-                if (CreditCard && CreditCard)
+                if (CreditCard && BankTransfer)
                 {
 
                     EditGroupBuyDto.PaymentMethod = "Credit Card , Bank Transfer";
