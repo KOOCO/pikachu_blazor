@@ -81,7 +81,16 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             await Autocomplete?.Clear();
             await UpdateItemList();
         }
+        private async Task CopyAsync()
+        {
 
+            var id = ItemList.Where(x => x.IsSelected == true).Select(x => x.Id).FirstOrDefault();
+
+            var copy = await _itemAppService.CopyAysnc(id);
+            NavigationManager.NavigateTo("/Items/Edit/" + copy.Id);
+
+
+        }
         public async Task OnPageSizeChanged(int value)
         {
             Filters.MaxResultCount = value;

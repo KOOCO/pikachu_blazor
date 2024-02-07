@@ -102,4 +102,9 @@ public class ItemController(
     {
         return _itemAppService.GetAllItemsLookupAsync();
     }
+    [HttpPost("copy-item/{id}")]
+    public Task<ItemDto> CopyAysnc(Guid Id)
+    {
+        return _itemAppService.CopyAysnc(Id);
+    }
 }

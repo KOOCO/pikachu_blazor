@@ -23,4 +23,5 @@ public interface IItemAppService :
     Task<List<ItemDto>> GetListForStoreAsync();
     Task<PagedResultDto<ItemListDto>> GetItemsListAsync(GetItemListDto input);
     Task<List<KeyValueDto>> GetAllItemsLookupAsync();
+    Task<ItemDto> CopyAysnc(Guid Id);
 }

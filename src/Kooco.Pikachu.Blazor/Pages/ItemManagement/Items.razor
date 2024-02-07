@@ -41,7 +41,9 @@
                 <i class="fa fa-plus"></i>
                 @L["NewItem"]
         </Button>
-        <Button Type="@ButtonType.Button" Class="btn btn-sm btn-secondary">@L["CopyItem"]</Button>
+        <Button Color="Color.Secondary" Size="Size.Small" Clicked="CopyAsync" Disabled="@(ItemList.Count(x => x.IsSelected) != 1)">
+            @L["CopyItem"]
+        </Button>
             <Button Type="@ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="DeleteSelectedAsync">
                 @L["DeleteSelected"]
         </Button>

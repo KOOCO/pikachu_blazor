@@ -116,6 +116,104 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
         return ObjectMapper.Map<Item, ItemDto>(item);
     }
 
+    public  async Task<ItemDto> CopyAysnc(Guid Id)
+    {
+        try
+        {
+            var orignalItem = await _itemRepository.GetAsync(Id);
+
+            await _itemRepository.EnsureCollectionLoadedAsync(orignalItem, i => i.ItemDetails);
+            await _itemRepository.EnsureCollectionLoadedAsync(orignalItem, i => i.Images);
+
+            var item = await _itemManager.CreateAsync(
+                orignalItem.ItemName + "Copy",
+                orignalItem.ItemDescriptionTitle,
+                orignalItem.ItemDescription,
+                orignalItem.ItemTags,
+                orignalItem.LimitAvaliableTimeStart,
+                orignalItem.LimitAvaliableTimeEnd,
+                orignalItem.ShareProfit,
+                orignalItem.IsFreeShipping,
+                orignalItem.IsReturnable,
+                orignalItem.ShippingMethodId,
+                orignalItem.TaxTypeId,
+                orignalItem.CustomField1Value,
+                orignalItem.CustomField1Name,
+                orignalItem.CustomField2Value,
+                orignalItem.CustomField2Name,
+                orignalItem.CustomField3Value,
+                orignalItem.CustomField3Name,
+                orignalItem.CustomField4Value,
+                orignalItem.CustomField4Name,
+                orignalItem.CustomField5Value,
+                orignalItem.CustomField5Name,
+                orignalItem.CustomField6Value,
+                orignalItem.CustomField6Name,
+                orignalItem.CustomField7Value,
+                orignalItem.CustomField7Name,
+                orignalItem.CustomField8Value,
+                orignalItem.CustomField8Name,
+                orignalItem.CustomField9Value,
+                orignalItem.CustomField9Name,
+                orignalItem.CustomField10Value,
+                orignalItem.CustomField10Name,
+                orignalItem.Attribute1Name,
+                orignalItem.Attribute2Name,
+                orignalItem.Attribute3Name,
+                orignalItem.ItemStorageTemperature
+                );
+
+            if (orignalItem.ItemDetails != null && orignalItem.ItemDetails.Any())
+            {
+                foreach (var itemDetail in orignalItem.ItemDetails)
+                {
+                    await _itemManager.AddItemDetailAsync(
+                        item,
+                        itemDetail.ItemName,
+                        itemDetail.SKU + "Copy",
+                        itemDetail.LimitQuantity,
+                        itemDetail.SellingPrice,
+                        itemDetail.SaleableQuantity ?? 0,
+                        itemDetail.PreOrderableQuantity,
+                        itemDetail.SaleablePreOrderQuantity,
+                        itemDetail.GroupBuyPrice,
+                        itemDetail.InventoryAccount,
+                        itemDetail.Attribute1Value,
+                        itemDetail.Attribute2Value,
+                        itemDetail.Attribute3Value
+                        );
+                }
+            }
+
+            if (orignalItem.Images != null && orignalItem.Images.Any())
+            {
+                foreach (var image in orignalItem.Images)
+                {
+                    if (item.Images.Any(x => x.BlobImageName == image.BlobImageName))
+                    {
+                        continue;
+                    }
+                    _itemManager.AddItemImage(
+                        item,
+                        image.Name,
+                        image.BlobImageName,
+                        image.ImageUrl,
+                        image.ImageType,
+                        image.SortNo
+                        );
+                }
+            }
+
+            await _itemRepository.InsertAsync(item);
+            return ObjectMapper.Map<Item, ItemDto>(item);
+        }
+        catch (Exception e)
+        {
+
+            throw;
+        }
+    }
+
     public override async Task<ItemDto> UpdateAsync(Guid id, UpdateItemDto input)
     {
         var sameName = await _itemRepository.FindByNameAsync(input.ItemName);
