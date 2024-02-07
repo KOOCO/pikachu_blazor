@@ -145,6 +145,10 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
         async Task OnCarouselUploadAsync(FileChangedEventArgs e)
         {
+            if (CarouselImages.Count >= 5)
+            {
+                return;
+            }
             if (e.Files.Length > MaxAllowedFilesPerUpload)
             {
                 await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesExceedMaxAllowedPerUpload]);
