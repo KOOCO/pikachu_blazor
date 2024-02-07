@@ -273,6 +273,7 @@
             <div class="col-10 ">
                 <Field>
                     <FilePicker @ref="CarouselPickerCustom"
+                        Disabled="CarouselImages.Count>=5"
                                         Multiple
                                  Changed="OnCarouselUploadAsync"
                                  ShowMode="FilePickerShowMode.List"

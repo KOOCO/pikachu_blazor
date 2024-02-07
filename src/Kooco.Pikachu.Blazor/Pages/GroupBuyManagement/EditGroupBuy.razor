@@ -267,6 +267,7 @@
                 <Field>
                     <FilePicker @ref="CarouselPickerCustom"
                                 Multiple
+                                 Disabled="CarouselImages.Count>=5"
                                 Changed="OnCarouselUploadAsync"
                                 ShowMode="FilePickerShowMode.List"
                                 Accept=".jpg, .png, .svg ,.jpeg,.webp">
