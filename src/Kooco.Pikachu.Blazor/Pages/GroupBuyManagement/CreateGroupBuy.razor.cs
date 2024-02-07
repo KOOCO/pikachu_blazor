@@ -147,6 +147,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         {
             if (CarouselImages.Count >= 5)
             {
+                await CarouselPickerCustom.Clear();
                 return;
             }
             if (e.Files.Length > MaxAllowedFilesPerUpload)
