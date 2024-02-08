@@ -165,7 +165,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             var count = 0;
             try
             {
-                foreach (var file in e.Files)
+                foreach (var file in e.Files.Take(5))
                 {
                     if (!ValidFileExtensions.Contains(Path.GetExtension(file.Name)))
                     {

@@ -391,22 +391,22 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 await CarouselPickerCustom.Clear();
                 return;
             }
-            if (e.Files.Length > MaxAllowedFilesPerUpload)
-            {
-                await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesExceedMaxAllowedPerUpload]);
-                await CarouselPickerCustom.Clear();
-                return;
-            }
-            if (CarouselImages.Count > TotalMaxAllowedFiles)
-            {
-                await _uiMessageService.Error(L[PikachuDomainErrorCodes.AlreadyUploadMaxAllowedFiles]);
-                await CarouselPickerCustom.Clear();
-                return;
-            }
+            //if (e.Files.Length > MaxAllowedFilesPerUpload)
+            //{
+            //    await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesExceedMaxAllowedPerUpload]);
+            //    await CarouselPickerCustom.Clear();
+            //    return;
+            //}
+            //if (CarouselImages.Count > TotalMaxAllowedFiles)
+            //{
+            //    await _uiMessageService.Error(L[PikachuDomainErrorCodes.AlreadyUploadMaxAllowedFiles]);
+            //    await CarouselPickerCustom.Clear();
+            //    return;
+            //}
             var count = 0;
             try
             {
-                foreach (var file in e.Files)
+                foreach (var file in e.Files.Take(5))
                 {
                     if (!ValidFileExtensions.Contains(Path.GetExtension(file.Name)))
                     {
