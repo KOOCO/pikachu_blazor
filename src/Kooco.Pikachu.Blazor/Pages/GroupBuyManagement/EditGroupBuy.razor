@@ -708,7 +708,7 @@
             </div>
             <div class="col-10">
                 <div class="col-12">
-                    <TextEdit Placeholder="@L["GroupBuyCondition"]" @bind-Text="EditGroupBuyDto.GroupBuyCondition" MaxLength="60"  />
+                    <TextEdit Placeholder="@L["GroupBuyCondition"]" Disabled @bind-Text="EditGroupBuyDto.GroupBuyCondition" MaxLength="60"  />
                 </div>
                 <div class="col-12">
                     <Blazored.TextEditor.BlazoredTextEditor @ref="@GroupBuyHtml">
@@ -755,7 +755,7 @@
             </div>
             <div class="col-10">
                 <div class="col-12">
-                     <TextEdit Placeholder="@L["CustomerInformation"]" @bind-Text="@EditGroupBuyDto.CustomerInformation" MaxLength="60"  />
+                     <TextEdit Placeholder="@L["CustomerInformation"]" Disabled @bind-Text="@EditGroupBuyDto.CustomerInformation" MaxLength="60"  />
                 </div>
                 <div class="col-12">
                      <Blazored.TextEditor.BlazoredTextEditor @ref="@CustomerInformationHtml">
@@ -801,7 +801,7 @@
             </div>
             <div class="col-10">
                 <div class="col-12">
-                    <TextEdit Placeholder="@L["ExchangePolicy"]" @bind-Text="@EditGroupBuyDto.ExchangePolicy" MaxLength="60" ShowCount />
+                    <TextEdit Placeholder="@L["ExchangePolicy"]" Disabled @bind-Text="@EditGroupBuyDto.ExchangePolicy" MaxLength="60" ShowCount />
                 </div>
                 <div class=" col-12">
                     <Blazored.TextEditor.BlazoredTextEditor @ref="@ExchangePolicyHtml">
