@@ -334,10 +334,10 @@
         <div class="row">
             <div class="col-2">@L["GroupBuyTime"]</div>
             <div class="col-4">
-                <DateEdit Class="form-control" @bind-Date=EditGroupBuyDto.StartTime Placeholder="@L["StartDate"].ToString()" TValue="DateTime?"/>
+                <DateEdit Class="form-control" InputMode="DateInputMode.DateTime" @bind-Date=EditGroupBuyDto.StartTime Placeholder="@L["StartDate"].ToString()" TValue="DateTime?"/>
             </div>
             <div class="col-4">
-               <DateEdit Class="form-control" @bind-Date=EditGroupBuyDto.EndTime Placeholder="@L["EndDate"].ToString()" TValue="DateTime?"  />
+               <DateEdit Class="form-control" InputMode="DateInputMode.DateTime" @bind-Date=EditGroupBuyDto.EndTime Placeholder="@L["EndDate"].ToString()" TValue="DateTime?"  />
             </div>
         </div>
         <div class="row">
