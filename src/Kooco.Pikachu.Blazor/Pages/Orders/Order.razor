@@ -155,7 +155,19 @@
                                     </tr>
                                     <tr>
                                         <td>@L["MerchantRemarks"]</td>
-                                        <td>@context.Remarks</td>
+                                        <td>
+                                            @foreach (var item in context.StoreComments)
+                                            {if (context.StoreComments.Count > 1)
+                                                {
+                                                    <span> @item.Comment /</span>
+                                                }
+                                                else
+                                                {
+                                                    <span> @item.Comment</span>
+                                                }
+                                            }
+                                            </td>
+
                                     </tr>
                                     <tr>
                                         <td>@L["OrderItems"]</td>

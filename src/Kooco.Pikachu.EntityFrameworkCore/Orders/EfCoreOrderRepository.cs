@@ -27,6 +27,7 @@ namespace Kooco.Pikachu.Orders
                 .OrderBy(sorting)
                 .PageBy(skipCount, maxResultCount)
                 .Include(o => o.GroupBuy)
+                .Include(o=>o.StoreComments)
                 .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Item)
                 .Include(o => o.OrderItems)
