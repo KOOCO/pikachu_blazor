@@ -244,7 +244,7 @@
             </div>
             <div class="col-12">
                 <div>
-                    <Table>
+                    <Table Responsive>
                         <TableHeader>
                             <TableRow>
                                 <TableHeaderCell Class="text-center">@L["PropertyName"]</TableHeaderCell>
@@ -312,10 +312,10 @@
                                         <input class="form-control form-control-sm" style="min-width: 100px;" @bind-value="@item.Sku" />
                                     </TableRowCell>
                                     <TableRowCell>
-                                        <NumericEdit Class="form-control form-control-sm" @bind-Value="@item.SellingPrice"></NumericEdit>
+                                        <NumericEdit Class="form-control form-control-sm"  style="min-width: 100px;" @bind-Value="@item.SellingPrice"></NumericEdit>
                                     </TableRowCell>
                                     <TableRowCell>
-                                        <NumericEdit Class="form-control form-control-sm" @bind-Value="@item.GroupBuyPrice"></NumericEdit>
+                                        <NumericEdit Class="form-control form-control-sm"  style="min-width: 100px;" @bind-Value="@item.GroupBuyPrice"></NumericEdit>
                                     </TableRowCell>
                                     <TableRowCell>
                                         <input class="form-control form-control-sm" style="min-width: 100px;" @bind-value="@item.InventoryAccount" />
