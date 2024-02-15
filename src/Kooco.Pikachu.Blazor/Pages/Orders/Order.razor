@@ -156,7 +156,7 @@
                                     <tr>
                                         <td>@L["MerchantRemarks"]</td>
                                         <td>
-                                            @foreach (var item in context.StoreComments)
+                                            @foreach (var item in context.StoreComments.OrderByDescending(x=>x.CreationTime))
                                             {if (context.StoreComments.Count > 1)
                                                 {
                                                     <span> @item.Comment /</span>
