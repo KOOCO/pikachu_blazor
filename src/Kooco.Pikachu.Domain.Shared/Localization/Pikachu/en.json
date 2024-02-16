@@ -179,7 +179,7 @@
     "AreYouSureToUpdateSortOrder": "Are You Sure You Want To Update Sort Order?",
     "EnterprisePurchase": "Enterprise Purchase",
     "ShortCodePatternDoesnotMatch": "Short Code Pattern Does not Match! Only Letters and Numbers are allowed and Length must be between 4 and 12",
-
+    "Pikachu:GroupBuyShortCodeCannotBeNull": "Group Buy Short Code Can not be null",
     //SetItem
     "SetItem": "Set Item",
     "AddItem": "Add Item",

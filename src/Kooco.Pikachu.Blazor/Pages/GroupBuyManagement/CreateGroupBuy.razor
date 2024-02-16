@@ -62,12 +62,14 @@
             <div class="row">
                 <div class="col-1"></div>
                 <div class="col-2">
-                    <label>@L["ShortCode"]</label>
+                    <label>@L["ShortCode"]
+                        <span class="text-danger"> *</span>
+                    </label>
                 </div>
                 <div class="col-7">
                     <Validations @ref="@EditValidationsRef" Model="@CreateGroupBuyDto" ValidateOnLoad="false">
                         <Validation UsePattern>
-                             <TextEdit Pattern="^[A-Za-z0-9]{4,12}$" MaxLength="12" @bind-Text="@CreateGroupBuyDto.ShortCode">
+                             <TextEdit  Pattern="^[A-Za-z0-9]{4,12}$" MaxLength="12" @bind-Text="@CreateGroupBuyDto.ShortCode">
                                  <Feedback>
                                     <ValidationError>@L["ShortCodePatternDoesnotMatch"]</ValidationError>
                                  </Feedback>

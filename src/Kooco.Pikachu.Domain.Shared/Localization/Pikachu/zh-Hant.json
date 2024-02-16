@@ -422,6 +422,7 @@
     "Results": "項結果",
     "Availability": "上架",
     "Filter": "篩選",
-    "Reset": "重置"
+    "Reset": "重置",
+    "Pikachu:GroupBuyShortCodeCannotBeNull": "團購短碼不能為空"
   }
 }

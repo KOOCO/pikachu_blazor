@@ -6,6 +6,7 @@ public static class PikachuDomainErrorCodes
 
     public const string ItemNameCannotBeNull = "Pikachu:ItemNameCannotBeNull";
     public const string GroupBuyNameCannotBeNull = "Pikachu:GroupBuyNameCannotBeNull";
+    public const string GroupBuyShortCodeCannotBeNull = "Pikachu:GroupBuyShortCodeCannotBeNull";
     public const string ItemWithSameNameAlreadyExists = "Pikachu:ItemWithSameNameAlreadyExists";
     public const string FreebieWithSameNameAlreadyExists = "Pikachu:FreebieWithSameNameAlreadyExists";
     public const string ItemDetailsCannotBeEmpty = "Pikachu:ItemDetailsCannotBeEmpty";
