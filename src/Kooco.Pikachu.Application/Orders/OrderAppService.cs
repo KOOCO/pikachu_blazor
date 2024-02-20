@@ -1,6 +1,7 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
+using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.OrderItems;
@@ -41,6 +42,8 @@ namespace Kooco.Pikachu.Orders
         private readonly IStringEncryptionService _stringEncryptionService;
         private readonly IRepository<OrderItem, Guid> _orderItemRepository;
         private readonly IStringLocalizer<PikachuResource> _l;
+        private readonly IItemRepository _itemRepository;
+        private readonly IItemDetailsRepository _itemDetailsRepository;
         public OrderAppService(
             IOrderRepository orderRepository,
             OrderManager orderManager,
@@ -51,7 +54,9 @@ namespace Kooco.Pikachu.Orders
             IStringEncryptionService stringEncryptionService,
             IStringLocalizer<PikachuResource> l,
             IRepository<OrderItem, Guid> orderItemRepository,
-            IRepository<OrderDelivery, Guid> orderDeliveryRepository
+            IRepository<OrderDelivery, Guid> orderDeliveryRepository,
+            IItemRepository itemRepository,
+            IItemDetailsRepository itemDetailsRepository
             )
         {
             _orderRepository = orderRepository;
@@ -64,6 +69,9 @@ namespace Kooco.Pikachu.Orders
             _orderItemRepository = orderItemRepository;
             _orderDeliveryRepository = orderDeliveryRepository;
             _l = l;
+            _itemRepository= itemRepository;
+            _orderItemRepository= orderItemRepository;
+            _itemDetailsRepository = itemDetailsRepository;
         }
 
         [AllowAnonymous]
@@ -123,6 +131,16 @@ namespace Kooco.Pikachu.Orders
                             item.DeliveryTemperature,
                             item.DeliveryTemperatureCost
                             );
+                        using (_dataFilter.Disable<IMultiTenant>())
+                        {
+                            //var orderItem = await _orderItemRepository.GetAsync(item.ItemId.Value);
+                            var details = await _itemDetailsRepository.FirstOrDefaultAsync(x => x.ItemId == item.ItemId);
+                            if (details != null)
+                            {
+                                details.SaleableQuantity = details.SaleableQuantity - item.Quantity;
+                                await _itemDetailsRepository.UpdateAsync(details);
+                            }
+                            }
                     }
                 }
                 await _orderRepository.InsertAsync(order);
