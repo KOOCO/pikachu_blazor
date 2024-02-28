@@ -15,7 +15,9 @@
 @inject IMessageService _message
 @inject IConfiguration _configuration
 @inject IJSRuntime JSRuntime
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.jquery.min.js"></script>
+<link href="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.min.css" rel="stylesheet"/>
 <style>
     .row {
         margin-top: 10px;
@@ -352,31 +354,11 @@
         <div class="row">
             <div class="col-2">@L["Logistic"]</div>
             <div class="col-2">@L["FreeShipping"]</div>
-            <div class="col-4"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.FreeShipping"></Switch></div>
+            <div class="col-2"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.FreeShipping"></Switch></div>
+            <div class="col-1">@L["Threshold"]</div>
+            <div class="col-2">  <InputNumber id="h-threshold" class="form-control" @bind-Value="CreateGroupBuyDto.FreeShippingThreshold" DisplayName="Free Shipping Threshold"></InputNumber></div>
         </div>
-        <div class="row">
-            <div class="col-2"></div>
-            <div class="col-2">
-                @L["ExcludeShippingMethod"]
-            </div>
-            <div class="col-8">
-                <div class="col-7 form-control" style="background-color:white">
-                    @foreach (var item in ItemTags)
-                    {
-                        <Badge class="item-tags" CloseClicked="@(() => HandleItemTagDelete(item))">@item</Badge>
-                    }
-                    <div class="input-container">
-                        <input type="text" id="tag-input" class="tag-input" placeholder="New Tag"
-                               @bind-value="TagInputValue"
-                               @onkeyup="HandleItemTagInputKeyUp" />
-                        <i class="tag-input-placeholder-icon fa fa-plus"></i>
-                    </div>
-                </div>
-
-            </div>
-
-        </div>
-        <div class="row">
+         <div class="row">
             <div class="col-2"></div>
             <div class="col-2">@L["AllowShipToOuterIsland"]</div>
             <div class="col-4"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.AllowShipToOuterTaiwan"></Switch></div>
@@ -386,6 +368,42 @@
             <div class="col-2">@L["AllowShipToOverSea"]</div>
             <div class="col-4"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.AllowShipOversea"></Switch></div>
         </div>
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-2">
+                @L["ShippingMethod"]
+            </div>
+            <div class="col-8">
+            
+              
+              @*   <div class="col-7 form-control" style="background-color:white">
+                    @foreach (var item in ItemTags)
+                    {
+                        <Badge class="item-tags" CloseClicked="@(() => HandleItemTagDelete(item))">@item</Badge>
+                    }
+                    <div class="input-container"> *@
+                      @*   <input type="text" id="tag-input" class="tag-input" placeholder="New Tag"
+                               @bind-value="TagInputValue"
+                               @onkeyup="HandleItemTagInputKeyUp" /> *@
+                        @* <i class="tag-input-placeholder-icon fa fa-plus"></i> *@
+                 @*    </div>
+                </div> *@
+             <SelectList TItem="string"
+                            TValue="string"
+                            Data="@ShippingMethods"
+                            TextField="@((item)=>item)"
+                            ValueField="@((item)=>item)"
+                                    Multiple
+                             @bind-SelectedValues="@ItemTags"
+                             DefaultItemDisabled="true"
+                             ItemDisabled="(item) => IsItemDisabled(item)"
+                             DefaultItemText="Select Shipping Methods" /> 
+           
+
+            </div>
+
+        </div>
+       
         <div class="row">
             <div class="col-2"></div>
             <div class="col-2">@L["ExpectDeliveryDate"]</div>

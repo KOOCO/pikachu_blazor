@@ -8,6 +8,8 @@ using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -30,7 +32,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         public List<CreateImageDto> CarouselImages { get; set; }
         private string TagInputValue { get; set; }
 
-        private List<string> ItemTags { get; set; } = []; //used for store item tags 
+        private IReadOnlyList<string> ItemTags { get; set; } = new List<string>(); //used for store item tags 
         private string? SelectedAutoCompleteText { get; set; }
         private List<ItemWithItemTypeDto> ItemsList { get; set; } = [];
         private List<ItemWithItemTypeDto> SetItemList { get; set; } = [];
@@ -50,7 +52,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         private FilePicker LogoPickerCustom { get; set; }
         private FilePicker BannerPickerCustom { get; set; }
         private FilePicker CarouselPickerCustom { get; set; }
-
+        private List<string> ShippingMethods { get; set; } = Enum.GetNames(typeof(DeliveryMethod)).ToList();
         private readonly IGroupBuyAppService _groupBuyAppService;
         private readonly IImageAppService _imageAppService;
         private readonly IItemAppService _itemAppService;
@@ -369,7 +371,74 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             }
             CollapseItem.Add(collapseItem);
         }
+        private bool IsItemDisabled(string item)
+        {
+            if (CreateGroupBuyDto.AllowShipToOuterTaiwan)
+            {
+                if (item == Enum.GetName(DeliveryMethod.SevenToElevenC2C) || item == Enum.GetName(DeliveryMethod.BlackCat) || item == Enum.GetName(DeliveryMethod.SevenToEleven))
+                {
 
+                    if (item == Enum.GetName(DeliveryMethod.SevenToElevenC2C))
+                    {
+
+                        return ItemTags != null && ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.SevenToEleven)) ? true : false;
+
+                    }
+                    else if (item == Enum.GetName(DeliveryMethod.SevenToEleven))
+                    {
+
+                        return ItemTags != null && ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.SevenToElevenC2C)) ? true : false;
+
+                    }
+                    else
+                    {
+                        return false;
+                    }
+
+                }
+                else
+                {
+
+                    return true;
+                }
+
+            }
+            else
+            {
+                if (item == Enum.GetName(DeliveryMethod.SevenToElevenC2C))
+                {
+
+                    return ItemTags != null && ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.SevenToEleven)) ? true : false;
+
+                }
+                else if (item == Enum.GetName(DeliveryMethod.SevenToEleven))
+                {
+
+                    return ItemTags != null && ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.SevenToElevenC2C)) ? true : false;
+
+                }
+                else if (item == Enum.GetName(DeliveryMethod.FamilyMart))
+                {
+
+
+                    return ItemTags != null && ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.FamilyMartC2C)) ? true : false;
+
+
+                }
+                else if (item == Enum.GetName(DeliveryMethod.FamilyMartC2C))
+                {
+
+                    return ItemTags != null && ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.FamilyMart)) ? true : false;
+
+
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+        }
         private static void OnProductGroupValueChange(ChangeEventArgs e, CollapseItem collapseItem)
         {
             int takeCount = int.Parse(e?.Value.ToString());
@@ -382,23 +451,30 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 collapseItem.Selected.Add(new ItemWithItemTypeDto());
             }
         }
-    
-        private void HandleItemTagInputKeyUp(KeyboardEventArgs e)
-        {
-            if (e.Key == "Enter")
-            {
-                if (!TagInputValue.IsNullOrWhiteSpace() && !ItemTags.Any(x => x == TagInputValue))
-                {
-                    ItemTags.Add(TagInputValue);
-                }
-                TagInputValue = string.Empty;
-            }
-        }
 
-        private void HandleItemTagDelete(string item)
-        {
-            ItemTags.Remove(item);
-        }
+        //private void HandleItemTagInputChange(ChangeEventArgs e)
+        //{
+        //    var selectedOptions = (IEnumerable<string>)e.Value;
+        //    ItemTags=new List<string>();
+        //    foreach (var item in selectedOptions.ToList())
+        //    {
+
+        //        if (!ItemTags.Any(x => x == item))
+        //        {
+
+        //            ItemTags.Add(item);
+                    
+        //        }
+            
+        //    }
+          
+           
+        //}
+
+        //private void HandleItemTagDelete(string item)
+        //{
+        //    ItemTags.Remove(item);
+        //}
         private void HandlePaymentTagInputKeyUp(KeyboardEventArgs e)
         {
             PaymentMethodError = null;

@@ -39,7 +39,7 @@ namespace Kooco.Pikachu.LogisticsProviders
             }
         }
 
-        public int FreeShippingThreshold { get; set; }
+        //public int FreeShippingThreshold { get; set; }
 
         public int Freight { get; set; }
 

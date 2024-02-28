@@ -204,5 +204,6 @@ namespace Kooco.Pikachu.GroupBuys
         public bool IsGroupBuyAvaliable { get; set; }
         public DateTime CreationTime { get; set; }
         public bool IsEnterprise { get; set; }
+        public decimal? FreeShippingThreshold { get; set; }
     }
 }

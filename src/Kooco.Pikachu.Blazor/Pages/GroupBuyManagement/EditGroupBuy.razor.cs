@@ -37,7 +37,8 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         private const int TotalMaxAllowedFiles = 5;
         private const int MaxAllowedFileSize = 1024 * 1024 * 10;
         private string? TagInputValue { get; set; }
-        private List<string> ItemTags { get; set; } = new List<string>(); //used for store item tags 
+        private IReadOnlyList<string> ItemTags { get; set; }  //used for store item tags 
+        private List<string> ShippingMethods { get; set; } = Enum.GetNames(typeof(DeliveryMethod)).ToList();
         private List<string> PaymentMethodTags { get; set; } = new List<string>(); //used for store item tags 
         private string PaymentTagInputValue { get; set; }
         private List<CollapseItem> CollapseItem = new();
@@ -97,6 +98,10 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             {
                 Id = Guid.Parse(id);
                 GroupBuy = await _groupBuyAppService.GetWithItemGroupsAsync(Id);
+                if (!string.IsNullOrEmpty(GroupBuy.ExcludeShippingMethod))
+                {
+                    ItemTags = GroupBuy.ExcludeShippingMethod.Split(',').ToList();
+                }
                 if (!GroupBuy.PaymentMethod.IsNullOrEmpty())
                 {
                     var payments = GroupBuy.PaymentMethod.Split(",");
@@ -106,10 +111,11 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                         BankTransfer = payments[0].Trim() == "Credit Card" ? true : false;
 
                     }
-                    else if(GroupBuy.PaymentMethod == "Credit Card") {
+                    else if (GroupBuy.PaymentMethod == "Credit Card")
+                    {
 
                         CreditCard = true;
-                    
+
                     }
                     else if (GroupBuy.PaymentMethod == "Bank Transfer")
                     {
@@ -142,8 +148,10 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 {
                     List<string> paymentMethotTagArray = EditGroupBuyDto.PaymentMethod?.Split(',')?.ToList() ?? new List<string>();
                     PaymentMethodTags = paymentMethotTagArray != null ? paymentMethotTagArray.ToList() : new List<string>();
-                    List<string> excludeShippingMethodArray = EditGroupBuyDto.ExcludeShippingMethod?.Split(',')?.ToList() ?? new();
-                    ItemTags = excludeShippingMethodArray != null ? excludeShippingMethodArray.ToList() : new List<string>();
+                    if (!string.IsNullOrEmpty(GroupBuy.ExcludeShippingMethod))
+                    {
+                        ItemTags = GroupBuy.ExcludeShippingMethod.Split(',').ToList();
+                    }
 
                     ExistingImages = await _imageAppService.GetGroupBuyImagesAsync(Id, ImageType.GroupBuyCarouselImage);
                     CarouselImages = _objectMapper.Map<List<ImageDto>, List<CreateImageDto>>(ExistingImages);
@@ -522,7 +530,41 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
             }
         }
+        private bool IsItemDisabled(string item)
+        {
+            if (item == Enum.GetName(DeliveryMethod.SevenToElevenC2C))
+            {
+                
+                    return ItemTags!=null&& ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.SevenToEleven)) ? true : false;
+                
+            }
+            else if (item == Enum.GetName(DeliveryMethod.SevenToEleven))
+            {
+               
+                    return ItemTags != null && ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.SevenToElevenC2C)) ? true : false;
 
+            }
+            else if (item == Enum.GetName(DeliveryMethod.FamilyMart))
+            {
+
+               
+                    return ItemTags != null && ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.FamilyMartC2C)) ? true : false;
+
+
+            }
+            else if (item == Enum.GetName(DeliveryMethod.FamilyMartC2C))
+            {
+               
+                    return ItemTags != null && ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.FamilyMart)) ? true : false;
+
+
+            }
+            else
+            {
+                return false;
+            }
+
+        }
         async Task DeleteLogoAsync(string blobImageName)
         {
             try
@@ -616,22 +658,21 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             }
         }
 
-        private void HandleItemTagInputKeyUp(KeyboardEventArgs e)
-        {
-            if (e.Key == "Enter")
-            {
-                if (!TagInputValue.IsNullOrWhiteSpace() && !ItemTags.Any(x => x == TagInputValue))
-                {
-                    ItemTags.Add(TagInputValue);
-                }
-                TagInputValue = string.Empty;
-            }
-        }
+        //private void HandleItemTagInputKeyUp(List<string> e)
+        //{
 
-        private void HandleItemTagDelete(string item)
-        {
-            ItemTags.Remove(item);
-        }
+        //    foreach (var item in e)
+        //    {
+        //        ItemTags.Add(TagInputValue);
+        //    }
+
+
+        //}
+
+        //private void HandleItemTagDelete(string item)
+        //{
+        //    ItemTags.Remove(item);
+        //}
 
         private void HandlePaymentTagInputKeyUp(KeyboardEventArgs e)
         {

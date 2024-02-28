@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Domain.Entities.Auditing;
 using Kooco.Pikachu.EnumValues;
+using System.ComponentModel.DataAnnotations;
 
 namespace Kooco.Pikachu.GroupBuys
 {
@@ -199,6 +200,8 @@ namespace Kooco.Pikachu.GroupBuys
         public string? CustomerInformationDescription { get; set; }
         public bool IsGroupBuyAvaliable { get; set; }
         public decimal? SalesAmount { get; set; }
+       
+        public decimal? FreeShippingThreshold { get; set; }
         /// <summary>
         /// 預設使用的發貨倉庫 Default Warehouse used for shipping
         /// </summary>
@@ -253,7 +256,8 @@ namespace Kooco.Pikachu.GroupBuys
             string? groupBuyConditionDescription,
             string? exchangePolicyDescription,
             string shortCode,
-            bool isEnterprise
+            bool isEnterprise,
+             decimal? freeShippingThreshold 
             )
         {
             Id = id;
@@ -301,6 +305,7 @@ namespace Kooco.Pikachu.GroupBuys
             ExchangePolicyDescription = exchangePolicyDescription;
             ShortCode = shortCode;
             IsEnterprise = isEnterprise;
+            FreeShippingThreshold = freeShippingThreshold;
 
             ItemGroups = new List<GroupBuyItemGroup>();
         }

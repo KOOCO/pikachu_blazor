@@ -343,15 +343,73 @@
         <div class="row">
             <div class="col-2">@L["Logistic"]</div>
             <div class="col-2">@L["FreeShipping"]</div>
-            <div class="col-4"> <Switch TValue="bool" @bind-Checked="@EditGroupBuyDto.FreeShipping"></Switch></div>
+            <div class="col-2"> <Switch TValue="bool" @bind-Checked="@EditGroupBuyDto.FreeShipping"></Switch></div>
+                 <div class="col-1">@L["Threshold"]</div>
+            <div class="col-2">  <InputNumber id="h-threshold" class="form-control" @bind-Value="EditGroupBuyDto.FreeShippingThreshold" DisplayName="Free Shipping Threshold"></InputNumber></div>
+       
+        </div>
+          <div class="row">
+            <div class="col-2"></div>
+            <div class="col-2">@L["AllowShipToOuterIsland"]</div>
+            <div class="col-4"> <Switch TValue="bool" @bind-Checked="@EditGroupBuyDto.AllowShipToOuterTaiwan"></Switch></div>
+        </div>
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-2">@L["AllowShipToOverSea"]</div>
+            <div class="col-4"> <Switch TValue="bool" @bind-Checked="@EditGroupBuyDto.AllowShipOversea"></Switch></div>
         </div>
         <div class="row">
             <div class="col-2"></div>
             <div class="col-2">
-                @L["ExcludeShippingMethod"]
+                @L["ShippingMethod"]
             </div>
             <div class="col-8">
-                <div class="col-7 form-control"  style="background-color:white">
+                <SelectList TItem="string"
+                            TValue="string"
+                            Data="@ShippingMethods"
+                            TextField="@((item)=>item)"
+                            ValueField="@((item)=>item)"
+                                    Multiple
+                             @bind-SelectedValues="@ItemTags"
+                             DefaultItemDisabled="true"
+                             ItemDisabled="(item) => IsItemDisabled(item)"
+                             DefaultItemText="Select Shipping Methods" />
+             @*   <Select    class="form-select" multiple SelectedValues="@ItemTags" SelectedValuesChanged="@HandleItemTagInputKeyUp"  >
+                     @foreach(var item in Enum.GetNames(typeof(DeliveryMethod)))
+            {
+                   if(item==Enum.GetName(DeliveryMethod.SevenToElevenC2C))
+                   {
+                   
+                     <SelectItem Disabled="@ItemTags.Any(x=>x==Enum.GetName(DeliveryMethod.SevenToEleven))"  Value="@item">@item</SelectItem>
+                   
+                   }
+                   else if (item==Enum.GetName(DeliveryMethod.SevenToEleven))
+                   {
+                   
+                     <SelectItem Disabled="@ItemTags.Any(x=>x==Enum.GetName(DeliveryMethod.SevenToElevenC2C))"  Value="@item">@item</SelectItem>
+                   
+                   }
+                    else if (item==Enum.GetName(DeliveryMethod.FamilyMart))
+                   {
+                   
+                     <SelectItem Disabled="@ItemTags.Any(x=>x==Enum.GetName(DeliveryMethod.FamilyMartC2C))"  Value="@item">@item</SelectItem>
+                   
+                   } 
+                   else if (item==Enum.GetName(DeliveryMethod.FamilyMartC2C))
+                   {
+                   
+                     <SelectItem Disabled="@ItemTags.Any(x=>x==Enum.GetName(DeliveryMethod.FamilyMart))"  Value="@item">@item</SelectItem>
+                   
+                   }
+                   else{
+                       <SelectItem  Value="@item">@item</SelectItem>
+                   }
+                   
+
+            }
+                     
+                </Select>   *@
+                @*  <div class="col-7 form-control"  style="background-color:white">
                     @foreach (var item in ItemTags)
                     {
                         <Badge class="item-tags" CloseClicked="@(() => HandleItemTagDelete(item))">@item</Badge>
@@ -362,19 +420,10 @@
                         @onkeyup="HandleItemTagInputKeyUp" />
                         <i class="tag-input-placeholder-icon fa fa-plus"></i>
                     </div>
-                </div>
+                </div> *@
             </div>
         </div>
-        <div class="row">
-            <div class="col-2"></div>
-            <div class="col-2">@L["AllowShipToOuterIsland"]</div>
-            <div class="col-4"> <Switch TValue="bool" @bind-Checked="@EditGroupBuyDto.AllowShipToOuterTaiwan"></Switch></div>
-        </div>
-        <div class="row">
-            <div class="col-2"></div>
-            <div class="col-2">@L["AllowShipToOverSea"]</div>
-            <div class="col-4"> <Switch TValue="bool" @bind-Checked="@EditGroupBuyDto.AllowShipOversea"></Switch></div>
-        </div>
+      
         <div class="row">
             <div class="col-2"></div>
             <div class="col-2">@L["ExpectDeliveryDate"]</div>

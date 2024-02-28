@@ -5,7 +5,7 @@ namespace Kooco.Pikachu.EnumValues;
 public enum DeliveryMethod
 {
     [Description("郵局")]
-    PostOffice,
+    PostOffice=0,
 
     [Description("自取")]
     SelfPickup,
@@ -14,5 +14,10 @@ public enum DeliveryMethod
     BlackCat,
 
     [Description("親送")]
-    HomeDelivery
+    HomeDelivery,
+    SevenToEleven,
+    SevenToElevenC2C,
+    FamilyMart,
+    FamilyMartC2C
+
 }

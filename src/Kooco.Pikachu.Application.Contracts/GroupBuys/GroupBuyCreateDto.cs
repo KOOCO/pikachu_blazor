@@ -196,5 +196,6 @@ namespace Kooco.Pikachu.GroupBuys
         public string? CustomerInformationDescription { get; set; }
         public string? ExchangePolicyDescription { get; set; }
         public bool IsEnterprise { get; set; }
+        public decimal? FreeShippingThreshold { get; set; }
     }
 }

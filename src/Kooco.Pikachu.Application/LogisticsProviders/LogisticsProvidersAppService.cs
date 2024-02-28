@@ -34,7 +34,7 @@ namespace Kooco.Pikachu.LogisticsProviders
                 greenWorld.SenderPhoneNumber = input.SenderPhoneNumber;
                 greenWorld.LogisticsType = input.LogisticsType;
                 greenWorld.LogisticsSubTypes = input.LogisticsSubTypes;
-                greenWorld.FreeShippingThreshold = input.FreeShippingThreshold;
+               
                 greenWorld.Freight = input.Freight;
 
                 await _logisticsProviderRepository.UpdateAsync(greenWorld);
@@ -51,7 +51,7 @@ namespace Kooco.Pikachu.LogisticsProviders
                     SenderPhoneNumber = input.SenderPhoneNumber,
                     LogisticsType = input.LogisticsType,
                     LogisticsSubTypes = input.LogisticsSubTypes,
-                    FreeShippingThreshold = input.FreeShippingThreshold,
+                  
                     Freight = input.Freight,
                     LogisticProvider = LogisticProviders.GreenWorldLogistics
                 };
@@ -66,7 +66,7 @@ namespace Kooco.Pikachu.LogisticsProviders
             {
                 homeDelivery.IsEnabled = input.IsEnabled;
                 homeDelivery.CustomTitle = input.CustomTitle;
-                homeDelivery.FreeShippingThreshold = input.FreeShippingThreshold;
+               
                 homeDelivery.Freight = input.Freight;
                 homeDelivery.MainIslands = input.MainIslands;
                 homeDelivery.OuterIslands = input.OuterIslands;
@@ -79,7 +79,7 @@ namespace Kooco.Pikachu.LogisticsProviders
                 {
                     IsEnabled = input.IsEnabled,
                     CustomTitle = input.CustomTitle,
-                    FreeShippingThreshold = input.FreeShippingThreshold,
+                   
                     Freight = input.Freight,
                     MainIslands = input.MainIslands,
                     OuterIslands = input.OuterIslands,
