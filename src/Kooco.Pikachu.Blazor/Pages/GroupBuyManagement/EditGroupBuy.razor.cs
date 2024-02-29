@@ -532,36 +532,69 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         }
         private bool IsItemDisabled(string item)
         {
-            if (item == Enum.GetName(DeliveryMethod.SevenToElevenC2C))
+            if (EditGroupBuyDto.AllowShipToOuterTaiwan)
             {
-                
-                    return ItemTags!=null&& ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.SevenToEleven)) ? true : false;
-                
-            }
-            else if (item == Enum.GetName(DeliveryMethod.SevenToEleven))
-            {
-               
-                    return ItemTags != null && ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.SevenToElevenC2C)) ? true : false;
+                if (item == Enum.GetName(DeliveryMethod.SevenToElevenC2C) || item == Enum.GetName(DeliveryMethod.BlackCat) || item == Enum.GetName(DeliveryMethod.SevenToEleven))
+                {
 
-            }
-            else if (item == Enum.GetName(DeliveryMethod.FamilyMart))
-            {
+                    if (item == Enum.GetName(DeliveryMethod.SevenToElevenC2C))
+                    {
 
-               
-                    return ItemTags != null && ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.FamilyMartC2C)) ? true : false;
+                        return ItemTags != null && ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.SevenToEleven)) ? true : false;
 
+                    }
+                    else if (item == Enum.GetName(DeliveryMethod.SevenToEleven))
+                    {
 
-            }
-            else if (item == Enum.GetName(DeliveryMethod.FamilyMartC2C))
-            {
-               
-                    return ItemTags != null && ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.FamilyMart)) ? true : false;
+                        return ItemTags != null && ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.SevenToElevenC2C)) ? true : false;
 
+                    }
+                    else
+                    {
+                        return false;
+                    }
+
+                }
+                else
+                {
+
+                    return true;
+                }
 
             }
             else
             {
-                return false;
+                if (item == Enum.GetName(DeliveryMethod.SevenToElevenC2C))
+                {
+
+                    return ItemTags != null && ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.SevenToEleven)) ? true : false;
+
+                }
+                else if (item == Enum.GetName(DeliveryMethod.SevenToEleven))
+                {
+
+                    return ItemTags != null && ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.SevenToElevenC2C)) ? true : false;
+
+                }
+                else if (item == Enum.GetName(DeliveryMethod.FamilyMart))
+                {
+
+
+                    return ItemTags != null && ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.FamilyMartC2C)) ? true : false;
+
+
+                }
+                else if (item == Enum.GetName(DeliveryMethod.FamilyMartC2C))
+                {
+
+                    return ItemTags != null && ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.FamilyMart)) ? true : false;
+
+
+                }
+                else
+                {
+                    return false;
+                }
             }
 
         }

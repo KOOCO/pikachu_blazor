@@ -32,10 +32,10 @@ namespace Kooco.Pikachu.LogisticsProviders
                 greenWorld.HashIV = input.HashIV;
                 greenWorld.SenderName = input.SenderName;
                 greenWorld.SenderPhoneNumber = input.SenderPhoneNumber;
-                greenWorld.LogisticsType = input.LogisticsType;
-                greenWorld.LogisticsSubTypes = input.LogisticsSubTypes;
-               
-                greenWorld.Freight = input.Freight;
+                greenWorld.PlatFormId = input.PlatFormId;
+                greenWorld.SenderAddress = input.SenderAddress;
+                greenWorld.SenderPostalCode = input.SenderPostalCode;
+                greenWorld.City = input.City;
 
                 await _logisticsProviderRepository.UpdateAsync(greenWorld);
             }
@@ -49,10 +49,10 @@ namespace Kooco.Pikachu.LogisticsProviders
                     HashIV = input.HashIV,
                     SenderName = input.SenderName,
                     SenderPhoneNumber = input.SenderPhoneNumber,
-                    LogisticsType = input.LogisticsType,
-                    LogisticsSubTypes = input.LogisticsSubTypes,
-                  
-                    Freight = input.Freight,
+                    PlatFormId = input.PlatFormId,
+                    SenderAddress = input.SenderAddress,
+                    SenderPostalCode = input.SenderPostalCode,
+                    City = input.City,
                     LogisticProvider = LogisticProviders.GreenWorldLogistics
                 };
                 await _logisticsProviderRepository.InsertAsync(greenWorld);
@@ -89,7 +89,166 @@ namespace Kooco.Pikachu.LogisticsProviders
                 await _logisticsProviderRepository.InsertAsync(homeDelivery);
             }
         }
+        public async Task UpdatePostOfficeAsync(PostOfficeCreateUpdateDto input)
+        {
+            var postOffice = await _logisticsProviderRepository.FirstOrDefaultAsync(x => x.LogisticProvider == LogisticProviders.PostOffice);
+            if (postOffice != null)
+            {
+             postOffice.Freight = input.Freight;
+                postOffice.Weight= input.Weight;
 
+                await _logisticsProviderRepository.UpdateAsync(postOffice);
+            }
+            else
+            {
+                postOffice = new LogisticsProviderSettings
+                {
+                    Freight = input.Freight,
+                Weight = input.Weight,
+                LogisticProvider = LogisticProviders.PostOffice
+                };
+
+                await _logisticsProviderRepository.InsertAsync(postOffice);
+            }
+        }
+        public async Task UpdateSevenToElevenAsync(SevenToElevenCreateUpdateDto input)
+        {
+            var sevenToEleven = await _logisticsProviderRepository.FirstOrDefaultAsync(x => x.LogisticProvider == LogisticProviders.SevenToEleven);
+            if (sevenToEleven != null)
+            {
+                sevenToEleven.Freight = input.Freight;
+                sevenToEleven.Payment = input.Payment;
+
+                await _logisticsProviderRepository.UpdateAsync(sevenToEleven);
+            }
+            else
+            {
+                sevenToEleven = new LogisticsProviderSettings
+                {
+                    Freight = input.Freight,
+                    Payment = input.Payment,
+                LogisticProvider = LogisticProviders.SevenToEleven
+                };
+
+                await _logisticsProviderRepository.InsertAsync(sevenToEleven);
+            }
+        }
+        public async Task UpdateFamilyMartAsync(SevenToElevenCreateUpdateDto input)
+        {
+            var sevenToEleven = await _logisticsProviderRepository.FirstOrDefaultAsync(x => x.LogisticProvider == LogisticProviders.FamilyMart);
+            if (sevenToEleven != null)
+            {
+                sevenToEleven.Freight = input.Freight;
+                sevenToEleven.Payment = input.Payment;
+
+                await _logisticsProviderRepository.UpdateAsync(sevenToEleven);
+            }
+            else
+            {
+                sevenToEleven = new LogisticsProviderSettings
+                {
+                    Freight = input.Freight,
+                    Payment = input.Payment,
+                    LogisticProvider = LogisticProviders.FamilyMart
+                };
+
+                await _logisticsProviderRepository.InsertAsync(sevenToEleven);
+            }
+        }
+        public async Task UpdateSevenToElevenFrozenAsync(SevenToElevenCreateUpdateDto input)
+        {
+            var sevenToEleven = await _logisticsProviderRepository.FirstOrDefaultAsync(x => x.LogisticProvider == LogisticProviders.SevenToElevenFrozen);
+            if (sevenToEleven != null)
+            {
+                sevenToEleven.Freight = input.Freight;
+                sevenToEleven.Payment = input.Payment;
+
+                await _logisticsProviderRepository.UpdateAsync(sevenToEleven);
+            }
+            else
+            {
+                sevenToEleven = new LogisticsProviderSettings
+                {
+                    Freight = input.Freight,
+                    Payment = input.Payment,
+                    LogisticProvider = LogisticProviders.SevenToElevenFrozen
+                };
+
+                await _logisticsProviderRepository.InsertAsync(sevenToEleven);
+            }
+        }
+        public async Task UpdateBNormalAsync(BNormalCreateUpdateDto input)
+        {
+            var bNormal = await _logisticsProviderRepository.FirstOrDefaultAsync(x => x.LogisticProvider == LogisticProviders.BNormal);
+            if (bNormal != null)
+            {
+                bNormal.Freight = input.Freight;
+                bNormal.OuterIslandFreight = input.OuterIslandFreight;
+                bNormal.Size= input.Size;
+
+                await _logisticsProviderRepository.UpdateAsync(bNormal);
+            }
+            else
+            {
+                bNormal = new LogisticsProviderSettings
+                {
+                    Freight = input.Freight,
+                    OuterIslandFreight = input.OuterIslandFreight,
+                    Size = input.Size,
+                    LogisticProvider = LogisticProviders.BNormal
+                };
+
+                await _logisticsProviderRepository.InsertAsync(bNormal);
+            }
+        }
+        public async Task UpdateBFreezeAsync(BNormalCreateUpdateDto input)
+        {
+            var bFreeze = await _logisticsProviderRepository.FirstOrDefaultAsync(x => x.LogisticProvider == LogisticProviders.BFreeze);
+            if (bFreeze != null)
+            {
+                bFreeze.Freight = input.Freight;
+                bFreeze.OuterIslandFreight = input.OuterIslandFreight;
+                bFreeze.Size = input.Size;
+
+                await _logisticsProviderRepository.UpdateAsync(bFreeze);
+            }
+            else
+            {
+                bFreeze = new LogisticsProviderSettings
+                {
+                    Freight = input.Freight,
+                    OuterIslandFreight = input.OuterIslandFreight,
+                    Size = input.Size,
+                    LogisticProvider = LogisticProviders.BFreeze
+                };
+
+                await _logisticsProviderRepository.InsertAsync(bFreeze);
+            }
+        }
+        public async Task UpdateBFrozenAsync(BNormalCreateUpdateDto input)
+        {
+            var bFrozen = await _logisticsProviderRepository.FirstOrDefaultAsync(x => x.LogisticProvider == LogisticProviders.BFrozen);
+            if (bFrozen != null)
+            {
+                bFrozen.Freight = input.Freight;
+                bFrozen.OuterIslandFreight = input.OuterIslandFreight;
+                bFrozen.Size = input.Size;
+
+                await _logisticsProviderRepository.UpdateAsync(bFrozen);
+            }
+            else
+            {
+                bFrozen = new LogisticsProviderSettings
+                {
+                    Freight = input.Freight,
+                    OuterIslandFreight = input.OuterIslandFreight,
+                    Size = input.Size,
+                    LogisticProvider = LogisticProviders.BFrozen
+                };
+
+                await _logisticsProviderRepository.InsertAsync(bFrozen);
+            }
+        }
         public async Task<List<LogisticsProviderSettingsDto>> GetAllAsync()
         {
             var providers = await _logisticsProviderRepository.GetListAsync();

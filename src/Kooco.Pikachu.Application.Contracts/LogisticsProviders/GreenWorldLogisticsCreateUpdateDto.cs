@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Kooco.Pikachu.EnumValues;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Kooco.Pikachu.LogisticsProviders
@@ -22,26 +23,30 @@ namespace Kooco.Pikachu.LogisticsProviders
         [Required(ErrorMessage = "This Field Is Required")]
         public string SenderPhoneNumber { get; set; }
 
-        [Required(ErrorMessage = "This Field Is Required")]
-        public string LogisticsType { get; set; }
+        //[Required(ErrorMessage = "This Field Is Required")]
+        //public string LogisticsType { get; set; }
 
-        [Required(ErrorMessage = "This Field Is Required")]
-        public string LogisticsSubTypes { get; set; }
+        //[Required(ErrorMessage = "This Field Is Required")]
+        //public string LogisticsSubTypes { get; set; }
 
-        [Required(ErrorMessage = "This Field Is Required")]
-        public List<string> LogisticsSubTypesList { get; set; }
+        //[Required(ErrorMessage = "This Field Is Required")]
+        //public List<string> LogisticsSubTypesList { get; set; }
 
-        [Required(ErrorMessage = "This Field Is Required")]
-        [Range(0, int.MaxValue, ErrorMessage = "This Field Must Be 0 Or Greater")]
-        public int FreeShippingThreshold { get; set; }
+        //[Required(ErrorMessage = "This Field Is Required")]
+        //[Range(0, int.MaxValue, ErrorMessage = "This Field Must Be 0 Or Greater")]
+        //public int FreeShippingThreshold { get; set; }
 
-        [Required(ErrorMessage = "This Field Is Required")]
-        [Range(0, int.MaxValue, ErrorMessage = "This Field Must Be 0 Or Greater")]
-        public int Freight { get; set; }
+        //[Required(ErrorMessage = "This Field Is Required")]
+        //[Range(0, int.MaxValue, ErrorMessage = "This Field Must Be 0 Or Greater")]
+        //public int Freight { get; set; }
+        public string? PlatFormId { get; set; }
+        public string? SenderPostalCode { get; set; }
+        public string? SenderAddress { get; set; }
+        public MainlandCity City { get; set; }
 
         public GreenWorldLogisticsCreateUpdateDto()
         {
-            LogisticsSubTypesList = new();
+          
         }
     }
 }

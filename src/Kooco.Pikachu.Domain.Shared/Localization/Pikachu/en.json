@@ -366,7 +366,7 @@
 
     //LogisticsManagement
     "LogisticsProviderSettings": "Logistics Provider Settings",
-    "GreenWorldLogistics": "Green World Logistics",
+    "GreenWorldLogistics": "Green World Logistics B2C",
     "SenderPhoneNumber": "Sender Phone Number",
     "LogisticsType": "Logistics Type",
     "LogisticsSubType": "Logistics Sub Type",
@@ -408,6 +408,12 @@
     "Display": "Display",
     "Results": "Results",
     "Filter": "Filter",
-    "Reset": "Reset"
+    "Reset": "Reset",
+    "MerchantID": "Merchant ID",
+    "PlatformID": "Platform ID",
+    "Cm0001": "0001: 60cm",
+    "Cm0002": "0002: 90cm",
+    "Cm0003": "0003: 120cm",
+    "Cm0004": "0004: 150cm"
   }
 }

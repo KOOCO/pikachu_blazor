@@ -4,6 +4,7 @@ using Kooco.Pikachu.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    partial class PikachuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240228064637_Change in LogisticProviderSetting Table")]
+    partial class ChangeinLogisticProviderSettingTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1389,14 +1392,8 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<string>("MainIslands")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("OuterIslandFreight")
-                        .HasColumnType("int");
-
                     b.Property<string>("OuterIslands")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Payment")
-                        .HasColumnType("bit");
 
                     b.Property<string>("PlatFormId")
                         .HasColumnType("nvarchar(max)");
@@ -1413,18 +1410,12 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<string>("SenderPostalCode")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Size")
-                        .HasColumnType("int");
-
                     b.Property<string>("StoreCode")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("TenantId");
-
-                    b.Property<decimal>("Weight")
-                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 

@@ -24,24 +24,18 @@ namespace Kooco.Pikachu.LogisticsProviders
 
         public string? SenderPhoneNumber { get; set; }
 
-        public string? LogisticsType { get; set; }
-
-        public string? LogisticsSubTypes { get; set; }
-
-        [NotMapped]
-        public List<string>? LogisticsSubTypesList
-        {
-            get
-            {
-                return string.IsNullOrEmpty(LogisticsSubTypes)
-                    ? new List<string>()
-                    : JsonConvert.DeserializeObject<List<string>>(LogisticsSubTypes);
-            }
-        }
-
+        public string? PlatFormId { get; set; }
+        public string? SenderPostalCode { get; set; }
+        public string? SenderAddress { get; set; }
+        public MainlandCity City { get; set; }
+        public decimal Weight { get; set; }
+        public bool Payment { get; set; }
+        public SizeEnum Size { get; set; }
+        public int OuterIslandFreight { get; set; }
         //public int FreeShippingThreshold { get; set; }
 
         public int Freight { get; set; }
+       
 
         public string? CustomTitle { get; set; }
 

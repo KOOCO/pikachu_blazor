@@ -288,7 +288,7 @@ public class PikachuDbContext :
             b.ToTable(PikachuConsts.DbTablePrefix + "LogisticsProviderSettings", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
 
-            b.Ignore(x => x.LogisticsSubTypesList);
+           // b.Ignore(x => x.LogisticsSubTypesList);
             b.Ignore(x => x.MainIslandsList);
             b.Ignore(x => x.OuterIslandsList);
         });

@@ -9,5 +9,12 @@ namespace Kooco.Pikachu.LogisticsProviders
         Task<List<LogisticsProviderSettingsDto>> GetAllAsync();
         Task UpdateGreenWorldAsync(GreenWorldLogisticsCreateUpdateDto input);
         Task UpdateHomeDeliveryAsync(HomeDeliveryCreateUpdateDto input);
+        Task UpdatePostOfficeAsync(PostOfficeCreateUpdateDto input);
+        Task UpdateSevenToElevenAsync(SevenToElevenCreateUpdateDto input);
+        Task UpdateFamilyMartAsync(SevenToElevenCreateUpdateDto input);
+        Task UpdateSevenToElevenFrozenAsync(SevenToElevenCreateUpdateDto input);
+        Task UpdateBNormalAsync(BNormalCreateUpdateDto input);
+        Task UpdateBFrozenAsync(BNormalCreateUpdateDto input);
+        Task UpdateBFreezeAsync(BNormalCreateUpdateDto input);
     }
 }

@@ -379,7 +379,7 @@
 
     //LogisticsManagement
     "LogisticsProviderSettings": "物流商設定",
-    "GreenWorldLogistics": "綠界物流",
+    "GreenWorldLogistics": "綠界物流B2C",
     "SenderPhoneNumber": "發送者電話",
     "LogisticsType": "物流類型",
     "LogisticsSubType": "物流子類型",
@@ -423,6 +423,8 @@
     "Availability": "上架",
     "Filter": "篩選",
     "Reset": "重置",
-    "Pikachu:GroupBuyShortCodeCannotBeNull": "團購短碼不能為空"
+    "Pikachu:GroupBuyShortCodeCannotBeNull": "團購短碼不能為空",
+    "MerchantID": "特店編號",
+    "PlatformID": "特約合作平台商代號"
   }
 }
