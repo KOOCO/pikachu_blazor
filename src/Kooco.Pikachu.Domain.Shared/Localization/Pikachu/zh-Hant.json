@@ -425,6 +425,15 @@
     "Reset": "重置",
     "Pikachu:GroupBuyShortCodeCannotBeNull": "團購短碼不能為空",
     "MerchantID": "特店編號",
-    "PlatformID": "特約合作平台商代號"
+    "PlatformID": "特約合作平台商代號",
+    "Cm0001": "0001: 60cm",
+    "Cm0002": "0002: 90cm",
+    "Cm0003": "0003: 120cm",
+    "Cm0004": "0004: 150cm",
+
+    "SevenToEleven1": "7-11",
+    "SevenToElevenC2C": "7-11 C2C",
+    "FamilyMart1": "Family Mart",
+    "FamilyMartC2C": "Family Mart C2C"
   }
 }

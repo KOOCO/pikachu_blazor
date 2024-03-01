@@ -197,5 +197,11 @@ namespace Kooco.Pikachu.GroupBuys
         public string? ExchangePolicyDescription { get; set; }
         public bool IsEnterprise { get; set; }
         public decimal? FreeShippingThreshold { get; set; }
+        public List<string>? ShippingMethodList { get; set; }
+        public GroupBuyCreateDto()
+        {
+            ShippingMethodList = new List<string>();
+          
+        }
     }
 }

@@ -374,31 +374,28 @@
                 @L["ShippingMethod"]
             </div>
             <div class="col-8">
-            
-              
-              @*   <div class="col-7 form-control" style="background-color:white">
-                    @foreach (var item in ItemTags)
-                    {
-                        <Badge class="item-tags" CloseClicked="@(() => HandleItemTagDelete(item))">@item</Badge>
-                    }
-                    <div class="input-container"> *@
-                      @*   <input type="text" id="tag-input" class="tag-input" placeholder="New Tag"
-                               @bind-value="TagInputValue"
-                               @onkeyup="HandleItemTagInputKeyUp" /> *@
-                        @* <i class="tag-input-placeholder-icon fa fa-plus"></i> *@
-                 @*    </div>
-                </div> *@
-             <SelectList TItem="string"
-                            TValue="string"
-                            Data="@ShippingMethods"
-                            TextField="@((item)=>item)"
-                            ValueField="@((item)=>item)"
-                                    Multiple
-                             @bind-SelectedValues="@ItemTags"
-                             DefaultItemDisabled="true"
-                             ItemDisabled="(item) => IsItemDisabled(item)"
-                             DefaultItemText="Select Shipping Methods" /> 
-           
+            @if(CreateGroupBuyDto.AllowShipToOuterTaiwan && !CreateGroupBuyDto.AllowShipOversea)
+            {
+             @foreach(var item in Enum.GetNames(typeof(DeliveryMethod)))
+              {
+                  if(item==Enum.GetName(DeliveryMethod.SevenToElevenC2C)||item==Enum.GetName(DeliveryMethod.SevenToEleven1)||item==Enum.GetName(DeliveryMethod.BlackCat))
+                  {
+               <label for="@item" class="form-label me-2">
+                                <input type="checkbox" class="form-check-input me-1" id="@item" checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))" @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                @L[item]
+                            </label>
+              }
+              }
+            }
+            else{
+              @foreach(var item in Enum.GetNames(typeof(DeliveryMethod)))
+              {
+               <label for="@item" class="form-label me-2">
+                                <input type="checkbox" class="form-check-input me-1" id="@item" checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))" @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                @L[item]
+                            </label>
+              }
+           }
 
             </div>
 
@@ -944,6 +941,7 @@
     @code {
 
 }
+
 
 
 

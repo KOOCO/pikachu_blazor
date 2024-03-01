@@ -18,6 +18,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
+using Microsoft.JSInterop;
 
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 {
@@ -371,73 +372,49 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             }
             CollapseItem.Add(collapseItem);
         }
-        private bool IsItemDisabled(string item)
+        void OnShippingMethodCheckedChange(string method, ChangeEventArgs e)
         {
-            if (CreateGroupBuyDto.AllowShipToOuterTaiwan)
+            var value = (bool)(e?.Value ?? false);
+
+            if (value)
             {
-                if (item == Enum.GetName(DeliveryMethod.SevenToElevenC2C) || item == Enum.GetName(DeliveryMethod.BlackCat) || item == Enum.GetName(DeliveryMethod.SevenToEleven))
+                // If the selected method is SevenToEleven or FamilyMart, uncheck the corresponding C2C method
+                if (method == "SevenToEleven1" && CreateGroupBuyDto.ShippingMethodList.Contains("SevenToElevenC2C"))
                 {
-
-                    if (item == Enum.GetName(DeliveryMethod.SevenToElevenC2C))
-                    {
-
-                        return ItemTags != null && ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.SevenToEleven)) ? true : false;
-
-                    }
-                    else if (item == Enum.GetName(DeliveryMethod.SevenToEleven))
-                    {
-
-                        return ItemTags != null && ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.SevenToElevenC2C)) ? true : false;
-
-                    }
-                    else
-                    {
-                        return false;
-                    }
-
+                    CreateGroupBuyDto.ShippingMethodList.Remove("SevenToElevenC2C");
+                    JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "SevenToElevenC2C");
                 }
-                else
+                else if (method == "FamilyMart1" && CreateGroupBuyDto.ShippingMethodList.Contains("FamilyMartC2C"))
                 {
-
-                    return true;
+                    CreateGroupBuyDto.ShippingMethodList.Remove("FamilyMartC2C");
+                    JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "FamilyMartC2C");
                 }
+          
+               
+               else if (method == "SevenToElevenC2C" && CreateGroupBuyDto.ShippingMethodList.Contains("SevenToEleven1"))
+                {
+                    CreateGroupBuyDto.ShippingMethodList.Remove("SevenToEleven1");
+                    JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "SevenToEleven1");
+                }
+                else if (method == "FamilyMartC2C" && CreateGroupBuyDto.ShippingMethodList.Contains("FamilyMart1"))
+                {
+                    CreateGroupBuyDto.ShippingMethodList.Remove("FamilyMart1");
+                    JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "FamilyMart1");
+                }
+            }
 
+            // Update the selected method in the CreateGroupBuyDto.ShippingMethodList
+            if (value)
+            {
+                CreateGroupBuyDto.ShippingMethodList.Add(method);
             }
             else
             {
-                if (item == Enum.GetName(DeliveryMethod.SevenToElevenC2C))
-                {
-
-                    return ItemTags != null && ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.SevenToEleven)) ? true : false;
-
-                }
-                else if (item == Enum.GetName(DeliveryMethod.SevenToEleven))
-                {
-
-                    return ItemTags != null && ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.SevenToElevenC2C)) ? true : false;
-
-                }
-                else if (item == Enum.GetName(DeliveryMethod.FamilyMart))
-                {
-
-
-                    return ItemTags != null && ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.FamilyMartC2C)) ? true : false;
-
-
-                }
-                else if (item == Enum.GetName(DeliveryMethod.FamilyMartC2C))
-                {
-
-                    return ItemTags != null && ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.FamilyMart)) ? true : false;
-
-
-                }
-                else
-                {
-                    return false;
-                }
+                CreateGroupBuyDto.ShippingMethodList.Remove(method);
             }
 
+            // Serialize the updated list and assign it to ExcludeShippingMethod
+            CreateGroupBuyDto.ExcludeShippingMethod = JsonConvert.SerializeObject(CreateGroupBuyDto.ShippingMethodList);
         }
         private static void OnProductGroupValueChange(ChangeEventArgs e, CollapseItem collapseItem)
         {

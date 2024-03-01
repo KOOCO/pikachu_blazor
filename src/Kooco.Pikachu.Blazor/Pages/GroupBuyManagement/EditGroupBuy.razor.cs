@@ -10,6 +10,7 @@ using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -98,10 +99,10 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             {
                 Id = Guid.Parse(id);
                 GroupBuy = await _groupBuyAppService.GetWithItemGroupsAsync(Id);
-                if (!string.IsNullOrEmpty(GroupBuy.ExcludeShippingMethod))
-                {
-                    ItemTags = GroupBuy.ExcludeShippingMethod.Split(',').ToList();
-                }
+                //if (!string.IsNullOrEmpty(GroupBuy.ExcludeShippingMethod))
+                //{
+                //    EditGroupBuyDto.ShippingMethodList= GroupBuy.ExcludeShippingMethod.Split(',').ToList();
+                //}
                 if (!GroupBuy.PaymentMethod.IsNullOrEmpty())
                 {
                     var payments = GroupBuy.PaymentMethod.Split(",");
@@ -530,73 +531,49 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
             }
         }
-        private bool IsItemDisabled(string item)
+        void OnShippingMethodCheckedChange(string method, ChangeEventArgs e)
         {
-            if (EditGroupBuyDto.AllowShipToOuterTaiwan)
+            var value = (bool)(e?.Value ?? false);
+
+            if (value)
             {
-                if (item == Enum.GetName(DeliveryMethod.SevenToElevenC2C) || item == Enum.GetName(DeliveryMethod.BlackCat) || item == Enum.GetName(DeliveryMethod.SevenToEleven))
+                // If the selected method is SevenToEleven or FamilyMart, uncheck the corresponding C2C method
+                if (method == "SevenToEleven1" && EditGroupBuyDto.ShippingMethodList.Contains("SevenToElevenC2C"))
                 {
-
-                    if (item == Enum.GetName(DeliveryMethod.SevenToElevenC2C))
-                    {
-
-                        return ItemTags != null && ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.SevenToEleven)) ? true : false;
-
-                    }
-                    else if (item == Enum.GetName(DeliveryMethod.SevenToEleven))
-                    {
-
-                        return ItemTags != null && ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.SevenToElevenC2C)) ? true : false;
-
-                    }
-                    else
-                    {
-                        return false;
-                    }
-
+                    EditGroupBuyDto.ShippingMethodList.Remove("SevenToElevenC2C");
+                    JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "SevenToElevenC2C");
                 }
-                else
+                else if (method == "FamilyMart1" && EditGroupBuyDto.ShippingMethodList.Contains("FamilyMartC2C"))
                 {
-
-                    return true;
+                    EditGroupBuyDto.ShippingMethodList.Remove("FamilyMartC2C");
+                    JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "FamilyMartC2C");
                 }
 
+
+                else if (method == "SevenToElevenC2C" && EditGroupBuyDto.ShippingMethodList.Contains("SevenToEleven"))
+                {
+                    EditGroupBuyDto.ShippingMethodList.Remove("SevenToEleven1");
+                    JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "SevenToEleven1");
+                }
+                else if (method == "FamilyMartC2C" && EditGroupBuyDto.ShippingMethodList.Contains("FamilyMart1"))
+                {
+                    EditGroupBuyDto.ShippingMethodList.Remove("FamilyMart1");
+                    JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "FamilyMart1");
+                }
+            }
+
+            // Update the selected method in the CreateGroupBuyDto.ShippingMethodList
+            if (value)
+            {
+                EditGroupBuyDto.ShippingMethodList.Add(method);
             }
             else
             {
-                if (item == Enum.GetName(DeliveryMethod.SevenToElevenC2C))
-                {
-
-                    return ItemTags != null && ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.SevenToEleven)) ? true : false;
-
-                }
-                else if (item == Enum.GetName(DeliveryMethod.SevenToEleven))
-                {
-
-                    return ItemTags != null && ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.SevenToElevenC2C)) ? true : false;
-
-                }
-                else if (item == Enum.GetName(DeliveryMethod.FamilyMart))
-                {
-
-
-                    return ItemTags != null && ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.FamilyMartC2C)) ? true : false;
-
-
-                }
-                else if (item == Enum.GetName(DeliveryMethod.FamilyMartC2C))
-                {
-
-                    return ItemTags != null && ItemTags.Any(x => x == Enum.GetName(DeliveryMethod.FamilyMart)) ? true : false;
-
-
-                }
-                else
-                {
-                    return false;
-                }
+                EditGroupBuyDto.ShippingMethodList.Remove(method);
             }
 
+            // Serialize the updated list and assign it to ExcludeShippingMethod
+            EditGroupBuyDto.ExcludeShippingMethod = JsonConvert.SerializeObject(EditGroupBuyDto.ShippingMethodList);
         }
         async Task DeleteLogoAsync(string blobImageName)
         {
@@ -755,10 +732,10 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     await _uiMessageService.Warn(L["Short Code Alredy Exist"]);
                     return;
                 }
-                if (ItemTags.Any())
-                {
-                    EditGroupBuyDto.ExcludeShippingMethod = string.Join(",", ItemTags);
-                }
+                //if (ItemTags.Any())
+                //{
+                //    EditGroupBuyDto.ExcludeShippingMethod = string.Join(",", ItemTags);
+                //}
                 //if (PaymentMethodTags.Any())
                 //{
                 //    EditGroupBuyDto.PaymentMethod = string.Join(",", PaymentMethodTags);

@@ -197,5 +197,11 @@ namespace Kooco.Pikachu.GroupBuys
         public bool IsEnterprise { get; set; }
         public decimal? FreeShippingThreshold { get; set; }
         public string ConcurrencyStamp { get; set; }
+        public List<string>? ShippingMethodList { get; set; }
+        public GroupBuyUpdateDto()
+        {
+            ShippingMethodList = new List<string>();
+
+        }
     }
 }

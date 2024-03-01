@@ -20,4 +20,7 @@
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
-    }
+}
+window.uncheckOtherCheckbox = function (method) {
+    document.getElementById(method).checked = false;
+};
