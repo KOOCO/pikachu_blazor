@@ -403,10 +403,64 @@
        
         <div class="row">
             <div class="col-2"></div>
-            <div class="col-2">@L["ExpectDeliveryDate"]</div>
-            <div class="col-4"><DateEdit TValue="DateTime?" Class="form-control" @bind-Date=CreateGroupBuyDto.ExpectShippingDateTo Placeholder="@L["StartDate"].ToString()" /></div>
-            <div class="col-4"><DateEdit TValue="DateTime?" Class="form-control" @bind-Date=CreateGroupBuyDto.ExpectShippingDateFrom Placeholder="@L["EndDate"].ToString()" /></div>
-        </div>
+            <div class="col-2">@L["DeliveryTimePreferance"]</div>
+         <div class="col-8">
+                    <label class="form-label">@L["SelfPickup"]<span class="text-danger"> </span></label>
+                </div>
+                <div class="col-2"></div>
+                <div class="col-2"></div>
+                <div class="col-8">
+                    @if (DeliveryTimeConts.SelfPickUp != null)
+                    {
+                        @foreach(var island in DeliveryTimeConts.SelfPickUp)
+                        {
+                            <label for="@island" class="form-label me-2">
+                            <input type="checkbox" class="form-check-input me-1" id="@island" checked="@(CreateGroupBuyDto.SelfPickupDeliveryTime != null && CreateGroupBuyDto.SelfPickupDeliveryTime.Contains(island))" @onchange="(value) => SelfPickupDeliveryTimeCheckedChange(island, value)" />
+                                @L[island]
+                            </label>
+                        }
+                    }
+                </div>
+                    <div class="col-2"></div>
+            <div class="col-2"></div>
+         <div class="col-8">
+                    <label class="form-label">@L["BlackCat"]<span class="text-danger"> </span></label>
+                </div>
+                <div class="col-2"></div>
+                <div class="col-2"></div>
+                <div class="col-8">
+                    @if (DeliveryTimeConts.BlackCat != null)
+                    {
+                        @foreach(var island in DeliveryTimeConts.BlackCat)
+                        {
+                            <label for="@island" class="form-label me-2">
+                                <input type="checkbox" class="form-check-input me-1" id="@island" checked="@(CreateGroupBuyDto.BlackCatDeliveryTime != null && CreateGroupBuyDto.BlackCatDeliveryTime.Contains(island))" @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)"   />
+                                @L[island]
+                            </label>
+                        }
+                    }
+                </div>
+                            <div class="col-2"></div>
+            <div class="col-2"></div>
+         <div class="col-8">
+                    <label class="form-label">@L["HomeDelivery"]<span class="text-danger"> </span></label>
+                </div>
+                <div class="col-2"></div>
+                <div class="col-2"></div>
+                <div class="col-8">
+                    @if (DeliveryTimeConts.HomeDelivery != null)
+                    {
+                        @foreach(var island in DeliveryTimeConts.HomeDelivery)
+                        {
+                            <label for="@island" class="form-label me-2">
+                                <input type="checkbox" class="form-check-input me-1" id="@island" checked="@(CreateGroupBuyDto.HomeDeliveryDeliveryTime != null && CreateGroupBuyDto.HomeDeliveryDeliveryTime.Contains(island))" @onchange="(value) => HomeDeliveryTimeCheckedChange(island, value)"   />
+                                @L[island]
+                            </label>
+                        }
+                    }
+                </div>
+            </div>
+        
 
         <div class="row">
             <div class="col-2">@L["Gateway"]</div>

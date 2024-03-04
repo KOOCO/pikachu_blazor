@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
 using Microsoft.JSInterop;
+using System.Runtime.CompilerServices;
 
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 {
@@ -28,7 +29,9 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         private const int MaxAllowedFilesPerUpload = 5;
         private const int TotalMaxAllowedFiles = 5;
         private const int MaxAllowedFileSize = 1024 * 1024 * 10;
-
+        public List<string>SelfPickupTimeList = new List<string>();
+        public List<string>BlackCateDeliveryTimeList = new List<string>();
+        public List<string>HomeDeliveryTimeList = new List<string>();
         private GroupBuyCreateDto CreateGroupBuyDto = new();
         public List<CreateImageDto> CarouselImages { get; set; }
         private string TagInputValue { get; set; }
@@ -371,6 +374,51 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 };
             }
             CollapseItem.Add(collapseItem);
+        }
+        void SelfPickupDeliveryTimeCheckedChange(string method, ChangeEventArgs e)
+        {
+            var value = (bool)(e?.Value ?? false);
+            if (value)
+            {
+                SelfPickupTimeList.Add(method);
+            }
+            else
+            {
+                SelfPickupTimeList.Remove(method);
+            }
+
+            CreateGroupBuyDto.SelfPickupDeliveryTime = JsonConvert.SerializeObject(SelfPickupTimeList);
+       
+        }
+        void BlackCatDeliveryTimeCheckedChange(string method, ChangeEventArgs e)
+        {
+            var value = (bool)(e?.Value ?? false);
+            if (value)
+            {
+                BlackCateDeliveryTimeList.Add(method);
+            }
+            else
+            {
+                BlackCateDeliveryTimeList.Remove(method);
+            }
+
+            CreateGroupBuyDto.BlackCatDeliveryTime = JsonConvert.SerializeObject(BlackCateDeliveryTimeList);
+
+        }
+        void HomeDeliveryTimeCheckedChange(string method, ChangeEventArgs e)
+        {
+            var value = (bool)(e?.Value ?? false);
+            if (value)
+            {
+                HomeDeliveryTimeList.Add(method);
+            }
+            else
+            {
+                HomeDeliveryTimeList.Remove(method);
+            }
+
+            CreateGroupBuyDto.HomeDeliveryDeliveryTime = JsonConvert.SerializeObject(HomeDeliveryTimeList);
+
         }
         void OnShippingMethodCheckedChange(string method, ChangeEventArgs e)
         {

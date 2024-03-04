@@ -419,6 +419,15 @@
     "SevenToEleven1": "7-11",
     "SevenToElevenC2C": "7-11 C2C",
     "FamilyMart1": "Family Mart",
-    "FamilyMartC2C": "Family Mart C2C"
+    "FamilyMartC2C": "Family Mart C2C",
+    "Weekday9To13": "Weekday 9-13",
+    "Weekday14To18": "Weekday 14-18",
+    "Weekend9To13": "Weekend 9-13",
+    "Weekend14To18": "Weekend 14-18",
+    "UnableToSpecifyDuringPeakPeriods": "Unable to Specify During Peak Periods",
+    "PleaseContactUs": "Please contact us",
+    "Before13PM": "Before 13p.m",
+    "Between14To18PM": "14-18 p.m",
+    "Inapplicable": "Inapplicable"
   }
 }

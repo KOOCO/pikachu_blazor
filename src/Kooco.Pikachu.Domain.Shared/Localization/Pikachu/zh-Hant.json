@@ -434,6 +434,16 @@
     "SevenToEleven1": "7-11",
     "SevenToElevenC2C": "7-11 C2C",
     "FamilyMart1": "Family Mart",
-    "FamilyMartC2C": "Family Mart C2C"
+    "FamilyMartC2C": "Family Mart C2C",
+    "Weekday9To13": "平日上午(09-13時)",
+    "Weekday14To18": "平日下午(14-18時)",
+    "Weekend9To13": "假日上午(09-13時)",
+    "Weekend14To18": "假日(14-18時)",
+    "UnableToSpecifyDuringPeakPeriods": "繁盛時期無法指定",
+    "PleaseContactUs": "取貨前line@客服聯繫",
+    "Before13PM": "13時前",
+    "Between14To18PM": "14-18時",
+    "Inapplicable": "不指定",
+    "UnableToSpecify": "無法指定"
   }
 }

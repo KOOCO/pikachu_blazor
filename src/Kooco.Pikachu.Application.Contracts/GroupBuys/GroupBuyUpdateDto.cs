@@ -198,6 +198,9 @@ namespace Kooco.Pikachu.GroupBuys
         public decimal? FreeShippingThreshold { get; set; }
         public string ConcurrencyStamp { get; set; }
         public List<string>? ShippingMethodList { get; set; }
+        public string? SelfPickupDeliveryTime { get; set; }
+        public string? BlackCatDeliveryTime { get; set; }
+        public string? HomeDeliveryDeliveryTime { get; set; }
         public GroupBuyUpdateDto()
         {
             ShippingMethodList = new List<string>();

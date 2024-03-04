@@ -68,7 +68,11 @@ namespace Kooco.Pikachu.Groupbuys
             string? exchangePolicyDescription,
             string shortCode,
             bool isEnterprise,
-            decimal? freeShippingThreshold 
+            decimal? freeShippingThreshold ,
+             string? selfPickupDeliveryTime,
+             string? blackCatDeliveryTime,
+             string? homeDeliveryDeliveryTime
+
             )
         {
             var sameName = await _groupBuyRepository.FirstOrDefaultAsync(x => x.GroupBuyName == groupBuyName);
@@ -82,7 +86,8 @@ namespace Kooco.Pikachu.Groupbuys
                 allowShipToOuterTaiwan, allowShipOversea, expectShippingDateFrom, expectShippingDateTo, moneyTransferValidDayBy, moneyTransferValidDays,
                 issueInvoice, autoIssueTriplicateInvoice, invoiceNote, protectPrivacyData, inviteCode, profitShare, metaPixelNo, fBID, iGID, lineID, gAID, gTM,
                 warningMessage, orderContactInfo, exchangePolicy, notifyMessage, excludeShippingMethod, isDefaultPaymentGateway, paymentMethod, groupbuyCondition, 
-                customerInformation,customerInformationDescription,groupBuyConditionDescription,exchangePolicyDescription,shortCode, isEnterprise,freeShippingThreshold);
+                customerInformation,customerInformationDescription,groupBuyConditionDescription,exchangePolicyDescription,shortCode, isEnterprise,freeShippingThreshold,selfPickupDeliveryTime,
+                blackCatDeliveryTime,homeDeliveryDeliveryTime);
         }
 
 

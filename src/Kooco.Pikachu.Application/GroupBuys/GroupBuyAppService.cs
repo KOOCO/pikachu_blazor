@@ -70,7 +70,8 @@ namespace Kooco.Pikachu.GroupBuys
                                                         input.IssueInvoice, input.AutoIssueTriplicateInvoice, input.InvoiceNote, input.ProtectPrivacyData, input.InviteCode, input.ProfitShare,
                                                         input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy,
                                                         input.NotifyMessage, input.ExcludeShippingMethod, input.IsDefaultPaymentGateWay, input.PaymentMethod, input.GroupBuyCondition, input.CustomerInformation,
-                                                        input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription, input.ShortCode, input.IsEnterprise,input.FreeShippingThreshold);
+                                                        input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription, input.ShortCode, input.IsEnterprise,input.FreeShippingThreshold,input.SelfPickupDeliveryTime,
+                                                        input.BlackCatDeliveryTime,input.HomeDeliveryDeliveryTime);
 
             if (input.ItemGroups != null && input.ItemGroups.Any())
             {
@@ -116,7 +117,8 @@ namespace Kooco.Pikachu.GroupBuys
                                                         input.IssueInvoice, input.AutoIssueTriplicateInvoice, input.InvoiceNote, input.ProtectPrivacyData, input.InviteCode, input.ProfitShare,
                                                         input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy,
                                                         input.NotifyMessage, input.ExcludeShippingMethod, input.IsDefaultPaymentGateWay, input.PaymentMethod, input.GroupBuyCondition, input.CustomerInformation,
-                                                        input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription, ShortCode, input.IsEnterprise,input.FreeShippingThreshold);
+                                                        input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription, ShortCode, input.IsEnterprise,input.FreeShippingThreshold,
+                                                        input.SelfPickupDeliveryTime,input.BlackCatDeliveryTime,input.HomeDeliveryDeliveryTime);
 
             if (input.ItemGroups != null && input.ItemGroups.Any())
             {
@@ -258,6 +260,9 @@ namespace Kooco.Pikachu.GroupBuys
             groupBuy.ShortCode = input.ShortCode;
             groupBuy.IsEnterprise = input.IsEnterprise;
             groupBuy.FreeShippingThreshold= input.FreeShippingThreshold;
+            groupBuy.HomeDeliveryDeliveryTime = input.HomeDeliveryDeliveryTime;
+            groupBuy.SelfPickupDeliveryTime = input.SelfPickupDeliveryTime;
+            groupBuy.BlackCatDeliveryTime = input.BlackCatDeliveryTime;
 
             if (input?.ItemGroups != null)
             {

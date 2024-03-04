@@ -20,7 +20,8 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
 using Volo.Abp.ObjectMapping;
-
+using System.Text.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 {
     public partial class EditGroupBuy
@@ -45,7 +46,9 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         private List<CollapseItem> CollapseItem = new();
         bool CreditCard { get; set; }
         bool BankTransfer { get; set; }
-
+        public List<string> SelfPickupTimeList = new List<string>();
+        public List<string> BlackCateDeliveryTimeList = new List<string>();
+        public List<string> HomeDeliveryTimeList = new List<string>();
         public string _ProductPicture = "Product Picture";
         private readonly IGroupBuyAppService _groupBuyAppService;
         private readonly IImageAppService _imageAppService;
@@ -99,9 +102,21 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             {
                 Id = Guid.Parse(id);
                 GroupBuy = await _groupBuyAppService.GetWithItemGroupsAsync(Id);
-                //if (!string.IsNullOrEmpty(GroupBuy.ExcludeShippingMethod))
+                if (!string.IsNullOrEmpty(GroupBuy.ExcludeShippingMethod))
+                {
+                    EditGroupBuyDto.ShippingMethodList = JsonSerializer.Deserialize<List<string>>(GroupBuy.ExcludeShippingMethod);
+                }
+                //if (!string.IsNullOrEmpty(GroupBuy.SelfPickupDeliveryTime))
                 //{
-                //    EditGroupBuyDto.ShippingMethodList= GroupBuy.ExcludeShippingMethod.Split(',').ToList();
+                //    SelfPickupTimeList = JsonSerializer.Deserialize<List<string>>(GroupBuy.SelfPickupDeliveryTime);
+                //}
+                //if (!string.IsNullOrEmpty(GroupBuy.BlackCatDeliveryTime))
+                //{
+                //    BlackCateDeliveryTimeList = JsonSerializer.Deserialize<List<string>>(GroupBuy.BlackCatDeliveryTime);
+                //}
+                //if (!string.IsNullOrEmpty(GroupBuy.HomeDeliveryDeliveryTime))
+                //{
+                //    HomeDeliveryTimeList = JsonSerializer.Deserialize<List<string>>(GroupBuy.HomeDeliveryDeliveryTime);
                 //}
                 if (!GroupBuy.PaymentMethod.IsNullOrEmpty())
                 {
@@ -530,6 +545,52 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 Console.WriteLine(exc.Message);
                 await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
             }
+        }
+
+        void SelfPickupDeliveryTimeCheckedChange(string method, ChangeEventArgs e)
+        {
+            var value = (bool)(e?.Value ?? false);
+            if (value)
+            {
+                SelfPickupTimeList.Add(method);
+            }
+            else
+            {
+                SelfPickupTimeList.Remove(method);
+            }
+
+            EditGroupBuyDto.SelfPickupDeliveryTime = JsonConvert.SerializeObject(SelfPickupTimeList);
+
+        }
+        void BlackCatDeliveryTimeCheckedChange(string method, ChangeEventArgs e)
+        {
+            var value = (bool)(e?.Value ?? false);
+            if (value)
+            {
+                BlackCateDeliveryTimeList.Add(method);
+            }
+            else
+            {
+                BlackCateDeliveryTimeList.Remove(method);
+            }
+
+            EditGroupBuyDto.BlackCatDeliveryTime = JsonConvert.SerializeObject(BlackCateDeliveryTimeList);
+
+        }
+        void HomeDeliveryTimeCheckedChange(string method, ChangeEventArgs e)
+        {
+            var value = (bool)(e?.Value ?? false);
+            if (value)
+            {
+                HomeDeliveryTimeList.Add(method);
+            }
+            else
+            {
+                HomeDeliveryTimeList.Remove(method);
+            }
+
+            EditGroupBuyDto.HomeDeliveryDeliveryTime = JsonConvert.SerializeObject(HomeDeliveryTimeList);
+
         }
         void OnShippingMethodCheckedChange(string method, ChangeEventArgs e)
         {
