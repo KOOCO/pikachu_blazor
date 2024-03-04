@@ -106,18 +106,18 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 {
                     EditGroupBuyDto.ShippingMethodList = JsonSerializer.Deserialize<List<string>>(GroupBuy.ExcludeShippingMethod);
                 }
-                //if (!string.IsNullOrEmpty(GroupBuy.SelfPickupDeliveryTime))
-                //{
-                //    SelfPickupTimeList = JsonSerializer.Deserialize<List<string>>(GroupBuy.SelfPickupDeliveryTime);
-                //}
-                //if (!string.IsNullOrEmpty(GroupBuy.BlackCatDeliveryTime))
-                //{
-                //    BlackCateDeliveryTimeList = JsonSerializer.Deserialize<List<string>>(GroupBuy.BlackCatDeliveryTime);
-                //}
-                //if (!string.IsNullOrEmpty(GroupBuy.HomeDeliveryDeliveryTime))
-                //{
-                //    HomeDeliveryTimeList = JsonSerializer.Deserialize<List<string>>(GroupBuy.HomeDeliveryDeliveryTime);
-                //}
+                if (!string.IsNullOrEmpty(GroupBuy.SelfPickupDeliveryTime))
+                {
+                    SelfPickupTimeList = JsonSerializer.Deserialize<List<string>>(GroupBuy.SelfPickupDeliveryTime);
+                }
+                if (!string.IsNullOrEmpty(GroupBuy.BlackCatDeliveryTime))
+                {
+                    BlackCateDeliveryTimeList = JsonSerializer.Deserialize<List<string>>(GroupBuy.BlackCatDeliveryTime);
+                }
+                if (!string.IsNullOrEmpty(GroupBuy.HomeDeliveryDeliveryTime))
+                {
+                    HomeDeliveryTimeList = JsonSerializer.Deserialize<List<string>>(GroupBuy.HomeDeliveryDeliveryTime);
+                }
                 if (!GroupBuy.PaymentMethod.IsNullOrEmpty())
                 {
                     var payments = GroupBuy.PaymentMethod.Split(",");
@@ -611,7 +611,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 }
 
 
-                else if (method == "SevenToElevenC2C" && EditGroupBuyDto.ShippingMethodList.Contains("SevenToEleven"))
+                else if (method == "SevenToElevenC2C" && EditGroupBuyDto.ShippingMethodList.Contains("SevenToEleven1"))
                 {
                     EditGroupBuyDto.ShippingMethodList.Remove("SevenToEleven1");
                     JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "SevenToEleven1");
