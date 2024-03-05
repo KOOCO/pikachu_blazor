@@ -22,6 +22,7 @@ namespace Kooco.Pikachu.Orders
         public DeliveryMethod? DeliveryMethod { get; set; }
         public string? ShippingNumber { get; set; }
         public string? City { get; set; }
+        public string? PostalCode { get; set; }
         public string? District { get; set; }
         public string? Road { get; set; }
         public string? AddressDetails { get; set; }

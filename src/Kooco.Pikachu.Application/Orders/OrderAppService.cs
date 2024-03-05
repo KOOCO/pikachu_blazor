@@ -100,7 +100,9 @@ namespace Kooco.Pikachu.Orders
                         input.RecipientPhone,
                         input.RecipientEmail,
                         input.DeliveryMethod,
+                        input.PostalCode,
                         input.City,
+
                         input.District,
                         input.Road,
                         input.AddressDetails,
@@ -214,6 +216,7 @@ namespace Kooco.Pikachu.Orders
                           ord.RecipientPhone,
                           ord.RecipientEmail,
                           ord.DeliveryMethod,
+                          ord.PostalCode,
                           ord.City,
                           ord.District,
                           ord.Road,
@@ -295,6 +298,7 @@ namespace Kooco.Pikachu.Orders
                      ord.RecipientPhone,
                      ord.RecipientEmail,
                      ord.DeliveryMethod,
+                     ord.PostalCode,
                      ord.City,
                      ord.District,
                      ord.Road,
@@ -453,6 +457,7 @@ namespace Kooco.Pikachu.Orders
             var order = await _orderRepository.GetAsync(id);
             order.RecipientName = input.RecipientName;
             order.RecipientPhone = input.RecipientPhone;
+            order.PostalCode = input.PostalCode;
             order.District = input.District;
             order.City = input.City;
             order.Road = input.Road;

@@ -28,6 +28,7 @@ namespace Kooco.Pikachu.Orders
         public string? City { get; set; }
         public string? District { get; set; }
         public string? Road { get; set; }
+        public string? PostalCode { get; set; }
         public string? AddressDetails { get; set; }
         public string? Remarks { get; set; }
         public ReceivingTime? ReceivingTime { get; set; }

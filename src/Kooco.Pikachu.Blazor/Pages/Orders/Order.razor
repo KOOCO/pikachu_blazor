@@ -144,9 +144,24 @@
                                         <td>@L["ShippingMethod"]</td>
                                         <td>@L[context.DeliveryMethod.ToString()]</td>
                                     </tr>
+                                      <tr>
+                                        <td>@L["PostalCode"]</td>
+                                        
+                                        <td>@context.PostalCode</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@L["City"]</td>
+
+                                        <td>@context.City</td>
+                                    </tr>
                                     <tr>
                                         <td>@L["Address"]</td>
-                                        <td class="d-none">@context.AddressDetails, @context.Road, @context.District, @context.City</td>
+                                        <td class="d-none">@context.AddressDetails</td>
+                                        <td>@context.AddressDetails</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@L["Address"]</td>
+                                        <td class="d-none">@context.AddressDetails</td>
                                         <td>@context.AddressDetails</td>
                                     </tr>
                                     <tr>
