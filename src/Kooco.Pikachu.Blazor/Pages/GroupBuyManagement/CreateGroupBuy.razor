@@ -380,7 +380,7 @@
               {
                   if(item==Enum.GetName(DeliveryMethod.SevenToElevenC2C)||item==Enum.GetName(DeliveryMethod.SevenToEleven1)||item==Enum.GetName(DeliveryMethod.BlackCat))
                   {
-               <label for="@item" class="form-label me-2">
+               <label for="@item" class="form-label">
                                 <input type="checkbox" class="form-check-input me-1" id="@item" checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))" @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                 @L[item]
                             </label>
@@ -390,7 +390,7 @@
             else{
               @foreach(var item in Enum.GetNames(typeof(DeliveryMethod)))
               {
-               <label for="@item" class="form-label me-2">
+               <label for="@item" class="form-label ">
                                 <input type="checkbox" class="form-check-input me-1" id="@item" checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))" @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                 @L[item]
                             </label>
@@ -414,7 +414,7 @@
                     {
                         @foreach(var island in DeliveryTimeConts.SelfPickUp)
                         {
-                            <label for="@island" class="form-label me-2">
+                            <label for="@island" class="form-label ">
                             <input type="checkbox" class="form-check-input me-1" id="@island" checked="@(CreateGroupBuyDto.SelfPickupDeliveryTime != null && CreateGroupBuyDto.SelfPickupDeliveryTime.Contains(island))" @onchange="(value) => SelfPickupDeliveryTimeCheckedChange(island, value)" />
                                 @L[island]
                             </label>
@@ -433,7 +433,7 @@
                     {
                         @foreach(var island in DeliveryTimeConts.BlackCat)
                         {
-                            <label for="@island" class="form-label me-2">
+                            <label for="@island" class="form-label">
                                 <input type="checkbox" class="form-check-input me-1" id="@island" checked="@(CreateGroupBuyDto.BlackCatDeliveryTime != null && CreateGroupBuyDto.BlackCatDeliveryTime.Contains(island))" @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)"   />
                                 @L[island]
                             </label>
@@ -452,7 +452,7 @@
                     {
                         @foreach(var island in DeliveryTimeConts.HomeDelivery)
                         {
-                            <label for="@island" class="form-label me-2">
+                            <label for="@island" class="form-label">
                                 <input type="checkbox" class="form-check-input me-1" id="@island" checked="@(CreateGroupBuyDto.HomeDeliveryDeliveryTime != null && CreateGroupBuyDto.HomeDeliveryDeliveryTime.Contains(island))" @onchange="(value) => HomeDeliveryTimeCheckedChange(island, value)"   />
                                 @L[island]
                             </label>
