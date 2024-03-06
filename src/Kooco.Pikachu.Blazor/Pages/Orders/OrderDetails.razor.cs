@@ -311,6 +311,16 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
 
             CreateShipmentModal.Show();
         }
+        private async void OrderItemShipped(OrderDeliveryDto deliveryOrder)
+        {
+            await loading.Show();
+            OrderDeliveryId = deliveryOrder.Id;
+            await _orderDeliveryAppService.UpdateOrderDeliveryStatus(OrderDeliveryId);
+            await GetOrderDetailsAsync();
+            await InvokeAsync(StateHasChanged);
+            await loading.Hide();
+
+        }
         private void CloseShipmentModal()
         {
             CreateShipmentModal.Hide();

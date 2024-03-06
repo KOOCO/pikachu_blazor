@@ -12,6 +12,7 @@ namespace Kooco.Pikachu.OrderDeliveries
         Task<List<OrderDeliveryDto>> GetListByOrderAsync(Guid Id);
         Task<OrderDeliveryDto> GetDeliveryOrderAsync(Guid Id);
         Task<OrderDeliveryDto> UpdateShippingDetails(Guid id, CreateOrderDto input);
+        Task UpdateOrderDeliveryStatus(Guid Id);
 
     }
 }

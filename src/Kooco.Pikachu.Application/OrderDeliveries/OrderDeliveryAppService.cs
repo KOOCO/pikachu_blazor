@@ -175,5 +175,13 @@ namespace Kooco.Pikachu.OrderDeliveries
 
             await _emailSender.SendAsync(mailMessage);
         }
+        public async Task UpdateOrderDeliveryStatus(Guid Id)
+        {
+
+          var delivery=  await _orderDeliveryRepository.GetAsync(Id);
+            delivery.DeliveryStatus = DeliveryStatus.Shipped;
+            await _orderDeliveryRepository.UpdateAsync(delivery);
+        
+        }
     }
 }

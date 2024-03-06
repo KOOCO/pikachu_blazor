@@ -28,6 +28,12 @@ public class OrderDeliveryController(
     {
         return _orderDeliveryAppService.GetListByOrderAsync(Id);
     }
+    [HttpPut("update-delivery-status/{id}")]
+    public Task UpdateOrderDeliveryStatus(Guid Id)
+    {
+        return _orderDeliveryAppService.UpdateOrderDeliveryStatus(Id);
+    }
+
     [HttpPut("update-shipping/{id}")]
     public Task<OrderDeliveryDto> UpdateShippingDetails(Guid id, CreateOrderDto input)
     {

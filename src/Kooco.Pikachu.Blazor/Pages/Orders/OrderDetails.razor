@@ -560,7 +560,16 @@
                         </DisplayTemplate>
                     </DataGridColumn>
                    
-                    <DataGridColumn Field="@nameof(OrderDeliveryDto.DeliveryMethod)" Caption="@L["DeliveryMethod"]" />
+                    <DataGridColumn Field="@nameof(OrderDeliveryDto.DeliveryMethod)" Caption="@L["DeliveryMethod"]" >
+                                <DisplayTemplate>
+                                    @L[context.DeliveryMethod.ToString()]
+                                </DisplayTemplate>
+                        </DataGridColumn>
+                        <DataGridColumn Field="@nameof(OrderDeliveryDto.LastModificationTime)" Caption="@L["LastUpdatedDate"]" >
+                                <DisplayTemplate>
+                                    @L[context.LastModificationTime.Value.ToShortDateString()]
+                                </DisplayTemplate>
+                        </DataGridColumn>
                     <DataGridColumn Field="@nameof(OrderDeliveryDto.DeliveryStatus)" Caption="@L["DeliveryStatus"]">
                         <DisplayTemplate>
                             @context.DeliveryStatus.ToString()
@@ -578,17 +587,35 @@
                              
                         </DisplayTemplate>
                     </DataGridColumn>
-                     <DataGridColumn Width="150px"
+                     <DataGridColumn Width="300px"
                                             TItem="OrderDeliveryDto"
                                             Field="@nameof(OrderDeliveryDto.Id)"
                                 Sortable="false"
                                 Caption="@L["Actions"]">
                         <DisplayTemplate>
-                        
-                                    <Button Type="ButtonType.Button" Clicked="() => OpenShipmentModal(context)" Class="btn btn-sm btn-primary me-1">
+                        <div class="btn-group me-1" role="group" aria-label="Button group with nested dropdown">
+  <Button Type="ButtonType.Button" Class="btn btn-primary">@L["ShipmentNotify"]</Button>
+  <Button Type="ButtonType.Button" Clicked="() => OpenShipmentModal(context)" style="margin-left: 1px;" Class="btn btn-primary"><Icon Class="dropdown-toggle"></Icon></Button>
+
+  
+</div>
+                                  @*   <Button Type="ButtonType.Button" Clicked="() => OpenShipmentModal(context)" Class="btn btn-sm btn-primary me-1">
                                     @L["ShipmentNotify"]
-                                </Button>
-                              
+                                </Button> *@
+                                @if(context.DeliveryStatus==DeliveryStatus.Proccesing)
+                                {
+                                    <Button Type="ButtonType.Button" Clicked="() => OrderItemShipped(context)" Class="btn btn-sm btn-secondary me-1">
+                                        @L["Shipped"]
+                                            </Button>
+                                    }
+                                    else
+                                    {
+                                        <Button Type="ButtonType.Button" Disabled Clicked="() => OrderItemShipped(context)" Class="btn btn-sm btn-secondary me-1">
+                                        @L["Shipped"]
+                                            </Button>
+                                                                        
+    
+    }
                                 </DisplayTemplate>
                             </DataGridColumn>
                 </DataGridColumns>

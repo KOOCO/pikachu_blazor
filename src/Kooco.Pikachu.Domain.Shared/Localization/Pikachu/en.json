@@ -430,6 +430,7 @@
     "Between14To18PM": "14-18 p.m",
     "Inapplicable": "Inapplicable",
     "RecipientPostalCode": "Recipient Postal Code",
-    "RecipientCity": "Recipient City"
+    "RecipientCity": "Recipient City",
+    "LastUpdatedDate": "Last Updated Date"
   }
 }
