@@ -90,12 +90,12 @@
                                 </table>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-12 text-end">
+                       @*   <div class="row">
+                            <div class="col-12 text-end"> *@
                               @*   <Button Type="ButtonType.Button" @onclick="OpenShipmentModal" Class="btn btn-sm btn-primary me-1">
                                     @L["ShipmentNotify"]
                                 </Button> *@
-                                @if (Order.PaymentMethod == PaymentMethods.CreditCard && Order.IsRefunded == false)
+                               @*  @if (Order.PaymentMethod == PaymentMethods.CreditCard && Order.IsRefunded == false)
                                 {
                                     <Button Type="ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="ApplyRefund">
                                         @L["ApplyRefund"]
@@ -108,7 +108,7 @@
                                     </Button>
                                 }
                             </div>
-                        </div>
+                        </div>  *@
                         <Divider></Divider>
                         <div class="row">
                             <div class="col-12">
@@ -284,7 +284,7 @@
         <div class="col-md-6 col-sm-12">
             <div class="row mb-2">
                 <div class="col-md-6 col-sm-12">
-                    @if (Order?.ShippingStatus != ShippingStatus.WaitingForPayment || Order?.OrderStatus == OrderStatus.Closed)
+                   @*  @if (Order?.ShippingStatus != ShippingStatus.WaitingForPayment || Order?.OrderStatus == OrderStatus.Closed)
                     {
                         var text = Order?.OrderStatus == OrderStatus.Closed ? "Closed" : "CancelOrder";
                         <Button Type="ButtonType.Button" disabled Class="btn btn-sm btn-danger">@L[text]</Button>
@@ -292,7 +292,19 @@
                     else
                     {
                         <Button Type="ButtonType.Button" @onclick="CancelOrder" Class="btn btn-sm btn-danger">@L["CancelOrder"]</Button>
-                    }
+                    } *@
+                     @if (Order.PaymentMethod == PaymentMethods.CreditCard && Order.IsRefunded == false)
+                                {
+                                    <Button Type="ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="ApplyRefund">
+                                        @L["ApplyRefund"]
+                                    </Button>
+                                }
+                                else
+                                {
+                                    <Button Type="ButtonType.Button" Disabled Class="btn btn-sm btn-danger" Clicked="ApplyRefund">
+                                         @L["ApplyRefund"]
+                                    </Button>
+                                }
                     @if (Order?.OrderStatus != OrderStatus.Returned && Order?.OrderStatus != OrderStatus.Exchange)
                     {
                         <Button Type="ButtonType.Button" Clicked="ExchangeOrder" Class="btn btn-sm btn-secondary me-1">@L["ExchangeItem"]</Button>
