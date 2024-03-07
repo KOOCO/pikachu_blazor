@@ -17,21 +17,22 @@ namespace Kooco.Pikachu.OrderDeliveries
         public  DeliveryMethod DeliveryMethod { get; set; }
         public  DeliveryStatus DeliveryStatus { get; set; }
         public string? DeliveryNo { get; set; }
-        public int? CarrierId { get; set; }
+        
+       
         public Guid OrderId { get; set; }
         public ICollection<OrderItem> Items  { get; set; }
 
         public Guid? TenantId { get; set; }
-        [ForeignKey(nameof(CarrierId))]
-        public EnumValue Carrier { get; set; }
+        public string AllPayLogisticsID { get; set; }
+        public string Editor { get; set; }
 
-        public OrderDelivery(Guid id, DeliveryMethod deliveryMethod,DeliveryStatus deliveryStatus,string? deliveryNo,int? carrierId,Guid orderId )
+        public OrderDelivery(Guid id, DeliveryMethod deliveryMethod,DeliveryStatus deliveryStatus,string? deliveryNo,string allPayLogisticsID, Guid orderId )
 
         {
             Id = id;
         DeliveryMethod = deliveryMethod;
             DeliveryStatus = deliveryStatus;
-            CarrierId = carrierId;
+            AllPayLogisticsID = allPayLogisticsID;
             DeliveryNo= deliveryNo;
             OrderId = orderId;
         

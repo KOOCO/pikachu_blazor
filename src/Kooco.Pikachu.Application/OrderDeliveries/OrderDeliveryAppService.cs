@@ -180,6 +180,7 @@ namespace Kooco.Pikachu.OrderDeliveries
 
           var delivery=  await _orderDeliveryRepository.GetAsync(Id);
             delivery.DeliveryStatus = DeliveryStatus.Shipped;
+            delivery.Editor = CurrentUser.Name;
             await _orderDeliveryRepository.UpdateAsync(delivery);
         
         }

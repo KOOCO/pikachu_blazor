@@ -572,6 +572,11 @@
                                     @context.LastModificationTime
                                 </DisplayTemplate>
                         </DataGridColumn>
+                         <DataGridColumn Field="@nameof(OrderDeliveryDto.Editor)" Caption="@L["Editor"]" >
+                                <DisplayTemplate>
+                                    @context.Editor
+                                </DisplayTemplate>
+                        </DataGridColumn>
                     <DataGridColumn Field="@nameof(OrderDeliveryDto.DeliveryStatus)" Caption="@L["DeliveryStatus"]">
                         <DisplayTemplate>
                             @context.DeliveryStatus.ToString()
@@ -583,12 +588,12 @@
                             @context.Items[0].DeliveryTemperature
                         </DisplayTemplate>
                        </DataGridColumn>
-                 
-                    <DataGridColumn TextAlignment="TextAlignment.Center" Field="@nameof(OrderDeliveryDto.CarrierId)" Caption="@L["Carrier"]">
+                 <DataGridColumn  Caption="@L["AllPayLogisticsID"]" >
                         <DisplayTemplate>
-                             
+                            @context.AllPayLogisticsID
                         </DisplayTemplate>
-                    </DataGridColumn>
+                       </DataGridColumn>
+                    
                      <DataGridColumn Width="300px"
                                             TItem="OrderDeliveryDto"
                                             Field="@nameof(OrderDeliveryDto.Id)"
@@ -596,7 +601,7 @@
                                 Caption="@L["Actions"]">
                         <DisplayTemplate>
                         <div class="btn-group me-1" role="group" aria-label="Button group with nested dropdown">
-  <Button Type="ButtonType.Button"  Class="btn btn-primary">@L["ShipmentNotify"]</Button>
+  <Button Type="ButtonType.Button" Clicked="()=>CreateOrderLogistics(context)" Class="btn btn-primary">@L["ShipmentNotify"]</Button>
   <Button Type="ButtonType.Button" Clicked="() => OpenShipmentModal(context)" style="margin-left: 1px;" Class="btn btn-primary"><Icon Class="dropdown-toggle"></Icon></Button>
 
   

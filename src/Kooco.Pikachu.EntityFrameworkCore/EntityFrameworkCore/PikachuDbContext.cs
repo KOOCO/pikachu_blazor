@@ -218,7 +218,7 @@ public class PikachuDbContext :
             b.ConfigureByConvention();
            
             b.HasMany(o => o.Items).WithOne().HasForeignKey(d => d.DeliveryOrderId);
-            b.HasOne(x => x.Carrier).WithMany().HasForeignKey(d => d.CarrierId).IsRequired(false);
+           
             b.HasOne<Order>().WithMany().HasForeignKey(d => d.OrderId);
 
         });

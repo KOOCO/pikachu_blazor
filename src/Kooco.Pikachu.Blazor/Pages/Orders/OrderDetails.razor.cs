@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -35,6 +36,8 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         private readonly HashSet<Guid> ExpandedRows = new();
         private OrderDeliveryDto SelectedOrder { get; set; }
         private Guid OrderDeliveryId { get; set; }
+        string? CheckoutForm { get; set; } = null;
+
         public OrderDetails()
         {
             Order = new();
@@ -249,6 +252,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 }
                 await loading.Show();
                 UpdateOrder.OrderStatus = Order.OrderStatus;
+                UpdateOrder.PostalCode = "403702";//Order.PostalCode;
                 Order = await _orderAppService.UpdateAsync(OrderId, UpdateOrder);
                 ModificationTrack = new();
                 await InvokeAsync(StateHasChanged);
@@ -321,6 +325,31 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
             await loading.Hide();
 
         }
+        private async void CreateOrderLogistics(OrderDeliveryDto deliveryOrder)
+        {
+            await loading.Show();
+            OrderDeliveryId = deliveryOrder.Id;
+            if (deliveryOrder.DeliveryMethod == DeliveryMethod.SevenToEleven1 && deliveryOrder.DeliveryMethod == DeliveryMethod.FamilyMart1)
+            {
+                var htmlString = await _storeLogisticsOrderAppService.CreateStoreLogisticsOrderAsync(Order.Id, OrderDeliveryId);
+                StringBuilder htmlForm = new();
+                htmlForm.Append(htmlString);
+                CheckoutForm = htmlForm.ToString();
+            }
+            else {
+              var result=  await _storeLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(Order.Id, OrderDeliveryId);
+                if (result.ResponseCode != "1")
+                {
+                    await _uiMessageService.Error(result.ResponseMessage);
+
+                }
+               
+            }
+            await GetOrderDetailsAsync();
+            await InvokeAsync(StateHasChanged);
+            await loading.Hide();
+
+        }
         private void CloseShipmentModal()
         {
             CreateShipmentModal.Hide();
@@ -330,7 +359,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
             try
             {
                 await loading.Show();
-                UpdateOrder.ShippingNumber = shipments.ShippingNumber;
+                  UpdateOrder.ShippingNumber = shipments.ShippingNumber;
                 UpdateOrder.DeliveryMethod = shipments.ShippingMethod;
                 await _orderDeliveryAppService.UpdateShippingDetails(OrderDeliveryId, UpdateOrder);
                 await CreateShipmentModal.Hide();
