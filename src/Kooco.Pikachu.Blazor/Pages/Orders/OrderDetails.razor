@@ -4,6 +4,7 @@
 @using Kooco.Pikachu.OrderItems;
 @using Kooco.Pikachu.Orders;
 @using Kooco.Pikachu.OrderDeliveries;
+@using Kooco.Pikachu.StoreLogisticOrders;
 @using Kooco.Pikachu.Refunds;
 @using Microsoft.Extensions.Localization;
 @using Blazorise;
@@ -18,6 +19,7 @@
 @inject IOrderAppService _orderAppService;
 @inject IRefundAppService _refundAppService;
 @inject IOrderDeliveryAppService _orderDeliveryAppService;
+@inject IStoreLogisticsOrderAppService _storeLogisticsOrderAppService;
 @inject ICurrentUser CurrentUser;
 @inject IModalService ModalService;
 <style>
@@ -567,7 +569,7 @@
                         </DataGridColumn>
                         <DataGridColumn Field="@nameof(OrderDeliveryDto.LastModificationTime)" Caption="@L["LastUpdatedDate"]" >
                                 <DisplayTemplate>
-                                    @L[context.LastModificationTime.Value.ToShortDateString()]
+                                    @context.LastModificationTime
                                 </DisplayTemplate>
                         </DataGridColumn>
                     <DataGridColumn Field="@nameof(OrderDeliveryDto.DeliveryStatus)" Caption="@L["DeliveryStatus"]">
@@ -868,6 +870,7 @@
         </ModalContent>
     </Modal>
 </LoadingIndicator>
+
 @code {
 
 }
