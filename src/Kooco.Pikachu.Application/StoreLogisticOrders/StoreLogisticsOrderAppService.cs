@@ -36,9 +36,9 @@ namespace Kooco.Pikachu.StoreLogisticOrders
         BNormalCreateUpdateDto BFreeze { get; set; }
         BNormalCreateUpdateDto BFrozen { get; set; }
         public StoreLogisticsOrderAppService(IOrderDeliveryRepository orderDeliveryRepository,IOrderRepository orderRepository,
-            ILogisticsProvidersAppService logisticsProvidersAppService) { 
-        
-        _orderRepository = orderRepository;
+            ILogisticsProvidersAppService logisticsProvidersAppService) {
+           
+            _orderRepository = orderRepository;
             _deliveryRepository = orderDeliveryRepository;
             _logisticsProvidersAppService= logisticsProvidersAppService;
             GreenWorld = new();

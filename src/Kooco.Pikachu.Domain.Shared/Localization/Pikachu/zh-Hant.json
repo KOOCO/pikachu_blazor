@@ -444,6 +444,14 @@
     "Before13PM": "13時前",
     "Between14To18PM": "14-18時",
     "Inapplicable": "不指定",
-    "UnableToSpecify": "無法指定"
+    "UnableToSpecify": "無法指定",
+    "Pikachu:AtLeastOnePaymentMethodIsRequired": "請選擇付款方式",
+    "Pikachu:AtLeastOneShippingMethodIsRequired": "請選擇配送方式",
+    "Pikachu:AtLeastOneDeliveryTimeIsRequiredForBlackCat": "請選擇黑貓取貨時間",
+    "Pikachu:AtLeastOneDeliveryTimeIsRequiredForSelfPickup": "請選擇自取取貨時間",
+    "Pikachu:AtLeastOneDeliveryTimeIsRequiredForHomeDelivery": "請選擇親送取貨時間",
+
+    
+
   }
 }
