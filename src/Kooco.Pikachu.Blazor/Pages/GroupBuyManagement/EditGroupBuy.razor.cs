@@ -822,6 +822,35 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
 
                 }
+                if (EditGroupBuyDto.PaymentMethod.IsNullOrEmpty())
+                {
+                    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOnePaymentMethodIsRequired]);
+                    return;
+                }
+                if (EditGroupBuyDto.ExcludeShippingMethod.IsNullOrEmpty())
+                {
+                    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneShippingMethodIsRequired]);
+                    return;
+                }
+                if ((!EditGroupBuyDto.ExcludeShippingMethod.IsNullOrEmpty()) && (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat")
+                    || EditGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup") || EditGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery")))
+                {
+                    if (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat") && EditGroupBuyDto.BlackCatDeliveryTime.IsNullOrEmpty())
+                    {
+                        await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForBlackCat]);
+                        return;
+                    }
+                    else if (EditGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup") && EditGroupBuyDto.SelfPickupDeliveryTime.IsNullOrEmpty())
+                    {
+                        await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForSelfPickup]);
+                        return;
+                    }
+                    else if (EditGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery") && EditGroupBuyDto.HomeDeliveryDeliveryTime.IsNullOrEmpty())
+                    {
+                        await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForHomeDelivery]);
+                        return;
+                    }
+                }
                 EditGroupBuyDto.NotifyMessage = await NotifyEmailHtml.GetHTML();
                 EditGroupBuyDto.GroupBuyConditionDescription = await GroupBuyHtml.GetHTML();
                 EditGroupBuyDto.ExchangePolicyDescription = await ExchangePolicyHtml.GetHTML();

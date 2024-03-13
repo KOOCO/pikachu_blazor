@@ -31,6 +31,8 @@
 
       <PackageReference Include="Hangfire.SqlServer" Version="1.8.6" />
 
+      <PackageReference Include="HtmlAgilityPack" Version="1.11.59" />
+
       <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.10">
         <PrivateAssets>all</PrivateAssets>
         <!-- <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets> -->

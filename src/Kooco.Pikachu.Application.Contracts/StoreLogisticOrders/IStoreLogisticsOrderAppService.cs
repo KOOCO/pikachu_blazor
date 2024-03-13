@@ -9,8 +9,9 @@ namespace Kooco.Pikachu.StoreLogisticOrders
     public interface IStoreLogisticsOrderAppService: IApplicationService
     {
 
-        Task<string> CreateStoreLogisticsOrderAsync(Guid orderId, Guid orderDeliveryId);
+        Task<ResponseResultDto> CreateStoreLogisticsOrderAsync(CreateLogisticsOrder input);
         Task<ResponseResultDto> CreateHomeDeliveryShipmentOrderAsync(Guid orderId, Guid orderDeliveryId);
+        Task<EmapApiResponse> GetStoreAsync(Guid orderId, Guid orderDeliveryId);
 
     }
 }

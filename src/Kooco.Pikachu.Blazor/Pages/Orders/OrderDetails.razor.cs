@@ -6,6 +6,7 @@ using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Html;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Volo.Abp;
+using static System.Net.WebRequestMethods;
 
 namespace Kooco.Pikachu.Blazor.Pages.Orders
 {
@@ -329,12 +331,50 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         {
             await loading.Show();
             OrderDeliveryId = deliveryOrder.Id;
-            if (deliveryOrder.DeliveryMethod == DeliveryMethod.SevenToEleven1 && deliveryOrder.DeliveryMethod == DeliveryMethod.FamilyMart1)
+            if (deliveryOrder.DeliveryMethod == DeliveryMethod.SevenToEleven1 || deliveryOrder.DeliveryMethod == DeliveryMethod.FamilyMart1)
             {
-                var htmlString = await _storeLogisticsOrderAppService.CreateStoreLogisticsOrderAsync(Order.Id, OrderDeliveryId);
+                var htmlString = await _storeLogisticsOrderAppService.GetStoreAsync(Order.Id, OrderDeliveryId);
                 StringBuilder htmlForm = new();
-                htmlForm.Append(htmlString);
-                CheckoutForm = htmlForm.ToString();
+                htmlForm.Append(htmlString.HtmlString);
+                string html = htmlString.HtmlString;
+                html=UpdateAttributes(html,Order.Id.ToString(),deliveryOrder.Id.ToString());
+                //int startIndex = htmlString.HtmlString.IndexOf("<script src=\"/Scripts/jquery-1.4.4.js\" type=\"text/javascript\">");
+                //int endIndex = htmlString.HtmlString.IndexOf("</script>", startIndex);
+
+                //int startIndexForm = htmlString.HtmlString.IndexOf("<form id=\"PostForm\" name=\"PostForm\" action=\"/Home/Family\" method=\"POST\">");
+                //int endIndexForm = htmlString.HtmlString.IndexOf("</form>", startIndexForm);
+
+                //if (startIndex != -1 && endIndex != -1)
+                //{
+                //    // Extract the script tag
+                //    string scriptTag = htmlString.HtmlString.Substring(startIndex, endIndex - startIndex + "</script>".Length);
+
+                //    // Replace the old src attribute with the new one
+                //    string newScriptTag = scriptTag.Replace("src=\"/Scripts/jquery-1.4.4.js\"", "src=\"https://logistics-stage.ecpay.com.tw/Scripts/jquery-1.4.4.js\"");
+
+                //    // Update the HTML string
+                //    htmlString.HtmlString.Replace(scriptTag, newScriptTag);
+                //     html = htmlString.HtmlString.Replace(scriptTag, newScriptTag);
+
+                //    // Convert the updated string back to StringBuilder
+                //    htmlForm = new StringBuilder(html);
+                //}
+                //if (startIndexForm != -1 && endIndexForm != -1)
+                //{
+                //    // Extract the form tag
+                //    string formTag = html.Substring(startIndexForm, endIndexForm - startIndexForm + "</form>".Length);
+
+                //    // Replace the old action attribute with the new one
+                //    string newFormTag = formTag.Replace("action=\"/Home/Family\"", "action=\"https://logistics-stage.ecpay.com.tw/Home/Family\"");
+
+                //    // Update the HTML string
+                //    html = html.Replace(formTag, newFormTag);
+                //    htmlForm = new StringBuilder(html);
+                //}
+                //await JSRuntime.InvokeVoidAsync("setCookie", htmlString.CookieName, htmlString.CookieValue,"None",true);
+                //NavigationManager.NavigateTo($"/map-response?htmlString={Uri.EscapeDataString(htmlForm.ToString())}");
+                await JSRuntime.InvokeVoidAsync("openPopup", html);
+                //NavigationManager.NavigateTo($"map-response/{htmlForm}");
             }
             else {
               var result=  await _storeLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(Order.Id, OrderDeliveryId);
@@ -490,7 +530,113 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 await loading.Hide();
             }
         }
+        private string UpdateAttributes(string htmlString,string orderId,string deliveryId)
+        {
+            HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
+            doc.LoadHtml(htmlString);
 
+            // Update href attributes
+            foreach (var link in doc.DocumentNode.SelectNodes("//a[@href]"))
+            {
+                link.Attributes["href"].Value = UpdateHref(link.Attributes["href"].Value);
+            }
+
+            // Update src attributes
+            foreach (var element in doc.DocumentNode.SelectNodes("//img[@src] | //script[@src]"))
+            {
+                element.Attributes["src"].Value = UpdateSrc(element.Attributes["src"].Value);
+              
+            }
+            htmlString = doc.DocumentNode.OuterHtml;
+            // Get the updated HTML string
+            htmlString = AddNewInputsToForm(htmlString,orderId,deliveryId);
+
+            // Change the form action
+            htmlString = UpdateButtonOnclick(htmlString);
+            htmlString = ReplaceSaveSubmit(htmlString);
+
+            return htmlString;
+        }
+
+        private string UpdateHref(string originalHref)
+        {
+            // Implement your logic to update href attribute
+            return "https://logistics-stage.ecpay.com.tw"+originalHref; // Modify this line based on your requirements
+        }
+
+        private string UpdateSrc(string originalSrc)
+        {
+            // Implement your logic to update src attribute
+            return "https://logistics-stage.ecpay.com.tw" +originalSrc; // Modify this line based on your requirements
+        }
+        private string AddNewInputsToForm(string html, string orderId, string deliveryId)
+        {
+            // Add new input fields after the existing form content
+            string newInputs = "<input id='deliveryId' type='hidden'  name='deliveryId' value='" + deliveryId + "' />";
+                    newInputs=newInputs+ "<input id='orderId' type='hidden'  name='orderId' value='"+orderId+"' />";
+
+            html = html.Replace("</form>", $"{newInputs}</form>");
+            return html;
+        }
+
+        private string UpdateButtonOnclick(string html)
+        {
+            // Update the onclick method for the submit button with ID "submitButton"
+            string newOnclick = "SaveSubmitNew('/api/app/store-logistics-order/store-logistics-order');";
+            html = System.Text.RegularExpressions.Regex.Replace(html, @"<input[^>]*type\s*=\s*[""']button[""'][^>]*onclick\s*=\s*[""']([^""']*)[""'][^>]*>", match =>
+            {
+                string originalInput = match.Groups[0].Value;
+                string modifiedInput = System.Text.RegularExpressions.Regex.Replace(originalInput, @"onclick\s*=\s*[""'][^""']*[""']", $"onclick=\"{newOnclick}\"");
+                return modifiedInput;
+            });
+
+
+            return html;
+        }
+        private string ReplaceSaveSubmit(string html)
+        {
+            string newFunction = "function SaveSubmitNew(url){" +
+                "" +
+                "" +
+                "const myHeaders = new Headers();\r\nmyHeaders.append(\"Content-Type\", \"application/json\");\r\n\r\nconst raw = JSON.stringify({\r\n  \"address\": \"新竹市東區建中一路52號1樓\",\r\n  \"storeaddress\": \"新竹市東區建中一路52號1樓\",\r\n  \"storeid\": \"131386\",\r\n  \"storename\": \"建盛門市\",\r\n  \"outside\": \"0\",\r\n  \"deliveryId\": \"5eefb622-d497-44c4-8f2a-909c55e6abd8\",\r\n  \"orderId\": \"054f0fed-d2c7-26cd-c8b6-3a11253970fe\"\r\n});\r\n\r\nconst requestOptions = {\r\n  method: \"POST\",\r\n  headers: myHeaders,\r\n  body: raw,\r\n  redirect: \"follow\"\r\n};\r\n\r\nfetch(\"https://localhost:44374/api/app/store-logistics-order/store-logistics-order\", requestOptions)\r\n  .then((response) => response.text())\r\n  .then((result) => console.log(result))\r\n  .catch((error) => console.error(error));}</script>";
+//            string newFunction = @"function SaveSubmitNew(url) {
+//                                debugger;
+//                                var formData = new FormData(document.getElementById('SubmitForm'));
+//                                var formDataObject = {};
+//                                formData.forEach(function(value, key){
+//                                    formDataObject[key] = value;
+//                                             });
+
+            //                    // Convert the plain JavaScript object to a JSON string
+            //                            var formDataJson = JSON.stringify(formDataObject);
+            //                            const myHeaders = new Headers();
+            //                            myHeaders.append('Content-Type', 'application/json');
+
+            //                            const raw = formDataJson;
+
+            //                        const requestOptions = {
+            //                                            method: 'POST',
+            //                                            headers: myHeaders,
+            //                                            body: raw,
+            //                                            redirect: 'follow'
+            //                                                };
+
+            //                                        fetch(url, requestOptions)
+            //                                        .then((response) => response.text())
+            //                                        .then((result) => console.log(result))
+            //                                        .catch((error) => console.error(error));
+
+            //                            };
+            //</script>";
+
+            // Find the script tag and add the new method inside it
+            html = System.Text.RegularExpressions.Regex.Replace(html, @"function SaveSubmit\(url\)[\s\S]*?}\s*<\/script>", newFunction);
+
+            return html;
+
+            
+
+        }
         public class StoreCommentsModel
         {
             public Guid? Id { get; set; }

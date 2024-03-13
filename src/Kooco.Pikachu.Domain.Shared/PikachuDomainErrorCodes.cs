@@ -27,6 +27,11 @@ public static class PikachuDomainErrorCodes
     public const string InvalidItemName = "Pikachu:InvalidItemName";
     public const string GroupBuyModuleCannotBeEmpty = "Pikachu:GroupBuyModuleCannotBeEmpty";
     public const string CanNotAddMoreThan20Modules = "Pikachu:CanNotAddMoreThan20Modules";
+    public const string AtLeastOneShippingMethodIsRequired = "Pikachu:AtLeastOneShippingMethodIsRequired";
+    public const string AtLeastOnePaymentMethodIsRequired = "Pikachu:AtLeastOnePaymentMethodIsRequired";
     public const string RefundForSameOrderAlreadyExists = "Pikachu:RefundForSameOrderAlreadyExists";
     public const string RefundIsOnlyAvailableForCreditCardPayments = "Pikachu:RefundIsOnlyAvailableForCreditCardPayments";
+    public const string AtLeastOneDeliveryTimeIsRequiredForBlackCat = "Pikachu:AtLeastOneDeliveryTimeIsRequiredForBlackCat";
+    public const string AtLeastOneDeliveryTimeIsRequiredForSelfPickup = "Pikachu:AtLeastOneDeliveryTimeIsRequiredForSelfPickup";
+    public const string AtLeastOneDeliveryTimeIsRequiredForHomeDelivery = "Pikachu:AtLeastOneDeliveryTimeIsRequiredForHomeDelivery";
 }

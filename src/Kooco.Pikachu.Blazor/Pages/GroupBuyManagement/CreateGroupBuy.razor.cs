@@ -588,6 +588,35 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
 
                 }
+                if (CreateGroupBuyDto.PaymentMethod.IsNullOrEmpty())
+                {
+                    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOnePaymentMethodIsRequired]);
+                    return;
+                }
+                if (CreateGroupBuyDto.ExcludeShippingMethod.IsNullOrEmpty())
+                {
+                    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneShippingMethodIsRequired]);
+                    return;
+                }
+                if ((!CreateGroupBuyDto.ExcludeShippingMethod.IsNullOrEmpty()) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat")
+                    || CreateGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup") || CreateGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery")))
+                {
+                    if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat") && CreateGroupBuyDto.BlackCatDeliveryTime.IsNullOrEmpty())
+                    {
+                        await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForBlackCat]);
+                        return;
+                    }
+                    else if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup") && CreateGroupBuyDto.SelfPickupDeliveryTime.IsNullOrEmpty())
+                    {
+                        await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForSelfPickup]);
+                        return;
+                    }
+                    else if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery") && CreateGroupBuyDto.HomeDeliveryDeliveryTime.IsNullOrEmpty())
+                    {
+                        await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForHomeDelivery]);
+                        return;
+                    }
+                }
                 CreateGroupBuyDto.NotifyMessage = await NotifyEmailHtml.GetHTML();
                 CreateGroupBuyDto.GroupBuyConditionDescription = await GroupBuyHtml.GetHTML();
                 CreateGroupBuyDto.ExchangePolicyDescription = await ExchangePolicyHtml.GetHTML();

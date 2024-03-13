@@ -1,0 +1,68 @@
+﻿@page "/map-response"
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+<h3>Your Blazor Page</h3>
+<div>
+    @tableMarkup
+</div>
+
+<div>
+    @formMarkup
+</div>
+@code {
+   
+    public string htmlString { get; set; }
+    private MarkupString tableMarkup;
+    private MarkupString formMarkup;
+    private List<string> scripts = new List<string>();
+
+    protected async override void OnInitialized()
+    {
+        // Parse HTML string and extract script elements
+        // Replace the following logic with your own HTML parsing or use a library like HtmlAgilityPack
+
+        var scriptStartIndex = 0;
+        var uri = new Uri(NavigationManager.Uri);
+        var query = uri.Query;
+
+        if (query.Contains("htmlString"))
+        {
+            var queryString = System.Web.HttpUtility.ParseQueryString(query);
+            htmlString = queryString["htmlString"];
+        }
+        if (!htmlString.IsNullOrEmpty())
+        {
+            var tableStartIndex = htmlString.IndexOf("<table", StringComparison.OrdinalIgnoreCase);
+            var tableEndIndex = htmlString.IndexOf("</table>", StringComparison.OrdinalIgnoreCase) + 8;
+            var tableHtml = htmlString.Substring(tableStartIndex, tableEndIndex - tableStartIndex);
+
+            // Extract form element
+            var formStartIndex = htmlString.IndexOf("<form", StringComparison.OrdinalIgnoreCase);
+            var formEndIndex = htmlString.IndexOf("</form>", StringComparison.OrdinalIgnoreCase) + 7;
+            var formHtml = htmlString.Substring(formStartIndex, formEndIndex - formStartIndex);
+
+            // Set MarkupString for rendering in Blazor component
+            tableMarkup = new MarkupString(tableHtml);
+            formMarkup = new MarkupString(formHtml);
+
+            while ((scriptStartIndex = htmlString.IndexOf("<script", scriptStartIndex, StringComparison.OrdinalIgnoreCase)) != -1)
+            {
+                var scriptEndIndex = htmlString.IndexOf("</script>", scriptStartIndex, StringComparison.OrdinalIgnoreCase) + 9;
+                var script = htmlString.Substring(scriptStartIndex, scriptEndIndex - scriptStartIndex);
+                scripts.Add(script);
+                scriptStartIndex = scriptEndIndex;
+            }
+
+            // Use JavaScript interop to append scripts to the DOM
+            foreach (var script in scripts)
+            {
+               await JSRuntime.InvokeVoidAsync("executeScript", script);
+            }
+            await JSRuntime.InvokeVoidAsync("changeFormActionAndSubmit", "PostForm", "https://logistics-stage.ecpay.com.tw/Home/Family");
+            var form = await JSRuntime.InvokeAsync<IJSObjectReference>("document.getElementById", "PostForm");
+
+         
+        }
+    }
+}
+
