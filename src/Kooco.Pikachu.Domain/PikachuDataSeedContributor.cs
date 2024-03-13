@@ -154,7 +154,7 @@ namespace Kooco.Pikachu
                     new EnumValue
                     {
                         EnumType = EnumType.TaxType,
-                        Text = "Non Taxable",
+                        Text = "Zero Tax",
                     },
                 autoSave: true);
                 await _appEnumValueRepository.InsertAsync(

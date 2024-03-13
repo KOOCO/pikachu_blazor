@@ -450,8 +450,25 @@
     "Pikachu:AtLeastOneDeliveryTimeIsRequiredForBlackCat": "請選擇黑貓取貨時間",
     "Pikachu:AtLeastOneDeliveryTimeIsRequiredForSelfPickup": "請選擇自取取貨時間",
     "Pikachu:AtLeastOneDeliveryTimeIsRequiredForHomeDelivery": "請選擇親送取貨時間",
+    "ItemStyle1": "商品規格",
+    "ItemStyle2": "商品規格",
+    "ItemStyle3": "商品規格",
+    "ItemStyle4": "商品規格",
+    "ItemStyle5": "商品規格",
+    "ItemStyle12": "商品規格",
+    "ItemStyle6": "商品規格",
+    "ItemStyle7": "商品規格",
+    "ItemStyle8": "商品規格",
+    "ItemStyle9": "商品規格",
+    "ItemStyle10": "商品規格",
+    "ItemStyle11": "商品規格",
+    "Taxable": "應稅",
+    "Non Taxable": "免稅",
+    "Zero Tax": "零税",
+    "Threshold": "免運門檻",
+    "DeliveryTimePreferance": "收貨時間"
 
-    
+
 
   }
 }

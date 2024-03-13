@@ -62,6 +62,7 @@
     "ItemTags": "Item Tags",
     "ItemStyle": "Item Style",
     "ItemStyleKey": "Item Style Key",
+
     "ItemStyleValue": "Item Style Value",
     "AddItemStyleButton": "Create New Property Name",
     "PriceAndInventory": "Price And Inventory",
@@ -436,6 +437,11 @@
     "Inapplicable": "Inapplicable",
     "RecipientPostalCode": "Recipient Postal Code",
     "RecipientCity": "Recipient City",
-    "LastUpdatedDate": "Last Updated Date"
+    "LastUpdatedDate": "Last Updated Date",
+    "Taxable": "Taxable",
+    "Non Taxable": "Non Taxable",
+    "Zero Tax": "Zero Tax",
+    "Threshold": "Threshold",
+    "DeliveryTimePreferance": "Delivery Time Preferance"
   }
 }

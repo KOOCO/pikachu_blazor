@@ -403,7 +403,7 @@
                         <SelectList TItem="EnumValueDto"
                                     TValue="int"
                                     Data="@TaxTypes"
-                                    TextField="@((item)=>item.Text)"
+                                    TextField="@((item)=>L[item.Text])"
                                     ValueField="@((item)=>item.Id)"
                         @bind-SelectedValue="@UpdateItemDto.TaxTypeId" />
                     </div>
