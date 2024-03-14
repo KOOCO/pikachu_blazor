@@ -1,8 +1,10 @@
 ﻿using Azure;
+using Azure.Core;
 using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.Orders;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using RestSharp;
 using System;
@@ -35,12 +37,14 @@ namespace Kooco.Pikachu.StoreLogisticOrders
         BNormalCreateUpdateDto BNormal { get; set; }
         BNormalCreateUpdateDto BFreeze { get; set; }
         BNormalCreateUpdateDto BFrozen { get; set; }
+        private readonly IConfiguration _configuration;
         public StoreLogisticsOrderAppService(IOrderDeliveryRepository orderDeliveryRepository,IOrderRepository orderRepository,
-            ILogisticsProvidersAppService logisticsProvidersAppService) {
+            ILogisticsProvidersAppService logisticsProvidersAppService, IConfiguration configuration) {
            
             _orderRepository = orderRepository;
             _deliveryRepository = orderDeliveryRepository;
             _logisticsProvidersAppService= logisticsProvidersAppService;
+            _configuration = configuration;
             GreenWorld = new();
             HomeDelivery = new();
             PostOffice = new();
@@ -116,7 +120,7 @@ namespace Kooco.Pikachu.StoreLogisticOrders
 
 
             var client = new RestClient(options);
-            var request = new RestRequest("https://logistics-stage.ecpay.com.tw/Express/Create", Method.Post);
+            var request = new RestRequest(_configuration["EcPay:LogisticApi"], Method.Post);
             request.AddHeader("Accept", "text/html");
             request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
             request.AddParameter("MerchantID", GreenWorld.StoreCode);
@@ -136,7 +140,7 @@ namespace Kooco.Pikachu.StoreLogisticOrders
             request.AddParameter("ReceiverAddress", order.AddressDetails);
             request.AddParameter("ServerReplyURL", "https://www.ecpay.com.tw/ServerReplyURL");
             //request.AddParameter("ReceiverStoreID", "123");
-            request.AddParameter("CheckMacValue", GenerateCheckMac(GreenWorld.StoreCode, "", DateTime.Now.ToShortDateString(), "HOME", orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.PostOffice ? "POST" : "TCAT", Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)),PostOffice.Weight, GreenWorld.SenderName,GreenWorld.SenderPhoneNumber,
+            request.AddParameter("CheckMacValue", GenerateCheckMac(greenWorld.HashKey, greenWorld.HashIV, GreenWorld.StoreCode, "", DateTime.Now.ToShortDateString(), "HOME", orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.PostOffice ? "POST" : "TCAT", Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)),PostOffice.Weight, GreenWorld.SenderName,GreenWorld.SenderPhoneNumber,
                                                     GreenWorld.SenderPostalCode,GreenWorld.SenderAddress, order.RecipientName, order.RecipientPhone,order.PostalCode,order.AddressDetails, "https://www.ecpay.com.tw/ServerReplyURL"));
             //request.AddParameter("IsCollection", "N");
             request.AddParameter("MerchantTradeNo",  "");
@@ -160,7 +164,7 @@ namespace Kooco.Pikachu.StoreLogisticOrders
             var orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(input.OrderId);
             var orderDelivery = orderDeliverys.Where(x => x.Id == input.DeliveryId).FirstOrDefault();
             var providers = await _logisticsProvidersAppService.GetAllAsync();
-
+            var logisticSubType = "";
             var greenWorld = providers.Where(p => p.LogisticProvider == EnumValues.LogisticProviders.GreenWorldLogistics).FirstOrDefault();
             if (greenWorld != null)
             {
@@ -212,22 +216,44 @@ namespace Kooco.Pikachu.StoreLogisticOrders
                 MaxTimeout = -1,
             };
             var client = new RestClient(options);
-            var request = new RestRequest("https://logistics-stage.ecpay.com.tw/Express/Create", Method.Post);
+            var request = new RestRequest(_configuration["EcPay:LogisticApi"], Method.Post);
             request.AddHeader("Accept", "text/html");
             request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
-            request.AddParameter("MerchantID", "2000132");
-            request.AddParameter("MerchantTradeDate", "2024/03/06");
+            request.AddParameter("MerchantID", greenWorld.StoreCode);
+            request.AddParameter("MerchantTradeDate", DateTime.Now);
             request.AddParameter("LogisticsType", "CVS");
-            request.AddParameter("LogisticsSubType", "FAMI");
+
+            if (orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.SevenToEleven1)
+            {
+                request.AddParameter("LogisticsSubType", "UNIMART");
+
+                logisticSubType = "UNIMART";
+            }
+            else if (orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.FamilyMart1)
+            {
+                request.AddParameter("LogisticsSubType", "FAMI");
+                logisticSubType = "FAMI";
+            }
+            else if (orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.SevenToElevenC2C)
+            {
+                request.AddParameter("LogisticsSubType", "UNIMARTC2C");
+                logisticSubType = "UNIMARTC2C";
+            }
+            else if (orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.FamilyMartC2C)
+            {
+                request.AddParameter("LogisticsSubType", "FAMIC2C");
+                logisticSubType = "FAMIC2C";
+            }
             request.AddParameter("GoodsAmount", Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)));
-            request.AddParameter("SenderName", CurrentUser.Name);
+            request.AddParameter("SenderName", greenWorld.SenderName);
             request.AddParameter("ReceiverName", order.RecipientName);
             request.AddParameter("ReceiverCellPhone", order.RecipientPhone);
             request.AddParameter("ServerReplyURL", "https://www.ecpay.com.tw/ServerReplyURL");
-            request.AddParameter("ReceiverStoreID", "123");
-            request.AddParameter("CheckMacValue", GenerateRequestString("2000132", order.OrderNo, "2024/03/06", "CVS", "FAMI", Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)), "N", CurrentUser.Name, order.RecipientName, order.RecipientPhone, "https://www.ecpay.com.tw/ServerReplyURL", "123"));
-            request.AddParameter("IsCollection", "N");
-            request.AddParameter("MerchantTradeNo", order.OrderNo);
+            request.AddParameter("ReceiverStoreID", input.StoreId);
+            request.AddParameter("CheckMacValue", GenerateRequestString(greenWorld.HashKey,greenWorld.HashIV,greenWorld.StoreCode, "", DateTime.Now.ToString(), "CVS", logisticSubType, Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)), greenWorld.SenderName, order.RecipientName, order.RecipientPhone, 
+                "https://www.ecpay.com.tw/ServerReplyURL", input.StoreId));
+            //request.AddParameter("IsCollection", "N");
+            request.AddParameter("MerchantTradeNo", "");
 
 
             RestResponse response = await client.ExecuteAsync(request);
@@ -240,10 +266,10 @@ namespace Kooco.Pikachu.StoreLogisticOrders
             }
             return result;
         }
-        public string GenerateRequestString(string merchantID, string merchantTradeNo, string merchantTradeDate, string logisticsType, string logisticsSubType, int goodsAmount, string isCollection, string senderName, string receiverName, string receiverCellPhone, string serverReplyURL, string receiverStoreID)
+        public string GenerateRequestString(string HashKey, string HashIV, string merchantID, string merchantTradeNo, string merchantTradeDate, string logisticsType, string logisticsSubType, int goodsAmount, string senderName, string receiverName, string receiverCellPhone, string serverReplyURL, string receiverStoreID)
         {
-            string HashKey = "5294y06JbISpM5x9";
-            string HashIV = "v77hoKGq4kWxNNIS";
+            //string HashKey = "5294y06JbISpM5x9";
+            //string HashIV = "v77hoKGq4kWxNNIS";
             // Create a dictionary to hold parameters
             var parameters = new Dictionary<string, string>
         {
@@ -254,7 +280,7 @@ namespace Kooco.Pikachu.StoreLogisticOrders
             { "LogisticsSubType", logisticsSubType },
             { "GoodsAmount", goodsAmount.ToString() },
 
-            { "IsCollection", isCollection },
+            //{ "IsCollection", isCollection },
 
             { "SenderName", senderName },
 
@@ -284,11 +310,7 @@ namespace Kooco.Pikachu.StoreLogisticOrders
             // Lowercase the string
             string lowercaseString = urlEncodedString.ToLower();
 
-            // Replace characters according to the urlencode conversion table
-            // (Note: In C#, URL encoding is done by default in UrlEncode method, so this step is optional)
-            //lowercaseString = lowercaseString.Replace("%20", "+").Replace("%21", "!").Replace("%27", "'").Replace("%28", "(").Replace("%29", ")").Replace("%2a", "*").Replace("%2d", "-").Replace("%2e", ".").Replace("%5f", "_").Replace("%7e", "~");
 
-            // Use MD5 encryption to generate the hash value
             string md5Checksum;
             using (MD5 md5 = MD5.Create())
             {
@@ -319,13 +341,34 @@ namespace Kooco.Pikachu.StoreLogisticOrders
             };
 
             var client1 = new RestClient(options);
-            var request1 = new RestRequest("https://logistics.ecpay.com.tw/Home/Family", Method.Post);
+            var request1 = new RestRequest(_configuration["EcPay:E-MAPApi"], Method.Post);
             request1.AddHeader("Accept", "text/html");
             request1.AddHeader("Content-Type", "application/x-www-form-urlencoded");
             //request1.AddHeader("Cookie", "MapInfo=MerchantID=2000132&MerchantTradeNo=ECPay&LogisticsType=CVS&LogisticsSubType=FAMI&IsCollection=N&ServerReplyURL=https%3a%2f%2fwww.ecpay.com.tw%2fServerReplyURL&CallBackFunction=&IsGet=&Device=0");
             request1.AddParameter("MerchantID", "2000132");
             request1.AddParameter("LogisticsType", "CVS");
-            request1.AddParameter("LogisticsSubType", "UNIMART");
+            if (orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.SevenToEleven1)
+            {
+                request1.AddParameter("LogisticsSubType", "UNIMART");
+
+               
+            }
+            else if (orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.FamilyMart1)
+            {
+                request1.AddParameter("LogisticsSubType", "FAMI");
+               
+            }
+            else if (orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.SevenToElevenC2C)
+            {
+                request1.AddParameter("LogisticsSubType", "UNIMARTC2C");
+               
+            }
+            else if (orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.FamilyMartC2C)
+            {
+                request1.AddParameter("LogisticsSubType", "FAMIC2C");
+                
+            }
+          
             request1.AddParameter("ServerReplyURL", "https://ba6ee5b524c5287100a78b51d8b7fc18.m.pipedream.net");
             request1.AddParameter("IsCollection", "N");
             RestResponse response1 = await client1.ExecuteAsync(request1);
@@ -345,11 +388,11 @@ namespace Kooco.Pikachu.StoreLogisticOrders
 
            
         }
-        public string GenerateCheckMac(string merchantID, string merchantTradeNo, string merchantTradeDate, string logisticsType, string logisticsSubType, int goodsAmount, decimal goodsWeight, string senderName, string senderPhone, string senderZipCode, string senderAddress,
+        public string GenerateCheckMac(string HashKey, string HashIV, string merchantID, string merchantTradeNo, string merchantTradeDate, string logisticsType, string logisticsSubType, int goodsAmount, decimal goodsWeight, string senderName, string senderPhone, string senderZipCode, string senderAddress,
                                     string receiverName, string receiverCellPhone, string receiverZipCode,string receiverAddress, string serverReplyURL)
         {
-            string HashKey = "5294y06JbISpM5x9";
-            string HashIV = "v77hoKGq4kWxNNIS";
+            //string HashKey = "5294y06JbISpM5x9";
+            //string HashIV = "v77hoKGq4kWxNNIS";
             // Create a dictionary to hold parameters
             var parameters = new Dictionary<string, string>
         {
@@ -396,11 +439,7 @@ namespace Kooco.Pikachu.StoreLogisticOrders
             // Lowercase the string
             string lowercaseString = urlEncodedString.ToLower();
 
-            // Replace characters according to the urlencode conversion table
-            // (Note: In C#, URL encoding is done by default in UrlEncode method, so this step is optional)
-            //lowercaseString = lowercaseString.Replace("%20", "+").Replace("%21", "!").Replace("%27", "'").Replace("%28", "(").Replace("%29", ")").Replace("%2a", "*").Replace("%2d", "-").Replace("%2e", ".").Replace("%5f", "_").Replace("%7e", "~");
-
-            // Use MD5 encryption to generate the hash value
+            
             string md5Checksum;
             using (MD5 md5 = MD5.Create())
             {

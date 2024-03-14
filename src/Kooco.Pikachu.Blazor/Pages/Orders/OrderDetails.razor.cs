@@ -595,39 +595,44 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         }
         private string ReplaceSaveSubmit(string html)
         {
-            string newFunction = "function SaveSubmitNew(url){" +
-                "" +
-                "" +
-                "const myHeaders = new Headers();\r\nmyHeaders.append(\"Content-Type\", \"application/json\");\r\n\r\nconst raw = JSON.stringify({\r\n  \"address\": \"新竹市東區建中一路52號1樓\",\r\n  \"storeaddress\": \"新竹市東區建中一路52號1樓\",\r\n  \"storeid\": \"131386\",\r\n  \"storename\": \"建盛門市\",\r\n  \"outside\": \"0\",\r\n  \"deliveryId\": \"5eefb622-d497-44c4-8f2a-909c55e6abd8\",\r\n  \"orderId\": \"054f0fed-d2c7-26cd-c8b6-3a11253970fe\"\r\n});\r\n\r\nconst requestOptions = {\r\n  method: \"POST\",\r\n  headers: myHeaders,\r\n  body: raw,\r\n  redirect: \"follow\"\r\n};\r\n\r\nfetch(\"https://localhost:44374/api/app/store-logistics-order/store-logistics-order\", requestOptions)\r\n  .then((response) => response.text())\r\n  .then((result) => console.log(result))\r\n  .catch((error) => console.error(error));}</script>";
-//            string newFunction = @"function SaveSubmitNew(url) {
-//                                debugger;
-//                                var formData = new FormData(document.getElementById('SubmitForm'));
-//                                var formDataObject = {};
-//                                formData.forEach(function(value, key){
-//                                    formDataObject[key] = value;
-//                                             });
 
-            //                    // Convert the plain JavaScript object to a JSON string
-            //                            var formDataJson = JSON.stringify(formDataObject);
-            //                            const myHeaders = new Headers();
-            //                            myHeaders.append('Content-Type', 'application/json');
+            string newFunction = @"function SaveSubmitNew(url) {
+                                debugger;
+                                var formData = new FormData(document.getElementById('SubmitForm'));
+                                var formDataObject = {};
+                                formData.forEach(function(value, key){
+                                    formDataObject[key] = value;
+                                             });
 
-            //                            const raw = formDataJson;
+                                // Convert the plain JavaScript object to a JSON string
+                                        var formDataJson = JSON.stringify(formDataObject);
+                                        const myHeaders = new Headers();
+                                        myHeaders.append('Content-Type', 'application/json');
 
-            //                        const requestOptions = {
-            //                                            method: 'POST',
-            //                                            headers: myHeaders,
-            //                                            body: raw,
-            //                                            redirect: 'follow'
-            //                                                };
+                                        const raw = formDataJson;
 
-            //                                        fetch(url, requestOptions)
-            //                                        .then((response) => response.text())
-            //                                        .then((result) => console.log(result))
-            //                                        .catch((error) => console.error(error));
+                                    const requestOptions = {
+                                                        method: 'POST',
+                                                        headers: myHeaders,
+                                                        body: raw,
+                                                        redirect: 'follow'
+                                                            };
 
-            //                            };
-            //</script>";
+                                                    fetch(url, requestOptions)
+                                                     .then((response) => {
+                                                          if (response.ok) {
+                                                       // If response is successful, close the popup window
+                                                            window.close();
+                                                             return response.text();
+                                                              } else {
+                                                             throw new Error('Network response was not ok.');
+                                                                }
+                                                                })
+                                                    .then((result) => console.log(result))
+                                                    .catch((error) => console.error(error));
+
+                                        };
+            </script>";
 
             // Find the script tag and add the new method inside it
             html = System.Text.RegularExpressions.Regex.Replace(html, @"function SaveSubmit\(url\)[\s\S]*?}\s*<\/script>", newFunction);
