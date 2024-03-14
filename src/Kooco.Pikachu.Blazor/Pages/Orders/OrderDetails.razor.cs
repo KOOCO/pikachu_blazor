@@ -254,7 +254,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 }
                 await loading.Show();
                 UpdateOrder.OrderStatus = Order.OrderStatus;
-                UpdateOrder.PostalCode = "403702";//Order.PostalCode;
+                UpdateOrder.PostalCode = Order.PostalCode;
                 Order = await _orderAppService.UpdateAsync(OrderId, UpdateOrder);
                 ModificationTrack = new();
                 await InvokeAsync(StateHasChanged);
@@ -331,7 +331,8 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         {
             await loading.Show();
             OrderDeliveryId = deliveryOrder.Id;
-            if (deliveryOrder.DeliveryMethod == DeliveryMethod.SevenToEleven1 || deliveryOrder.DeliveryMethod == DeliveryMethod.FamilyMart1)
+            if (deliveryOrder.DeliveryMethod == DeliveryMethod.SevenToEleven1 || deliveryOrder.DeliveryMethod == DeliveryMethod.FamilyMart1||
+               deliveryOrder.DeliveryMethod == DeliveryMethod.SevenToElevenC2C||deliveryOrder.DeliveryMethod == DeliveryMethod.FamilyMart1)
             {
                 var htmlString = await _storeLogisticsOrderAppService.GetStoreAsync(Order.Id, OrderDeliveryId);
                 StringBuilder htmlForm = new();
