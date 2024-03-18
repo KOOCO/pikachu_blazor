@@ -827,7 +827,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOnePaymentMethodIsRequired]);
                     return;
                 }
-                if (EditGroupBuyDto.ExcludeShippingMethod.IsNullOrEmpty())
+                if (EditGroupBuyDto.ExcludeShippingMethod.IsNullOrEmpty()|| EditGroupBuyDto.ExcludeShippingMethod=="[]")
                 {
                     await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneShippingMethodIsRequired]);
                     return;
