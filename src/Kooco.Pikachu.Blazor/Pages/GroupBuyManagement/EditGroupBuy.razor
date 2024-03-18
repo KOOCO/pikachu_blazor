@@ -401,12 +401,21 @@
                     @if (DeliveryTimeConts.SelfPickUp != null)
                     {
                         @foreach(var island in DeliveryTimeConts.SelfPickUp)
+                        {    
+                            @if ((EditGroupBuyDto.ExcludeShippingMethod != null) && (EditGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup")))
                         {
                             <label for="@island" class="form-label">
                             <input type="checkbox" class="form-check-input me-1" id="@island" checked="@(EditGroupBuyDto.SelfPickupDeliveryTime != null && EditGroupBuyDto.SelfPickupDeliveryTime.Contains(island))" @onchange="(value) => SelfPickupDeliveryTimeCheckedChange(island, value)" />
                                 @L[island]
                             </label>
+                        }else
+                        {
+                            <label for="@island" class="form-label">
+                            <input disabled type="checkbox" class="form-check-input me-1" id="@island" checked="@(EditGroupBuyDto.SelfPickupDeliveryTime != null && EditGroupBuyDto.SelfPickupDeliveryTime.Contains(island))" @onchange="(value) => SelfPickupDeliveryTimeCheckedChange(island, value)" />
+                                @L[island]
+                            </label> 
                         }
+                    }
                     }
                 </div>
                     <div class="col-2"></div>
@@ -421,10 +430,21 @@
                     {
                         @foreach(var island in DeliveryTimeConts.BlackCat)
                         {
+                        @if ((EditGroupBuyDto.ExcludeShippingMethod != null) && (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat")))
+                        {
                             <label for="@island" class="form-label">
                                 <input type="checkbox" class="form-check-input me-1" id="@island" checked="@(EditGroupBuyDto.BlackCatDeliveryTime != null && EditGroupBuyDto.BlackCatDeliveryTime.Contains(island))" @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)"   />
                                 @L[island]
                             </label>
+                        }
+                        else
+                        {
+                          <label for="@island" class="form-label">
+                                <input disabled type="checkbox" class="form-check-input me-1" id="@island" checked="@(EditGroupBuyDto.BlackCatDeliveryTime != null && EditGroupBuyDto.BlackCatDeliveryTime.Contains(island))" @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)"   />
+                                @L[island]
+                            </label>
+                        
+                        }
                         }
                     }
                 </div>
@@ -440,10 +460,20 @@
                     {
                         @foreach(var island in DeliveryTimeConts.HomeDelivery)
                         {
+                      @if ((EditGroupBuyDto.ExcludeShippingMethod != null) && (EditGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery")))
+                        {
                             <label for="@island" class="form-label">
                                 <input type="checkbox" class="form-check-input me-1" id="@island" checked="@(EditGroupBuyDto.HomeDeliveryDeliveryTime != null && EditGroupBuyDto.HomeDeliveryDeliveryTime.Contains(island))" @onchange="(value) => HomeDeliveryTimeCheckedChange(island, value)"   />
                                 @L[island]
                             </label>
+                        }
+                        else{
+                         <label for="@island" class="form-label">
+                                <input disabled type="checkbox" class="form-check-input me-1" id="@island" checked="@(EditGroupBuyDto.HomeDeliveryDeliveryTime != null && EditGroupBuyDto.HomeDeliveryDeliveryTime.Contains(island))" @onchange="(value) => HomeDeliveryTimeCheckedChange(island, value)"   />
+                                @L[island]
+                            </label>
+                        
+                        }
                         }
                     }
                 </div>
