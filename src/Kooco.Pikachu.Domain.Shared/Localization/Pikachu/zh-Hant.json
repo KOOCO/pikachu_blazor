@@ -68,7 +68,7 @@
     "PreviewPage": "預覽頁面",
     "ItemImage": "商品圖片",
     "ItemTags": "商品標籤",
-    "ItemStyle": "商品樣式",
+    "ItemStyle": "商品規格",
     "ItemStyleKey": "商品樣式名稱",
     "ItemStyleValue": "商品樣式內容",
     "AddItemStyleButton": "建立新屬性",
@@ -466,7 +466,8 @@
     "Non Taxable": "免稅",
     "Zero Tax": "零税",
     "Threshold": "免運門檻",
-    "DeliveryTimePreferance": "收貨時間"
+    "DeliveryTimePreferance": "收貨時間",
+    "SelectGroupBuy": "請選擇團購"
 
 
 

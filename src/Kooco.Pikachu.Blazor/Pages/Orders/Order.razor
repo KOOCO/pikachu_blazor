@@ -29,7 +29,7 @@
             Size="Size.Small"
              id="mySelectElement"
              SelectedValueChanged="@(e=>OnSearch(e))">
-              <SelectItem Value="@Guid.Empty" >Select GroupBuy</SelectItem>
+              <SelectItem Value="@Guid.Empty" >@L["SelectGroupBuy"]</SelectItem>
                 @foreach (var item in GroupBuyList)
                 {
                     <SelectItem Value="@item.Id">@item.Name</SelectItem>
