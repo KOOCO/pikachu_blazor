@@ -535,6 +535,21 @@
                 <InputNumber class="form-control" @bind-Value="@EditGroupBuyDto.ProfitShare" />
             </div>
         </div>
+         <div class="row">
+            <div class="col-2"></div>
+            <div class="col-2">
+                <label>@L["TaxType"]</label>
+            </div>
+            <div class="col-5">
+                   <Select TValue="TaxType" Class="form-select"
+                            @bind-SelectedValue="@EditGroupBuyDto.TaxType">
+                                @foreach (var enumValue in Enum.GetValues(typeof(TaxType)))
+                                {
+                                    <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                }
+                            </Select>
+            </div>
+        </div>
      @*    <div class="row">
             <div class="col-2"></div>
             <div class="col-2">

@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.Items.Dtos;
+﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Items.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.SymbolStore;
@@ -201,7 +202,7 @@ namespace Kooco.Pikachu.GroupBuys
         public string? SelfPickupDeliveryTime { get; set; }
         public string? BlackCatDeliveryTime { get; set; }
         public string? HomeDeliveryDeliveryTime { get; set; }
-
+        public TaxType TaxType { get; set; }
         public GroupBuyCreateDto()
         {
             ShippingMethodList = new List<string>();

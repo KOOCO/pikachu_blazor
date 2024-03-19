@@ -203,7 +203,7 @@ namespace Kooco.Pikachu.GroupBuys
         public string? SelfPickupDeliveryTime { get; set; }
         public string? BlackCatDeliveryTime { get; set; }
         public string? HomeDeliveryDeliveryTime { get; set; }
-
+        public TaxType TaxType { get; set; }
         public decimal? FreeShippingThreshold { get; set; }
         /// <summary>
         /// 預設使用的發貨倉庫 Default Warehouse used for shipping
@@ -263,8 +263,9 @@ namespace Kooco.Pikachu.GroupBuys
              decimal? freeShippingThreshold ,
              string? selfPickupDeliveryTime,
              string? blackCatDeliveryTime,
-             string? homeDeliveryDeliveryTime
+             string? homeDeliveryDeliveryTime,
 
+                TaxType taxType
             )
         {
             Id = id;
@@ -315,9 +316,10 @@ namespace Kooco.Pikachu.GroupBuys
             FreeShippingThreshold = freeShippingThreshold;
 
             ItemGroups = new List<GroupBuyItemGroup>();
-            SelfPickupDeliveryTime= selfPickupDeliveryTime;
+            SelfPickupDeliveryTime = selfPickupDeliveryTime;
             HomeDeliveryDeliveryTime = homeDeliveryDeliveryTime;
             BlackCatDeliveryTime = blackCatDeliveryTime;
+            TaxType = taxType;
         }
 
         public GroupBuyItemGroup AddItemGroup(

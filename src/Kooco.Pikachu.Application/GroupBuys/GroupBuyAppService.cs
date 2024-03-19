@@ -71,7 +71,7 @@ namespace Kooco.Pikachu.GroupBuys
                                                         input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy,
                                                         input.NotifyMessage, input.ExcludeShippingMethod, input.IsDefaultPaymentGateWay, input.PaymentMethod, input.GroupBuyCondition, input.CustomerInformation,
                                                         input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription, input.ShortCode, input.IsEnterprise,input.FreeShippingThreshold,input.SelfPickupDeliveryTime,
-                                                        input.BlackCatDeliveryTime,input.HomeDeliveryDeliveryTime);
+                                                        input.BlackCatDeliveryTime,input.HomeDeliveryDeliveryTime,input.TaxType);
 
             if (input.ItemGroups != null && input.ItemGroups.Any())
             {
@@ -118,7 +118,7 @@ namespace Kooco.Pikachu.GroupBuys
                                                         input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy,
                                                         input.NotifyMessage, input.ExcludeShippingMethod, input.IsDefaultPaymentGateWay, input.PaymentMethod, input.GroupBuyCondition, input.CustomerInformation,
                                                         input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription, ShortCode, input.IsEnterprise,input.FreeShippingThreshold,
-                                                        input.SelfPickupDeliveryTime,input.BlackCatDeliveryTime,input.HomeDeliveryDeliveryTime);
+                                                        input.SelfPickupDeliveryTime,input.BlackCatDeliveryTime,input.HomeDeliveryDeliveryTime,input.TaxType);
 
             if (input.ItemGroups != null && input.ItemGroups.Any())
             {
@@ -263,7 +263,7 @@ namespace Kooco.Pikachu.GroupBuys
             groupBuy.HomeDeliveryDeliveryTime = input.HomeDeliveryDeliveryTime;
             groupBuy.SelfPickupDeliveryTime = input.SelfPickupDeliveryTime;
             groupBuy.BlackCatDeliveryTime = input.BlackCatDeliveryTime;
-
+            groupBuy.TaxType = input.TaxType;
             if (input?.ItemGroups != null)
             {
                 foreach (var group in input.ItemGroups)
