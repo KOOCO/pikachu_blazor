@@ -23,4 +23,5 @@ public interface ISetItemAppService :
     Task<SetItemDto> GetAsync(Guid id, bool includeDetails = false);
     Task DeleteSingleImageAsync(Guid id, string blobImageName);
     Task<List<ItemWithItemTypeDto>> GetItemsLookupAsync();
+    Task<List<ItemWithItemTypeDto>> GetAvailableItemsLookupAsync();
 }

@@ -47,7 +47,7 @@ public class ItemRepository : EfCoreRepository<PikachuDbContext, Item, Guid>, II
     public async Task<List<ItemWithItemType>> GetItemsLookupAsync()
     {
         return await (await GetQueryableAsync())
-            .Where(x => x.IsItemAvaliable)
+            .Where(x => x.IsItemAvaliable &&( x.LimitAvaliableTimeEnd==null||x.LimitAvaliableTimeEnd.Value.Date>=DateTime.Now.Date))
             .Select(x => new ItemWithItemType
             {
                 Id = x.Id,
