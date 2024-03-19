@@ -202,4 +202,14 @@ public class OrderController(
     {
         return _ordersAppService.GetReconciliationListAsExcelFileAsync(input);
     }
+    [HttpPost("order-shipped")]
+    public Task<OrderDto> OrderShipped(Guid id)
+    {
+        return _ordersAppService.OrderShipped(id);
+    }
+    [HttpPost("order-closed")]
+    public Task<OrderDto> OrderClosed(Guid id)
+    {
+        return _ordersAppService.OrderClosed(id);
+    }
 }

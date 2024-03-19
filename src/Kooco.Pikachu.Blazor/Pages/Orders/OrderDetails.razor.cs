@@ -643,6 +643,58 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
             
 
         }
+
+        private async Task ShippingStatusChanged(ShippingStatus selectedValue)
+        {
+            try
+            {
+                await loading.Show();
+               
+                
+                if (selectedValue == Order.ShippingStatus)
+                {
+                    await loading.Hide();
+                    return;
+                
+                }
+                if (selectedValue == ShippingStatus.PrepareShipment && Order.ShippingStatus == ShippingStatus.WaitingForPayment)
+                {
+                    PaymentResult paymentResult = new PaymentResult();
+                    paymentResult.OrderId = Order.Id;
+                    await _orderAppService.HandlePaymentAsync(paymentResult);
+                    await GetOrderDetailsAsync();
+                    await base.OnInitializedAsync();
+                    await loading.Hide();
+
+                }
+                else if (selectedValue == ShippingStatus.Shipped && Order.ShippingStatus == ShippingStatus.PrepareShipment)
+                {
+                    await _orderAppService.OrderShipped(Order.Id);
+                    await GetOrderDetailsAsync();
+                    await base.OnInitializedAsync();
+                    await loading.Hide();
+
+                }
+                else if (selectedValue == ShippingStatus.Closed && Order.ShippingStatus == ShippingStatus.Shipped)
+                {
+                    await _orderAppService.OrderClosed(Order.Id);
+                    await GetOrderDetailsAsync();
+                    await base.OnInitializedAsync();
+                    await loading.Hide();
+                }
+                await loading.Hide();
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
+
+            }
+            finally
+            {
+                await loading.Hide();
+            }
+
+        }
         public class StoreCommentsModel
         {
             public Guid? Id { get; set; }

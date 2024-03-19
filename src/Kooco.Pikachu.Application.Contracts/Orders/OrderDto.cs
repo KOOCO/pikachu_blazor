@@ -49,5 +49,8 @@ namespace Kooco.Pikachu.Orders
         public OrderReturnStatus ReturnStatus { get; set; }
         public InvoiceStatus InvoiceStatus { get; set; }
         public OrderType? OrderType { get; set; }
+        public string PrepareShipmentBy { get; set; }
+        public string ShippedBy { get; set; }
+        public string ClosedBy { get; set; }
     }
 }

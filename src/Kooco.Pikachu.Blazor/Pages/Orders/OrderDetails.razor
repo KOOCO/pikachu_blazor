@@ -329,12 +329,19 @@
             </div>
             <Card>
                 <CardBody>
+                    <div class="row">
+                         <div class="col-12 d-flex justify-content-between">
+                    <p class="fw-bold">@L["Date"]</p>
+                    <p class="fw-bold">@L["Editor"]</p>
                     <p class="fw-bold">@L["OrderStatus"]</p>
+                    </div>
+                    </div>
                     <div class="row">
                         @if (Order?.ShippingStatus == ShippingStatus.WaitingForPayment)
                         {
                             <div class="col-12 d-flex justify-content-between">
                                 <p>@Order?.CreationTime.ToShortDateString()</p>
+                                <p></p>
                                 <p>@L[ShippingStatus.WaitingForPayment.ToString()]</p>
                             </div>
                         }
@@ -342,10 +349,12 @@
                         {
                             <div class="col-12 d-flex justify-content-between">
                                 <p>@Order?.CreationTime.ToShortDateString()</p>
+                                <p></p>
                                 <p>@L[ShippingStatus.WaitingForPayment.ToString()]</p>
                             </div>
                             <div class="col-12 d-flex justify-content-between">
                                 <p>@Order?.PaymentDate?.ToShortDateString()</p>
+                                <p>@Order?.PrepareShipmentBy</p>
                                 <p>@L[ShippingStatus.PrepareShipment.ToString()]</p>
                             </div>
                         }
@@ -357,10 +366,12 @@
                             </div>
                             <div class="col-12 d-flex justify-content-between">
                                 <p>@Order?.PaymentDate?.ToShortDateString()</p>
+                                  <p>@Order?.PrepareShipmentBy</p>
                                 <p>@L[ShippingStatus.PrepareShipment.ToString()]</p>
                             </div>
                             <div class="col-12 d-flex justify-content-between">
                                 <p>@Order?.ShippingDate?.ToShortDateString()</p>
+                                  <p>@Order?.ShippedBy</p>
                                 <p>@L[ShippingStatus.Shipped.ToString()]</p>
                             </div>
                         }
@@ -368,9 +379,34 @@
                         {
                             <div class="col-12 d-flex justify-content-between">
                                 <p>@Order?.CancellationDate?.ToShortDateString()</p>
+                                 <p>@Order?.ClosedBy</p>
                                 <p>@L[OrderStatus.Closed.ToString()]</p>
                             </div>
                         }
+                    </div>
+                </CardBody>
+            </Card>
+             <Card>
+                <CardBody>
+                    <div class="row">
+                         <div class="col-12 d-flex justify-content-between">
+                    <p class="fw-bold">@L["ManualStatusUpdate"]</p>
+                    
+                    
+                    </div>
+                    </div>
+                    <div class="row">
+                         <div class="col-12 d-flex justify-content-between">
+                         <Select TValue="ShippingStatus" Class="form-select form-select-sm"
+                                SelectedValue="@Order.ShippingStatus"
+                                SelectedValueChanged="@(e => ShippingStatusChanged(e))">
+                                    <SelectItem></SelectItem>
+                                    @foreach (var enumValue in Enum.GetValues(typeof(ShippingStatus)))
+                                    {
+                                        <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                    }
+                                </Select>
+                                </div>
                     </div>
                 </CardBody>
             </Card>

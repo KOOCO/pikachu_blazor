@@ -8,6 +8,7 @@ namespace Kooco.Pikachu.EnumValues
     {
         WaitingForPayment,
         PrepareShipment,
-        Shipped
+        Shipped,
+        Closed
     }
 }

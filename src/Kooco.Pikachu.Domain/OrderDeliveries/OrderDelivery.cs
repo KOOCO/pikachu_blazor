@@ -35,7 +35,7 @@ namespace Kooco.Pikachu.OrderDeliveries
             AllPayLogisticsID = allPayLogisticsID;
             DeliveryNo= deliveryNo;
             OrderId = orderId;
-        
+            Editor = "";
         }
       
     }
