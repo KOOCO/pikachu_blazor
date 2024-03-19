@@ -545,11 +545,11 @@
             <div class="col-2">@L["IssueInvoice"]</div>
             <div class="col-4"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.IssueInvoice"></Switch></div>
         </div>
-        <div class="row">
+        @* <div class="row">
             <div class="col-2"></div>
             <div class="col-2 form-label">@L["AutoIssueTriplicateInvoice"]</div>
             <div class="col-4"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.AutoIssueTriplicateInvoice"></Switch></div>
-        </div>
+        </div> *@
         <div class="row">
             <div class="col-2"></div>
             <div class="col-2 form-label">
@@ -590,14 +590,14 @@
         </div>
         <div class="row">
             <div class="col-2"></div>
-            <div class="col-2">
+           @*  <div class="col-2">
                 <label>@L["FaceBookPixelID"]</label>
             </div>
             <div class="col-5">
                 <InputNumber class="form-control" @bind-Value="@CreateGroupBuyDto.MetaPixelNo" />
-            </div>
+            </div> *@
         </div>
-        <div class="row">
+       @*  <div class="row">
             <div class="col-2"></div>
             <div class="col-2">
                 <label>@L["FaceBookID"]</label>
@@ -641,7 +641,7 @@
             <div class="col-5">
                 <TextEdit @bind-Text="@CreateGroupBuyDto.GTM" />
             </div>
-        </div>
+        </div> *@
         <Divider></Divider>
         <div class="row">
             <div class="col-2"><label>@L["AddModule"]</label></div>
