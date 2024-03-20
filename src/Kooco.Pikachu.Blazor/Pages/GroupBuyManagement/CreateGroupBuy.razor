@@ -559,6 +559,21 @@
                 <InputTextArea class="form-control" maxlength="200" @bind-Value="@CreateGroupBuyDto.InvoiceNote"></InputTextArea>
             </div>
         </div>
+         <div class="row">
+            <div class="col-2"></div>
+            <div class="col-2">
+                <label>@L["TaxType"]</label>
+            </div>
+            <div class="col-5">
+                   <Select TValue="TaxType" Class="form-select"
+                            @bind-SelectedValue="@CreateGroupBuyDto.TaxType">
+                                @foreach (var enumValue in Enum.GetValues(typeof(TaxType)))
+                                {
+                                    <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                }
+                            </Select>
+            </div>
+        </div>
         <Divider></Divider>
         <div class="row">
             <div class="col-2">@L["AdvanceSetting"]</div>
@@ -588,21 +603,7 @@
                 <InputNumber class="form-control" @bind-Value="@CreateGroupBuyDto.ProfitShare" />
             </div>
         </div>
-          <div class="row">
-            <div class="col-2"></div>
-            <div class="col-2">
-                <label>@L["TaxType"]</label>
-            </div>
-            <div class="col-5">
-                   <Select TValue="TaxType" Class="form-select"
-                            @bind-SelectedValue="@CreateGroupBuyDto.TaxType">
-                                @foreach (var enumValue in Enum.GetValues(typeof(TaxType)))
-                                {
-                                    <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
-                                }
-                            </Select>
-            </div>
-        </div>
+         
         <div class="row">
             <div class="col-2"></div>
            @*  <div class="col-2">
