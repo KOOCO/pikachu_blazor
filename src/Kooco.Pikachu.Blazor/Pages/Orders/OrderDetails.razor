@@ -375,12 +375,48 @@
                                 <p>@L[ShippingStatus.Shipped.ToString()]</p>
                             </div>
                         }
-                        @if (Order?.OrderStatus == OrderStatus.Closed)
+                         @if (Order?.ShippingStatus == ShippingStatus.Completed)
                         {
+                              <div class="col-12 d-flex justify-content-between">
+                                <p>@Order?.CreationTime.ToShortDateString()</p>
+                                <p>@L[ShippingStatus.WaitingForPayment.ToString()]</p>
+                            </div>
+                            <div class="col-12 d-flex justify-content-between">
+                                <p>@Order?.PaymentDate?.ToShortDateString()</p>
+                                  <p>@Order?.PrepareShipmentBy</p>
+                                <p>@L[ShippingStatus.PrepareShipment.ToString()]</p>
+                            </div>
+                            <div class="col-12 d-flex justify-content-between">
+                                <p>@Order?.ShippingDate?.ToShortDateString()</p>
+                                  <p>@Order?.ShippedBy</p>
+                                <p>@L[ShippingStatus.Shipped.ToString()]</p>
+                            </div>
                             <div class="col-12 d-flex justify-content-between">
                                 <p>@Order?.CancellationDate?.ToShortDateString()</p>
                                  <p>@Order?.ClosedBy</p>
-                                <p>@L[OrderStatus.Closed.ToString()]</p>
+                                <p>@L[ShippingStatus.Completed.ToString()]</p>
+                            </div>
+                        }
+                        @if (Order?.ShippingStatus == ShippingStatus.Closed)
+                        {
+                              <div class="col-12 d-flex justify-content-between">
+                                <p>@Order?.CreationTime.ToShortDateString()</p>
+                                <p>@L[ShippingStatus.WaitingForPayment.ToString()]</p>
+                            </div>
+                            <div class="col-12 d-flex justify-content-between">
+                                <p>@Order?.PaymentDate?.ToShortDateString()</p>
+                                  <p>@Order?.PrepareShipmentBy</p>
+                                <p>@L[ShippingStatus.PrepareShipment.ToString()]</p>
+                            </div>
+                            <div class="col-12 d-flex justify-content-between">
+                                <p>@Order?.ShippingDate?.ToShortDateString()</p>
+                                  <p>@Order?.ShippedBy</p>
+                                <p>@L[ShippingStatus.Shipped.ToString()]</p>
+                            </div>
+                            <div class="col-12 d-flex justify-content-between">
+                                <p>@Order?.CancellationDate?.ToShortDateString()</p>
+                                 <p>@Order?.ClosedBy</p>
+                                <p>@L[ShippingStatus.Closed.ToString()]</p>
                             </div>
                         }
                     </div>

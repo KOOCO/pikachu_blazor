@@ -9,6 +9,8 @@ namespace Kooco.Pikachu.EnumValues
         WaitingForPayment,
         PrepareShipment,
         Shipped,
+        Completed,
         Closed
+        
     }
 }

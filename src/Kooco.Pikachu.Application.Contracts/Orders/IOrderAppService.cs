@@ -37,5 +37,6 @@ namespace Kooco.Pikachu.Orders
         Task<IRemoteStreamContent> GetReconciliationListAsExcelFileAsync(GetOrderListDto input);
         Task<OrderDto> OrderShipped(Guid id);
         Task<OrderDto> OrderClosed(Guid id);
+        Task<OrderDto> OrderComplete(Guid id);
     }
 }

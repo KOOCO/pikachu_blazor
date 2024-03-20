@@ -651,13 +651,8 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 await loading.Show();
                
                 
-                if (selectedValue == Order.ShippingStatus)
-                {
-                    await loading.Hide();
-                    return;
-                
-                }
-                if (selectedValue == ShippingStatus.PrepareShipment && Order.ShippingStatus == ShippingStatus.WaitingForPayment)
+               
+                if (selectedValue == ShippingStatus.PrepareShipment )
                 {
                     PaymentResult paymentResult = new PaymentResult();
                     paymentResult.OrderId = Order.Id;
@@ -667,7 +662,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                     await loading.Hide();
 
                 }
-                else if (selectedValue == ShippingStatus.Shipped && Order.ShippingStatus == ShippingStatus.PrepareShipment)
+                else if (selectedValue == ShippingStatus.Shipped )
                 {
                     await _orderAppService.OrderShipped(Order.Id);
                     await GetOrderDetailsAsync();
@@ -675,7 +670,14 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                     await loading.Hide();
 
                 }
-                else if (selectedValue == ShippingStatus.Closed && Order.ShippingStatus == ShippingStatus.Shipped)
+                else if (selectedValue == ShippingStatus.Completed)
+                {
+                    await _orderAppService.OrderClosed(Order.Id);
+                    await GetOrderDetailsAsync();
+                    await base.OnInitializedAsync();
+                    await loading.Hide();
+                }
+                else if (selectedValue == ShippingStatus.Closed )
                 {
                     await _orderAppService.OrderClosed(Order.Id);
                     await GetOrderDetailsAsync();

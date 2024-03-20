@@ -549,7 +549,20 @@ namespace Kooco.Pikachu.Orders
 
             order.ShippingStatus = ShippingStatus.Closed;
             order.ClosedBy = CurrentUser.Name;
-            order.LastModificationTime = DateTime.Now;
+            order.CancellationDate = DateTime.Now;
+
+            await _orderRepository.UpdateAsync(order);
+            await UnitOfWorkManager.Current.SaveChangesAsync();
+            await SendEmailAsync(order.Id);
+            return ObjectMapper.Map<Order, OrderDto>(order);
+        }
+        public async Task<OrderDto> OrderComplete(Guid id)
+        {
+            var order = await _orderRepository.GetWithDetailsAsync(id);
+
+            order.ShippingStatus = ShippingStatus.Completed;
+            order.CompletedBy = CurrentUser.Name;
+            order.CompletionTime = DateTime.Now;
 
             await _orderRepository.UpdateAsync(order);
             await UnitOfWorkManager.Current.SaveChangesAsync();

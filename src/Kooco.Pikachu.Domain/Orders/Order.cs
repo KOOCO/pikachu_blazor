@@ -54,6 +54,8 @@ namespace Kooco.Pikachu.Orders
         public string PrepareShipmentBy { get; set; }
         public string ShippedBy { get; set; }
         public string ClosedBy { get; set; }
+        public string CompletedBy { get; set; }
+        public DateTime? CompletionTime { get; set; }
         public OrderReturnStatus? ReturnStatus { get; set; }
         public ICollection<OrderItem> OrderItems { get; set; }
         public ICollection<StoreComment> StoreComments { get; set; }
@@ -126,6 +128,10 @@ namespace Kooco.Pikachu.Orders
             OrderType = orderType;
             SplitFromId = splitFromId;
             PostalCode = postalCode;
+            ClosedBy = "";
+            CompletedBy = "";
+            PrepareShipmentBy = "";
+            ShippedBy = "";
         }
 
         public void AddOrderItem(

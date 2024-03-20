@@ -212,4 +212,9 @@ public class OrderController(
     {
         return _ordersAppService.OrderClosed(id);
     }
+    [HttpPost("order-completed")]
+    public Task<OrderDto> OrderComplete(Guid id)
+    {
+        return _ordersAppService.OrderComplete(id);
+    }
 }
