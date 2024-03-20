@@ -98,7 +98,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                             new Attributes
                             {
                                 Id = 1,
-                                Name =ExistingItem.Attribute1Name,
+                                Name =L[ExistingItem.Attribute1Name],
                                 ItemTags = ItemDetailsList.Where(x => x.Attribute1Value != null).Select(x => x.Attribute1Value).Distinct().ToList()
                             });
                     }
@@ -108,7 +108,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                             new Attributes
                             {
                                 Id = 2,
-                                Name = ExistingItem.Attribute2Name,
+                                Name = L[ExistingItem.Attribute2Name],
                                 ItemTags = ItemDetailsList.Where(x => x.Attribute2Value != null).Select(x => x.Attribute2Value).Distinct().ToList()
                             });
                     }
@@ -118,7 +118,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                             new Attributes
                             {
                                 Id = 3,
-                                Name = ExistingItem.Attribute3Name,
+                                Name = L[ExistingItem.Attribute3Name],
                                 ItemTags = ItemDetailsList.Where(x => x.Attribute3Value != null).Select(x => x.Attribute3Value).Distinct().ToList()
                             });
                     }
