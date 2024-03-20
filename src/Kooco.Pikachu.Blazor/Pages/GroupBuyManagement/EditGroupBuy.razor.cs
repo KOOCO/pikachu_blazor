@@ -835,17 +835,17 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 if ((!EditGroupBuyDto.ExcludeShippingMethod.IsNullOrEmpty()) && (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat")
                     || EditGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup") || EditGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery")))
                 {
-                    if (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat") && EditGroupBuyDto.BlackCatDeliveryTime.IsNullOrEmpty())
+                    if (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat") && (EditGroupBuyDto.BlackCatDeliveryTime.IsNullOrEmpty()|| EditGroupBuyDto.BlackCatDeliveryTime=="[]"))
                     {
                         await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForBlackCat]);
                         return;
                     }
-                    else if (EditGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup") && EditGroupBuyDto.SelfPickupDeliveryTime.IsNullOrEmpty())
+                    else if (EditGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup") && (EditGroupBuyDto.SelfPickupDeliveryTime.IsNullOrEmpty()|| EditGroupBuyDto.SelfPickupDeliveryTime=="[]"))
                     {
                         await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForSelfPickup]);
                         return;
                     }
-                    else if (EditGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery") && EditGroupBuyDto.HomeDeliveryDeliveryTime.IsNullOrEmpty())
+                    else if (EditGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery") && (EditGroupBuyDto.HomeDeliveryDeliveryTime.IsNullOrEmpty()|| EditGroupBuyDto.HomeDeliveryDeliveryTime=="[]"))
                     {
                         await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForHomeDelivery]);
                         return;

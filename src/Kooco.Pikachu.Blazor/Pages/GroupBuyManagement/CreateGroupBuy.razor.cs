@@ -601,17 +601,17 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 if ((!CreateGroupBuyDto.ExcludeShippingMethod.IsNullOrEmpty()) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat")
                     || CreateGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup") || CreateGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery")))
                 {
-                    if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat") && CreateGroupBuyDto.BlackCatDeliveryTime.IsNullOrEmpty())
+                    if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat") && (CreateGroupBuyDto.BlackCatDeliveryTime.IsNullOrEmpty()|| CreateGroupBuyDto.BlackCatDeliveryTime == "[]"))
                     {
                         await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForBlackCat]);
                         return;
                     }
-                    else if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup") && CreateGroupBuyDto.SelfPickupDeliveryTime.IsNullOrEmpty())
+                    else if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup") && CreateGroupBuyDto.SelfPickupDeliveryTime.IsNullOrEmpty() || (CreateGroupBuyDto.SelfPickupDeliveryTime == "[]"))
                     {
                         await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForSelfPickup]);
                         return;
                     }
-                    else if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery") && CreateGroupBuyDto.HomeDeliveryDeliveryTime.IsNullOrEmpty())
+                    else if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery") && (CreateGroupBuyDto.HomeDeliveryDeliveryTime.IsNullOrEmpty()|| CreateGroupBuyDto.HomeDeliveryDeliveryTime=="[]"))
                     {
                         await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForHomeDelivery]);
                         return;
