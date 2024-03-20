@@ -54,11 +54,7 @@ public class SetItemController(
     {
         return ((IReadOnlyAppService<SetItemDto, SetItemDto, Guid, PagedAndSortedResultRequestDto>)_setItemAppService).GetAsync(id);
     }
-    [HttpGet("get-available-items-lookup")]
-    public Task<List<ItemWithItemTypeDto>> GetAvailableItemsLookupAsync()
-    {
-        return _setItemAppService.GetAvailableItemsLookupAsync();
-    }
+  
 
     [HttpGet("get-items-lookup")]
     public Task<List<ItemWithItemTypeDto>> GetItemsLookupAsync()

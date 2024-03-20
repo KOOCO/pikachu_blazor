@@ -35,25 +35,7 @@ public class SetItemRepository : EfCoreRepository<PikachuDbContext, SetItem, Gui
         dbContext.SetItems.RemoveRange(dbContext.SetItems.Where(setItem => ids.Contains(setItem.Id)));
         dbContext.GroupBuyItemGroupDetails.RemoveRange(dbContext.GroupBuyItemGroupDetails.Where(gd => ids.Contains(gd.SetItemId ?? Guid.Empty)));
     }
-    public async Task<List<ItemWithItemType>> GetAvailableItemsLookupAsync()
-    {
-        var dbContext = await GetDbContextAsync();
-        return await dbContext.SetItems
-            .Where(x=>x.LimitAvaliableTimeEnd.Date>=DateTime.Now.Date)
-          .Include(s => s.Images)
-          .Include(s => s.SetItemDetails)
-              .ThenInclude(d => d.Item)
-              .ThenInclude(i => i.Images)
-              
-              .Select(x => new ItemWithItemType
-              {
-                  Id = x.Id,
-                  Name = x.SetItemName,
-                  ItemType = ItemType.SetItem
-             
-              })
-          .ToListAsync();
-    }
+   
     public async Task<List<ItemWithItemType>> GetItemsLookupAsync()
     {
         return await (await GetQueryableAsync())

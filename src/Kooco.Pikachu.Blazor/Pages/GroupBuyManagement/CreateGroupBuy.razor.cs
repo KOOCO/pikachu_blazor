@@ -89,7 +89,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         protected override async Task OnInitializedAsync()
         {
             CreateGroupBuyDto.EntryURL = _configuration["EntryUrl"]?.TrimEnd('/');
-            SetItemList = await _setItemAppService.GetAvailableItemsLookupAsync();
+            SetItemList = await _setItemAppService.GetItemsLookupAsync();
             ItemsList = await _itemAppService.GetItemsLookupAsync();
             ItemsList.AddRange(SetItemList);
         }
