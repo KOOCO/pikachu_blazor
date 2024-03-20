@@ -467,7 +467,10 @@
     "Zero Tax": "零税",
     "Threshold": "免運門檻",
     "DeliveryTimePreferance": "收貨時間",
-    "SelectGroupBuy": "請選擇團購"
+    "SelectGroupBuy": "請選擇團購",
+    "Shipped": "已出貨",
+    "ManualStatusUpdate": "手動調整狀態",
+    "Completed": "出貨完成"
 
 
 

@@ -182,7 +182,91 @@ namespace Kooco.Pikachu.OrderDeliveries
             delivery.DeliveryStatus = DeliveryStatus.Shipped;
             delivery.Editor = CurrentUser.Name;
             await _orderDeliveryRepository.UpdateAsync(delivery);
-        
+            var orderDeliveries= (await _orderDeliveryRepository.GetQueryableAsync()).Where(x => x.OrderId == delivery.OrderId).ToList();
+        if(!orderDeliveries.Any(x=>x.DeliveryStatus!=DeliveryStatus.Shipped))
+            {
+              var order=  await _orderRepository.GetAsync(delivery.OrderId);
+                order.ShippingStatus = ShippingStatus.Shipped;
+                await _orderRepository.UpdateAsync(order);
+                await UnitOfWorkManager.Current.SaveChangesAsync();
+                await SendEmailAsync(order.Id);
+
+            }
+
+        }
+        private async Task SendEmailAsync(Guid id, OrderStatus? orderStatus = null)
+        {
+            var order = await _orderRepository.GetWithDetailsAsync(id);
+            var groupbuy = await _groupBuyRepository.GetAsync(g => g.Id == order.GroupBuyId);
+
+            string status = orderStatus == null ? _l[order.ShippingStatus.ToString()] : _l[orderStatus.ToString()];
+
+            string subject = $"{groupbuy.GroupBuyName} 訂單#{order.OrderNo} {status}";
+
+            string body = File.ReadAllText("wwwroot/EmailTemplates/email.html");
+            DateTime creationTime = order.CreationTime;
+            TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById("China Standard Time"); // UTC+8
+            DateTimeOffset creationTimeInTimeZone = TimeZoneInfo.ConvertTime(creationTime, tz);
+            string formattedTime = creationTimeInTimeZone.ToString("yyyy-MM-dd HH:mm:ss");
+
+            body = body.Replace("{{Greetings}}", "");
+            body = body.Replace("{{Footer}}", "");
+
+            body = body.Replace("{{NotifyMessage}}", groupbuy.NotifyMessage);
+            body = body.Replace("{{GroupBuyName}}", groupbuy.GroupBuyName);
+            body = body.Replace("{{OrderNo}}", order.OrderNo);
+            body = body.Replace("{{OrderDate}}", formattedTime);
+            body = body.Replace("{{CustomerName}}", order.CustomerName);
+            body = body.Replace("{{CustomerEmail}}", order.CustomerEmail);
+            body = body.Replace("{{CustomerPhone}}", order.CustomerPhone);
+            body = body.Replace("{{RecipientName}}", order.RecipientName);
+            body = body.Replace("{{RecipientPhone}}", order.RecipientPhone);
+            body = body.Replace("{{PaymentMethod}}", _l[order.PaymentMethod.ToString()]);
+            body = body.Replace("{{PaymentStatus}}", _l[order.OrderStatus.ToString()]);
+            body = body.Replace("{{ShippingMethod}}", $"{_l[order.DeliveryMethod.ToString()]} {order.ShippingNumber}");
+            body = body.Replace("{{DeliveryFee}}", "0");
+            body = body.Replace("{{RecipientAddress}}", order.AddressDetails);
+            body = body.Replace("{{ShippingStatus}}", _l[order.ShippingStatus.ToString()]);
+            body = body.Replace("{{RecipientComments}}", order.Remarks);
+
+            if (order.OrderItems != null)
+            {
+                StringBuilder sb = new();
+                foreach (var item in order.OrderItems)
+                {
+                    string itemName = "";
+                    if (item.ItemType == ItemType.Item)
+                    {
+                        itemName = item.Item?.ItemName;
+                    }
+                    else if (item.ItemType == ItemType.SetItem)
+                    {
+                        itemName = item.SetItem?.SetItemName;
+                    }
+                    else
+                    {
+                        itemName = item.Freebie?.ItemName;
+                    }
+
+                    itemName += $" {item.ItemPrice:N0} x {item.Quantity}";
+                    sb.Append(
+                        $@"
+                    <tr>
+                        <td>{itemName}</td>
+                        <td>${item.ItemPrice:N0}</td>
+                        <td>{item.Quantity}</td>
+                        <td>${item.TotalAmount:N0}</td>
+                    </tr>"
+                    );
+                }
+
+                body = body.Replace("{{OrderItems}}", sb.ToString());
+            }
+
+            body = body.Replace("{{DeliveryFee}}", "$0");
+            body = body.Replace("{{TotalAmount}}", $"${order.TotalAmount:N0}");
+
+            await _emailSender.SendAsync(order.CustomerEmail, subject, body);
         }
     }
 }
