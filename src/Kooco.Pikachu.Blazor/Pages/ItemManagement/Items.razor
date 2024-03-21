@@ -127,12 +127,12 @@
                 <DataGridColumn Field="@nameof(ItemListDto.ItemDescriptionTitle)"
                                 Caption="@L["ItemDescription"]">
                 </DataGridColumn>
-                <DataGridColumn Caption="@L["TimeLimitPeriod"]"
+             @*    <DataGridColumn Caption="@L["TimeLimitPeriod"]"
                                 Sortable="false">
                     <DisplayTemplate>
                         @context.LimitAvaliableTimeStart.ToShortDateString() - @context.LimitAvaliableTimeEnd.ToShortDateString()
                     </DisplayTemplate>
-                </DataGridColumn>
+                </DataGridColumn> *@
                 <DataGridColumn Field="@nameof(ItemListDto.CreationTime)"
                                 Caption="@L["CreatedTime"]">
                     <DisplayTemplate>

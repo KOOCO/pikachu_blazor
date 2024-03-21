@@ -465,6 +465,8 @@
     "Taxable": "應稅",
     "Non Taxable": "免稅",
     "Zero Tax": "零税",
+    "NonTaxable": "免稅",
+    "ZeroTax": "零税",
     "Threshold": "免運門檻",
     "DeliveryTimePreferance": "收貨時間",
     "SelectGroupBuy": "請選擇團購",

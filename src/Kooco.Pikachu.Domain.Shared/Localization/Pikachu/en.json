@@ -441,12 +441,14 @@
     "Taxable": "Taxable",
     "Non Taxable": "Non Taxable",
     "Zero Tax": "Zero Tax",
+    "NonTaxable": "Non Taxable",
+    "ZeroTax": "Zero Tax",
     "Threshold": "Threshold",
     "DeliveryTimePreferance": "Delivery Time Preferance",
     "SelectGroupBuy": "Select GroupBuy",
     "Shipped": "Shipped",
     "ManualStatusUpdate": "Manual Status Update",
-    "Completed": "Completed",
-    
+    "Completed": "Completed"
+
   }
 }
