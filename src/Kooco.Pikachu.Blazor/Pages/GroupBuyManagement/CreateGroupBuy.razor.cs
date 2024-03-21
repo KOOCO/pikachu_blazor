@@ -575,7 +575,8 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
 
                 }
-                else if(CreditCard) {
+                else if (CreditCard)
+                {
 
                     CreateGroupBuyDto.PaymentMethod = "Credit Card";
 
@@ -587,6 +588,10 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     CreateGroupBuyDto.PaymentMethod = "Bank Transfer";
 
 
+                }
+                else {
+
+                    CreateGroupBuyDto.PaymentMethod = "";
                 }
                 if (CreateGroupBuyDto.PaymentMethod.IsNullOrEmpty())
                 {
