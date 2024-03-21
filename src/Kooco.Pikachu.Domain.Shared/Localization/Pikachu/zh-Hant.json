@@ -246,7 +246,7 @@
     "MerchantRemarks": "商家備註",
     "CombineOrders": "合併訂單",
     "Open": "開啟",
-    "Closed": "關閉",
+    "Closed": "取消訂單",
     "Returned": "退貨",
     "OrderDetails": "訂單細項",
     "CancelOrder": "取消訂單",
