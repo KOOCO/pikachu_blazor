@@ -305,10 +305,10 @@ namespace Kooco.Pikachu.StoreLogisticOrders
             requestString = $"HashKey={HashKey}&{requestString}&HashIV={HashIV}";
 
             // URL encode the entire string
-            string urlEncodedString = HttpUtility.UrlEncode(requestString);
+            string urlEncodedString = Uri.EscapeDataString(requestString);
 
             // Lowercase the string
-            string lowercaseString = urlEncodedString.ToLower();
+            string lowercaseString = urlEncodedString;
 
 
             string md5Checksum;
@@ -434,10 +434,10 @@ namespace Kooco.Pikachu.StoreLogisticOrders
             requestString = $"HashKey={HashKey}&{requestString}&HashIV={HashIV}";
 
             // URL encode the entire string
-            string urlEncodedString = HttpUtility.UrlEncode(requestString);
+            string urlEncodedString = Uri.EscapeDataString(requestString);
 
             // Lowercase the string
-            string lowercaseString = urlEncodedString.ToLower();
+            string lowercaseString = urlEncodedString;
 
             
             string md5Checksum;

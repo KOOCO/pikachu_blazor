@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kooco.Pikachu.EnumValues;
+using System;
 using System.Collections.Generic;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Domain.Entities;
@@ -208,5 +209,6 @@ namespace Kooco.Pikachu.GroupBuys
         public string? SelfPickupDeliveryTime { get; set; }
         public string? BlackCatDeliveryTime { get; set; }
         public string? HomeDeliveryDeliveryTime { get; set; }
+        public TaxType TaxType { get; set; }
     }
 }

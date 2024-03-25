@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.EnumValues;
+﻿using Kooco.Pikachu.ElectronicInvoiceSettings;
+using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Items;
@@ -44,6 +45,7 @@ namespace Kooco.Pikachu.Orders
         private readonly IStringLocalizer<PikachuResource> _l;
         private readonly IItemRepository _itemRepository;
         private readonly IItemDetailsRepository _itemDetailsRepository;
+        private readonly IElectronicInvoiceAppService _electronicInvoiceAppService;
         public OrderAppService(
             IOrderRepository orderRepository,
             OrderManager orderManager,
@@ -56,7 +58,8 @@ namespace Kooco.Pikachu.Orders
             IRepository<OrderItem, Guid> orderItemRepository,
             IRepository<OrderDelivery, Guid> orderDeliveryRepository,
             IItemRepository itemRepository,
-            IItemDetailsRepository itemDetailsRepository
+            IItemDetailsRepository itemDetailsRepository,
+            IElectronicInvoiceAppService electronicInvoiceAppService
             )
         {
             _orderRepository = orderRepository;
@@ -72,6 +75,7 @@ namespace Kooco.Pikachu.Orders
             _itemRepository= itemRepository;
             _orderItemRepository= orderItemRepository;
             _itemDetailsRepository = itemDetailsRepository;
+            _electronicInvoiceAppService = electronicInvoiceAppService;
         }
 
         [AllowAnonymous]
@@ -357,22 +361,30 @@ namespace Kooco.Pikachu.Orders
 
             var items = await _orderRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.GroupBuyId, input.OrderIds, input.StartDate, input.EndDate, input.OrderStatus);
 
-            var dtos = ObjectMapper.Map<List<Order>, List<OrderDto>>(items);
-
-            if (hideCredentials)
+            try
             {
-                var groupbuy = await _groupBuyRepository.GetAsync(input.GroupBuyId.Value);
-                if (groupbuy.ProtectPrivacyData)
+                var dtos = ObjectMapper.Map<List<Order>, List<OrderDto>>(items);
+
+                if (hideCredentials)
                 {
-                    dtos.HideCredentials();
+                    var groupbuy = await _groupBuyRepository.GetAsync(input.GroupBuyId.Value);
+                    if (groupbuy.ProtectPrivacyData)
+                    {
+                        dtos.HideCredentials();
+                    }
                 }
-            }
 
-            return new PagedResultDto<OrderDto>
+                return new PagedResultDto<OrderDto>
+                {
+                    TotalCount = totalCount,
+                    Items = dtos
+                };
+            }
+            catch (Exception e)
             {
-                TotalCount = totalCount,
-                Items = dtos
-            };
+
+                throw;
+            }
         }
 
         public async Task<PagedResultDto<OrderDto>> GetTenantOrderListAsync(GetOrderListDto input)
@@ -540,6 +552,7 @@ namespace Kooco.Pikachu.Orders
 
             await _orderRepository.UpdateAsync(order);
             await UnitOfWorkManager.Current.SaveChangesAsync();
+                await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
             await SendEmailAsync(order.Id);
             return ObjectMapper.Map<Order, OrderDto>(order);
         }

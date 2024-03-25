@@ -448,7 +448,8 @@
     "SelectGroupBuy": "Select GroupBuy",
     "Shipped": "Shipped",
     "ManualStatusUpdate": "Manual Status Update",
-    "Completed": "Completed"
+    "Completed": "Completed",
+    "SpecialTaxable": "Special Taxable"
 
   }
 }
