@@ -15,6 +15,7 @@ namespace Kooco.Pikachu.Orders
         public InvoiceType? InvoiceType { get; set; }
         public string? InvoiceNumber { get; set; }
         public string? UniformNumber { get; set; }
+        public string? TaxTitle { get; set; }
         public bool IsAsSameBuyer { get; set; }
         public string? RecipientName { get; set; }
         public string? RecipientPhone { get; set; }

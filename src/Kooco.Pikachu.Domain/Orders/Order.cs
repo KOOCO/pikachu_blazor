@@ -25,6 +25,7 @@ namespace Kooco.Pikachu.Orders
         public InvoiceType? InvoiceType { get; set; }
         public string? InvoiceNumber { get; set; }
         public string? UniformNumber { get; set; }
+        public string? TaxTitle { get; set; }
         public bool IsAsSameBuyer { get; set; }
         public string? RecipientName { get; set; }
         public string? RecipientPhone { get; set; }
@@ -76,6 +77,7 @@ namespace Kooco.Pikachu.Orders
             InvoiceType? invoiceType,
             string invoiceNumber,
             string? uniformNumber,
+            string? taxTitle,
             bool isAsSameBuyer,
             string? recipientName,
             string? recipientPhone,
@@ -106,6 +108,7 @@ namespace Kooco.Pikachu.Orders
             InvoiceType = invoiceType;
             InvoiceNumber = invoiceNumber;
             UniformNumber = uniformNumber;
+            TaxTitle = taxTitle;
             IsAsSameBuyer = isAsSameBuyer;
             RecipientName = recipientName;
             RecipientEmail = recipientEmail;

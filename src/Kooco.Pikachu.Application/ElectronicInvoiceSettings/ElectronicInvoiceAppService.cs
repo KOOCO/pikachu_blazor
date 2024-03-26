@@ -69,8 +69,8 @@ namespace Kooco.Pikachu.ElectronicInvoiceSettings
             myItem orderitem=new myItem();
                 orderitem.ItemSeq = 1;
                 orderitem.ItemName = item.Item.ItemName;
-             //orderitem.ItemCount = 1;
-                //orderitem.ItemWord = "";
+                orderitem.ItemCount = 1;
+                orderitem.ItemWord = "";
                 orderitem.ItemPrice = item.ItemPrice;
                 orderitem.ItemTaxType =((int)(await _enumvalueRepository.FirstOrDefaultAsync(x=>x.Id==item.Item.TaxTypeId)).EnumType).ToString();
                 orderitem.ItemAmount = item.TotalAmount;
@@ -94,7 +94,7 @@ namespace Kooco.Pikachu.ElectronicInvoiceSettings
                             }}";
             request.AddStringBody(body, DataFormat.Json);
             RestResponse response = await client.ExecuteAsync(request);
-            ApiResponse response1 = JsonConvert.DeserializeObject<ApiResponse>(json);
+            ApiResponse response1 = JsonConvert.DeserializeObject<ApiResponse>(response.Content);
             if (response1.TransCode == 1)
             {
                 var result = DecryptStringFromAES(response1.Data, "ejCk326UnaZWKisg", "q9jcZX8Ib9LM8wYk");
