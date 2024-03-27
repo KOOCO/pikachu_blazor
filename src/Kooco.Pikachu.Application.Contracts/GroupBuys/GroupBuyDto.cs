@@ -209,6 +209,7 @@ namespace Kooco.Pikachu.GroupBuys
         public string? SelfPickupDeliveryTime { get; set; }
         public string? BlackCatDeliveryTime { get; set; }
         public string? HomeDeliveryDeliveryTime { get; set; }
+        public string? DeliveredByStoreDeliveryTime { get; set; }
         public TaxType TaxType { get; set; }
     }
 }

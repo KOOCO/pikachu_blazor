@@ -18,6 +18,8 @@ public enum DeliveryMethod
     SevenToEleven1,
     SevenToElevenC2C,
     FamilyMart1,
-    FamilyMartC2C
+    FamilyMartC2C,
+    [Description("廠商統一出貨")]
+    DeliveredByStore
 
 }

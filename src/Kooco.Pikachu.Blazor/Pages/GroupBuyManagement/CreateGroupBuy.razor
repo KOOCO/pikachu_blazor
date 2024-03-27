@@ -381,7 +381,7 @@
                   if(item==Enum.GetName(DeliveryMethod.SevenToElevenC2C)||item==Enum.GetName(DeliveryMethod.SevenToEleven1)||item==Enum.GetName(DeliveryMethod.BlackCat))
                   {
                <label for="@item" class="form-label">
-                                <input type="checkbox" class="form-check-input me-1" id="@item" checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))" @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                <input type="checkbox" class="form-check-input me-1" id="@item" disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")" checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))" @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                 @L[item]
                             </label>
               }
@@ -391,7 +391,7 @@
               @foreach(var item in Enum.GetNames(typeof(DeliveryMethod)))
               {
                <label for="@item" class="form-label ">
-                                <input type="checkbox" class="form-check-input me-1" id="@item" checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))" @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                <input type="checkbox" class="form-check-input me-1" id="@item" disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")" checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))" @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                 @L[item]
                             </label>
               }
@@ -490,6 +490,36 @@
                             
                          <label for="@island" class="form-label">
                                 <input disabled  type="checkbox" class="form-check-input me-1" id="@island" checked="@(CreateGroupBuyDto.HomeDeliveryDeliveryTime != null && CreateGroupBuyDto.HomeDeliveryDeliveryTime.Contains(island))" @onchange="(value) => HomeDeliveryTimeCheckedChange(island, value)" />
+                                @L[island]
+                            </label>
+                        }
+                    }
+                    }
+                </div>
+                <div class="col-2"></div>
+            <div class="col-2"></div>
+         <div class="col-8">
+                    <label class="form-label">@L["DeliveredByStore"]<span class="text-danger"> </span></label>
+                </div>
+                <div class="col-2"></div>
+                <div class="col-2"></div>
+                <div class="col-8">
+                    @if (DeliveryTimeConts.DeliveredByStore != null)
+                    {
+                    @foreach (var island in DeliveryTimeConts.DeliveredByStore)
+                    {
+                        @if ((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
+                        {
+                            <label for="@island" class="form-label">
+                                <input type="checkbox" class="form-check-input me-1" id="@island" checked="@(CreateGroupBuyDto.DeliveredByStoreDeliveryTime != null && CreateGroupBuyDto.DeliveredByStoreDeliveryTime.Contains(island))" @onchange="(value) => DeliverdByStoreDeliveryTimeCheckedChange(island, value)" />
+                                @L[island]
+                            </label>
+                        }
+                        else
+                        {
+                            
+                         <label for="@island" class="form-label">
+                                <input disabled type="checkbox" class="form-check-input me-1" id="@island" checked="@(CreateGroupBuyDto.DeliveredByStoreDeliveryTime != null && CreateGroupBuyDto.DeliveredByStoreDeliveryTime.Contains(island))" @onchange="(value) => DeliverdByStoreDeliveryTimeCheckedChange(island, value)" />
                                 @L[island]
                             </label>
                         }

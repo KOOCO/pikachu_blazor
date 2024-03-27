@@ -203,6 +203,7 @@ namespace Kooco.Pikachu.GroupBuys
         public string? SelfPickupDeliveryTime { get; set; }
         public string? BlackCatDeliveryTime { get; set; }
         public string? HomeDeliveryDeliveryTime { get; set; }
+        public string? DeliveredByStoreDeliveryTime { get; set; }
         public TaxType TaxType { get; set; }
         public decimal? FreeShippingThreshold { get; set; }
         /// <summary>
@@ -264,6 +265,7 @@ namespace Kooco.Pikachu.GroupBuys
              string? selfPickupDeliveryTime,
              string? blackCatDeliveryTime,
              string? homeDeliveryDeliveryTime,
+             string? deliveredByStoreDeliveryTime,
 
                 TaxType taxType
             )
@@ -319,6 +321,7 @@ namespace Kooco.Pikachu.GroupBuys
             SelfPickupDeliveryTime = selfPickupDeliveryTime;
             HomeDeliveryDeliveryTime = homeDeliveryDeliveryTime;
             BlackCatDeliveryTime = blackCatDeliveryTime;
+            DeliveredByStoreDeliveryTime = deliveredByStoreDeliveryTime;
             TaxType = taxType;
         }
 

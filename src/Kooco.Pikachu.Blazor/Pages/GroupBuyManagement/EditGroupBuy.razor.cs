@@ -49,6 +49,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         public List<string> SelfPickupTimeList = new List<string>();
         public List<string> BlackCateDeliveryTimeList = new List<string>();
         public List<string> HomeDeliveryTimeList = new List<string>();
+        public List<string> DeliveredByStoreTimeList = new List<string>();
         public string _ProductPicture = "Product Picture";
         private readonly IGroupBuyAppService _groupBuyAppService;
         private readonly IImageAppService _imageAppService;
@@ -592,6 +593,21 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             EditGroupBuyDto.HomeDeliveryDeliveryTime = JsonConvert.SerializeObject(HomeDeliveryTimeList);
 
         }
+        void DeliveredByStoreTimeCheckedChange(string method, ChangeEventArgs e)
+        {
+            var value = (bool)(e?.Value ?? false);
+            if (value)
+            {
+                DeliveredByStoreTimeList.Add(method);
+            }
+            else
+            {
+                DeliveredByStoreTimeList.Remove(method);
+            }
+
+            EditGroupBuyDto.DeliveredByStoreDeliveryTime = JsonConvert.SerializeObject(DeliveredByStoreTimeList);
+
+        }
         void OnShippingMethodCheckedChange(string method, ChangeEventArgs e)
         {
             var value = (bool)(e?.Value ?? false);
@@ -626,6 +642,21 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             // Update the selected method in the CreateGroupBuyDto.ShippingMethodList
             if (value)
             {
+                if (method == "DeliveredByStore")
+                {
+                    foreach (var item in EditGroupBuyDto.ShippingMethodList)
+                    {
+                        JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", item);
+
+                    }
+                    EditGroupBuyDto.ShippingMethodList = new List<string>();
+                }
+                else
+                {
+                    EditGroupBuyDto.ShippingMethodList.Remove("DeliveredByStore");
+
+                }
+                
                 EditGroupBuyDto.ShippingMethodList.Add(method);
             }
             else
@@ -837,7 +868,8 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     return;
                 }
                 if ((!EditGroupBuyDto.ExcludeShippingMethod.IsNullOrEmpty()) && (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat")
-                    || EditGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup") || EditGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery")))
+                    || EditGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup") || EditGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery")
+                    || EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
                 {
                     if (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat") && (EditGroupBuyDto.BlackCatDeliveryTime.IsNullOrEmpty()|| EditGroupBuyDto.BlackCatDeliveryTime=="[]"))
                     {
@@ -852,6 +884,11 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     else if (EditGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery") && (EditGroupBuyDto.HomeDeliveryDeliveryTime.IsNullOrEmpty()|| EditGroupBuyDto.HomeDeliveryDeliveryTime=="[]"))
                     {
                         await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForHomeDelivery]);
+                        return;
+                    }
+                    else if (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore") && (EditGroupBuyDto.DeliveredByStoreDeliveryTime.IsNullOrEmpty() || EditGroupBuyDto.DeliveredByStoreDeliveryTime == "[]"))
+                    {
+                        await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForDeliverdByStore]);
                         return;
                     }
                 }

@@ -450,6 +450,7 @@
     "Pikachu:AtLeastOneDeliveryTimeIsRequiredForBlackCat": "請選擇黑貓取貨時間",
     "Pikachu:AtLeastOneDeliveryTimeIsRequiredForSelfPickup": "請選擇自取取貨時間",
     "Pikachu:AtLeastOneDeliveryTimeIsRequiredForHomeDelivery": "請選擇親送取貨時間",
+    "Pikachu:AtLeastOneDeliveryTimeIsRequiredForDeliverdByStore": "請選擇廠商統一出貨時間",
     "ItemStyle1": "商品規格",
     "ItemStyle2": "商品規格",
     "ItemStyle3": "商品規格",
@@ -473,7 +474,8 @@
     "SelectGroupBuy": "請選擇團購",
     "Shipped": "已出貨",
     "ManualStatusUpdate": "手動調整狀態",
-    "Completed": "出貨完成"
+    "Completed": "出貨完成",
+    "DeliveredByStore": "廠商統一出貨"
 
 
 

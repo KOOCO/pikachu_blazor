@@ -33,6 +33,7 @@ public static class PikachuDomainErrorCodes
     public const string AtLeastOneDeliveryTimeIsRequiredForBlackCat = "Pikachu:AtLeastOneDeliveryTimeIsRequiredForBlackCat";
     public const string AtLeastOneDeliveryTimeIsRequiredForSelfPickup = "Pikachu:AtLeastOneDeliveryTimeIsRequiredForSelfPickup";
     public const string AtLeastOneDeliveryTimeIsRequiredForHomeDelivery = "Pikachu:AtLeastOneDeliveryTimeIsRequiredForHomeDelivery";
+    public const string AtLeastOneDeliveryTimeIsRequiredForDeliverdByStore = "Pikachu:AtLeastOneDeliveryTimeIsRequiredForDeliverdByStore";
     public const string AtLeastOneShippingMethodIsRequired = "Pikachu:AtLeastOneShippingMethodIsRequired";
     public const string AtLeastOnePaymentMethodIsRequired = "Pikachu:AtLeastOnePaymentMethodIsRequired";
 }

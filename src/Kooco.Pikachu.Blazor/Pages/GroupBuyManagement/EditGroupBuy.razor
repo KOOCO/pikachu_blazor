@@ -381,7 +381,7 @@
               @foreach(var item in Enum.GetNames(typeof(DeliveryMethod)))
               {
                <label for="@item" class="form-label">
-                                <input type="checkbox" class="form-check-input me-1" id="@item" checked="@((EditGroupBuyDto.ExcludeShippingMethod != null) && (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))" @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                <input type="checkbox" class="form-check-input me-1" id="@item" disabled="@((EditGroupBuyDto.ExcludeShippingMethod != null) && (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")" checked="@((EditGroupBuyDto.ExcludeShippingMethod != null) && (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))" @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                 @L[item]
                             </label>
               }
@@ -470,6 +470,35 @@
                         else{
                          <label for="@island" class="form-label">
                                 <input disabled type="checkbox" class="form-check-input me-1" id="@island" checked="@(EditGroupBuyDto.HomeDeliveryDeliveryTime != null && EditGroupBuyDto.HomeDeliveryDeliveryTime.Contains(island))" @onchange="(value) => HomeDeliveryTimeCheckedChange(island, value)"   />
+                                @L[island]
+                            </label>
+                        
+                        }
+                        }
+                    }
+                </div>
+            <div class="col-2"></div>
+            <div class="col-2"></div>
+         <div class="col-8">
+                    <label class="form-label">@L["DeliveredByStore"]<span class="text-danger"> </span></label>
+                </div>
+                <div class="col-2"></div>
+                <div class="col-2"></div>
+                <div class="col-8">
+                    @if (DeliveryTimeConts.DeliveredByStore != null)
+                    {
+                        @foreach(var island in DeliveryTimeConts.DeliveredByStore)
+                        {
+                      @if ((EditGroupBuyDto.ExcludeShippingMethod != null) && (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
+                        {
+                            <label for="@island" class="form-label">
+                                <input type="checkbox" class="form-check-input me-1" id="@island" checked="@(EditGroupBuyDto.DeliveredByStoreDeliveryTime != null && EditGroupBuyDto.DeliveredByStoreDeliveryTime.Contains(island))" @onchange="(value) => DeliveredByStoreTimeCheckedChange(island, value)"   />
+                                @L[island]
+                            </label>
+                        }
+                        else{
+                         <label for="@island" class="form-label">
+                                <input disabled type="checkbox" class="form-check-input me-1" id="@island" checked="@(EditGroupBuyDto.DeliveredByStoreDeliveryTime != null && EditGroupBuyDto.DeliveredByStoreDeliveryTime.Contains(island))" @onchange="(value) => DeliveredByStoreTimeCheckedChange(island, value)"   />
                                 @L[island]
                             </label>
                         

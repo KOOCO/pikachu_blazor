@@ -72,6 +72,7 @@ namespace Kooco.Pikachu.Groupbuys
              string? selfPickupDeliveryTime,
              string? blackCatDeliveryTime,
              string? homeDeliveryDeliveryTime,
+             string? deliveredByStoreDeliveryTime,
             TaxType taxType
             )
         {
@@ -87,7 +88,7 @@ namespace Kooco.Pikachu.Groupbuys
                 issueInvoice, autoIssueTriplicateInvoice, invoiceNote, protectPrivacyData, inviteCode, profitShare, metaPixelNo, fBID, iGID, lineID, gAID, gTM,
                 warningMessage, orderContactInfo, exchangePolicy, notifyMessage, excludeShippingMethod, isDefaultPaymentGateway, paymentMethod, groupbuyCondition, 
                 customerInformation,customerInformationDescription,groupBuyConditionDescription,exchangePolicyDescription,shortCode, isEnterprise,freeShippingThreshold,selfPickupDeliveryTime,
-                blackCatDeliveryTime,homeDeliveryDeliveryTime,taxType);
+                blackCatDeliveryTime,homeDeliveryDeliveryTime,deliveredByStoreDeliveryTime,taxType);
         }
 
 
