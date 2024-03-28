@@ -166,7 +166,7 @@ namespace Kooco.Pikachu.Orders
 
                 if (groupBuy?.IsEnterprise == true)
                 {
-                    //await SendEmailAsync(order.Id);
+                    await SendEmailAsync(order.Id);
                 }
 
                 return ObjectMapper.Map<Order, OrderDto>(order);
