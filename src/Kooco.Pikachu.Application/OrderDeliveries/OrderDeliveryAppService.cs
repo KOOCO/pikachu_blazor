@@ -211,8 +211,10 @@ namespace Kooco.Pikachu.OrderDeliveries
 
             body = body.Replace("{{Greetings}}", "");
             body = body.Replace("{{Footer}}", "");
-
-            body = body.Replace("{{NotifyMessage}}", groupbuy.NotifyMessage);
+            if (order.ShippingStatus == ShippingStatus.WaitingForPayment)
+            {
+                body = body.Replace("{{NotifyMessage}}", groupbuy.NotifyMessage);
+            }
             body = body.Replace("{{GroupBuyName}}", groupbuy.GroupBuyName);
             body = body.Replace("{{OrderNo}}", order.OrderNo);
             body = body.Replace("{{OrderDate}}", formattedTime);
