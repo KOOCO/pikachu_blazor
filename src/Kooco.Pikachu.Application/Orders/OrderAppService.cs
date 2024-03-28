@@ -1,5 +1,6 @@
 ﻿using Kooco.Pikachu.ElectronicInvoiceSettings;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Items;
@@ -46,6 +47,7 @@ namespace Kooco.Pikachu.Orders
         private readonly IItemRepository _itemRepository;
         private readonly IItemDetailsRepository _itemDetailsRepository;
         private readonly IElectronicInvoiceAppService _electronicInvoiceAppService;
+        private readonly IFreebieRepository _freebieRepository;
         public OrderAppService(
             IOrderRepository orderRepository,
             OrderManager orderManager,
@@ -59,7 +61,8 @@ namespace Kooco.Pikachu.Orders
             IRepository<OrderDelivery, Guid> orderDeliveryRepository,
             IItemRepository itemRepository,
             IItemDetailsRepository itemDetailsRepository,
-            IElectronicInvoiceAppService electronicInvoiceAppService
+            IElectronicInvoiceAppService electronicInvoiceAppService,
+            IFreebieRepository freebieRepository
             )
         {
             _orderRepository = orderRepository;
@@ -76,6 +79,7 @@ namespace Kooco.Pikachu.Orders
             _orderItemRepository= orderItemRepository;
             _itemDetailsRepository = itemDetailsRepository;
             _electronicInvoiceAppService = electronicInvoiceAppService;
+            _freebieRepository = freebieRepository;
         }
 
         [AllowAnonymous]
@@ -147,6 +151,13 @@ namespace Kooco.Pikachu.Orders
                                 details.SaleableQuantity = details.SaleableQuantity - item.Quantity;
                                 await _itemDetailsRepository.UpdateAsync(details);
                             }
+
+                            if (item.FreebieId != null)
+                            {
+                              var freebie=  await _freebieRepository.FirstOrDefaultAsync(x => x.Id == item.FreebieId);
+                                freebie.FreebieAmount -= item.Quantity;
+                                await _freebieRepository.UpdateAsync(freebie);
+                            }
                             }
                     }
                 }
@@ -155,7 +166,7 @@ namespace Kooco.Pikachu.Orders
 
                 if (groupBuy?.IsEnterprise == true)
                 {
-                    await SendEmailAsync(order.Id);
+                    //await SendEmailAsync(order.Id);
                 }
 
                 return ObjectMapper.Map<Order, OrderDto>(order);

@@ -31,6 +31,11 @@ public class FreebieController(
     {
         return _freebieAppService.CreateAsync(input);
     }
+    [HttpPut("dedcut-freebie-amount/{freebieId}/{quantity}")]
+    public Task DeductFreebieAmountAsync(Guid freebieId, int quantity)
+    {
+        return _freebieAppService.DeductFreebieAmountAsync(freebieId, quantity);
+    }
 
     [HttpDelete("{id}")]
     public Task DeleteAsync(Guid id)

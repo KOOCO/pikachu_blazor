@@ -163,6 +163,12 @@ namespace Kooco.Pikachu.Freebies
             freebie.IsFreebieAvaliable = !freebie.IsFreebieAvaliable;
             await _freebieRepository.UpdateAsync(freebie);
         }
+        public async Task DeductFreebieAmountAsync(Guid freebieId,int quantity)
+        {
+            var freebie = await _freebieRepository.FindAsync(x => x.Id == freebieId);
+            freebie.FreebieAmount-=quantity;
+            await _freebieRepository.UpdateAsync( freebie);
+        }
 
     }
 }
