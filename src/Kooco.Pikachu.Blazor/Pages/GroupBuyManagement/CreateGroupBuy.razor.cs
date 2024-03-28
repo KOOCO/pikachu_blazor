@@ -565,11 +565,11 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyNameCannotBeNull]);
                     return;
                 }
-                if (CreateGroupBuyDto.ShortCode.IsNullOrWhiteSpace())
-                {
-                    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyShortCodeCannotBeNull]);
-                    return;
-                }
+                //if (CreateGroupBuyDto.ShortCode.IsNullOrWhiteSpace())
+                //{
+                //    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyShortCodeCannotBeNull]);
+                //    return;
+                //}
 
                 string shortCode = CreateGroupBuyDto.ShortCode;
                 string pattern = @"^[A-Za-z0-9]{4,12}$";

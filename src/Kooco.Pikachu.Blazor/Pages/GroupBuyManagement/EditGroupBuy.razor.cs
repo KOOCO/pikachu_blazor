@@ -802,11 +802,11 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         {
             try
             {
-                if (EditGroupBuyDto.GroupBuyName.IsNullOrWhiteSpace())
-                {
-                    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyNameCannotBeNull]);
-                    return;
-                }
+                //if (EditGroupBuyDto.GroupBuyName.IsNullOrWhiteSpace())
+                //{
+                //    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyNameCannotBeNull]);
+                //    return;
+                //}
 
                 string shortCode = EditGroupBuyDto.ShortCode;
                 string pattern = @"^[A-Za-z0-9]{4,12}$";

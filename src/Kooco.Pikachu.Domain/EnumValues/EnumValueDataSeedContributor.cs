@@ -68,9 +68,7 @@ namespace Kooco.Pikachu.EnumValues
                 enumValue.Text = "Taxable";
 
                 await _enumRepository.InsertAsync(enumValue);
-                enumValue = new EnumValue();
-                enumValue.EnumType = EnumType.TaxType;
-                enumValue.Text = "Special Taxable";
+                
 
                 await _enumRepository.InsertAsync(enumValue);
                 enumValue = new EnumValue();
