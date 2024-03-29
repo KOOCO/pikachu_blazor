@@ -572,21 +572,28 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 //}
 
                 string shortCode = CreateGroupBuyDto.ShortCode;
-                string pattern = @"^[A-Za-z0-9]{4,12}$";
-
-                bool isPatternValid = Regex.IsMatch(shortCode, pattern);
-
-                if (!isPatternValid)
+                if (!string.IsNullOrEmpty(shortCode))
                 {
-                    await _uiMessageService.Warn(L["ShortCodePatternDoesnotMatch"]);
-                    return;
+                    string pattern = @"^[A-Za-z0-9]{4,12}$";
+
+                    bool isPatternValid = Regex.IsMatch(shortCode, pattern);
+
+                    if (!isPatternValid)
+                    {
+                        await _uiMessageService.Warn(L["ShortCodePatternDoesnotMatch"]);
+                        return;
+                    }
+                    var check = await _groupBuyAppService.CheckShortCodeForCreate(CreateGroupBuyDto.ShortCode);
+
+                    if (check)
+                    {
+                        await _uiMessageService.Warn(L["Short Code Alredy Exist"]);
+                        return;
+                    }
                 }
-                var check = await _groupBuyAppService.CheckShortCodeForCreate(CreateGroupBuyDto.ShortCode);
+                else {
 
-                if (check)
-                {
-                    await _uiMessageService.Warn(L["Short Code Alredy Exist"]);
-                    return;
+                    CreateGroupBuyDto.ShortCode = "";
                 }
                 CreateGroupBuyDto.GroupBuyNo = 0;
                 CreateGroupBuyDto.Status = "New";

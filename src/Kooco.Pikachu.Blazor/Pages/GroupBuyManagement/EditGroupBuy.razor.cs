@@ -807,22 +807,30 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 //    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyNameCannotBeNull]);
                 //    return;
                 //}
-
+                var check = false;
                 string shortCode = EditGroupBuyDto.ShortCode;
-                string pattern = @"^[A-Za-z0-9]{4,12}$";
-                bool isPatternValid = Regex.IsMatch(shortCode, pattern);
-
-                if (!isPatternValid)
+                if (!string.IsNullOrEmpty(shortCode))
                 {
-                    await _uiMessageService.Warn(L["ShortCodePatternDoesnotMatch"]);
-                    return;
+                    string pattern = @"^[A-Za-z0-9]{4,12}$";
+                    bool isPatternValid = Regex.IsMatch(shortCode, pattern);
+
+                    if (!isPatternValid)
+                    {
+                        await _uiMessageService.Warn(L["ShortCodePatternDoesnotMatch"]);
+                        return;
+                    }
+                     check = await _groupBuyAppService.CheckShortCodeForEdit(EditGroupBuyDto.ShortCode, Id);
+
+                    if (check)
+                    {
+                        await _uiMessageService.Warn(L["Short Code Alredy Exist"]);
+                        return;
+                    }
                 }
-                var check = await _groupBuyAppService.CheckShortCodeForEdit(EditGroupBuyDto.ShortCode, Id);
-
-                if (check)
+                else
                 {
-                    await _uiMessageService.Warn(L["Short Code Alredy Exist"]);
-                    return;
+
+                    EditGroupBuyDto.ShortCode = "";
                 }
                 //if (ItemTags.Any())
                 //{
