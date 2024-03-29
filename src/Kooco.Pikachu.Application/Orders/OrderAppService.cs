@@ -617,6 +617,9 @@ namespace Kooco.Pikachu.Orders
             {
                 body = body.Replace("{{NotifyMessage}}", groupbuy.NotifyMessage);
             }
+            else {
+                body = body.Replace("{{NotifyMessage}}", "");
+            }
             body = body.Replace("{{GroupBuyName}}", groupbuy.GroupBuyName);
             body = body.Replace("{{OrderNo}}", order.OrderNo);
             body = body.Replace("{{OrderDate}}", formattedTime);
