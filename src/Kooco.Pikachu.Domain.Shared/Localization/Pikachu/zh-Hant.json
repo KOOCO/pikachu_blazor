@@ -318,6 +318,7 @@
     "Enum:TenantStatus.3": "暫停",
 
     "DeliveryTemperatureCost": "溫層運費成本",
+    "Temperature": "溫層",
     "Cost": "成本",
     "CostUpdateSuccessfully": "成功更新成本",
 
