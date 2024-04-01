@@ -2,6 +2,7 @@
 using Blazorise.DataGrid;
 using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.Blazor.Pages.ItemManagement;
+using Kooco.Pikachu.ElectronicInvoiceSettings;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Orders;
@@ -38,6 +39,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         private readonly HashSet<Guid> ExpandedRows = new();
         private LoadingIndicator loading { get; set; }
         private List<KeyValueDto> GroupBuyList { get; set; } = new();
+        
         private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<OrderDto> e)
         {
             PageIndex = e.Page - 1;
@@ -116,6 +118,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
 
             await loading.Hide();
         }
+
         bool ShowCombineButton()
         {
             var selectedOrders = Orders.Where(x => x.IsSelected).ToList();
@@ -194,6 +197,12 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         {
             var selectedOrder = Orders.SingleOrDefault(x => x.IsSelected);
             NavigationManager.NavigateTo($"Orders/OrderShippingDetails/{selectedOrder.Id}");
+        }
+        public async void IssueInvoice()
+        {
+            var selectedOrder = Orders.SingleOrDefault(x => x.IsSelected);
+          await  _electronicInvoiceAppService.CreateInvoiceAsync(selectedOrder.Id);
+           
         }
         async Task DownloadExcel()
         {

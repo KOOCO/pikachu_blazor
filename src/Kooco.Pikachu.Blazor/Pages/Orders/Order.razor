@@ -1,4 +1,5 @@
 ﻿@page "/Orders"
+@using Kooco.Pikachu.ElectronicInvoiceSettings
 @using Kooco.Pikachu.EnumValues;
 @using Kooco.Pikachu.Localization;
 @using Kooco.Pikachu.OrderItems;
@@ -12,6 +13,7 @@
 @inject IStringLocalizer<PikachuResource> L;
 @inject NavigationManager NavigationManager;
 @inject IUiMessageService _uiMessageService;
+@inject IElectronicInvoiceAppService _electronicInvoiceAppService;
 @inject IOrderAppService _orderAppService;
 @inject IGroupBuyAppService _groupBuyAppService;
 @using Microsoft.JSInterop;
@@ -49,6 +51,20 @@
                 <input type="checkbox" class="form-check-input" checked="@IsAllSelected" @onchange="HandleSelectAllChange"></input>
                 <Label Class="form-label">@L["SelectAll"]</Label>
             </div>
+                @if ((Orders.Where(x => x.IsSelected).Count() != 1) || (Orders.Where(x => x.ShippingStatus != ShippingStatus.Shipped && x.IsSelected).Any()) || (Orders.Where(x => x.InvoiceNumber != null && x.IsSelected).Any()))
+            {
+                <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
+                    <i class="fa fa-print"></i>
+                    @L["IssueInvoice"]
+                </Button>
+            }
+            else
+            {
+                <Button Type="@ButtonType.Button" @onclick="IssueInvoice" Class="ms-1 btn btn-sm btn-primary">
+                    <i class="fa fa-print"></i>
+                    @L["IssueInvoice"]
+                </Button>
+            }
             @if (ShowCombineButton())
             {
                 <Button Type="@ButtonType.Button" Clicked="MergeOrders" Class="btn btn-sm btn-secondary">@L["CombineOrders"]</Button>

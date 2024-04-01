@@ -1,5 +1,6 @@
 ﻿using Hangfire.Storage;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.Orders;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -14,6 +15,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using static OpenIddict.Abstractions.OpenIddictConstants;
@@ -25,27 +27,39 @@ namespace Kooco.Pikachu.ElectronicInvoiceSettings
         private readonly IConfiguration _configuration;
         private readonly IOrderRepository _orderRepository;
         private readonly IRepository<EnumValue, int> _enumvalueRepository;
+        private readonly IGroupBuyRepository _groupBuyRepository;
         private readonly IElectronicInvoiceSettingRepository _repository;
         public ElectronicInvoiceAppService(IConfiguration configuration, IOrderRepository orderRepository,
                                             IElectronicInvoiceSettingRepository repository,
-                                            IRepository<EnumValue, int> enumvalueRepository)
+                                            IRepository<EnumValue, int> enumvalueRepository,
+                                            IGroupBuyRepository groupBuyRepository)
         {
             _configuration = configuration;
             _orderRepository = orderRepository;
             _repository = repository;
             _enumvalueRepository= enumvalueRepository;
+            _groupBuyRepository= groupBuyRepository;
 
         }
         public async Task CreateInvoiceAsync(Guid orderId)
         {
-            var order = await _orderRepository.GetAsync(orderId);
-
+            var query = await _repository.GetQueryableAsync();
+            var setting =await _repository.FirstOrDefaultAsync();
+            var order = await _orderRepository.GetWithDetailsAsync(orderId);
+            
+            if (order.InvoiceNumber != null)
+            {
+                return;
+            
+            }
+            var groupBuy=await _groupBuyRepository.GetAsync(order.GroupBuyId);
+            var print = order.UniformNumber.IsNullOrWhiteSpace() ? "0" : "1";
             var options = new RestClientOptions
             {
                 MaxTimeout = -1,
             };
             var client = new RestClient(options);
-            var request = new RestRequest("https://einvoice-stage.ecpay.com.tw/B2CInvoice/Issue", Method.Post);
+            var request = new RestRequest(_configuration["EcPay:InvoiceApi"], Method.Post);
 
             var parameters = new Parameters
             {
@@ -56,23 +70,25 @@ namespace Kooco.Pikachu.ElectronicInvoiceSettings
                 CustomerPhone = order.RecipientPhone,
                 CustomerEmail = order.CustomerEmail,
                 ClearanceMark = "1",
-                Print = "1",
+                InvoiceRemark=groupBuy.InvoiceNote,
+                //CustomerIdentifier=order.UniformNumber,
+                Print = print,
                 Donation = "0",
-                TaxType = "1",
+                TaxType ="1", //groupBuy.TaxType==TaxType.Taxable?"1":groupBuy.TaxType==TaxType.NonTaxable?"3":"9",
                 SalesAmount = order.TotalAmount,
                 InvType = "07",
                 vat = "1",
                 Items = new List<myItem>()
             };
-            foreach (var item in order.OrderItems)
+            foreach (var item in order?.OrderItems)
             { 
             myItem orderitem=new myItem();
                 orderitem.ItemSeq = 1;
-                orderitem.ItemName = item.Item.ItemName;
+                orderitem.ItemName = item.Item?.ItemName??item.Freebie.ItemName;
                 orderitem.ItemCount = 1;
-                orderitem.ItemWord = "";
+                orderitem.ItemWord = "1";
                 orderitem.ItemPrice = item.ItemPrice;
-                orderitem.ItemTaxType =((int)(await _enumvalueRepository.FirstOrDefaultAsync(x=>x.Id==item.Item.TaxTypeId)).EnumType).ToString();
+                orderitem.ItemTaxType = 1;//(await _enumvalueRepository.FirstOrDefaultAsync(x=>x.Id==item.Item.TaxTypeId)).Text=="Taxable"?1:3;
                 orderitem.ItemAmount = item.TotalAmount;
                 orderitem.ItemRemark = "";
                 parameters.Items.Add(orderitem);
@@ -83,7 +99,7 @@ namespace Kooco.Pikachu.ElectronicInvoiceSettings
         string json = JsonConvert.SerializeObject(parameters);
             //var json = "{\"MerchantID\": \"2000132\",\"RelateNumber\": ,\"CustomerName\": \"SomiKayani\",\"CustomerAddr\": \"Abcxyz street 123\",\"CustomerPhone\": \"0912345678\",\"CustomerEmail\": \"kiani_mujahid@yahoo.com\",\"ClearanceMark\": \"1\",\"Print\": \"1\",\"Donation\": \"0\",\"TaxType\": \"1\",\"SalesAmount\": 70,\"InvType\": \"07\",\"vat\": \"1\",\"Items\": [{\"ItemSeq\": 1,\"ItemName\": \"item01\",\"ItemCount\": 1,\"ItemWord\": \"Test\",\"ItemPrice\": 50,\"ItemTaxType\": \"1\",\"ItemAmount\": 50,\"ItemRemark\": \"item01_desc\"},{\"ItemSeq\": 2,\"ItemName\": \"item02\",\"ItemCount\": 1,\"ItemWord\": \"Test2\",\"ItemPrice\": 20,\"ItemTaxType\": \"1\",\"ItemAmount\": 20,\"ItemRemark\": \"item02_desc\"}]}";
           var newJson  = Uri.EscapeDataString(json);
-            var encryptedString = EncryptStringToAES(newJson, "ejCk326UnaZWKisg", "q9jcZX8Ib9LM8wYk");
+            var encryptedString = EncryptStringToAES(newJson, setting.HashKey,setting.HashIV);
             request.AddHeader("Content-Type", "application/json");
             var body = $@"{{
                          ""MerchantID"": ""2000132"",
@@ -97,10 +113,17 @@ namespace Kooco.Pikachu.ElectronicInvoiceSettings
             ApiResponse response1 = JsonConvert.DeserializeObject<ApiResponse>(response.Content);
             if (response1.TransCode == 1)
             {
-                var result = DecryptStringFromAES(response1.Data, "ejCk326UnaZWKisg", "q9jcZX8Ib9LM8wYk");
+                var result = DecryptStringFromAES(response1.Data, setting.HashKey, setting.HashIV);
 
                var data= HttpUtility.UrlDecode(result);
-                JObject jsonObj = JsonConvert.DeserializeObject<JObject>(data);
+                ResponseModel jsonObj = JsonConvert.DeserializeObject<ResponseModel>(data);
+                if (jsonObj.InvoiceNo.IsNullOrEmpty())
+                {
+                    throw new UserFriendlyException(jsonObj.RtnMsg);
+                
+                }
+                order.InvoiceNumber = jsonObj.InvoiceNo;
+                await _orderRepository.UpdateAsync(order);
 
             }
             
@@ -168,7 +191,7 @@ public class myItem
     public int ItemCount { get; set; }
     public string ItemWord { get; set; }
     public decimal ItemPrice { get; set; }
-    public string ItemTaxType { get; set; }
+    public int ItemTaxType { get; set; }
     public decimal ItemAmount { get; set; }
     public string ItemRemark { get; set; }
 }
@@ -182,6 +205,8 @@ public class Parameters
     public string CustomerPhone { get; set; }
     public string CustomerEmail { get; set; }
     public string ClearanceMark { get; set; }
+    public string InvoiceRemark { get; set; }
+    public string CustomerIdentifier { get; set; }
     public string Print { get; set; }
     public string Donation { get; set; }
     public string TaxType { get; set; }
@@ -198,4 +223,12 @@ public class ApiResponse
     public int TransCode { get; set; }
     public string TransMsg { get; set; }
     public string Data { get; set; }
+}
+public class ResponseModel
+{
+    public int RtnCode { get; set; }
+    public string RtnMsg { get; set; }
+    public string InvoiceNo { get; set; }
+    public string InvoiceDate { get; set; }
+    public string RandomNumber { get; set; }
 }

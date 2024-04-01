@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.BackgroundJobs;
 using Volo.Abp.Content;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
@@ -28,6 +29,7 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Security.Encryption;
+
 
 namespace Kooco.Pikachu.Orders
 {
@@ -40,6 +42,7 @@ namespace Kooco.Pikachu.Orders
         private readonly IRepository<OrderDelivery, Guid> _orderDeliveryRepository;
         private readonly IGroupBuyRepository _groupBuyRepository;
         private readonly IEmailSender _emailSender;
+        private readonly IBackgroundJobManager _backgroundJobManager;
         private readonly IRepository<PaymentGateway, Guid> _paymentGatewayRepository;
         private readonly IStringEncryptionService _stringEncryptionService;
         private readonly IRepository<OrderItem, Guid> _orderItemRepository;
@@ -47,6 +50,7 @@ namespace Kooco.Pikachu.Orders
         private readonly IItemRepository _itemRepository;
         private readonly IItemDetailsRepository _itemDetailsRepository;
         private readonly IElectronicInvoiceAppService _electronicInvoiceAppService;
+        private readonly IElectronicInvoiceSettingRepository _electronicInvoiceSettingRepository;
         private readonly IFreebieRepository _freebieRepository;
         public OrderAppService(
             IOrderRepository orderRepository,
@@ -62,7 +66,9 @@ namespace Kooco.Pikachu.Orders
             IItemRepository itemRepository,
             IItemDetailsRepository itemDetailsRepository,
             IElectronicInvoiceAppService electronicInvoiceAppService,
-            IFreebieRepository freebieRepository
+            IFreebieRepository freebieRepository,
+            IBackgroundJobManager backgroundJobManager,
+            IElectronicInvoiceSettingRepository electronicInvoiceSettingRepository
             )
         {
             _orderRepository = orderRepository;
@@ -80,6 +86,8 @@ namespace Kooco.Pikachu.Orders
             _itemDetailsRepository = itemDetailsRepository;
             _electronicInvoiceAppService = electronicInvoiceAppService;
             _freebieRepository = freebieRepository;
+            _backgroundJobManager = backgroundJobManager;
+            _electronicInvoiceSettingRepository= electronicInvoiceSettingRepository;
         }
 
         [AllowAnonymous]
@@ -103,6 +111,7 @@ namespace Kooco.Pikachu.Orders
                         input.InvoiceType,
                         input.InvoiceNumber,
                         input.UniformNumber,
+                        input.CarrierId,
                         input.TaxTitle,
                         input.IsAsSameBuyer,
                         input.RecipientName,
@@ -227,6 +236,7 @@ namespace Kooco.Pikachu.Orders
                           ord.InvoiceType,
                           ord.InvoiceNumber,
                           ord.UniformNumber,
+                          ord.CarrierId,
                           ord.TaxTitle,
                           ord.IsAsSameBuyer,
                           ord.RecipientName,
@@ -310,6 +320,7 @@ namespace Kooco.Pikachu.Orders
                      ord.InvoiceType,
                      ord.InvoiceNumber,
                      ord.UniformNumber,
+                     ord.CarrierId,
                      ord.TaxTitle,
                      ord.IsAsSameBuyer,
                      ord.RecipientName,
@@ -566,7 +577,11 @@ namespace Kooco.Pikachu.Orders
 
             await _orderRepository.UpdateAsync(order);
             await UnitOfWorkManager.Current.SaveChangesAsync();
-                await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+            var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+            var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
+            var delay = DateTime.Now.AddDays(invoiceDely)-DateTime.Now;
+             await _backgroundJobManager.EnqueueAsync(order.Id, BackgroundJobPriority.High, delay);
+           // await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
             await SendEmailAsync(order.Id);
             return ObjectMapper.Map<Order, OrderDto>(order);
         }
