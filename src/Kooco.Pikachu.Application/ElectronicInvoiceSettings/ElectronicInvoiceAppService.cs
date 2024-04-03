@@ -117,7 +117,7 @@ namespace Kooco.Pikachu.ElectronicInvoiceSettings
 
                var data= HttpUtility.UrlDecode(result);
                 ResponseModel jsonObj = JsonConvert.DeserializeObject<ResponseModel>(data);
-                if (jsonObj.InvoiceNo.IsNullOrEmpty())
+                if (jsonObj.InvoiceNo.IsNullOrWhiteSpace())
                 {
                     throw new UserFriendlyException(jsonObj.RtnMsg);
                 
