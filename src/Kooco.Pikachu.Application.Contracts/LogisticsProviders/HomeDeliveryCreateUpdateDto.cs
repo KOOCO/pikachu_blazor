@@ -7,8 +7,8 @@ namespace Kooco.Pikachu.LogisticsProviders
     {
         public bool IsEnabled { get; set; }
 
-        [Required(ErrorMessage = "This Field Is Required")]
-        public string CustomTitle { get; set; }
+
+        public string CustomTitle { get; set; } = "";
 
         [Required(ErrorMessage = "This Field Is Required")]
         [Range(0, int.MaxValue, ErrorMessage = "This Field Must Be 0 Or Greater")]

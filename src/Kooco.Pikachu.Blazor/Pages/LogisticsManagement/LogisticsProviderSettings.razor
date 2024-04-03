@@ -231,7 +231,7 @@
                     <Switch TValue="bool" id="h-enable-disable-switch" @bind-Checked="HomeDelivery.IsEnabled"></Switch>
                 </div>
             </div>
-            <div class="row">
+          @*   <div class="row">
                 <div class="col-3">
                     <label for="custom-title" class="form-label">@L["CustomTitle"]<span class="text-danger"> *</span></label>
                 </div>
@@ -239,7 +239,7 @@
                     <InputText id="custom-title" class="form-control" @bind-Value="HomeDelivery.CustomTitle"></InputText>
                     <ValidationMessage For="@(() => HomeDelivery.CustomTitle)" />
                 </div>
-            </div>
+            </div> *@
             <div class="row">
                 <div class="col-3">
                     <label class="form-label">@L["MainIslands"]<span class="text-danger"> *</span></label>
@@ -285,7 +285,7 @@
             </div> *@
             <div class="row">
                 <div class="col-3">
-                    <label for="h-freight" class="form-label">@L["Freight"]<span class="text-danger"> *</span></label>
+                    <label for="h-freight" class="form-label">@L["Cost"]<span class="text-danger"> *</span></label>
                 </div>
                 <div class="col-8">
                     <InputNumber id="h-freight" class="form-control" @bind-Value="HomeDelivery.Freight" min="0"></InputNumber>
