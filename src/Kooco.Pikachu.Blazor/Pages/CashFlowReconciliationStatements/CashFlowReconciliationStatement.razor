@@ -28,37 +28,19 @@
                 </div>
                 
             </div>
-             @if (Orders.Where(x => x.IsSelected).Count() != 1)
+            @if (Orders.Where(x => x.IsSelected).Count() != 1 || Orders.Any(x => x.IsSelected && x.IsVoidInvoice))
             {
-                <Dropdown Class="btn btn-md" Disabled>
-                 <DropdownToggle Color="Color.Primary">
-                     @L["SelectModule"]
-                 </DropdownToggle>
-                 <DropdownMenu>
-                     @foreach (IssueInvoice issueInvoiceDropdownValue in Enum.GetValues(typeof(IssueInvoice)))
-                        {
-                            <DropdownItem>
-                                @L[issueInvoiceDropdownValue.ToString()]
-                            </DropdownItem>
-                        }
-                    </DropdownMenu>
-                </Dropdown>
+                <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
+                    <i class="fa fa-print"></i>
+                    @L["VoidInvoice"]
+                </Button>
             }
             else
             {
-                <Dropdown Class="btn btn-md">
-                    <DropdownToggle Color="Color.Primary">
-                        @L["SelectModule"]
-                    </DropdownToggle>
-                    <DropdownMenu>
-                        @foreach (IssueInvoice issueInvoiceDropdownValue in Enum.GetValues(typeof(IssueInvoice)))
-                        {
-                            <DropdownItem>
-                                @L[issueInvoiceDropdownValue.ToString()]
-                            </DropdownItem>
-                        }
-                    </DropdownMenu>
-                </Dropdown>
+                <Button Type="@ButtonType.Button" Clicked="() => OpenVoidReasonModal()" Class="ms-1 btn btn-sm btn-primary">
+                    <i class="fa fa-print"></i>
+                    @L["VoidInvoice"]
+                </Button>
             }
             <Button Type="ButtonType.Button" Class="btn btn-sm btn-outline-dark" Clicked="DownloadExcel"><i class="fa fa-arrow-down"></i></Button>
            
@@ -96,27 +78,28 @@
                             @L[context.OrderNo]
                         </DisplayTemplate>
                     </DataGridColumn>
-                    <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />
-                    <DataGridColumn Field="@nameof(OrderDto.CustomerName)" Caption="@L["CustomerName"]" />
-                    <DataGridColumn Field="@nameof(OrderDto.CustomerEmail)" Caption="@L["Email"]" />
+                    <DataGridColumn Field="@nameof(OrderDto.LastModificationTime)" Caption="@L["LastUpDateDate"]" />
+                  @*   <DataGridColumn Field="@nameof(OrderDto.CustomerName)" Caption="@L["CustomerName"]" />
+                    <DataGridColumn Field="@nameof(OrderDto.CustomerEmail)" Caption="@L["Email"]" /> *@
                     <DataGridColumn Field="@nameof(OrderDto.InvoiceStatus)" Caption="@L["InvoiceStatus"]">
                         <DisplayTemplate>
                             @L[context.InvoiceStatus.ToString()]
                         </DisplayTemplate>
                     </DataGridColumn>
-                    <DataGridColumn Field="@nameof(OrderDto.ShippingStatus)" Caption="@L["ShippingStatus"]">
+                    
+                    <DataGridColumn Field="@nameof(OrderDto.InvoiceNumber)" Caption="@L["InvoiceNumber"]">
                         <DisplayTemplate>
-                            @L[context.ShippingStatus.ToString()]
-                        </DisplayTemplate>
-                    </DataGridColumn>
-                    <DataGridColumn Field="@nameof(OrderDto.PaymentMethod)" Caption="@L["PaymentMethod"]">
-                        <DisplayTemplate>
-                            @L[context.PaymentMethod.ToString()]
+                            @context.InvoiceNumber
                         </DisplayTemplate>
                     </DataGridColumn>
                     <DataGridColumn TextAlignment="TextAlignment.Center" Field="@nameof(OrderDto.TotalAmount)" Caption="@L["CheckoutAmount"]">
                         <DisplayTemplate>
                             $ @context.TotalAmount.ToString("N2")
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn Field="@nameof(OrderDto.LastModifierId)" Caption="@L["Editor"]">
+                        <DisplayTemplate>
+                            @L[context.LastModifierId.ToString()]
                         </DisplayTemplate>
                     </DataGridColumn>
                 </DataGridColumns>
@@ -184,6 +167,39 @@
             </DataGrid>
         </CardBody>
     </Card>
+      <Modal @ref="CreateVoidReasonModal">
+      
+        <ModalContent IsCentered="true">
+            <EditForm Model="@VoidReason" OnValidSubmit="ApplyVoidReasonAsync">
+                <ModalHeader>
+                    <ModalTitle>@L["VoidReason"]</ModalTitle>
+                        <CloseButton Clicked="CloseVoidReasonModal"  />
+                    </ModalHeader>
+                    <ModalBody>
+
+                        <DataAnnotationsValidator />
+                    
+                    <div class="row my-2">
+                        <label class="form-label">@L["VoidReason"]</label>
+                        <div class="col-12 mb-2">
+                            <InputText class="form-control" @bind-Value="@VoidReason.Reason"></InputText>
+                            <ValidationMessage For="@(() => VoidReason.Reason)" />
+                        </div>
+                    </div>
+                </ModalBody>
+                <ModalFooter>
+                    <Button Color="Color.Danger"
+                            Clicked="CloseVoidReasonModal">
+                        @L["Cancel"]
+                    </Button>
+                    <Button Type="ButtonType.Submit" Class="btn btn-primary">
+                        <i class="fa fa-check"></i>
+                        @L["Save"]
+                    </Button>
+                </ModalFooter>
+            </EditForm>
+        </ModalContent>
+    </Modal>
 </LoadingIndicator>
 @code {
 

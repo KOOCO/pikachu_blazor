@@ -38,5 +38,6 @@ namespace Kooco.Pikachu.Orders
         Task<OrderDto> OrderShipped(Guid id);
         Task<OrderDto> OrderClosed(Guid id);
         Task<OrderDto> OrderComplete(Guid id);
+        Task CreateVoidInvoice(Guid id, string reason);
     }
 }

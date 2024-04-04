@@ -75,7 +75,7 @@ namespace Kooco.Pikachu.ElectronicInvoiceSettings
                 Print = print,
                 Donation = "0",
                 TaxType ="1", //groupBuy.TaxType==TaxType.Taxable?"1":groupBuy.TaxType==TaxType.NonTaxable?"3":"9",
-                SalesAmount = order.TotalAmount,
+                SalesAmount = order.OrderItems.Sum(x=>x.TotalAmount),
                 InvType = "07",
                 vat = "1",
                 Items = new List<myItem>()
@@ -123,6 +123,7 @@ namespace Kooco.Pikachu.ElectronicInvoiceSettings
                 
                 }
                 order.InvoiceNumber = jsonObj.InvoiceNo;
+                order.InvoiceStatus = InvoiceStatus.Issued;
                 await _orderRepository.UpdateAsync(order);
 
             }

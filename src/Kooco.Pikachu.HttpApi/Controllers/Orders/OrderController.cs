@@ -217,4 +217,9 @@ public class OrderController(
     {
         return _ordersAppService.OrderComplete(id);
     }
+    
+    public Task CreateVoidInvoice(Guid id, string reason)
+    {
+        return _ordersAppService.CreateVoidInvoice(id, reason);
+    }
 }

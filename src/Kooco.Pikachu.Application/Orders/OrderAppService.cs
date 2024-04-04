@@ -552,7 +552,17 @@ namespace Kooco.Pikachu.Orders
             await UnitOfWorkManager.Current.SaveChangesAsync();
             await SendEmailAsync(order.Id, OrderStatus.Closed);
         }
-
+        public async Task CreateVoidInvoice(Guid id, string reason)
+        {
+            var order = await _orderRepository.GetAsync(id);
+            order.IsVoidInvoice = true;
+            order.VoidReason = reason;
+            order.InvoiceStatus = InvoiceStatus.InvoiceVoided;
+            order.LastModificationTime = DateTime.Now;
+            order.LastModifierId = CurrentUser.Id;
+            await _orderRepository.UpdateAsync(order);
+        
+        }
         public async Task<OrderDto> UpdateShippingDetails(Guid id, CreateOrderDto input)
         {
             var order = await _orderRepository.GetWithDetailsAsync(id);
