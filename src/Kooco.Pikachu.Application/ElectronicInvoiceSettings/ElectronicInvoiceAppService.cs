@@ -1,4 +1,5 @@
-﻿using Hangfire.Storage;
+﻿using Azure.Core;
+using Hangfire.Storage;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.Orders;
@@ -10,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Reflection.PortableExecutable;
 using System.Security.Cryptography;
 using System.Text;
@@ -18,6 +20,7 @@ using System.Web;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.SettingManagement;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Kooco.Pikachu.ElectronicInvoiceSettings
@@ -129,7 +132,52 @@ namespace Kooco.Pikachu.ElectronicInvoiceSettings
             }
             
         }
+        public async Task CreateVoidInvoiceAsync(Guid orderId,string invoiceNo,DateTime invoiceDate,string reason)
+        {
+            var order = await _orderRepository.GetWithDetailsAsync(orderId);
+            var setting = await _repository.FirstOrDefaultAsync();
+            var options = new RestClientOptions
+            {
+                MaxTimeout = -1,
+            };
+            var client = new RestClient(options);
+            var request = new RestRequest(_configuration["EcPay:VoidInvoiceApi"], Method.Post);
 
+
+            var parameters = new VoidInvoiceParameters
+            {
+                InvoiceDate =invoiceDate,
+                InvoiceNo=invoiceNo,
+                MerchantID= "2000132",
+                Reason=reason
+
+
+            };
+            
+            
+            string json = JsonConvert.SerializeObject(parameters);
+            //var json = "{\"MerchantID\": \"2000132\",\"RelateNumber\": ,\"CustomerName\": \"SomiKayani\",\"CustomerAddr\": \"Abcxyz street 123\",\"CustomerPhone\": \"0912345678\",\"CustomerEmail\": \"kiani_mujahid@yahoo.com\",\"ClearanceMark\": \"1\",\"Print\": \"1\",\"Donation\": \"0\",\"TaxType\": \"1\",\"SalesAmount\": 70,\"InvType\": \"07\",\"vat\": \"1\",\"Items\": [{\"ItemSeq\": 1,\"ItemName\": \"item01\",\"ItemCount\": 1,\"ItemWord\": \"Test\",\"ItemPrice\": 50,\"ItemTaxType\": \"1\",\"ItemAmount\": 50,\"ItemRemark\": \"item01_desc\"},{\"ItemSeq\": 2,\"ItemName\": \"item02\",\"ItemCount\": 1,\"ItemWord\": \"Test2\",\"ItemPrice\": 20,\"ItemTaxType\": \"1\",\"ItemAmount\": 20,\"ItemRemark\": \"item02_desc\"}]}";
+            var newJson = Uri.EscapeDataString(json);
+            var encryptedString = EncryptStringToAES(newJson, setting.HashKey, setting.HashIV);
+            request.AddHeader("Content-Type", "application/json");
+            var body = $@"{{
+                         ""MerchantID"": ""2000132"",
+                         ""RqHeader"": {{
+                         ""Timestamp"": {DateTimeOffset.UtcNow.ToUnixTimeSeconds()}
+                           }},
+                        ""Data"": ""{encryptedString}""
+                            }}";
+            request.AddStringBody(body, DataFormat.Json);
+            RestResponse response = await client.ExecuteAsync(request);
+            ApiResponse response1 = JsonConvert.DeserializeObject<ApiResponse>(response.Content);
+            if (response1.TransCode == 1)
+            {
+                var result = DecryptStringFromAES(response1.Data, setting.HashKey, setting.HashIV);
+
+                var data = HttpUtility.UrlDecode(result);
+                ResponseModel jsonObj = JsonConvert.DeserializeObject<ResponseModel>(data);
+            }
+            }
         static string EncryptStringToAES(string plainText, string key, string iv)
         {
             byte[] encrypted;
@@ -232,4 +280,11 @@ public class ResponseModel
     public string InvoiceNo { get; set; }
     public string InvoiceDate { get; set; }
     public string RandomNumber { get; set; }
+}
+public class VoidInvoiceParameters {
+    public string MerchantID { get; set; }
+    public string InvoiceNo { get; set; }
+    public DateTime InvoiceDate { get; set; }
+    public string Reason { get; set; }
+
 }
