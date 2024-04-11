@@ -468,6 +468,23 @@ namespace Kooco.Pikachu.Orders
                 Items = ObjectMapper.Map<List<Order>, List<OrderDto>>(items)
             };
         }
+        public async Task<PagedResultDto<OrderDto>> GetVoidListAsync(GetOrderListDto input)
+        {
+            if (input.Sorting.IsNullOrEmpty())
+            {
+                input.Sorting = $"{nameof(Order.CreationTime)} desc";
+            }
+
+            var totalCount = await _orderRepository.CountVoidAsync(input.Filter, input.GroupBuyId, input.StartDate, input.EndDate);
+
+            var items = await _orderRepository.GetVoidListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.GroupBuyId, input.OrderIds, input.StartDate, input.EndDate);
+
+            return new PagedResultDto<OrderDto>
+            {
+                TotalCount = totalCount,
+                Items = ObjectMapper.Map<List<Order>, List<OrderDto>>(items)
+            };
+        }
         [Authorize(PikachuPermissions.Orders.AddStoreComment)]
         public async Task AddStoreCommentAsync(Guid id, string comment)
         {
@@ -552,16 +569,32 @@ namespace Kooco.Pikachu.Orders
             await UnitOfWorkManager.Current.SaveChangesAsync();
             await SendEmailAsync(order.Id, OrderStatus.Closed);
         }
-        public async Task CreateVoidInvoice(Guid id, string reason)
+        public async Task VoidInvoice(Guid id, string reason)
         {
             var order = await _orderRepository.GetAsync(id);
             order.IsVoidInvoice = true;
             order.VoidReason = reason;
+            order.VoidUser = CurrentUser.Name;
+            order.VoidDate = DateTime.Now;
             order.InvoiceStatus = InvoiceStatus.InvoiceVoided;
             order.LastModificationTime = DateTime.Now;
             order.LastModifierId = CurrentUser.Id;
             await _orderRepository.UpdateAsync(order);
+            await _electronicInvoiceAppService.CreateVoidInvoiceAsync(id, reason);
         
+        }
+        public async Task CreditNoteInvoice(Guid id, string reason)
+        {
+            var order = await _orderRepository.GetAsync(id);
+           // order.IsVoidInvoice = true;
+            order.CreditNoteReason = reason;
+            order.CreditNoteUser = CurrentUser.Name;
+            order.CreditNoteDate = DateTime.Now;
+            order.InvoiceStatus = InvoiceStatus.InvoiceVoided;
+          
+            await _orderRepository.UpdateAsync(order);
+            await _electronicInvoiceAppService.CreateCreditNoteAsync(id);
+
         }
         public async Task<OrderDto> UpdateShippingDetails(Guid id, CreateOrderDto input)
         {
@@ -584,15 +617,15 @@ namespace Kooco.Pikachu.Orders
             order.ShippingStatus = ShippingStatus.Shipped;
             order.ShippedBy = CurrentUser.Name;
             order.ShippingDate = DateTime.Now;
-
+            order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
             await _orderRepository.UpdateAsync(order);
             await UnitOfWorkManager.Current.SaveChangesAsync();
             var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
             var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
             var delay = DateTime.Now.AddDays(invoiceDely)-DateTime.Now;
-             await _backgroundJobManager.EnqueueAsync(order.Id, BackgroundJobPriority.High, delay);
-           // await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
-            await SendEmailAsync(order.Id);
+            // await _backgroundJobManager.EnqueueAsync(order.Id, BackgroundJobPriority.High, delay);
+            await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+            //await SendEmailAsync(order.Id);
             return ObjectMapper.Map<Order, OrderDto>(order);
         }
         public async Task<OrderDto> OrderClosed(Guid id)

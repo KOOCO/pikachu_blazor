@@ -54,8 +54,15 @@ namespace Kooco.Pikachu.Orders
         public string ShippedBy { get; set; }
         public string ClosedBy { get; set; }
         public string CompletedBy { get; set; }
-        public string VoidReason { get; set; }
+        public string? VoidReason { get; set; }
+        public string? CreditNoteReason { get; set; }
         public bool IsVoidInvoice { get; set; }
+        public DateTime? InvoiceDate { get; set; }
+        public DateTime? CreditNoteDate { get; set; }
+        public string? CreditNoteUser { get; set; }
+        public string? VoidUser { get; set; }
+        public DateTime? VoidDate { get; set; }
         public DateTime? CompletionTime { get; set; }
+        public IssueInvoiceStatus? IssueStatus { get; set; }
     }
 }

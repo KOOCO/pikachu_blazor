@@ -7,17 +7,15 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 using System.Linq;
-using Kooco.Pikachu.Items.Dtos;
+
 using Microsoft.JSInterop;
 using System.IO;
-using Kooco.Pikachu.EnumValues;
 using System.ComponentModel.DataAnnotations;
-using Kooco.Pikachu.Blazor.Pages.Orders;
-using Kooco.Pikachu.OrderDeliveries;
 
-namespace Kooco.Pikachu.Blazor.Pages.CashFlowReconciliationStatements
+
+namespace Kooco.Pikachu.Blazor.Pages.VoidInvoices
 {
-    public partial class CashFlowReconciliationStatement
+    public partial class VoidInvoice
     {
         private bool IsAllSelected { get; set; } = false;
         private List<OrderDto> Orders { get; set; } = new();
@@ -27,8 +25,8 @@ namespace Kooco.Pikachu.Blazor.Pages.CashFlowReconciliationStatements
         private int PageSize { get; set; } = 10;
         private string? Sorting { get; set; }
         private string? Filter { get; set; }
-        private Modal CreateVoidReasonModal { get; set; }
-        private VoidReason VoidReason { get; set; } = new();
+        private Modal CreateCreditNoteReasonModal { get; set; }
+        private CreditReason CreditReason { get; set; } = new();
         private readonly HashSet<Guid> ExpandedRows = new();
         private LoadingIndicator loading { get; set; }
         private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<OrderDto> e)
@@ -44,7 +42,7 @@ namespace Kooco.Pikachu.Blazor.Pages.CashFlowReconciliationStatements
             {
                 await loading.Show();
                 int skipCount = PageIndex * PageSize;
-                var result = await _orderAppService.GetReconciliationListAsync(new GetOrderListDto
+                var result = await _orderAppService.GetVoidListAsync(new GetOrderListDto
                 {
                     Sorting = Sorting,
                     MaxResultCount = PageSize,
@@ -158,24 +156,24 @@ namespace Kooco.Pikachu.Blazor.Pages.CashFlowReconciliationStatements
         }
         private void CloseVoidReasonModal()
         {
-            CreateVoidReasonModal.Hide();
+            CreateCreditNoteReasonModal.Hide();
         }
-        private async Task ApplyVoidReasonAsync()
+        private async Task ApplyCreditReasonAsync()
         {
             await loading.Show();
             var selectedOrder = Orders.SingleOrDefault(x => x.IsSelected);
-            await _orderAppService.VoidInvoice(selectedOrder.Id, VoidReason.Reason);
-            await CreateVoidReasonModal.Hide();
+            await _orderAppService.CreditNoteInvoice(selectedOrder.Id, CreditReason.Reason);
+            await CreateCreditNoteReasonModal.Hide();
             await UpdateItemList();
             await InvokeAsync(StateHasChanged);
         }
         private void OpenVoidReasonModal()
         {
            
-            CreateVoidReasonModal.Show();
+            CreateCreditNoteReasonModal.Show();
         }
     }
-    public class VoidReason
+    public class CreditReason
     {
        
 

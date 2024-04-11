@@ -63,10 +63,15 @@ namespace Kooco.Pikachu.Orders
         public ICollection<StoreComment> StoreComments { get; set; }
         public bool IsRefunded { get; set; }
         public bool IsVoidInvoice { get; set; }
+        public DateTime? VoidDate { get; set; }
         public string? VoidReason { get; set; }
+        public string? CreditNoteReason { get; set; }
         public DateTime? InvoiceDate { get; set; }
-
+        public  IssueInvoiceStatus? IssueStatus { get; set; }
         public InvoiceStatus InvoiceStatus { get; set; }
+        public string? VoidUser { get; set; }
+        public DateTime? CreditNoteDate { get; set; }
+        public string? CreditNoteUser { get; set; }
         public OrderType? OrderType { get; set; }
         public Order() { }
 

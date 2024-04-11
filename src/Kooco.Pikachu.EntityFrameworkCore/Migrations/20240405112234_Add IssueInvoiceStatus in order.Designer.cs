@@ -4,6 +4,7 @@ using Kooco.Pikachu.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    partial class PikachuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240405112234_Add IssueInvoiceStatus in order")]
+    partial class AddIssueInvoiceStatusinorder
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1638,15 +1641,6 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("CreatorId");
 
-                    b.Property<DateTime?>("CreditNoteDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreditNoteReason")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CreditNoteUser")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("CustomerEmail")
                         .HasColumnType("nvarchar(max)");
 
@@ -1794,13 +1788,7 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<string>("UniformNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("VoidDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("VoidReason")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("VoidUser")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

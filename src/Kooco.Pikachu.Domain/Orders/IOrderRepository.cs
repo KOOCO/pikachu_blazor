@@ -26,6 +26,8 @@ namespace Kooco.Pikachu.Orders
         Task<List<Order>> GetReturnListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId);
         Task<long> CountReconciliationAsync(string? filter, Guid? groupBuyId, DateTime? startDate, DateTime? endDate);
         Task<List<Order>> GetReconciliationListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId, List<Guid> orderId, DateTime? startDate = null, DateTime? endDate = null);
+        Task<long> CountVoidAsync(string? filter, Guid? groupBuyId, DateTime? startDate, DateTime? endDate);
+        Task<List<Order>> GetVoidListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId, List<Guid> orderId, DateTime? startDate = null, DateTime? endDate = null);
 
     }
 }

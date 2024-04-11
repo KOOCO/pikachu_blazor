@@ -10,6 +10,7 @@ namespace Kooco.Pikachu.ElectronicInvoiceSettings
     {
 
          Task CreateInvoiceAsync(Guid orderId);
-        Task CreateVoidInvoiceAsync(Guid orderId, string invoiceNo, DateTime invoiceDate, string reason);
+        Task CreateVoidInvoiceAsync(Guid orderId,string reason);
+        Task CreateCreditNoteAsync(Guid orderId);
     }
 }

@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Linq.Dynamic.Core;
@@ -122,17 +123,91 @@ namespace Kooco.Pikachu.ElectronicInvoiceSettings
                 ResponseModel jsonObj = JsonConvert.DeserializeObject<ResponseModel>(data);
                 if (jsonObj.InvoiceNo.IsNullOrWhiteSpace())
                 {
-                    throw new UserFriendlyException(jsonObj.RtnMsg);
-                
+                    order.IssueStatus = IssueInvoiceStatus.Failed;
+                    await _orderRepository.UpdateAsync(order);
                 }
                 order.InvoiceNumber = jsonObj.InvoiceNo;
                 order.InvoiceStatus = InvoiceStatus.Issued;
+                order.InvoiceDate = jsonObj.InvoiceDate;
+                order.IssueStatus = IssueInvoiceStatus.Succeeded;
                 await _orderRepository.UpdateAsync(order);
 
             }
             
         }
-        public async Task CreateVoidInvoiceAsync(Guid orderId,string invoiceNo,DateTime invoiceDate,string reason)
+        public async Task CreateCreditNoteAsync(Guid orderId)
+        {
+            var query = await _repository.GetQueryableAsync();
+            var setting = await _repository.FirstOrDefaultAsync();
+            var order = await _orderRepository.GetWithDetailsAsync(orderId);
+
+           
+            var groupBuy = await _groupBuyRepository.GetAsync(order.GroupBuyId);
+            var print = order.UniformNumber.IsNullOrWhiteSpace() ? "0" : "1";
+            var options = new RestClientOptions
+            {
+                MaxTimeout = -1,
+            };
+            var client = new RestClient(options);
+            var request = new RestRequest(_configuration["EcPay:CreditNoteApi"], Method.Post);
+
+            var parameters = new CreditNoteParameters
+            {
+                MerchantID = "2000132",
+                InvoiceNo = order.InvoiceNumber,
+                CustomerName = order.CustomerName,
+                InvoiceDate = order.InvoiceDate.Value,
+               NotifyMail=order.RecipientEmail,
+               NotifyPhone=order.RecipientPhone,
+                AllowanceNotify="E",
+                AllowanceAmount =(int)order.OrderItems.Sum(x => x.TotalAmount),
+              ReturnURL="https:\\localhost:4000",
+                Items = new List<myItem>()
+            };
+            foreach (var item in order?.OrderItems)
+            {
+                myItem orderitem = new myItem();
+                orderitem.ItemSeq = 1;
+                orderitem.ItemName = item.Item?.ItemName ?? item.Freebie.ItemName;
+                orderitem.ItemCount = 1;
+                orderitem.ItemWord = "1";
+                orderitem.ItemPrice = item.ItemPrice;
+                orderitem.ItemTaxType = 1;//(await _enumvalueRepository.FirstOrDefaultAsync(x=>x.Id==item.Item.TaxTypeId)).Text=="Taxable"?1:3;
+                orderitem.ItemAmount = item.TotalAmount;
+                orderitem.ItemRemark = "";
+                parameters.Items.Add(orderitem);
+
+            }
+
+
+            string json = JsonConvert.SerializeObject(parameters);
+            //var json = "{\"MerchantID\": \"2000132\",\"RelateNumber\": ,\"CustomerName\": \"SomiKayani\",\"CustomerAddr\": \"Abcxyz street 123\",\"CustomerPhone\": \"0912345678\",\"CustomerEmail\": \"kiani_mujahid@yahoo.com\",\"ClearanceMark\": \"1\",\"Print\": \"1\",\"Donation\": \"0\",\"TaxType\": \"1\",\"SalesAmount\": 70,\"InvType\": \"07\",\"vat\": \"1\",\"Items\": [{\"ItemSeq\": 1,\"ItemName\": \"item01\",\"ItemCount\": 1,\"ItemWord\": \"Test\",\"ItemPrice\": 50,\"ItemTaxType\": \"1\",\"ItemAmount\": 50,\"ItemRemark\": \"item01_desc\"},{\"ItemSeq\": 2,\"ItemName\": \"item02\",\"ItemCount\": 1,\"ItemWord\": \"Test2\",\"ItemPrice\": 20,\"ItemTaxType\": \"1\",\"ItemAmount\": 20,\"ItemRemark\": \"item02_desc\"}]}";
+            var newJson = Uri.EscapeDataString(json);
+            var encryptedString = EncryptStringToAES(newJson, setting.HashKey, setting.HashIV);
+            request.AddHeader("Content-Type", "application/json");
+            var body = $@"{{
+                         ""MerchantID"": ""2000132"",
+                         ""RqHeader"": {{
+                         ""Timestamp"": {DateTimeOffset.UtcNow.ToUnixTimeSeconds()}
+                           }},
+                        ""Data"": ""{encryptedString}""
+                            }}";
+            request.AddStringBody(body, DataFormat.Json);
+            RestResponse response = await client.ExecuteAsync(request);
+            ApiResponse response1 = JsonConvert.DeserializeObject<ApiResponse>(response.Content);
+            if (response1.TransCode == 1)
+            {
+                var result = DecryptStringFromAES(response1.Data, setting.HashKey, setting.HashIV);
+
+                var data = HttpUtility.UrlDecode(result);
+                ResponseModel jsonObj = JsonConvert.DeserializeObject<ResponseModel>(data);
+              
+             
+
+            }
+
+        }
+        public async Task CreateVoidInvoiceAsync(Guid orderId,string reason)
         {
             var order = await _orderRepository.GetWithDetailsAsync(orderId);
             var setting = await _repository.FirstOrDefaultAsync();
@@ -146,8 +221,8 @@ namespace Kooco.Pikachu.ElectronicInvoiceSettings
 
             var parameters = new VoidInvoiceParameters
             {
-                InvoiceDate =invoiceDate,
-                InvoiceNo=invoiceNo,
+                InvoiceDate =order.InvoiceDate.Value,
+                InvoiceNo=order.InvoiceNumber??"",
                 MerchantID= "2000132",
                 Reason=reason
 
@@ -175,7 +250,11 @@ namespace Kooco.Pikachu.ElectronicInvoiceSettings
                 var result = DecryptStringFromAES(response1.Data, setting.HashKey, setting.HashIV);
 
                 var data = HttpUtility.UrlDecode(result);
-                ResponseModel jsonObj = JsonConvert.DeserializeObject<ResponseModel>(data);
+                VoidInvoiceParameters jsonObj = JsonConvert.DeserializeObject<VoidInvoiceParameters>(data);
+                order.IsVoidInvoice = true;
+                order.InvoiceStatus = InvoiceStatus.InvoiceVoided;
+                await _orderRepository.UpdateAsync(order);
+           
             }
             }
         static string EncryptStringToAES(string plainText, string key, string iv)
@@ -264,6 +343,30 @@ public class Parameters
     public string vat { get; set; }
     public List<myItem> Items { get; set; }
 }
+public class CreditNoteParameters
+{
+    public string MerchantID { get; set; }
+
+    
+    public string InvoiceNo { get; set; }
+
+   
+
+   
+    public DateTime InvoiceDate { get; set; }
+
+    public string CustomerName { get; set; }
+
+    public string NotifyMail { get; set; }
+    public string AllowanceNotify { get; set; }
+
+
+    public string NotifyPhone { get; set; }
+
+   public string ReturnURL { get; set; }
+    public int AllowanceAmount { get; set; }
+    public List<myItem> Items { get; set; }
+}
 public class ApiResponse
 {
     public int PlatformID { get; set; }
@@ -278,7 +381,7 @@ public class ResponseModel
     public int RtnCode { get; set; }
     public string RtnMsg { get; set; }
     public string InvoiceNo { get; set; }
-    public string InvoiceDate { get; set; }
+    public DateTime? InvoiceDate { get; set; }
     public string RandomNumber { get; set; }
 }
 public class VoidInvoiceParameters {

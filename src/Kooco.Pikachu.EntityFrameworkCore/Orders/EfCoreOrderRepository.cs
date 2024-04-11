@@ -55,6 +55,27 @@ namespace Kooco.Pikachu.Orders
                 .ThenInclude(oi => oi.Freebie)
                 .ToListAsync();
         }
+        public async Task<long> CountVoidAsync(string? filter, Guid? groupBuyId, DateTime? startDate, DateTime? endDate)
+        {
+            return await ApplyVoidFilters((await GetQueryableAsync()).Include(o => o.GroupBuy), filter, groupBuyId, null, startDate, endDate).CountAsync();
+        }
+        public async Task<List<Order>> GetVoidListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId, List<Guid> orderId, DateTime? startDate = null, DateTime? endDate = null)
+        {
+            return await ApplyVoidFilters(await GetQueryableAsync(), filter, groupBuyId, orderId, startDate, endDate)
+                .OrderBy(sorting)
+                .PageBy(skipCount, maxResultCount)
+                .Include(o => o.GroupBuy)
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Item)
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.SetItem)
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Freebie)
+                .ToListAsync();
+        }
+
+
+
         private static IQueryable<Order> ApplyFilters(
             IQueryable<Order> queryable,
             string? filter,
@@ -97,6 +118,28 @@ namespace Kooco.Pikachu.Orders
                 .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
                 .Where(x => x.ShippingStatus == ShippingStatus.Shipped)
                 .Where(x => x.OrderType != OrderType.MargeToNew);
+        }
+        private static IQueryable<Order> ApplyVoidFilters(
+         IQueryable<Order> queryable,
+         string? filter,
+         Guid? groupBuyId,
+         List<Guid> orderIds,
+         DateTime? startDate = null,
+         DateTime? endDate = null
+         )
+        {
+            return queryable
+                .WhereIf(groupBuyId.HasValue, x => x.GroupBuyId == groupBuyId)
+                .WhereIf(!filter.IsNullOrWhiteSpace(),
+                x => x.OrderNo.Contains(filter)
+                || (x.CustomerName != null && x.CustomerName.Contains(filter))
+                || (x.CustomerEmail != null && x.CustomerEmail.Contains(filter))
+                ).WhereIf(orderIds != null && orderIds.Any(), x => orderIds.Contains(x.Id))
+                .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate.Value.Date)
+                .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
+                .Where(x => x.ShippingStatus == ShippingStatus.Shipped)
+                .Where(x => x.OrderType != OrderType.MargeToNew)
+                .Where(x=>x.IsVoidInvoice==true);
         }
         public async Task<Order> MaxByOrderNumberAsync()
         {

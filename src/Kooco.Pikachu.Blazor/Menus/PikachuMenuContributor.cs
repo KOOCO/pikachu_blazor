@@ -181,6 +181,14 @@ public class PikachuMenuContributor : IMenuContributor
             url: "/CashFlowManagement/CashFlowReconciliationStatement",
             requiredPermissionName: PikachuPermissions.CashFlowReconciliationStatement)
             );
+        paymentManagement.AddItem(new ApplicationMenuItem(
+           name: "VoidInvoice",
+           icon: "fas fa-file-invoice",
+           displayName: l["Menu:VoidInvoice"],
+           //displayName: "金流對帳表",
+           url: "/VoidInvoice",
+           requiredPermissionName: PikachuPermissions.CashFlowReconciliationStatement)
+           );
 
         var logisticsManagment =
                 new ApplicationMenuItem(

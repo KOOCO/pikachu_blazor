@@ -218,8 +218,18 @@ public class OrderController(
         return _ordersAppService.OrderComplete(id);
     }
     
-    public Task CreateVoidInvoice(Guid id, string reason)
+    public Task VoidInvoice(Guid id, string reason)
     {
-        return _ordersAppService.CreateVoidInvoice(id, reason);
+        return _ordersAppService.VoidInvoice(id, reason);
+    }
+    [HttpGet("void-list")]
+    public Task<PagedResultDto<OrderDto>> GetVoidListAsync(GetOrderListDto input)
+    {
+        return _ordersAppService.GetVoidListAsync(input);
+    }
+    
+    public Task CreditNoteInvoice(Guid id, string reason)
+    {
+        return _ordersAppService.CreditNoteInvoice(id, reason);
     }
 }
