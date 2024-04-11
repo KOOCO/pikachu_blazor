@@ -623,9 +623,9 @@ namespace Kooco.Pikachu.Orders
             var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
             var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
             var delay = DateTime.Now.AddDays(invoiceDely)-DateTime.Now;
-            // await _backgroundJobManager.EnqueueAsync(order.Id, BackgroundJobPriority.High, delay);
+            await _backgroundJobManager.EnqueueAsync(order.Id, BackgroundJobPriority.High, delay);
             await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
-            //await SendEmailAsync(order.Id);
+            await SendEmailAsync(order.Id);
             return ObjectMapper.Map<Order, OrderDto>(order);
         }
         public async Task<OrderDto> OrderClosed(Guid id)

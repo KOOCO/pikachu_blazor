@@ -672,7 +672,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 }
                 else if (selectedValue == ShippingStatus.Completed)
                 {
-                    await _orderAppService.OrderClosed(Order.Id);
+                    await _orderAppService.OrderComplete(Order.Id);
                     await GetOrderDetailsAsync();
                     await base.OnInitializedAsync();
                     await loading.Hide();
