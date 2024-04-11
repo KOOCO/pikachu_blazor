@@ -686,7 +686,10 @@ namespace Kooco.Pikachu.Orders
             body = body.Replace("{{CustomerPhone}}", order.CustomerPhone);
             body = body.Replace("{{RecipientName}}", order.RecipientName);
             body = body.Replace("{{RecipientPhone}}", order.RecipientPhone);
-            body = body.Replace("{{PaymentMethod}}", _l[order.PaymentMethod.ToString()]);
+            if (!groupbuy.IsEnterprise)
+            {
+                body = body.Replace("{{PaymentMethod}}", _l[order.PaymentMethod.ToString()]);
+            }
             body = body.Replace("{{PaymentStatus}}", _l[order.OrderStatus.ToString()]);
             body = body.Replace("{{ShippingMethod}}", $"{_l[order.DeliveryMethod.ToString()]} {order.ShippingNumber}");
             body = body.Replace("{{DeliveryFee}}", "0");

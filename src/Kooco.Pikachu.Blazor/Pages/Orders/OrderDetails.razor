@@ -88,6 +88,13 @@
                                             <td>@L["ShippingMethod"]</td>
                                             <td>@L[Order.DeliveryMethod.ToString()] @Order.ShippingNumber </td>
                                         </tr>
+                                        @if (Order.ReceivingTime != null)
+                                        {
+                                            <tr>
+                                                <td>@L["DeliveryTime"]</td>
+                                                <td>@L[Order.ReceivingTime?.ToString()]  </td>
+                                            </tr>
+                                        }
                                     </tbody>
                                 </table>
                             </div>
