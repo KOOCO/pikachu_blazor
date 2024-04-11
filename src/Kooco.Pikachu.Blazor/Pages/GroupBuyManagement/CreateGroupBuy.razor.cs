@@ -640,6 +640,12 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneShippingMethodIsRequired]);
                     return;
                 }
+                if (CreateGroupBuyDto.IsEnterprise && (!CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
+                {
+                    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.DeliverdByStoreMethodIsRequired]);
+                    return;
+                }
+
                 if ((!CreateGroupBuyDto.ExcludeShippingMethod.IsNullOrEmpty()) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat")
                     || CreateGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup") || CreateGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery")
                     || CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))

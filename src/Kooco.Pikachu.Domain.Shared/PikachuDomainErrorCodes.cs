@@ -36,4 +36,5 @@ public static class PikachuDomainErrorCodes
     public const string AtLeastOneDeliveryTimeIsRequiredForDeliverdByStore = "Pikachu:AtLeastOneDeliveryTimeIsRequiredForDeliverdByStore";
     public const string AtLeastOneShippingMethodIsRequired = "Pikachu:AtLeastOneShippingMethodIsRequired";
     public const string AtLeastOnePaymentMethodIsRequired = "Pikachu:AtLeastOnePaymentMethodIsRequired";
+    public const string DeliverdByStoreMethodIsRequired = "Pikachu:DeliverdByStoreMethodIsRequired";
 }

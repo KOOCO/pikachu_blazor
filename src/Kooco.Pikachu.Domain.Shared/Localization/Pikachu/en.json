@@ -99,6 +99,7 @@
     "Pikachu:AtLeastOneDeliveryTimeIsRequiredForHomeDelivery": "AtLeast One Delivery Time Is Required For Home Delivery ",
     "Pikachu:AtLeastOneDeliveryTimeIsRequiredForDeliverdByStore": "AtLeast One Delivery Time Is Required For Deliverd By Store",
     "Pikachu:SellingPriceForItemShouldBeGreaterThanZero": "Selling Price for Items Should Be Equal Or Greater Than 0",
+    "Pikachu:DeliverdByStoreMethodIsRequired": "Deliverd By Store Method Is Required",
     "CopyToAll": "Copy To All",
     "SystemIsUnableToCopyAtTheMoment": "System is Unable to Copy at the moment",
     "GenerateSKU": "Generate SKU",

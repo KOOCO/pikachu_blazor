@@ -452,6 +452,7 @@
     "Pikachu:AtLeastOneDeliveryTimeIsRequiredForSelfPickup": "請選擇自取取貨時間",
     "Pikachu:AtLeastOneDeliveryTimeIsRequiredForHomeDelivery": "請選擇親送取貨時間",
     "Pikachu:AtLeastOneDeliveryTimeIsRequiredForDeliverdByStore": "請選擇廠商統一出貨時間",
+    "Pikachu:DeliverdByStoreMethodIsRequired": "請選擇廠商統一出貨",
     "ItemStyle1": "商品規格",
     "ItemStyle2": "商品規格",
     "ItemStyle3": "商品規格",
