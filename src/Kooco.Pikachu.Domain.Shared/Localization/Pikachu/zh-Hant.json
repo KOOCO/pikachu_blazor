@@ -477,9 +477,10 @@
     "Shipped": "已出貨",
     "ManualStatusUpdate": "手動調整狀態",
     "Completed": "出貨完成",
-    "DeliveredByStore": "廠商統一出貨"
-
-
-
+    "DeliveredByStore": "廠商統一出貨",
+    "DeliveryTime": "收貨時間",
+    "RecipientCity": "縣市",
+    "RecipientPostalCode": "郵遞區號",
+    "Editor": "編輯者"
   }
 }

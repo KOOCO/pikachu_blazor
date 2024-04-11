@@ -439,8 +439,6 @@
     "Before13PM": "Before 13p.m",
     "Between14To18PM": "14-18 p.m",
     "Inapplicable": "Inapplicable",
-    "RecipientPostalCode": "Recipient Postal Code",
-    "RecipientCity": "Recipient City",
     "LastUpdatedDate": "Last Updated Date",
     "Taxable": "Taxable",
     "Non Taxable": "Non Taxable",
@@ -454,9 +452,10 @@
     "ManualStatusUpdate": "Manual Status Update",
     "Completed": "Completed",
     "SpecialTaxable": "Special Taxable",
-    "DeliveredByStore": "Delivered By Store"
-
-
-
+    "DeliveredByStore": "Delivered By Store",
+    "DeliveryTime": "Delivery Time",
+    "RecipientCity": "Recipient City",
+    "RecipientPostalCode": "Recipient Postal Code",
+    "Editor": "Editor"
   }
 }
