@@ -399,8 +399,8 @@
                                 <p>@L[ShippingStatus.Shipped.ToString()]</p>
                             </div>
                             <div class="col-12 d-flex justify-content-between">
-                                <p>@Order?.CancellationDate?.ToShortDateString()</p>
-                                 <p>@Order?.ClosedBy</p>
+                                <p>@Order?.CompletionTime?.ToShortDateString()</p>
+                                 <p>@Order?.CompletedBy</p>
                                 <p>@L[ShippingStatus.Completed.ToString()]</p>
                             </div>
                         }
