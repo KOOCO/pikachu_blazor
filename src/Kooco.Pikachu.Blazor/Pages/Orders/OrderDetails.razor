@@ -68,7 +68,7 @@
                                             <td>@L["Email"]</td>
                                             <td>@Order.CustomerEmail</td>
                                         </tr>
-                                        @if (!Order.GroupBuy.IsEnterprise)
+                                        @if ((Order.GroupBuy?.IsEnterprise ==null ||!Order.GroupBuy.IsEnterprise))
                                         {
                                             <tr>
                                                 <td>@L["PaymentMethod"]</td>
@@ -89,7 +89,7 @@
                                         </tr>
                                         <tr>
                                             <td>@L["TaxNumber"]</td>
-                                            <td>@Order.UniformNumber</td>
+                                            <td>@(Order.UniformNumber!="/"?Order.UniformNumber:"")</td>
                                         </tr>
                                         <tr>
                                             <td>@L["InvoiceCarrier"]</td>
