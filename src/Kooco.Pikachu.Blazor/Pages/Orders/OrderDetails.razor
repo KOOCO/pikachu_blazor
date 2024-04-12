@@ -68,13 +68,24 @@
                                             <td>@L["Email"]</td>
                                             <td>@Order.CustomerEmail</td>
                                         </tr>
-                                        <tr>
-                                            <td>@L["PaymentMethod"]</td>
-                                            <td>@L[Order.PaymentMethod.ToString()]</td>
-                                        </tr>
+                                        @if (!Order.GroupBuy.IsEnterprise)
+                                        {
+                                            <tr>
+                                                <td>@L["PaymentMethod"]</td>
+                                                <td>@L[Order.PaymentMethod.ToString()]</td>
+                                            </tr>
+                                        }
                                         <tr>
                                             <td>@L["Invoice"]</td>
                                             <td>@Order.InvoiceNumber</td>
+                                        </tr>
+                                        <tr>
+                                            <td>@L["CarrierNumber"]</td>
+                                            <td>@(Order.CarrierId!="/"?Order.CarrierId:"")</td>
+                                        </tr>
+                                         <tr>
+                                            <td>@L["TaxTitle"]</td>
+                                            <td>@Order.TaxTitle</td>
                                         </tr>
                                         <tr>
                                             <td>@L["TaxNumber"]</td>

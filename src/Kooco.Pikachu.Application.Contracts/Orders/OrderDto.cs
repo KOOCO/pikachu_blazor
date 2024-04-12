@@ -61,6 +61,7 @@ namespace Kooco.Pikachu.Orders
         public DateTime? CreditNoteDate { get; set; }
         public string? CreditNoteUser { get; set; }
         public string? VoidUser { get; set; }
+        public string? CarrierId { get; set; }
         public DateTime? VoidDate { get; set; }
         public DateTime? CompletionTime { get; set; }
         public IssueInvoiceStatus? IssueStatus { get; set; }
