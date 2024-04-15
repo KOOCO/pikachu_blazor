@@ -51,7 +51,7 @@
                 <input type="checkbox" class="form-check-input" checked="@IsAllSelected" @onchange="HandleSelectAllChange"></input>
                 <Label Class="form-label">@L["SelectAll"]</Label>
             </div>
-           @*      @if ((Orders.Where(x => x.IsSelected).Count() != 1) || (Orders.Where(x => x.ShippingStatus != ShippingStatus.PrepareShipment && x.IsSelected).Any()) || (Orders.Where(x => x.InvoiceNumber != null && x.IsSelected).Any()))
+                 @if ((Orders.Where(x => x.IsSelected).Count() != 1) || (Orders.Where(x => x.ShippingStatus != ShippingStatus.PrepareShipment && x.IsSelected).Any()) || (Orders.Where(x => x.InvoiceNumber != null && x.IsSelected).Any()))
             {
                 <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
                     <i class="fa fa-print"></i>
@@ -59,12 +59,12 @@
                 </Button>
             }
             else
-            { *@
+            { 
                 <Button Type="@ButtonType.Button" @onclick="IssueInvoice" Class="ms-1 btn btn-sm btn-primary">
                     <i class="fa fa-print"></i>
                     @L["IssueInvoice"]
                 </Button>
-            @* } *@
+             } 
             @if (ShowCombineButton())
             {
                 <Button Type="@ButtonType.Button" Clicked="MergeOrders" Class="btn btn-sm btn-secondary">@L["CombineOrders"]</Button>
