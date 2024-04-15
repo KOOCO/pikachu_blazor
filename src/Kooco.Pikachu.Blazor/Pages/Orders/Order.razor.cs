@@ -131,13 +131,15 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 foreach (var order in selectedOrders)
                 {
                     if (order.GroupBuyId != firstSelectedOrder.GroupBuyId ||
-                        order.CustomerName != firstSelectedOrder.CustomerName ||
+                         order.CustomerName != firstSelectedOrder.CustomerName ||
                         order.CustomerEmail != firstSelectedOrder.CustomerEmail ||
-                        order.RecipientName != firstSelectedOrder.RecipientName ||
-                        order.DeliveryMethod != firstSelectedOrder.DeliveryMethod ||
-                        order.PaymentMethod != firstSelectedOrder.PaymentMethod||
+                       order.ShippingStatus != firstSelectedOrder.ShippingStatus ||
+                    
+                       
                         order.OrderType!=null
-                        || order.OrderStatus!=OrderStatus.Open)
+                        || order.ShippingStatus==ShippingStatus.Shipped
+                        || order.ShippingStatus == ShippingStatus.Completed
+                        || order.ShippingStatus == ShippingStatus.Closed)
                     {
                         // If any property doesn't match, set allMatch to false and break the loop
                         allMatch = false;

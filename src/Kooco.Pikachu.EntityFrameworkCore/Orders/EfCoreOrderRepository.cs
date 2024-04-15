@@ -95,8 +95,8 @@ namespace Kooco.Pikachu.Orders
                 ).WhereIf(orderIds != null && orderIds.Any(), x => orderIds.Contains(x.Id))
                 .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate.Value.Date)
                 .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
-                .WhereIf(orderStatus.HasValue, x => x.OrderStatus == orderStatus)
-                .Where(x => x.OrderType != OrderType.MargeToNew);
+                .WhereIf(orderStatus.HasValue, x => x.OrderStatus == orderStatus);
+                //.Where(x => x.OrderType != OrderType.MargeToNew);
         }
         private static IQueryable<Order> ApplyReconciliationFilters(
          IQueryable<Order> queryable,

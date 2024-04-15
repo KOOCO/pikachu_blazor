@@ -206,22 +206,43 @@ namespace Kooco.Pikachu.Orders
                     var order = await _orderRepository.GetWithDetailsAsync(id);
                     TotalAmount += order.TotalAmount;
                     TotalQuantity += order.TotalQuantity;
-                    order.OrderType = OrderType.MargeToNew;
-                    await _orderRepository.UpdateAsync(order);
+                    
+
                     foreach (var item in order.OrderItems)
                     {
-                        OrderItemsCreateDto orderItem = new OrderItemsCreateDto();
-                        orderItem.ItemId = item.ItemId;
-                        orderItem.SetItemId = item.SetItemId;
-                        orderItem.FreebieId = item.FreebieId;
-                        orderItem.ItemType = item.ItemType;
 
-                        orderItem.Spec = item.Spec;
-                        orderItem.ItemPrice = item.ItemPrice;
-                        orderItem.TotalAmount = item.TotalAmount;
-                        orderItem.Quantity = item.Quantity;
-                        orderItem.SKU = item.SKU;
-                        orderItems.Add(orderItem);
+                        if (orderItems.Any(x => x.ItemId == item.ItemId && x.FreebieId==null) || orderItems.Any(x => x.FreebieId == item.FreebieId&& x.ItemId==null))
+                        {
+                            if (item.ItemId != null)
+                            {
+                                var orderItem = orderItems.Where(x => x.ItemId == item.ItemId).FirstOrDefault();
+                                orderItem.TotalAmount += item.TotalAmount;
+                                orderItem.Quantity += item.Quantity;
+                            }
+                            else {
+                                var orderItem = orderItems.Where(x => x.FreebieId == item.FreebieId).FirstOrDefault();
+                                orderItem.TotalAmount += item.TotalAmount;
+                                orderItem.Quantity += item.Quantity;
+
+                            }
+
+
+
+                        }
+                        else {
+                            OrderItemsCreateDto orderItem = new OrderItemsCreateDto();
+                            orderItem.ItemId = item.ItemId;
+                            orderItem.SetItemId = item.SetItemId;
+                            orderItem.FreebieId = item.FreebieId;
+                            orderItem.ItemType = item.ItemType;
+
+                            orderItem.Spec = item.Spec;
+                            orderItem.ItemPrice = item.ItemPrice;
+                            orderItem.TotalAmount = item.TotalAmount;
+                            orderItem.Quantity = item.Quantity;
+                            orderItem.SKU = item.SKU;
+                            orderItems.Add(orderItem);
+                        }
 
                     }
 
@@ -276,6 +297,13 @@ namespace Kooco.Pikachu.Orders
 
                 }
                 await _orderRepository.InsertAsync(order1);
+                foreach (var id in Ids)
+                {
+                    var ord1 = await _orderRepository.GetAsync(id);
+                    ord1.OrderType = OrderType.MargeToNew;
+                    await _orderRepository.UpdateAsync(ord1, autoSave: true);
+                }
+                await UnitOfWorkManager.Current.SaveChangesAsync();
                 return ObjectMapper.Map<Order, OrderDto>(order1);
             }
         }

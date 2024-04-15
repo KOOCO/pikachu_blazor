@@ -145,6 +145,20 @@
                             $ @context.TotalAmount.ToString("N2")
                         </DisplayTemplate>
                     </DataGridColumn>
+                    <DataGridColumn TextAlignment="TextAlignment.Center" Field="@nameof(OrderDto.OrderType)" >
+                        <DisplayTemplate>
+                            @if (context.OrderType == OrderType.MargeToNew)
+                            {
+                                @L["Orignal"];
+
+                            }
+                            @if (context.OrderType == OrderType.NewMarge)
+                            {
+                                @L["Combined"];
+
+                            }
+                        </DisplayTemplate>
+                    </DataGridColumn>
                 </DataGridColumns>
                 <DetailRowTemplate>
                     @{

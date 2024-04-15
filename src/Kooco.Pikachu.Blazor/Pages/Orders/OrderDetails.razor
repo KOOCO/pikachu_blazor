@@ -162,9 +162,12 @@
                                                     {
                                                         @Order.RecipientName
                                                     }
-                                                    <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientName">
-                                                        <i class="fa fa-pencil text-secondary"></i>
-                                                    </span>
+                                                    @if (Order.OrderType != OrderType.MargeToNew)
+                                                    {
+                                                        <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientName">
+                                                            <i class="fa fa-pencil text-secondary"></i>
+                                                        </span>
+                                                    }
                                                 </td>
                                             }
                                         </tr>
@@ -195,9 +198,12 @@
                                                     {
                                                         @Order.RecipientPhone
                                                     }
-                                                    <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientPhone">
-                                                        <i class="fa fa-pencil text-secondary"></i>
-                                                    </span>
+                                                     @if (Order.OrderType != OrderType.MargeToNew)
+                                                    {
+                                                        <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientPhone">
+                                                            <i class="fa fa-pencil text-secondary"></i>
+                                                        </span>
+                                                    }
                                                 </td>
                                             }
                                         </tr>
@@ -268,9 +274,12 @@
                                                         @(Order.AddressDetails)
                                                         @*  + ", " + Order.Road + ", " + Order.District + ", " + Order.City *@
                                                     }
-                                                    <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientAddress">
-                                                        <i class="fa fa-pencil text-secondary"></i>
-                                                    </span>
+                                                     @if (Order.OrderType != OrderType.MargeToNew)
+                                                    {
+                                                        <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientAddress">
+                                                            <i class="fa fa-pencil text-secondary"></i>
+                                                        </span>
+                                                    }
                                                 </td>
                                             }
                                         </tr>
@@ -313,36 +322,46 @@
                     {
                         <Button Type="ButtonType.Button" @onclick="CancelOrder" Class="btn btn-sm btn-danger">@L["CancelOrder"]</Button>
                     } *@
-                     @if (Order.PaymentMethod == PaymentMethods.CreditCard && Order.IsRefunded == false)
-                                {
-                                    <Button Type="ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="ApplyRefund">
-                                        @L["ApplyRefund"]
-                                    </Button>
-                                }
-                                else
-                                {
-                                    <Button Type="ButtonType.Button" Disabled Class="btn btn-sm btn-danger" Clicked="ApplyRefund">
-                                         @L["ApplyRefund"]
-                                    </Button>
-                                }
-                    @if (Order?.OrderStatus != OrderStatus.Returned && Order?.OrderStatus != OrderStatus.Exchange)
+                     @if (Order.OrderType != OrderType.MargeToNew)
                     {
-                        <Button Type="ButtonType.Button" Clicked="ExchangeOrder" Class="btn btn-sm btn-secondary me-1">@L["ExchangeItem"]</Button>
+                        @if (Order.PaymentMethod == PaymentMethods.CreditCard && Order.IsRefunded == false)
+                        {
+                            <Button Type="ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="ApplyRefund">
+                                @L["ApplyRefund"]
+                            </Button>
+                        }
+                        else
+                        {
+                            <Button Type="ButtonType.Button"       
+                                Disabled Class="btn btn-sm btn-danger" Clicked="ApplyRefund">
+                                 @L["ApplyRefund"]
+                            </Button>
+                        }
+                        @if (Order?.OrderStatus != OrderStatus.Returned && Order?.OrderStatus != OrderStatus.Exchange)
+                        {
+                            <Button Type="ButtonType.Button" Clicked="ExchangeOrder" Class="btn btn-sm btn-secondary me-1">@L["ExchangeItem"]</Button>
+                        }
                     }
                 </div>
                 <div class="col-md-6 col-sm-12 text-lg-end">
-                    @if (Order.ShippingStatus == ShippingStatus.PrepareShipment && Order.OrderItems.Any(x => x.IsSelected == true) && Order.OrderType == null)
+                     @if (Order.OrderType != OrderType.MargeToNew)
                     {
-                        <Button Clicked="SplitOrder" Type="ButtonType.Button" Class="btn btn-sm btn-secondary">@L["SplitOrder"]</Button>
-                    }
-                    else
-                    {
-                        <Button Type="ButtonType.Button" Disabled Class="btn btn-sm btn-secondary me-1">@L["SplitOrder"]</Button>
+                        @if (Order.ShippingStatus == ShippingStatus.PrepareShipment && Order.OrderItems.Any(x => x.IsSelected == true) && Order.OrderType == null)
+                        {
+                            <Button Clicked="SplitOrder" Type="ButtonType.Button" Class="btn btn-sm btn-secondary">@L["SplitOrder"]</Button>
+                        }
+                        else
+                        {
+                            <Button Type="ButtonType.Button"    
+
+                                Disabled Class="btn btn-sm btn-secondary me-1">@L["SplitOrder"]</Button>
+                        }
                     }
                     <Button Type="ButtonType.Button" @onclick="NavigateToOrderShipmentDetails" Class="btn btn-sm btn-primary">
-                        <Icon Class="fa fa-print"></Icon>
-                        @L["PrintOrder"]
-                    </Button>
+                            <Icon Class="fa fa-print"></Icon>
+                            @L["PrintOrder"]
+                        </Button>
+                    
                 </div>
             </div>
             <Card>
@@ -440,18 +459,20 @@
                     </div>
                 </CardBody>
             </Card>
-             <Card>
-                <CardBody>
-                    <div class="row">
-                         <div class="col-12 d-flex justify-content-between">
-                    <p class="fw-bold">@L["ManualStatusUpdate"]</p>
-                    
-                    
-                    </div>
-                    </div>
-                    <div class="row">
-                         <div class="col-12 d-flex justify-content-between">
-                         <Select TValue="ShippingStatus" Class="form-select form-select-sm"
+             @if (Order.OrderType != OrderType.MargeToNew)
+            {
+                <Card>
+                    <CardBody>
+                        <div class="row">
+                            <div class="col-12 d-flex justify-content-between">
+                                <p class="fw-bold">@L["ManualStatusUpdate"]</p>
+
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 d-flex justify-content-between">
+                                <Select TValue="ShippingStatus" Class="form-select form-select-sm"
                                 SelectedValue="@Order.ShippingStatus"
                                 SelectedValueChanged="@(e => ShippingStatusChanged(e))">
                                     <SelectItem></SelectItem>
@@ -464,6 +485,7 @@
                     </div>
                 </CardBody>
             </Card>
+            }
         </div>
     </div>
 
@@ -473,6 +495,8 @@
         <div class="col-6">
             <h4 class="d-inline-block">@L["OrderItems"]</h4>
         </div>
+         @if (Order.OrderType != OrderType.MargeToNew)
+                                                    {
         <div class="col-6 text-end">
             @if (IsItemsEditMode)
             {
@@ -492,6 +516,7 @@
                 </Button>
             }
         </div>
+        }
         <div class="col-12">
             <Card>
                 <CardBody>
@@ -690,29 +715,32 @@
                                 Sortable="false"
                                 Caption="@L["Actions"]">
                         <DisplayTemplate>
-                        <div class="btn-group me-1" role="group" aria-label="Button group with nested dropdown">
-  <Button Type="ButtonType.Button" Clicked="()=>CreateOrderLogistics(context)" Class="btn btn-primary">@L["ShipmentNotify"]</Button>
-  <Button Type="ButtonType.Button" Clicked="() => OpenShipmentModal(context)" style="margin-left: 1px;" Class="btn btn-primary"><Icon Class="dropdown-toggle"></Icon></Button>
+                             @if (Order.OrderType != OrderType.MargeToNew)
+                                    {
+                                        <div class="btn-group me-1" role="group" aria-label="Button group with nested dropdown">
+                                            <Button Type="ButtonType.Button" Clicked="()=>CreateOrderLogistics(context)" Class="btn btn-primary">@L["ShipmentNotify"]</Button>
+                                                <Button Type="ButtonType.Button" Clicked="() => OpenShipmentModal(context)" style="margin-left: 1px;" Class="btn btn-primary"><Icon Class="dropdown-toggle"></Icon></Button>
 
-  
-</div>
-                                  @*   <Button Type="ButtonType.Button" Clicked="() => OpenShipmentModal(context)" Class="btn btn-sm btn-primary me-1">
+
+                                            </div>
+                                        @*   <Button Type="ButtonType.Button" Clicked="() => OpenShipmentModal(context)" Class="btn btn-sm btn-primary me-1">
                                     @L["ShipmentNotify"]
                                 </Button> *@
-                                @if(context.DeliveryStatus==DeliveryStatus.Proccesing)
-                                {
-                                    <Button Type="ButtonType.Button" Clicked="() => OrderItemShipped(context)" Class="btn btn-sm btn-secondary me-1">
-                                        @L["Shipped"]
+                                        @if (context.DeliveryStatus == DeliveryStatus.Proccesing)
+                                        {
+                                            <Button Type="ButtonType.Button" Clicked="() => OrderItemShipped(context)" Class="btn btn-sm btn-secondary me-1">
+                                                @L["Shipped"]
                                             </Button>
+                                        }
+                                        else
+                                        {
+                                            <Button Type="ButtonType.Button"     
+                                                Disabled Clicked="() => OrderItemShipped(context)" Class="btn btn-sm btn-secondary me-1">
+                                                 @L["Shipped"]
+                                            </Button>
+                                        }
+
                                     }
-                                    else
-                                    {
-                                        <Button Type="ButtonType.Button" Disabled Clicked="() => OrderItemShipped(context)" Class="btn btn-sm btn-secondary me-1">
-                                        @L["Shipped"]
-                                            </Button>
-                                                                        
-    
-    }
                                 </DisplayTemplate>
                             </DataGridColumn>
                 </DataGridColumns>
@@ -864,25 +892,28 @@
                                 <InputTextArea class="form-control" @bind-Value="@StoreComments.Comment"></InputTextArea>
                                 <ValidationMessage For="@(() => StoreComments.Comment)" />
                             </div>
-                            <div class="col-12 text-end">
-                                <Button Type="ButtonType.Button" Class="btn btn-sm btn-danger me-1" Clicked="() => StoreComments = new()">
-                                    @L["Cancel"]
-                                </Button>
-                                @if (StoreComments.Id == null)
-                                {
-                                    <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
-                                        <i class="fa fa-check"></i>
-                                        @L["Save"]
+                             @if (Order.OrderType != OrderType.MargeToNew)
+                            {
+                                <div class="col-12 text-end">
+                                    <Button Type="ButtonType.Button" Class="btn btn-sm btn-danger me-1" Clicked="() => StoreComments = new()">
+                                        @L["Cancel"]
                                     </Button>
-                                }
-                                else
-                                {
-                                    <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
-                                        <i class="fa fa-check"></i>
+                                    @if (StoreComments.Id == null)
+                                    {
+                                        <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
+                                            <i class="fa fa-check"></i>
+                                            @L["Save"]
+                                        </Button>
+                                    }
+                                    else
+                                    {
+                                        <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
+                                            <i class="fa fa-check"></i>
                                         @L["Update"]
                                     </Button>
                                 }
                             </div>
+                            }
                         </EditForm>
                     </div>
                 </CardBody>
