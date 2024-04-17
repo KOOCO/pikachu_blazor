@@ -27,7 +27,21 @@
                     </Button>
                 </div>
                 
-            </div>
+            </div @if (Orders.Where(x => x.IsSelected).Count() != 1|| Orders.Any(x => x.IsSelected && x.IsVoidInvoice &&x.CreditNoteReason!=null) )
+            {
+                <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
+                    <i class="fa fa-print"></i>
+                    @L["IssueCreditNote"]
+                </Button>
+            }
+            else
+            {
+                <Button Type="@ButtonType.Button" Clicked="() => OpenCreditReasonModal()" Class="ms-1 btn btn-sm btn-primary">
+                    <i class="fa fa-print"></i>
+                    @L["IssueCreditNote"]
+                </Button>
+            }
+
             @if (Orders.Where(x => x.IsSelected).Count() != 1 || Orders.Any(x => x.IsSelected && x.IsVoidInvoice))
             {
                 <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
@@ -81,7 +95,7 @@
                     <DataGridColumn Field="@nameof(OrderDto.LastModificationTime)" Caption="@L["LastUpDateDate"]" />
                   @*   <DataGridColumn Field="@nameof(OrderDto.CustomerName)" Caption="@L["CustomerName"]" />
                     <DataGridColumn Field="@nameof(OrderDto.CustomerEmail)" Caption="@L["Email"]" /> *@
-                    <DataGridColumn Field="@nameof(OrderDto.IssueStatus)" Caption="@L["InvoiceStatus"]">
+                    <DataGridColumn Field="@nameof(OrderDto.IssueStatus)" Caption="@L["InvoiceIssueStatus"]">
                         <DisplayTemplate>
                             @L[context.IssueStatus.ToString()]
                         </DisplayTemplate>
@@ -99,7 +113,7 @@
                     </DataGridColumn>
                     <DataGridColumn Field="@nameof(OrderDto.LastModifierId)" Caption="@L["Editor"]">
                         <DisplayTemplate>
-                            @L[context.LastModifierId.ToString()]
+                            @context.VoidUser
                         </DisplayTemplate>
                     </DataGridColumn>
                 </DataGridColumns>
@@ -190,6 +204,39 @@
                 <ModalFooter>
                     <Button Color="Color.Danger"
                             Clicked="CloseVoidReasonModal">
+                        @L["Cancel"]
+                    </Button>
+                    <Button Type="ButtonType.Submit" Class="btn btn-primary">
+                        <i class="fa fa-check"></i>
+                        @L["Save"]
+                    </Button>
+                </ModalFooter>
+            </EditForm>
+        </ModalContent>
+    </Modal>
+      <Modal @ref="CreateCreditNoteReasonModal">
+      
+        <ModalContent IsCentered="true">
+            <EditForm Model="@CreditReason" OnValidSubmit="ApplyCreditReasonAsync">
+                <ModalHeader>
+                    <ModalTitle>@L["CreditReason"]</ModalTitle>
+                        <CloseButton Clicked="CloseCreditReasonModal"  />
+                    </ModalHeader>
+                    <ModalBody>
+
+                        <DataAnnotationsValidator />
+                    
+                    <div class="row my-2">
+                        <label class="form-label">@L["CreditReason"]</label>
+                        <div class="col-12 mb-2">
+                            <InputText class="form-control" @bind-Value="@CreditReason.Reason"></InputText>
+                            <ValidationMessage For="@(() => CreditReason.Reason)" />
+                        </div>
+                    </div>
+                </ModalBody>
+                <ModalFooter>
+                    <Button Color="Color.Danger"
+                            Clicked="CloseCreditReasonModal">
                         @L["Cancel"]
                     </Button>
                     <Button Type="ButtonType.Submit" Class="btn btn-primary">

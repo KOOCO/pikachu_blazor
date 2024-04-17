@@ -14,6 +14,7 @@ using Kooco.Pikachu.EnumValues;
 using System.ComponentModel.DataAnnotations;
 using Kooco.Pikachu.Blazor.Pages.Orders;
 using Kooco.Pikachu.OrderDeliveries;
+using Kooco.Pikachu.Blazor.Pages.VoidInvoices;
 
 namespace Kooco.Pikachu.Blazor.Pages.CashFlowReconciliationStatements
 {
@@ -31,6 +32,8 @@ namespace Kooco.Pikachu.Blazor.Pages.CashFlowReconciliationStatements
         private VoidReason VoidReason { get; set; } = new();
         private readonly HashSet<Guid> ExpandedRows = new();
         private LoadingIndicator loading { get; set; }
+        private Modal CreateCreditNoteReasonModal { get; set; }
+        private CreditReason CreditReason { get; set; } = new();
         private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<OrderDto> e)
         {
             PageIndex = e.Page - 1;
@@ -174,10 +177,35 @@ namespace Kooco.Pikachu.Blazor.Pages.CashFlowReconciliationStatements
            
             CreateVoidReasonModal.Show();
         }
+        private void CloseCreditReasonModal()
+        {
+            CreateCreditNoteReasonModal.Hide();
+        }
+        private async Task ApplyCreditReasonAsync()
+        {
+            await loading.Show();
+            var selectedOrder = Orders.SingleOrDefault(x => x.IsSelected);
+            await _orderAppService.CreditNoteInvoice(selectedOrder.Id, CreditReason.Reason);
+            await CreateCreditNoteReasonModal.Hide();
+            await UpdateItemList();
+            await InvokeAsync(StateHasChanged);
+        }
+        private void OpenCreditReasonModal()
+        {
+
+            CreateCreditNoteReasonModal.Show();
+        }
     }
     public class VoidReason
     {
        
+
+        [Required(ErrorMessage = "This Field Is Required")]
+        public string? Reason { get; set; }
+    }
+    public class CreditReason
+    {
+
 
         [Required(ErrorMessage = "This Field Is Required")]
         public string? Reason { get; set; }

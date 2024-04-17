@@ -117,7 +117,8 @@ namespace Kooco.Pikachu.Orders
                 .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate.Value.Date)
                 .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
                 .Where(x => x.ShippingStatus == ShippingStatus.Shipped)
-                .Where(x => x.OrderType != OrderType.MargeToNew);
+                .Where(x=>x.IsVoidInvoice==false);
+                //.Where(x => x.OrderType != OrderType.MargeToNew);
         }
         private static IQueryable<Order> ApplyVoidFilters(
          IQueryable<Order> queryable,

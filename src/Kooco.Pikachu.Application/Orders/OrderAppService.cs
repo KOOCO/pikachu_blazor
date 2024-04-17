@@ -614,11 +614,12 @@ namespace Kooco.Pikachu.Orders
         public async Task CreditNoteInvoice(Guid id, string reason)
         {
             var order = await _orderRepository.GetAsync(id);
+          
            // order.IsVoidInvoice = true;
             order.CreditNoteReason = reason;
             order.CreditNoteUser = CurrentUser.Name;
             order.CreditNoteDate = DateTime.Now;
-            order.InvoiceStatus = InvoiceStatus.InvoiceVoided;
+            order.InvoiceStatus = InvoiceStatus.CreditNote;
           
             await _orderRepository.UpdateAsync(order);
             await _electronicInvoiceAppService.CreateCreditNoteAsync(id);
@@ -652,7 +653,7 @@ namespace Kooco.Pikachu.Orders
             var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
             var delay = DateTime.Now.AddDays(invoiceDely)-DateTime.Now;
             await _backgroundJobManager.EnqueueAsync(order.Id, BackgroundJobPriority.High, delay);
-            await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+           // await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
             await SendEmailAsync(order.Id);
             return ObjectMapper.Map<Order, OrderDto>(order);
         }

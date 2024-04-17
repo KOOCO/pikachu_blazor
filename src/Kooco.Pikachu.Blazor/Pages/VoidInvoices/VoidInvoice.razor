@@ -28,20 +28,7 @@
                 </div>
                 
             </div>
-          @*   @if (Orders.Where(x => x.IsSelected).Count() != 1 || Orders.Any(x => x.IsSelected && x.CreditNoteDate!=null))
-            {
-                <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
-                    <i class="fa fa-print"></i>
-                    @L["IssueCreditNote"]
-                </Button>
-            }
-            else
-            { *@
-                <Button Type="@ButtonType.Button" Clicked="() => OpenVoidReasonModal()" Class="ms-1 btn btn-sm btn-primary">
-                    <i class="fa fa-print"></i>
-                    @L["IssueCreditNote"]
-                </Button>
-            @* } *@
+      
             <Button Type="ButtonType.Button" Class="btn btn-sm btn-outline-dark" Clicked="DownloadExcel"><i class="fa fa-arrow-down"></i></Button>
            
 

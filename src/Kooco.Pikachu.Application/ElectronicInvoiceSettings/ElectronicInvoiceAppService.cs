@@ -123,12 +123,14 @@ namespace Kooco.Pikachu.ElectronicInvoiceSettings
                 ResponseModel jsonObj = JsonConvert.DeserializeObject<ResponseModel>(data);
                 if (jsonObj.InvoiceNo.IsNullOrWhiteSpace())
                 {
+                    order.VoidUser = CurrentUser.Name;
                     order.IssueStatus = IssueInvoiceStatus.Failed;
                     await _orderRepository.UpdateAsync(order);
                 }
                 order.InvoiceNumber = jsonObj.InvoiceNo;
                 order.InvoiceStatus = InvoiceStatus.Issued;
                 order.InvoiceDate = jsonObj.InvoiceDate;
+                order.VoidUser = CurrentUser.Name;
                 order.IssueStatus = IssueInvoiceStatus.Succeeded;
                 await _orderRepository.UpdateAsync(order);
 
@@ -156,7 +158,7 @@ namespace Kooco.Pikachu.ElectronicInvoiceSettings
                 MerchantID = "2000132",
                 InvoiceNo = order.InvoiceNumber,
                 CustomerName = order.CustomerName,
-                InvoiceDate = order.InvoiceDate.Value,
+                InvoiceDate = order.InvoiceDate==null?DateTime.Now: order.InvoiceDate.Value,
                NotifyMail=order.RecipientEmail,
                NotifyPhone=order.RecipientPhone,
                 AllowanceNotify="E",
@@ -348,12 +350,12 @@ public class CreditNoteParameters
     public string MerchantID { get; set; }
 
     
-    public string InvoiceNo { get; set; }
+    public string? InvoiceNo { get; set; }
 
    
 
    
-    public DateTime InvoiceDate { get; set; }
+    public DateTime? InvoiceDate { get; set; }
 
     public string CustomerName { get; set; }
 

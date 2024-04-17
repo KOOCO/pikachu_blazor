@@ -8,6 +8,7 @@ namespace Kooco.Pikachu.EnumValues
     {
         Pending,
         Issued, 
-        InvoiceVoided
+        InvoiceVoided,
+        CreditNote
     }
 }
