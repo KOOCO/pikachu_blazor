@@ -7,7 +7,7 @@
 @using Blazorise;
 @using Blazorise.LoadingIndicator;
 @using Volo.Abp.AspNetCore.Components.Messages;
-
+@inherits PikachuComponentBase;
 @inject IRefundAppService _refundAppService;
 @inject IStringLocalizer<PikachuResource> L;
 @inject IUiMessageService _uiMessageService;
@@ -65,14 +65,39 @@
                  <DataGridColumn TItem="RefundDto"
                                  Caption="@L["RefundReview"]">
                      <DisplayTemplate>
-                         <Select TValue="RefundReviewStatus" Class="form-select form-select-sm" 
+                         <Div>
+                            @if (!(context.RefundReview == RefundReviewStatus.Proccessing && context.Order.PaymentMethod == PaymentMethods.CreditCard))
+                             {
+                         <Select Disabled TValue="RefundReviewStatus" Class="form-select form-select-sm mb-1" 
                                     SelectedValue="@context.RefundReview" 
                                     SelectedValueChanged="@(e => RefundReviewChanged(e, context))">
                              @foreach (var enumValue in Enum.GetValues(typeof(RefundReviewStatus)))
                             {
                                 <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
                             }
-                        </Select>
+                                </Select>
+                            }
+                            else if(context.RefundReview==RefundReviewStatus.Proccessing&& context.Order.PaymentMethod==PaymentMethods.CreditCard)
+                            {
+                                <Select  TValue="RefundReviewStatus" Class="form-select form-select-sm mb-1"
+                                        SelectedValue="@context.RefundReview"
+                                        SelectedValueChanged="@(e => RefundReviewChanged(e, context))">
+                                  
+                                    @foreach (var enumValue in Enum.GetValues(typeof(RefundReviewStatus)))
+                                    {
+                                        @if(enumValue.ToString() == "Success" || enumValue.ToString() == "Fail")
+                                        {
+                                        <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                        }
+                                    }
+                                </Select>
+                            }
+                            @if (CanProcessRefund&&context.RefundReview==RefundReviewStatus.PendingReview)
+                {
+                            <Button Type="ButtonType.Button" Clicked="@(e => RefundApproved(context))" Class="btn btn-sm btn-primary">Approve</Button>
+                                <Button Type="ButtonType.Button" Clicked="@(e => RefundReject(context))" Class="btn btn-sm btn-danger">Reject</Button>
+                }
+                        </Div>
                      </DisplayTemplate>
                  </DataGridColumn>
                  <DataGridColumn TItem="RefundDto"

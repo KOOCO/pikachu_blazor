@@ -34,6 +34,7 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
 
         var refundPermissions = myGroup2.AddPermission(PikachuPermissions.Refund.Default, L("Permission:Refunds"));
         refundPermissions.AddChild(PikachuPermissions.Refund.Create, L("Permission:Create"));
+        refundPermissions.AddChild(PikachuPermissions.Refund.RefundOrderProcess, L("Permission:RefundProcess"));
         var myGroup3 = context.AddGroup(PikachuPermissions.PaymentManagement);
         myGroup3.AddPermission(PikachuPermissions.CashFlowDealerSettings, L("Permission:CashFlowDealerSettings"));
         myGroup3.AddPermission(PikachuPermissions.CashFlowReconciliationStatement, L("Permission:CashFlowReconciliationStatement"));

@@ -8,6 +8,8 @@ namespace Kooco.Pikachu.EnumValues
     {
         PendingReview,
         ReturnedApplication,
-        Returned
+        Proccessing, 
+        Fail,
+        Success
     }
 }

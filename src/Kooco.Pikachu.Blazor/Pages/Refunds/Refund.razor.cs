@@ -3,7 +3,9 @@ using Blazorise.DataGrid;
 using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Items.Dtos;
+using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.Refunds;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
@@ -24,7 +26,12 @@ namespace Kooco.Pikachu.Blazor.Pages.Refunds
         string? Sorting { get; set; }
         string? Filter { get; set; }
         int TotalCount { get; set; }
-
+        private bool CanProcessRefund { get; set; }
+        protected override async Task OnInitializedAsync()
+        {
+            CanProcessRefund = await AuthorizationService
+         .IsGrantedAsync(PikachuPermissions.Refund.RefundOrderProcess);
+        }
         private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<RefundDto> e)
         {
             PageIndex = e.Page - 1;
@@ -60,6 +67,51 @@ namespace Kooco.Pikachu.Blazor.Pages.Refunds
             {
                 await loading.Hide();
             }
+        }
+        
+             private async Task RefundApproved(RefundDto rowData)
+        {
+            try
+            {
+                await loading.Show();
+                
+                    await _refundAppService.UpdateRefundReviewAsync(rowData.Id, RefundReviewStatus.Proccessing);
+                
+                
+                await UpdateItemList();
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
+                await JSRunTime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+                await loading.Hide();
+            }
+
+        }
+        private async Task RefundReject(RefundDto rowData)
+        {
+            try
+            {
+                await loading.Show();
+
+                await _refundAppService.UpdateRefundReviewAsync(rowData.Id, RefundReviewStatus.ReturnedApplication);
+
+
+                await UpdateItemList();
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
+                await JSRunTime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+                await loading.Hide();
+            }
+
         }
         private async Task RefundReviewChanged(RefundReviewStatus selectedValue, RefundDto rowData)
         {

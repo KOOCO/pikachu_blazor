@@ -34,6 +34,7 @@ public static class PikachuPermissions
     public const string EmailSettings = "EmailSettings";
     public const string AutomaticEmailing = "AutomaticEmailing";
     public const string DeliveryTemperatureCost = "DeliveryTemperatureCost";
+   
     /// <summary>
     /// 
     /// </summary>
@@ -75,5 +76,6 @@ public static class PikachuPermissions
     {
         public const string Default = OrderManagement + ".Refunds";
         public const string Create = Default + ".Create";
+        public const string RefundOrderProcess = Default + "RefundProcess";
     }
 }
