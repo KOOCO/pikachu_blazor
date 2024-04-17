@@ -700,7 +700,10 @@
                     </DataGridColumn>
                      <DataGridColumn  Caption="@L["DeliveryTemperature"]" >
                         <DisplayTemplate>
-                            @context.Items[0].DeliveryTemperature
+                            @if(context.Items.Count>0)
+                            {
+                            @context.Items[0]?.DeliveryTemperature
+                            }
                         </DisplayTemplate>
                        </DataGridColumn>
                  <DataGridColumn  Caption="@L["AllPayLogisticsID"]" >
