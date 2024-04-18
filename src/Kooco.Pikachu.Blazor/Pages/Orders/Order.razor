@@ -147,9 +147,15 @@
                     </DataGridColumn>
                     <DataGridColumn TextAlignment="TextAlignment.Center" Field="@nameof(OrderDto.OrderType)" >
                         <DisplayTemplate>
-                            @if (context.OrderType == OrderType.MargeToNew)
+                            @if (context.OrderType == OrderType.MargeToNew || context.OrderType == OrderType.SplitToNew)
                             {
                                 @L["Orignal"];
+
+                            }
+                            @if (context.OrderType == OrderType.NewSplit)
+                            {
+                                @L["Split"]
+                                ;
 
                             }
                             @if (context.OrderType == OrderType.NewMarge)

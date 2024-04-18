@@ -344,11 +344,17 @@
                     }
                 </div>
                 <div class="col-md-6 col-sm-12 text-lg-end">
+                    @if(Order.Id!=Guid.Empty)
+                    {
                      @if (Order.OrderType != OrderType.MargeToNew)
                     {
                         @if (Order.ShippingStatus == ShippingStatus.PrepareShipment && Order.OrderItems.Any(x => x.IsSelected == true) && Order.OrderType == null)
                         {
                             <Button Clicked="SplitOrder" Type="ButtonType.Button" Class="btn btn-sm btn-secondary">@L["SplitOrder"]</Button>
+                        }
+                        else if(Order.ShippingStatus == ShippingStatus.WaitingForPayment && Order.OrderItems.Any(x => x.IsSelected == true) && Order.OrderType == null)
+                        {
+                        <Button Clicked="SplitOrder" Type="ButtonType.Button" Class="btn btn-sm btn-secondary">@L["SplitOrder"]</Button>
                         }
                         else
                         {
@@ -356,6 +362,7 @@
 
                                 Disabled Class="btn btn-sm btn-secondary me-1">@L["SplitOrder"]</Button>
                         }
+                    }
                     }
                     <Button Type="ButtonType.Button" @onclick="NavigateToOrderShipmentDetails" Class="btn btn-sm btn-primary">
                             <Icon Class="fa fa-print"></Icon>
