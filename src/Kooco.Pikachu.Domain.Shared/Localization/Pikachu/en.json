@@ -313,7 +313,13 @@
     "ReviewCompletionTime": "Review Completion Time",
     "RefundReview": "Refund Review",
     "PendingReview": "Pending Review",
+    "Processing": "Processing",
+    "Success": "Success",
+    "Fail": "Fail",
     "ReturnedApplication": "Returned Application",
+    "Approver": "Approver",
+    "Refunder": "Refunder",
+    "MerchantRemark": "Merchant Remark",
     "Enum:TenantStatus.0": "Open",
     "Enum:TenantStatus.1": "Closed",
     "Enum:TenantStatus.2": "Warning",
@@ -460,5 +466,6 @@
     "RecipientCity": "Recipient City",
     "RecipientPostalCode": "Recipient Postal Code",
     "Editor": "Editor"
+
   }
 }

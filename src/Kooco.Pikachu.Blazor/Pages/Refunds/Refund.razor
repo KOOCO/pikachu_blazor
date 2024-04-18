@@ -100,10 +100,22 @@
                         </Div>
                      </DisplayTemplate>
                  </DataGridColumn>
+                <DataGridColumn TItem="RefundDto"
+                                Caption="@L["Approver"]">
+                    <DisplayTemplate>
+                        @L[context.Approver??""]
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="RefundDto"
+                                Caption="@L["Refunder"]">
+                    <DisplayTemplate>
+                        @L[context.Refunder??""]
+                    </DisplayTemplate>
+                </DataGridColumn>
                  <DataGridColumn TItem="RefundDto"
-                                 Caption="@L["OrderStatus"]">
+                                Caption="@L["MerchantRemarks"]">
                      <DisplayTemplate>
-                         @L[context.Order.OrderStatus.ToString()]
+                         @context.Order.Remarks
                      </DisplayTemplate>
                  </DataGridColumn>
                  <DataGridColumn TItem="RefundDto"

@@ -64,6 +64,16 @@ namespace Kooco.Pikachu.Refunds
         {
             var refund = await _refundRepository.GetAsync(id);
             refund.RefundReview = input;
+            if (input == RefundReviewStatus.Proccessing||input==RefundReviewStatus.ReturnedApplication)
+            {
+                refund.ReviewCompletionTime = DateTime.Now;
+                refund.Approver = CurrentUser.Name;
+            }
+            if (input == RefundReviewStatus.Fail || input == RefundReviewStatus.Success)
+            {
+               
+                refund.Refunder = CurrentUser.Name;
+            }
             await _refundRepository.UpdateAsync(refund);
             return ObjectMapper.Map<Refund, RefundDto>(refund);
         }

@@ -314,6 +314,13 @@
     "RefundReview": "退款審核",
     "PendingReview": "待審核",
     "Refunded": "已退款",
+    "Processing": "處理中",
+    "Success": "退款成功",
+    "Fail": "退款失敗",
+    "ReturnedApplication": "審核失敗",
+    "Approver": "審核人員",
+    "Refunder": "退款人員",
+    "MerchantRemark": "備註",
     "Enum:TenantStatus.0": "正常",
     "Enum:TenantStatus.1": "關閉",
     "Enum:TenantStatus.2": "警示",
@@ -484,5 +491,7 @@
     "RecipientCity": "縣市",
     "RecipientPostalCode": "郵遞區號",
     "Editor": "編輯者"
+
+
   }
 }

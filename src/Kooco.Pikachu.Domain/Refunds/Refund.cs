@@ -17,7 +17,8 @@ namespace Kooco.Pikachu.Refunds
 
         public DateTime? ReviewCompletionTime { get; set; }
         public RefundReviewStatus RefundReview { get; set; }
-
+        public string? Approver { get; set; }
+        public string? Refunder { get; set; }
         [ForeignKey(nameof(OrderId))]
         public Order Order { get; set; }
         public Guid? TenantId { get; set; }

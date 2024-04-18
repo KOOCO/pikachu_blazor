@@ -12,5 +12,7 @@ namespace Kooco.Pikachu.Refunds
         public RefundReviewStatus RefundReview { get; set; }
         public OrderDto Order { get; set; }
         public Guid? TenantId { get; set; }
+        public string? Approver { get; set; }
+        public string? Refunder { get; set; }
     }
 }
