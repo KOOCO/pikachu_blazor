@@ -78,6 +78,13 @@
                                     Caption="@L["GroupBuyName"]">
                     </DataGridColumn>
                     <DataGridColumn TItem="GroupBuyDto"
+                                    Field="@nameof(GroupBuyDto.StartTime)"
+                                    Caption="@L["TimePeriod"]">
+                        <DisplayTemplate>
+                            @context.StartTime-@context.EndTime
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn TItem="GroupBuyDto"
                                     Field="@nameof(GroupBuyDto.CreationTime)"
                                     Caption="@L["CreatedTime"]">
                         <DisplayTemplate>
