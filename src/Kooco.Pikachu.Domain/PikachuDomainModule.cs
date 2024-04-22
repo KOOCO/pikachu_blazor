@@ -70,6 +70,7 @@ public class PikachuDomainModule : AbpModule
         {
             options.IsEnabled = MultiTenancyConsts.IsEnabled;
         });
+      
 
 
 #if DEBUG

@@ -238,7 +238,7 @@ public class PikachuBlazorModule : AbpModule
 
         context.Services.AddHangfireServer(options =>
         {
-            options.Queues = new[] { "automatic-emails-job" };
+            options.Queues = new[] { "automatic-emails-job", "automatic-issue-invoice" };
         });
     }
 
