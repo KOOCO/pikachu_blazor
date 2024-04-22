@@ -211,6 +211,7 @@ public class PikachuBlazorModule : AbpModule
         ConfigureMenu(context);
         ConfigureSignalRHubOptions();
         ConfigureHangfire(context, configuration);
+  
         context.Services.AddScoped<CustomTenantManagement>();
         context.Services.AddCors(options =>
         {
@@ -226,7 +227,7 @@ public class PikachuBlazorModule : AbpModule
         });
         Configure<AbpBackgroundJobOptions>(options =>
         {
-            options.IsJobExecutionEnabled = false;
+            options.IsJobExecutionEnabled = true;
         });
     }
     private void ConfigureHangfire(ServiceConfigurationContext context, IConfiguration configuration)

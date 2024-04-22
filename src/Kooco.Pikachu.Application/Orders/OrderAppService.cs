@@ -702,7 +702,7 @@ namespace Kooco.Pikachu.Orders
             await UnitOfWorkManager.Current.SaveChangesAsync();
             var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
             var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
-            var delay = DateTime.Now.AddDays(invoiceDely)-DateTime.Now;
+            var delay = DateTime.Now.AddMinutes(1)-DateTime.Now;
             GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
           var jobid=  await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
            // await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
