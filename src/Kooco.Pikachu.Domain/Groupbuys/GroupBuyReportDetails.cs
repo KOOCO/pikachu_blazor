@@ -1,5 +1,8 @@
 ﻿
+using Kooco.Pikachu.GroupBuys;
+using Kooco.Pikachu.OrderItems;
 using System;
+using System.Collections.Generic;
 
 namespace Kooco.Pikachu.Groupbuys;
 
@@ -16,4 +19,6 @@ public class GroupBuyReportDetails
     public decimal BloggersProfit { get; set; }
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
+    public GroupBuy GroupBuy { get; set; }
+    public List<OrderItem> OrderItems { get; set; }
 }
