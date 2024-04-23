@@ -617,7 +617,7 @@
                                     <td>
                                     </td>
                                     <td>
-                                        $@Order.TotalAmount.ToString("N2")
+                                        $@Order.OrderItems.Sum(x=>x.TotalAmount).ToString("N2")
                                     </td>
                                 </tr>
                                 <tr>
@@ -629,7 +629,7 @@
                                     <td>
                                     </td>
                                     <td>
-                                        -
+                                       $@((Order.TotalAmount-Order.OrderItems.Sum(x=>x.TotalAmount)).ToString("N2"))
                                     </td>
                                 </tr>
                                 <tr>

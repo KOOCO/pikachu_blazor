@@ -29,6 +29,7 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Security.Encryption;
+using Volo.Abp.Validation.Localization;
 
 
 namespace Kooco.Pikachu.Orders
@@ -310,6 +311,7 @@ namespace Kooco.Pikachu.Orders
 
         public async Task<OrderDto> SplitOrderAsync(List<Guid> OrderItemIds, Guid OrderId)
         {
+            Order newOrder= new Order();
             var ord = await _orderRepository.GetWithDetailsAsync(OrderId);
             decimal TotalAmount = ord.TotalAmount;
             int TotalQuantity = ord.TotalQuantity;
@@ -388,6 +390,8 @@ namespace Kooco.Pikachu.Orders
 
                                        );
                         await _orderRepository.InsertAsync(order1);
+                        await UnitOfWorkManager.Current.SaveChangesAsync();
+                        newOrder = order1;
                         if (order1.ShippingStatus == ShippingStatus.PrepareShipment)
                         {
                             if (orderItem.Item?.IsFreeShipping == true)
@@ -438,12 +442,22 @@ namespace Kooco.Pikachu.Orders
                     }
 
                 }
-
-                ord.TotalAmount = TotalAmount;
-                ord.TotalQuantity = TotalQuantity;
+                if (ord.OrderItems.Count <=0)
+                {
+                    //var newOrder = await _orderRepository.GetAsync(newOrderId);
+                    newOrder.TotalAmount += TotalAmount;
+                    await _orderRepository.UpdateAsync(newOrder);
+                    ord.TotalAmount = 0;
+                    ord.TotalQuantity = 0;
+                }
+                else {
+                    ord.TotalAmount = TotalAmount;
+                    ord.TotalQuantity = TotalQuantity;
+                }
+                
                 ord.OrderType = OrderType.SplitToNew;
                 await _orderRepository.UpdateAsync(ord);
-
+                await UnitOfWorkManager.Current.SaveChangesAsync();
                 return ObjectMapper.Map<Order, OrderDto>(ord);
             }
         }
