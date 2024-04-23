@@ -21,4 +21,5 @@ public class GroupBuyReportDetails
     public DateTime? EndDate { get; set; }
     public GroupBuy GroupBuy { get; set; }
     public List<OrderItem> OrderItems { get; set; }
+    public List<OrderItem> OrderItemsPaid { get; set; }
 }
