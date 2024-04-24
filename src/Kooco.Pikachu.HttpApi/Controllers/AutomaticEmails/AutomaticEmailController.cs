@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.AutomaticEmails;
+﻿using Asp.Versioning;
+using Kooco.Pikachu.AutomaticEmails;
 using Kooco.Pikachu.EnumValues;
 using Microsoft.AspNetCore.Mvc;
 using System;

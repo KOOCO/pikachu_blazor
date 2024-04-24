@@ -3,7 +3,7 @@
   <Import Project="..\..\common.props" />
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <RootNamespace>Kooco.Pikachu</RootNamespace>
   </PropertyGroup>
@@ -11,12 +11,12 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Kooco.Pikachu.EntityFrameworkCore\Kooco.Pikachu.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\Kooco.Pikachu.TestBase\Kooco.Pikachu.TestBase.csproj" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.10" />
-    <PackageReference Include="Volo.Abp.EntityFrameworkCore.Sqlite" Version="7.3.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.4" />
+    <PackageReference Include="Volo.Abp.EntityFrameworkCore.Sqlite" Version="8.1.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
   </ItemGroup>
 
 </Project>

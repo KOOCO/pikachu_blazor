@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.TenantEmailing;
+﻿using Asp.Versioning;
+using Kooco.Pikachu.TenantEmailing;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Volo.Abp;

@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.Tenants;
+﻿using Asp.Versioning;
+using Kooco.Pikachu.Tenants;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
