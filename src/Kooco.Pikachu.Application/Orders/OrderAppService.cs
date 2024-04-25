@@ -926,13 +926,14 @@ namespace Kooco.Pikachu.Orders
                         }
 
                     }
-                    //if (order.OrderItems.Any(x => x.FreebieId != null))
-                    //{
-                    //    var OrderDelivery1 = new OrderDelivery(Guid.NewGuid(), order.DeliveryMethod.Value, DeliveryStatus.Proccesing, null, "", order.Id);
-                    //    OrderDelivery1 = await _orderDeliveryRepository.InsertAsync(OrderDelivery1);
-                    //    order.UpdateOrderItem(order.OrderItems.Where(x => x.FreebieId != null).ToList(), OrderDelivery1.Id);
-                    //}
-            await _orderRepository.UpdateAsync(order);
+                    await UnitOfWorkManager.Current.SaveChangesAsync();
+                    if (order.OrderItems.Any(x => x.FreebieId != null))
+                    {
+                       
+                      var  OrderDelivery1 = await _orderDeliveryRepository.FirstOrDefaultAsync(x=>x.OrderId==order.Id);
+                        order.UpdateOrderItem(order.OrderItems.Where(x => x.FreebieId != null).ToList(), OrderDelivery1.Id);
+                    }
+                    await _orderRepository.UpdateAsync(order);
                     await UnitOfWorkManager.Current.SaveChangesAsync();
                     await SendEmailAsync(order.Id);
                 }

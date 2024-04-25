@@ -320,7 +320,7 @@ namespace Kooco.Pikachu.StoreLogisticOrders
             }
 
             // Uppercase the MD5 checksum
-            string finalChecksum = md5Checksum.ToUpper();
+            string finalChecksum = md5Checksum;
 
             // Append CheckMacValue to the request string
             requestString += $"&CheckMacValue={finalChecksum}";
