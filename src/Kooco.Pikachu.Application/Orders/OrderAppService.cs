@@ -714,11 +714,14 @@ namespace Kooco.Pikachu.Orders
             order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
             await _orderRepository.UpdateAsync(order);
             await UnitOfWorkManager.Current.SaveChangesAsync();
-            var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
-            var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
-            var delay = DateTime.Now.AddMinutes(1)-DateTime.Now;
-            GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
-          var jobid=  await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+            if (order.GroupBuy.IssueInvoice)
+            {
+                var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
+                var delay = DateTime.Now.AddMinutes(1) - DateTime.Now;
+                GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
+                var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+            }
            // await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
             await SendEmailAsync(order.Id);
             return ObjectMapper.Map<Order, OrderDto>(order);
