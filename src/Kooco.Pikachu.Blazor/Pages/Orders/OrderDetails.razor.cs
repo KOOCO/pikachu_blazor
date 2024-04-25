@@ -16,7 +16,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Volo.Abp;
-using static System.Net.WebRequestMethods;
+
 
 namespace Kooco.Pikachu.Blazor.Pages.Orders
 {
@@ -730,7 +730,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         [Required]
         public DeliveryMethod ShippingMethod { get; set; }
 
-        [Required(ErrorMessage = "This Field Is Required")]
+       
         public string? ShippingNumber { get; set; }
     }
 }
