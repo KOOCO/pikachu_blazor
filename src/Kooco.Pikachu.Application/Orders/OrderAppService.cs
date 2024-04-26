@@ -257,8 +257,8 @@ namespace Kooco.Pikachu.Orders
                           ord.PaymentMethod,
                           ord.InvoiceType,
                           ord.InvoiceNumber,
-                          ord.UniformNumber,
                           ord.CarrierId,
+                          ord.UniformNumber,
                           ord.TaxTitle,
                           ord.IsAsSameBuyer,
                           ord.RecipientName,
@@ -277,6 +277,7 @@ namespace Kooco.Pikachu.Orders
                           ord.ReturnStatus,
                           OrderType.NewMarge
                           );
+                order1.ShippingStatus = ord.ShippingStatus;
 
                 foreach (var item in orderItems)
                 {
@@ -297,7 +298,65 @@ namespace Kooco.Pikachu.Orders
                                    );
 
                 }
+
                 await _orderRepository.InsertAsync(order1);
+                await UnitOfWorkManager.Current.SaveChangesAsync();
+                if (order1.ShippingStatus == ShippingStatus.PrepareShipment)
+                {
+                    if (order1.OrderItems.Any(x => x.Item?.IsFreeShipping == true))
+                    {
+                        if (order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Normal && (x.Item != null || x.Item?.IsFreeShipping == true)).Any())
+                        {
+                            var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Proccesing, null, "", order1.Id);
+                            OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                            order1.UpdateOrderItem(order1.OrderItems.Where(x => (x.DeliveryTemperature == ItemStorageTemperature.Normal && x.Item?.IsFreeShipping == true)).ToList(), OrderDelivery.Id);
+                        }
+                        if (order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze && x.Item?.IsFreeShipping == true).Any())
+                        {
+                            var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Proccesing, null, "", order1.Id);
+                            OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                            order1.UpdateOrderItem(order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze && x.Item?.IsFreeShipping == true).ToList(), OrderDelivery.Id);
+                        }
+                        if (order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen && x.Item?.IsFreeShipping == true).Any())
+                        {
+                            var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Proccesing, null, "", order1.Id);
+                            OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                            order1.UpdateOrderItem(order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen && x?.Item.IsFreeShipping == true).ToList(), OrderDelivery.Id);
+                        }
+                    }
+                    if (order1.OrderItems.Any(x => x.Item?.IsFreeShipping == false))
+                    {
+                        if (order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Normal && x.Item?.IsFreeShipping == false).Any())
+                        {
+                            var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Proccesing, null, "", order1.Id);
+                            OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                            order1.UpdateOrderItem(order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Normal && x.Item?.IsFreeShipping == false).ToList(), OrderDelivery.Id);
+                        }
+                        if (order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze && x.Item?.IsFreeShipping == false).Any())
+                        {
+                            var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Proccesing, null, "", order1.Id);
+                            OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                            order1.UpdateOrderItem(order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze && x.Item?.IsFreeShipping == false).ToList(), OrderDelivery.Id);
+                        }
+                        if (order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen && x.Item?.IsFreeShipping == false).Any())
+                        {
+                            var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Proccesing, null, "", order1.Id);
+                            OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                            order1.UpdateOrderItem(order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen && x.Item?.IsFreeShipping == false).ToList(), OrderDelivery.Id);
+                        }
+
+                    }
+                    await UnitOfWorkManager.Current.SaveChangesAsync();
+                    if (order1.OrderItems.Any(x => x.FreebieId != null))
+                    {
+
+                        var OrderDelivery1 = await _orderDeliveryRepository.FirstOrDefaultAsync(x => x.OrderId == order1.Id);
+                        order1.UpdateOrderItem(order1.OrderItems.Where(x => x.FreebieId != null).ToList(), OrderDelivery1.Id);
+                    }
+                    await _orderRepository.UpdateAsync(order1);
+                    await UnitOfWorkManager.Current.SaveChangesAsync();
+                }
+
                 foreach (var id in Ids)
                 {
                     var ord1 = await _orderRepository.GetAsync(id);
@@ -305,6 +364,7 @@ namespace Kooco.Pikachu.Orders
                     await _orderRepository.UpdateAsync(ord1, autoSave: true);
                 }
                 await UnitOfWorkManager.Current.SaveChangesAsync();
+              
                 return ObjectMapper.Map<Order, OrderDto>(order1);
             }
         }
@@ -351,8 +411,8 @@ namespace Kooco.Pikachu.Orders
                          ord.PaymentMethod,
                          ord.InvoiceType,
                          ord.InvoiceNumber,
-                         ord.UniformNumber,
                          ord.CarrierId,
+                         ord.UniformNumber,
                          ord.TaxTitle,
                          ord.IsAsSameBuyer,
                          ord.RecipientName,
