@@ -119,6 +119,11 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 {
                     HomeDeliveryTimeList = JsonSerializer.Deserialize<List<string>>(GroupBuy.HomeDeliveryDeliveryTime);
                 }
+                if (EditGroupBuyDto.FreeShipping && EditGroupBuyDto.FreeShippingThreshold == null)
+                {
+                    await _uiMessageService.Warn("Please Enter Threshold Amount");
+
+                }
                 if (!GroupBuy.PaymentMethod.IsNullOrEmpty())
                 {
                     var payments = GroupBuy.PaymentMethod.Split(",");
