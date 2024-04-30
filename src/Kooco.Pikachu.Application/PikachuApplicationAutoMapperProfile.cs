@@ -74,6 +74,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<GroupBuyItemGroupDto, GroupBuyItemGroupCreateUpdateDto>();
         CreateMap<GroupBuyItemGroupDetails, GroupBuyItemGroupDetailsDto>();
         CreateMap<GroupBuy, KeyValueDto>().ForMember(dest => dest.Name, src => src.MapFrom(s => s.GroupBuyName));
+        CreateMap<GroupBuyList, KeyValueDto>().ForMember(dest => dest.Name, src => src.MapFrom(s => s.GroupBuyName));
         CreateMap<GroupBuyItemGroupWithCount, GroupBuyItemGroupWithCountDto>();
         CreateMap<GroupBuyReportDetails, GroupBuyReportDetailsDto>();
 

@@ -352,8 +352,8 @@ namespace Kooco.Pikachu.GroupBuys
         }
         public async Task<List<KeyValueDto>> GetAllGroupBuyLookupAsync()
         {
-            var groupbuys = (await _groupBuyRepository.GetListAsync()).ToList();
-            return ObjectMapper.Map<List<GroupBuy>, List<KeyValueDto>>(groupbuys);
+            var groupbuys = (await _groupBuyRepository.GetListAsync()).Select(x=>new GroupBuyList {Id=x.Id,GroupBuyName=x.GroupBuyName }).ToList();
+            return ObjectMapper.Map<List<GroupBuyList>, List<KeyValueDto>>(groupbuys);
         }
         /// <summary>
         /// This Method Returns the Desired Result For the Store Front End.

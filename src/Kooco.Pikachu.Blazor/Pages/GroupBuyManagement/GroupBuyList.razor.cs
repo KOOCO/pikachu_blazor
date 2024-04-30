@@ -67,7 +67,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 });
                 GroupBuyListItem = result.Items.ToList();
                 Total = (int)result.TotalCount;
-                ItemsList = await _groupBuyAppService.GetAllGroupBuyLookupAsync();
+                //ItemsList = await _groupBuyAppService.GetAllGroupBuyLookupAsync();
             }
             catch (Exception ex)
             {

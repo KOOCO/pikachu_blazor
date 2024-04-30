@@ -122,10 +122,11 @@ namespace Kooco.Pikachu.StoreLogisticOrders
 
             var client = new RestClient(options);
             var request = new RestRequest(_configuration["EcPay:LogisticApi"], Method.Post);
+            var marchentDate = DateTime.Now.ToString("yyyy/MM/dd");
             request.AddHeader("Accept", "text/html");
             request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
             request.AddParameter("MerchantID", GreenWorld.StoreCode);
-            request.AddParameter("MerchantTradeDate", DateTime.Now.ToShortDateString());
+            request.AddParameter("MerchantTradeDate",marchentDate);
             request.AddParameter("LogisticsType", "HOME");
             request.AddParameter("LogisticsSubType",orderDelivery.DeliveryMethod==EnumValues.DeliveryMethod.PostOffice?"POST":"TCAT");
             request.AddParameter("GoodsAmount", Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)));
@@ -141,7 +142,7 @@ namespace Kooco.Pikachu.StoreLogisticOrders
             request.AddParameter("ReceiverAddress", order.AddressDetails);
             request.AddParameter("ServerReplyURL", "https://www.ecpay.com.tw/ServerReplyURL");
             //request.AddParameter("ReceiverStoreID", "123");
-            request.AddParameter("CheckMacValue", GenerateCheckMac(greenWorld.HashKey, greenWorld.HashIV, GreenWorld.StoreCode, "", DateTime.Now.ToShortDateString(), "HOME", orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.PostOffice ? "POST" : "TCAT", Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)),PostOffice.Weight, GreenWorld.SenderName,GreenWorld.SenderPhoneNumber,
+            request.AddParameter("CheckMacValue", GenerateCheckMac(greenWorld.HashKey, greenWorld.HashIV, GreenWorld.StoreCode, "", marchentDate, "HOME", orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.PostOffice ? "POST" : "TCAT", Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)),PostOffice.Weight, GreenWorld.SenderName,GreenWorld.SenderPhoneNumber,
                                                     GreenWorld.SenderPostalCode,GreenWorld.SenderAddress, order.RecipientName, order.RecipientPhone,order.PostalCode,order.AddressDetails, "https://www.ecpay.com.tw/ServerReplyURL"));
             //request.AddParameter("IsCollection", "N");
             request.AddParameter("MerchantTradeNo",  "");
@@ -218,10 +219,11 @@ namespace Kooco.Pikachu.StoreLogisticOrders
             };
             var client = new RestClient(options);
             var request = new RestRequest(_configuration["EcPay:LogisticApi"], Method.Post);
+            var marchentDate = DateTime.Now.ToString("yyyy/MM/dd");
             request.AddHeader("Accept", "text/html");
             request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
             request.AddParameter("MerchantID", greenWorld.StoreCode);
-            request.AddParameter("MerchantTradeDate", DateTime.Now);
+            request.AddParameter("MerchantTradeDate", marchentDate);
             request.AddParameter("LogisticsType", "CVS");
 
             if (orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.SevenToEleven1)
@@ -251,10 +253,10 @@ namespace Kooco.Pikachu.StoreLogisticOrders
             request.AddParameter("ReceiverCellPhone", order.RecipientPhone);
             request.AddParameter("ServerReplyURL", "https://www.ecpay.com.tw/ServerReplyURL");
             request.AddParameter("ReceiverStoreID", order.StoreId);
-            request.AddParameter("CheckMacValue", GenerateRequestString(greenWorld.HashKey,greenWorld.HashIV,greenWorld.StoreCode, "", DateTime.Now.ToString(), "CVS", logisticSubType, Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)), greenWorld.SenderName, order.RecipientName, order.RecipientPhone, 
+            request.AddParameter("CheckMacValue", GenerateRequestString(greenWorld.HashKey,greenWorld.HashIV,greenWorld.StoreCode, order.OrderNo, marchentDate, "CVS", logisticSubType, Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)), greenWorld.SenderName, order.RecipientName, order.RecipientPhone, 
                 "https://www.ecpay.com.tw/ServerReplyURL", order.StoreId));
             //request.AddParameter("IsCollection", "N");
-            request.AddParameter("MerchantTradeNo", "");
+            request.AddParameter("MerchantTradeNo", order.OrderNo);
 
 
             RestResponse response = await client.ExecuteAsync(request);
@@ -281,7 +283,7 @@ namespace Kooco.Pikachu.StoreLogisticOrders
             { "LogisticsSubType", logisticsSubType },
             { "GoodsAmount", goodsAmount.ToString() },
 
-            //{ "IsCollection", isCollection },
+            //{ "IsCollection", "Y" },
 
             { "SenderName", senderName },
 
@@ -304,29 +306,25 @@ namespace Kooco.Pikachu.StoreLogisticOrders
 
             // Add HashKey and HashIV
             requestString = $"HashKey={HashKey}&{requestString}&HashIV={HashIV}";
+            string urlEncodedData = HttpUtility.UrlEncode(requestString);
 
-            // URL encode the entire string
-            string urlEncodedString = Uri.EscapeDataString(requestString);
+            // Step 5: Convert to lowercase
+            string lowercaseData = urlEncodedData.ToLower();
 
-            // Lowercase the string
-            string lowercaseString = urlEncodedString;
-
-
-            string md5Checksum;
+            // Step 6: Create MD5 hash
             using (MD5 md5 = MD5.Create())
             {
-                byte[] inputBytes = Encoding.UTF8.GetBytes(lowercaseString);
+                byte[] inputBytes = Encoding.UTF8.GetBytes(lowercaseData);
                 byte[] hashBytes = md5.ComputeHash(inputBytes);
-                md5Checksum = BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+
+                // Convert byte array to hex string
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < hashBytes.Length; i++)
+                {
+                    sb.Append(hashBytes[i].ToString("X2")); // To hexadecimal string
+                }
+             return sb.ToString(); // Step 7: Convert to uppercase implicitly
             }
-
-            // Uppercase the MD5 checksum
-            string finalChecksum = md5Checksum;
-
-            // Append CheckMacValue to the request string
-            requestString += $"&CheckMacValue={finalChecksum}";
-
-            return finalChecksum;
 
 
         }
@@ -435,27 +433,26 @@ namespace Kooco.Pikachu.StoreLogisticOrders
             requestString = $"HashKey={HashKey}&{requestString}&HashIV={HashIV}";
 
             // URL encode the entire string
-            string urlEncodedString = Uri.EscapeDataString(requestString);
+            //requestString = $"HashKey={HashKey}&{requestString}&HashIV={HashIV}";
+            string urlEncodedData = HttpUtility.UrlEncode(requestString);
 
-            // Lowercase the string
-            string lowercaseString = urlEncodedString;
+            // Step 5: Convert to lowercase
+            string lowercaseData = urlEncodedData.ToLower();
 
-            
-            string md5Checksum;
+            // Step 6: Create MD5 hash
             using (MD5 md5 = MD5.Create())
             {
-                byte[] inputBytes = Encoding.UTF8.GetBytes(lowercaseString);
+                byte[] inputBytes = Encoding.UTF8.GetBytes(lowercaseData);
                 byte[] hashBytes = md5.ComputeHash(inputBytes);
-                md5Checksum = BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+
+                // Convert byte array to hex string
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < hashBytes.Length; i++)
+                {
+                    sb.Append(hashBytes[i].ToString("X2")); // To hexadecimal string
+                }
+                return sb.ToString(); // Step 7: Convert to uppercase implicitly
             }
-
-            // Uppercase the MD5 checksum
-            string finalChecksum = md5Checksum.ToUpper();
-
-            // Append CheckMacValue to the request string
-            requestString += $"&CheckMacValue={finalChecksum}";
-
-            return finalChecksum;
         }
 
         static ResponseResultDto ParseApiResponse(string apiResponse)

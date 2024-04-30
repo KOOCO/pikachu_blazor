@@ -21,20 +21,8 @@
         <div class="col-8 text-end">
             <div class="d-inline-block">
                 <div class="input-group">
-                    <Autocomplete Size="Size.Small" TItem="KeyValueDto"
-                                  TValue="Guid?"
-                                  Data="@ItemsList"
-                                  TextField="@(( item ) => item.Name)"
-                                  ValueField="@(( item ) => item.Id)"
-                                  @bind-SelectedText="SelectedAutoCompleteText"
-                                  Placeholder="Search..."
-                                  Filter="AutocompleteFilter.StartsWith"
-                                  CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
-                                                    HighlightSearch
-                                   Immediate="true"
-                                   @ref="AutocompleteField">
-                         <NotFoundContent> @L["NotFound"] </NotFoundContent>
-                    </Autocomplete>
+                    <InputText class="form-control form-control-sm search-bar" @bind-Value="@SelectedAutoCompleteText" placeholder="@L["Search"]"></InputText>
+                   
                     <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="OnSearch">
                         <i class="fa fa-search"></i>
                     </Button>
