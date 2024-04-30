@@ -331,61 +331,68 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         {
             await loading.Show();
             OrderDeliveryId = deliveryOrder.Id;
-            if (deliveryOrder.DeliveryMethod == DeliveryMethod.SevenToEleven1 || deliveryOrder.DeliveryMethod == DeliveryMethod.FamilyMart1||
-               deliveryOrder.DeliveryMethod == DeliveryMethod.SevenToElevenC2C||deliveryOrder.DeliveryMethod == DeliveryMethod.FamilyMart1)
+            if (deliveryOrder.DeliveryMethod == DeliveryMethod.SevenToEleven1 || deliveryOrder.DeliveryMethod == DeliveryMethod.FamilyMart1 ||
+               deliveryOrder.DeliveryMethod == DeliveryMethod.SevenToElevenC2C || deliveryOrder.DeliveryMethod == DeliveryMethod.FamilyMart1)
             {
-                var htmlString = await _storeLogisticsOrderAppService.GetStoreAsync(Order.Id, OrderDeliveryId);
-                StringBuilder htmlForm = new();
-                htmlForm.Append(htmlString.HtmlString);
-                string html = htmlString.HtmlString;
-                html=UpdateAttributes(html,Order.Id.ToString(),deliveryOrder.Id.ToString());
-                //int startIndex = htmlString.HtmlString.IndexOf("<script src=\"/Scripts/jquery-1.4.4.js\" type=\"text/javascript\">");
-                //int endIndex = htmlString.HtmlString.IndexOf("</script>", startIndex);
-
-                //int startIndexForm = htmlString.HtmlString.IndexOf("<form id=\"PostForm\" name=\"PostForm\" action=\"/Home/Family\" method=\"POST\">");
-                //int endIndexForm = htmlString.HtmlString.IndexOf("</form>", startIndexForm);
-
-                //if (startIndex != -1 && endIndex != -1)
-                //{
-                //    // Extract the script tag
-                //    string scriptTag = htmlString.HtmlString.Substring(startIndex, endIndex - startIndex + "</script>".Length);
-
-                //    // Replace the old src attribute with the new one
-                //    string newScriptTag = scriptTag.Replace("src=\"/Scripts/jquery-1.4.4.js\"", "src=\"https://logistics-stage.ecpay.com.tw/Scripts/jquery-1.4.4.js\"");
-
-                //    // Update the HTML string
-                //    htmlString.HtmlString.Replace(scriptTag, newScriptTag);
-                //     html = htmlString.HtmlString.Replace(scriptTag, newScriptTag);
-
-                //    // Convert the updated string back to StringBuilder
-                //    htmlForm = new StringBuilder(html);
-                //}
-                //if (startIndexForm != -1 && endIndexForm != -1)
-                //{
-                //    // Extract the form tag
-                //    string formTag = html.Substring(startIndexForm, endIndexForm - startIndexForm + "</form>".Length);
-
-                //    // Replace the old action attribute with the new one
-                //    string newFormTag = formTag.Replace("action=\"/Home/Family\"", "action=\"https://logistics-stage.ecpay.com.tw/Home/Family\"");
-
-                //    // Update the HTML string
-                //    html = html.Replace(formTag, newFormTag);
-                //    htmlForm = new StringBuilder(html);
-                //}
-                //await JSRuntime.InvokeVoidAsync("setCookie", htmlString.CookieName, htmlString.CookieValue,"None",true);
-                //NavigationManager.NavigateTo($"/map-response?htmlString={Uri.EscapeDataString(htmlForm.ToString())}");
-                await JSRuntime.InvokeVoidAsync("openPopup", html);
-                //NavigationManager.NavigateTo($"map-response/{htmlForm}");
-            }
-            else {
-              var result=  await _storeLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(Order.Id, OrderDeliveryId);
+                var result = await _storeLogisticsOrderAppService.CreateStoreLogisticsOrderAsync(Order.Id, deliveryOrder.Id);
                 if (result.ResponseCode != "1")
                 {
                     await _uiMessageService.Error(result.ResponseMessage);
 
                 }
-               
+                //    var htmlString = await _storeLogisticsOrderAppService.GetStoreAsync(Order.Id);
+                //    StringBuilder htmlForm = new();
+                //    htmlForm.Append(htmlString.HtmlString);
+                //    string html = htmlString.HtmlString;
+                //    html=UpdateAttributes(html,Order.Id.ToString(),deliveryOrder.Id.ToString());
+                //    //int startIndex = htmlString.HtmlString.IndexOf("<script src=\"/Scripts/jquery-1.4.4.js\" type=\"text/javascript\">");
+                //    //int endIndex = htmlString.HtmlString.IndexOf("</script>", startIndex);
+
+                //    //int startIndexForm = htmlString.HtmlString.IndexOf("<form id=\"PostForm\" name=\"PostForm\" action=\"/Home/Family\" method=\"POST\">");
+                //    //int endIndexForm = htmlString.HtmlString.IndexOf("</form>", startIndexForm);
+
+                //    //if (startIndex != -1 && endIndex != -1)
+                //    //{
+                //    //    // Extract the script tag
+                //    //    string scriptTag = htmlString.HtmlString.Substring(startIndex, endIndex - startIndex + "</script>".Length);
+
+                //    //    // Replace the old src attribute with the new one
+                //    //    string newScriptTag = scriptTag.Replace("src=\"/Scripts/jquery-1.4.4.js\"", "src=\"https://logistics-stage.ecpay.com.tw/Scripts/jquery-1.4.4.js\"");
+
+                //    //    // Update the HTML string
+                //    //    htmlString.HtmlString.Replace(scriptTag, newScriptTag);
+                //    //     html = htmlString.HtmlString.Replace(scriptTag, newScriptTag);
+
+                //    //    // Convert the updated string back to StringBuilder
+                //    //    htmlForm = new StringBuilder(html);
+                //    //}
+                //    //if (startIndexForm != -1 && endIndexForm != -1)
+                //    //{
+                //    //    // Extract the form tag
+                //    //    string formTag = html.Substring(startIndexForm, endIndexForm - startIndexForm + "</form>".Length);
+
+                //    //    // Replace the old action attribute with the new one
+                //    //    string newFormTag = formTag.Replace("action=\"/Home/Family\"", "action=\"https://logistics-stage.ecpay.com.tw/Home/Family\"");
+
+                //    //    // Update the HTML string
+                //    //    html = html.Replace(formTag, newFormTag);
+                //    //    htmlForm = new StringBuilder(html);
+                //    //}
+                //    //await JSRuntime.InvokeVoidAsync("setCookie", htmlString.CookieName, htmlString.CookieValue,"None",true);
+                //    //NavigationManager.NavigateTo($"/map-response?htmlString={Uri.EscapeDataString(htmlForm.ToString())}");
+                //    await JSRuntime.InvokeVoidAsync("openPopup", html);
+                //    //NavigationManager.NavigateTo($"map-response/{htmlForm}");
             }
+            else
+            {
+                var result = await _storeLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(Order.Id, OrderDeliveryId);
+                if (result.ResponseCode != "1")
+                {
+                    await _uiMessageService.Error(result.ResponseMessage);
+
+                }
+            }
+            
             await GetOrderDetailsAsync();
             await InvokeAsync(StateHasChanged);
             await loading.Hide();

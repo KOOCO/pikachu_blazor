@@ -73,6 +73,7 @@ namespace Kooco.Pikachu.Orders
         public DateTime? CreditNoteDate { get; set; }
         public string? CreditNoteUser { get; set; }
         public OrderType? OrderType { get; set; }
+        public string? StoreId { get; set; }
         public Order() { }
 
         public Order(

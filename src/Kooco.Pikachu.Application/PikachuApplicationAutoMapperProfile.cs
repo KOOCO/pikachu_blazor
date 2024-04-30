@@ -69,6 +69,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
 
         //
         CreateMap<GroupBuy, GroupBuyDto>();
+        CreateMap<GroupBuyList, GroupBuyDto>();
         CreateMap<GroupBuyItemGroup, GroupBuyItemGroupDto>();
         CreateMap<GroupBuyItemGroupDto, GroupBuyItemGroupCreateUpdateDto>();
         CreateMap<GroupBuyItemGroupDetails, GroupBuyItemGroupDetailsDto>();

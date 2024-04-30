@@ -1,5 +1,6 @@
 ﻿using Azure;
 using Azure.Core;
+using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.Orders;
@@ -22,7 +23,7 @@ using Volo.Abp.Application.Services;
 
 namespace Kooco.Pikachu.StoreLogisticOrders
 {
-    
+    [RemoteService(IsEnabled = false)]
     public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogisticsOrderAppService
     {
         private readonly IOrderRepository _orderRepository;
@@ -157,12 +158,12 @@ namespace Kooco.Pikachu.StoreLogisticOrders
             return result;
         }
 
-        public async Task<ResponseResultDto> CreateStoreLogisticsOrderAsync(CreateLogisticsOrder input)
+        public async Task<ResponseResultDto> CreateStoreLogisticsOrderAsync(Guid orderId, Guid orderDeliveryId)
         {
             ResponseResultDto result = new ResponseResultDto();
-            var order = await _orderRepository.GetAsync(input.OrderId);
-            var orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(input.OrderId);
-            var orderDelivery = orderDeliverys.Where(x => x.Id == input.DeliveryId).FirstOrDefault();
+            var order = await _orderRepository.GetAsync(orderId);
+            var orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
+            var orderDelivery = orderDeliverys.Where(x => x.Id == orderDeliveryId).FirstOrDefault();
             var providers = await _logisticsProvidersAppService.GetAllAsync();
             var logisticSubType = "";
             var greenWorld = providers.Where(p => p.LogisticProvider == EnumValues.LogisticProviders.GreenWorldLogistics).FirstOrDefault();
@@ -249,9 +250,9 @@ namespace Kooco.Pikachu.StoreLogisticOrders
             request.AddParameter("ReceiverName", order.RecipientName);
             request.AddParameter("ReceiverCellPhone", order.RecipientPhone);
             request.AddParameter("ServerReplyURL", "https://www.ecpay.com.tw/ServerReplyURL");
-            request.AddParameter("ReceiverStoreID", input.StoreId);
+            request.AddParameter("ReceiverStoreID", order.StoreId);
             request.AddParameter("CheckMacValue", GenerateRequestString(greenWorld.HashKey,greenWorld.HashIV,greenWorld.StoreCode, "", DateTime.Now.ToString(), "CVS", logisticSubType, Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)), greenWorld.SenderName, order.RecipientName, order.RecipientPhone, 
-                "https://www.ecpay.com.tw/ServerReplyURL", input.StoreId));
+                "https://www.ecpay.com.tw/ServerReplyURL", order.StoreId));
             //request.AddParameter("IsCollection", "N");
             request.AddParameter("MerchantTradeNo", "");
 
@@ -329,12 +330,12 @@ namespace Kooco.Pikachu.StoreLogisticOrders
 
 
         }
-        public async Task<EmapApiResponse> GetStoreAsync(Guid orderId, Guid orderDeliveryId)
+        public async Task<EmapApiResponse> GetStoreAsync(string deliveryMethod)
         {
             EmapApiResponse result=new EmapApiResponse();
-            var order=await _orderRepository.GetAsync(orderId);
-            var orderDeliverys= await _deliveryRepository.GetWithDetailsAsync(orderId);
-            var orderDelivery = orderDeliverys.Where(x => x.Id == orderDeliveryId).FirstOrDefault();
+            //var order=await _orderRepository.GetAsync(orderId);
+            //var orderDeliverys= await _deliveryRepository.GetWithDetailsAsync(orderId);
+            //var orderDelivery = orderDeliverys.Where(x => x.Id == orderDeliveryId).FirstOrDefault();
             var options = new RestClientOptions
             {
                 MaxTimeout = -1,
@@ -347,23 +348,23 @@ namespace Kooco.Pikachu.StoreLogisticOrders
             //request1.AddHeader("Cookie", "MapInfo=MerchantID=2000132&MerchantTradeNo=ECPay&LogisticsType=CVS&LogisticsSubType=FAMI&IsCollection=N&ServerReplyURL=https%3a%2f%2fwww.ecpay.com.tw%2fServerReplyURL&CallBackFunction=&IsGet=&Device=0");
             request1.AddParameter("MerchantID", "2000132");
             request1.AddParameter("LogisticsType", "CVS");
-            if (orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.SevenToEleven1)
+            if (deliveryMethod == EnumValues.DeliveryMethod.SevenToEleven1.ToString())
             {
                 request1.AddParameter("LogisticsSubType", "UNIMART");
 
                
             }
-            else if (orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.FamilyMart1)
+            else if (deliveryMethod == EnumValues.DeliveryMethod.FamilyMart1.ToString())
             {
                 request1.AddParameter("LogisticsSubType", "FAMI");
                
             }
-            else if (orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.SevenToElevenC2C)
+            else if (deliveryMethod == EnumValues.DeliveryMethod.SevenToElevenC2C.ToString())
             {
                 request1.AddParameter("LogisticsSubType", "UNIMARTC2C");
                
             }
-            else if (orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.FamilyMartC2C)
+            else if (deliveryMethod == EnumValues.DeliveryMethod.FamilyMartC2C.ToString())
             {
                 request1.AddParameter("LogisticsSubType", "FAMIC2C");
                 

@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Refunds;
 using Kooco.Pikachu.StoreLogisticOrders;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,7 @@ using Volo.Abp.AspNetCore.Mvc;
 
 namespace Kooco.Pikachu.Controllers.StoreLogisticOrders
 {
-    [RemoteService(IsEnabled = false)]
+    [RemoteService(IsEnabled = true)]
     [ControllerName("StoreLogisticOrders")]
     [Area("app")]
     [Route("api/app/store-logistic-order")]
@@ -20,21 +21,21 @@ namespace Kooco.Pikachu.Controllers.StoreLogisticOrders
     IStoreLogisticsOrderAppService _storeLogisticsOrderAppService
     ) : AbpController, IStoreLogisticsOrderAppService
     {
-        [HttpPost]
+        [HttpPost("create-homedelivery-shipment")]
         public Task<ResponseResultDto> CreateHomeDeliveryShipmentOrderAsync(Guid orderId, Guid orderDeliveryId)
         {
             return _storeLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(orderId, orderDeliveryId);
         }
-        [HttpPost]
-        public Task<ResponseResultDto> CreateStoreLogisticsOrderAsync([FromBody] CreateLogisticsOrder input)
+        [HttpPost("create-logistic")]
+        public Task<ResponseResultDto> CreateStoreLogisticsOrderAsync(Guid orderId, Guid orderDeliveryId)
         {
 
-            return _storeLogisticsOrderAppService.CreateStoreLogisticsOrderAsync(input);
+            return _storeLogisticsOrderAppService.CreateStoreLogisticsOrderAsync( orderId,  orderDeliveryId);
         }
-        [HttpPost]
-        public Task<EmapApiResponse> GetStoreAsync(Guid orderId, Guid orderDeliveryId)
+        [HttpGet("get-store/{deliveryMethod}")]
+        public Task<EmapApiResponse> GetStoreAsync(string deliveryMethod)
         {
-            return _storeLogisticsOrderAppService.GetStoreAsync(orderId, orderDeliveryId);
+            return _storeLogisticsOrderAppService.GetStoreAsync(deliveryMethod);
         }
     }
 }

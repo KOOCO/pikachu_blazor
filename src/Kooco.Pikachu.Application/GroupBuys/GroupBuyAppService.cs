@@ -201,7 +201,7 @@ namespace Kooco.Pikachu.GroupBuys
             return new PagedResultDto<GroupBuyDto>
             {
                 TotalCount = count,
-                Items = ObjectMapper.Map<List<GroupBuy>, List<GroupBuyDto>>(result)
+                Items = ObjectMapper.Map<List<GroupBuyList>, List<GroupBuyDto>>(result)
             };
         }
 

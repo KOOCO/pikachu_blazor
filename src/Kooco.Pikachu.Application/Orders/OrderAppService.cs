@@ -132,7 +132,7 @@ namespace Kooco.Pikachu.Orders
                         input.ReturnStatus,
                         input.OrderType
                         );
-
+                order.StoreId = input.StoreId;
                 if (input.OrderItems != null)
                 {
                     foreach (var item in input.OrderItems)

@@ -37,5 +37,6 @@ namespace Kooco.Pikachu.Orders
         public List<OrderItemsCreateDto> OrderItems { get; set; }
         public OrderReturnStatus? ReturnStatus { get; set; }
         public OrderType? OrderType { get; set; }
+        public string? StoreId { get; set; }
     }
 }

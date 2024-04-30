@@ -19,10 +19,16 @@ namespace Kooco.Pikachu.Controllers.GroupBuys;
 [ControllerName("GroupBuy")]
 [Area("app")]
 [Route("api/app/group-buy")]
-public class GroupBuyController(
-    IGroupBuyAppService _groupBuyAppService
-        ) : AbpController, IGroupBuyAppService
+public class GroupBuyController: AbpController, IGroupBuyAppService
 {
+    private readonly IGroupBuyAppService _groupBuyAppService;
+    public GroupBuyController(
+   IGroupBuyAppService groupBuyAppService
+       )
+    {
+    _groupBuyAppService = groupBuyAppService;
+    
+    }
     [HttpPost]
     public Task<GroupBuyDto> CreateAsync(GroupBuyCreateDto input)
     {
@@ -48,9 +54,9 @@ public class GroupBuyController(
     }
 
     [HttpGet("get-list")]
-    public Task<PagedResultDto<GroupBuyDto>> GetListAsync(GetGroupBuyInput input)
+    public async Task<PagedResultDto<GroupBuyDto>> GetListAsync(GetGroupBuyInput input)
     {
-        return _groupBuyAppService.GetListAsync(input);
+        return await _groupBuyAppService.GetListAsync(input);
     }
 
     [HttpGet("with-details/{id}")]

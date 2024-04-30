@@ -65,5 +65,6 @@ namespace Kooco.Pikachu.Orders
         public DateTime? VoidDate { get; set; }
         public DateTime? CompletionTime { get; set; }
         public IssueInvoiceStatus? IssueStatus { get; set; }
+        public string? StoreId { get; set; }
     }
 }
