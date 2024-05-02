@@ -117,12 +117,12 @@ namespace Kooco.Pikachu.Refunds
           
             var client = new RestClient(options);
             var request = new RestRequest("https://payment.ecpay.com.tw/CreditDetail/DoAction", Method.Post);
-    //        "HashKey": "hxiE9LaFS9nMXb0a",
-    //"HashIV": "gEDzzSvxugbBxrRz",
-    //"MerchantID": "3345125",
-            string HashKey = "hxiE9LaFS9nMXb0a";
-            string HashIV = "gEDzzSvxugbBxrRz";
-            string MerchantId = "3345125";
+    //        "HashKey": "MqPualB34qDhv6wO",
+    //"HashIV": "9oZiHmM977DkgLrl",
+    //"MerchantID": "3252187",
+            string HashKey = "MqPualB34qDhv6wO";
+            string HashIV = "9oZiHmM977DkgLrl";
+            string MerchantId = "3252187";
             request.AddHeader("Accept", "text/html");
             request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
             request.AddParameter("MerchantID", MerchantId);
