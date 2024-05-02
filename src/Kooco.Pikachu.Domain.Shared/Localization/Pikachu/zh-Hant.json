@@ -328,7 +328,7 @@
 
     "DeliveryTemperatureCost": "溫層運費成本",
     "Temperature": "溫層",
-    "Cost": "成本",
+    "Cost": "運費",
     "CostUpdateSuccessfully": "成功更新成本",
 
 
@@ -490,7 +490,19 @@
     "DeliveryTime": "收貨時間",
     "RecipientCity": "縣市",
     "RecipientPostalCode": "郵遞區號",
-    "Editor": "編輯者"
+    "Editor": "編輯者",
+    "FamilyMart": "全家",
+    "7-11": "7-11",
+    "7-11 frozen": "7-11冷凍",
+    "B-Normal": "黑貓常溫",
+    "B-Freeze": "黑貓冷藏",
+    "B-Frozen": "黑貓冷凍",
+    "Weight": "重量",
+    "Payment": "是否代收款",
+    "OuterIslandFreight": "離島運費",
+    "Size": "尺寸",
+    "Yes": "是",
+    "No": "否"
 
 
   }

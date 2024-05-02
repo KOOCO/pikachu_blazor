@@ -465,7 +465,21 @@
     "DeliveryTime": "Delivery Time",
     "RecipientCity": "Recipient City",
     "RecipientPostalCode": "Recipient Postal Code",
-    "Editor": "Editor"
+    "Editor": "Editor",
+    "FamilyMart": "Family Mart",
+    "7-11": "7-11",
+    "7-11 frozen": "7-11 Frozen",
+    "B-Normal": "B-Normal",
+    "B-Freeze": "B-Freeze",
+    "B-Frozen": "B-Frozen",
+    "Weight": "Weight",
+    "Payment": "Payment",
+    "OuterIslandFreight": "Outer Island Freight",
+    "Size": "Size",
+    "Yes": "Yes",
+    "No": "No"
+
+
 
   }
 }

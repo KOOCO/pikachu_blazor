@@ -203,14 +203,14 @@
     <CardBody>
         <Tabs SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
     <Items>
-        <Tab Name="HomeDelivery">Home Delivery</Tab>
-        <Tab Name="postoffice">Post Office</Tab>
-        <Tab Name="familymart">Family Mart</Tab>
-        <Tab Name="7-11">7-11</Tab>
-        <Tab Name="7-11frozen">7-11 frozen</Tab>
-        <Tab Name="b-normal">B-Normal</Tab>
-        <Tab Name="b-freeze">B-Freeze</Tab>
-        <Tab Name="b-frozen">B-Frozen</Tab>
+        <Tab Name="HomeDelivery">@L["HomeDelivery"]</Tab>
+        <Tab Name="postoffice">@L["PostOffice"]</Tab>
+        <Tab Name="familymart">@L["FamilyMart"]</Tab>
+        <Tab Name="7-11">@L["7-11"]</Tab>
+        <Tab Name="7-11frozen">@L["7-11 frozen"]</Tab>
+        <Tab Name="b-normal">@L["B-Normal"]</Tab>
+        <Tab Name="b-freeze">@L["B-Freeze"]</Tab>
+        <Tab Name="b-frozen">@L["B-Frozen"]</Tab>
 
        
     </Items>
@@ -367,8 +367,8 @@
                                     </div>
                                     <div class="col-8">
                                         <Select @bind-SelectedValue="FamilyMart.Payment">
-                                            <SelectItem Value="true">Yes</SelectItem>
-                                            <SelectItem Value="false">No</SelectItem>
+                                            <SelectItem Value="true">@L["Yes"]</SelectItem>
+                                            <SelectItem Value="false">@L["No"]</SelectItem>
                                         </Select>
                                     </div>
                                 </div>
@@ -579,7 +579,7 @@
         <TabPanel Name="b-frozen">
             <Card>
                         <CardHeader>
-                            <h4>@L["B-Normal"]</h4>
+                            <h4>@L["B-Frozen"]</h4>
                         </CardHeader>
                         <CardBody>
                             <EditForm Model="@BFrozen" OnValidSubmit="UpdateBFrozenAsync">
