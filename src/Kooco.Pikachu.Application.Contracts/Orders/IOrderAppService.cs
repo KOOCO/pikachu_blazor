@@ -31,6 +31,7 @@ namespace Kooco.Pikachu.Orders
         Task<PaymentGatewayDto> GetPaymentGatewayConfigurationsAsync(Guid id);
         Task<OrderDto> MergeOrdersAsync(List<Guid> Ids);
         Task<OrderDto> SplitOrderAsync(List<Guid> OrderItemIds, Guid OrderId);
+        Task<OrderDto> RefundOrderItems(List<Guid> OrderItemIds, Guid OrderId);
         Task ExchangeOrderAsync(Guid id);
         Task<PagedResultDto<OrderDto>> GetTenantOrderListAsync(GetOrderListDto input);
         Task<PagedResultDto<OrderDto>> GetReconciliationListAsync(GetOrderListDto input);
@@ -41,5 +42,6 @@ namespace Kooco.Pikachu.Orders
         Task VoidInvoice(Guid id, string reason);
         Task<PagedResultDto<OrderDto>> GetVoidListAsync(GetOrderListDto input);
         Task CreditNoteInvoice(Guid id, string reason);
+        Task RefundAmountAsync(double amount, Guid OrderId);
     }
 }

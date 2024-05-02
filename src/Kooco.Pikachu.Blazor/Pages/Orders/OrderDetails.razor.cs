@@ -30,8 +30,10 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         private StoreCommentsModel StoreComments = new();
         private ModificationTrack ModificationTrack = new();
         private Shipments shipments = new();
+        private RefundOrder refunds = new();
         private List<UpdateOrderItemDto> EditingItems { get; set; } = new();
         private Modal CreateShipmentModal { get; set; }
+        private Modal RefundModal { get; set; }
         private LoadingIndicator loading { get; set; } = new();
         private bool IsItemsEditMode { get; set; } = false;
         private List<OrderDeliveryDto> OrderDeliveries { get; set; }
@@ -402,6 +404,87 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         {
             CreateShipmentModal.Hide();
         }
+        private void CloseRefundModal()
+        {
+            RefundModal.Hide();
+        }
+        private async Task ApplyRefundAsync()
+        {
+            try
+            {
+                if (refunds.IsRefundOrder)
+                {
+
+                    await ApplyRefund();
+                    await RefundModal.Hide();
+                }
+                else if (refunds.IsRefundItems)
+                {
+                  await  loading.Show();
+                    var orderItemIds = Order?.OrderItems.Where(x => x.IsSelected).Select(x => x.Id).ToList();
+                    if (orderItemIds.Count < 1)
+                    {
+                        await _uiMessageService.Error("Please Select Order Item");
+                        await loading.Hide();
+                        return;
+                    }
+                    refunds.OrderItemIds=orderItemIds;
+                    await _orderAppService.RefundOrderItems(orderItemIds, OrderId);
+                    await loading.Hide();
+                    await RefundModal.Hide();
+
+                }
+                else {
+                    await loading.Show();
+                 if(refunds.Amount==0)
+                    {
+                        await _uiMessageService.Error("Please Enter Amount");
+                        await loading.Hide();
+                        return;
+
+                    }
+                    await _orderAppService.RefundAmountAsync(refunds.Amount, OrderId);
+                    await loading.Hide();
+                    await RefundModal.Hide();
+
+                }
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+              
+            }
+        }
+        private async Task UpdateCheckState(int checkbox)
+        {
+            switch (checkbox)
+            {
+                case 1:
+                    refunds.IsRefundOrder = true;
+                    refunds.IsRefundItems = false;
+                    refunds.IsRefundAmount = false;
+                    await InvokeAsync(StateHasChanged);
+                    break;
+                case 2:
+                    refunds.IsRefundItems = true;
+                    refunds.IsRefundOrder = false;
+                    refunds.IsRefundAmount = false;
+                    await InvokeAsync(StateHasChanged);
+                    break;
+                case 3:
+                    refunds.IsRefundAmount = true;
+                    refunds.IsRefundOrder = false;
+                    refunds.IsRefundItems = false;
+                    await InvokeAsync(StateHasChanged);
+                    break;
+            }
+            await InvokeAsync(StateHasChanged);
+        }
+
         private async Task ApplyShipmentAsync()
         {
             try
@@ -511,11 +594,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         {
             try
             {
-                if (Order.PaymentMethod != PaymentMethods.CreditCard)
-                {
-                    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.RefundIsOnlyAvailableForCreditCardPayments]);
-                    return;
-                }
+              
                 var confimation = await _uiMessageService.Confirm(L["AreYouSureToRefundThisOrder?"]);
                 if (confimation)
                 {
@@ -537,6 +616,17 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
             {
                 await loading.Hide();
             }
+        }
+
+        private void OpenRefundModal()
+        {
+          
+            refunds = new RefundOrder
+            {
+                IsRefundOrder = true,
+            };
+
+            RefundModal.Show();
         }
         private string UpdateAttributes(string htmlString,string orderId,string deliveryId)
         {
@@ -739,5 +829,17 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
 
        
         public string? ShippingNumber { get; set; }
+    }
+    public class RefundOrder
+    {
+        
+        public bool IsRefundOrder { get; set; }
+
+
+        public bool IsRefundItems { get; set; }
+        public bool IsRefundAmount { get; set; }
+        public Guid? OrderId { get; set; }
+        public List<Guid> OrderItemIds { get; set; }
+        public double Amount { get; set; }
     }
 }

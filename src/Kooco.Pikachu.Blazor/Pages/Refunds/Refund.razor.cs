@@ -76,7 +76,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Refunds
                 await loading.Show();
                 
                     await _refundAppService.UpdateRefundReviewAsync(rowData.Id, RefundReviewStatus.Proccessing);
-                
+                await _refundAppService.SendRefundRequestAsync(rowData.Id);
                 
                 await UpdateItemList();
             }

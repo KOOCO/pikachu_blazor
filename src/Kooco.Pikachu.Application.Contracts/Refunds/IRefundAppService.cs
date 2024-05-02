@@ -11,5 +11,6 @@ namespace Kooco.Pikachu.Refunds
         Task CreateAsync(Guid orderId);
         Task<PagedResultDto<RefundDto>> GetListAsync(GetRefundListDto input);
         Task<RefundDto> UpdateRefundReviewAsync(Guid id, RefundReviewStatus input);
+        Task SendRefundRequestAsync(Guid id);
     }
 }

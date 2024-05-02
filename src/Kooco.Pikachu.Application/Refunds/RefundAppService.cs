@@ -1,10 +1,18 @@
 ﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.LogisticsProviders;
+using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Permissions;
 using Microsoft.AspNetCore.Authorization;
+using MiniExcelLibs;
+using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -17,14 +25,23 @@ namespace Kooco.Pikachu.Refunds
     {
         private readonly IRefundRepository _refundRepository;
         private readonly IOrderRepository _orderRepository;
+        private readonly ILogisticsProvidersAppService _logisticsProvidersAppService;
+        GreenWorldLogisticsCreateUpdateDto GreenWorld { get; set; }
+        private readonly IConfiguration _configuration;
 
         public RefundAppService(
             IRefundRepository refundRepository,
-            IOrderRepository orderRepository
+            IOrderRepository orderRepository,
+            ILogisticsProvidersAppService logisticsProvidersAppService,
+            IConfiguration configuration
+
             )
         {
             _refundRepository = refundRepository;
             _orderRepository = orderRepository;
+            _logisticsProvidersAppService = logisticsProvidersAppService;
+            _configuration = configuration;
+            GreenWorld = new();
         }
 
         [Authorize(PikachuPermissions.Refund.Create)]
@@ -76,6 +93,100 @@ namespace Kooco.Pikachu.Refunds
             }
             await _refundRepository.UpdateAsync(refund);
             return ObjectMapper.Map<Refund, RefundDto>(refund);
+        }
+
+        public async Task SendRefundRequestAsync(Guid id)
+        {
+            var refund = await _refundRepository.GetAsync(id);
+
+            var providers = await _logisticsProvidersAppService.GetAllAsync();
+            var logisticSubType = "";
+            var greenWorld = providers.Where(p => p.LogisticProvider == EnumValues.LogisticProviders.GreenWorldLogistics).FirstOrDefault();
+            if (greenWorld != null)
+            {
+                GreenWorld = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorld);
+            }
+            var options = new RestClientOptions
+            {
+                MaxTimeout = -1,
+            };
+
+
+
+
+          
+            var client = new RestClient(options);
+            var request = new RestRequest("https://payment.ecpay.com.tw/CreditDetail/DoAction", Method.Post);
+           
+            request.AddHeader("Accept", "text/html");
+            request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+            request.AddParameter("MerchantID", GreenWorld.StoreCode);
+            request.AddParameter("MerchantTradeNo", refund.Order?.MerchantTradeNo!=null? refund.Order?.MerchantTradeNo: refund.Order?.OrderNo);
+            request.AddParameter("TradeNo", refund.Order?.TradeNo);
+            request.AddParameter("TotalAmount", (int)(refund.Order?.TotalAmount));
+            request.AddParameter("Action", "R");
+            request.AddParameter("CheckMacValue", GenerateCheckMac(greenWorld.HashKey, greenWorld.HashIV, GreenWorld.StoreCode, refund.Order?.MerchantTradeNo != null ? refund.Order?.MerchantTradeNo : refund.Order?.OrderNo,refund.Order?.TradeNo,"R",((int)refund.Order?.TotalAmount).ToString()));
+            //request.AddParameter("IsCollection", "N");
+           
+
+
+            RestResponse response = await client.ExecuteAsync(request);
+
+
+        }
+        public string GenerateCheckMac(string HashKey, string HashIV, string merchantID, string merchantTradeNo, string tradeNo,string action,string totalamount)
+        {
+            //string HashKey = "5294y06JbISpM5x9";
+            //string HashIV = "v77hoKGq4kWxNNIS";
+            // Create a dictionary to hold parameters
+            var parameters = new Dictionary<string, string>
+        {
+            { "MerchantID", merchantID },
+            { "MerchantTradeNo", merchantTradeNo },
+            { "TradeNo", tradeNo },
+            { "Action", action },
+            { "TotalAmount", totalamount },
+           
+
+
+
+        
+
+
+
+
+        };
+
+            // Sort parameters alphabetically
+            var sortedParameters = parameters.OrderBy(p => p.Key);
+
+            // Construct the request string
+            string requestString = string.Join("&", sortedParameters.Select(p => $"{p.Key}={p.Value}"));
+
+            // Add HashKey and HashIV
+            requestString = $"HashKey={HashKey}&{requestString}&HashIV={HashIV}";
+
+            // URL encode the entire string
+            //requestString = $"HashKey={HashKey}&{requestString}&HashIV={HashIV}";
+            string urlEncodedData = HttpUtility.UrlEncode(requestString);
+
+            // Step 5: Convert to lowercase
+            string lowercaseData = urlEncodedData.ToLower();
+
+            // Step 6: Create MD5 hash
+            using (MD5 md5 = MD5.Create())
+            {
+                byte[] inputBytes = Encoding.UTF8.GetBytes(lowercaseData);
+                byte[] hashBytes = md5.ComputeHash(inputBytes);
+
+                // Convert byte array to hex string
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < hashBytes.Length; i++)
+                {
+                    sb.Append(hashBytes[i].ToString("X2")); // To hexadecimal string
+                }
+                return sb.ToString(); // Step 7: Convert to uppercase implicitly
+            }
         }
     }
 }

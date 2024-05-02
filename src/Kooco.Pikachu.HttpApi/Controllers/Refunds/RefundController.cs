@@ -30,6 +30,11 @@ public class RefundController(
         return _refundAppService.GetListAsync(input);
     }
 
+    public Task SendRefundRequestAsync(Guid id)
+    {
+        return _refundAppService.SendRefundRequestAsync(id);
+    }
+
     [HttpPut("{id}/{input}")]
     public Task<RefundDto> UpdateRefundReviewAsync(Guid id, RefundReviewStatus input)
     {

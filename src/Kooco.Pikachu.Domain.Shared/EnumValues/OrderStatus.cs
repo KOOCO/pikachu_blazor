@@ -7,6 +7,7 @@ namespace Kooco.Pikachu.EnumValues
         Open,
         Closed,
         Returned,
-        Exchange
+        Exchange,
+        Refund
     }
 }

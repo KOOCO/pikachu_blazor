@@ -30,7 +30,11 @@ namespace Kooco.Pikachu.Refunds
                 .PageBy(skipCount,maxResultCount)
                 .ToListAsync();
         }
-
+        public async Task<Refund> GetAsync(Guid Id)
+        {
+            var query = (await GetQueryableAsync()).Include(x => x.Order).Where(x=>x.Id==Id).FirstOrDefault();
+            return query;
+        }
         private static IQueryable<Refund> ApplyFilter(
             IQueryable<Refund> queryable,
             string? filter
@@ -41,7 +45,7 @@ namespace Kooco.Pikachu.Refunds
                 x => x.Order == null || x.Order.OrderNo.Contains(filter)
                 || x.Order.CustomerName.Contains(filter)
                 || x.Order.TotalAmount.ToString().Contains(filter)
-                );
+                ).Where(x=>x.Order.IsRefunded==true);
         }
     }
 }

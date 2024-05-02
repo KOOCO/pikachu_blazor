@@ -233,4 +233,14 @@ public class OrderController(
     {
         return _ordersAppService.CreditNoteInvoice(id, reason);
     }
+
+    public Task<OrderDto> RefundOrderItems(List<Guid> OrderItemIds, Guid OrderId)
+    {
+       return _ordersAppService.RefundOrderItems(OrderItemIds, OrderId);
+    }
+
+    public Task RefundAmountAsync(double amount, Guid OrderId)
+    {
+        return _ordersAppService.RefundAmountAsync(amount, OrderId);
+    }
 }
