@@ -443,6 +443,12 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                         return;
 
                     }
+                 if(refunds.Amount>(double)Order.TotalAmount) {
+
+                        await _uiMessageService.Error("Enter amount is greater than order amount");
+                        await loading.Hide();
+                        return;
+                    }
                     await _orderAppService.RefundAmountAsync(refunds.Amount, OrderId);
                     await loading.Hide();
                     await RefundModal.Hide();
@@ -453,10 +459,11 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
             {
                 await _uiMessageService.Error(ex.GetType().ToString());
                 await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+                await loading.Hide();
             }
             finally
             {
-              
+              await GetOrderDetailsAsync();
             }
         }
         private async Task UpdateCheckState(int checkbox)
