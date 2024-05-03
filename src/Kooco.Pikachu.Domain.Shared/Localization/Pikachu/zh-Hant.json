@@ -394,7 +394,7 @@
     "LogisticsType": "物流類型",
     "LogisticsSubType": "物流子類型",
     "FreeShippingThreshold": "免運費",
-    "Freight": "貨運",
+    "Freight": "運費",
     "StoreCode": "Store Code",
     "SaveSettings": "儲存設定",
     "CustomTitle": "自訂抬頭",
