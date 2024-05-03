@@ -653,7 +653,7 @@
     </div>
     <div class="row">
         <div class="col-6">
-            <h4 class="d-inline-block">@L["Order Deliveries"]</h4>
+            <h4 class="d-inline-block">@L["OrderDelivery"]</h4>
         </div>
 
         <div class="col-12">
@@ -763,7 +763,7 @@
                                 <th></th>
                                 
                                  <th>@L["Temperature"]</th>
-                                  <th>@L["Delivery Cost"]</th>
+                                  <th>@L["DeliveryCost"]</th>
                                 <th>@L["Quantity"]</th>
                                 <th>@L["UnitPrice"]</th>
                                 <th>@L["Subtotal"]</th>
@@ -827,7 +827,7 @@
                                                 else
                                                 {
                                                     <td>
-                                                        @item.DeliveryTemperature
+                                                        @L[item.DeliveryTemperature.ToString()]
                                                     </td>
                                                     <td>
                                                         @item.DeliveryTemperatureCost

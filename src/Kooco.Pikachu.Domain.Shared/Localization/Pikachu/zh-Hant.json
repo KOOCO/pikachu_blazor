@@ -23,6 +23,7 @@
     "Menu:GroupBuyManagement": "團購管理",
     "Menu:GroupBuyListView": "團購列表",
     "Menu:GroupBuyReports": "團購報表",
+    "Menu:VoidInvoice": "作廢/折讓票據",
     "Menu:GroupBuyPageConfig": "團購頁面設定",
     "Menu:FreebiesListView": "贈品清單",
     "Menu:ProductManagement": "商品管理",
@@ -502,7 +503,22 @@
     "OuterIslandFreight": "離島運費",
     "Size": "尺寸",
     "Yes": "是",
-    "No": "否"
+    "No": "否",
+    "OrderDelivery": "物流單",
+    "IssueDate": "開票日期",
+    "DeliveryNo": "貨運號碼",
+    "DeliveryMethod": "運送方式",
+    "DeliveryStatus": "狀態",
+    "DeliveryTemperature": "溫層",
+    "AllPayLogisticsID": "綠界物流號",
+    "DeliveryCost": "運費",
+    "InvoiceNumber": "發票號碼",
+    "VoidDate": "作廢日期",
+    "VoidUser": "作廢人",
+    "CreditNoteDate": "折讓日期",
+    "CreditNoteUser": "折讓人",
+    "VoidReason": "作廢原因",
+    "CreditNoteReason": "折讓原因"
 
 
   }
