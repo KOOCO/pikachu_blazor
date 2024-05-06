@@ -16,5 +16,8 @@ namespace Kooco.Pikachu.LogisticsProviders
         Task UpdateBNormalAsync(BNormalCreateUpdateDto input);
         Task UpdateBFrozenAsync(BNormalCreateUpdateDto input);
         Task UpdateBFreezeAsync(BNormalCreateUpdateDto input);
+        Task UpdateGreenWorldC2CAsync(GreenWorldLogisticsCreateUpdateDto input);
+        Task UpdateFamilyMartC2CAsync(SevenToElevenCreateUpdateDto input);
+        Task UpdateSevenToElevenC2CAsync(SevenToElevenCreateUpdateDto input);
     }
 }

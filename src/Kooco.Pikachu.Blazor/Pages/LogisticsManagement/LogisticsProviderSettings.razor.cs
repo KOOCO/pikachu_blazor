@@ -14,11 +14,14 @@ namespace Kooco.Pikachu.Blazor.Pages.LogisticsManagement
     public partial class LogisticsProviderSettings
     {
         GreenWorldLogisticsCreateUpdateDto GreenWorld { get; set; }
+        GreenWorldLogisticsCreateUpdateDto GreenWorldC2C { get; set; }
         HomeDeliveryCreateUpdateDto HomeDelivery { get; set; }
         PostOfficeCreateUpdateDto PostOffice { get; set; }
         SevenToElevenCreateUpdateDto SevenToEleven { get; set; }
+        SevenToElevenCreateUpdateDto SevenToElevenC2C { get; set; }
         SevenToElevenCreateUpdateDto SevenToElevenFrozen { get; set; }
         SevenToElevenCreateUpdateDto FamilyMart { get; set; }
+        SevenToElevenCreateUpdateDto FamilyMartC2C { get; set; }
         BNormalCreateUpdateDto BNormal { get; set; }
         BNormalCreateUpdateDto BFreeze { get; set; }
         BNormalCreateUpdateDto BFrozen { get; set; }
@@ -27,11 +30,14 @@ namespace Kooco.Pikachu.Blazor.Pages.LogisticsManagement
         public LogisticsProviderSettings()
         {
             GreenWorld = new();
+            GreenWorldC2C = new();
             HomeDelivery = new(); 
             PostOffice = new();
             SevenToEleven = new();
+            SevenToElevenC2C = new();
             SevenToElevenFrozen = new();
             FamilyMart = new();
+            FamilyMartC2C = new();
             BNormal = new();
             BFreeze = new();
             BFrozen = new();
@@ -60,7 +66,11 @@ namespace Kooco.Pikachu.Blazor.Pages.LogisticsManagement
             {
                 GreenWorld = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorld);
             }
-
+            var greenWorldC2C = providers.Where(p => p.LogisticProvider == EnumValues.LogisticProviders.GreenWorldLogisticsC2C).FirstOrDefault();
+            if (greenWorldC2C != null)
+            {
+                GreenWorldC2C = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorldC2C);
+            }
             var homeDelivery = providers.Where(p => p.LogisticProvider == EnumValues.LogisticProviders.HomeDelivery).FirstOrDefault();
             if (homeDelivery != null)
             {
@@ -76,10 +86,20 @@ namespace Kooco.Pikachu.Blazor.Pages.LogisticsManagement
             {
                 SevenToEleven = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(sevenToEleven);
             }
+            var sevenToElevenC2C = providers.Where(p => p.LogisticProvider == EnumValues.LogisticProviders.SevenToElevenC2C).FirstOrDefault();
+            if (sevenToElevenC2C != null)
+            {
+                SevenToElevenC2C = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(sevenToElevenC2C);
+            }
             var familyMart = providers.Where(p => p.LogisticProvider == EnumValues.LogisticProviders.FamilyMart).FirstOrDefault();
             if (familyMart != null)
             {
                 FamilyMart = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(familyMart);
+            }
+            var familyMartC2C = providers.Where(p => p.LogisticProvider == EnumValues.LogisticProviders.FamilyMartC2C).FirstOrDefault();
+            if (familyMartC2C != null)
+            {
+                FamilyMartC2C = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(familyMartC2C);
             }
             var sevenToElevenFrozen = providers.Where(p => p.LogisticProvider == EnumValues.LogisticProviders.SevenToElevenFrozen).FirstOrDefault();
             if (sevenToElevenFrozen != null)
@@ -114,6 +134,29 @@ namespace Kooco.Pikachu.Blazor.Pages.LogisticsManagement
                 await Loading.Show();
                 GreenWorld.City = city;
                 await _logisticProvidersAppService.UpdateGreenWorldAsync(GreenWorld);
+                await GetAllAsync();
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+                await Loading.Hide();
+            }
+        }
+        async Task UpdateGreenWorldLogisticsC2CAsync()
+        {
+            try
+            {
+                var city = GreenWorldC2C.City;
+                var confirm = await _uiMessageService.Confirm(L["AreYouSureToUpdateGreenWorldC2C?"]);
+                if (!confirm)
+                    return;
+                await Loading.Show();
+                GreenWorldC2C.City = city;
+                await _logisticProvidersAppService.UpdateGreenWorldC2CAsync(GreenWorldC2C);
                 await GetAllAsync();
             }
             catch (Exception ex)
@@ -189,6 +232,27 @@ namespace Kooco.Pikachu.Blazor.Pages.LogisticsManagement
                 await Loading.Hide();
             }
         }
+        async Task UpdateSevenToElevenC2CAsync()
+        {
+            try
+            {
+                var confirm = await _uiMessageService.Confirm(L["AreYouSureToUpdate7-11C2C?"]);
+                if (!confirm)
+                    return;
+                await Loading.Show();
+                await _logisticProvidersAppService.UpdateSevenToElevenC2CAsync(SevenToElevenC2C);
+                await GetAllAsync();
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+                await Loading.Hide();
+            }
+        }
         async Task UpdateSevenToElevenFrozenAsync()
         {
             try
@@ -219,6 +283,27 @@ namespace Kooco.Pikachu.Blazor.Pages.LogisticsManagement
                     return;
                 await Loading.Show();
                 await _logisticProvidersAppService.UpdateFamilyMartAsync(FamilyMart);
+                await GetAllAsync();
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+                await Loading.Hide();
+            }
+        }
+        async Task UpdateFamilyMartC2CAsync()
+        {
+            try
+            {
+                var confirm = await _uiMessageService.Confirm(L["AreYouSureToUpdateFamilyMartC2C?"]);
+                if (!confirm)
+                    return;
+                await Loading.Show();
+                await _logisticProvidersAppService.UpdateFamilyMartC2CAsync(FamilyMartC2C);
                 await GetAllAsync();
             }
             catch (Exception ex)

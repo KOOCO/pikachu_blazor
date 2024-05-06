@@ -4,6 +4,7 @@ namespace Kooco.Pikachu.EnumValues
     public enum LogisticProviders
     {
         GreenWorldLogistics,
+        GreenWorldLogisticsC2C,
         HomeDelivery,
         PostOffice,
         FamilyMart,
@@ -11,7 +12,9 @@ namespace Kooco.Pikachu.EnumValues
         SevenToElevenFrozen,
         BNormal,
         BFreeze,
-        BFrozen
+        BFrozen,
+        FamilyMartC2C,
+        SevenToElevenC2C,
 
     }
 }

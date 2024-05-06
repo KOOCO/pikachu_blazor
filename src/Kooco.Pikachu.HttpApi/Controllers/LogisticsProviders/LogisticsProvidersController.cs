@@ -45,10 +45,20 @@ public class LogisticsProvidersController(
     {
         return _logisticsProvidersAppService.UpdateSevenToElevenAsync(input);
     }
+    [HttpPut("7-11C2C")]
+    public Task UpdateSevenToElevenC2CAsync(SevenToElevenCreateUpdateDto input)
+    {
+        return _logisticsProvidersAppService.UpdateSevenToElevenC2CAsync(input);
+    }
     [HttpPut("family-mart")]
     public Task UpdateFamilyMartAsync(SevenToElevenCreateUpdateDto input)
     {
         return _logisticsProvidersAppService.UpdateFamilyMartAsync(input);
+    }
+    [HttpPut("family-mart-c2c")]
+    public Task UpdateFamilyMartC2CAsync(SevenToElevenCreateUpdateDto input)
+    {
+        return _logisticsProvidersAppService.UpdateFamilyMartC2CAsync(input);
     }
     [HttpPut("7-11frozen")]
     public Task UpdateSevenToElevenFrozenAsync(SevenToElevenCreateUpdateDto input)
@@ -69,5 +79,10 @@ public class LogisticsProvidersController(
     public Task UpdateBFreezeAsync(BNormalCreateUpdateDto input)
     {
         return _logisticsProvidersAppService.UpdateBFreezeAsync(input);
+    }
+    [HttpPut("green-world-c2c")]
+    public Task UpdateGreenWorldC2CAsync(GreenWorldLogisticsCreateUpdateDto input)
+    {
+        return _logisticsProvidersAppService.UpdateGreenWorldC2CAsync(input);
     }
 }

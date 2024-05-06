@@ -58,7 +58,44 @@ namespace Kooco.Pikachu.LogisticsProviders
                 await _logisticsProviderRepository.InsertAsync(greenWorld);
             }
         }
+        public async Task UpdateGreenWorldC2CAsync(GreenWorldLogisticsCreateUpdateDto input)
+        {
+            var greenWorld = await _logisticsProviderRepository.FirstOrDefaultAsync(x => x.LogisticProvider == LogisticProviders.GreenWorldLogisticsC2C);
 
+            if (greenWorld != null)
+            {
+                greenWorld.IsEnabled = input.IsEnabled;
+                greenWorld.StoreCode = input.StoreCode;
+                greenWorld.HashKey = input.HashKey;
+                greenWorld.HashIV = input.HashIV;
+                greenWorld.SenderName = input.SenderName;
+                greenWorld.SenderPhoneNumber = input.SenderPhoneNumber;
+                greenWorld.PlatFormId = input.PlatFormId;
+                greenWorld.SenderAddress = input.SenderAddress;
+                greenWorld.SenderPostalCode = input.SenderPostalCode;
+                greenWorld.City = input.City;
+
+                await _logisticsProviderRepository.UpdateAsync(greenWorld);
+            }
+            else
+            {
+                greenWorld = new LogisticsProviderSettings
+                {
+                    IsEnabled = input.IsEnabled,
+                    StoreCode = input.StoreCode,
+                    HashKey = input.HashKey,
+                    HashIV = input.HashIV,
+                    SenderName = input.SenderName,
+                    SenderPhoneNumber = input.SenderPhoneNumber,
+                    PlatFormId = input.PlatFormId,
+                    SenderAddress = input.SenderAddress,
+                    SenderPostalCode = input.SenderPostalCode,
+                    City = input.City,
+                    LogisticProvider = LogisticProviders.GreenWorldLogisticsC2C
+                };
+                await _logisticsProviderRepository.InsertAsync(greenWorld);
+            }
+        }
         public async Task UpdateHomeDeliveryAsync(HomeDeliveryCreateUpdateDto input)
         {
             var homeDelivery = await _logisticsProviderRepository.FirstOrDefaultAsync(x => x.LogisticProvider == LogisticProviders.HomeDelivery);
@@ -133,6 +170,28 @@ namespace Kooco.Pikachu.LogisticsProviders
                 await _logisticsProviderRepository.InsertAsync(sevenToEleven);
             }
         }
+        public async Task UpdateSevenToElevenC2CAsync(SevenToElevenCreateUpdateDto input)
+        {
+            var sevenToEleven = await _logisticsProviderRepository.FirstOrDefaultAsync(x => x.LogisticProvider == LogisticProviders.SevenToElevenC2C);
+            if (sevenToEleven != null)
+            {
+                sevenToEleven.Freight = input.Freight;
+                sevenToEleven.Payment = input.Payment;
+
+                await _logisticsProviderRepository.UpdateAsync(sevenToEleven);
+            }
+            else
+            {
+                sevenToEleven = new LogisticsProviderSettings
+                {
+                    Freight = input.Freight,
+                    Payment = input.Payment,
+                    LogisticProvider = LogisticProviders.SevenToElevenC2C
+                };
+
+                await _logisticsProviderRepository.InsertAsync(sevenToEleven);
+            }
+        }
         public async Task UpdateFamilyMartAsync(SevenToElevenCreateUpdateDto input)
         {
             var sevenToEleven = await _logisticsProviderRepository.FirstOrDefaultAsync(x => x.LogisticProvider == LogisticProviders.FamilyMart);
@@ -150,6 +209,28 @@ namespace Kooco.Pikachu.LogisticsProviders
                     Freight = input.Freight,
                     Payment = input.Payment,
                     LogisticProvider = LogisticProviders.FamilyMart
+                };
+
+                await _logisticsProviderRepository.InsertAsync(sevenToEleven);
+            }
+        }
+        public async Task UpdateFamilyMartC2CAsync(SevenToElevenCreateUpdateDto input)
+        {
+            var sevenToEleven = await _logisticsProviderRepository.FirstOrDefaultAsync(x => x.LogisticProvider == LogisticProviders.FamilyMartC2C);
+            if (sevenToEleven != null)
+            {
+                sevenToEleven.Freight = input.Freight;
+                sevenToEleven.Payment = input.Payment;
+
+                await _logisticsProviderRepository.UpdateAsync(sevenToEleven);
+            }
+            else
+            {
+                sevenToEleven = new LogisticsProviderSettings
+                {
+                    Freight = input.Freight,
+                    Payment = input.Payment,
+                    LogisticProvider = LogisticProviders.FamilyMartC2C
                 };
 
                 await _logisticsProviderRepository.InsertAsync(sevenToEleven);
