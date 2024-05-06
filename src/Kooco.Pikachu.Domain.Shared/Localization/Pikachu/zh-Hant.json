@@ -518,7 +518,15 @@
     "CreditNoteDate": "折讓日期",
     "CreditNoteUser": "折讓人",
     "VoidReason": "作廢原因",
-    "CreditNoteReason": "折讓原因"
+    "CreditNoteReason": "折讓原因",
+    "LastUpdatedDate": "最後更新時間",
+    "Succeeded": "成功",
+    "Failed": "失敗",
+    "Orignal": "原訂單",
+    "Split": "拆單",
+    "Combined": "併單"
+
+
 
 
   }

@@ -492,7 +492,12 @@
     "CreditNoteDate": "Credit Note Date",
     "CreditNoteUser": "Credit Note User",
     "VoidReason": "Void Reason",
-    "CreditNoteReason": "Credit Note Reason"
+    "CreditNoteReason": "Credit Note Reason",
+    "Succeeded": "Succeeded",
+    "Failed": "Failed",
+    "Orignal": "Orignal",
+    "Split": "Split",
+    "Combined": "Combined"
 
 
 

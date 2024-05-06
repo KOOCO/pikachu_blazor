@@ -701,7 +701,7 @@
                         </DataGridColumn>
                     <DataGridColumn Field="@nameof(OrderDeliveryDto.DeliveryStatus)" Caption="@L["DeliveryStatus"]">
                         <DisplayTemplate>
-                            @context.DeliveryStatus.ToString()
+                            @L[context.DeliveryStatus.ToString()]
                         </DisplayTemplate>
                      
                     </DataGridColumn>
@@ -709,7 +709,7 @@
                         <DisplayTemplate>
                             @if(context.Items.Count>0)
                             {
-                            @context.Items[0]?.DeliveryTemperature
+                            @L[context.Items[0]?.DeliveryTemperature.ToString()]
                             }
                         </DisplayTemplate>
                        </DataGridColumn>
