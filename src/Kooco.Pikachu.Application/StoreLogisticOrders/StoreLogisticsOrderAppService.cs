@@ -162,16 +162,28 @@ namespace Kooco.Pikachu.StoreLogisticOrders
         public async Task<ResponseResultDto> CreateStoreLogisticsOrderAsync(Guid orderId, Guid orderDeliveryId)
         {
             ResponseResultDto result = new ResponseResultDto();
-            var order = await _orderRepository.GetAsync(orderId);
+            var order = await _orderRepository.GetWithDetailsAsync(orderId);
             var orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
             var orderDelivery = orderDeliverys.Where(x => x.Id == orderDeliveryId).FirstOrDefault();
+           
             var providers = await _logisticsProvidersAppService.GetAllAsync();
             var logisticSubType = "";
-            var greenWorld = providers.Where(p => p.LogisticProvider == EnumValues.LogisticProviders.GreenWorldLogistics).FirstOrDefault();
-            if (greenWorld != null)
+            if (orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.SevenToElevenC2C || orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.FamilyMartC2C)
             {
-                GreenWorld = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorld);
+                var greenWorld = providers.Where(p => p.LogisticProvider == EnumValues.LogisticProviders.GreenWorldLogisticsC2C).FirstOrDefault();
+                if (greenWorld != null)
+                {
+                    GreenWorld = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorld);
+                }
             }
+            else {
+                var greenWorld = providers.Where(p => p.LogisticProvider == EnumValues.LogisticProviders.GreenWorldLogistics).FirstOrDefault();
+                if (greenWorld != null)
+                {
+                    GreenWorld = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorld);
+                }
+            }
+          
 
             var homeDelivery = providers.Where(p => p.LogisticProvider == EnumValues.LogisticProviders.HomeDelivery).FirstOrDefault();
             if (homeDelivery != null)
@@ -222,7 +234,7 @@ namespace Kooco.Pikachu.StoreLogisticOrders
             var marchentDate = DateTime.Now.ToString("yyyy/MM/dd");
             request.AddHeader("Accept", "text/html");
             request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
-            request.AddParameter("MerchantID", greenWorld.StoreCode);
+            request.AddParameter("MerchantID", GreenWorld.StoreCode);
             request.AddParameter("MerchantTradeDate", marchentDate);
             request.AddParameter("LogisticsType", "CVS");
 
@@ -241,20 +253,32 @@ namespace Kooco.Pikachu.StoreLogisticOrders
             {
                 request.AddParameter("LogisticsSubType", "UNIMARTC2C");
                 logisticSubType = "UNIMARTC2C";
+                request.AddParameter("GoodsName", order.GroupBuy.GroupBuyName);
+                request.AddParameter("SenderCellPhone", GreenWorld.SenderPhoneNumber);
             }
             else if (orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.FamilyMartC2C)
             {
                 request.AddParameter("LogisticsSubType", "FAMIC2C");
                 logisticSubType = "FAMIC2C";
+                request.AddParameter("GoodsName", order.GroupBuy.GroupBuyName);
+                request.AddParameter("SenderCellPhone", GreenWorld.SenderPhoneNumber);
             }
             request.AddParameter("GoodsAmount", Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)));
-            request.AddParameter("SenderName", greenWorld.SenderName);
+            request.AddParameter("SenderName", GreenWorld.SenderName);
             request.AddParameter("ReceiverName", order.RecipientName);
             request.AddParameter("ReceiverCellPhone", order.RecipientPhone);
             request.AddParameter("ServerReplyURL", "https://www.ecpay.com.tw/ServerReplyURL");
             request.AddParameter("ReceiverStoreID", order.StoreId);
-            request.AddParameter("CheckMacValue", GenerateRequestString(greenWorld.HashKey,greenWorld.HashIV,greenWorld.StoreCode, order.OrderNo, marchentDate, "CVS", logisticSubType, Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)), greenWorld.SenderName, order.RecipientName, order.RecipientPhone, 
-                "https://www.ecpay.com.tw/ServerReplyURL", order.StoreId));
+            if (orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.SevenToElevenC2C || orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.FamilyMartC2C)
+            {
+                request.AddParameter("CheckMacValue", GenerateRequestString(GreenWorld.HashKey, GreenWorld.HashIV, GreenWorld.StoreCode, order.OrderNo, marchentDate, "CVS", logisticSubType, Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)), GreenWorld.SenderName, order.RecipientName, order.RecipientPhone,
+                    "https://www.ecpay.com.tw/ServerReplyURL", order.StoreId,order.GroupBuy.GroupBuyName,GreenWorld.SenderPhoneNumber));
+            }
+            else {
+                request.AddParameter("CheckMacValue", GenerateRequestString(GreenWorld.HashKey, GreenWorld.HashIV, GreenWorld.StoreCode, order.OrderNo, marchentDate, "CVS", logisticSubType, Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)), GreenWorld.SenderName, order.RecipientName, order.RecipientPhone,
+                        "https://www.ecpay.com.tw/ServerReplyURL", order.StoreId));
+
+            }
             //request.AddParameter("IsCollection", "N");
             request.AddParameter("MerchantTradeNo", order.OrderNo);
 
@@ -269,7 +293,7 @@ namespace Kooco.Pikachu.StoreLogisticOrders
             }
             return result;
         }
-        public string GenerateRequestString(string HashKey, string HashIV, string merchantID, string merchantTradeNo, string merchantTradeDate, string logisticsType, string logisticsSubType, int goodsAmount, string senderName, string receiverName, string receiverCellPhone, string serverReplyURL, string receiverStoreID)
+        public string GenerateRequestString(string HashKey, string HashIV, string merchantID, string merchantTradeNo, string merchantTradeDate, string logisticsType, string logisticsSubType, int goodsAmount, string senderName, string receiverName, string receiverCellPhone, string serverReplyURL, string receiverStoreID,string? goodName=null,string? senderCellNumber =null)
         {
             //string HashKey = "5294y06JbISpM5x9";
             //string HashIV = "v77hoKGq4kWxNNIS";
@@ -297,7 +321,14 @@ namespace Kooco.Pikachu.StoreLogisticOrders
             { "ReceiverStoreID", receiverStoreID },
 
         };
-
+            if (goodName != null)
+            {
+                parameters.Add("GoodsName", goodName);
+            }
+            if (senderCellNumber != null)
+            {
+                parameters.Add("SenderCellPhone", senderCellNumber);
+            }
             // Sort parameters alphabetically
             var sortedParameters = parameters.OrderBy(p => p.Key);
 
