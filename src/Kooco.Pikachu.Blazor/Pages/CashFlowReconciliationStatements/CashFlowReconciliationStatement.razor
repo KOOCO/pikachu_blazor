@@ -219,7 +219,7 @@
         <ModalContent IsCentered="true">
             <EditForm Model="@CreditReason" OnValidSubmit="ApplyCreditReasonAsync">
                 <ModalHeader>
-                    <ModalTitle>@L["CreditReason"]</ModalTitle>
+                    <ModalTitle>@L["CreditNoteReason"]</ModalTitle>
                         <CloseButton Clicked="CloseCreditReasonModal"  />
                     </ModalHeader>
                     <ModalBody>
@@ -227,7 +227,7 @@
                         <DataAnnotationsValidator />
                     
                     <div class="row my-2">
-                        <label class="form-label">@L["CreditReason"]</label>
+                        <label class="form-label">@L["CreditNoteReason"]</label>
                         <div class="col-12 mb-2">
                             <InputText class="form-control" @bind-Value="@CreditReason.Reason"></InputText>
                             <ValidationMessage For="@(() => CreditReason.Reason)" />

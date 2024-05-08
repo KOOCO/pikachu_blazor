@@ -528,7 +528,9 @@
     "Split": "拆單",
     "Combined": "併單",
     "SentToBackStage": "已送達後台",
-    "7-11C2C": "7-11 C2C"
+    "7-11C2C": "7-11 C2C",
+    "VoidInvoice": "作廢發票",
+    "IssueCreditNote": "開立折讓"
 
 
   }

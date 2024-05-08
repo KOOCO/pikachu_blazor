@@ -499,7 +499,9 @@
     "Orignal": "Orignal",
     "Split": "Split",
     "Combined": "Combined",
-    "SentToBackStage": "Sent To Back Stage"
+    "SentToBackStage": "Sent To Back Stage",
+    "VoidInvoice": "Void Invoice",
+    "IssueCreditNote": "Issue Credit Note"
 
 
 
