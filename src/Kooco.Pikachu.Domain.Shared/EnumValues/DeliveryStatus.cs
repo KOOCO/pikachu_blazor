@@ -6,7 +6,7 @@ namespace Kooco.Pikachu.EnumValues
 {
     public enum DeliveryStatus
     {
-        Proccesing,
+        Processing,
         Shipped
 
     }
