@@ -29,7 +29,7 @@
             TValue="Guid?"
             SelectedValue="@SelectedGroupBuy"
             Size="Size.Small"
-             id="mySelectElement"
+              id="mySelectElement" 
              SelectedValueChanged="@(e=>OnSearch(e))">
               <SelectItem Value="@Guid.Empty" >@L["SelectGroupBuy"]</SelectItem>
                 @foreach (var item in GroupBuyList)

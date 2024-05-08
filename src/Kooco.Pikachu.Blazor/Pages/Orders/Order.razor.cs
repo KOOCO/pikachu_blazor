@@ -42,17 +42,19 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         
         private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<OrderDto> e)
         {
+            await JSRuntime.InvokeVoidAsync("removeSelectClass", "mySelectElement");
+            await JSRuntime.InvokeVoidAsync("removeInputClass", "startDate");
+            await JSRuntime.InvokeVoidAsync("removeInputClass", "endDate");
             PageIndex = e.Page - 1;
             await UpdateItemList();
             await GetGroupBuyList();
             await InvokeAsync(StateHasChanged);
-            await JSRuntime.InvokeVoidAsync("removeSelectClass", "mySelectElement");
-            await JSRuntime.InvokeVoidAsync("removeInputClass", "startDate");
-            await JSRuntime.InvokeVoidAsync("removeInputClass", "endDate");
+       
         }
         private async Task GetGroupBuyList() {
-
+            await loading.Show();
             GroupBuyList = await _groupBuyAppService.GetGroupBuyLookupAsync();
+            await loading.Hide();
         
         }
         private async Task UpdateItemList()

@@ -345,10 +345,11 @@ namespace Kooco.Pikachu.GroupBuys
 
         public async Task<List<KeyValueDto>> GetGroupBuyLookupAsync()
         {
-            var groupbuys = (await _groupBuyRepository.GetListAsync())
+            var groupbuys = (await _groupBuyRepository.GetQueryableAsync())
                             .Where(g => g.IsGroupBuyAvaliable)
+                            .Select(x => new GroupBuyList { Id = x.Id, GroupBuyName = x.GroupBuyName })
                             .ToList();
-            return ObjectMapper.Map<List<GroupBuy>, List<KeyValueDto>>(groupbuys);
+            return ObjectMapper.Map<List<GroupBuyList>, List<KeyValueDto>>(groupbuys);
         }
         public async Task<List<KeyValueDto>> GetAllGroupBuyLookupAsync()
         {
