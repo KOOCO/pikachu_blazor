@@ -46,12 +46,12 @@ namespace Kooco.Pikachu.Orders
             return await ApplyReconciliationFilters(await GetQueryableAsync(), filter, groupBuyId, orderId, startDate, endDate)
                 .OrderBy(sorting)
                 .PageBy(skipCount, maxResultCount)
-                .Include(o => o.GroupBuy)
+                //.Include(o => o.GroupBuy)
                 .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.Item)
-                .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.SetItem)
-                .Include(o => o.OrderItems)
+                //.ThenInclude(oi => oi.Item)
+                //.Include(o => o.OrderItems)
+                //.ThenInclude(oi => oi.SetItem)
+                //.Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Freebie)
                 .ToListAsync();
         }
