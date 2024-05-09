@@ -291,7 +291,7 @@ namespace Kooco.Pikachu.GroupBuys
                 decimal profit = 0;
                 foreach (var item in itemWithShareProfit)
                 {
-                    profit += (item.TotalAmount * ((decimal)(item.Item.ShareProfit) / 100));
+                    profit +=(decimal)(query.GroupBuy.ProfitShare-item.Item.ShareProfit)*item.TotalAmount;
 
                 }
                 query.BloggersProfit = (decimal)(groupbuyProfit - profit);

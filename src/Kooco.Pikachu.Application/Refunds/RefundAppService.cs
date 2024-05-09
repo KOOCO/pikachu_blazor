@@ -9,6 +9,7 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -160,37 +161,60 @@ namespace Kooco.Pikachu.Refunds
 
 
         };
+            IEnumerable<string>? param = parameters.ToDictionary().Keys
+                                          .OrderBy(o => o)
+                                          .Select(s => s + "=" + parameters.ToDictionary()[s]);
 
-            // Sort parameters alphabetically
-            var sortedParameters = parameters.OrderBy(p => p.Key);
+            string collectionValue = string.Join("&", param);
 
-            // Construct the request string
-            string requestString = string.Join("&", sortedParameters.Select(p => $"{p.Key}={p.Value}"));
+            collectionValue = $"HashKey={HashKey}" + "&" + collectionValue + $"&HashIV={HashIV}";
 
-            // Add HashKey and HashIV
-            requestString = $"HashKey={HashKey}&{requestString}&HashIV={HashIV}";
+            collectionValue = WebUtility.UrlEncode(collectionValue).ToLower();
 
-            // URL encode the entire string
+            return ComputeSHA256Hash(collectionValue);
+            //// Sort parameters alphabetically
+            //var sortedParameters = parameters.OrderBy(p => p.Key);
+
+            //// Construct the request string
+            //string requestString = string.Join("&", sortedParameters.Select(p => $"{p.Key}={p.Value}"));
+
+            //// Add HashKey and HashIV
             //requestString = $"HashKey={HashKey}&{requestString}&HashIV={HashIV}";
-            string urlEncodedData = HttpUtility.UrlEncode(requestString);
 
-            // Step 5: Convert to lowercase
-            string lowercaseData = urlEncodedData.ToLower();
+            //// URL encode the entire string
+            ////requestString = $"HashKey={HashKey}&{requestString}&HashIV={HashIV}";
+            //string urlEncodedData = HttpUtility.UrlEncode(requestString);
 
-            // Step 6: Create MD5 hash
-            using (MD5 md5 = MD5.Create())
+            //// Step 5: Convert to lowercase
+            //string lowercaseData = urlEncodedData.ToLower();
+
+            //// Step 6: Create MD5 hash
+            //using (MD5 md5 = MD5.Create())
+            //{
+            //    byte[] inputBytes = Encoding.UTF8.GetBytes(lowercaseData);
+            //    byte[] hashBytes = md5.ComputeHash(inputBytes);
+
+            //    // Convert byte array to hex string
+            //    StringBuilder sb = new StringBuilder();
+            //    for (int i = 0; i < hashBytes.Length; i++)
+            //    {
+            //        sb.Append(hashBytes[i].ToString("X2")); // To hexadecimal string
+            //    }
+            //    return sb.ToString(); // Step 7: Convert to uppercase implicitly
+            //}
+        }
+        public string ComputeSHA256Hash(string rawData)
+        {
+            byte[] bytes = SHA256.HashData(Encoding.UTF8.GetBytes(rawData));
+
+            StringBuilder builder = new();
+
+            for (int i = 0; i < bytes.Length; i++)
             {
-                byte[] inputBytes = Encoding.UTF8.GetBytes(lowercaseData);
-                byte[] hashBytes = md5.ComputeHash(inputBytes);
-
-                // Convert byte array to hex string
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < hashBytes.Length; i++)
-                {
-                    sb.Append(hashBytes[i].ToString("X2")); // To hexadecimal string
-                }
-                return sb.ToString(); // Step 7: Convert to uppercase implicitly
+                builder.Append(bytes[i].ToString("x2"));
             }
+
+            return builder.ToString();
         }
     }
 }
