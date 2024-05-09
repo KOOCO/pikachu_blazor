@@ -114,7 +114,7 @@ namespace Kooco.Pikachu.OrderDeliveries
                 body = body.Replace("{{DeliveryNo}}", deliveryOrder.DeliveryNo);
             }
             else {
-                body = body.Replace("<span class=\"spacer\"></span>\r\n <p>出貨狀態</p>\r\n <p>{{ShippingStatus}}</p>", "");
+                body = body.Replace("<span class=\"spacer\"></span>\r\n <p>貨運號碼</p>\r\n <p>{{DeliveryNo}}</p>", "");
 
             }
             
@@ -231,7 +231,7 @@ namespace Kooco.Pikachu.OrderDeliveries
             {
                 body = body.Replace("{{NotifyMessage}}", "");
             }
-            body = body.Replace("<span class=\"spacer\"></span>\r\n <p>出貨狀態</p>\r\n <p>{{ShippingStatus}}</p>", "");
+            body = body.Replace("<span class=\"spacer\"></span>\r\n <p>貨運號碼</p>\r\n <p>{{DeliveryNo}}</p>", "");
 
             body = body.Replace("{{GroupBuyName}}", groupbuy.GroupBuyName);
             body = body.Replace("{{OrderNo}}", order.OrderNo);
