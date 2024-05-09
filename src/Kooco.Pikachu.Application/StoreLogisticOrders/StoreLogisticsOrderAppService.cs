@@ -109,7 +109,7 @@ namespace Kooco.Pikachu.StoreLogisticOrders
             var bFrozen = providers.Where(p => p.LogisticProvider == EnumValues.LogisticProviders.BFrozen).FirstOrDefault();
             if (bFrozen != null)
             {
-                BFrozen = ObjectMapper.Map<LogisticsProviderSettingsDto, BNormalCreateUpdateDto>(bFreeze);
+                BFrozen = ObjectMapper.Map<LogisticsProviderSettingsDto, BNormalCreateUpdateDto>(bFrozen);
             }
             var options = new RestClientOptions
             {

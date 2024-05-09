@@ -368,7 +368,7 @@
             {
              @foreach(var item in Enum.GetNames(typeof(DeliveryMethod)))
               {
-                  if(item==Enum.GetName(DeliveryMethod.SevenToElevenC2C)||item==Enum.GetName(DeliveryMethod.SevenToEleven1)||item==Enum.GetName(DeliveryMethod.BlackCat))
+                        if (item == Enum.GetName(DeliveryMethod.SevenToElevenC2C) || item == Enum.GetName(DeliveryMethod.SevenToEleven1) || item == Enum.GetName(DeliveryMethod.BlackCat1) || item == Enum.GetName(DeliveryMethod.BlackCatFreeze) || item == Enum.GetName(DeliveryMethod.BlackCatFrozen))
                   {
                <label for="@item" class="form-label ">
                                 <input type="checkbox" class="form-check-input me-1" id="@item" checked="@((EditGroupBuyDto.ExcludeShippingMethod != null) && (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))" @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
@@ -421,7 +421,22 @@
                     <div class="col-2"></div>
             <div class="col-2"></div>
          <div class="col-8">
+                @if (EditGroupBuyDto.ExcludeShippingMethod != null && EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1"))
+                {
                     <label class="form-label">@L["BlackCat"]<span class="text-danger"> </span></label>
+                }
+                else if (EditGroupBuyDto.ExcludeShippingMethod != null && EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFreeze"))
+                {
+                    <label class="form-label">@L["BlackCatFreeze"]<span class="text-danger"> </span></label>
+                }
+                                 else if (EditGroupBuyDto.ExcludeShippingMethod != null && EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFrozen"))
+                {
+                    <label class="form-label">@L["BlackCatFrozen"]<span class="text-danger"> </span></label>
+                }
+                else
+                {
+                    <label class="form-label">@L["BlackCat"]<span class="text-danger"> </span></label>
+                }
                 </div>
                 <div class="col-2"></div>
                 <div class="col-2"></div>
@@ -430,7 +445,7 @@
                     {
                         @foreach(var island in DeliveryTimeConts.BlackCat)
                         {
-                        @if ((EditGroupBuyDto.ExcludeShippingMethod != null) && (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat")))
+                        @if ((EditGroupBuyDto.ExcludeShippingMethod != null) && ((EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1")) || (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFreeze")) || (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFrozen"))))
                         {
                             <label for="@island" class="form-label">
                                 <input type="checkbox" class="form-check-input me-1" id="@island" checked="@(EditGroupBuyDto.BlackCatDeliveryTime != null && EditGroupBuyDto.BlackCatDeliveryTime.Contains(island))" @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)"   />

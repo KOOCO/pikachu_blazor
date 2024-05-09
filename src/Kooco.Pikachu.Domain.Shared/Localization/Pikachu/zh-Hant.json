@@ -283,6 +283,7 @@
     "PostOffice": "郵局",
     "SelfPickup": "自取",
     "BlackCat": "黑貓",
+    "BlackCat1": "黑貓",
     "HomeDelivery": "親送",
     "OrderCreated": "訂單成立",
     "Telephone": "電話",
@@ -530,7 +531,9 @@
     "SentToBackStage": "已送達後台",
     "7-11C2C": "7-11 C2C",
     "VoidInvoice": "作廢發票",
-    "IssueCreditNote": "開立折讓"
+    "IssueCreditNote": "開立折讓",
+    "BlackCatFreeze": "黑貓冷藏",
+    "BlackCatFrozen": "黑貓冷凍",
 
 
   }

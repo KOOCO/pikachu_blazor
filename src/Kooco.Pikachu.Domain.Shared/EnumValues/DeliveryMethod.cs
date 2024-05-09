@@ -11,15 +11,17 @@ public enum DeliveryMethod
     SelfPickup,
 
     [Description("黑貓")]
-    BlackCat,
-
+    BlackCat1,
+    BlackCatFreeze = 10,
+    BlackCatFrozen = 11,
     [Description("親送")]
-    HomeDelivery,
-    SevenToEleven1,
-    SevenToElevenC2C,
-    FamilyMart1,
-    FamilyMartC2C,
+    HomeDelivery=4,
+    SevenToEleven1=5,
+    SevenToElevenC2C=6,
+    FamilyMart1=7,
+    FamilyMartC2C=8,
     [Description("廠商統一出貨")]
-    DeliveredByStore
+    DeliveredByStore=9,
+    
 
 }

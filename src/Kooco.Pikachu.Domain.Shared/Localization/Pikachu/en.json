@@ -243,6 +243,7 @@
     "PostOffice": "Post Office",
     "SelfPickup": "Self Pickup",
     "BlackCat": "Black Cat",
+    "BlackCat1": "Black Cat",
     "HomeDelivery": "Home Delivery",
     "OrderItems": "Order Items",
     "Address": "Address",
@@ -501,7 +502,9 @@
     "Combined": "Combined",
     "SentToBackStage": "Sent To Back Stage",
     "VoidInvoice": "Void Invoice",
-    "IssueCreditNote": "Issue Credit Note"
+    "IssueCreditNote": "Issue Credit Note",
+    "BlackCatFreeze": "Black Cat Freeze",
+    "BlackCatFrozen": "Black Cat Frozen"
 
 
 

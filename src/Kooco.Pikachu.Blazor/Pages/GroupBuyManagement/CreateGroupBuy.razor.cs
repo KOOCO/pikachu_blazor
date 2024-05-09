@@ -31,6 +31,8 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         private const int MaxAllowedFileSize = 1024 * 1024 * 10;
         public List<string>SelfPickupTimeList = new List<string>();
         public List<string>BlackCateDeliveryTimeList = new List<string>();
+        public List<string>BlackCatFreezeDeliveryTimeList = new List<string>();
+        public List<string>BlackCatFrozenDeliveryTimeList = new List<string>();
         public List<string>HomeDeliveryTimeList = new List<string>();
         public List<string>DeliverdByStoreTimeList = new List<string>();
         private GroupBuyCreateDto CreateGroupBuyDto = new();
@@ -466,6 +468,36 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     CreateGroupBuyDto.ShippingMethodList.Remove("FamilyMart1");
                     JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "FamilyMart1");
                 }
+                else if (method == "BlackCat1" && CreateGroupBuyDto.ShippingMethodList.Contains("BlackCatFreeze"))
+                    {
+                    CreateGroupBuyDto.ShippingMethodList.Remove("BlackCatFreeze");
+                    JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "BlackCatFreeze");
+                }
+                else if (method == "BlackCat1" && CreateGroupBuyDto.ShippingMethodList.Contains("BlackCatFrozen"))
+                {
+                    CreateGroupBuyDto.ShippingMethodList.Remove("BlackCatFrozen");
+                    JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "BlackCatFrozen");
+                }
+                else if (method == "BlackCatfreeze" && CreateGroupBuyDto.ShippingMethodList.Contains("BlackCat1"))
+                {
+                    CreateGroupBuyDto.ShippingMethodList.Remove("BlackCat1");
+                    JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "BlackCat1");
+                }
+                else if (method == "BlackCatFreeze" && CreateGroupBuyDto.ShippingMethodList.Contains("BlackCatFrozen"))
+                {
+                    CreateGroupBuyDto.ShippingMethodList.Remove("BlackCatFrozen");
+                    JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "BlackCatFrozen");
+                }
+                else if (method == "BlackCatFrozen" && CreateGroupBuyDto.ShippingMethodList.Contains("BlackCat1"))
+                {
+                    CreateGroupBuyDto.ShippingMethodList.Remove("BlackCat1");
+                    JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "BlackCat1");
+                }
+                else if (method == "BlackCatFrozen" && CreateGroupBuyDto.ShippingMethodList.Contains("BlackCatFreeze"))
+                {
+                    CreateGroupBuyDto.ShippingMethodList.Remove("BlackCatFreeze");
+                    JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "BlackCatFreeze");
+                }
             }
 
             // Update the selected method in the CreateGroupBuyDto.ShippingMethodList
@@ -650,11 +682,21 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     await _uiMessageService.Warn("Please Enter Threshold Amount");
                 
                 }
-                if ((!CreateGroupBuyDto.ExcludeShippingMethod.IsNullOrEmpty()) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat")
+                if ((!CreateGroupBuyDto.ExcludeShippingMethod.IsNullOrEmpty()) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1")
                     || CreateGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup") || CreateGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery")
                     || CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
                 {
-                    if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat") && (CreateGroupBuyDto.BlackCatDeliveryTime.IsNullOrEmpty()|| CreateGroupBuyDto.BlackCatDeliveryTime == "[]"))
+                    if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1") && (CreateGroupBuyDto.BlackCatDeliveryTime.IsNullOrEmpty()|| CreateGroupBuyDto.BlackCatDeliveryTime == "[]"))
+                    {
+                        await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForBlackCat]);
+                        return;
+                    }
+                    if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFreeze") && (CreateGroupBuyDto.BlackCatDeliveryTime.IsNullOrEmpty() || CreateGroupBuyDto.BlackCatDeliveryTime == "[]"))
+                    {
+                        await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForBlackCat]);
+                        return;
+                    }
+                    if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFrozen") && (CreateGroupBuyDto.BlackCatDeliveryTime.IsNullOrEmpty() || CreateGroupBuyDto.BlackCatDeliveryTime == "[]"))
                     {
                         await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForBlackCat]);
                         return;
