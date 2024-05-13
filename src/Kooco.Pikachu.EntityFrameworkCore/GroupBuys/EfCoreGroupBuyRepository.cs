@@ -295,7 +295,15 @@ namespace Kooco.Pikachu.GroupBuys
                     profit +=((decimal)(query.GroupBuy.ProfitShare-item.Item.ShareProfit) / 100.0M) *item.TotalAmount;
 
                 }
-                query.BloggersProfit = (decimal)(groupbuyProfit - profit);
+                if (groupbuyProfit < profit)
+                {
+                    query.BloggersProfit = groupbuyProfit - profit;
+                    query.BloggersProfit = -1 * query.BloggersProfit;
+                }
+                else
+                {
+                    query.BloggersProfit = (decimal)(groupbuyProfit - profit);
+                }
             }
             //query.BloggersProfit = (query.OrderItems
             //      .Where(item => item.Item.ShareProfit > 0)

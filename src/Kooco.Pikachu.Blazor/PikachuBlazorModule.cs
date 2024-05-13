@@ -227,7 +227,7 @@ public class PikachuBlazorModule : AbpModule
         });
         Configure<AbpBackgroundJobOptions>(options =>
         {
-            options.IsJobExecutionEnabled = false;
+            options.IsJobExecutionEnabled = true;
         });
     }
     private void ConfigureHangfire(ServiceConfigurationContext context, IConfiguration configuration)
