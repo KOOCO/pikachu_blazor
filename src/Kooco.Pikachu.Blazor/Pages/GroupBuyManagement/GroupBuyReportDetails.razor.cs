@@ -66,7 +66,7 @@ public partial class GroupBuyReportDetails
         {
             await Loading.Show();
             int skipCount = PageIndex * PageSize;
-            var result = await _orderAppService.GetListAsync(new GetOrderListDto
+            var result = await _orderAppService.GetReportListAsync(new GetOrderListDto
             {
                 Sorting = Sorting,
                 MaxResultCount = PageSize,

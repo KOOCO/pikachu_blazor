@@ -781,7 +781,42 @@ namespace Kooco.Pikachu.Orders
                 throw;
             }
         }
+        public async Task<PagedResultDto<OrderDto>> GetReportListAsync(GetOrderListDto input, bool hideCredentials = false)
+        {
+            if (input.Sorting.IsNullOrEmpty())
+            {
+                input.Sorting = $"{nameof(Order.CreationTime)} desc";
+            }
 
+            var totalCount = await _orderRepository.CountAllAsync(input.Filter, input.GroupBuyId, input.StartDate, input.EndDate, input.OrderStatus);
+
+            var items = await _orderRepository.GetAllListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.GroupBuyId, input.OrderIds, input.StartDate, input.EndDate, input.OrderStatus);
+
+            try
+            {
+                var dtos = ObjectMapper.Map<List<Order>, List<OrderDto>>(items);
+
+                if (hideCredentials)
+                {
+                    var groupbuy = await _groupBuyRepository.GetAsync(input.GroupBuyId.Value);
+                    if (groupbuy.ProtectPrivacyData)
+                    {
+                        dtos.HideCredentials();
+                    }
+                }
+
+                return new PagedResultDto<OrderDto>
+                {
+                    TotalCount = totalCount,
+                    Items = dtos
+                };
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+        }
         public async Task<PagedResultDto<OrderDto>> GetTenantOrderListAsync(GetOrderListDto input)
         {
             using (_dataFilter.Disable<IMultiTenant>())

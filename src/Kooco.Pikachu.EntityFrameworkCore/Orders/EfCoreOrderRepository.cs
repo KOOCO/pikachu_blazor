@@ -21,6 +21,10 @@ namespace Kooco.Pikachu.Orders
         {
             return await ApplyFilters((await GetQueryableAsync()).Include(o => o.GroupBuy), filter, groupBuyId, null, startDate, endDate, orderStatus).CountAsync();
         }
+        public async Task<long> CountAllAsync(string? filter, Guid? groupBuyId, DateTime? startDate, DateTime? endDate, OrderStatus? orderStatus = null)
+        {
+            return await ApplyFiltersNew((await GetQueryableAsync()).Include(o => o.GroupBuy), filter, groupBuyId, null, startDate, endDate, orderStatus).CountAsync();
+        }
         public async Task<List<Order>> GetListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId, List<Guid> orderId, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null)
         {
             return await ApplyFilters(await GetQueryableAsync(), filter, groupBuyId, orderId, startDate, endDate, orderStatus)
@@ -36,7 +40,21 @@ namespace Kooco.Pikachu.Orders
                 .ThenInclude(oi => oi.Freebie)
                 .ToListAsync();
         }
-
+        public async Task<List<Order>> GetAllListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId, List<Guid> orderId, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null)
+        {
+            return await ApplyFiltersNew(await GetQueryableAsync(), filter, groupBuyId, orderId, startDate, endDate, orderStatus)
+                .OrderBy(sorting)
+                .PageBy(skipCount, maxResultCount)
+                .Include(o => o.GroupBuy)
+                .Include(o => o.StoreComments)
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Item)
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.SetItem)
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Freebie)
+                .ToListAsync();
+        }
         public async Task<long> CountReconciliationAsync(string? filter, Guid? groupBuyId, DateTime? startDate, DateTime? endDate)
         {
             return await ApplyReconciliationFilters((await GetQueryableAsync()).Include(o => o.GroupBuy), filter, groupBuyId, null, startDate, endDate).CountAsync();
@@ -75,7 +93,29 @@ namespace Kooco.Pikachu.Orders
         }
 
 
-
+        private static IQueryable<Order> ApplyFiltersNew(
+         IQueryable<Order> queryable,
+         string? filter,
+         Guid? groupBuyId,
+         List<Guid> orderIds,
+         DateTime? startDate = null,
+         DateTime? endDate = null,
+         OrderStatus? orderStatus = null
+         )
+        {
+            return queryable
+                .WhereIf(groupBuyId.HasValue, x => x.GroupBuyId == groupBuyId)
+                .WhereIf(!filter.IsNullOrWhiteSpace(),
+                x => x.OrderNo.Contains(filter)
+                || (x.CustomerName != null && x.CustomerName.Contains(filter))
+                || (x.CustomerEmail != null && x.CustomerEmail.Contains(filter))
+                ).WhereIf(orderIds != null && orderIds.Any(), x => orderIds.Contains(x.Id))
+                .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate.Value.Date)
+                .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
+                .WhereIf(orderStatus.HasValue, x => x.OrderStatus == orderStatus);
+                //.Where(x => x.IsRefunded == false);
+            //.Where(x => x.OrderType != OrderType.MargeToNew);
+        }
         private static IQueryable<Order> ApplyFilters(
             IQueryable<Order> queryable,
             string? filter,

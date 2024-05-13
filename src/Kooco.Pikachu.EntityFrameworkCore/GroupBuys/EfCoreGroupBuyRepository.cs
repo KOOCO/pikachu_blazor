@@ -260,23 +260,24 @@ namespace Kooco.Pikachu.GroupBuys
         {
             var dbContext = await GetDbContextAsync();
             var query = await (from order in dbContext.Orders
+                               .Include(x=>x.OrderItems).ThenInclude(x=>x.Item)
                         .WhereIf(startDate.HasValue, x => x.CreationTime >= startDate)
                         .WhereIf(endDate.HasValue, x => x.CreationTime < endDate)
                         .WhereIf(orderStatus.HasValue, x => x.OrderStatus == orderStatus)
                         join groupbuy in dbContext.GroupBuys.Where(g => g.Id == id) on order.GroupBuyId equals groupbuy.Id
-                        group order by order.GroupBuyId into groupedOrders
+                        group order by order.GroupBuyId into groupedOrders 
                         select new GroupBuyReportDetails
                         {
                             GroupBuyName = groupedOrders.First().GroupBuy.GroupBuyName,
                             StartDate = startDate ?? groupedOrders.First().GroupBuy.CreationTime,
                             EndDate = endDate ?? DateTime.Now,
-                            OrderItems = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open ).SelectMany(o => o.OrderItems).ToList(),
-                            OrderItemsPaid= groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open && order.ShippingStatus != ShippingStatus.WaitingForPayment).SelectMany(o => o.OrderItems).ToList(),
-                            OrderQuantityPaid = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open && order.ShippingStatus != ShippingStatus.WaitingForPayment).Sum(order => order.TotalQuantity)-(groupedOrders.Where(order=>order.IsRefunded).Sum(x=>x.TotalQuantity)),
-                            TotalOrderQuantity = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(order => order.TotalQuantity),
-                            SalesAmount = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(order => order.TotalAmount),
+                            OrderItems = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open ).Distinct().SelectMany(o => o.OrderItems).ToList(),
+                            OrderItemsPaid= groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open && order.ShippingStatus != ShippingStatus.WaitingForPayment).Distinct().SelectMany(o => o.OrderItems).ToList(),
+                            OrderQuantityPaid = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open && order.ShippingStatus != ShippingStatus.WaitingForPayment).Count()-(groupedOrders.Where(order=>order.IsRefunded).Count()),
+                            TotalOrderQuantity = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Count(),
+                            SalesAmount = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Distinct().Sum(order => order.TotalAmount),
                             //SalesAmountExclShipping = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open && order.ShippingStatus == ShippingStatus.PrepareShipment).Sum(order => order.TotalAmount) ,
-                            AmountReceived = groupedOrders.Where(x => x.OrderStatus == OrderStatus.Open && x.ShippingStatus != ShippingStatus.WaitingForPayment).Sum(order => order.TotalAmount),
+                            AmountReceived = groupedOrders.Where(x => x.OrderStatus == OrderStatus.Open && x.ShippingStatus != ShippingStatus.WaitingForPayment).Distinct().Sum(order => order.TotalAmount),
                            GroupBuy= groupedOrders.First().GroupBuy,
                            // SalesAmountMinusShipping = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(order => order.TotalAmount) - groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(x => x.TotalAmount - x.OrderItems.Sum(y => y.ItemPrice)),
                             //BloggersProfit = (groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open && order.ShippingStatus==ShippingStatus.PrepareShipment).Sum(order => order.TotalAmount) - groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open && order.ShippingStatus == ShippingStatus.PrepareShipment).Count() * 200) * (groupedOrders.First().GroupBuy.ProfitShare / 100.0M)
@@ -291,7 +292,7 @@ namespace Kooco.Pikachu.GroupBuys
                 decimal profit = 0;
                 foreach (var item in itemWithShareProfit)
                 {
-                    profit +=(decimal)(query.GroupBuy.ProfitShare-item.Item.ShareProfit)*item.TotalAmount;
+                    profit +=((decimal)(query.GroupBuy.ProfitShare-item.Item.ShareProfit) / 100.0M) *item.TotalAmount;
 
                 }
                 query.BloggersProfit = (decimal)(groupbuyProfit - profit);

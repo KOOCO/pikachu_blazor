@@ -243,4 +243,9 @@ public class OrderController(
     {
         return _ordersAppService.RefundAmountAsync(amount, OrderId);
     }
+
+    public Task<PagedResultDto<OrderDto>> GetReportListAsync(GetOrderListDto input, bool hideCredentials = false)
+    {
+        return _ordersAppService.GetReportListAsync(input, hideCredentials);
+    }
 }
