@@ -96,6 +96,8 @@
     "Pikachu:AtLeastOnePaymentMethodIsRequired": "AtLeast One Payment Method Is Required",
     "Pikachu:AtLeastOneShippingMethodIsRequired": "AtLeast One Shipping Method Is Required",
     "Pikachu:AtLeastOneDeliveryTimeIsRequiredForBlackCat": "Ateast One Delivery Time Is Required For BlackCat",
+    "Pikachu:AtLeastOneDeliveryTimeIsRequiredForBlackCatFreeze": "Ateast One Delivery Time Is Required For BlackCat Freeze",
+    "Pikachu:AtLeastOneDeliveryTimeIsRequiredForBlackCatFrozen": "Ateast One Delivery Time Is Required For BlackCat Frozen",
     "Pikachu:AtLeastOneDeliveryTimeIsRequiredForSelfPickup": "AtLeast One Delivery Time Is Required For SelfPickup",
     "Pikachu:AtLeastOneDeliveryTimeIsRequiredForHomeDelivery": "AtLeast One Delivery Time Is Required For Home Delivery ",
     "Pikachu:AtLeastOneDeliveryTimeIsRequiredForDeliverdByStore": "AtLeast One Delivery Time Is Required For Deliverd By Store",

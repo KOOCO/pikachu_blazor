@@ -694,12 +694,12 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     }
                     if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFreeze") && (CreateGroupBuyDto.BlackCatDeliveryTime.IsNullOrEmpty() || CreateGroupBuyDto.BlackCatDeliveryTime == "[]"))
                     {
-                        await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForBlackCat]);
+                        await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForBlackCatFreeze]);
                         return;
                     }
                     if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFrozen") && (CreateGroupBuyDto.BlackCatDeliveryTime.IsNullOrEmpty() || CreateGroupBuyDto.BlackCatDeliveryTime == "[]"))
                     {
-                        await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForBlackCat]);
+                        await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForBlackCatFrozen]);
                         return;
                     }
                     else if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup") && CreateGroupBuyDto.SelfPickupDeliveryTime.IsNullOrEmpty() || (CreateGroupBuyDto.SelfPickupDeliveryTime == "[]"))
