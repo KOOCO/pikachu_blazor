@@ -4,10 +4,12 @@ using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Permissions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using MiniExcelLibs;
 using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
@@ -121,9 +123,9 @@ namespace Kooco.Pikachu.Refunds
     //        "HashKey": "MqPualB34qDhv6wO",
     //"HashIV": "9oZiHmM977DkgLrl",
     //"MerchantID": "3252187",
-            string HashKey = "MqPualB34qDhv6wO";
-            string HashIV = "9oZiHmM977DkgLrl";
-            string MerchantId = "3252187";
+            string HashKey = "hxiE9LaFS9nMXb0a";
+            string HashIV = "gEDzzSvxugbBxrRz";
+            string MerchantId = "3345125";
             request.AddHeader("Accept", "text/html");
             request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
             request.AddParameter("MerchantID", MerchantId);
@@ -137,8 +139,25 @@ namespace Kooco.Pikachu.Refunds
 
 
             RestResponse response = await client.ExecuteAsync(request);
+            
+            NameValueCollection queryParams = HttpUtility.ParseQueryString(response.Content);
+            var result = new RefundResponse
+            {
+                MerchantID = queryParams["MerchantID"],
+                MerchantTradeNo = queryParams["MerchantTradeNo"],
+                TradeNo = queryParams["TradeNo"],
+                RtnMsg = queryParams["RtnMsg"],
+                RtnCode = int.Parse(queryParams["RtnCode"])
+            };
+            if (result.RtnCode == 1)
+            {
+                refund.RefundReview = RefundReviewStatus.Success;
 
+            }
+            else {
 
+                refund.RefundReview = RefundReviewStatus.Fail;
+            }
         }
         public string GenerateCheckMac(string HashKey, string HashIV, string merchantID, string merchantTradeNo, string tradeNo,string action,string totalamount)
         {
@@ -214,7 +233,16 @@ namespace Kooco.Pikachu.Refunds
                 builder.Append(bytes[i].ToString("x2"));
             }
 
-            return builder.ToString();
+            return builder.ToString().ToUpper();
         }
+    }
+    public class RefundResponse {
+       
+        public string MerchantID { get; set; }
+        public string MerchantTradeNo { get; set; }
+        public string TradeNo { get; set; }
+        public string RtnMsg { get; set; }
+        public int RtnCode { get; set; }
+
     }
 }
