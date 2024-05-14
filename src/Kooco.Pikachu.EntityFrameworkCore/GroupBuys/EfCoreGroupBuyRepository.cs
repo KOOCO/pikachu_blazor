@@ -288,7 +288,7 @@ namespace Kooco.Pikachu.GroupBuys
                 query.SalesAmountMinusShipping = query.SalesAmountExclShipping;
                 query.AmountReceivedExclShipping = query.OrderItemsPaid.Sum(x => x.TotalAmount);
                 var groupbuyProfit = query.AmountReceivedExclShipping * ((query.GroupBuy.ProfitShare) / 100.0M);
-                var itemWithShareProfit = query.OrderItems.Where(x => x.Item != null && x.Item.ShareProfit > 0).ToList();
+                var itemWithShareProfit = query.OrderItemsPaid.Where(x => x.Item != null && x.Item.ShareProfit > 0).ToList();
                 decimal profit = 0;
                 foreach (var item in itemWithShareProfit)
                 {
