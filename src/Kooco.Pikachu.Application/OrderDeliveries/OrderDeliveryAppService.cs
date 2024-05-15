@@ -115,7 +115,9 @@ namespace Kooco.Pikachu.OrderDeliveries
                 body = body.Replace("{{DeliveryNo}}", deliveryOrder.DeliveryNo);
             }
             else {
-                string pattern = @"<span class=""spacer""></span>\r\n <p>貨運號碼</p>\r\n <p>\{\{DeliveryNo\}\}</p>";
+                string pattern = @"<span class=""spacer""></span>\s*<p>貨運號碼</p>\s*<p>\{\{DeliveryNo\}\}</p>";
+
+                // Replace the matched pattern with an empty string
                 body = Regex.Replace(body, pattern, "");
             }
             
@@ -232,7 +234,9 @@ namespace Kooco.Pikachu.OrderDeliveries
             {
                 body = body.Replace("{{NotifyMessage}}", "");
             }
-            string pattern = @"<span class=""spacer""></span>\r\n <p>貨運號碼</p>\r\n <p>\{\{DeliveryNo\}\}</p>";
+            string pattern = @"<span class=""spacer""></span>\s*<p>貨運號碼</p>\s*<p>\{\{DeliveryNo\}\}</p>";
+
+            // Replace the matched pattern with an empty string
             body = Regex.Replace(body, pattern, "");
             body = body.Replace("{{GroupBuyName}}", groupbuy.GroupBuyName);
             body = body.Replace("{{OrderNo}}", order.OrderNo);

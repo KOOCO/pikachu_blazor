@@ -21,6 +21,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -1090,7 +1091,9 @@ namespace Kooco.Pikachu.Orders
             else {
                 body = body.Replace("{{NotifyMessage}}", "");
             }
-            string pattern = @"<span class=""spacer""></span>\r\n <p>貨運號碼</p>\r\n <p>\{\{DeliveryNo\}\}</p>";
+            string pattern = @"<span class=""spacer""></span>\s*<p>貨運號碼</p>\s*<p>\{\{DeliveryNo\}\}</p>";
+
+            // Replace the matched pattern with an empty string
             body = Regex.Replace(body, pattern, "");
 
             body = body.Replace("{{GroupBuyName}}", groupbuy.GroupBuyName);
