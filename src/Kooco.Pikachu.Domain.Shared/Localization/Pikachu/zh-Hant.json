@@ -535,7 +535,8 @@
     "VoidInvoice": "作廢發票",
     "IssueCreditNote": "開立折讓",
     "BlackCatFreeze": "黑貓冷藏",
-    "BlackCatFrozen": "黑貓冷凍"
+    "BlackCatFrozen": "黑貓冷凍",
+    "SetGroupBuyPrice": "團購價"
 
 
   }

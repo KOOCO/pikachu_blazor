@@ -506,7 +506,8 @@
     "VoidInvoice": "Void Invoice",
     "IssueCreditNote": "Issue Credit Note",
     "BlackCatFreeze": "Black Cat Freeze",
-    "BlackCatFrozen": "Black Cat Frozen"
+    "BlackCatFrozen": "Black Cat Frozen",
+    "SetGroupBuyPrice": "Set GroupBuy Price"
 
 
 
