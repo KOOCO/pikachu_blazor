@@ -11,6 +11,7 @@ using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.Refunds;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.Localization;
 using MiniExcelLibs;
 using System;
@@ -18,6 +19,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
@@ -1088,7 +1090,8 @@ namespace Kooco.Pikachu.Orders
             else {
                 body = body.Replace("{{NotifyMessage}}", "");
             }
-            body = body.Replace("<span class=\"spacer\"></span>\r\n <p>貨運號碼</p>\r\n <p>{{DeliveryNo}}</p>", "");
+            string pattern = @"<span class=""spacer""></span>\r\n <p>貨運號碼</p>\r\n <p>\{\{DeliveryNo\}\}</p>";
+            body = Regex.Replace(body, pattern, "");
 
             body = body.Replace("{{GroupBuyName}}", groupbuy.GroupBuyName);
             body = body.Replace("{{OrderNo}}", order.OrderNo);
