@@ -1030,7 +1030,7 @@ namespace Kooco.Pikachu.Orders
             {
                 var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
                 var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
-                var delay = DateTime.Now.AddMinutes(1) - DateTime.Now;
+                var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
                 GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
                 var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
             }
