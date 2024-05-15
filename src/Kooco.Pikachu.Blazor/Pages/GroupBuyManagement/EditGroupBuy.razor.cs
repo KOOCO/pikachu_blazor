@@ -918,7 +918,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 if (EditGroupBuyDto.FreeShipping && EditGroupBuyDto.FreeShippingThreshold == null)
                 {
                     await _uiMessageService.Warn("Please Enter Threshold Amount");
-
+                    return;
                 }
                 if ((!EditGroupBuyDto.ExcludeShippingMethod.IsNullOrEmpty()) && (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1")
                     || EditGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup") || EditGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery")

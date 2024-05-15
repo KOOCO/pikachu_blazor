@@ -2,6 +2,7 @@
 using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.Permissions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -19,6 +20,7 @@ using System.Web;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Domain.Repositories;
 
 namespace Kooco.Pikachu.Refunds
 {
@@ -28,22 +30,22 @@ namespace Kooco.Pikachu.Refunds
     {
         private readonly IRefundRepository _refundRepository;
         private readonly IOrderRepository _orderRepository;
+        private readonly IRepository<PaymentGateway, Guid> _paymentGatewayRepository;
        // private readonly ILogisticsProvidersAppService _logisticsProvidersAppService;
         GreenWorldLogisticsCreateUpdateDto GreenWorld { get; set; }
         //private readonly IConfiguration _configuration;
 
         public RefundAppService(
             IRefundRepository refundRepository,
-            IOrderRepository orderRepository
-            //ILogisticsProvidersAppService logisticsProvidersAppService,
-            //IConfiguration configuration
+            IOrderRepository orderRepository,
+            IRepository<PaymentGateway, Guid> paymentGatewayRepository
+           
 
             )
         {
             _refundRepository = refundRepository;
             _orderRepository = orderRepository;
-            //_logisticsProvidersAppService = logisticsProvidersAppService;
-            //_configuration = configuration;
+            _paymentGatewayRepository = paymentGatewayRepository;
             GreenWorld = new();
         }
 
@@ -102,13 +104,14 @@ namespace Kooco.Pikachu.Refunds
         {
             var refund = await _refundRepository.GetAsync(id);
 
-            //var providers = await _logisticsProvidersAppService.GetAllAsync();
+            var ecpay = (await _paymentGatewayRepository.GetQueryableAsync()).Where(x => x.PaymentIntegrationType == PaymentIntegrationType.EcPay).FirstOrDefault();
+            if (ecpay == null)
+            {
+                throw new UserFriendlyException("Please Set Ecpay Setting First");
+            
+            }
             var logisticSubType = "";
-            //var greenWorld = providers.Where(p => p.LogisticProvider == EnumValues.LogisticProviders.GreenWorldLogistics).FirstOrDefault();
-            //if (greenWorld != null)
-            //{
-            //    GreenWorld = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorld);
-            //}
+           
             var options = new RestClientOptions
             {
                 MaxTimeout = -1,
@@ -120,12 +123,10 @@ namespace Kooco.Pikachu.Refunds
           
             var client = new RestClient(options);
             var request = new RestRequest("https://payment.ecpay.com.tw/CreditDetail/DoAction", Method.Post);
-    //        "HashKey": "MqPualB34qDhv6wO",
-    //"HashIV": "9oZiHmM977DkgLrl",
-    //"MerchantID": "3252187",
-            string HashKey = "hxiE9LaFS9nMXb0a";
-            string HashIV = "gEDzzSvxugbBxrRz";
-            string MerchantId = "3345125";
+   
+            string HashKey =ecpay.HashKey;
+            string HashIV = ecpay.HashIV;
+            string MerchantId = ecpay.MerchantId;
             request.AddHeader("Accept", "text/html");
             request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
             request.AddParameter("MerchantID", MerchantId);
@@ -171,14 +172,6 @@ namespace Kooco.Pikachu.Refunds
             { "Action", action },
             { "TotalAmount", totalamount },
            
-
-
-
-        
-
-
-
-
         };
             IEnumerable<string>? param = parameters.ToDictionary().Keys
                                           .OrderBy(o => o)
