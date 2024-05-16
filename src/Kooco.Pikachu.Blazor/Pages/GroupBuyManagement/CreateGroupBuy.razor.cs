@@ -684,6 +684,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     return;
                 }
                 if ((!CreateGroupBuyDto.ExcludeShippingMethod.IsNullOrEmpty()) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1")
+                    || CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFreeze") || CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFrozen")
                     || CreateGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup") || CreateGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery")
                     || CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
                 {
