@@ -156,7 +156,18 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
             ModificationTrack.NewAddress ??= Order.AddressDetails;
             ModificationTrack.IsAddressInputVisible = true;
         }
-
+        void EditRecipientPostalCode()
+        {
+            ModificationTrack.IsModified = true;
+            ModificationTrack.NewPostalCode ??= Order.PostalCode;
+            ModificationTrack.IsPostalCodeInputVisible = true;
+        }
+        void EditRecipientCity()
+        {
+            ModificationTrack.IsModified = true;
+            ModificationTrack.NewCity ??= Order.City;
+            ModificationTrack.IsCityInputVisible = true;
+        }
         void SaveRecipientName()
         {
             if (ModificationTrack.NewName.IsNullOrWhiteSpace())
@@ -198,7 +209,32 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 ModificationTrack.IsInvalidAddress = false;
             }
         }
-
+        void SaveRecipientPostalCode()
+        {
+            if (ModificationTrack.NewPostalCode.IsNullOrWhiteSpace())
+            {
+                ModificationTrack.IsInvalidPostalCode = true;
+            }
+            else
+            {
+                ModificationTrack.IsPostalCodeModified = true;
+                ModificationTrack.IsPostalCodeInputVisible = false;
+                ModificationTrack.IsInvalidPostalCode = false;
+            }
+        }
+        void SaveRecipientCity()
+        {
+            if (ModificationTrack.NewCity.IsNullOrWhiteSpace())
+            {
+                ModificationTrack.IsInvalidCity = true;
+            }
+            else
+            {
+                ModificationTrack.IsCityModified = true;
+                ModificationTrack.IsCityInputVisible = false;
+                ModificationTrack.IsInvalidCity = false;
+            }
+        }
         void CancelChanges()
         {
             ModificationTrack = new();
@@ -207,7 +243,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         {
             try
             {
-                if (ModificationTrack.IsInvalidName || ModificationTrack.IsInvalidPhone || ModificationTrack.IsInvalidAddress)
+                if (ModificationTrack.IsInvalidName || ModificationTrack.IsInvalidPhone || ModificationTrack.IsInvalidAddress||ModificationTrack.IsInvalidPostalCode)
                 {
                     return;
                 }
@@ -226,11 +262,17 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                     ModificationTrack.IsInvalidAddress = true;
                     return;
                 }
+                else if (ModificationTrack.IsPostalCodeInputVisible)
+                {
+                    ModificationTrack.IsInvalidPostalCode = true;
+                    return;
+                }
                 else
                 {
                     ModificationTrack.IsInvalidName = false;
                     ModificationTrack.IsInvalidPhone = false;
                     ModificationTrack.IsInvalidAddress = false;
+                    ModificationTrack.IsInvalidPostalCode = false;
                 }
                 UpdateOrder.RecipientName = ModificationTrack.IsNameModified
                 ? ModificationTrack.NewName
@@ -239,7 +281,9 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 UpdateOrder.RecipientPhone = ModificationTrack.IsPhoneModified
                 ? ModificationTrack.NewPhone
                 : Order.RecipientPhone;
-
+                UpdateOrder.PostalCode = ModificationTrack.IsPostalCodeModified
+                ? ModificationTrack.NewPostalCode
+                : Order.PostalCode;
                 if (ModificationTrack.IsAddressModified)
                 {
                     UpdateOrder.City = ModificationTrack.NewCity;
@@ -256,7 +300,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 }
                 await loading.Show();
                 UpdateOrder.OrderStatus = Order.OrderStatus;
-                UpdateOrder.PostalCode = Order.PostalCode;
+                //UpdateOrder.PostalCode = Order.PostalCode;
                 Order = await _orderAppService.UpdateAsync(OrderId, UpdateOrder);
                 ModificationTrack = new();
                 await InvokeAsync(StateHasChanged);
@@ -822,12 +866,19 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         public bool IsInvalidPhone { get; set; }
         public bool IsPhoneModified { get; set; }
         public bool IsAddressInputVisible { get; set; }
+        public bool IsPostalCodeInputVisible { get; set; }
         public string NewRoad { get; set; }
         public string NewDistrict { get; set; }
+        public bool IsCityInputVisible { get; set; }
         public string NewCity { get; set; }
+        public bool IsInvalidCity { get; set; }
         public string NewAddress { get; set; }
+        public string NewPostalCode { get; set; }
         public bool IsInvalidAddress { get; set; }
+        public bool IsInvalidPostalCode { get; set; }
         public bool IsAddressModified { get; set; }
+        public bool IsPostalCodeModified { get; set; }
+        public bool IsCityModified { get; set; }
     }
     public class Shipments
     {

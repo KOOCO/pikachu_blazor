@@ -209,11 +209,91 @@
                                         </tr>
                                         <tr>
                                             <td>@L["RecipientPostalCode"]</td>
-                                            <td>@Order.PostalCode</td>
+
+                                            @* <td>@Order.PostalCode</td> *@
+                                               @if (ModificationTrack.IsPostalCodeInputVisible)
+                                            {
+                                                <td>
+                                         
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <div class="input-group">
+                                                                @{
+                                                                    var errorClass = ModificationTrack.IsInvalidPostalCode ? "invalid" : "";
+                                                                }
+                                                                <input class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewPostalCode" />
+                                                                <Button Type="ButtonType.Button" @onclick="SaveRecipientPostalCode" Class="btn btn-sm btn-primary">
+                                                                    <i class="fa fa-check"></i>
+                                                                </Button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td class="d-flex justify-content-between">
+                                                    @if (ModificationTrack.IsPostalCodeModified)
+                                                    {
+                                                        @(ModificationTrack.NewPostalCode)
+                                                        @* +", " + ModificationTrack.NewRoad + ", " + ModificationTrack.NewDistrict + ", " + ModificationTrack.NewCity *@
+                                                    }
+                                                    else
+                                                    {
+                                                        @(Order.PostalCode)
+                                                        @*  + ", " + Order.Road + ", " + Order.District + ", " + Order.City *@
+                                                    }
+                                                     @if (Order.OrderType != OrderType.MargeToNew)
+                                                    {
+                                                        <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientPostalCode">
+                                                            <i class="fa fa-pencil text-secondary"></i>
+                                                        </span>
+                                                    }
+                                                </td>
+                                            }
                                         </tr>
                                         <tr>
                                             <td>@L["RecipientCity"]</td>
-                                            <td>@L[Order.City??""]</td>
+                                            @if (ModificationTrack.IsCityInputVisible)
+                                            {
+                                                <td>
+
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <div class="input-group">
+                                                                @{
+                                                                    var errorClass = ModificationTrack.IsInvalidCity ? "invalid" : "";
+                                                                }
+                                                                <input class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewCity" />
+                                                                <Button Type="ButtonType.Button" @onclick="SaveRecipientCity" Class="btn btn-sm btn-primary">
+                                                                    <i class="fa fa-check"></i>
+                                                                </Button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td class="d-flex justify-content-between">
+                                                    @if (ModificationTrack.IsCityModified)
+                                                    {
+                                                        @L[ModificationTrack.NewCity]
+                                                        @* +", " + ModificationTrack.NewRoad + ", " + ModificationTrack.NewDistrict + ", " + ModificationTrack.NewCity *@
+                                                    }
+                                                    else
+                                                    {
+                                                        @L[Order.City??""]
+                                                        @*  + ", " + Order.Road + ", " + Order.District + ", " + Order.City *@
+                                                    }
+                                                    @if (Order.OrderType != OrderType.MargeToNew)
+                                                    {
+                                                        <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientCity">
+                                                            <i class="fa fa-pencil text-secondary"></i>
+                                                        </span>
+                                                    }
+                                                </td>
+                                            }
                                         </tr>
                                         <tr>
                                             <td>@L["RecipientAddress"]</td>
