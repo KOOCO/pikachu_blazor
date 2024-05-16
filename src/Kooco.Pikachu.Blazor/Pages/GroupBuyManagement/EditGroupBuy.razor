@@ -91,7 +91,7 @@
         <Divider></Divider>
          <div class="row">
             <div class="col-2">
-                <label>@L["GroupBuyName"]</label>
+                <label>@L["GroupBuyName"] <span class="text-danger"> *</span></label>
             </div>
             <div class="col-9">
                 <TextEdit  MaxLength="@MaxtextCount" @bind-Text="@EditGroupBuyDto.GroupBuyName" />
@@ -361,7 +361,7 @@
         <div class="row">
             <div class="col-2"></div>
             <div class="col-2">
-                @L["ShippingMethod"]
+                @L["ShippingMethod"] <span class="text-danger"> *</span>
             </div>
             <div class="col-8">
                 @if(EditGroupBuyDto.AllowShipToOuterTaiwan && !EditGroupBuyDto.AllowShipOversea)
@@ -524,7 +524,7 @@
             </div>
         <div class="row">
             <div class="col-2">@L["Gateway"]</div>
-            <div class="col-2">@L["PaymentMethod"]</div>
+            <div class="col-2">@L["PaymentMethod"] <span class="text-danger"> *</span></div>
             <div class="col-4">  
                
                     <Check   TValue="bool" @bind-Checked="@CreditCard">@L["CreditCard"]</Check>
