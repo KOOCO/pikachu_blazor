@@ -243,7 +243,7 @@
     "BlackCatHomeDelivery": "黑貓宅急便",
     "OrderItems": "訂單項目",
     "Address": "地址",
-    "Remarks": "Remarks",
+    "Remarks": "備註",
     "MerchantRemarks": "商家備註",
     "CombineOrders": "合併訂單",
     "Open": "開啟",
@@ -536,7 +536,8 @@
     "IssueCreditNote": "開立折讓",
     "BlackCatFreeze": "黑貓冷藏",
     "BlackCatFrozen": "黑貓冷凍",
-    "SetGroupBuyPrice": "團購價"
+    "SetGroupBuyPrice": "團購價",
+    "InvoiceIssueStatus": "狀態"
 
 
   }

@@ -507,7 +507,8 @@
     "IssueCreditNote": "Issue Credit Note",
     "BlackCatFreeze": "Black Cat Freeze",
     "BlackCatFrozen": "Black Cat Frozen",
-    "SetGroupBuyPrice": "Set GroupBuy Price"
+    "SetGroupBuyPrice": "Set GroupBuy Price",
+    "InvoiceIssueStatus": "Invoice Issue Status"
 
 
 
