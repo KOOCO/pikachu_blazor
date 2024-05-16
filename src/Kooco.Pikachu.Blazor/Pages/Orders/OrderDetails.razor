@@ -505,16 +505,22 @@
                                 <p>@Order?.CreationTime.ToShortDateString()</p>
                                 <p>@L[ShippingStatus.WaitingForPayment.ToString()]</p>
                             </div>
-                            <div class="col-12 d-flex justify-content-between">
-                                <p>@Order?.PaymentDate?.ToShortDateString()</p>
+                            @if (Order?.PaymentDate != null && Order?.PrepareShipmentBy != null)
+                            {
+                                <div class="col-12 d-flex justify-content-between">
+                                    <p>@Order?.PaymentDate?.ToShortDateString()</p>
                                   <p>@Order?.PrepareShipmentBy</p>
                                 <p>@L[ShippingStatus.PrepareShipment.ToString()]</p>
                             </div>
-                            <div class="col-12 d-flex justify-content-between">
-                                <p>@Order?.ShippingDate?.ToShortDateString()</p>
+                            }
+                            @if (Order?.ShippingDate != null && Order?.ShippedBy != null)
+                            {
+                                <div class="col-12 d-flex justify-content-between">
+                                    <p>@Order?.ShippingDate?.ToShortDateString()</p>
                                   <p>@Order?.ShippedBy</p>
                                 <p>@L[ShippingStatus.Shipped.ToString()]</p>
                             </div>
+                            }
                             <div class="col-12 d-flex justify-content-between">
                                 <p>@Order?.CompletionTime?.ToShortDateString()</p>
                                  <p>@Order?.CompletedBy</p>
@@ -527,16 +533,22 @@
                                 <p>@Order?.CreationTime.ToShortDateString()</p>
                                 <p>@L[ShippingStatus.WaitingForPayment.ToString()]</p>
                             </div>
-                            <div class="col-12 d-flex justify-content-between">
-                                <p>@Order?.PaymentDate?.ToShortDateString()</p>
+                            @if (Order?.PaymentDate != null && Order?.PrepareShipmentBy != null)
+                            {
+                                <div class="col-12 d-flex justify-content-between">
+                                    <p>@Order?.PaymentDate?.ToShortDateString()</p>
                                   <p>@Order?.PrepareShipmentBy</p>
                                 <p>@L[ShippingStatus.PrepareShipment.ToString()]</p>
                             </div>
+                            }
+                              @if (Order?.ShippingDate != null && Order?.ShippedBy != null)
+                            {
                             <div class="col-12 d-flex justify-content-between">
                                 <p>@Order?.ShippingDate?.ToShortDateString()</p>
                                   <p>@Order?.ShippedBy</p>
                                 <p>@L[ShippingStatus.Shipped.ToString()]</p>
                             </div>
+                            }
                             <div class="col-12 d-flex justify-content-between">
                                 <p>@Order?.CancellationDate?.ToShortDateString()</p>
                                  <p>@Order?.ClosedBy</p>
