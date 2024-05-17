@@ -10,6 +10,8 @@ using System.Linq;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Refunds;
 using Microsoft.JSInterop;
+using Kooco.Pikachu.Permissions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Kooco.Pikachu.Blazor.Pages.ReturnAndExchangeOrders
 {
@@ -26,6 +28,12 @@ namespace Kooco.Pikachu.Blazor.Pages.ReturnAndExchangeOrders
 
         private readonly HashSet<Guid> ExpandedRows = new();
         private LoadingIndicator loading { get; set; }
+        private bool CanProcessRefund { get; set; }
+        protected override async Task OnInitializedAsync()
+        {
+            CanProcessRefund = await AuthorizationService
+         .IsGrantedAsync(PikachuPermissions.Refund.RefundOrderProcess);
+        }
         private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<OrderDto> e)
         {
             PageIndex = e.Page - 1;

@@ -7,7 +7,7 @@
 @using Blazorise;
 @using Volo.Abp.AspNetCore.Components.Messages;
 @using Blazorise.LoadingIndicator;
-
+@inherits PikachuComponentBase;
 @inject IStringLocalizer<PikachuResource> L;
 @inject NavigationManager NavigationManager;
 @inject IUiMessageService _uiMessageService;
@@ -63,12 +63,12 @@
                     <DataGridColumn Field="@nameof(OrderDto.CustomerName)" Caption="@L["CustomerName"]" />
                     <DataGridColumn   Field="@nameof(OrderDto.ReturnStatus)" Caption="@L["ReturnStatus"]">
                              <DisplayTemplate>
-                             @if (context.ReturnStatus == OrderReturnStatus.WaitingForApprove)
+                            @if (context.ReturnStatus == OrderReturnStatus.PendingReview && CanProcessRefund)
                             {
                                 <Select TValue="OrderReturnStatus" Class="form-select form-select-sm"
                                 SelectedValue="@context.ReturnStatus"
                                 SelectedValueChanged="@(e => ReturnStatusChanged(e, context))">
-                                    <SelectItem></SelectItem>
+                                    
                                     @foreach (var enumValue in Enum.GetValues(typeof(OrderReturnStatus)))
                                     {
                                         <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>

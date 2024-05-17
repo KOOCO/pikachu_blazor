@@ -34,6 +34,7 @@ using Volo.Abp.Emailing;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Security.Encryption;
 using Volo.Abp.Validation.Localization;
+using static Kooco.Pikachu.Permissions.PikachuPermissions;
 
 
 namespace Kooco.Pikachu.Orders
@@ -939,12 +940,17 @@ namespace Kooco.Pikachu.Orders
 
             }
             await _orderRepository.UpdateAsync(order);
+            if (orderReturnStatus == OrderReturnStatus.Approve)
+            {
+                await _refundAppService.CreateAsync(id);
+
+            }
         }
 
         public async Task ExchangeOrderAsync(Guid id)
         {
             var order = await _orderRepository.GetAsync(id);
-            order.ReturnStatus = OrderReturnStatus.WaitingForApprove;
+            order.ReturnStatus = OrderReturnStatus.PendingReview;
             order.OrderStatus = OrderStatus.Returned;
 
             await _orderRepository.UpdateAsync(order);
