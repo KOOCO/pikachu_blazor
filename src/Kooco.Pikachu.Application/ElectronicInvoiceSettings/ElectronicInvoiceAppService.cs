@@ -126,6 +126,7 @@ namespace Kooco.Pikachu.ElectronicInvoiceSettings
                     order.VoidUser = CurrentUser.Name;
                     order.IssueStatus = IssueInvoiceStatus.Failed;
                     await _orderRepository.UpdateAsync(order);
+                    throw new UserFriendlyException(jsonObj.RtnMsg.ToString());
                     return;
                 }
                 order.InvoiceNumber = jsonObj.InvoiceNo;

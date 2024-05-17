@@ -204,8 +204,16 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         }
         public async void IssueInvoice()
         {
-            var selectedOrder = Orders.SingleOrDefault(x => x.IsSelected);
-          await  _electronicInvoiceAppService.CreateInvoiceAsync(selectedOrder.Id);
+            try
+            {
+                var selectedOrder = Orders.SingleOrDefault(x => x.IsSelected);
+                await _electronicInvoiceAppService.CreateInvoiceAsync(selectedOrder.Id);
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.Message.ToString());
+
+            }
            
         }
         async Task DownloadExcel()
