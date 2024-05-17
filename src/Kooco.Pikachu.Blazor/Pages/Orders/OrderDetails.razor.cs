@@ -627,6 +627,13 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
             }
         }
 
+        async void ReturnOrder()
+        {
+
+            await _orderAppService.ReturnOrderAsync(Order.Id);
+            NavigationManager.NavigateTo("Orders");
+
+        }
         async void ExchangeOrder()
         {
 
@@ -634,7 +641,6 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
             NavigationManager.NavigateTo("Orders");
 
         }
-
         void CalculateTotal(UpdateOrderItemDto item)
         {
             var index = EditingItems.IndexOf(item);

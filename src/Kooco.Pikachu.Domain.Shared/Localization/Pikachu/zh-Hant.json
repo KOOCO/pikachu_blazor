@@ -537,7 +537,8 @@
     "BlackCatFreeze": "黑貓冷藏",
     "BlackCatFrozen": "黑貓冷凍",
     "SetGroupBuyPrice": "團購價",
-    "InvoiceIssueStatus": "狀態"
+    "InvoiceIssueStatus": "狀態",
+    "Return": "退貨"
 
 
   }

@@ -248,4 +248,9 @@ public class OrderController(
     {
         return _ordersAppService.GetReportListAsync(input, hideCredentials);
     }
+    [HttpPost("return-order")]
+    public Task ReturnOrderAsync(Guid id)
+    {
+        return _ordersAppService.ReturnOrderAsync(id);
+    }
 }

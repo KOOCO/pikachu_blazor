@@ -44,5 +44,6 @@ namespace Kooco.Pikachu.Orders
         Task CreditNoteInvoice(Guid id, string reason);
         Task RefundAmountAsync(double amount, Guid OrderId);
         Task<PagedResultDto<OrderDto>> GetReportListAsync(GetOrderListDto input, bool hideCredentials = false);
+        Task ReturnOrderAsync(Guid id);
     }
 }
