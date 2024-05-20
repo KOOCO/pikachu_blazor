@@ -435,7 +435,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 if (result.ResponseCode != "1")
                 {
                     await _uiMessageService.Error(result.ResponseMessage);
-
+                    await loading.Hide();
                 }
             }
             
