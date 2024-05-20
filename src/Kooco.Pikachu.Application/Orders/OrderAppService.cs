@@ -1042,11 +1042,12 @@ namespace Kooco.Pikachu.Orders
             order.ShippingStatus = ShippingStatus.Shipped;
             order.ShippedBy = CurrentUser.Name;
             order.ShippingDate = DateTime.Now;
-            order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
+           
             await _orderRepository.UpdateAsync(order);
             await UnitOfWorkManager.Current.SaveChangesAsync();
             if (order.GroupBuy.IssueInvoice)
             {
+                order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
                 var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
                 var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
                 var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
