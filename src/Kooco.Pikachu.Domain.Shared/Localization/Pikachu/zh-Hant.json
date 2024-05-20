@@ -539,7 +539,8 @@
     "SetGroupBuyPrice": "團購價",
     "InvoiceIssueStatus": "狀態",
     "Return": "退貨",
-    "PleaseEnterThresholdAmount": "請輸入免運門檻"
+    "PleaseEnterThresholdAmount": "請輸入免運門檻",
+    "Exchange": "換貨"
 
 
   }

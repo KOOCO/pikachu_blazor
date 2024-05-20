@@ -511,7 +511,8 @@
     "InvoiceIssueStatus": "Invoice Issue Status",
     "Approve": "Approve",
     "Return": "Return",
-    "PleaseEnterThresholdAmount": "Please Enter Threshold Amount"
+    "PleaseEnterThresholdAmount": "Please Enter Threshold Amount",
+    "Exchange": "Exchange"
 
 
 
