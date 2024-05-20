@@ -538,7 +538,8 @@
     "BlackCatFrozen": "黑貓冷凍",
     "SetGroupBuyPrice": "團購價",
     "InvoiceIssueStatus": "狀態",
-    "Return": "退貨"
+    "Return": "退貨",
+    "PleaseEnterThresholdAmount": "請輸入免運門檻"
 
 
   }

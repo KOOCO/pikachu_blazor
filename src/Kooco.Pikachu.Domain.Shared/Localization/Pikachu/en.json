@@ -510,7 +510,8 @@
     "SetGroupBuyPrice": "Set GroupBuy Price",
     "InvoiceIssueStatus": "Invoice Issue Status",
     "Approve": "Approve",
-    "Return": "Return"
+    "Return": "Return",
+    "PleaseEnterThresholdAmount": "Please Enter Threshold Amount"
 
 
 

@@ -121,7 +121,8 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 }
                 if (EditGroupBuyDto.FreeShipping && EditGroupBuyDto.FreeShippingThreshold == null)
                 {
-                    await _uiMessageService.Warn("Please Enter Threshold Amount");
+                    await _uiMessageService.Warn("PleaseEnterThresholdAmount");
+                    return;
 
                 }
                 if (!GroupBuy.PaymentMethod.IsNullOrEmpty())
