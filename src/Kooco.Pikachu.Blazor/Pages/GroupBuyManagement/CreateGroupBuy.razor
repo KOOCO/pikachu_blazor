@@ -8,6 +8,7 @@
 @using Microsoft.Extensions.Localization;
 @using System.ComponentModel;
 @using Blazorise.Components;
+@using Blazorise.LoadingIndicator;
 
 @inject IGroupBuyAppService AppService
 @inject NavigationManager NavigationManager
@@ -36,6 +37,7 @@
         }
 </style>
 <h3>@L["NewGroupBuy"]</h3>
+<LoadingIndicator @ref="Loading" FullScreen FadeIn></LoadingIndicator>
 <Card>
     <CardBody>
         <div class="row">

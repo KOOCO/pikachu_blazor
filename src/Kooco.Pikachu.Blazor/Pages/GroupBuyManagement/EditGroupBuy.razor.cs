@@ -104,6 +104,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 
                 Id = Guid.Parse(id);
                 GroupBuy = await _groupBuyAppService.GetWithItemGroupsAsync(Id);
+                EditGroupBuyDto = _objectMapper.Map<GroupBuyDto, GroupBuyUpdateDto>(GroupBuy);
                 if (!string.IsNullOrEmpty(GroupBuy.ExcludeShippingMethod))
                 {
                     EditGroupBuyDto.ShippingMethodList = JsonSerializer.Deserialize<List<string>>(GroupBuy.ExcludeShippingMethod);
@@ -122,8 +123,8 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 }
                 if (EditGroupBuyDto.FreeShipping && EditGroupBuyDto.FreeShippingThreshold == null)
                 {
-                    await _uiMessageService.Warn("PleaseEnterThresholdAmount");
-                    return;
+                    EditGroupBuyDto.FreeShippingThreshold = 0;
+                   
 
                 }
                 if (!GroupBuy.PaymentMethod.IsNullOrEmpty())
@@ -148,7 +149,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
                     }
                 }
-                EditGroupBuyDto = _objectMapper.Map<GroupBuyDto, GroupBuyUpdateDto>(GroupBuy);
+                
                 EditGroupBuyDto.EntryURL = $"{_configuration["EntryUrl"]?.TrimEnd('/')}/{Id}";
                 LoadItemGroups();
                 if (EditValidationsRef != null)
@@ -173,12 +174,12 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             {
                 try
                 {
-                    List<string> paymentMethotTagArray = EditGroupBuyDto.PaymentMethod?.Split(',')?.ToList() ?? new List<string>();
-                    PaymentMethodTags = paymentMethotTagArray != null ? paymentMethotTagArray.ToList() : new List<string>();
-                    if (!string.IsNullOrEmpty(GroupBuy.ExcludeShippingMethod))
-                    {
-                        ItemTags = GroupBuy.ExcludeShippingMethod.Split(',').ToList();
-                    }
+                    //List<string> paymentMethotTagArray = EditGroupBuyDto.PaymentMethod?.Split(',')?.ToList() ?? new List<string>();
+                    //PaymentMethodTags = paymentMethotTagArray != null ? paymentMethotTagArray.ToList() : new List<string>();
+                    //if (!string.IsNullOrEmpty(GroupBuy.ExcludeShippingMethod))
+                    //{
+                    //    ItemTags = GroupBuy.ExcludeShippingMethod.Split(',').ToList();
+                    //}
 
                     ExistingImages = await _imageAppService.GetGroupBuyImagesAsync(Id, ImageType.GroupBuyCarouselImage);
                     CarouselImages = _objectMapper.Map<List<ImageDto>, List<CreateImageDto>>(ExistingImages);
@@ -210,7 +211,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
         private async Task LoadHtmlContent()
         {
-            await Task.Delay(2);
+            //await Task.Delay(2);
             await GroupBuyHtml.LoadHTMLContent(EditGroupBuyDto.GroupBuyConditionDescription);
             await CustomerInformationHtml.LoadHTMLContent(EditGroupBuyDto.CustomerInformationDescription);
             await ExchangePolicyHtml.LoadHTMLContent(EditGroupBuyDto.ExchangePolicyDescription);
@@ -847,6 +848,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 //    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyNameCannotBeNull]);
                 //    return;
                 //}
+                await Loading.Show();
                 var check = false;
                 string shortCode = EditGroupBuyDto.ShortCode;
                 if (!string.IsNullOrEmpty(shortCode))
@@ -857,6 +859,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     if (!isPatternValid)
                     {
                         await _uiMessageService.Warn(L["ShortCodePatternDoesnotMatch"]);
+                        await Loading.Hide();
                         return;
                     }
                      check = await _groupBuyAppService.CheckShortCodeForEdit(EditGroupBuyDto.ShortCode, Id);
@@ -864,6 +867,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     if (check)
                     {
                         await _uiMessageService.Warn(L["Short Code Alredy Exist"]);
+                        await Loading.Hide();
                         return;
                     }
                 }
@@ -908,21 +912,25 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 if (EditGroupBuyDto.PaymentMethod.IsNullOrEmpty())
                 {
                     await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOnePaymentMethodIsRequired]);
+                    await Loading.Hide();
                     return;
                 }
                 if (EditGroupBuyDto.ExcludeShippingMethod.IsNullOrEmpty()|| EditGroupBuyDto.ExcludeShippingMethod=="[]")
                 {
                     await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneShippingMethodIsRequired]);
+                    await Loading.Hide();
                     return;
                 }
                 if (EditGroupBuyDto.IsEnterprise && (!EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
                 {
                     await _uiMessageService.Warn(L[PikachuDomainErrorCodes.DeliverdByStoreMethodIsRequired]);
+                    await Loading.Hide();
                     return;
                 }
                 if (EditGroupBuyDto.FreeShipping && EditGroupBuyDto.FreeShippingThreshold == null)
                 {
-                    await _uiMessageService.Warn("Please Enter Threshold Amount");
+                    await _uiMessageService.Warn("PleaseEnterThresholdAmount");
+                    await Loading.Hide();
                     return;
                 }
                 if ((!EditGroupBuyDto.ExcludeShippingMethod.IsNullOrEmpty()) && (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1")
@@ -933,31 +941,37 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     if (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1") && (EditGroupBuyDto.BlackCatDeliveryTime.IsNullOrEmpty()|| EditGroupBuyDto.BlackCatDeliveryTime=="[]"))
                     {
                         await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForBlackCat]);
+                        await Loading.Hide();
                         return;
                     }
                     if (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFreeze") && (EditGroupBuyDto.BlackCatDeliveryTime.IsNullOrEmpty() || EditGroupBuyDto.BlackCatDeliveryTime == "[]"))
                     {
                         await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForBlackCatFreeze]);
+                        await Loading.Hide();
                         return;
                     }
                     if (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFrozen") && (EditGroupBuyDto.BlackCatDeliveryTime.IsNullOrEmpty() || EditGroupBuyDto.BlackCatDeliveryTime == "[]"))
                     {
                         await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForBlackCatFrozen]);
+                        await Loading.Hide();
                         return;
                     }
                     else if (EditGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup") && (EditGroupBuyDto.SelfPickupDeliveryTime.IsNullOrEmpty()|| EditGroupBuyDto.SelfPickupDeliveryTime=="[]"))
                     {
                         await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForSelfPickup]);
+                        await Loading.Hide();
                         return;
                     }
                     else if (EditGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery") && (EditGroupBuyDto.HomeDeliveryDeliveryTime.IsNullOrEmpty()|| EditGroupBuyDto.HomeDeliveryDeliveryTime=="[]"))
                     {
                         await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForHomeDelivery]);
+                        await Loading.Hide();
                         return;
                     }
                     else if (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore") && (EditGroupBuyDto.DeliveredByStoreDeliveryTime.IsNullOrEmpty() || EditGroupBuyDto.DeliveredByStoreDeliveryTime == "[]"))
                     {
                         await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForDeliverdByStore]);
+                        await Loading.Hide();
                         return;
                     }
                 }
