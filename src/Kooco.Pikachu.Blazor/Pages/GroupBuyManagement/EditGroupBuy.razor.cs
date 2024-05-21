@@ -105,6 +105,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 Id = Guid.Parse(id);
                 GroupBuy = await _groupBuyAppService.GetWithItemGroupsAsync(Id);
                 EditGroupBuyDto = _objectMapper.Map<GroupBuyDto, GroupBuyUpdateDto>(GroupBuy);
+                EditGroupBuyDto.ShortCode=EditGroupBuyDto.ShortCode==""?null:EditGroupBuyDto.ShortCode;
                 if (!string.IsNullOrEmpty(GroupBuy.ExcludeShippingMethod))
                 {
                     EditGroupBuyDto.ShippingMethodList = JsonSerializer.Deserialize<List<string>>(GroupBuy.ExcludeShippingMethod);
