@@ -101,6 +101,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         {
             try
             {
+                
                 Id = Guid.Parse(id);
                 GroupBuy = await _groupBuyAppService.GetWithItemGroupsAsync(Id);
                 if (!string.IsNullOrEmpty(GroupBuy.ExcludeShippingMethod))
@@ -154,11 +155,14 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 {
                     await EditValidationsRef.ClearAll();
                 }
+                await LoadHtmlContent();
                 StateHasChanged();
+                
 
             }
             catch (Exception ex)
             {
+                
                 await _uiMessageService.Error(ex.GetType().ToString());
                 await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
             }
@@ -183,7 +187,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     var setItemsList = await _setItemAppService.GetItemsLookupAsync();
                     ItemsList.AddRange(setItemsList);
                     LoadingItems = false;
-                    await LoadHtmlContent();
+                    //await LoadHtmlContent();
 
                     StateHasChanged();
                 }
