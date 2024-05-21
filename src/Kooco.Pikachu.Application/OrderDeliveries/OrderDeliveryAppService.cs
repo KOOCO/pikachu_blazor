@@ -63,7 +63,10 @@ namespace Kooco.Pikachu.OrderDeliveries
 
             await _orderDeliveryRepository.UpdateAsync(order);
             await UnitOfWorkManager.Current.SaveChangesAsync();
-            await SendEmailAsync(order.OrderId, order.Id);
+            if (order.DeliveryNo != null)
+            {
+                await SendEmailAsync(order.OrderId, order.Id);
+            }
             return ObjectMapper.Map<OrderDelivery, OrderDeliveryDto>(order);
         }
         private async Task SendEmailAsync(Guid id,Guid DeliveryOrderId, OrderStatus? orderStatus = null)

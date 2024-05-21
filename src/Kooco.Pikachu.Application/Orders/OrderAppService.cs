@@ -1032,7 +1032,10 @@ namespace Kooco.Pikachu.Orders
 
             await _orderRepository.UpdateAsync(order);
             await UnitOfWorkManager.Current.SaveChangesAsync();
-            await SendEmailAsync(order.Id);
+            if (order.ShippingNumber != null)
+            {
+                await SendEmailAsync(order.Id);
+            }
             return ObjectMapper.Map<Order, OrderDto>(order);
         }
         public async Task<OrderDto> OrderShipped(Guid id)
