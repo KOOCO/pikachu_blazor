@@ -157,7 +157,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 {
                     await EditValidationsRef.ClearAll();
                 }
-                await LoadHtmlContent();
+                //await LoadHtmlContent();
                 StateHasChanged();
                 
 
@@ -181,7 +181,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     //{
                     //    ItemTags = GroupBuy.ExcludeShippingMethod.Split(',').ToList();
                     //}
-
+                    await LoadHtmlContent();
                     ExistingImages = await _imageAppService.GetGroupBuyImagesAsync(Id, ImageType.GroupBuyCarouselImage);
                     CarouselImages = _objectMapper.Map<List<ImageDto>, List<CreateImageDto>>(ExistingImages);
 
@@ -212,7 +212,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
         private async Task LoadHtmlContent()
         {
-            //await Task.Delay(2);
+            await Task.Delay(2);
             await GroupBuyHtml.LoadHTMLContent(EditGroupBuyDto.GroupBuyConditionDescription);
             await CustomerInformationHtml.LoadHTMLContent(EditGroupBuyDto.CustomerInformationDescription);
             await ExchangePolicyHtml.LoadHTMLContent(EditGroupBuyDto.ExchangePolicyDescription);
