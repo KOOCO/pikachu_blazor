@@ -139,6 +139,29 @@ namespace Kooco.Pikachu.Orders
                 .Where(x=>x.IsRefunded==false);
                 //.Where(x => x.OrderType != OrderType.MargeToNew);
         }
+        private static IQueryable<Order> ApplyReturnFilters(
+          IQueryable<Order> queryable,
+          string? filter,
+          Guid? groupBuyId,
+          List<Guid> orderIds,
+          DateTime? startDate = null,
+          DateTime? endDate = null,
+          OrderStatus? orderStatus = null
+          )
+        {
+            return queryable
+                .WhereIf(groupBuyId.HasValue, x => x.GroupBuyId == groupBuyId)
+                .WhereIf(!filter.IsNullOrWhiteSpace(),
+                x => x.OrderNo.Contains(filter)
+                || (x.CustomerName != null && x.CustomerName.Contains(filter))
+                || (x.CustomerEmail != null && x.CustomerEmail.Contains(filter))
+                ).WhereIf(orderIds != null && orderIds.Any(), x => orderIds.Contains(x.Id))
+                .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate.Value.Date)
+                .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
+                .WhereIf(orderStatus.HasValue, x => x.OrderStatus == orderStatus)
+                .Where(x => x.IsRefunded == true);
+            //.Where(x => x.OrderType != OrderType.MargeToNew);
+        }
         private static IQueryable<Order> ApplyReconciliationFilters(
          IQueryable<Order> queryable,
          string? filter,
@@ -210,11 +233,11 @@ namespace Kooco.Pikachu.Orders
 
         public async Task<long> ReturnOrderCountAsync(string? filter, Guid? groupBuyId)
         {
-            return await ApplyFilters((await GetQueryableAsync()).Include(o => o.GroupBuy), filter, groupBuyId, null).Where(x => x.OrderStatus == OrderStatus.Returned || x.OrderStatus == OrderStatus.Exchange).CountAsync();
+            return await ApplyReturnFilters((await GetQueryableAsync()).Include(o => o.GroupBuy), filter, groupBuyId, null).Where(x => x.OrderStatus == OrderStatus.Returned || x.OrderStatus == OrderStatus.Exchange).CountAsync();
         }
         public async Task<List<Order>> GetReturnListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId)
         {
-            return await ApplyFilters(await GetQueryableAsync(), filter, groupBuyId, null)
+            return await ApplyReturnFilters(await GetQueryableAsync(), filter, groupBuyId, null)
                 .Where(x => x.OrderStatus == OrderStatus.Returned || x.OrderStatus == OrderStatus.Exchange)
                 .OrderBy(sorting)
                 .PageBy(skipCount, maxResultCount)

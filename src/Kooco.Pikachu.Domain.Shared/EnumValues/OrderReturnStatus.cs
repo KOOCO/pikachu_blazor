@@ -6,7 +6,7 @@ namespace Kooco.Pikachu.EnumValues
 {
     public enum OrderReturnStatus
     {
-        PendingReview,
+        Pending,
         Approve =1,
         Reject = 2,
         Processing =3,

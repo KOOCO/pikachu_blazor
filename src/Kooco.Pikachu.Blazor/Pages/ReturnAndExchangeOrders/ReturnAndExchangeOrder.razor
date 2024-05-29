@@ -63,37 +63,88 @@
                     <DataGridColumn Field="@nameof(OrderDto.CustomerName)" Caption="@L["CustomerName"]" />
                     <DataGridColumn   Field="@nameof(OrderDto.ReturnStatus)" Caption="@L["ReturnStatus"]">
                              <DisplayTemplate>
-                            @if (context.ReturnStatus == OrderReturnStatus.PendingReview && CanProcessRefund)
+                                
+                            @if (context.ReturnStatus == OrderReturnStatus.Pending && CanProcessRefund)
                             {
                                 <Select TValue="OrderReturnStatus" Class="form-select form-select-sm"
                                 SelectedValue="@context.ReturnStatus"
                                 SelectedValueChanged="@(e => ReturnStatusChanged(e, context))">
                                     
                                     @foreach (var enumValue in Enum.GetValues(typeof(OrderReturnStatus)))
-                                    {
-                                        <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
-                                    }
-                                </Select>
-                            }
-                            else
-                            {
-
-                                <Select  TValue="OrderReturnStatus" Class="form-select form-select-sm"
-                                        SelectedValue="@context.ReturnStatus"
-                                        SelectedValueChanged="@(e => ReturnStatusChanged(e, context))">
-                                    <SelectItem></SelectItem>
-
-                                    @foreach (var enumValue in Enum.GetValues(typeof(OrderReturnStatus)))
-                                    {
-                                        @if(enumValue.ToString()=="Processing"||enumValue.ToString()=="Succeeded")
+                                    { @if(enumValue.ToString()=="Approve"||enumValue.ToString()=="Pending"||enumValue.ToString()=="Reject")
                                         {
                                         <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
                                         }
                                     }
                                 </Select>
-
-
-}
+                            }
+                              else if (context.ReturnStatus == OrderReturnStatus.Processing && CanProcessRefund)
+                            {
+                                <Select Disabled TValue="OrderReturnStatus" Class="form-select form-select-sm"
+                                SelectedValue="@context.ReturnStatus"
+                                SelectedValueChanged="@(e => ReturnStatusChanged(e, context))">
+                                    
+                                    @foreach (var enumValue in Enum.GetValues(typeof(OrderReturnStatus)))
+                                    { 
+                                        <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                        
+                                    }
+                                </Select>
+                            }
+                                else if (context.ReturnStatus == OrderReturnStatus.Processing )
+                            {
+                                <Select  TValue="OrderReturnStatus" Class="form-select form-select-sm"
+                                SelectedValue="@context.ReturnStatus"
+                                SelectedValueChanged="@(e => ReturnStatusChanged(e, context))">
+                                    
+                                    @foreach (var enumValue in Enum.GetValues(typeof(OrderReturnStatus)))
+                                    { @if(enumValue.ToString()=="Processing"||enumValue.ToString()=="Succeeded")
+                                        {
+                                        <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                        }
+                                    }
+                                </Select>
+                            }
+                                  else if (context.ReturnStatus == OrderReturnStatus.Succeeded )
+                            {
+                                <Select Disabled  TValue="OrderReturnStatus" Class="form-select form-select-sm"
+                                SelectedValue="@context.ReturnStatus"
+                                SelectedValueChanged="@(e => ReturnStatusChanged(e, context))">
+                                    
+                                    @foreach (var enumValue in Enum.GetValues(typeof(OrderReturnStatus)))
+                                    { 
+                                        <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                        
+                                    }
+                                </Select>
+                            }
+                             else if (context.ReturnStatus == OrderReturnStatus.Reject)
+                            {
+                                <Select Disabled TValue="OrderReturnStatus" Class="form-select form-select-sm"
+                                SelectedValue="@context.ReturnStatus"
+                                SelectedValueChanged="@(e => ReturnStatusChanged(e, context))">
+                                    
+                                    @foreach (var enumValue in Enum.GetValues(typeof(OrderReturnStatus)))
+                                    { 
+                                        <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                        
+                                    }
+                                </Select>
+                            }
+                            else{
+                              <Select Disabled TValue="OrderReturnStatus" Class="form-select form-select-sm"
+                                SelectedValue="@context.ReturnStatus"
+                                SelectedValueChanged="@(e => ReturnStatusChanged(e, context))">
+                                    
+                                    @foreach (var enumValue in Enum.GetValues(typeof(OrderReturnStatus)))
+                                    { 
+                                        <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                        
+                                    }
+                                </Select>
+                            
+                            }
+  
                         </DisplayTemplate>
                         </DataGridColumn>
                     <DataGridColumn Field="@nameof(OrderDto.OrderStatus)" Caption="@L["OrderStatus"]">

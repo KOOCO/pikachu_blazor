@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.ElectronicInvoiceSettings;
+﻿using Hangfire.Storage;
+using Kooco.Pikachu.ElectronicInvoiceSettings;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Groupbuys;
@@ -18,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -59,6 +61,7 @@ namespace Kooco.Pikachu.Orders
         private readonly IElectronicInvoiceSettingRepository _electronicInvoiceSettingRepository;
         private readonly IFreebieRepository _freebieRepository;
         private readonly IRefundAppService _refundAppService;
+        private readonly IRefundRepository _refundRepository;
         public OrderAppService(
             IOrderRepository orderRepository,
             OrderManager orderManager,
@@ -76,7 +79,8 @@ namespace Kooco.Pikachu.Orders
             IFreebieRepository freebieRepository,
             IBackgroundJobManager backgroundJobManager,
             IElectronicInvoiceSettingRepository electronicInvoiceSettingRepository,
-            IRefundAppService refundAppService
+            IRefundAppService refundAppService,
+            IRefundRepository refundRepository
             )
         {
             _orderRepository = orderRepository;
@@ -97,6 +101,7 @@ namespace Kooco.Pikachu.Orders
             _backgroundJobManager = backgroundJobManager;
             _electronicInvoiceSettingRepository= electronicInvoiceSettingRepository;
             _refundAppService = refundAppService;
+            _refundRepository = refundRepository;
         }
 
         [AllowAnonymous]
@@ -943,6 +948,12 @@ namespace Kooco.Pikachu.Orders
             if (orderReturnStatus == OrderReturnStatus.Approve)
             {
                 await _refundAppService.CreateAsync(id);
+                if (order.OrderStatus == OrderStatus.Returned)
+                {
+                    var refund = (await _refundRepository.GetQueryableAsync()).Where(x => x.OrderId == order.Id).FirstOrDefault();
+                    await _refundAppService.UpdateRefundReviewAsync(refund.Id, RefundReviewStatus.Proccessing);
+                    await _refundAppService.SendRefundRequestAsync(refund.Id);
+                }
 
             }
         }
@@ -950,7 +961,7 @@ namespace Kooco.Pikachu.Orders
         public async Task ExchangeOrderAsync(Guid id)
         {
             var order = await _orderRepository.GetAsync(id);
-            order.ReturnStatus = OrderReturnStatus.PendingReview;
+            order.ReturnStatus = OrderReturnStatus.Pending;
             order.OrderStatus = OrderStatus.Exchange;
 
             await _orderRepository.UpdateAsync(order);
@@ -960,7 +971,7 @@ namespace Kooco.Pikachu.Orders
         public async Task ReturnOrderAsync(Guid id)
         {
             var order = await _orderRepository.GetAsync(id);
-            order.ReturnStatus = OrderReturnStatus.PendingReview;
+            order.ReturnStatus = OrderReturnStatus.Pending;
             order.OrderStatus = OrderStatus.Returned;
 
             await _orderRepository.UpdateAsync(order);
