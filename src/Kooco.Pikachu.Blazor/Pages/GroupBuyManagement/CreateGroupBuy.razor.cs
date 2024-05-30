@@ -689,7 +689,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 }
                 if (CreateGroupBuyDto.FreeShipping && CreateGroupBuyDto.FreeShippingThreshold == null)
                 {
-                    await _uiMessageService.Warn("PleaseEnterThresholdAmount");
+                    await _uiMessageService.Warn(L["PleaseEnterThresholdAmount"]);
                     await Loading.Hide();
                     return;
                 }
