@@ -944,18 +944,20 @@ namespace Kooco.Pikachu.Orders
                 order.OrderStatus = OrderStatus.Open;
 
             }
-            await _orderRepository.UpdateAsync(order);
+            
             if (orderReturnStatus == OrderReturnStatus.Approve)
             {
-                await _refundAppService.CreateAsync(id);
+              
                 if (order.OrderStatus == OrderStatus.Returned)
                 {
+                    await _refundAppService.CreateAsync(id);
                     var refund = (await _refundRepository.GetQueryableAsync()).Where(x => x.OrderId == order.Id).FirstOrDefault();
                     await _refundAppService.UpdateRefundReviewAsync(refund.Id, RefundReviewStatus.Proccessing);
                     await _refundAppService.SendRefundRequestAsync(refund.Id);
                 }
-
+                order.ReturnStatus=OrderReturnStatus.Processing;
             }
+            await _orderRepository.UpdateAsync(order);
         }
 
         public async Task ExchangeOrderAsync(Guid id)

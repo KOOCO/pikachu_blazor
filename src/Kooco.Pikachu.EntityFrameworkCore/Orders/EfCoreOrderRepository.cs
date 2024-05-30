@@ -27,18 +27,20 @@ namespace Kooco.Pikachu.Orders
         }
         public async Task<List<Order>> GetListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId, List<Guid> orderId, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null)
         {
-            return await ApplyFilters(await GetQueryableAsync(), filter, groupBuyId, orderId, startDate, endDate, orderStatus)
+            var result= await ApplyFilters(await GetQueryableAsync(), filter, groupBuyId, orderId, startDate, endDate, orderStatus)
                 .OrderBy(sorting)
                 .PageBy(skipCount, maxResultCount)
                 .Include(o => o.GroupBuy)
-                .Include(o=>o.StoreComments)
+                .Include(o => o.StoreComments)
                 .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Item)
                 .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.SetItem)
                 .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Freebie)
+                
                 .ToListAsync();
+            return result;
         }
         public async Task<List<Order>> GetAllListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId, List<Guid> orderId, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null)
         {
@@ -126,7 +128,7 @@ namespace Kooco.Pikachu.Orders
             OrderStatus? orderStatus = null
             )
         {
-            return queryable
+            var result= queryable
                 .WhereIf(groupBuyId.HasValue, x => x.GroupBuyId == groupBuyId)
                 .WhereIf(!filter.IsNullOrWhiteSpace(),
                 x => x.OrderNo.Contains(filter)
@@ -137,7 +139,9 @@ namespace Kooco.Pikachu.Orders
                 .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
                 .WhereIf(orderStatus.HasValue, x => x.OrderStatus == orderStatus)
                 .Where(x=>x.IsRefunded==false);
-                //.Where(x => x.OrderType != OrderType.MargeToNew);
+            //.Where(x => x.OrderType != OrderType.MargeToNew);
+         
+            return result;
         }
         private static IQueryable<Order> ApplyReturnFilters(
           IQueryable<Order> queryable,
@@ -159,7 +163,8 @@ namespace Kooco.Pikachu.Orders
                 .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate.Value.Date)
                 .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
                 .WhereIf(orderStatus.HasValue, x => x.OrderStatus == orderStatus)
-                .Where(x => x.IsRefunded == true);
+                .Where(x=>x.OrderStatus==OrderStatus.Returned||x.OrderStatus==OrderStatus.Exchange|| x.IsRefunded == true)
+                ;
             //.Where(x => x.OrderType != OrderType.MargeToNew);
         }
         private static IQueryable<Order> ApplyReconciliationFilters(
