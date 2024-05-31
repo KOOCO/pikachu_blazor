@@ -207,9 +207,9 @@ namespace Kooco.Pikachu.GroupBuys
 
         public async Task<GroupBuyDto> UpdateAsync(Guid id, GroupBuyUpdateDto input)
         {
-            var sameName = await _groupBuyRepository.FirstOrDefaultAsync(x => x.GroupBuyName == input.GroupBuyName);
+            var sameName = await _groupBuyRepository.AnyAsync(x => x.GroupBuyName == input.GroupBuyName && x.Id!=id);
 
-            if (sameName != null && sameName.Id != id)
+            if (sameName)
             {
                 throw new BusinessException(PikachuDomainErrorCodes.ItemWithSameNameAlreadyExists);
             }
@@ -296,7 +296,7 @@ namespace Kooco.Pikachu.GroupBuys
                     }
                 }
             }
-
+           await CurrentUnitOfWork.SaveChangesAsync();
 
             return ObjectMapper.Map<GroupBuy, GroupBuyDto>(groupBuy);
         }

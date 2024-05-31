@@ -105,6 +105,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 Id = Guid.Parse(id);
                 GroupBuy = await _groupBuyAppService.GetWithItemGroupsAsync(Id);
                 EditGroupBuyDto = _objectMapper.Map<GroupBuyDto, GroupBuyUpdateDto>(GroupBuy);
+                await LoadHtmlContent();
                 EditGroupBuyDto.ShortCode=EditGroupBuyDto.ShortCode==""?null:EditGroupBuyDto.ShortCode;
                 if (!string.IsNullOrEmpty(GroupBuy.ExcludeShippingMethod))
                 {
@@ -157,7 +158,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 {
                     await EditValidationsRef.ClearAll();
                 }
-                //await LoadHtmlContent();
+                //
                 StateHasChanged();
                 
 
@@ -213,6 +214,10 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         private async Task LoadHtmlContent()
         {
             await Task.Delay(2);
+            if (EditGroupBuyDto.GroupBuyName == null)
+            {
+                await Task.Delay(6000);
+            }
             await GroupBuyHtml.LoadHTMLContent(EditGroupBuyDto.GroupBuyConditionDescription);
             await CustomerInformationHtml.LoadHTMLContent(EditGroupBuyDto.CustomerInformationDescription);
             await ExchangePolicyHtml.LoadHTMLContent(EditGroupBuyDto.ExchangePolicyDescription);

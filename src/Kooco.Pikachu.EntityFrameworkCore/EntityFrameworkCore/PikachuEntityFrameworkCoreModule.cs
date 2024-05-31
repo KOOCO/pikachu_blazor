@@ -55,6 +55,7 @@ public class PikachuEntityFrameworkCoreModule : AbpModule
                 /* The main point to change your DBMS.
                  * See also PikachuMigrationsDbContextFactory for EF Core tooling. */
             options.UseSqlServer();
+           
         });
 
     }
