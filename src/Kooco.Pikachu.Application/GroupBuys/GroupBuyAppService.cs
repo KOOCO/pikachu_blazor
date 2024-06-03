@@ -23,6 +23,7 @@ using Volo.Abp.Content;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
+using Volo.Abp.Validation.Localization;
 
 namespace Kooco.Pikachu.GroupBuys
 {
@@ -38,7 +39,7 @@ namespace Kooco.Pikachu.GroupBuys
         private readonly IOrderRepository _orderRepository;
         private readonly IRepository<DeliveryTemperatureCost, Guid> _temperatureRepository;
         private readonly IStringLocalizer<PikachuResource> _l;
-
+      
         public GroupBuyAppService(
             IGroupBuyRepository groupBuyRepository,
             GroupBuyManager groupBuyManager,
@@ -153,6 +154,12 @@ namespace Kooco.Pikachu.GroupBuys
         }
         public async Task DeleteAsync(Guid id)
         {
+            var check = (await _orderRepository.GetQueryableAsync()).Any(x => x.GroupBuyId == id);
+                if(check)
+                {
+                throw new UserFriendlyException("Groupbuy have order its not delete able");
+            
+            }
             await _groupBuyRepository.DeleteAsync(id);
         }
 
@@ -319,6 +326,12 @@ namespace Kooco.Pikachu.GroupBuys
         {
             foreach (var id in groupBuyIds)
             {
+                var check = (await _orderRepository.GetQueryableAsync()).Any(x => x.GroupBuyId == id);
+                if (check)
+                {
+                    throw new UserFriendlyException("Groupbuy have order its not delete able");
+
+                }
                 var images = await _imageRepository.GetListAsync(x => x.TargetId == id);
                 if (images == null) continue;
 

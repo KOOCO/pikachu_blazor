@@ -95,13 +95,14 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             EditGroupBuyDto = new GroupBuyUpdateDto();
             CarouselImages = [];
             GroupBuy = new();
+            Loading=new LoadingIndicator();
             id ??= "";
         }
         protected override async Task OnInitializedAsync()
         {
             try
             {
-                
+                //await Loading.Show();
                 Id = Guid.Parse(id);
                 GroupBuy = await _groupBuyAppService.GetWithItemGroupsAsync(Id);
                 EditGroupBuyDto = _objectMapper.Map<GroupBuyDto, GroupBuyUpdateDto>(GroupBuy);
@@ -160,28 +161,30 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 }
                 //
                 StateHasChanged();
-                
+                //await Loading.Hide();
 
             }
             catch (Exception ex)
             {
-                
+                //await Loading.Hide();
                 await _uiMessageService.Error(ex.GetType().ToString());
                 await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
             }
+            finally
+                {
+                //await Loading.Hide();
+            }
         }
+
+      
         protected override async Task OnAfterRenderAsync(bool isFirstRender)
         {
             if (isFirstRender)
             {
                 try
                 {
-                    //List<string> paymentMethotTagArray = EditGroupBuyDto.PaymentMethod?.Split(',')?.ToList() ?? new List<string>();
-                    //PaymentMethodTags = paymentMethotTagArray != null ? paymentMethotTagArray.ToList() : new List<string>();
-                    //if (!string.IsNullOrEmpty(GroupBuy.ExcludeShippingMethod))
-                    //{
-                    //    ItemTags = GroupBuy.ExcludeShippingMethod.Split(',').ToList();
-                    //}
+                    await Loading.Show();
+                    await OnInitializedAsync();
                     await LoadHtmlContent();
                     ExistingImages = await _imageAppService.GetGroupBuyImagesAsync(Id, ImageType.GroupBuyCarouselImage);
                     CarouselImages = _objectMapper.Map<List<ImageDto>, List<CreateImageDto>>(ExistingImages);
@@ -193,19 +196,24 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                     //await LoadHtmlContent();
 
                     StateHasChanged();
+                    await Loading.Hide();
                 }
                 catch (BusinessException ex)
                 {
+                    await Loading.Hide();
                     await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
                     await _uiMessageService.Error(L[ex.Code]);
+
                 }
                 catch (Exception ex)
                 {
+                    await Loading.Hide();
                     await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
                     await _uiMessageService.Error(ex.GetType().ToString());
                 }
                 finally
                 {
+                    await Loading.Hide();
                     LoadingItems = false;
                 }
             }

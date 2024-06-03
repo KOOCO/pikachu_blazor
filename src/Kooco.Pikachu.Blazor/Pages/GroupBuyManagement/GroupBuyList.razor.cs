@@ -111,7 +111,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             catch (Exception ex)
             {
                 await loading.Hide();
-                await _uiMessageService.Error(ex.GetType()?.ToString());
+                await _uiMessageService.Error(ex.Message.ToString());
                 Console.WriteLine(ex.ToString());
             }
         }
