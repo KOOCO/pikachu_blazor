@@ -78,9 +78,9 @@
                                     }
                                 </Select>
                             }
-                              else if (context.ReturnStatus == OrderReturnStatus.Processing && CanProcessRefund)
+                            @*   else if (context.ReturnStatus == OrderReturnStatus.Processing && CanProcessRefund)
                             {
-                                <Select Disabled TValue="OrderReturnStatus" Class="form-select form-select-sm"
+                                <Select  TValue="OrderReturnStatus" Class="form-select form-select-sm"
                                 SelectedValue="@context.ReturnStatus"
                                 SelectedValueChanged="@(e => ReturnStatusChanged(e, context))">
                                     
@@ -90,7 +90,7 @@
                                         
                                     }
                                 </Select>
-                            }
+                            } *@
                                 else if (context.ReturnStatus == OrderReturnStatus.Processing )
                             {
                                 <Select  TValue="OrderReturnStatus" Class="form-select form-select-sm"

@@ -316,6 +316,7 @@
     "ReviewCompletionTime": "Review Completion Time",
     "RefundReview": "Refund Review",
     "PendingReview": "Pending Review",
+    "Pending": "Pending",
     "Processing": "Processing",
     "Success": "Success",
     "Fail": "Fail",
@@ -512,7 +513,9 @@
     "Approve": "Approve",
     "Return": "Return",
     "PleaseEnterThresholdAmount": "Please Enter Threshold Amount",
-    "Exchange": "Exchange"
+    "Exchange": "Exchange",
+    "Reject": "Reject",
+
 
 
 
