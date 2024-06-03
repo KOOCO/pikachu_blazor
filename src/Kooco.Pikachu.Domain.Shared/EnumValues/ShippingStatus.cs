@@ -10,7 +10,8 @@ namespace Kooco.Pikachu.EnumValues
         PrepareShipment,
         Shipped,
         Completed,
-        Closed
+        Closed,
+        Exchange
         
     }
 }

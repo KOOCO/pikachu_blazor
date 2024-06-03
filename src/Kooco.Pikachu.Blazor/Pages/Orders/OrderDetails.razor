@@ -528,6 +528,42 @@
                                 <p>@L[ShippingStatus.Completed.ToString()]</p>
                             </div>
                         }
+                        @if (Order?.ShippingStatus == ShippingStatus.Exchange)
+                        {
+                                  <div class="col-12 d-flex justify-content-between">
+                                    <p>@Order?.CreationTime.ToShortDateString()</p>
+                                    <p>@L[ShippingStatus.WaitingForPayment.ToString()]</p>
+                                </div>
+                            @if (Order?.PaymentDate != null && Order?.PrepareShipmentBy != null)
+                            {
+                                        <div class="col-12 d-flex justify-content-between">
+                                            <p>@Order?.PaymentDate?.ToShortDateString()</p>
+                                          <p>@Order?.PrepareShipmentBy</p>
+                                        <p>@L[ShippingStatus.PrepareShipment.ToString()]</p>
+                                    </div>
+                            }
+                            @if (Order?.ShippingDate != null && Order?.ShippedBy != null)
+                            {
+                                        <div class="col-12 d-flex justify-content-between">
+                                            <p>@Order?.ShippingDate?.ToShortDateString()</p>
+                                          <p>@Order?.ShippedBy</p>
+                                        <p>@L[ShippingStatus.Shipped.ToString()]</p>
+                                    </div>
+                            }
+                             @if (Order?.CompletionTime != null && Order?.CompletedBy != null)
+                             {
+                                <div class="col-12 d-flex justify-content-between">
+                                    <p>@Order?.CompletionTime?.ToShortDateString()</p>
+                                     <p>@Order?.CompletedBy</p>
+                                    <p>@L[ShippingStatus.Completed.ToString()]</p>
+                                </div>
+                             }
+                            <div class="col-12 d-flex justify-content-between">
+                                <p>@Order?.ExchangeTime?.ToShortDateString()</p>
+                                <p>@Order?.ExchangeBy</p>
+                                <p>@L[ShippingStatus.Exchange.ToString()]</p>
+                            </div>
+                        }
                         @if (Order?.ShippingStatus == ShippingStatus.Closed)
                         {
                               <div class="col-12 d-flex justify-content-between">
@@ -578,7 +614,10 @@
                                     <SelectItem></SelectItem>
                                     @foreach (var enumValue in Enum.GetValues(typeof(ShippingStatus)))
                                     {
+                                        @if(enumValue.ToString()!="Exchange")
+                                        {
                                         <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                        }
                                     }
                                 </Select>
                                 </div>

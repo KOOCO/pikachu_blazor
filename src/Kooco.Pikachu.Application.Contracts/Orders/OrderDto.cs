@@ -52,6 +52,7 @@ namespace Kooco.Pikachu.Orders
         public OrderType? OrderType { get; set; }
         public string PrepareShipmentBy { get; set; }
         public string ShippedBy { get; set; }
+        public string ExchangeBy { get; set; }
         public string ClosedBy { get; set; }
         public string CompletedBy { get; set; }
         public string? VoidReason { get; set; }
@@ -64,6 +65,7 @@ namespace Kooco.Pikachu.Orders
         public string? CarrierId { get; set; }
         public DateTime? VoidDate { get; set; }
         public DateTime? CompletionTime { get; set; }
+        public DateTime? ExchangeTime { get; set; }
         public IssueInvoiceStatus? IssueStatus { get; set; }
         public string? StoreId { get; set; }
     }
