@@ -185,7 +185,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                 {
                     await Loading.Show();
                     await OnInitializedAsync();
-                    await LoadHtmlContent();
+                    //await LoadHtmlContent();
                     ExistingImages = await _imageAppService.GetGroupBuyImagesAsync(Id, ImageType.GroupBuyCarouselImage);
                     CarouselImages = _objectMapper.Map<List<ImageDto>, List<CreateImageDto>>(ExistingImages);
 
