@@ -206,12 +206,20 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         {
             try
             {
+                await loading.Show();
                 var selectedOrder = Orders.SingleOrDefault(x => x.IsSelected);
                 await _electronicInvoiceAppService.CreateInvoiceAsync(selectedOrder.Id);
+                await loading.Hide();
+                await _uiMessageService.Success("Invoice Issue Successfully");
+                await UpdateItemList();
+
+
             }
             catch (Exception ex)
             {
+                await loading.Hide();
                 await _uiMessageService.Error(ex.Message.ToString());
+                
 
             }
            
