@@ -55,7 +55,7 @@ namespace Kooco.Pikachu.Orders
         public OrderStatus OrderStatus { get; set; }
         public string PrepareShipmentBy { get; set; }
         public string ShippedBy { get; set; }
-        public string ExchangeBy { get; set; }
+        public string? ExchangeBy { get; set; }
         public string ClosedBy { get; set; }
         public string CompletedBy { get; set; }
         public DateTime? CompletionTime { get; set; }
