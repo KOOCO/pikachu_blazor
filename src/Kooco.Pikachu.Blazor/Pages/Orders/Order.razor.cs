@@ -210,7 +210,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 var selectedOrder = Orders.SingleOrDefault(x => x.IsSelected);
                 await _electronicInvoiceAppService.CreateInvoiceAsync(selectedOrder.Id);
                 await loading.Hide();
-                await _uiMessageService.Success("Invoice Issue Successfully");
+                await _uiMessageService.Success(L["InvoiceIssueSuccessfully"]);
                 await UpdateItemList();
 
 
