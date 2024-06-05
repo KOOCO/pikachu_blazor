@@ -611,6 +611,8 @@
                                 <Select TValue="ShippingStatus" Class="form-select form-select-sm"
                                 SelectedValue="@Order.ShippingStatus"
                                 SelectedValueChanged="@(e => ShippingStatusChanged(e))">
+                                @if(Order.ShippingStatus!=ShippingStatus.Exchange)
+                                {
                                     <SelectItem></SelectItem>
                                     @foreach (var enumValue in Enum.GetValues(typeof(ShippingStatus)))
                                     {
@@ -618,6 +620,7 @@
                                         {
                                         <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
                                         }
+                                    }
                                     }
                                 </Select>
                                 </div>
