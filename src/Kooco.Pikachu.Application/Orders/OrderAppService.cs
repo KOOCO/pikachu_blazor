@@ -957,6 +957,12 @@ namespace Kooco.Pikachu.Orders
                 }
                 order.ReturnStatus=OrderReturnStatus.Processing;
             }
+            if (orderReturnStatus == OrderReturnStatus.Succeeded && order.OrderStatus==OrderStatus.Exchange)
+            {
+                order.ExchangeBy = CurrentUser.UserName;
+                order.ExchangeTime = DateTime.Now;
+                order.ShippingStatus = ShippingStatus.Exchange;
+            }
             await _orderRepository.UpdateAsync(order);
         }
 
@@ -965,9 +971,7 @@ namespace Kooco.Pikachu.Orders
             var order = await _orderRepository.GetAsync(id);
             order.ReturnStatus = OrderReturnStatus.Pending;
             order.OrderStatus = OrderStatus.Exchange;
-            order.ExchangeBy = CurrentUser.UserName;
-            order.ExchangeTime = DateTime.Now;
-            order.ShippingStatus = ShippingStatus.Exchange;
+           
             await _orderRepository.UpdateAsync(order);
 
 
