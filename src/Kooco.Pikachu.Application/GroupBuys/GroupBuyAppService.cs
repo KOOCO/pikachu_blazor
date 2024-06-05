@@ -157,7 +157,7 @@ namespace Kooco.Pikachu.GroupBuys
             var check = (await _orderRepository.GetQueryableAsync()).Any(x => x.GroupBuyId == id);
                 if(check)
                 {
-                throw new UserFriendlyException("Groupbuy have order its not delete able");
+                throw new UserFriendlyException(_l["Groupbuyhaveorderitsnotdeleteable"]);
             
             }
             await _groupBuyRepository.DeleteAsync(id);
@@ -329,7 +329,7 @@ namespace Kooco.Pikachu.GroupBuys
                 var check = (await _orderRepository.GetQueryableAsync()).Any(x => x.GroupBuyId == id);
                 if (check)
                 {
-                    throw new UserFriendlyException("Groupbuy have order its not delete able");
+                    throw new UserFriendlyException(_l["Groupbuyhaveorderitsnotdeleteable"]);
 
                 }
                 var images = await _imageRepository.GetListAsync(x => x.TargetId == id);

@@ -544,7 +544,8 @@
     "InvoiceIssueStatus": "狀態",
     "Return": "退貨",
     "PleaseEnterThresholdAmount": "請輸入免運門檻",
-    "Exchange": "換貨"
+    "Exchange": "換貨",
+    "Groupbuyhaveorderitsnotdeleteable": "無法刪除已有訂單團購"
 
 
   }
