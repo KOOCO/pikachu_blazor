@@ -417,7 +417,7 @@
                                  @L["ApplyRefund"]
                             </Button>
                         }
-                        @if (Order?.OrderStatus != OrderStatus.Returned && Order?.OrderStatus != OrderStatus.Exchange)
+                        @if (Order?.OrderStatus != OrderStatus.Returned && Order?.OrderStatus != OrderStatus.Exchange && Order?.ShippingStatus!=ShippingStatus.WaitingForPayment&&Order?.ShippingStatus!=ShippingStatus.PrepareShipment)
                         {
                             <Button Type="ButtonType.Button" Clicked="ReturnOrder" Class="btn btn-sm btn-secondary me-1">@L["Return"]</Button>
                          <Button Type="ButtonType.Button" Clicked="ExchangeOrder" Class="btn btn-sm btn-secondary me-1">@L["ExchangeItem"]</Button>
