@@ -322,6 +322,8 @@
     "Fail": "Fail",
     "ReturnedApplication": "Returned Application",
     "Approver": "Approver",
+    "Approve": "Approve",
+    "ReturnStatus": "Return Status",
     "Refunder": "Refunder",
     "MerchantRemark": "Merchant Remark",
     "Enum:TenantStatus.0": "Open",
