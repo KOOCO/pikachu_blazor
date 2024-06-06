@@ -71,26 +71,26 @@
                                 SelectedValueChanged="@(e => ReturnStatusChanged(e, context))">
                                     
                                     @foreach (var enumValue in Enum.GetValues(typeof(OrderReturnStatus)))
-                                    { @if(enumValue.ToString()=="Approve"||enumValue.ToString()=="Pending"||enumValue.ToString()=="Reject")
+                                    { 
+                                        @if(enumValue.ToString()=="Approve"||enumValue.ToString()=="Pending"||enumValue.ToString()=="Reject")
                                         {
-                                        <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                            @if (enumValue.ToString() == "Succeeded")
+                                            {
+                                                var str = enumValue.ToString() + " in return";
+
+
+                                                <SelectItem Value="@enumValue">@L[str]</SelectItem>
+
+                                            }
+                                            else
+                                            {
+                                                <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                            }
                                         }
                                     }
                                 </Select>
                             }
-                            @*   else if (context.ReturnStatus == OrderReturnStatus.Processing && CanProcessRefund)
-                            {
-                                <Select  TValue="OrderReturnStatus" Class="form-select form-select-sm"
-                                SelectedValue="@context.ReturnStatus"
-                                SelectedValueChanged="@(e => ReturnStatusChanged(e, context))">
-                                    
-                                    @foreach (var enumValue in Enum.GetValues(typeof(OrderReturnStatus)))
-                                    { 
-                                        <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
-                                        
-                                    }
-                                </Select>
-                            } *@
+                         
                                 else if (context.ReturnStatus == OrderReturnStatus.Processing )
                             {
                                 <Select  TValue="OrderReturnStatus" Class="form-select form-select-sm"
@@ -98,9 +98,22 @@
                                 SelectedValueChanged="@(e => ReturnStatusChanged(e, context))">
                                     
                                     @foreach (var enumValue in Enum.GetValues(typeof(OrderReturnStatus)))
-                                    { @if(enumValue.ToString()=="Processing"||enumValue.ToString()=="Succeeded")
+                                    { 
+                                        @if(enumValue.ToString()=="Processing"||enumValue.ToString()=="Succeeded")
                                         {
-                                        <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                            @if (enumValue.ToString() == "Succeeded")
+                                            {
+                                                var str = enumValue.ToString() + " in return";
+                                               
+                                                
+                                                <SelectItem Value="@enumValue">@L[str]</SelectItem>
+
+                                            }
+                                            else
+                                            {
+                                                <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                            }
+                                       
                                         }
                                     }
                                 </Select>
@@ -112,8 +125,19 @@
                                 SelectedValueChanged="@(e => ReturnStatusChanged(e, context))">
                                     
                                     @foreach (var enumValue in Enum.GetValues(typeof(OrderReturnStatus)))
-                                    { 
-                                        <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                    {
+                                        @if (enumValue.ToString() == "Succeeded")
+                                        {
+                                            var str = enumValue.ToString() + " in return";
+
+
+                                            <SelectItem Value="@enumValue">@L[str]</SelectItem>
+
+                                        }
+                                        else
+                                        {
+                                            <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                        }
                                         
                                     }
                                 </Select>
@@ -125,8 +149,19 @@
                                 SelectedValueChanged="@(e => ReturnStatusChanged(e, context))">
                                     
                                     @foreach (var enumValue in Enum.GetValues(typeof(OrderReturnStatus)))
-                                    { 
-                                        <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                    {
+                                        @if (enumValue.ToString() == "Succeeded")
+                                        {
+                                            var str = enumValue.ToString() + " in return";
+
+
+                                            <SelectItem Value="@enumValue">@L[str]</SelectItem>
+
+                                        }
+                                        else
+                                        {
+                                            <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                        }
                                         
                                     }
                                 </Select>
@@ -137,8 +172,19 @@
                                 SelectedValueChanged="@(e => ReturnStatusChanged(e, context))">
                                     
                                     @foreach (var enumValue in Enum.GetValues(typeof(OrderReturnStatus)))
-                                    { 
-                                        <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                    {
+                                        @if (enumValue.ToString() == "Succeeded")
+                                        {
+                                            var str = enumValue.ToString() + " in return";
+
+
+                                            <SelectItem Value="@enumValue">@L[str]</SelectItem>
+
+                                        }
+                                        else
+                                        {
+                                            <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                        }
                                         
                                     }
                                 </Select>

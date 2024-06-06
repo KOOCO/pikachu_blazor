@@ -522,6 +522,9 @@
     "RefundWholeOrder": "Refund Whole Order",
     "SelectItemForRefund": "Select Item For Refund",
     "RefundAmount": "Refund Amount",
+    "Succeeded cash flow": "Succeeded",
+    "Succeeded void invoice": "Succeeded",
+    "Succeeded in return": "Succeeded"
 
 
 

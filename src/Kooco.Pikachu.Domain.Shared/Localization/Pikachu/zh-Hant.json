@@ -534,6 +534,9 @@
     "ReturnStatus": "退換貨狀態",
     "RefundWholeOrder": "整單退款",
     "SelectItemForRefund": "選擇退款品項",
-    "RefundAmount": "退款金額"
+    "RefundAmount": "退款金額",
+    "Succeeded cash flow": "發票已開立",
+    "Succeeded void invoice": "完成",
+    "Succeeded in return": "完成"
   }
 }
