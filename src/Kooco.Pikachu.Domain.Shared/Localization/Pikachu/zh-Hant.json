@@ -531,6 +531,9 @@
     "Zero Tax": "零税",
     "ZeroTax": "零税",
     "Approve": "通過",
-    "ReturnStatus": "退換貨狀態"
+    "ReturnStatus": "退換貨狀態",
+    "RefundWholeOrder": "整單退款",
+    "SelectItemForRefund": "選擇退款品項",
+    "RefundAmount": "退款金額"
   }
 }

@@ -518,7 +518,11 @@
     "Exchange": "Exchange",
     "Reject": "Reject",
     "Groupbuyhaveorderitsnotdeleteable": "Groupbuy have order its not deleteable",
-    "InvoiceIssueSuccessfully": "Invoice Issue Successfully"
+    "InvoiceIssueSuccessfully": "Invoice Issue Successfully",
+    "RefundWholeOrder": "Refund Whole Order",
+    "SelectItemForRefund": "Select Item For Refund",
+    "RefundAmount": "Refund Amount",
+
 
 
   }

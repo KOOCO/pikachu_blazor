@@ -1259,40 +1259,18 @@
                                         }
                                     </tr>
                                 }
+                              
+                               
                                 <tr>
                                     <td colspan="2" class="text-end">
-                                        @L["Subtotal"]
+                                        @L["RefundAmount"]
                                     </td>
                                     <td>
                                     </td>
                                     <td>
                                     </td>
                                     <td>
-                                        $@Order.OrderItems.Sum(x=>x.TotalAmount).ToString("N2")
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2" class="text-end">
-                                        @L["DeliveryFee"]
-                                    </td>
-                                    <td>
-                                    </td>
-                                    <td>
-                                    </td>
-                                    <td>
-                                       $@((Order.TotalAmount-Order.OrderItems.Sum(x=>x.TotalAmount)).ToString("N2"))
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2" class="text-end">
-                                        @L["Total"]
-                                    </td>
-                                    <td>
-                                    </td>
-                                    <td>
-                                    </td>
-                                    <td>
-                                        $@Order.TotalAmount.ToString("N2")
+                                        $@Order.OrderItems.Where(x=>x.IsSelected==true).Sum(x=>x.ItemPrice*x.Quantity).ToString("N2")
                                     </td>
                                 </tr>
                             }
