@@ -8,6 +8,7 @@
 @using Blazorise.LoadingIndicator;
 @using Volo.Abp.AspNetCore.Components.Messages;
 @inherits PikachuComponentBase;
+@inject NavigationManager NavigationManager;
 @inject IRefundAppService _refundAppService;
 @inject IStringLocalizer<PikachuResource> L;
 @inject IUiMessageService _uiMessageService;
@@ -36,6 +37,7 @@
                    TotalItems="TotalCount"
                    ShowPager="true"
                    PageSize="PageSize"
+                  RowDoubleClicked="NavigateToOrderDetails"
                    SortChanged="OnSortChange">
              <DataGridColumns>
                  <DataGridColumn TItem="RefundDto"

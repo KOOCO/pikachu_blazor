@@ -3,9 +3,11 @@ using Blazorise.DataGrid;
 using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Items.Dtos;
+using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.Refunds;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
@@ -38,6 +40,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Refunds
             await UpdateItemList();
             await InvokeAsync(StateHasChanged);
         }
+      
         private async Task UpdateItemList()
         {
             try
@@ -68,8 +71,16 @@ namespace Kooco.Pikachu.Blazor.Pages.Refunds
                 await loading.Hide();
             }
         }
-        
-             private async Task RefundApproved(RefundDto rowData)
+        public async void NavigateToOrderDetails(DataGridRowMouseEventArgs<RefundDto> e)
+        {
+            await loading.Show();
+
+            var id = e.Item.OrderId;
+            NavigationManager.NavigateTo($"Orders/OrderDetails/{id}");
+
+            await loading.Hide();
+        }
+        private async Task RefundApproved(RefundDto rowData)
         {
             try
             {

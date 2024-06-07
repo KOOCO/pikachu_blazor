@@ -5,6 +5,7 @@ using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.TestLables;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Html;
 using Microsoft.JSInterop;
@@ -41,9 +42,10 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         private OrderDeliveryDto SelectedOrder { get; set; }
         private Guid OrderDeliveryId { get; set; }
         string? CheckoutForm { get; set; } = null;
-
-        public OrderDetails()
+        private readonly ITestLableAppService _testLableAppService;
+        public OrderDetails(ITestLableAppService testLableAppService)
         {
+            _testLableAppService = testLableAppService;
             Order = new();
         }
         protected async override Task OnAfterRenderAsync(bool isFirstRender)
@@ -371,6 +373,18 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
             await GetOrderDetailsAsync();
             await InvokeAsync(StateHasChanged);
             await loading.Hide();
+
+        }
+        private async void TestLabel(OrderDeliveryDto deliveryOrder)
+        {
+            if (deliveryOrder.DeliveryMethod == DeliveryMethod.SevenToEleven1 || deliveryOrder.DeliveryMethod == DeliveryMethod.FamilyMart1)
+            {
+                await loading.Show();
+
+                var result = await _testLableAppService.TestLableAsync(deliveryOrder.DeliveryMethod == DeliveryMethod.SevenToEleven1 ? "UNIMART" : "FAMI");
+                await InvokeAsync(StateHasChanged);
+                await loading.Hide();
+            }
 
         }
         private async void CreateOrderLogistics(OrderDeliveryDto deliveryOrder)
