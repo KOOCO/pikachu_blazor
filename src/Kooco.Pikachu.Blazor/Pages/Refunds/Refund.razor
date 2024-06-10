@@ -14,7 +14,7 @@
 @inject IUiMessageService _uiMessageService;
 @inject IJSRuntime JSRunTime;
 
-<LoadingIndicator @ref="loading" FullScreen FadeIn></LoadingIndicator>
+<LoadingIndicator @ref="loading" FullScreen FadeIn>
 
  <div class="row">
      <div class="col-6">
@@ -38,6 +38,7 @@
                    ShowPager="true"
                    PageSize="PageSize"
                   RowDoubleClicked="NavigateToOrderDetails"
+                      Responsive="true"
                    SortChanged="OnSortChange">
              <DataGridColumns>
                  <DataGridColumn TItem="RefundDto"
@@ -142,3 +143,4 @@
         </DataGrid>
     </CardBody>
 </Card>
+</LoadingIndicator>

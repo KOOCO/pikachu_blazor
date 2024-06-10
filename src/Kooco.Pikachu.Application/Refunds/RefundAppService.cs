@@ -150,14 +150,18 @@ namespace Kooco.Pikachu.Refunds
                 RtnMsg = queryParams["RtnMsg"],
                 RtnCode = int.Parse(queryParams["RtnCode"])
             };
-            if (result.RtnCode == 1)
+            if (result != null)
             {
-                refund.RefundReview = RefundReviewStatus.Success;
+                if (result.RtnCode == 1)
+                {
+                    refund.RefundReview = RefundReviewStatus.Success;
 
-            }
-            else {
+                }
+                else
+                {
 
-                refund.RefundReview = RefundReviewStatus.Fail;
+                    refund.RefundReview = RefundReviewStatus.Fail;
+                }
             }
         }
         public string GenerateCheckMac(string HashKey, string HashIV, string merchantID, string merchantTradeNo, string tradeNo,string action,string totalamount)
