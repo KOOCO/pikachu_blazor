@@ -537,6 +537,7 @@
     "RefundAmount": "退款金額",
     "Succeeded cash flow": "發票已開立",
     "Succeeded void invoice": "完成",
-    "Succeeded in return": "完成"
+    "Succeeded in return": "完成",
+    "TimePeriod": "團購期間"
   }
 }

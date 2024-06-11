@@ -524,7 +524,9 @@
     "RefundAmount": "Refund Amount",
     "Succeeded cash flow": "Succeeded",
     "Succeeded void invoice": "Succeeded",
-    "Succeeded in return": "Succeeded"
+    "Succeeded in return": "Succeeded",
+    "TimePeriod": "Time Period"
+
 
 
 
