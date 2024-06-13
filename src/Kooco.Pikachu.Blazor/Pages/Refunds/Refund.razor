@@ -47,6 +47,12 @@
                         @context.Order.OrderNo
                     </DisplayTemplate>
                  </DataGridColumn>
+                    <DataGridColumn TItem="RefundDto"
+                                    Caption="@L["ParentOrderNo"]">
+                        <DisplayTemplate>
+                            @context.Order.MerchantTradeNo
+                        </DisplayTemplate>
+                    </DataGridColumn>
                  <DataGridColumn TItem="RefundDto"
                                  Caption="@L["SubmissionTime"]">
                      <DisplayTemplate>
@@ -65,10 +71,10 @@
                          @context.Order.CustomerName
                      </DisplayTemplate>
                  </DataGridColumn>
-                 <DataGridColumn TItem="RefundDto"
+                 <DataGridColumn Width="15%" TItem="RefundDto"
                                  Caption="@L["RefundReview"]">
                      <DisplayTemplate>
-                         <Div>
+                         <Div  >
                             @if (!(context.RefundReview == RefundReviewStatus.Proccessing && context.Order.PaymentMethod == PaymentMethods.CreditCard))
                              {
                          <Select Disabled TValue="RefundReviewStatus" Class="form-select form-select-sm mb-1" 
