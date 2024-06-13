@@ -234,22 +234,25 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
 
         private void LoadItemGroups()
         {
-            var itemGroups = GroupBuy.ItemGroups;
-            if (itemGroups.Any())
+            if (CollapseItem.Count == 0)
             {
-                var i = 0;
-                foreach (var itemGroup in itemGroups)
+                var itemGroups = GroupBuy.ItemGroups;
+                if (itemGroups.Any())
                 {
-                    var collapseItem = new CollapseItem
+                    var i = 0;
+                    foreach (var itemGroup in itemGroups)
                     {
-                        Id = itemGroup.Id,
-                        Index = i++,
-                        SortOrder = itemGroup.SortOrder,
-                        GroupBuyModuleType = itemGroup.GroupBuyModuleType,
-                        Selected = []
-                    };
+                        var collapseItem = new CollapseItem
+                        {
+                            Id = itemGroup.Id,
+                            Index = i++,
+                            SortOrder = itemGroup.SortOrder,
+                            GroupBuyModuleType = itemGroup.GroupBuyModuleType,
+                            Selected = []
+                        };
 
-                    CollapseItem.Add(collapseItem);
+                        CollapseItem.Add(collapseItem);
+                    }
                 }
             }
         }
