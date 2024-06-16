@@ -525,7 +525,9 @@
     "Succeeded cash flow": "Succeeded",
     "Succeeded void invoice": "Succeeded",
     "Succeeded in return": "Succeeded",
-    "TimePeriod": "Time Period"
+    "TimePeriod": "Time Period",
+    "Refunds": "Refunds",
+    "ParentOrderNo": "Parent Order No"
 
 
 
