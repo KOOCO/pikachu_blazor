@@ -540,6 +540,7 @@
     "Succeeded in return": "完成",
     "TimePeriod": "團購期間",
     "Refunds": "退款",
-    "ParentOrderNo": "原訂單號"
+    "ParentOrderNo": "原訂單號",
+    "Copy": "複製"
   }
 }

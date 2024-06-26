@@ -880,9 +880,12 @@
                                         @*   <Button Type="ButtonType.Button" Clicked="() => OpenShipmentModal(context)" Class="btn btn-sm btn-primary me-1">
                                     @L["ShipmentNotify"]
                                 </Button> *@
-                                     <Button Type="ButtonType.Button" Clicked="() => TestLabel(context)" Class="btn btn-sm btn-secondary me-1">
-                                                Test Label
-                                            </Button>
+                                    <Button Type="ButtonType.Button" 
+                                            Clicked="() => TestLabel(context)" 
+                                            Class="btn btn-sm btn-secondary me-1"
+                                            hidden>
+                                        Test Label
+                                    </Button>
                                         @if (context.DeliveryStatus == DeliveryStatus.Processing)
                                         {
                                             <Button Type="ButtonType.Button" Clicked="() => OrderItemShipped(context)" Class="btn btn-sm btn-secondary me-1">
