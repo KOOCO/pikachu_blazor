@@ -168,7 +168,7 @@ namespace Kooco.Pikachu.Orders
                         using (_dataFilter.Disable<IMultiTenant>())
                         {
                             //var orderItem = await _orderItemRepository.GetAsync(item.ItemId.Value);
-                            var details = await _itemDetailsRepository.FirstOrDefaultAsync(x => x.ItemId == item.ItemId);
+                            var details = await _itemDetailsRepository.FirstOrDefaultAsync(x => x.ItemId == item.ItemId && x.ItemName == item.Spec);
                             if (details != null)
                             {
                                 details.SaleableQuantity = details.SaleableQuantity - item.Quantity;
