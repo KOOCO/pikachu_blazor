@@ -365,27 +365,46 @@
             </div>
             <div class="col-8">
                 @if(EditGroupBuyDto.AllowShipToOuterTaiwan && !EditGroupBuyDto.AllowShipOversea)
-            {
-             @foreach(var item in Enum.GetNames(typeof(DeliveryMethod)))
-              {
-                        if (item == Enum.GetName(DeliveryMethod.SevenToElevenC2C) || item == Enum.GetName(DeliveryMethod.SevenToEleven1) || item == Enum.GetName(DeliveryMethod.BlackCat1) || item == Enum.GetName(DeliveryMethod.BlackCatFreeze) || item == Enum.GetName(DeliveryMethod.BlackCatFrozen))
-                  {
-               <label for="@item" class="form-label ">
-                                <input type="checkbox" class="form-check-input me-1" id="@item" checked="@((EditGroupBuyDto.ExcludeShippingMethod != null) && (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))" @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                {
+                    @foreach(string item in Enum.GetNames(typeof(DeliveryMethod)))
+                    {
+                        if (
+                            item == Enum.GetName(DeliveryMethod.SevenToElevenC2C) || 
+                            item == Enum.GetName(DeliveryMethod.SevenToEleven1) || 
+                            item == Enum.GetName(DeliveryMethod.BlackCat1) || 
+                            item == Enum.GetName(DeliveryMethod.BlackCatFreeze) || 
+                            item == Enum.GetName(DeliveryMethod.BlackCatFrozen))
+                        {
+                            <label for="@item" class="form-label ">
+                                <input type="checkbox" 
+                                       class="form-check-input me-1" 
+                                       id="@item" 
+                                       checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) && 
+                                                  (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))" 
+                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                 @L[item]
                             </label>
-              }
-              }
-            }
-            else{
-              @foreach(var item in Enum.GetNames(typeof(DeliveryMethod)))
-              {
-               <label for="@item" class="form-label">
-                                <input type="checkbox" class="form-check-input me-1" id="@item" disabled="@((EditGroupBuyDto.ExcludeShippingMethod != null) && (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")" checked="@((EditGroupBuyDto.ExcludeShippingMethod != null) && (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))" @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
-                                @L[item]
-                            </label>
-              }
-           }
+                        }
+                    }
+                }
+                else
+                {
+                   @foreach(string item in Enum.GetNames(typeof(DeliveryMethod)))
+                   {
+                       <label for="@item" class="form-label">
+                           <input type="checkbox" 
+                                  class="form-check-input me-1" 
+                                  id="@item" 
+                                  disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) && 
+                                              (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && 
+                                              item is not "DeliveredByStore")" 
+                                  checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) && 
+                                             (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))" 
+                                  @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                           @L[item]
+                       </label>
+                   }
+                }
             </div>
         </div>
       
