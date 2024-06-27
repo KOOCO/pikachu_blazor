@@ -22,870 +22,894 @@ using Volo.Abp.AspNetCore.Components.Messages;
 using Microsoft.JSInterop;
 using System.Runtime.CompilerServices;
 using Blazorise.LoadingIndicator;
+using Blazorise.Extensions;
+using Kooco.Pikachu.Localization;
 
 
-namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
+namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
+
+public partial class CreateGroupBuy
 {
-    public partial class CreateGroupBuy
+    #region Inject
+    private const int maxtextCount = 60;
+    private const int MaxAllowedFilesPerUpload = 5;
+    private const int TotalMaxAllowedFiles = 5;
+    private const int MaxAllowedFileSize = 1024 * 1024 * 10;
+    public List<string>SelfPickupTimeList = new List<string>();
+    public List<string>BlackCateDeliveryTimeList = new List<string>();
+    public List<string>BlackCatFreezeDeliveryTimeList = new List<string>();
+    public List<string>BlackCatFrozenDeliveryTimeList = new List<string>();
+    public List<string>HomeDeliveryTimeList = new List<string>();
+    public List<string>DeliverdByStoreTimeList = new List<string>();
+    private GroupBuyCreateDto CreateGroupBuyDto = new();
+    public List<CreateImageDto> CarouselImages { get; set; }
+    private string TagInputValue { get; set; }
+    private LoadingIndicator Loading { get; set; } = new();
+    private IReadOnlyList<string> ItemTags { get; set; } = new List<string>(); //used for store item tags 
+    private string? SelectedAutoCompleteText { get; set; }
+    private List<ItemWithItemTypeDto> ItemsList { get; set; } = [];
+    private List<ItemWithItemTypeDto> SetItemList { get; set; } = [];
+    private List<string> PaymentMethodTags { get; set; } = [];
+    private string PaymentTagInputValue { get; set; }
+    private List<CollapseItem> CollapseItem = [];
+    string logoBlobName;
+    string bannerBlobName;
+    protected Validations EditValidationsRef;
+    private BlazoredTextEditor NotifyEmailHtml { get; set; }
+    private BlazoredTextEditor GroupBuyHtml { get; set; }
+    private BlazoredTextEditor CustomerInformationHtml { get; set; }
+    private BlazoredTextEditor ExchangePolicyHtml { get; set; }
+    bool CreditCard { get; set; }
+    bool BankTransfer { get; set; }
+    public string _ProductPicture = "Product Picture";
+    private FilePicker LogoPickerCustom { get; set; }
+    private FilePicker BannerPickerCustom { get; set; }
+    private FilePicker CarouselPickerCustom { get; set; }
+    private List<string> ShippingMethods { get; set; } = Enum.GetNames(typeof(DeliveryMethod)).ToList();
+    private readonly IGroupBuyAppService _groupBuyAppService;
+    private readonly IImageAppService _imageAppService;
+    private readonly IItemAppService _itemAppService;
+    private readonly ISetItemAppService _setItemAppService;
+    private readonly IUiMessageService _uiMessageService;
+    private readonly ImageContainerManager _imageContainerManager;
+    private readonly List<string> ValidFileExtensions = [".jpg", ".png", ".svg", ".jpeg", ".webp"];
+    public readonly List<string> ValidPaymentMethods = ["ALL", "Credit", "WebATM", "ATM", "CVS", "BARCODE", "Alipay", "Tenpay", "TopUpUsed", "GooglePay"];
+    private string? PaymentMethodError { get; set; } = null;
+    int CurrentIndex { get; set; }
+
+    public bool IsUnableToSpecifyDuringPeakPeriodsForSelfPickups = false;
+
+    public bool IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery = false;
+
+    public bool IsUnableToSpecifyDuringPeakPeriodsForDeliveredByStore = false;
+    #endregion
+
+    #region Constructor
+    public CreateGroupBuy(
+        IGroupBuyAppService groupBuyAppService,
+        IImageAppService imageAppService,
+        IUiMessageService uiMessageService,
+        ImageContainerManager imageContainerManager,
+        IItemAppService itemAppService,
+        ISetItemAppService setItemAppService
+        )
     {
-        private const int maxtextCount = 60;
-        private const int MaxAllowedFilesPerUpload = 5;
-        private const int TotalMaxAllowedFiles = 5;
-        private const int MaxAllowedFileSize = 1024 * 1024 * 10;
-        public List<string>SelfPickupTimeList = new List<string>();
-        public List<string>BlackCateDeliveryTimeList = new List<string>();
-        public List<string>BlackCatFreezeDeliveryTimeList = new List<string>();
-        public List<string>BlackCatFrozenDeliveryTimeList = new List<string>();
-        public List<string>HomeDeliveryTimeList = new List<string>();
-        public List<string>DeliverdByStoreTimeList = new List<string>();
-        private GroupBuyCreateDto CreateGroupBuyDto = new();
-        public List<CreateImageDto> CarouselImages { get; set; }
-        private string TagInputValue { get; set; }
-        private LoadingIndicator Loading { get; set; } = new();
-        private IReadOnlyList<string> ItemTags { get; set; } = new List<string>(); //used for store item tags 
-        private string? SelectedAutoCompleteText { get; set; }
-        private List<ItemWithItemTypeDto> ItemsList { get; set; } = [];
-        private List<ItemWithItemTypeDto> SetItemList { get; set; } = [];
-        private List<string> PaymentMethodTags { get; set; } = [];
-        private string PaymentTagInputValue { get; set; }
-        private List<CollapseItem> CollapseItem = [];
-        string logoBlobName;
-        string bannerBlobName;
-        protected Validations EditValidationsRef;
-        private BlazoredTextEditor NotifyEmailHtml { get; set; }
-        private BlazoredTextEditor GroupBuyHtml { get; set; }
-        private BlazoredTextEditor CustomerInformationHtml { get; set; }
-        private BlazoredTextEditor ExchangePolicyHtml { get; set; }
-        bool CreditCard { get; set; }
-        bool BankTransfer { get; set; }
-        public string _ProductPicture = "Product Picture";
-        private FilePicker LogoPickerCustom { get; set; }
-        private FilePicker BannerPickerCustom { get; set; }
-        private FilePicker CarouselPickerCustom { get; set; }
-        private List<string> ShippingMethods { get; set; } = Enum.GetNames(typeof(DeliveryMethod)).ToList();
-        private readonly IGroupBuyAppService _groupBuyAppService;
-        private readonly IImageAppService _imageAppService;
-        private readonly IItemAppService _itemAppService;
-        private readonly ISetItemAppService _setItemAppService;
-        private readonly IUiMessageService _uiMessageService;
-        private readonly ImageContainerManager _imageContainerManager;
-        private readonly List<string> ValidFileExtensions = [".jpg", ".png", ".svg", ".jpeg", ".webp"];
-        public readonly List<string> ValidPaymentMethods = ["ALL", "Credit", "WebATM", "ATM", "CVS", "BARCODE", "Alipay", "Tenpay", "TopUpUsed", "GooglePay"];
-        private string? PaymentMethodError { get; set; } = null;
-        int CurrentIndex { get; set; }
-        public CreateGroupBuy(
-            IGroupBuyAppService groupBuyAppService,
-            IImageAppService imageAppService,
-            IUiMessageService uiMessageService,
-            ImageContainerManager imageContainerManager,
-            IItemAppService itemAppService,
-            ISetItemAppService setItemAppService
-            )
+        _groupBuyAppService = groupBuyAppService;
+        _imageAppService = imageAppService;
+        _uiMessageService = uiMessageService;
+        _imageContainerManager = imageContainerManager;
+
+        CarouselImages = new List<CreateImageDto>();
+        _itemAppService = itemAppService;
+        _setItemAppService = setItemAppService;
+
+    }
+    #endregion
+
+    #region Methods
+    protected override async Task OnInitializedAsync()
+    {
+        CreateGroupBuyDto.EntryURL = _configuration["EntryUrl"]?.TrimEnd('/');
+        SetItemList = await _setItemAppService.GetItemsLookupAsync();
+        ItemsList = await _itemAppService.GetItemsLookupAsync();
+        ItemsList.AddRange(SetItemList);
+    }
+
+    async Task OnLogoUploadAsync(FileChangedEventArgs e)
+    {
+        if (e.Files.Length > 1)
         {
-            _groupBuyAppService = groupBuyAppService;
-            _imageAppService = imageAppService;
-            _uiMessageService = uiMessageService;
-            _imageContainerManager = imageContainerManager;
-
-            CarouselImages = new List<CreateImageDto>();
-            _itemAppService = itemAppService;
-            _setItemAppService = setItemAppService;
-
+            await _uiMessageService.Error("Select Only 1 Logo Upload");
+            await LogoPickerCustom.Clear();
+            return;
         }
-        protected override async Task OnInitializedAsync()
+        if (e.Files.Length == 0)
         {
-            CreateGroupBuyDto.EntryURL = _configuration["EntryUrl"]?.TrimEnd('/');
-            SetItemList = await _setItemAppService.GetItemsLookupAsync();
-            ItemsList = await _itemAppService.GetItemsLookupAsync();
-            ItemsList.AddRange(SetItemList);
+            return;
         }
-
-        async Task OnLogoUploadAsync(FileChangedEventArgs e)
+        try
         {
-            if (e.Files.Length > 1)
+            if (!ValidFileExtensions.Contains(Path.GetExtension(e.Files[0].Name)))
             {
-                await _uiMessageService.Error("Select Only 1 Logo Upload");
+                await _uiMessageService.Error(L["InvalidFileType"]);
                 await LogoPickerCustom.Clear();
                 return;
             }
-            if (e.Files.Length == 0)
+            if (e.Files[0].Size > MaxAllowedFileSize)
             {
+                await LogoPickerCustom.RemoveFile(e.Files[0]);
+                await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
                 return;
             }
+            string newFileName = Path.ChangeExtension(
+                  Guid.NewGuid().ToString().Replace("-", ""),
+                  Path.GetExtension(e.Files[0].Name));
+            var stream = e.Files[0].OpenReadStream(long.MaxValue);
             try
             {
-                if (!ValidFileExtensions.Contains(Path.GetExtension(e.Files[0].Name)))
-                {
-                    await _uiMessageService.Error(L["InvalidFileType"]);
-                    await LogoPickerCustom.Clear();
-                    return;
-                }
-                if (e.Files[0].Size > MaxAllowedFileSize)
-                {
-                    await LogoPickerCustom.RemoveFile(e.Files[0]);
-                    await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
-                    return;
-                }
-                string newFileName = Path.ChangeExtension(
-                      Guid.NewGuid().ToString().Replace("-", ""),
-                      Path.GetExtension(e.Files[0].Name));
-                var stream = e.Files[0].OpenReadStream(long.MaxValue);
-                try
-                {
-                    var memoryStream = new MemoryStream();
+                var memoryStream = new MemoryStream();
 
-                    await stream.CopyToAsync(memoryStream);
-                    memoryStream.Position = 0;
-                    var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
-                    logoBlobName = newFileName;
+                await stream.CopyToAsync(memoryStream);
+                memoryStream.Position = 0;
+                var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
+                logoBlobName = newFileName;
 
-                    CreateGroupBuyDto.LogoURL = url;
+                CreateGroupBuyDto.LogoURL = url;
 
-                    await LogoPickerCustom.Clear();
-                }
-                finally
-                {
-                    stream.Close();
-                }
+                await LogoPickerCustom.Clear();
             }
-            catch (Exception exc)
+            finally
             {
-                Console.WriteLine(exc.Message);
-                await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
+                stream.Close();
             }
         }
-
-        async Task OnCarouselUploadAsync(FileChangedEventArgs e)
+        catch (Exception exc)
         {
-            if (CarouselImages.Count >= 5)
-            {
-                await CarouselPickerCustom.Clear();
-                return;
-            }
-            //if (e.Files.Length > MaxAllowedFilesPerUpload)
-            //{
-            //    await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesExceedMaxAllowedPerUpload]);
-            //    await CarouselPickerCustom.Clear();
-            //    return;
-            //}
-            //if (CarouselImages.Count > TotalMaxAllowedFiles)
-            //{
-            //    await _uiMessageService.Error(L[PikachuDomainErrorCodes.AlreadyUploadMaxAllowedFiles]);
-            //    await CarouselPickerCustom.Clear();
-            //    return;
-            //}
-            var count = 0;
-            try
-            {
-                foreach (var file in e.Files.Take(5))
-                {
-                    if (!ValidFileExtensions.Contains(Path.GetExtension(file.Name)))
-                    {
-                        await CarouselPickerCustom.RemoveFile(file);
-                        await _uiMessageService.Error(L["InvalidFileType"]);
-                        continue;
-                    }
-                    if (file.Size > MaxAllowedFileSize)
-                    {
-                        count++;
-                        await CarouselPickerCustom.RemoveFile(file);
-                        continue;
-                    }
-                    string newFileName = Path.ChangeExtension(
-                          Guid.NewGuid().ToString().Replace("-", ""),
-                          Path.GetExtension(file.Name));
-                    var stream = file.OpenReadStream(long.MaxValue);
-                    try
-                    {
-                        var memoryStream = new MemoryStream();
-
-                        await stream.CopyToAsync(memoryStream);
-                        memoryStream.Position = 0;
-                        var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
-
-                        int sortNo = CarouselImages.LastOrDefault()?.SortNo ?? 0;
-
-                        CarouselImages.Add(new CreateImageDto
-                        {
-                            Name = file.Name,
-                            BlobImageName = newFileName,
-                            ImageUrl = url,
-                            ImageType = ImageType.GroupBuyCarouselImage,
-                            SortNo = sortNo + 1
-                        });
-
-                        await CarouselPickerCustom.Clear();
-                    }
-                    finally
-                    {
-                        stream.Close();
-                    }
-                }
-                if (count > 0)
-                {
-                    await _uiMessageService.Error(count + ' ' + L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
-                }
-            }
-            catch (Exception exc)
-            {
-                Console.WriteLine(exc.Message);
-                await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
-            }
-        }
-
-        async Task OnBannerUploadAsync(FileChangedEventArgs e)
-        {
-            if (e.Files.Length > 1)
-            {
-                await _uiMessageService.Error("Select Only 1 Logo Upload");
-                await BannerPickerCustom.Clear();
-                return;
-            }
-            if (e.Files.Length == 0)
-            {
-                return;
-            }
-            try
-            {
-                if (!ValidFileExtensions.Contains(Path.GetExtension(e.Files[0].Name)))
-                {
-                    await _uiMessageService.Error(L["InvalidFileType"]);
-                    await BannerPickerCustom.Clear();
-                    return;
-                }
-                if (e.Files[0].Size > MaxAllowedFileSize)
-                {
-                    await BannerPickerCustom.RemoveFile(e.Files[0]);
-                    await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
-                    return;
-                }
-                string newFileName = Path.ChangeExtension(
-                      Guid.NewGuid().ToString().Replace("-", ""),
-                      Path.GetExtension(e.Files[0].Name));
-                var stream = e.Files[0].OpenReadStream(long.MaxValue);
-                try
-                {
-                    var memoryStream = new MemoryStream();
-
-                    await stream.CopyToAsync(memoryStream);
-                    memoryStream.Position = 0;
-                    var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
-                    bannerBlobName = newFileName;
-                    CreateGroupBuyDto.BannerURL = url;
-                    await BannerPickerCustom.Clear();
-                }
-                finally
-                {
-                    stream.Close();
-                }
-            }
-            catch (Exception exc)
-            {
-                Console.WriteLine(exc.Message);
-                await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
-            }
-        }
-
-        async Task DeleteLogoAsync(string blobImageName)
-        {
-            try
-            {
-                var confirmed = await _uiMessageService.Confirm(L[PikachuDomainErrorCodes.AreYouSureToDeleteImage]);
-                if (confirmed)
-                {
-                    await _imageContainerManager.DeleteAsync(blobImageName);
-                    CreateGroupBuyDto.LogoURL = null;
-                    StateHasChanged();
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWentWrongWhileDeletingImage]);
-            }
-        }
-        async Task DeleteBannerAsync(string blobImageName)
-        {
-            try
-            {
-                var confirmed = await _uiMessageService.Confirm(L[PikachuDomainErrorCodes.AreYouSureToDeleteImage]);
-                if (confirmed)
-                {
-                    confirmed = await _imageContainerManager.DeleteAsync(blobImageName);
-                    CreateGroupBuyDto.BannerURL = null;
-                    StateHasChanged();
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWentWrongWhileDeletingImage]);
-            }
-        }
-        async Task DeleteImageAsync(string blobImageName)
-        {
-            try
-            {
-                var confirmed = await _uiMessageService.Confirm(L[PikachuDomainErrorCodes.AreYouSureToDeleteImage]);
-                if (confirmed)
-                {
-                    await _imageContainerManager.DeleteAsync(blobImageName);
-                    CarouselImages = CarouselImages.Where(x => x.BlobImageName != blobImageName).ToList();
-                    StateHasChanged();
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWentWrongWhileDeletingImage]);
-            }
-        }
-
-        void AddProductItem(GroupBuyModuleType groupBuyModuleType)
-        {
-            if (CollapseItem.Count >= 20)
-            {
-                _uiMessageService.Error(L[PikachuDomainErrorCodes.CanNotAddMoreThan20Modules]);
-                return;
-            }
-
-            CollapseItem collapseItem;
-            if (groupBuyModuleType == GroupBuyModuleType.ProductDescriptionModule
-                || groupBuyModuleType == GroupBuyModuleType.IndexAnchor)
-            {
-                collapseItem = new()
-                {
-                    Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
-                    SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
-                    GroupBuyModuleType = groupBuyModuleType,
-                    Selected =
-                    [
-                        new ItemWithItemTypeDto()
-                    ]
-                };
-            }
-            else
-            {
-                collapseItem = new()
-                {
-                    Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
-                    SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
-                    GroupBuyModuleType = groupBuyModuleType,
-                    Selected =
-                    [
-                        new ItemWithItemTypeDto(),
-                        new ItemWithItemTypeDto(),
-                        new ItemWithItemTypeDto()
-                    ]
-                };
-            }
-            CollapseItem.Add(collapseItem);
-        }
-        void SelfPickupDeliveryTimeCheckedChange(string method, ChangeEventArgs e)
-        {
-            var value = (bool)(e?.Value ?? false);
-            if (value)
-            {
-                SelfPickupTimeList.Add(method);
-            }
-            else
-            {
-                SelfPickupTimeList.Remove(method);
-            }
-
-            CreateGroupBuyDto.SelfPickupDeliveryTime = JsonConvert.SerializeObject(SelfPickupTimeList);
-       
-        }
-        void BlackCatDeliveryTimeCheckedChange(string method, ChangeEventArgs e)
-        {
-            var value = (bool)(e?.Value ?? false);
-            if (value)
-            {
-                BlackCateDeliveryTimeList.Add(method);
-            }
-            else
-            {
-                BlackCateDeliveryTimeList.Remove(method);
-            }
-
-            CreateGroupBuyDto.BlackCatDeliveryTime = JsonConvert.SerializeObject(BlackCateDeliveryTimeList);
-
-        }
-        void DeliverdByStoreDeliveryTimeCheckedChange(string method, ChangeEventArgs e)
-        {
-            var value = (bool)(e?.Value ?? false);
-            if (value)
-            {
-                DeliverdByStoreTimeList.Add(method);
-            }
-            else
-            {
-                DeliverdByStoreTimeList.Remove(method);
-            }
-
-            CreateGroupBuyDto.DeliveredByStoreDeliveryTime = JsonConvert.SerializeObject(DeliverdByStoreTimeList);
-
-        }
-
-        void HomeDeliveryTimeCheckedChange(string method, ChangeEventArgs e)
-        {
-            var value = (bool)(e?.Value ?? false);
-            if (value)
-            {
-                HomeDeliveryTimeList.Add(method);
-            }
-            else
-            {
-                HomeDeliveryTimeList.Remove(method);
-            }
-
-            CreateGroupBuyDto.HomeDeliveryDeliveryTime = JsonConvert.SerializeObject(HomeDeliveryTimeList);
-
-        }
-        void OnShippingMethodCheckedChange(string method, ChangeEventArgs e)
-        {
-            var value = (bool)(e?.Value ?? false);
-
-            if (value)
-            {
-                // If the selected method is SevenToEleven or FamilyMart, uncheck the corresponding C2C method
-                if (method == "SevenToEleven1" && CreateGroupBuyDto.ShippingMethodList.Contains("SevenToElevenC2C"))
-                {
-                    CreateGroupBuyDto.ShippingMethodList.Remove("SevenToElevenC2C");
-                    JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "SevenToElevenC2C");
-                }
-                else if (method == "FamilyMart1" && CreateGroupBuyDto.ShippingMethodList.Contains("FamilyMartC2C"))
-                {
-                    CreateGroupBuyDto.ShippingMethodList.Remove("FamilyMartC2C");
-                    JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "FamilyMartC2C");
-                }
-          
-               
-               else if (method == "SevenToElevenC2C" && CreateGroupBuyDto.ShippingMethodList.Contains("SevenToEleven1"))
-                {
-                    CreateGroupBuyDto.ShippingMethodList.Remove("SevenToEleven1");
-                    JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "SevenToEleven1");
-                }
-                else if (method == "FamilyMartC2C" && CreateGroupBuyDto.ShippingMethodList.Contains("FamilyMart1"))
-                {
-                    CreateGroupBuyDto.ShippingMethodList.Remove("FamilyMart1");
-                    JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "FamilyMart1");
-                }
-                else if (method == "BlackCat1" && CreateGroupBuyDto.ShippingMethodList.Contains("BlackCatFreeze"))
-                    {
-                    CreateGroupBuyDto.ShippingMethodList.Remove("BlackCatFreeze");
-                    JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "BlackCatFreeze");
-                }
-                else if (method == "BlackCat1" && CreateGroupBuyDto.ShippingMethodList.Contains("BlackCatFrozen"))
-                {
-                    CreateGroupBuyDto.ShippingMethodList.Remove("BlackCatFrozen");
-                    JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "BlackCatFrozen");
-                }
-                else if (method == "BlackCatfreeze" && CreateGroupBuyDto.ShippingMethodList.Contains("BlackCat1"))
-                {
-                    CreateGroupBuyDto.ShippingMethodList.Remove("BlackCat1");
-                    JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "BlackCat1");
-                }
-                else if (method == "BlackCatFreeze" && CreateGroupBuyDto.ShippingMethodList.Contains("BlackCatFrozen"))
-                {
-                    CreateGroupBuyDto.ShippingMethodList.Remove("BlackCatFrozen");
-                    JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "BlackCatFrozen");
-                }
-                else if (method == "BlackCatFrozen" && CreateGroupBuyDto.ShippingMethodList.Contains("BlackCat1"))
-                {
-                    CreateGroupBuyDto.ShippingMethodList.Remove("BlackCat1");
-                    JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "BlackCat1");
-                }
-                else if (method == "BlackCatFrozen" && CreateGroupBuyDto.ShippingMethodList.Contains("BlackCatFreeze"))
-                {
-                    CreateGroupBuyDto.ShippingMethodList.Remove("BlackCatFreeze");
-                    JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "BlackCatFreeze");
-                }
-            }
-
-            // Update the selected method in the CreateGroupBuyDto.ShippingMethodList
-            if (value)
-            {
-                if (method == "DeliveredByStore")
-                {
-                    foreach (var item in CreateGroupBuyDto.ShippingMethodList)
-                    {
-                        JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", item);
-
-                    }
-                    CreateGroupBuyDto.ShippingMethodList = new List<string>();
-                }
-                else {
-                    CreateGroupBuyDto.ShippingMethodList.Remove("DeliveredByStore");
-
-                }
-                CreateGroupBuyDto.ShippingMethodList.Add(method);
-            }
-            else
-            {
-                CreateGroupBuyDto.ShippingMethodList.Remove(method);
-            }
-
-            // Serialize the updated list and assign it to ExcludeShippingMethod
-            CreateGroupBuyDto.ExcludeShippingMethod = JsonConvert.SerializeObject(CreateGroupBuyDto.ShippingMethodList);
-        }
-        private static void OnProductGroupValueChange(ChangeEventArgs e, CollapseItem collapseItem)
-        {
-            int takeCount = int.Parse(e?.Value.ToString());
-            if (collapseItem.Selected.Count > takeCount)
-            {
-                collapseItem.Selected = collapseItem.Selected.Take(takeCount).ToList();
-            }
-            else
-            {
-                collapseItem.Selected.Add(new ItemWithItemTypeDto());
-            }
-        }
-
-        //private void HandleItemTagInputChange(ChangeEventArgs e)
-        //{
-        //    var selectedOptions = (IEnumerable<string>)e.Value;
-        //    ItemTags=new List<string>();
-        //    foreach (var item in selectedOptions.ToList())
-        //    {
-
-        //        if (!ItemTags.Any(x => x == item))
-        //        {
-
-        //            ItemTags.Add(item);
-                    
-        //        }
-            
-        //    }
-          
-           
-        //}
-
-        //private void HandleItemTagDelete(string item)
-        //{
-        //    ItemTags.Remove(item);
-        //}
-        private void HandlePaymentTagInputKeyUp(KeyboardEventArgs e)
-        {
-            PaymentMethodError = null;
-            if (e.Key == "Enter")
-            {
-                if (!PaymentTagInputValue.IsNullOrWhiteSpace() && !PaymentMethodTags.Any(x => x == PaymentTagInputValue))
-                {
-                    var matchedPaymentMethod = ValidPaymentMethods.FirstOrDefault(pm => string.Equals(pm, PaymentTagInputValue, StringComparison.OrdinalIgnoreCase));
-                    if (matchedPaymentMethod != null)
-                    {
-                        PaymentMethodTags.Add(matchedPaymentMethod);
-                    }
-                    else
-                    {
-                        PaymentMethodError = $"{PaymentTagInputValue} is not a valid Payment Method";
-                    }
-                }
-                PaymentTagInputValue = string.Empty;
-            }
-        }
-
-        private void HandlePaymentTagDelete(string item)
-        {
-            PaymentMethodTags.Remove(item);
-        }
-
-        protected virtual async Task CreateEntityAsync()
-        {
-            try
-            {
-                await Loading.Show();
-                if (CreateGroupBuyDto.GroupBuyName.IsNullOrWhiteSpace())
-                {
-                    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyNameCannotBeNull]);
-                    await Loading.Hide();
-                    return;
-                }
-                //if (CreateGroupBuyDto.ShortCode.IsNullOrWhiteSpace())
-                //{
-                //    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyShortCodeCannotBeNull]);
-                //    return;
-                //}
-
-                string shortCode = CreateGroupBuyDto.ShortCode;
-                if (!string.IsNullOrEmpty(shortCode))
-                {
-                    string pattern = @"^[A-Za-z0-9]{4,12}$";
-
-                    bool isPatternValid = Regex.IsMatch(shortCode, pattern);
-
-                    if (!isPatternValid)
-                    {
-                        await _uiMessageService.Warn(L["ShortCodePatternDoesnotMatch"]);
-                        await Loading.Hide();
-                        return;
-                    }
-                    var check = await _groupBuyAppService.CheckShortCodeForCreate(CreateGroupBuyDto.ShortCode);
-
-                    if (check)
-                    {
-                        await _uiMessageService.Warn(L["Short Code Alredy Exist"]);
-                        await Loading.Hide();
-                        return;
-                    }
-                }
-                else {
-
-                    CreateGroupBuyDto.ShortCode = "";
-                }
-                CreateGroupBuyDto.GroupBuyNo = 0;
-                CreateGroupBuyDto.Status = "New";
-                if (ItemTags.Any())
-                {
-                    CreateGroupBuyDto.ExcludeShippingMethod = string.Join(",", ItemTags);
-                }
-                //if (PaymentMethodTags.Any())
-                //{
-                //    CreateGroupBuyDto.PaymentMethod = string.Join(",", PaymentMethodTags);
-                //}
-                if (CreditCard && BankTransfer)
-                {
-
-                    CreateGroupBuyDto.PaymentMethod = "Credit Card , Bank Transfer";
-
-
-                }
-                else if (CreditCard)
-                {
-
-                    CreateGroupBuyDto.PaymentMethod = "Credit Card";
-
-
-                }
-                else if (BankTransfer)
-                {
-
-                    CreateGroupBuyDto.PaymentMethod = "Bank Transfer";
-
-
-                }
-                else {
-
-                    CreateGroupBuyDto.PaymentMethod = "";
-                }
-                if (CreateGroupBuyDto.PaymentMethod.IsNullOrEmpty())
-                {
-                    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOnePaymentMethodIsRequired]);
-                    await Loading.Hide();
-                    return;
-                }
-                if (CreateGroupBuyDto.ExcludeShippingMethod.IsNullOrEmpty())
-                {
-                    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneShippingMethodIsRequired]);
-                    await Loading.Hide();
-                    return;
-                }
-                if (CreateGroupBuyDto.IsEnterprise && (!CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
-                {
-                    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.DeliverdByStoreMethodIsRequired]);
-                    await Loading.Hide();
-                    return;
-                }
-                if (CreateGroupBuyDto.FreeShipping && CreateGroupBuyDto.FreeShippingThreshold == null)
-                {
-                    await _uiMessageService.Warn(L["PleaseEnterThresholdAmount"]);
-                    await Loading.Hide();
-                    return;
-                }
-                if ((!CreateGroupBuyDto.ExcludeShippingMethod.IsNullOrEmpty()) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1")
-                    || CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFreeze") || CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFrozen")
-                    || CreateGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup") || CreateGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery")
-                    || CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
-                {
-                    if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1") && (CreateGroupBuyDto.BlackCatDeliveryTime.IsNullOrEmpty()|| CreateGroupBuyDto.BlackCatDeliveryTime == "[]"))
-                    {
-                        await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForBlackCat]);
-                        await Loading.Hide();
-                        return;
-                    }
-                    if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFreeze") && (CreateGroupBuyDto.BlackCatDeliveryTime.IsNullOrEmpty() || CreateGroupBuyDto.BlackCatDeliveryTime == "[]"))
-                    {
-                        await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForBlackCatFreeze]);
-                        await Loading.Hide();
-                        return;
-                    }
-                    if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFrozen") && (CreateGroupBuyDto.BlackCatDeliveryTime.IsNullOrEmpty() || CreateGroupBuyDto.BlackCatDeliveryTime == "[]"))
-                    {
-                        await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForBlackCatFrozen]);
-                        await Loading.Hide();
-                        return;
-                    }
-                    else if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup") && CreateGroupBuyDto.SelfPickupDeliveryTime.IsNullOrEmpty() || (CreateGroupBuyDto.SelfPickupDeliveryTime == "[]"))
-                    {
-                        await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForSelfPickup]);
-                        await Loading.Hide();
-                        return;
-                    }
-                    else if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery") && (CreateGroupBuyDto.HomeDeliveryDeliveryTime.IsNullOrEmpty()|| CreateGroupBuyDto.HomeDeliveryDeliveryTime=="[]"))
-                    {
-                        await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForHomeDelivery]);
-                        await Loading.Hide();
-                        return;
-                    }
-                }
-                else if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore") && (CreateGroupBuyDto.HomeDeliveryDeliveryTime.IsNullOrEmpty() || CreateGroupBuyDto.HomeDeliveryDeliveryTime == "[]"))
-                {
-                    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForDeliverdByStore]);
-                    await Loading.Hide();
-                    return;
-                }
-                CreateGroupBuyDto.NotifyMessage = await NotifyEmailHtml.GetHTML();
-                CreateGroupBuyDto.GroupBuyConditionDescription = await GroupBuyHtml.GetHTML();
-                CreateGroupBuyDto.ExchangePolicyDescription = await ExchangePolicyHtml.GetHTML();
-                CreateGroupBuyDto.CustomerInformationDescription = await CustomerInformationHtml.GetHTML();
-
-                CreateGroupBuyDto.ItemGroups = new List<GroupBuyItemGroupCreateUpdateDto>();
-
-                foreach (var item in CollapseItem)
-                {
-                    if (item.Selected.Any(s => s.Id == Guid.Empty && item.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor && s.Name.IsNullOrEmpty()))
-                    {
-                        await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyModuleCannotBeEmpty]);
-                        return;
-                    }
-
-                    int j = 1;
-                    if (item.Selected.Any())
-                    {
-                        var itemGroup = new GroupBuyItemGroupCreateUpdateDto
-                        {
-                            SortOrder = item.SortOrder,
-                            GroupBuyModuleType = item.GroupBuyModuleType
-                        };
-
-                        foreach (var itemDetail in item.Selected)
-                        {
-                            if (itemDetail.Id != Guid.Empty || (item.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor && !itemDetail.Name.IsNullOrEmpty()))
-                            {
-                                itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
-                                {
-                                    SortOrder = j++,
-                                    ItemId = itemDetail.ItemType == ItemType.Item && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
-                                    SetItemId = itemDetail.ItemType == ItemType.SetItem && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
-                                    ItemType = itemDetail.ItemType,
-                                    DisplayText = itemGroup.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor ? itemDetail.Name : null
-                                });
-                            }
-                        }
-
-                        CreateGroupBuyDto.ItemGroups.Add(itemGroup);
-                    }
-                }
-
-                var result = await _groupBuyAppService.CreateAsync(CreateGroupBuyDto);
-                foreach (var item in CarouselImages)
-                {
-                    item.TargetId = result.Id;
-                    await _imageAppService.CreateAsync(item);
-                }
-                await Loading.Hide();
-                NavigationManager.NavigateTo("GroupBuyManagement/GroupBuyList");
-            }
-            catch (BusinessException ex)
-            {
-                await Loading.Hide();
-                await _uiMessageService.Error(L[ex.Code]);
-            }
-            catch (Exception ex)
-            {
-                await Loading.Hide();
-                await _uiMessageService.Error(ex.Message.GetType()?.ToString());
-            }
-        }
-        private async Task OnSelectedValueChanged(Guid? id, CollapseItem collapseItem, ItemWithItemTypeDto? selectedItem = null)
-        {
-            try
-            {
-                var item = ItemsList.FirstOrDefault(x => x.Id == id);
-                var index = collapseItem.Selected.IndexOf(selectedItem);
-                if (item != null)
-                {
-                    if (item.ItemType == ItemType.Item)
-                    {
-                        selectedItem.Item = await _itemAppService.GetAsync(item.Id, true);
-                        selectedItem.Id = selectedItem.Item.Id;
-                        selectedItem.Name = selectedItem.Item.ItemName;
-                        selectedItem.ItemType = ItemType.Item;
-                    }
-                    if (item.ItemType == ItemType.SetItem)
-                    {
-                        selectedItem.SetItem = await _setItemAppService.GetAsync(item.Id, true);
-                        selectedItem.Id = selectedItem.SetItem.Id;
-                        selectedItem.Name = selectedItem.SetItem.SetItemName;
-                        selectedItem.ItemType = ItemType.SetItem;
-                    }
-                    collapseItem.Selected[index] = selectedItem;
-                }
-                else
-                {
-                    if (collapseItem.GroupBuyModuleType != GroupBuyModuleType.IndexAnchor || collapseItem.Selected[index].Id != Guid.Empty)
-                    {
-                        collapseItem.Selected[index] = new();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                await _uiMessageService.Error(ex.GetType().ToString());
-            }
-        }
-
-        private void RemoveCollapseItem(int index)
-        {
-            var item = CollapseItem.Where(i => i.Index == index).FirstOrDefault();
-            CollapseItem.Remove(item);
-        }
-
-        private void BackToGroupBuyList()
-        {
-            NavigationManager.NavigateTo("GroupBuyManagement/GroupBuyList");
-        }
-
-        void StartDrag(CollapseItem item)
-        {
-            CurrentIndex = CollapseItem.IndexOf(item);
-        }
-
-        void Drop(CollapseItem item)
-        {
-            if (item != null)
-            {
-                var index = CollapseItem.IndexOf(item);
-
-                var current = CollapseItem[CurrentIndex];
-
-                CollapseItem.RemoveAt(CurrentIndex);
-                CollapseItem.Insert(index, current);
-
-                CurrentIndex = index;
-
-                for (int i = 0; i < CollapseItem.Count; i++)
-                {
-                    CollapseItem[i].Index = i;
-                    CollapseItem[i].SortOrder = i + 1;
-                }
-                StateHasChanged();
-            }
+            Console.WriteLine(exc.Message);
+            await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
         }
     }
 
-    public class CollapseItem
+    async Task OnCarouselUploadAsync(FileChangedEventArgs e)
     {
-        public Guid? Id { get; set; }
-        public int Index { get; set; }
-        public GroupBuyModuleType GroupBuyModuleType { get; set; }
-        public int SortOrder { get; set; }
-        public List<ItemWithItemTypeDto> Selected { get; set; }
-        public bool IsModified = false;
-        public CollapseItem()
+        if (CarouselImages.Count >= 5)
         {
-            Selected = [];
+            await CarouselPickerCustom.Clear();
+            return;
         }
+        //if (e.Files.Length > MaxAllowedFilesPerUpload)
+        //{
+        //    await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesExceedMaxAllowedPerUpload]);
+        //    await CarouselPickerCustom.Clear();
+        //    return;
+        //}
+        //if (CarouselImages.Count > TotalMaxAllowedFiles)
+        //{
+        //    await _uiMessageService.Error(L[PikachuDomainErrorCodes.AlreadyUploadMaxAllowedFiles]);
+        //    await CarouselPickerCustom.Clear();
+        //    return;
+        //}
+        var count = 0;
+        try
+        {
+            foreach (var file in e.Files.Take(5))
+            {
+                if (!ValidFileExtensions.Contains(Path.GetExtension(file.Name)))
+                {
+                    await CarouselPickerCustom.RemoveFile(file);
+                    await _uiMessageService.Error(L["InvalidFileType"]);
+                    continue;
+                }
+                if (file.Size > MaxAllowedFileSize)
+                {
+                    count++;
+                    await CarouselPickerCustom.RemoveFile(file);
+                    continue;
+                }
+                string newFileName = Path.ChangeExtension(
+                      Guid.NewGuid().ToString().Replace("-", ""),
+                      Path.GetExtension(file.Name));
+                var stream = file.OpenReadStream(long.MaxValue);
+                try
+                {
+                    var memoryStream = new MemoryStream();
+
+                    await stream.CopyToAsync(memoryStream);
+                    memoryStream.Position = 0;
+                    var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
+
+                    int sortNo = CarouselImages.LastOrDefault()?.SortNo ?? 0;
+
+                    CarouselImages.Add(new CreateImageDto
+                    {
+                        Name = file.Name,
+                        BlobImageName = newFileName,
+                        ImageUrl = url,
+                        ImageType = ImageType.GroupBuyCarouselImage,
+                        SortNo = sortNo + 1
+                    });
+
+                    await CarouselPickerCustom.Clear();
+                }
+                finally
+                {
+                    stream.Close();
+                }
+            }
+            if (count > 0)
+            {
+                await _uiMessageService.Error(count + ' ' + L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
+            }
+        }
+        catch (Exception exc)
+        {
+            Console.WriteLine(exc.Message);
+            await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
+        }
+    }
+
+    async Task OnBannerUploadAsync(FileChangedEventArgs e)
+    {
+        if (e.Files.Length > 1)
+        {
+            await _uiMessageService.Error("Select Only 1 Logo Upload");
+            await BannerPickerCustom.Clear();
+            return;
+        }
+        if (e.Files.Length == 0)
+        {
+            return;
+        }
+        try
+        {
+            if (!ValidFileExtensions.Contains(Path.GetExtension(e.Files[0].Name)))
+            {
+                await _uiMessageService.Error(L["InvalidFileType"]);
+                await BannerPickerCustom.Clear();
+                return;
+            }
+            if (e.Files[0].Size > MaxAllowedFileSize)
+            {
+                await BannerPickerCustom.RemoveFile(e.Files[0]);
+                await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
+                return;
+            }
+            string newFileName = Path.ChangeExtension(
+                  Guid.NewGuid().ToString().Replace("-", ""),
+                  Path.GetExtension(e.Files[0].Name));
+            var stream = e.Files[0].OpenReadStream(long.MaxValue);
+            try
+            {
+                var memoryStream = new MemoryStream();
+
+                await stream.CopyToAsync(memoryStream);
+                memoryStream.Position = 0;
+                var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
+                bannerBlobName = newFileName;
+                CreateGroupBuyDto.BannerURL = url;
+                await BannerPickerCustom.Clear();
+            }
+            finally
+            {
+                stream.Close();
+            }
+        }
+        catch (Exception exc)
+        {
+            Console.WriteLine(exc.Message);
+            await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
+        }
+    }
+
+    async Task DeleteLogoAsync(string blobImageName)
+    {
+        try
+        {
+            var confirmed = await _uiMessageService.Confirm(L[PikachuDomainErrorCodes.AreYouSureToDeleteImage]);
+            if (confirmed)
+            {
+                await _imageContainerManager.DeleteAsync(blobImageName);
+                CreateGroupBuyDto.LogoURL = null;
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWentWrongWhileDeletingImage]);
+        }
+    }
+    async Task DeleteBannerAsync(string blobImageName)
+    {
+        try
+        {
+            var confirmed = await _uiMessageService.Confirm(L[PikachuDomainErrorCodes.AreYouSureToDeleteImage]);
+            if (confirmed)
+            {
+                confirmed = await _imageContainerManager.DeleteAsync(blobImageName);
+                CreateGroupBuyDto.BannerURL = null;
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWentWrongWhileDeletingImage]);
+        }
+    }
+    async Task DeleteImageAsync(string blobImageName)
+    {
+        try
+        {
+            var confirmed = await _uiMessageService.Confirm(L[PikachuDomainErrorCodes.AreYouSureToDeleteImage]);
+            if (confirmed)
+            {
+                await _imageContainerManager.DeleteAsync(blobImageName);
+                CarouselImages = CarouselImages.Where(x => x.BlobImageName != blobImageName).ToList();
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWentWrongWhileDeletingImage]);
+        }
+    }
+
+    void AddProductItem(GroupBuyModuleType groupBuyModuleType)
+    {
+        if (CollapseItem.Count >= 20)
+        {
+            _uiMessageService.Error(L[PikachuDomainErrorCodes.CanNotAddMoreThan20Modules]);
+            return;
+        }
+
+        CollapseItem collapseItem;
+        if (groupBuyModuleType == GroupBuyModuleType.ProductDescriptionModule
+            || groupBuyModuleType == GroupBuyModuleType.IndexAnchor)
+        {
+            collapseItem = new()
+            {
+                Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
+                GroupBuyModuleType = groupBuyModuleType,
+                Selected =
+                [
+                    new ItemWithItemTypeDto()
+                ]
+            };
+        }
+        else
+        {
+            collapseItem = new()
+            {
+                Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
+                GroupBuyModuleType = groupBuyModuleType,
+                Selected =
+                [
+                    new ItemWithItemTypeDto(),
+                    new ItemWithItemTypeDto(),
+                    new ItemWithItemTypeDto()
+                ]
+            };
+        }
+        CollapseItem.Add(collapseItem);
+    }
+    void SelfPickupDeliveryTimeCheckedChange(string method, ChangeEventArgs e)
+    {
+        if (method is PikachuResource.UnableToSpecifyDuringPeakPeriods)
+        {
+            if (IsUnableToSpecifyDuringPeakPeriodsForSelfPickups) IsUnableToSpecifyDuringPeakPeriodsForSelfPickups = false;
+
+            else IsUnableToSpecifyDuringPeakPeriodsForSelfPickups = true;
+        }
+
+        bool value = (bool)(e?.Value ?? false);
+
+        if (value) SelfPickupTimeList.Add(method);
+        
+        else SelfPickupTimeList.Remove(method);
+
+        CreateGroupBuyDto.SelfPickupDeliveryTime = JsonConvert.SerializeObject(SelfPickupTimeList);
+   
+    }
+    void BlackCatDeliveryTimeCheckedChange(string method, ChangeEventArgs e)
+    {
+        var value = (bool)(e?.Value ?? false);
+        if (value)
+        {
+            BlackCateDeliveryTimeList.Add(method);
+        }
+        else
+        {
+            BlackCateDeliveryTimeList.Remove(method);
+        }
+
+        CreateGroupBuyDto.BlackCatDeliveryTime = JsonConvert.SerializeObject(BlackCateDeliveryTimeList);
+
+    }
+    void DeliverdByStoreDeliveryTimeCheckedChange(string method, ChangeEventArgs e)
+    {
+        if (method is PikachuResource.UnableToSpecifyDuringPeakPeriods)
+        {
+            if (IsUnableToSpecifyDuringPeakPeriodsForDeliveredByStore) IsUnableToSpecifyDuringPeakPeriodsForDeliveredByStore = false;
+
+            else IsUnableToSpecifyDuringPeakPeriodsForDeliveredByStore = true;
+        }
+
+        bool value = (bool)(e?.Value ?? false);
+
+        if (value) DeliverdByStoreTimeList.Add(method);
+
+        else DeliverdByStoreTimeList.Remove(method);
+
+        CreateGroupBuyDto.DeliveredByStoreDeliveryTime = JsonConvert.SerializeObject(DeliverdByStoreTimeList);
+
+    }
+
+    void HomeDeliveryTimeCheckedChange(string method, ChangeEventArgs e)
+    {
+        if (method is PikachuResource.UnableToSpecifyDuringPeakPeriods)
+        {
+            if (IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery) IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery = false;
+
+            else IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery = true;
+        }
+
+        bool value = (bool)(e?.Value ?? false);
+
+        if (value) HomeDeliveryTimeList.Add(method);
+
+        else HomeDeliveryTimeList.Remove(method);
+
+        CreateGroupBuyDto.HomeDeliveryDeliveryTime = JsonConvert.SerializeObject(HomeDeliveryTimeList);
+
+    }
+    void OnShippingMethodCheckedChange(string method, ChangeEventArgs e)
+    {
+        var value = (bool)(e?.Value ?? false);
+
+        if (value)
+        {
+            // If the selected method is SevenToEleven or FamilyMart, uncheck the corresponding C2C method
+            if (method == "SevenToEleven1" && CreateGroupBuyDto.ShippingMethodList.Contains("SevenToElevenC2C"))
+            {
+                CreateGroupBuyDto.ShippingMethodList.Remove("SevenToElevenC2C");
+                JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "SevenToElevenC2C");
+            }
+            else if (method == "FamilyMart1" && CreateGroupBuyDto.ShippingMethodList.Contains("FamilyMartC2C"))
+            {
+                CreateGroupBuyDto.ShippingMethodList.Remove("FamilyMartC2C");
+                JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "FamilyMartC2C");
+            }
+      
+           
+           else if (method == "SevenToElevenC2C" && CreateGroupBuyDto.ShippingMethodList.Contains("SevenToEleven1"))
+            {
+                CreateGroupBuyDto.ShippingMethodList.Remove("SevenToEleven1");
+                JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "SevenToEleven1");
+            }
+            else if (method == "FamilyMartC2C" && CreateGroupBuyDto.ShippingMethodList.Contains("FamilyMart1"))
+            {
+                CreateGroupBuyDto.ShippingMethodList.Remove("FamilyMart1");
+                JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "FamilyMart1");
+            }
+            else if (method == "BlackCat1" && CreateGroupBuyDto.ShippingMethodList.Contains("BlackCatFreeze"))
+                {
+                CreateGroupBuyDto.ShippingMethodList.Remove("BlackCatFreeze");
+                JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "BlackCatFreeze");
+            }
+            else if (method == "BlackCat1" && CreateGroupBuyDto.ShippingMethodList.Contains("BlackCatFrozen"))
+            {
+                CreateGroupBuyDto.ShippingMethodList.Remove("BlackCatFrozen");
+                JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "BlackCatFrozen");
+            }
+            else if (method == "BlackCatfreeze" && CreateGroupBuyDto.ShippingMethodList.Contains("BlackCat1"))
+            {
+                CreateGroupBuyDto.ShippingMethodList.Remove("BlackCat1");
+                JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "BlackCat1");
+            }
+            else if (method == "BlackCatFreeze" && CreateGroupBuyDto.ShippingMethodList.Contains("BlackCatFrozen"))
+            {
+                CreateGroupBuyDto.ShippingMethodList.Remove("BlackCatFrozen");
+                JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "BlackCatFrozen");
+            }
+            else if (method == "BlackCatFrozen" && CreateGroupBuyDto.ShippingMethodList.Contains("BlackCat1"))
+            {
+                CreateGroupBuyDto.ShippingMethodList.Remove("BlackCat1");
+                JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "BlackCat1");
+            }
+            else if (method == "BlackCatFrozen" && CreateGroupBuyDto.ShippingMethodList.Contains("BlackCatFreeze"))
+            {
+                CreateGroupBuyDto.ShippingMethodList.Remove("BlackCatFreeze");
+                JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "BlackCatFreeze");
+            }
+        }
+
+        // Update the selected method in the CreateGroupBuyDto.ShippingMethodList
+        if (value)
+        {
+            if (method == "DeliveredByStore")
+            {
+                foreach (var item in CreateGroupBuyDto.ShippingMethodList)
+                {
+                    JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", item);
+
+                }
+                CreateGroupBuyDto.ShippingMethodList = new List<string>();
+            }
+            else {
+                CreateGroupBuyDto.ShippingMethodList.Remove("DeliveredByStore");
+
+            }
+            CreateGroupBuyDto.ShippingMethodList.Add(method);
+        }
+        else
+        {
+            CreateGroupBuyDto.ShippingMethodList.Remove(method);
+        }
+
+        // Serialize the updated list and assign it to ExcludeShippingMethod
+        CreateGroupBuyDto.ExcludeShippingMethod = JsonConvert.SerializeObject(CreateGroupBuyDto.ShippingMethodList);
+    }
+    private static void OnProductGroupValueChange(ChangeEventArgs e, CollapseItem collapseItem)
+    {
+        int takeCount = int.Parse(e?.Value.ToString());
+        if (collapseItem.Selected.Count > takeCount)
+        {
+            collapseItem.Selected = collapseItem.Selected.Take(takeCount).ToList();
+        }
+        else
+        {
+            collapseItem.Selected.Add(new ItemWithItemTypeDto());
+        }
+    }
+
+    //private void HandleItemTagInputChange(ChangeEventArgs e)
+    //{
+    //    var selectedOptions = (IEnumerable<string>)e.Value;
+    //    ItemTags=new List<string>();
+    //    foreach (var item in selectedOptions.ToList())
+    //    {
+
+    //        if (!ItemTags.Any(x => x == item))
+    //        {
+
+    //            ItemTags.Add(item);
+                
+    //        }
+        
+    //    }
+      
+       
+    //}
+
+    //private void HandleItemTagDelete(string item)
+    //{
+    //    ItemTags.Remove(item);
+    //}
+    private void HandlePaymentTagInputKeyUp(KeyboardEventArgs e)
+    {
+        PaymentMethodError = null;
+        if (e.Key == "Enter")
+        {
+            if (!PaymentTagInputValue.IsNullOrWhiteSpace() && !PaymentMethodTags.Any(x => x == PaymentTagInputValue))
+            {
+                var matchedPaymentMethod = ValidPaymentMethods.FirstOrDefault(pm => string.Equals(pm, PaymentTagInputValue, StringComparison.OrdinalIgnoreCase));
+                if (matchedPaymentMethod != null)
+                {
+                    PaymentMethodTags.Add(matchedPaymentMethod);
+                }
+                else
+                {
+                    PaymentMethodError = $"{PaymentTagInputValue} is not a valid Payment Method";
+                }
+            }
+            PaymentTagInputValue = string.Empty;
+        }
+    }
+
+    private void HandlePaymentTagDelete(string item)
+    {
+        PaymentMethodTags.Remove(item);
+    }
+
+    protected virtual async Task CreateEntityAsync()
+    {
+        try
+        {
+            await Loading.Show();
+            if (CreateGroupBuyDto.GroupBuyName.IsNullOrWhiteSpace())
+            {
+                await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyNameCannotBeNull]);
+                await Loading.Hide();
+                return;
+            }
+            //if (CreateGroupBuyDto.ShortCode.IsNullOrWhiteSpace())
+            //{
+            //    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyShortCodeCannotBeNull]);
+            //    return;
+            //}
+
+            string shortCode = CreateGroupBuyDto.ShortCode;
+            if (!string.IsNullOrEmpty(shortCode))
+            {
+                string pattern = @"^[A-Za-z0-9]{4,12}$";
+
+                bool isPatternValid = Regex.IsMatch(shortCode, pattern);
+
+                if (!isPatternValid)
+                {
+                    await _uiMessageService.Warn(L["ShortCodePatternDoesnotMatch"]);
+                    await Loading.Hide();
+                    return;
+                }
+                var check = await _groupBuyAppService.CheckShortCodeForCreate(CreateGroupBuyDto.ShortCode);
+
+                if (check)
+                {
+                    await _uiMessageService.Warn(L["Short Code Alredy Exist"]);
+                    await Loading.Hide();
+                    return;
+                }
+            }
+            else {
+
+                CreateGroupBuyDto.ShortCode = "";
+            }
+            CreateGroupBuyDto.GroupBuyNo = 0;
+            CreateGroupBuyDto.Status = "New";
+            if (ItemTags.Any())
+            {
+                CreateGroupBuyDto.ExcludeShippingMethod = string.Join(",", ItemTags);
+            }
+            //if (PaymentMethodTags.Any())
+            //{
+            //    CreateGroupBuyDto.PaymentMethod = string.Join(",", PaymentMethodTags);
+            //}
+            if (CreditCard && BankTransfer)
+            {
+
+                CreateGroupBuyDto.PaymentMethod = "Credit Card , Bank Transfer";
+
+
+            }
+            else if (CreditCard)
+            {
+
+                CreateGroupBuyDto.PaymentMethod = "Credit Card";
+
+
+            }
+            else if (BankTransfer)
+            {
+
+                CreateGroupBuyDto.PaymentMethod = "Bank Transfer";
+
+
+            }
+            else {
+
+                CreateGroupBuyDto.PaymentMethod = "";
+            }
+            if (CreateGroupBuyDto.PaymentMethod.IsNullOrEmpty())
+            {
+                await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOnePaymentMethodIsRequired]);
+                await Loading.Hide();
+                return;
+            }
+            if (CreateGroupBuyDto.ExcludeShippingMethod.IsNullOrEmpty())
+            {
+                await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneShippingMethodIsRequired]);
+                await Loading.Hide();
+                return;
+            }
+            if (CreateGroupBuyDto.IsEnterprise && (!CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
+            {
+                await _uiMessageService.Warn(L[PikachuDomainErrorCodes.DeliverdByStoreMethodIsRequired]);
+                await Loading.Hide();
+                return;
+            }
+            if (CreateGroupBuyDto.FreeShipping && CreateGroupBuyDto.FreeShippingThreshold == null)
+            {
+                await _uiMessageService.Warn(L["PleaseEnterThresholdAmount"]);
+                await Loading.Hide();
+                return;
+            }
+            if ((!CreateGroupBuyDto.ExcludeShippingMethod.IsNullOrEmpty()) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1")
+                || CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFreeze") || CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFrozen")
+                || CreateGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup") || CreateGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery")
+                || CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
+            {
+                if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1") && (CreateGroupBuyDto.BlackCatDeliveryTime.IsNullOrEmpty()|| CreateGroupBuyDto.BlackCatDeliveryTime == "[]"))
+                {
+                    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForBlackCat]);
+                    await Loading.Hide();
+                    return;
+                }
+                if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFreeze") && (CreateGroupBuyDto.BlackCatDeliveryTime.IsNullOrEmpty() || CreateGroupBuyDto.BlackCatDeliveryTime == "[]"))
+                {
+                    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForBlackCatFreeze]);
+                    await Loading.Hide();
+                    return;
+                }
+                if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFrozen") && (CreateGroupBuyDto.BlackCatDeliveryTime.IsNullOrEmpty() || CreateGroupBuyDto.BlackCatDeliveryTime == "[]"))
+                {
+                    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForBlackCatFrozen]);
+                    await Loading.Hide();
+                    return;
+                }
+                else if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup") && CreateGroupBuyDto.SelfPickupDeliveryTime.IsNullOrEmpty() || (CreateGroupBuyDto.SelfPickupDeliveryTime == "[]"))
+                {
+                    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForSelfPickup]);
+                    await Loading.Hide();
+                    return;
+                }
+                else if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery") && (CreateGroupBuyDto.HomeDeliveryDeliveryTime.IsNullOrEmpty()|| CreateGroupBuyDto.HomeDeliveryDeliveryTime=="[]"))
+                {
+                    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForHomeDelivery]);
+                    await Loading.Hide();
+                    return;
+                }
+            }
+            else if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore") && (CreateGroupBuyDto.HomeDeliveryDeliveryTime.IsNullOrEmpty() || CreateGroupBuyDto.HomeDeliveryDeliveryTime == "[]"))
+            {
+                await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForDeliverdByStore]);
+                await Loading.Hide();
+                return;
+            }
+            CreateGroupBuyDto.NotifyMessage = await NotifyEmailHtml.GetHTML();
+            CreateGroupBuyDto.GroupBuyConditionDescription = await GroupBuyHtml.GetHTML();
+            CreateGroupBuyDto.ExchangePolicyDescription = await ExchangePolicyHtml.GetHTML();
+            CreateGroupBuyDto.CustomerInformationDescription = await CustomerInformationHtml.GetHTML();
+
+            CreateGroupBuyDto.ItemGroups = new List<GroupBuyItemGroupCreateUpdateDto>();
+
+            foreach (var item in CollapseItem)
+            {
+                if (item.Selected.Any(s => s.Id == Guid.Empty && item.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor && s.Name.IsNullOrEmpty()))
+                {
+                    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyModuleCannotBeEmpty]);
+                    return;
+                }
+
+                int j = 1;
+                if (item.Selected.Any())
+                {
+                    var itemGroup = new GroupBuyItemGroupCreateUpdateDto
+                    {
+                        SortOrder = item.SortOrder,
+                        GroupBuyModuleType = item.GroupBuyModuleType
+                    };
+
+                    foreach (var itemDetail in item.Selected)
+                    {
+                        if (itemDetail.Id != Guid.Empty || (item.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor && !itemDetail.Name.IsNullOrEmpty()))
+                        {
+                            itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
+                            {
+                                SortOrder = j++,
+                                ItemId = itemDetail.ItemType == ItemType.Item && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
+                                SetItemId = itemDetail.ItemType == ItemType.SetItem && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
+                                ItemType = itemDetail.ItemType,
+                                DisplayText = itemGroup.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor ? itemDetail.Name : null
+                            });
+                        }
+                    }
+
+                    CreateGroupBuyDto.ItemGroups.Add(itemGroup);
+                }
+            }
+
+            var result = await _groupBuyAppService.CreateAsync(CreateGroupBuyDto);
+            foreach (var item in CarouselImages)
+            {
+                item.TargetId = result.Id;
+                await _imageAppService.CreateAsync(item);
+            }
+            await Loading.Hide();
+            NavigationManager.NavigateTo("GroupBuyManagement/GroupBuyList");
+        }
+        catch (BusinessException ex)
+        {
+            await Loading.Hide();
+            await _uiMessageService.Error(L[ex.Code]);
+        }
+        catch (Exception ex)
+        {
+            await Loading.Hide();
+            await _uiMessageService.Error(ex.Message.GetType()?.ToString());
+        }
+    }
+    private async Task OnSelectedValueChanged(Guid? id, CollapseItem collapseItem, ItemWithItemTypeDto? selectedItem = null)
+    {
+        try
+        {
+            var item = ItemsList.FirstOrDefault(x => x.Id == id);
+            var index = collapseItem.Selected.IndexOf(selectedItem);
+            if (item != null)
+            {
+                if (item.ItemType == ItemType.Item)
+                {
+                    selectedItem.Item = await _itemAppService.GetAsync(item.Id, true);
+                    selectedItem.Id = selectedItem.Item.Id;
+                    selectedItem.Name = selectedItem.Item.ItemName;
+                    selectedItem.ItemType = ItemType.Item;
+                }
+                if (item.ItemType == ItemType.SetItem)
+                {
+                    selectedItem.SetItem = await _setItemAppService.GetAsync(item.Id, true);
+                    selectedItem.Id = selectedItem.SetItem.Id;
+                    selectedItem.Name = selectedItem.SetItem.SetItemName;
+                    selectedItem.ItemType = ItemType.SetItem;
+                }
+                collapseItem.Selected[index] = selectedItem;
+            }
+            else
+            {
+                if (collapseItem.GroupBuyModuleType != GroupBuyModuleType.IndexAnchor || collapseItem.Selected[index].Id != Guid.Empty)
+                {
+                    collapseItem.Selected[index] = new();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await _uiMessageService.Error(ex.GetType().ToString());
+        }
+    }
+
+    private void RemoveCollapseItem(int index)
+    {
+        var item = CollapseItem.Where(i => i.Index == index).FirstOrDefault();
+        CollapseItem.Remove(item);
+    }
+
+    private void BackToGroupBuyList()
+    {
+        NavigationManager.NavigateTo("GroupBuyManagement/GroupBuyList");
+    }
+
+    void StartDrag(CollapseItem item)
+    {
+        CurrentIndex = CollapseItem.IndexOf(item);
+    }
+
+    void Drop(CollapseItem item)
+    {
+        if (item != null)
+        {
+            var index = CollapseItem.IndexOf(item);
+
+            var current = CollapseItem[CurrentIndex];
+
+            CollapseItem.RemoveAt(CurrentIndex);
+            CollapseItem.Insert(index, current);
+
+            CurrentIndex = index;
+
+            for (int i = 0; i < CollapseItem.Count; i++)
+            {
+                CollapseItem[i].Index = i;
+                CollapseItem[i].SortOrder = i + 1;
+            }
+            StateHasChanged();
+        }
+    }
+    #endregion
+}
+
+public class CollapseItem
+{
+    public Guid? Id { get; set; }
+    public int Index { get; set; }
+    public GroupBuyModuleType GroupBuyModuleType { get; set; }
+    public int SortOrder { get; set; }
+    public List<ItemWithItemTypeDto> Selected { get; set; }
+    public bool IsModified = false;
+    public CollapseItem()
+    {
+        Selected = [];
     }
 }

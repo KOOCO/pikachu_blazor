@@ -415,25 +415,37 @@
                 <div class="col-8">
                     @if (DeliveryTimeConts.SelfPickUp != null)
                     {
-                  
-                        @foreach (var island in DeliveryTimeConts.SelfPickUp)
+                        @foreach (string island in DeliveryTimeConts.SelfPickUp)
                         {
-                        @if ((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup")))
-                        {
-                            <label for="@island" class="form-label ">
-                                <input  type="checkbox" class="form-check-input me-1" id="@island" checked="@(CreateGroupBuyDto.SelfPickupDeliveryTime != null && CreateGroupBuyDto.SelfPickupDeliveryTime.Contains(island))" @onchange="(value) => SelfPickupDeliveryTimeCheckedChange(island, value)" />
-                                @L[island]
-                            </label>
+                            @if ((CreateGroupBuyDto.ExcludeShippingMethod is not null) && 
+                                (CreateGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup")))
+                            {
+                                <label for="@island" class="form-label ">
+                                    <input type="checkbox"
+                                           class="form-check-input me-1"
+                                           id="@island"
+                                           disabled="@(island is not PikachuResource.UnableToSpecifyDuringPeakPeriods ? 
+                                                        IsUnableToSpecifyDuringPeakPeriodsForSelfPickups :
+                                                        false)"
+                                           checked="@(CreateGroupBuyDto.SelfPickupDeliveryTime is not null &&
+                                                              CreateGroupBuyDto.SelfPickupDeliveryTime.Contains(island))"
+                                           @onchange="(value) => SelfPickupDeliveryTimeCheckedChange(island, value)" />
+                                    @L[island]
+                                </label>
+                            }
+                            else
+                            {
+                                <label for="@island" class="form-label ">
+                                    <input disabled 
+                                           type="checkbox" 
+                                           class="form-check-input me-1" 
+                                           id="@island" 
+                                           checked="@(CreateGroupBuyDto.SelfPickupDeliveryTime is not null && CreateGroupBuyDto.SelfPickupDeliveryTime.Contains(island))" 
+                                           @onchange="(value) => SelfPickupDeliveryTimeCheckedChange(island, value)" />
+                                    @L[island]
+                                </label>
+                            }
                         }
-                else
-                        {
-
-                            <label for="@island" class="form-label ">
-                                <input disabled type="checkbox" class="form-check-input me-1" id="@island" checked="@(CreateGroupBuyDto.SelfPickupDeliveryTime != null && CreateGroupBuyDto.SelfPickupDeliveryTime.Contains(island))" @onchange="(value) => SelfPickupDeliveryTimeCheckedChange(island, value)" />
-                                @L[island]
-                            </label>
-                        }
-                    }
                     }
                 </div>
                     <div class="col-2"></div>
@@ -497,18 +509,33 @@
                     {
                     @foreach (var island in DeliveryTimeConts.HomeDelivery)
                     {
-                        @if ((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery")))
+                        @if ((CreateGroupBuyDto.ExcludeShippingMethod is not null) && 
+                            (CreateGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery")))
                         {
                             <label for="@island" class="form-label">
-                                <input  type="checkbox" class="form-check-input me-1" id="@island" checked="@(CreateGroupBuyDto.HomeDeliveryDeliveryTime != null && CreateGroupBuyDto.HomeDeliveryDeliveryTime.Contains(island))" @onchange="(value) => HomeDeliveryTimeCheckedChange(island, value)" />
+                                <input type="checkbox" 
+                                       class="form-check-input me-1" 
+                                       id="@island"
+                                       disabled="@(island is not PikachuResource.UnableToSpecifyDuringPeakPeriods ?
+                                                    IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery :
+                                                    false)"
+                                       checked="@(CreateGroupBuyDto.HomeDeliveryDeliveryTime is not null && 
+                                                  CreateGroupBuyDto.HomeDeliveryDeliveryTime.Contains(island))" 
+                                       @onchange="(value) => HomeDeliveryTimeCheckedChange(island, value)" />
                                 @L[island]
                             </label>
                         }
                         else
                         {
                             
-                         <label for="@island" class="form-label">
-                                <input disabled  type="checkbox" class="form-check-input me-1" id="@island" checked="@(CreateGroupBuyDto.HomeDeliveryDeliveryTime != null && CreateGroupBuyDto.HomeDeliveryDeliveryTime.Contains(island))" @onchange="(value) => HomeDeliveryTimeCheckedChange(island, value)" />
+                            <label for="@island" class="form-label">
+                                <input disabled 
+                                       type="checkbox" 
+                                       class="form-check-input me-1" 
+                                       id="@island" 
+                                       checked="@(CreateGroupBuyDto.HomeDeliveryDeliveryTime is not null && 
+                                                  CreateGroupBuyDto.HomeDeliveryDeliveryTime.Contains(island))" 
+                                       @onchange="(value) => HomeDeliveryTimeCheckedChange(island, value)" />
                                 @L[island]
                             </label>
                         }
@@ -527,19 +554,34 @@
                     {
                     @foreach (var island in DeliveryTimeConts.DeliveredByStore)
                     {
-                        @if ((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
+                        @if ((CreateGroupBuyDto.ExcludeShippingMethod is not null) && 
+                            (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
                         {
                             <label for="@island" class="form-label">
-                                <input type="checkbox" class="form-check-input me-1" id="@island" checked="@(CreateGroupBuyDto.DeliveredByStoreDeliveryTime != null && CreateGroupBuyDto.DeliveredByStoreDeliveryTime.Contains(island))" @onchange="(value) => DeliverdByStoreDeliveryTimeCheckedChange(island, value)" />
+                                <input type="checkbox" 
+                                       class="form-check-input me-1" 
+                                       id="@island"
+                                       disabled="@(island is not PikachuResource.UnableToSpecifyDuringPeakPeriods ?
+                                                    IsUnableToSpecifyDuringPeakPeriodsForDeliveredByStore :
+                                                    false)"
+                                       checked="@(CreateGroupBuyDto.DeliveredByStoreDeliveryTime is not null && 
+                                                  CreateGroupBuyDto.DeliveredByStoreDeliveryTime.Contains(island))" 
+                                       @onchange="(value) => DeliverdByStoreDeliveryTimeCheckedChange(island, value)" />
                                 @L[island]
                             </label>
                         }
                         else
                         {
                             
-                         <label for="@island" class="form-label">
-                                <input disabled type="checkbox" class="form-check-input me-1" id="@island" checked="@(CreateGroupBuyDto.DeliveredByStoreDeliveryTime != null && CreateGroupBuyDto.DeliveredByStoreDeliveryTime.Contains(island))" @onchange="(value) => DeliverdByStoreDeliveryTimeCheckedChange(island, value)" />
-                                @L[island]
+                            <label for="@island" class="form-label">
+                               <input disabled 
+                                      type="checkbox" 
+                                      class="form-check-input me-1" 
+                                      id="@island" 
+                                      checked="@(CreateGroupBuyDto.DeliveredByStoreDeliveryTime is not null && 
+                                                 CreateGroupBuyDto.DeliveredByStoreDeliveryTime.Contains(island))" 
+                                      @onchange="(value) => DeliverdByStoreDeliveryTimeCheckedChange(island, value)" />
+                               @L[island]
                             </label>
                         }
                     }
