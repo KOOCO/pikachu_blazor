@@ -400,12 +400,12 @@
                 <div class="col-8">
                     @if (DeliveryTimeConts.SelfPickUp != null)
                     {
-                        @foreach(var island in DeliveryTimeConts.SelfPickUp)
+                        @foreach(string island in DeliveryTimeConts.SelfPickUp)
                         {    
                             @if ((EditGroupBuyDto.ExcludeShippingMethod is not null) && 
                                  (EditGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup")))
                             {
-                                <label for="@island" class="form-label">
+                                <label for="@(island)_SelfPickUp" class="form-label">
                                     <input type="checkbox" 
                                            class="form-check-input me-1" 
                                            id="@island" 
@@ -420,7 +420,7 @@
                             }
                             else
                             {
-                                <label for="@island" class="form-label">
+                                <label for="@(island)_SelfPickUp" class="form-label">
                                     <input disabled 
                                            type="checkbox" 
                                            class="form-check-input me-1" 
@@ -497,7 +497,7 @@
                             @if ((EditGroupBuyDto.ExcludeShippingMethod is not null) && 
                                  (EditGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery")))
                             {
-                                <label for="@island" class="form-label">
+                                <label for="@(island)_HomeDelivery" class="form-label">
                                     <input type="checkbox" 
                                            class="form-check-input me-1" 
                                            id="@island" 
@@ -511,7 +511,7 @@
                                 </label>
                             }
                             else{
-                                <label for="@island" class="form-label">
+                                <label for="@(island)_HomeDelivery" class="form-label">
                                        <input disabled 
                                               type="checkbox" 
                                               class="form-check-input me-1" 
@@ -541,7 +541,7 @@
                             @if ((EditGroupBuyDto.ExcludeShippingMethod is not null) && 
                                  (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
                             {
-                                <label for="@island" class="form-label">
+                                <label for="@(island)_DeliveredByStore" class="form-label">
                                     <input type="checkbox" 
                                            class="form-check-input me-1" 
                                            id="@island"
@@ -556,7 +556,7 @@
                             }
                             else
                             {
-                                <label for="@island" class="form-label">
+                                <label for="@(island)_DeliveredByStore" class="form-label">
                                        <input disabled 
                                               type="checkbox" 
                                               class="form-check-input me-1" 

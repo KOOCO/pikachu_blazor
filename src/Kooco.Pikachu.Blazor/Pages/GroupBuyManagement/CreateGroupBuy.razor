@@ -420,7 +420,7 @@
                             @if ((CreateGroupBuyDto.ExcludeShippingMethod is not null) && 
                                 (CreateGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup")))
                             {
-                                <label for="@island" class="form-label ">
+                                <label for="@(island)_SelfPickUp" class="form-label ">
                                     <input type="checkbox"
                                            class="form-check-input me-1"
                                            id="@island"
@@ -428,19 +428,20 @@
                                                         IsUnableToSpecifyDuringPeakPeriodsForSelfPickups :
                                                         false)"
                                            checked="@(CreateGroupBuyDto.SelfPickupDeliveryTime is not null &&
-                                                              CreateGroupBuyDto.SelfPickupDeliveryTime.Contains(island))"
+                                                      CreateGroupBuyDto.SelfPickupDeliveryTime.Contains(island))"
                                            @onchange="(value) => SelfPickupDeliveryTimeCheckedChange(island, value)" />
                                     @L[island]
                                 </label>
                             }
                             else
                             {
-                                <label for="@island" class="form-label ">
+                                <label for="@(island)_SelfPickUp" class="form-label ">
                                     <input disabled 
                                            type="checkbox" 
                                            class="form-check-input me-1" 
                                            id="@island" 
-                                           checked="@(CreateGroupBuyDto.SelfPickupDeliveryTime is not null && CreateGroupBuyDto.SelfPickupDeliveryTime.Contains(island))" 
+                                           checked="@(CreateGroupBuyDto.SelfPickupDeliveryTime is not null && 
+                                                      CreateGroupBuyDto.SelfPickupDeliveryTime.Contains(island))" 
                                            @onchange="(value) => SelfPickupDeliveryTimeCheckedChange(island, value)" />
                                     @L[island]
                                 </label>
@@ -507,12 +508,12 @@
                 <div class="col-8">
                     @if (DeliveryTimeConts.HomeDelivery != null)
                     {
-                    @foreach (var island in DeliveryTimeConts.HomeDelivery)
+                    @foreach (string island in DeliveryTimeConts.HomeDelivery)
                     {
                         @if ((CreateGroupBuyDto.ExcludeShippingMethod is not null) && 
                             (CreateGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery")))
                         {
-                            <label for="@island" class="form-label">
+                            <label for="@(island)_HomeDelivery" class="form-label">
                                 <input type="checkbox" 
                                        class="form-check-input me-1" 
                                        id="@island"
@@ -527,8 +528,8 @@
                         }
                         else
                         {
-                            
-                            <label for="@island" class="form-label">
+
+                            <label for="@(island)_HomeDelivery" class="form-label">
                                 <input disabled 
                                        type="checkbox" 
                                        class="form-check-input me-1" 
@@ -552,12 +553,12 @@
                 <div class="col-8">
                     @if (DeliveryTimeConts.DeliveredByStore != null)
                     {
-                    @foreach (var island in DeliveryTimeConts.DeliveredByStore)
+                    @foreach (string island in DeliveryTimeConts.DeliveredByStore)
                     {
                         @if ((CreateGroupBuyDto.ExcludeShippingMethod is not null) && 
                             (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
                         {
-                            <label for="@island" class="form-label">
+                            <label for="@(island)_DeliveredByStore" class="form-label">
                                 <input type="checkbox" 
                                        class="form-check-input me-1" 
                                        id="@island"
@@ -572,8 +573,8 @@
                         }
                         else
                         {
-                            
-                            <label for="@island" class="form-label">
+
+                            <label for="@(island)_DeliveredByStore" class="form-label">
                                <input disabled 
                                       type="checkbox" 
                                       class="form-check-input me-1" 

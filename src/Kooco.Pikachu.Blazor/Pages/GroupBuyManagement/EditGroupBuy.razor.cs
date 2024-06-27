@@ -606,7 +606,6 @@ public partial class EditGroupBuy
         else SelfPickupTimeList.Remove(method);
 
         EditGroupBuyDto.SelfPickupDeliveryTime = JsonConvert.SerializeObject(SelfPickupTimeList);
-
     }
     void BlackCatDeliveryTimeCheckedChange(string method, ChangeEventArgs e)
     {
@@ -621,7 +620,6 @@ public partial class EditGroupBuy
         }
 
         EditGroupBuyDto.BlackCatDeliveryTime = JsonConvert.SerializeObject(BlackCateDeliveryTimeList);
-
     }
     void HomeDeliveryTimeCheckedChange(string method, ChangeEventArgs e)
     {
@@ -639,7 +637,6 @@ public partial class EditGroupBuy
         else HomeDeliveryTimeList.Remove(method);
 
         EditGroupBuyDto.HomeDeliveryDeliveryTime = JsonConvert.SerializeObject(HomeDeliveryTimeList);
-
     }
     void DeliveredByStoreTimeCheckedChange(string method, ChangeEventArgs e)
     {
@@ -657,7 +654,6 @@ public partial class EditGroupBuy
         else DeliveredByStoreTimeList.Remove(method);
 
         EditGroupBuyDto.DeliveredByStoreDeliveryTime = JsonConvert.SerializeObject(DeliveredByStoreTimeList);
-
     }
     void OnShippingMethodCheckedChange(string method, ChangeEventArgs e)
     {
