@@ -22,4 +22,6 @@ public class PikachuResource
     public const string NextPage = "NextPage";
 
     public const string LastPage = "LastPage";
+
+    public const string EditItem = "EditItem";
 }
