@@ -1,5 +1,6 @@
 ﻿@page "/CashFlowManagement/CashFlowReconciliationStatement"
 @using Kooco.Pikachu.EnumValues;
+@using Kooco.Pikachu.Items
 @using Kooco.Pikachu.Localization;
 @using Kooco.Pikachu.OrderItems;
 @using Kooco.Pikachu.Orders;
@@ -12,6 +13,7 @@
 @inject NavigationManager NavigationManager;
 @inject IUiMessageService _uiMessageService;
 @inject IOrderAppService _orderAppService;
+@inject IItemAppService _ItemAppService;
 @inject IJSRuntime JSRuntime;
 
 <LoadingIndicator @ref="loading" FullScreen FadeIn>
@@ -128,65 +130,64 @@
                     </DataGridColumn>
                 </DataGridColumns>
                 <DetailRowTemplate>
-                    @{
-                        var orderItems = (context as OrderDto).OrderItems;
-                        <div class="mx-2 px-3 py-2 border">
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <td>@L["RecipientInformation"]</td>
-                                        <td>@context.CustomerName / @context.CustomerPhone</td>
-                                    </tr>
-                                    <tr>
-                                        <td>@L["ShippingMethod"]</td>
-                                        <td>@L[context.DeliveryMethod.ToString()]</td>
-                                    </tr>
-                                    <tr>
-                                        <td>@L["Address"]</td>
-                                        <td class="d-none">@context.AddressDetails, @context.Road, @context.District, @context.City</td>
-                                        <td>@context.AddressDetails</td>
-                                    </tr>
-                                    <tr>
-                                        <td>@L["Remarks"]</td>
-                                        <td>@context.Remarks</td>
-                                    </tr>
-                                    <tr>
-                                        <td>@L["MerchantRemarks"]</td>
-                                        <td>@context.Remarks</td>
-                                    </tr>
-                                    <tr>
-                                        <td>@L["OrderItems"]</td>
-                                        <td>
-                                            @foreach (var item in orderItems)
+                @{
+                    <div class="mx-2 px-3 py-2 border">
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td>@L["RecipientInformation"]</td>
+                                    <td>@context.CustomerName / @context.CustomerPhone</td>
+                                </tr>
+                                <tr>
+                                    <td>@L["ShippingMethod"]</td>
+                                    <td>@L[context.DeliveryMethod.ToString()]</td>
+                                </tr>
+                                <tr>
+                                    <td>@L["Address"]</td>
+                                    <td class="d-none">@context.AddressDetails, @context.Road, @context.District, @context.City</td>
+                                    <td>@context.AddressDetails</td>
+                                </tr>
+                                <tr>
+                                    <td>@L["Remarks"]</td>
+                                    <td>@context.Remarks</td>
+                                </tr>
+                                <tr>
+                                    <td>@L["MerchantRemarks"]</td>
+                                    <td>@context.Remarks</td>
+                                </tr>
+                                <tr>
+                                    <td>@L["OrderItems"]</td>
+                                    <td>
+                                        @foreach (OrderItemDto item in (context as OrderDto).OrderItems)
+                                        {
+                                            @if (item.ItemType == ItemType.Item)
                                             {
-                                                @if (item.ItemType == ItemType.Item)
-                                                {
-                                                    <div mb-1>
-                                                        <span>@item.Spec</span>
-                                                        <span>@item.Item?.ItemName x @item.Quantity</span>
-                                                    </div>
-                                                }
-                                                @if (item.ItemType == ItemType.SetItem)
-                                                {
-                                                    <div mb-1>
-                                                        <span>@item.Spec</span>
-                                                        <span>@item.SetItem?.SetItemName x @item.Quantity</span>
-                                                    </div>
-                                                }
-                                                @if (item.ItemType == ItemType.Freebie)
-                                                {
-                                                    <div mb-1>
-                                                        <span>@item.Spec</span>
-                                                        <span>@item.Freebie?.ItemName x @item.Quantity</span>
-                                                    </div>
-                                                }
+                                                <div mb-1>
+                                                    <span>@item.Spec</span>
+                                                    <span>@item.Item?.ItemName x @item.Quantity</span>
+                                                </div>
                                             }
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    }
+                                            @if (item.ItemType == ItemType.SetItem)
+                                            {
+                                                <div mb-1>
+                                                    <span>@item.Spec</span>
+                                                    <span>@item.SetItem?.SetItemName x @item.Quantity</span>
+                                                </div>
+                                            }
+                                            @if (item.ItemType == ItemType.Freebie)
+                                            {
+                                                <div mb-1>
+                                                    <span>@item.Spec</span>
+                                                    <span>@item.Freebie?.ItemName x @item.Quantity</span>
+                                                </div>
+                                            }
+                                        }
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                }
                 </DetailRowTemplate>
                 <FirstPageButtonTemplate>@L[PikachuResource.FirstPage]</FirstPageButtonTemplate>
                 <PreviousPageButtonTemplate>@L[PikachuResource.PrevPage]</PreviousPageButtonTemplate>
