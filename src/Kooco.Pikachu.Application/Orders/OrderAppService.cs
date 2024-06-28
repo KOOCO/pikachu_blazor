@@ -1028,17 +1028,17 @@ namespace Kooco.Pikachu.Orders
         }
         public async Task CreditNoteInvoice(Guid id, string reason)
         {
-            var order = await _orderRepository.GetAsync(id);
+            Order order = await _orderRepository.GetAsync(id);
           
-           // order.IsVoidInvoice = true;
+            order.IsVoidInvoice = true;
             order.CreditNoteReason = reason;
             order.CreditNoteUser = CurrentUser.Name;
             order.CreditNoteDate = DateTime.Now;
             order.InvoiceStatus = InvoiceStatus.CreditNote;
           
             await _orderRepository.UpdateAsync(order);
-            await _electronicInvoiceAppService.CreateCreditNoteAsync(id);
 
+            await _electronicInvoiceAppService.CreateCreditNoteAsync(id);
         }
         public async Task<OrderDto> UpdateShippingDetails(Guid id, CreateOrderDto input)
         {

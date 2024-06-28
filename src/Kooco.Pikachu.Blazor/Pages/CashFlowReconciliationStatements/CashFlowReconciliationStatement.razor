@@ -28,7 +28,8 @@
                     </Button>
                 </div>
                 
-            </div @if (Orders.Where(x => x.IsSelected).Count() != 1|| Orders.Any(x => x.IsSelected && x.IsVoidInvoice &&x.CreditNoteReason!=null) )
+            </div> 
+            @if (Orders.Where(x => x.IsSelected).Count() != 1|| Orders.Any(x => x.IsSelected && x.IsVoidInvoice &&x.CreditNoteReason!=null) )
             {
                 <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
                     <i class="fa fa-print"></i>

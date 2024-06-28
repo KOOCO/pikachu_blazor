@@ -184,10 +184,15 @@ namespace Kooco.Pikachu.Blazor.Pages.CashFlowReconciliationStatements
         private async Task ApplyCreditReasonAsync()
         {
             await loading.Show();
-            var selectedOrder = Orders.SingleOrDefault(x => x.IsSelected);
+
+            OrderDto? selectedOrder = Orders.SingleOrDefault(x => x.IsSelected);
+            
             await _orderAppService.CreditNoteInvoice(selectedOrder.Id, CreditReason.Reason);
+
             await CreateCreditNoteReasonModal.Hide();
+            
             await UpdateItemList();
+            
             await InvokeAsync(StateHasChanged);
         }
         private void OpenCreditReasonModal()
