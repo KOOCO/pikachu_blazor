@@ -1052,7 +1052,12 @@ public partial class EditGroupBuy
             }
             await Loading.Show();
 
-            var result = await _groupBuyAppService.UpdateAsync(Id, EditGroupBuyDto);
+            GroupBuyDto result = await _groupBuyAppService.UpdateAsync(Id, EditGroupBuyDto);
+
+            if (EditGroupBuyDto.IsEnterprise)
+            {
+                await _OrderAppService.UpdateOrdersIfIsEnterpricePurchaseAsync(Id);
+            }
 
             foreach (var item in CarouselImages)
             {

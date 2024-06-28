@@ -65,7 +65,7 @@
     "ChinaTrust": "中國信託",
     "ChooseGroupBuy": "選擇套用團購",
     "ChooseItem": "選擇商品",
-    "Closed": "取消訂單",
+    "Closed": "關閉訂單",
     "Cm0001": "0001: 60cm",
     "Cm0002": "0002: 90cm",
     "Cm0003": "0003: 120cm",
@@ -75,7 +75,7 @@
     "Combined": "併單",
     "CombineOrders": "合併訂單",
     "CommodityAttributes": "商品屬性",
-    "Completed": "出貨完成",
+    "Completed": "已寄出",
     "ConfigureYourSKUPattern": "設置SKU格式",
     "ConfigureYourSKUPatternMessage": "選取你想要設置該商品屬性的SKU",
     "CopyItem": "複製商品",
@@ -415,7 +415,7 @@
     "ReportUrl": "報表連結",
     "Reset": "重置",
     "Results": "項結果",
-    "Return": "退貨",
+    "ReturnOrder": "退貨",
     "Returnable": "可退貨",
     "Returned": "退貨",
     "ReturnedApplication": "審核失敗",
@@ -431,7 +431,6 @@
     "SampleValue": "樣本值",
     "Save": "儲存",
     "SaveChanges": "儲存",
-
     "SaveSettings": "儲存設定",
     "SaveSortOrder": "儲存排列順序",
     "Search": "搜尋",
@@ -515,7 +514,7 @@
     "VoidInvoice": "作廢發票",
     "VoidReason": "作廢原因",
     "VoidUser": "作廢人",
-    "WaitingForPayment": "等待付款中",
+    "WaitingForPayment": "待付款",
     "Weekday14To18": "平日下午(14-18時)",
     "Weekday9To13": "平日上午(09-13時)",
     "Weekend14To18": "假日(14-18時)",
@@ -548,6 +547,10 @@
     "NextPage": "下一頁",
     "FirstPage": "第一頁",
     "LastPage": "最後一頁",
-    "EditItem": "商品內容"
+    "EditItem": "商品內容",
+    "ToBeShipped": "待出貨",
+    "Delivered": "已送達",
+    "Return": "被退件",
+    "EnterpricePurchase": "企業採購"
   }
 }

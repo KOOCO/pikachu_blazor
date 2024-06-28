@@ -1436,6 +1436,11 @@ namespace Kooco.Pikachu.Orders
             memoryStream.Seek(0, SeekOrigin.Begin);
             return new RemoteStreamContent(memoryStream, "Reconciliation Report.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         }
+
+        public async Task UpdateOrdersIfIsEnterpricePurchaseAsync(Guid groupBuyId)
+        {
+            await _orderRepository.UpdateOrdersIfIsEnterpricePurchaseAsync(groupBuyId);
+        }
     }
 }
 

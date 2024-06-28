@@ -3,6 +3,7 @@
 @using Kooco.Pikachu.EnumValues;
 @using Kooco.Pikachu.GroupBuys;
 @using Kooco.Pikachu.Items.Dtos;
+@using Kooco.Pikachu.Orders
 @using Microsoft.Extensions.Configuration;
 @using Pikachu.Items;
 @using Pikachu.Localization;
@@ -18,6 +19,8 @@
 @inject IMessageService _message
 @inject IConfiguration _configuration
 @inject IJSRuntime JSRuntime;
+@inject IOrderAppService _OrderAppService;
+
 <style>
     .row {
         margin-top: 10px;

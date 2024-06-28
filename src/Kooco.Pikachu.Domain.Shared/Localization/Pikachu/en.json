@@ -281,7 +281,7 @@
     "Permission:Orders": "Orders Management",
     "Permission:AddStoreComments": "Add Store Comments",
     "WaitingForPayment": "Waiting For Payment",
-    "PrepareShipment": "Prepare Shipment",
+    "PrepareShipment": "Processing",
     "PersonalInvoice": "Personal Invoice",
     "CellphoneInvoice": "Cellphone Invoice",
     "BusinessInvoice": "Business Invoice",
@@ -466,7 +466,7 @@
     "SelectGroupBuy": "Select GroupBuy",
     "Shipped": "Shipped",
     "ManualStatusUpdate": "Manual Status Update",
-    "Completed": "Completed",
+    "Completed": "Picked Up",
     "SpecialTaxable": "Special Taxable",
     "DeliveredByStore": "Delivered By Store",
     "DeliveryTime": "Delivery Time",
@@ -512,8 +512,7 @@
     "BlackCatFrozen": "Black Cat Frozen",
     "SetGroupBuyPrice": "Set GroupBuy Price",
     "InvoiceIssueStatus": "Invoice Issue Status",
-    "Approve": "Approve",
-    "Return": "Return",
+    "ReturnOrder": "Return",
     "PleaseEnterThresholdAmount": "Please Enter Threshold Amount",
     "Exchange": "Exchange",
     "Reject": "Reject",
@@ -533,6 +532,10 @@
     "PrevPage": "Prev",
     "NextPage": "Next",
     "FirstPage": "First",
-    "LastPage": "Last"
+    "LastPage": "Last",
+    "ToBeShipped": "To Be Shipped",
+    "Delivered": "Delivered",
+    "Return": "Return",
+    "EnterpricePurchase": "Enterprice Purchase"
   }
 }

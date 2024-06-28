@@ -256,5 +256,16 @@ namespace Kooco.Pikachu.Orders
                 .ToListAsync();
         }
 
+        public async Task UpdateOrdersIfIsEnterpricePurchaseAsync(Guid groupBuyId)
+        {
+            List<Order> orders = [.. (await GetQueryableAsync()).Where(w => w.GroupBuyId == groupBuyId)];
+
+            foreach (Order item in orders)
+            {
+                item.ShippingStatus = ShippingStatus.EnterpricePurchase;
+            }
+
+            await UpdateManyAsync(orders);
+        }
     }
 }

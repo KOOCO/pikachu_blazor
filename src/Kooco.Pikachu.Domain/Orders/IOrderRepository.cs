@@ -41,5 +41,6 @@ namespace Kooco.Pikachu.Orders
         Task<long> CountVoidAsync(string? filter, Guid? groupBuyId, DateTime? startDate, DateTime? endDate);
         Task<List<Order>> GetVoidListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId, List<Guid> orderId, DateTime? startDate = null, DateTime? endDate = null);
 
+        Task UpdateOrdersIfIsEnterpricePurchaseAsync(Guid groupBuyId);
     }
 }

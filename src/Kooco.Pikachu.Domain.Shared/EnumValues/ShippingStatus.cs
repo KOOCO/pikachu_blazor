@@ -2,16 +2,18 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Kooco.Pikachu.EnumValues
+namespace Kooco.Pikachu.EnumValues;
+
+public enum ShippingStatus
 {
-    public enum ShippingStatus
-    {
-        WaitingForPayment,
-        PrepareShipment,
-        Shipped,
-        Completed,
-        Closed,
-        Exchange
-        
-    }
+    WaitingForPayment,
+    PrepareShipment,
+    Shipped,
+    Completed,
+    Closed,
+    Exchange,
+    ToBeShipped,
+    Delivered,
+    Return,
+    EnterpricePurchase
 }

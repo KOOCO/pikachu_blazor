@@ -253,4 +253,10 @@ public class OrderController(
     {
         return _ordersAppService.ReturnOrderAsync(id);
     }
+
+    [HttpPost("update-orders-if-IsEnterpricePurchase")]
+    public Task UpdateOrdersIfIsEnterpricePurchaseAsync(Guid groupBuyId)
+    {
+        return _ordersAppService.UpdateOrdersIfIsEnterpricePurchaseAsync(groupBuyId);
+    }
 }
