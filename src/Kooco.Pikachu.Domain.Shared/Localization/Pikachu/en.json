@@ -527,10 +527,12 @@
     "Succeeded in return": "Succeeded",
     "TimePeriod": "Time Period",
     "Refunds": "Refunds",
-    "ParentOrderNo": "Parent Order No"
-
-
-
-
+    "ParentOrderNo": "Parent Order No",
+    "PreOrderQuantity": "Pre Order Quantity",
+    "AvailablePreOrderQuantity": "Available Pre Order Quantity",
+    "PrevPage": "Prev",
+    "NextPage": "Next",
+    "FirstPage": "First",
+    "LastPage": "Last"
   }
 }

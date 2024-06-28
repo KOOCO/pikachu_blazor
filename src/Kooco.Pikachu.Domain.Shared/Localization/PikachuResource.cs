@@ -6,4 +6,20 @@ namespace Kooco.Pikachu.Localization;
 public class PikachuResource
 {
     public const string UnableToSpecifyDuringPeakPeriods = "UnableToSpecifyDuringPeakPeriods";
+
+    public const string CurrentStock = "CurrentStock";
+
+    public const string AvailableStock = "AvailableStock";
+
+    public const string PreOrderQuantity = "PreOrderQuantity";
+
+    public const string AvailablePreOrderQuantity = "AvailablePreOrderQuantity";
+
+    public const string FirstPage = "FirstPage";
+
+    public const string PrevPage = "PrevPage";
+
+    public const string NextPage = "NextPage";
+
+    public const string LastPage = "LastPage";
 }

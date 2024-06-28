@@ -86,7 +86,9 @@
                 </Div>
                 <Div Class="col-2">
                     <Label Class="form-label">@L["Availability"]</Label>
-                    <Select TValue="bool?" @bind-SelectedValue="Filters.IsAvailable" Class="form-select form-select-sm">
+                    <Select TValue="bool?" 
+                            @bind-SelectedValue="Filters.IsAvailable" 
+                            Class="form-select form-select-sm">
                         <SelectItem TValue="bool?" Value="null"></SelectItem>
                         <SelectItem TValue="bool?" Value="true">@L["Yes"]</SelectItem>
                         <SelectItem TValue="bool?" Value="false">@L["No"]</SelectItem>
@@ -118,7 +120,8 @@
             <DataGridColumns>
                 <DataGridColumn Caption="@L["Select"]" Width="30px">
                     <DisplayTemplate>
-                        <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
+                        <InputCheckbox class="form-check-input" 
+                                       @bind-Value="@context.IsSelected" />
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn Field="@nameof(ItemListDto.ItemName)"
@@ -158,11 +161,16 @@
                 <DataGridColumn Field="@nameof(ItemListDto.IsItemAvaliable)"
                                 Caption="@L["Availability"]">
                     <DisplayTemplate>
-                        <Switch TValue="bool" Checked="@context.IsItemAvaliable" CheckedChanged="@(() => OnItemAvaliablityChange(context.Id))"></Switch>
+                        <Switch TValue="bool" 
+                                Checked="@context.IsItemAvaliable" 
+                                CheckedChanged="@(() => OnItemAvaliablityChange(context.Id))" />
                     </DisplayTemplate>
                 </DataGridColumn>
-
             </DataGridColumns>
+            <FirstPageButtonTemplate>@L[PikachuResource.FirstPage]</FirstPageButtonTemplate>
+            <PreviousPageButtonTemplate>@L[PikachuResource.PrevPage]</PreviousPageButtonTemplate>
+            <NextPageButtonTemplate>@L[PikachuResource.NextPage]</NextPageButtonTemplate>
+            <LastPageButtonTemplate>@L[PikachuResource.LastPage]</LastPageButtonTemplate>
         </DataGrid>
     </CardBody>
 </Card>

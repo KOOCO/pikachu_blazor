@@ -1,4 +1,5 @@
 ﻿@page "/Items/InventoryReport"
+
 @using Volo.Abp.Application.Dtos
 @using Kooco.Pikachu.Items.Dtos
 @using Kooco.Pikachu.Items
@@ -8,6 +9,7 @@
 @using System.Text.Json;
 @using System.ComponentModel
 @using Blazorise.Components
+
 @inject IStringLocalizer<PikachuResource> L
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
@@ -40,7 +42,6 @@
                   TotalItems="Total"
                   ShowPager="true"
                   PageSize="PageSize"
-                  
                   SortChanged="OnSortChange">
             <DataGridColumns>
                 <DataGridColumn TItem="ItemDetailsDto"
@@ -55,24 +56,26 @@
                 </DataGridColumn>
                 <DataGridColumn TItem="ItemDetailsDto"
                                 Field="@nameof(ItemDetailsDto.StockOnHand)"
-                                Caption="@L["Current Stock"]">
+                                Caption="@L[PikachuResource.CurrentStock]">
                 </DataGridColumn>
        
                 <DataGridColumn TItem="ItemDetailsDto"
                                 Field="@nameof(ItemDetailsDto.SaleableQuantity)"
-                                Caption="@L["Available Stock"]">
+                                Caption="@L[PikachuResource.AvailableStock]">
                 </DataGridColumn>
                 <DataGridColumn TItem="ItemDetailsDto"
                                 Field="@nameof(ItemDetailsDto.PreOrderableQuantity)"
-                                Caption="@L["Preorder Quantity"]">
+                                Caption="@L[PikachuResource.PreOrderQuantity]">
                 </DataGridColumn>
                 <DataGridColumn TItem="ItemDetailsDto"
                                 Field="@nameof(ItemDetailsDto.SaleablePreOrderQuantity)"
-                                Caption="@L["Available Preorder Quantity"]">
+                                Caption="@L[PikachuResource.AvailablePreOrderQuantity]">
                 </DataGridColumn>
-             
-   
             </DataGridColumns>
+            <FirstPageButtonTemplate>@L[PikachuResource.FirstPage]</FirstPageButtonTemplate>
+            <PreviousPageButtonTemplate>@L[PikachuResource.PrevPage]</PreviousPageButtonTemplate>
+            <NextPageButtonTemplate>@L[PikachuResource.NextPage]</NextPageButtonTemplate>
+            <LastPageButtonTemplate>@L[PikachuResource.LastPage]</LastPageButtonTemplate>
         </DataGrid>
     </CardBody>
 </Card>

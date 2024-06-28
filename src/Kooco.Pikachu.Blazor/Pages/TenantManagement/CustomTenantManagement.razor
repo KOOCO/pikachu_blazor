@@ -38,7 +38,7 @@
     </CardHeader>
     <CardBody>
         @* ************************* DATA GRID ************************* *@
-        <AbpExtensibleDataGrid TItem="TenantDto"
+        <Kooco.Pikachu.Blazor.Pages.AbpExtensibleDataGrid.CustomAbpExtensibleDataGrid TItem="TenantDto"
                                Data="@Entities"
                                ReadData="@OnDataGridReadAsync"
                                TotalItems="@TotalCount"
@@ -46,8 +46,7 @@
                                PageSize="@PageSize"
                                CurrentPage="@CurrentPage"
                                Columns="@TenantManagementTableColumns"
-                               Responsive="true">
-        </AbpExtensibleDataGrid>
+                               Responsive="true" />
     </CardBody>
 </Card>
 

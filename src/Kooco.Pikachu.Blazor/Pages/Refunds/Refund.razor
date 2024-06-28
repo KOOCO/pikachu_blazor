@@ -1,4 +1,5 @@
 ﻿@page "/Refund"
+
 @using Kooco.Pikachu.EnumValues;
 @using Kooco.Pikachu.Localization;
 @using Kooco.Pikachu.Orders;
@@ -7,7 +8,9 @@
 @using Blazorise;
 @using Blazorise.LoadingIndicator;
 @using Volo.Abp.AspNetCore.Components.Messages;
+
 @inherits PikachuComponentBase;
+
 @inject NavigationManager NavigationManager;
 @inject IRefundAppService _refundAppService;
 @inject IStringLocalizer<PikachuResource> L;
@@ -29,6 +32,7 @@
          </div>
      </div>
  </div>
+
  <Card>
      <CardBody>
          <DataGrid TItem="RefundDto"
@@ -146,7 +150,15 @@
                      </DisplayTemplate>
                  </DataGridColumn>
             </DataGridColumns>
+            <FirstPageButtonTemplate>@L[PikachuResource.FirstPage]</FirstPageButtonTemplate>
+            <PreviousPageButtonTemplate>@L[PikachuResource.PrevPage]</PreviousPageButtonTemplate>
+            <NextPageButtonTemplate>@L[PikachuResource.NextPage]</NextPageButtonTemplate>
+            <LastPageButtonTemplate>@L[PikachuResource.LastPage]</LastPageButtonTemplate>
         </DataGrid>
     </CardBody>
 </Card>
 </LoadingIndicator>
+
+@{
+
+}

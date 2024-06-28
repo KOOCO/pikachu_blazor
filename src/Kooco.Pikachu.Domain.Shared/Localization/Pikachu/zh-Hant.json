@@ -34,7 +34,7 @@
     "Availability": "上架",
     "AVAILABILITY": "上/下架",
     "AvailablePreorderQuantity": "可預訂數量",
-    "AvailableStock": "可用庫存",
+    "AvailableStock": "可銷售數量",
     "BankTransfer": "銀行轉帳",
     "Before13PM": "13時前",
     "Between14To18PM": "14-18時",
@@ -88,7 +88,7 @@
     "CreditNoteDate": "折讓日期",
     "CreditNoteReason": "折讓原因",
     "CreditNoteUser": "折讓人",
-    "CurrentStock": "當前庫存",
+    "CurrentStock": "目前庫存",
     "CustomerEmail": "收貨人電子郵箱",
     "CustomerInformation": "訂購人資訊",
     "CustomerName": "客戶名稱",
@@ -541,6 +541,12 @@
     "TimePeriod": "團購期間",
     "Refunds": "退款",
     "ParentOrderNo": "原訂單號",
-    "Copy": "複製"
+    "Copy": "複製",
+    "PreOrderQuantity": "預購數量",
+    "AvailablePreOrderQuantity": "可銷售預購數量",
+    "PrevPage": "上一頁",
+    "NextPage": "下一頁",
+    "FirstPage": "第一頁",
+    "LastPage": "最後一頁"
   }
 }
