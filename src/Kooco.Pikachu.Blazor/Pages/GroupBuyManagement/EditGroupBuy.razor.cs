@@ -48,6 +48,7 @@ public partial class EditGroupBuy
     private List<CollapseItem> CollapseItem = new();
     bool CreditCard { get; set; }
     bool BankTransfer { get; set; }
+    bool IsCashOnDelivery { get; set; }
     public List<string> SelfPickupTimeList = new List<string>();
     public List<string> BlackCateDeliveryTimeList = new List<string>();
     public List<string> HomeDeliveryTimeList = new List<string>();

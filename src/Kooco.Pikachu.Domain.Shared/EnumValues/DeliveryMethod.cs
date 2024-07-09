@@ -22,6 +22,6 @@ public enum DeliveryMethod
     FamilyMartC2C=8,
     [Description("廠商統一出貨")]
     DeliveredByStore=9,
-    
-
+    TCatDelivery=12,
+    TCatSevenToEleven=13
 }
