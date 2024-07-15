@@ -95,28 +95,28 @@
         <CardBody>
             <DataGrid TItem="OrderDto"
                       Data="@Orders"
-            @bind-SelectedRow="@SelectedOrder"
+                      @bind-SelectedRow="@SelectedOrder"
                       ReadData="OnDataGridReadAsync"
                       TotalItems="TotalCount"
                       DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.Id == SelectedOrder?.Id)"
                       Responsive
-                       ShowPager="true"
-                       PageSize="PageSize"
-                       RowClicked="ToggleRow"
-                       RowDoubleClicked="NavigateToOrderDetails"
-                       SortChanged="OnSortChange">
-                 <DataGridColumns>
-                     <DataGridCommandColumn />
-                     <DataGridColumn Caption="@L["Select"]" Width="30px">
-                         <DisplayTemplate>
-                             <InputCheckbox  class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
-                         </DisplayTemplate>
-                     </DataGridColumn>
-                     <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
-                         <DisplayTemplate>
-                             @{
-                                var isExpanded = ExpandedRows.Contains(context.Id);
-                                var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
+                      ShowPager="true"
+                      PageSize="PageSize"
+                      RowClicked="ToggleRow"
+                      RowDoubleClicked="NavigateToOrderDetails"
+                      SortChanged="OnSortChange">
+                <DataGridColumns>
+                    <DataGridCommandColumn />
+                    <DataGridColumn Caption="@L["Select"]" Width="30px">
+                        <DisplayTemplate>
+                            <InputCheckbox  class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
+                        <DisplayTemplate>
+                            @{
+                               var isExpanded = ExpandedRows.Contains(context.Id);
+                               var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
                             }
                             <i class="@chevronClass"></i>
                             @L[context.OrderNo]
@@ -150,18 +150,14 @@
                             @if (context.OrderType == OrderType.MargeToNew || context.OrderType == OrderType.SplitToNew)
                             {
                                 @L["Orignal"];
-
                             }
                             @if (context.OrderType == OrderType.NewSplit)
                             {
-                                @L["Split"]
-                                ;
-
+                                @L["Split"];
                             }
                             @if (context.OrderType == OrderType.NewMarge)
                             {
                                 @L["Combined"];
-
                             }
                         </DisplayTemplate>
                     </DataGridColumn>
@@ -196,11 +192,6 @@
                                         <td>@context.AddressDetails</td>
                                     </tr>
                                     <tr>
-                                        <td>@L["Address"]</td>
-                                        <td class="d-none">@context.AddressDetails</td>
-                                        <td>@context.AddressDetails</td>
-                                    </tr>
-                                    <tr>
                                         <td>@L["Remarks"]</td>
                                         <td>@context.Remarks</td>
                                     </tr>
@@ -217,8 +208,7 @@
                                                     <span> @item.Comment</span>
                                                 }
                                             }
-                                            </td>
-
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>@L["OrderItems"]</td>
