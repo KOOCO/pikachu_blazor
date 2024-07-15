@@ -608,11 +608,20 @@
             <Div Class="col-2"></Div>
             <Div Class="col-2">Product Type</Div>
             <Div Class="col-8">
-                <select class="form-select">
+                <select class="form-select"
+                        @onchange=OnProductTypeChange>
                     <option></option>
-                    @foreach (string value in Enum.GetNames<ProductType>())
+                    @foreach (ProductType value in Enum.GetValues<ProductType>())
                     {
-                        <option value="@value">@L[value]</option>
+                        if (value == EditGroupBuyDto.ProductType)
+                        {
+                            <option value="@value" selected>@L[value.ToString() ?? string.Empty]</option>
+                        }
+
+                        else
+                        {
+                            <option value="@value">@L[value.ToString() ?? string.Empty]</option>
+                        }
                     }
                 </select>
             </Div>

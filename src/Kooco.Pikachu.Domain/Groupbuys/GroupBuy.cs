@@ -211,6 +211,7 @@ namespace Kooco.Pikachu.GroupBuys
         /// </summary>
         //public Warehouse DefaultWarehouse { get; set; }
         public bool IsEnterprise { get; set; }
+        public ProductType? ProductType { get; set; }
         public ICollection<GroupBuyItemGroup> ItemGroups { get; set; }
 
         public GroupBuy()

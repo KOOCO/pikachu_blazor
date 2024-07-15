@@ -6,10 +6,12 @@ using Volo.Abp.Domain.Entities;
 
 namespace Kooco.Pikachu.GroupBuys
 {
-    public class GroupBuyUpdateDto : IHasConcurrencyStamp
+    public class GroupBuyUpdateDto :  IHasConcurrencyStamp
     {
         public ICollection<GroupBuyItemGroupCreateUpdateDto> ItemGroups { get; set; }
 
+        public Guid Id { get; set; }
+        public DateTime CreationTime { get; set; }
         /// <summary>
         /// 團購編號  GroupBuysNo
         /// </summary>
@@ -204,6 +206,7 @@ namespace Kooco.Pikachu.GroupBuys
         public string? HomeDeliveryDeliveryTime { get; set; }
         public string? DeliveredByStoreDeliveryTime { get; set; }
         public TaxType TaxType { get; set; }
+        public ProductType? ProductType { get; set; }
         public GroupBuyUpdateDto()
         {
             ShippingMethodList = new List<string>();

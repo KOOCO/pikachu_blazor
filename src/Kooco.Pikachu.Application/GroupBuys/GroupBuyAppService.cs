@@ -65,7 +65,7 @@ namespace Kooco.Pikachu.GroupBuys
 
         public async Task<GroupBuyDto> CreateAsync(GroupBuyCreateDto input)
         {
-            var result = await _groupBuyManager.CreateAsync(input.GroupBuyNo, input.Status, input.GroupBuyName, input.EntryURL, input.EntryURL2, input.SubjectLine,
+            GroupBuy result = await _groupBuyManager.CreateAsync(input.GroupBuyNo, input.Status, input.GroupBuyName, input.EntryURL, input.EntryURL2, input.SubjectLine,
                                                         input.ShortName, input.LogoURL, input.BannerURL, input.StartTime, input.EndTime, input.FreeShipping, input.AllowShipToOuterTaiwan,
                                                         input.AllowShipOversea, input.ExpectShippingDateFrom, input.ExpectShippingDateTo, input.MoneyTransferValidDayBy, input.MoneyTransferValidDays,
                                                         input.IssueInvoice, input.AutoIssueTriplicateInvoice, input.InvoiceNote, input.ProtectPrivacyData, input.InviteCode, input.ProfitShare,
@@ -214,65 +214,14 @@ namespace Kooco.Pikachu.GroupBuys
 
         public async Task<GroupBuyDto> UpdateAsync(Guid id, GroupBuyUpdateDto input)
         {
-            var sameName = await _groupBuyRepository.AnyAsync(x => x.GroupBuyName == input.GroupBuyName && x.Id!=id);
+            bool sameName = await _groupBuyRepository.AnyAsync(x => x.GroupBuyName == input.GroupBuyName && x.Id != id);
 
-            if (sameName)
-            {
-                throw new BusinessException(PikachuDomainErrorCodes.ItemWithSameNameAlreadyExists);
-            }
+            if (sameName) throw new BusinessException(PikachuDomainErrorCodes.ItemWithSameNameAlreadyExists);
 
-            var groupBuy = await _groupBuyRepository.GetWithDetailsAsync(id);
+            GroupBuy groupBuy = await _groupBuyRepository.GetWithDetailsAsync(id);
 
-            groupBuy.GroupBuyNo = input.GroupBuyNo;
-            groupBuy.Status = input.Status;
-            groupBuy.GroupBuyName = input.GroupBuyName;
-            groupBuy.EntryURL = input.EntryURL;
-            groupBuy.EntryURL2 = input.EntryURL2;
-            groupBuy.SubjectLine = input.SubjectLine;
-            groupBuy.ShortName = input.ShortName;
-            groupBuy.LogoURL = input.LogoURL;
-            groupBuy.BannerURL = input.BannerURL;
-            groupBuy.StartTime = input.StartTime;
-            groupBuy.EndTime = input.EndTime;
-            groupBuy.FreeShipping = input.FreeShipping;
-            groupBuy.AllowShipToOuterTaiwan = input.AllowShipToOuterTaiwan;
-            groupBuy.AllowShipOversea = input.AllowShipOversea;
-            groupBuy.ExpectShippingDateFrom = input.ExpectShippingDateFrom;
-            groupBuy.ExpectShippingDateTo = input.ExpectShippingDateTo;
-            groupBuy.MoneyTransferValidDayBy = input.MoneyTransferValidDayBy;
-            groupBuy.MoneyTransferValidDays = input.MoneyTransferValidDays;
-            groupBuy.IssueInvoice = input.IssueInvoice;
-            groupBuy.AutoIssueTriplicateInvoice = input.AutoIssueTriplicateInvoice;
-            groupBuy.InvoiceNote = input.InvoiceNote;
-            groupBuy.ProtectPrivacyData = input.ProtectPrivacyData;
-            groupBuy.InviteCode = input.InviteCode;
-            groupBuy.ProfitShare = input.ProfitShare;
-            groupBuy.MetaPixelNo = input.MetaPixelNo;
-            groupBuy.FBID = input.FBID;
-            groupBuy.IGID = input.IGID;
-            groupBuy.LineID = input.LineID;
-            groupBuy.GAID = input.GAID;
-            groupBuy.GTM = input.GTM;
-            groupBuy.WarningMessage = input.WarningMessage;
-            groupBuy.OrderContactInfo = input.OrderContactInfo;
-            groupBuy.ExchangePolicy = input.ExchangePolicy;
-            groupBuy.NotifyMessage = input.NotifyMessage;
-            groupBuy.ExcludeShippingMethod = input.ExcludeShippingMethod;
-            groupBuy.IsDefaultPaymentGateWay = input.IsDefaultPaymentGateWay;
-            groupBuy.PaymentMethod = input.PaymentMethod;
-            groupBuy.GroupBuyCondition = input.GroupBuyCondition;
-            groupBuy.CustomerInformation = input.CustomerInformation;
-            groupBuy.CustomerInformationDescription = input.CustomerInformationDescription;
-            groupBuy.GroupBuyConditionDescription = input.GroupBuyConditionDescription;
-            groupBuy.ExchangePolicyDescription = input.ExchangePolicyDescription;
-            groupBuy.ShortCode = input.ShortCode;
-            groupBuy.IsEnterprise = input.IsEnterprise;
-            groupBuy.FreeShippingThreshold= input.FreeShippingThreshold;
-            groupBuy.HomeDeliveryDeliveryTime = input.HomeDeliveryDeliveryTime;
-            groupBuy.SelfPickupDeliveryTime = input.SelfPickupDeliveryTime;
-            groupBuy.BlackCatDeliveryTime = input.BlackCatDeliveryTime;
-            groupBuy.DeliveredByStoreDeliveryTime = input.DeliveredByStoreDeliveryTime;
-            groupBuy.TaxType = input.TaxType;
+            groupBuy = ObjectMapper.Map<GroupBuyUpdateDto, GroupBuy>(input);
+
             if (input?.ItemGroups != null)
             {
                 foreach (var group in input.ItemGroups)
@@ -303,7 +252,8 @@ namespace Kooco.Pikachu.GroupBuys
                     }
                 }
             }
-           await CurrentUnitOfWork.SaveChangesAsync();
+
+            await _groupBuyRepository.UpdateAsync(groupBuy);
 
             return ObjectMapper.Map<GroupBuy, GroupBuyDto>(groupBuy);
         }

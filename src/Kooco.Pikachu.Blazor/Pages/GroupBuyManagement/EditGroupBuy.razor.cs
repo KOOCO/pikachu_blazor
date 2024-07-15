@@ -908,11 +908,8 @@ public partial class EditGroupBuy
                     return;
                 }
             }
-            else
-            {
+            else EditGroupBuyDto.ShortCode = "";
 
-                EditGroupBuyDto.ShortCode = "";
-            }
             //if (ItemTags.Any())
             //{
             //    EditGroupBuyDto.ExcludeShippingMethod = string.Join(",", ItemTags);
@@ -921,31 +918,17 @@ public partial class EditGroupBuy
             //{
             //    EditGroupBuyDto.PaymentMethod = string.Join(",", PaymentMethodTags);
             //}
-            if (CreditCard && BankTransfer)
-            {
 
-                EditGroupBuyDto.PaymentMethod = "Credit Card , Bank Transfer";
+            if (CreditCard && BankTransfer && IsCashOnDelivery) EditGroupBuyDto.PaymentMethod = "Credit Card , Bank Transfer , Cash On Delivery";
 
+            else if (CreditCard) EditGroupBuyDto.PaymentMethod = "Credit Card";
 
-            }
-            else if (CreditCard)
-            {
+            else if (BankTransfer) EditGroupBuyDto.PaymentMethod = "Bank Transfer";
 
-                EditGroupBuyDto.PaymentMethod = "Credit Card";
+            else if (IsCashOnDelivery) EditGroupBuyDto.PaymentMethod = "Cash On Delivery";
 
+            else EditGroupBuyDto.PaymentMethod = string.Empty;
 
-            }
-            else if (BankTransfer)
-            {
-
-                EditGroupBuyDto.PaymentMethod = "Bank Transfer";
-
-
-            }
-            else {
-
-                EditGroupBuyDto.PaymentMethod = "";
-            }
             if (EditGroupBuyDto.PaymentMethod.IsNullOrEmpty())
             {
                 await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOnePaymentMethodIsRequired]);
@@ -1083,6 +1066,12 @@ public partial class EditGroupBuy
             Console.WriteLine(ex.ToString());
             await _uiMessageService.Error(ex.Message.GetType()?.ToString());
         }
+    }
+
+    public void OnProductTypeChange(ChangeEventArgs e)
+    {
+        EditGroupBuyDto.ProductType = Enum.TryParse<ProductType>(Convert.ToString(e.Value),
+                                                                 out ProductType selectedValue) ? selectedValue : null;
     }
 
     private async Task OnSelectedValueChanged(Guid? id, CollapseItem collapseItem, ItemWithItemTypeDto? selectedItem = null)

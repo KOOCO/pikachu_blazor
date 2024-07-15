@@ -115,5 +115,6 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<DeliveryTemperatureCostDto, UpdateDeliveryTemperatureCostDto>();
 
         CreateMap<OrderDelivery, OrderDeliveryDto > ();
+        CreateMap<GroupBuyUpdateDto, GroupBuy>().ReverseMap();
     }
 }
