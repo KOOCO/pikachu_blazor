@@ -34,7 +34,6 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         async Task GetOrderDetailsAsync()
         {
             Order = await _orderAppService.GetWithDetailsAsync(OrderId);
-            JSRuntime.InvokeVoidAsync("eval", $"document.title = '{Order.OrderNo.ToString()}'");
 
             await InvokeAsync(StateHasChanged);
         }
