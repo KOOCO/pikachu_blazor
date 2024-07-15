@@ -551,6 +551,8 @@
     "ToBeShipped": "待出貨",
     "Delivered": "已送達",
     "Return": "被退件",
-    "EnterpricePurchase": "企業採購"
+    "EnterpricePurchase": "企業採購",
+    "ActivityEndDateWarning": "活動結束日期不能小於活動開始日期",
+    "ActivityStartDateWarning": "活動開始日期不能大於活動結束日期"
   }
 }

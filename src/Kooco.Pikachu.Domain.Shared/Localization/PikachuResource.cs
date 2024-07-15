@@ -30,4 +30,8 @@ public class PikachuResource
     public const string TCatDelivery = "TCatDelivery";
 
     public const string CashOnDelivery = "CashOnDelivery";
+
+    public const string ActivityStartDateWarning = "ActivityStartDateWarning";
+
+    public const string ActivityEndDateWarning = "ActivityEndDateWarning";
 }

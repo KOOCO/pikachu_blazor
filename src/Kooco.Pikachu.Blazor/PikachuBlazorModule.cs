@@ -17,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using MudBlazor.Services;
 using OpenIddict.Validation.AspNetCore;
 using System;
 using System.Collections.Generic;
@@ -314,7 +315,8 @@ public class PikachuBlazorModule : AbpModule
     {
         context.Services
             .AddBootstrap5Providers()
-            .AddFontAwesomeIcons();
+            .AddFontAwesomeIcons()
+            .AddMudServices();
     }
 
     private void ConfigureMenu(ServiceConfigurationContext context)

@@ -25,12 +25,12 @@ namespace Kooco.Pikachu.Freebies
         }
         public async Task<List<Freebie>> GetFreebieStoreAsync(Guid groupBuyId)
         {
-            var data = await GetQueryableAsync();
-            return await data
+            return [.. (await GetQueryableAsync())
+                .Where(w => DateTime.Now.Date >= w.ActivityStartDate && DateTime.Now.Date <= w.ActivityEndDate)
                 .Where(x => x.IsFreebieAvaliable)
                 .Include(x => x.FreebieGroupBuys)
                 .Where(x => x.ApplyToAllGroupBuy || x.FreebieGroupBuys.Select(x => x.GroupBuyId).Contains(groupBuyId))
-                .ToListAsync();
+            ];
         }
 
     }

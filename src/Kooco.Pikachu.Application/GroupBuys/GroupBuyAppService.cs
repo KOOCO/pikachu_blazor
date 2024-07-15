@@ -374,7 +374,7 @@ namespace Kooco.Pikachu.GroupBuys
         {
             using (_dataFilter.Disable<IMultiTenant>())
             {
-                var freebie = await _freebieRepository.GetFreebieStoreAsync(groupBuyId);
+                List<Freebie> freebie = await _freebieRepository.GetFreebieStoreAsync(groupBuyId);
                 return ObjectMapper.Map<List<Freebie>, List<FreebieDto>>(freebie);
             }
         }
