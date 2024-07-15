@@ -116,40 +116,39 @@ namespace Kooco.Pikachu.StoreLogisticOrders
                 MaxTimeout = -1,
             };
 
-           
+            RestClient client = new (options);
 
-
-
-            var client = new RestClient(options);
-            var request = new RestRequest(_configuration["EcPay:LogisticApi"], Method.Post);
-            var marchentDate = DateTime.Now.ToString("yyyy/MM/dd");
+            RestRequest request = new (_configuration["EcPay:LogisticApi"], Method.Post);
+            
+            string marchentDate = DateTime.Now.ToString("yyyy/MM/dd");
+            
             request.AddHeader("Accept", "text/html");
             request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
             request.AddParameter("MerchantID", GreenWorld.StoreCode);
             request.AddParameter("MerchantTradeDate",marchentDate);
             request.AddParameter("LogisticsType", "HOME");
-            request.AddParameter("LogisticsSubType",orderDelivery.DeliveryMethod==EnumValues.DeliveryMethod.PostOffice?"POST":"TCAT");
+            request.AddParameter("LogisticsSubType",orderDelivery.DeliveryMethod is DeliveryMethod.PostOffice ? "POST" : "TCAT");
             request.AddParameter("GoodsAmount", Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)));
             request.AddParameter("GoodsWeight", PostOffice.Weight);
             request.AddParameter("SenderName", GreenWorld.SenderName);
             request.AddParameter("SenderPhone", GreenWorld.SenderPhoneNumber);
             request.AddParameter("SenderZipCode", GreenWorld.SenderPostalCode);
             request.AddParameter("SenderAddress", GreenWorld.SenderAddress);
-
             request.AddParameter("ReceiverName", order.RecipientName);
             request.AddParameter("ReceiverCellPhone", order.RecipientPhone);
             request.AddParameter("ReceiverZipCode", order.PostalCode);
-            request.AddParameter("ReceiverAddress", order.AddressDetails);
+            request.AddParameter("ReceiverAddress", string.Concat(order.City, order.AddressDetails));
             request.AddParameter("ServerReplyURL", "https://www.ecpay.com.tw/ServerReplyURL");
             //request.AddParameter("ReceiverStoreID", "123");
             request.AddParameter("CheckMacValue", GenerateCheckMac(greenWorld.HashKey, greenWorld.HashIV, GreenWorld.StoreCode, "", marchentDate, "HOME", orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.PostOffice ? "POST" : "TCAT", Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)),PostOffice.Weight, GreenWorld.SenderName,GreenWorld.SenderPhoneNumber,
-                                                    GreenWorld.SenderPostalCode,GreenWorld.SenderAddress, order.RecipientName, order.RecipientPhone,order.PostalCode,order.AddressDetails, "https://www.ecpay.com.tw/ServerReplyURL"));
+                                                    GreenWorld.SenderPostalCode,GreenWorld.SenderAddress, order.RecipientName, order.RecipientPhone,order.PostalCode, string.Concat(order.City, order.AddressDetails), "https://www.ecpay.com.tw/ServerReplyURL"));
             //request.AddParameter("IsCollection", "N");
             request.AddParameter("MerchantTradeNo",  "");
 
-
             RestResponse response = await client.ExecuteAsync(request);
+
             ResponseResultDto result = ParseApiResponse(response.Content.ToString());
+            
             if (result.ResponseCode == "1")
             {
                 orderDelivery.DeliveryNo = result.ShippingInfo.BookingNote;
