@@ -78,13 +78,15 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
             {
                 ExpandedRows.Add(e.Item.Id);
             }
-
-
         }
+
         async Task GetOrderDetailsAsync()
         {
             Order = await _orderAppService.GetWithDetailsAsync(OrderId);
             OrderDeliveries = await _orderDeliveryAppService.GetListByOrderAsync(OrderId);
+
+            OrderDeliveries = [.. OrderDeliveries.Where(w => w.Items.Count > 0)];
+
             await InvokeAsync(StateHasChanged);
         }
 

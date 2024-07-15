@@ -797,16 +797,11 @@
             <Card>
                 <CardBody>
                     <DataGrid TItem="OrderDeliveryDto"
-                      Data="@OrderDeliveries"
-                      @bind-SelectedRow="@SelectedOrder"
-                      
-                      
-                      DetailRowTrigger="@((e) => e.Item.Items?.Count > 0 && e.Item.Id == SelectedOrder?.Id)"
-                      Responsive
-                       
-                       RowClicked="ToggleRow"
-                      
-                    >
+                              Data="@OrderDeliveries"
+                              @bind-SelectedRow="@SelectedOrder"
+                              DetailRowTrigger="@((e) => e.Item.Items?.Count > 0 && e.Item.Id == SelectedOrder?.Id)"
+                              Responsive
+                              RowClicked="ToggleRow">
                  <DataGridColumns>
                      <DataGridCommandColumn />
                      

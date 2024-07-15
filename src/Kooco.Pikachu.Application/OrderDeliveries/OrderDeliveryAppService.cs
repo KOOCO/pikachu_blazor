@@ -44,9 +44,9 @@ namespace Kooco.Pikachu.OrderDeliveries
         }
         public async Task<List<OrderDeliveryDto>> GetListByOrderAsync(Guid Id)
         {
-            var result = await _orderDeliveryRepository.GetWithDetailsAsync(Id);
+            List<OrderDelivery> result = await _orderDeliveryRepository.GetWithDetailsAsync(Id);
 
-            return ObjectMapper.Map<List<OrderDelivery>, List<OrderDeliveryDto>>(result.ToList());
+            return ObjectMapper.Map<List<OrderDelivery>, List<OrderDeliveryDto>>([.. result]);
         }
         public async Task<OrderDeliveryDto> GetDeliveryOrderAsync(Guid Id)
         {
