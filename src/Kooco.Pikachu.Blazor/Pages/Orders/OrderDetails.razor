@@ -259,14 +259,22 @@
                                             @if (ModificationTrack.IsCityInputVisible)
                                             {
                                                 <td>
-
                                                     <div class="row">
                                                         <div class="col-12">
                                                             <div class="input-group">
                                                                 @{
-                                                                    var errorClass = ModificationTrack.IsInvalidCity ? "invalid" : "";
+                                                                    string errorClass = ModificationTrack.IsInvalidCity ? "invalid" : "";
                                                                 }
-                                                                <input class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewCity" />
+                                                                @* <input class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewCity" /> *@
+
+                                                                <select class="form-select form-select-sm @errorClass" @onchange=@((e) => ModificationTrack.NewCity = Convert.ToString(e.Value))>
+                                                                    <option value=""> Select City </option>
+                                                                    @foreach(string city in Enum.GetNames<RecipientCities>()) 
+                                                                    {
+                                                                        <option value="@city">@city</option>
+                                                                    }
+                                                                </select>
+
                                                                 <Button Type="ButtonType.Button" @onclick="SaveRecipientCity" Class="btn btn-sm btn-primary">
                                                                     <i class="fa fa-check"></i>
                                                                 </Button>
