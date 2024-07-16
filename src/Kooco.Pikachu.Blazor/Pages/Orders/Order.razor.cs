@@ -5,6 +5,7 @@ using Kooco.Pikachu.Blazor.Pages.ItemManagement;
 using Kooco.Pikachu.ElectronicInvoiceSettings;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Items.Dtos;
+using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.Orders;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -17,259 +18,332 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Volo.Abp.Application.Dtos;
 using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form;
 
-namespace Kooco.Pikachu.Blazor.Pages.Orders
+namespace Kooco.Pikachu.Blazor.Pages.Orders;
+
+public partial class Order
 {
-    public partial class Order
+    #region Inject
+    private bool IsAllSelected { get; set; } = false;
+    private List<OrderDto> Orders { get; set; } = new();
+    private int TotalCount { get; set; }
+    private OrderDto SelectedOrder { get; set; }
+    private Guid? GroupBuyFilter { get; set; }
+    private int PageIndex { get; set; } = 1;
+    private int PageSize { get; set; } = 10;
+    private Guid? SelectedGroupBuy { get; set; }
+    private DateTime? StartDate { get; set; }
+    private DateTime? EndDate { get; set; }
+    private string? Sorting { get; set; }
+    private string? Filter { get; set; }
+    private bool isOrderCombine { get; set; } = false;
+    private readonly HashSet<Guid> ExpandedRows = new();
+    private LoadingIndicator loading { get; set; }
+    private List<KeyValueDto> GroupBuyList { get; set; } = new();
+    private List<ShippingStatus> ShippingStatuses { get; set; } = [];
+    private List<DeliveryMethod> DeliveryMethods { get; set; } = [];
+    private string SelectedTabName = "All";
+    private DataGridReadDataEventArgs<OrderDto> TabReadData;
+    #endregion
+
+    #region Methods
+    private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<OrderDto> e)
     {
-        private bool IsAllSelected { get; set; } = false;
-        private List<OrderDto> Orders { get; set; } = new();
-        private int TotalCount { get; set; }
-        private OrderDto SelectedOrder { get; set; }
-        private Guid? GroupBuyFilter { get; set; }
-        private int PageIndex { get; set; } = 1;
-        private int PageSize { get; set; } = 10;
-        private Guid? SelectedGroupBuy { get; set; }
-        private DateTime? StartDate { get; set; }
-        private DateTime? EndDate { get; set; }
-        private string? Sorting { get; set; }
-        private string? Filter { get; set; }
-        private bool isOrderCombine { get; set; } = false;
-        private readonly HashSet<Guid> ExpandedRows = new();
-        private LoadingIndicator loading { get; set; }
-        private List<KeyValueDto> GroupBuyList { get; set; } = new();
-        
-        private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<OrderDto> e)
+        await JSRuntime.InvokeVoidAsync("removeSelectClass", "mySelectElement");
+        await JSRuntime.InvokeVoidAsync("removeSelectClass", "shippingMethodSelectElem");
+        await JSRuntime.InvokeVoidAsync("removeInputClass", "startDate");
+        await JSRuntime.InvokeVoidAsync("removeInputClass", "endDate");
+        PageIndex = e.Page - 1;
+        await UpdateItemList();
+        await GetGroupBuyList();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void SelectedTabChanged(string e)
+    {
+        SelectedTabName = e;
+
+        TotalCount = 0;
+
+        StateHasChanged();
+    }
+
+    public async Task OnTabLoadDataGridReadAsync(DataGridReadDataEventArgs<OrderDto> e, string tabName)
+    {
+        await JSRuntime.InvokeVoidAsync("removeSelectClass", "mySelectElement");
+        await JSRuntime.InvokeVoidAsync("removeSelectClass", "shippingMethodSelectElem");
+        await JSRuntime.InvokeVoidAsync("removeInputClass", "startDate");
+        await JSRuntime.InvokeVoidAsync("removeInputClass", "endDate");
+
+        PageIndex = e.Page - 1;
+
+        await LoadTabAsPerNameAsync(tabName);
+
+        await GetGroupBuyList();
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task GetGroupBuyList() {
+        await loading.Show();
+        GroupBuyList = await _groupBuyAppService.GetGroupBuyLookupAsync();
+        await loading.Hide();
+    
+    }
+    
+    private async Task UpdateItemList()
+    {
+        try
         {
-            await JSRuntime.InvokeVoidAsync("removeSelectClass", "mySelectElement");
-            await JSRuntime.InvokeVoidAsync("removeInputClass", "startDate");
-            await JSRuntime.InvokeVoidAsync("removeInputClass", "endDate");
-            PageIndex = e.Page - 1;
-            await UpdateItemList();
-            await GetGroupBuyList();
-            await InvokeAsync(StateHasChanged);
-       
-        }
-        private async Task GetGroupBuyList() {
             await loading.Show();
-            GroupBuyList = await _groupBuyAppService.GetGroupBuyLookupAsync();
-            await loading.Hide();
-        
-        }
-        private async Task UpdateItemList()
-        {
-            try
+            int skipCount = PageIndex * PageSize;
+            var result = await _orderAppService.GetListAsync(new GetOrderListDto
             {
-                await loading.Show();
-                int skipCount = PageIndex * PageSize;
-                var result = await _orderAppService.GetListAsync(new GetOrderListDto
-                {
-                    Sorting = Sorting,
-                    MaxResultCount = PageSize,
-                    SkipCount = skipCount,
-                    Filter = Filter,
-                    GroupBuyId=GroupBuyFilter,
-                    StartDate=StartDate,
-                    EndDate=EndDate
-                });
-                Orders = result?.Items.ToList() ?? new List<OrderDto>();
-                TotalCount = (int?)result?.TotalCount ?? 0;
-
-                await loading.Hide();
-            }
-            catch (Exception ex)
-            {
-                await loading.Hide();
-                await _uiMessageService.Error(ex.GetType().ToString());
-                Console.WriteLine(ex.ToString());
-            }
-        }
-
-        async Task OnSearch(Guid? e=null)
-        {
-            if (e == Guid.Empty)
-            {
-                GroupBuyFilter = null;
-            }
-            else { GroupBuyFilter = e; }
-                
-            
-          
-            PageIndex = 0;
-            await UpdateItemList();
-        }
-      
-  
-        void HandleSelectAllChange(ChangeEventArgs e)
-        {
-            IsAllSelected = e.Value != null ? (bool)e.Value : false;
-            Orders.ForEach(item =>
-            {
-                item.IsSelected = IsAllSelected;
+                Sorting = Sorting,
+                MaxResultCount = PageSize,
+                SkipCount = skipCount,
+                Filter = Filter,
+                GroupBuyId=GroupBuyFilter,
+                StartDate=StartDate,
+                EndDate=EndDate
             });
-            StateHasChanged();
-        }
-
-        public async void NavigateToOrderDetails(DataGridRowMouseEventArgs<OrderDto> e)
-        {
-            await loading.Show();
-
-            var id = e.Item.Id;
-            NavigationManager.NavigateTo($"Orders/OrderDetails/{id}");
+            Orders = result?.Items.ToList() ?? new List<OrderDto>();
+            TotalCount = (int?)result?.TotalCount ?? 0;
 
             await loading.Hide();
         }
-
-        bool ShowCombineButton()
+        catch (Exception ex)
         {
-            var selectedOrders = Orders.Where(x => x.IsSelected).ToList();
+            await loading.Hide();
+            await _uiMessageService.Error(ex.GetType().ToString());
+            Console.WriteLine(ex.ToString());
+        }
+    }
 
-            if (selectedOrders.Count>1)
+    public async Task LoadTabAsPerNameAsync(string tabName)
+    {
+        try
+        {
+            await loading.Show();
+
+            int skipCount = PageIndex * PageSize;
+            
+            PagedResultDto<OrderDto> result = await _orderAppService.GetListAsync(new GetOrderListDto
             {
-                var firstSelectedOrder = selectedOrders.First();
-                bool allMatch = true;
+                Sorting = Sorting,
+                MaxResultCount = PageSize,
+                SkipCount = skipCount,
+                Filter = Filter,
+                GroupBuyId = GroupBuyFilter,
+                StartDate = StartDate,
+                EndDate = EndDate,
+                ShippingStatus = Enum.Parse<ShippingStatus>(tabName)
+            });
 
-                foreach (var order in selectedOrders)
-                {
-                    if (order.GroupBuyId != firstSelectedOrder.GroupBuyId ||
-                         order.CustomerName != firstSelectedOrder.CustomerName ||
-                        order.CustomerEmail != firstSelectedOrder.CustomerEmail ||
-                       order.ShippingStatus != firstSelectedOrder.ShippingStatus ||
-                    
-                       
-                        order.OrderType!=null
-                        || order.ShippingStatus==ShippingStatus.Shipped
-                        || order.ShippingStatus == ShippingStatus.Completed
-                        || order.ShippingStatus == ShippingStatus.Closed)
-                    {
-                        // If any property doesn't match, set allMatch to false and break the loop
-                        allMatch = false;
-                        break;
-                    }
-                }
+            Orders = [];
 
-                if (allMatch)
+            Orders = [.. result.Items];
+
+            TotalCount = (int?)result?.TotalCount ?? 0;
+
+            await loading.Hide();
+        }
+        catch (Exception ex)
+        {
+            await loading.Hide();
+
+            await _uiMessageService.Error(ex.GetType().ToString());
+        }
+    }
+
+    async Task OnSearch(Guid? e=null)
+    {
+        if (e == Guid.Empty)
+        {
+            GroupBuyFilter = null;
+        }
+        else { GroupBuyFilter = e; }
+            
+        
+      
+        PageIndex = 0;
+        await UpdateItemList();
+    }
+  
+    void HandleSelectAllChange(ChangeEventArgs e)
+    {
+        IsAllSelected = e.Value != null ? (bool)e.Value : false;
+        Orders.ForEach(item =>
+        {
+            item.IsSelected = IsAllSelected;
+        });
+        StateHasChanged();
+    }
+
+    public async void NavigateToOrderDetails(DataGridRowMouseEventArgs<OrderDto> e)
+    {
+        await loading.Show();
+
+        var id = e.Item.Id;
+        NavigationManager.NavigateTo($"Orders/OrderDetails/{id}");
+
+        await loading.Hide();
+    }
+
+    bool ShowCombineButton()
+    {
+        var selectedOrders = Orders.Where(x => x.IsSelected).ToList();
+
+        if (selectedOrders.Count>1)
+        {
+            var firstSelectedOrder = selectedOrders.First();
+            bool allMatch = true;
+
+            foreach (var order in selectedOrders)
+            {
+                if (order.GroupBuyId != firstSelectedOrder.GroupBuyId ||
+                     order.CustomerName != firstSelectedOrder.CustomerName ||
+                    order.CustomerEmail != firstSelectedOrder.CustomerEmail ||
+                   order.ShippingStatus != firstSelectedOrder.ShippingStatus ||
+                
+                   
+                    order.OrderType!=null
+                    || order.ShippingStatus==ShippingStatus.Shipped
+                    || order.ShippingStatus == ShippingStatus.Completed
+                    || order.ShippingStatus == ShippingStatus.Closed)
                 {
-                    // All selected orders have the same values for the specified properties
-                    Console.WriteLine("All selected orders have the same values.");
-                    return true;
+                    // If any property doesn't match, set allMatch to false and break the loop
+                    allMatch = false;
+                    break;
                 }
-                else
-                {
-                    // Not all selected orders have the same values for the specified properties
-                    Console.WriteLine("Selected orders have different values for the specified properties.");
-                    return false;
-                }
+            }
+
+            if (allMatch)
+            {
+                // All selected orders have the same values for the specified properties
+                Console.WriteLine("All selected orders have the same values.");
+                return true;
             }
             else
             {
-                // No selected orders found
-                Console.WriteLine("No selected orders found.");
+                // Not all selected orders have the same values for the specified properties
+                Console.WriteLine("Selected orders have different values for the specified properties.");
                 return false;
             }
-
-
         }
-        async void OnSortChange(DataGridSortChangedEventArgs e)
+        else
         {
-            Sorting = e.FieldName + " " + (e.SortDirection != SortDirection.Default ? e.SortDirection : "");
-            await UpdateItemList();
+            // No selected orders found
+            Console.WriteLine("No selected orders found.");
+            return false;
         }
 
-        void ToggleRow(DataGridRowMouseEventArgs<OrderDto> e)
-        {
-            if (ExpandedRows.Contains(e.Item.Id))
-            {
-                ExpandedRows.Remove(e.Item.Id);
-            }
-            else
-            {
-                ExpandedRows.Add(e.Item.Id);
-            }
-
-           
-        }
-        private async void MergeOrders() {
-            var orderIds = Orders.Where(x => x.IsSelected).Select(x => x.Id).ToList();
-            await _orderAppService.MergeOrdersAsync(orderIds);
-           await UpdateItemList();
-
-        }
-
-        public void NavigateToOrderPrint()
-        {
-            var selectedOrder = Orders.SingleOrDefault(x => x.IsSelected);
-            NavigationManager.NavigateTo($"Orders/OrderShippingDetails/{selectedOrder.Id}");
-        }
-        public async void IssueInvoice()
-        {
-            try
-            {
-                await loading.Show();
-                var selectedOrder = Orders.SingleOrDefault(x => x.IsSelected);
-                await _electronicInvoiceAppService.CreateInvoiceAsync(selectedOrder.Id);
-                await loading.Hide();
-                await _uiMessageService.Success(L["InvoiceIssueSuccessfully"]);
-                await UpdateItemList();
-
-
-            }
-            catch (Exception ex)
-            {
-                await loading.Hide();
-                await _uiMessageService.Error(ex.Message.ToString());
-                
-
-            }
-           
-        }
-        async Task DownloadExcel()
-        {
-            try
-            {
-                int skipCount = PageIndex * PageSize;
-                var orderIds = Orders.Where(x => x.IsSelected).Select(x=>x.Id).ToList();
-                Sorting = Sorting != null ? Sorting : "OrderNo Ascending";
-
-
-                var remoteStreamContent = await _orderAppService.GetListAsExcelFileAsync(new GetOrderListDto
-                {
-                    Sorting = Sorting,
-                    MaxResultCount = PageSize,
-                    SkipCount = skipCount,
-                    Filter = Filter,
-                    OrderIds=orderIds,
-                });
-                using (var responseStream = remoteStreamContent.GetStream())
-                {
-                    // Create Excel file from the stream
-                    using (var memoryStream = new MemoryStream())
-                    {
-                        await responseStream.CopyToAsync(memoryStream);
-                        memoryStream.Seek(0, SeekOrigin.Begin);
-
-                        // Convert MemoryStream to byte array
-                        var excelData = memoryStream.ToArray();
-
-                        // Trigger the download using JavaScript interop
-                        await JSRuntime.InvokeVoidAsync("downloadFile", new
-                        {
-                            ByteArray = excelData,
-                            FileName = "ReconciliationStatement.xlsx",
-                            ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                        });
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-
-                throw e;
-            }
-
-
-        }
 
     }
+
+    async void OnSortChange(DataGridSortChangedEventArgs e)
+    {
+        Sorting = e.FieldName + " " + (e.SortDirection != SortDirection.Default ? e.SortDirection : "");
+        await UpdateItemList();
+    }
+
+    void ToggleRow(DataGridRowMouseEventArgs<OrderDto> e)
+    {
+        if (ExpandedRows.Contains(e.Item.Id))
+        {
+            ExpandedRows.Remove(e.Item.Id);
+        }
+        else
+        {
+            ExpandedRows.Add(e.Item.Id);
+        }
+
+       
+    }
+
+    private async void MergeOrders() {
+        var orderIds = Orders.Where(x => x.IsSelected).Select(x => x.Id).ToList();
+        await _orderAppService.MergeOrdersAsync(orderIds);
+       await UpdateItemList();
+
+    }
+
+    public void NavigateToOrderPrint()
+    {
+        var selectedOrder = Orders.SingleOrDefault(x => x.IsSelected);
+        NavigationManager.NavigateTo($"Orders/OrderShippingDetails/{selectedOrder.Id}");
+    }
+    
+    public async void IssueInvoice()
+    {
+        try
+        {
+            await loading.Show();
+            var selectedOrder = Orders.SingleOrDefault(x => x.IsSelected);
+            await _electronicInvoiceAppService.CreateInvoiceAsync(selectedOrder.Id);
+            await loading.Hide();
+            await _uiMessageService.Success(L["InvoiceIssueSuccessfully"]);
+            await UpdateItemList();
+
+
+        }
+        catch (Exception ex)
+        {
+            await loading.Hide();
+            await _uiMessageService.Error(ex.Message.ToString());
+            
+
+        }
+       
+    }
+    
+    async Task DownloadExcel()
+    {
+        try
+        {
+            int skipCount = PageIndex * PageSize;
+            var orderIds = Orders.Where(x => x.IsSelected).Select(x=>x.Id).ToList();
+            Sorting = Sorting != null ? Sorting : "OrderNo Ascending";
+
+
+            var remoteStreamContent = await _orderAppService.GetListAsExcelFileAsync(new GetOrderListDto
+            {
+                Sorting = Sorting,
+                MaxResultCount = PageSize,
+                SkipCount = skipCount,
+                Filter = Filter,
+                OrderIds=orderIds,
+            });
+            using (var responseStream = remoteStreamContent.GetStream())
+            {
+                // Create Excel file from the stream
+                using (var memoryStream = new MemoryStream())
+                {
+                    await responseStream.CopyToAsync(memoryStream);
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+
+                    // Convert MemoryStream to byte array
+                    var excelData = memoryStream.ToArray();
+
+                    // Trigger the download using JavaScript interop
+                    await JSRuntime.InvokeVoidAsync("downloadFile", new
+                    {
+                        ByteArray = excelData,
+                        FileName = "ReconciliationStatement.xlsx",
+                        ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    });
+                }
+            }
+        }
+        catch (Exception e)
+        {
+
+            throw e;
+        }
+
+
+    }
+    #endregion
 }

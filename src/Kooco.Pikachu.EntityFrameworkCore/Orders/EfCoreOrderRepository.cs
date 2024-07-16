@@ -9,263 +9,289 @@ using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 
-namespace Kooco.Pikachu.Orders
+namespace Kooco.Pikachu.Orders;
+
+public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, Guid>, IOrderRepository
 {
-    public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, Guid>, IOrderRepository
+    #region Constructor
+    public EfCoreOrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvider) : base(dbContextProvider)
     {
-        public EfCoreOrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvider) : base(dbContextProvider)
-        {
 
-        }
-        public async Task<long> CountAsync(string? filter, Guid? groupBuyId, DateTime? startDate, DateTime? endDate, OrderStatus? orderStatus = null)
-        {
-            return await ApplyFilters((await GetQueryableAsync()).Include(o => o.GroupBuy), filter, groupBuyId, null, startDate, endDate, orderStatus).CountAsync();
-        }
-        public async Task<long> CountAllAsync(string? filter, Guid? groupBuyId, DateTime? startDate, DateTime? endDate, OrderStatus? orderStatus = null)
-        {
-            return await ApplyFiltersNew((await GetQueryableAsync()).Include(o => o.GroupBuy), filter, groupBuyId, null, startDate, endDate, orderStatus).CountAsync();
-        }
-        public async Task<List<Order>> GetListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId, List<Guid> orderId, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null)
-        {
-            var result= await ApplyFilters(await GetQueryableAsync(), filter, groupBuyId, orderId, startDate, endDate, orderStatus)
-                .OrderBy(sorting)
-                .PageBy(skipCount, maxResultCount)
-                .Include(o => o.GroupBuy)
-                .Include(o => o.StoreComments)
-                .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.Item)
-                .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.SetItem)
-                .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.Freebie)
-                
-                .ToListAsync();
-            return result;
-        }
-        public async Task<List<Order>> GetAllListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId, List<Guid> orderId, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null)
-        {
-            return await ApplyFiltersNew(await GetQueryableAsync(), filter, groupBuyId, orderId, startDate, endDate, orderStatus)
-                .OrderBy(sorting)
-                .PageBy(skipCount, maxResultCount)
-                .Include(o => o.GroupBuy)
-                .Include(o => o.StoreComments)
-                .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.Item)
-                .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.SetItem)
-                .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.Freebie)
-                .ToListAsync();
-        }
-        public async Task<long> CountReconciliationAsync(string? filter, Guid? groupBuyId, DateTime? startDate, DateTime? endDate)
-        {
-            return await ApplyReconciliationFilters((await GetQueryableAsync()).Include(o => o.GroupBuy), filter, groupBuyId, null, startDate, endDate).CountAsync();
-        }
-        public async Task<List<Order>> GetReconciliationListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId, List<Guid> orderId, DateTime? startDate = null, DateTime? endDate = null)
-        {
-            return await ApplyReconciliationFilters(await GetQueryableAsync(), filter, groupBuyId, orderId, startDate, endDate)
-                .OrderBy(sorting)
-                .PageBy(skipCount, maxResultCount)
-                //.Include(o => o.GroupBuy)
-                .Include(o => o.OrderItems)
-                //.ThenInclude(oi => oi.Item)
-                //.Include(o => o.OrderItems)
-                //.ThenInclude(oi => oi.SetItem)
-                //.Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.Freebie)
-                .ToListAsync();
-        }
-        public async Task<long> CountVoidAsync(string? filter, Guid? groupBuyId, DateTime? startDate, DateTime? endDate)
-        {
-            return await ApplyVoidFilters((await GetQueryableAsync()).Include(o => o.GroupBuy), filter, groupBuyId, null, startDate, endDate).CountAsync();
-        }
-        public async Task<List<Order>> GetVoidListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId, List<Guid> orderId, DateTime? startDate = null, DateTime? endDate = null)
-        {
-            return await ApplyVoidFilters(await GetQueryableAsync(), filter, groupBuyId, orderId, startDate, endDate)
-                .OrderBy(sorting)
-                .PageBy(skipCount, maxResultCount)
-                .Include(o => o.GroupBuy)
-                .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.Item)
-                .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.SetItem)
-                .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.Freebie)
-                .ToListAsync();
-        }
+    }
+    #endregion
 
+    #region Methods
+    public async Task<long> CountAsync(string? filter,
+                                       Guid? groupBuyId,
+                                       DateTime? startDate,
+                                       DateTime? endDate,
+                                       OrderStatus? orderStatus = null,
+                                       ShippingStatus? shippingStatus = null)
+    {
+        return await ApplyFilters(
+            (await GetQueryableAsync()).Include(o => o.GroupBuy), 
+            filter, 
+            groupBuyId, 
+            null, 
+            startDate, 
+            endDate, 
+            orderStatus,
+            shippingStatus
+        ).CountAsync();
+    }
 
-        private static IQueryable<Order> ApplyFiltersNew(
-         IQueryable<Order> queryable,
-         string? filter,
-         Guid? groupBuyId,
-         List<Guid> orderIds,
-         DateTime? startDate = null,
-         DateTime? endDate = null,
-         OrderStatus? orderStatus = null
-         )
-        {
-            return queryable
-                .WhereIf(groupBuyId.HasValue, x => x.GroupBuyId == groupBuyId)
-                .WhereIf(!filter.IsNullOrWhiteSpace(),
+    public async Task<long> CountAllAsync(string? filter,
+                                          Guid? groupBuyId,
+                                          DateTime? startDate,
+                                          DateTime? endDate,
+                                          OrderStatus? orderStatus = null)
+    {
+        return await ApplyFiltersNew((await GetQueryableAsync()).Include(o => o.GroupBuy), filter, groupBuyId, null, startDate, endDate, orderStatus).CountAsync();
+    }
+    
+    public async Task<List<Order>> GetListAsync(int skipCount,
+                                                int maxResultCount,
+                                                string? sorting,
+                                                string? filter,
+                                                Guid? groupBuyId,
+                                                List<Guid> orderId,
+                                                DateTime? startDate = null,
+                                                DateTime? endDate = null,
+                                                OrderStatus? orderStatus = null,
+                                                ShippingStatus? shippingStatus = null)
+    {
+        var result= await ApplyFilters(await GetQueryableAsync(), filter, groupBuyId, orderId, startDate, endDate, orderStatus, shippingStatus)
+            .OrderBy(sorting)
+            .PageBy(skipCount, maxResultCount)
+            .Include(o => o.GroupBuy)
+            .Include(o => o.StoreComments)
+            .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.Item)
+            .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.SetItem)
+            .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.Freebie)
+            .ToListAsync();
+        return result;
+    }
+    public async Task<List<Order>> GetAllListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId, List<Guid> orderId, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null)
+    {
+        return await ApplyFiltersNew(await GetQueryableAsync(), filter, groupBuyId, orderId, startDate, endDate, orderStatus)
+            .OrderBy(sorting)
+            .PageBy(skipCount, maxResultCount)
+            .Include(o => o.GroupBuy)
+            .Include(o => o.StoreComments)
+            .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.Item)
+            .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.SetItem)
+            .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.Freebie)
+            .ToListAsync();
+    }
+    public async Task<long> CountReconciliationAsync(string? filter, Guid? groupBuyId, DateTime? startDate, DateTime? endDate)
+    {
+        return await ApplyReconciliationFilters((await GetQueryableAsync()).Include(o => o.GroupBuy), filter, groupBuyId, null, startDate, endDate).CountAsync();
+    }
+    public async Task<List<Order>> GetReconciliationListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId, List<Guid> orderId, DateTime? startDate = null, DateTime? endDate = null)
+    {
+        return await ApplyReconciliationFilters(await GetQueryableAsync(), filter, groupBuyId, orderId, startDate, endDate)
+            .OrderBy(sorting)
+            .PageBy(skipCount, maxResultCount)
+            //.Include(o => o.GroupBuy)
+            .Include(o => o.OrderItems)
+            //.ThenInclude(oi => oi.Item)
+            //.Include(o => o.OrderItems)
+            //.ThenInclude(oi => oi.SetItem)
+            //.Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.Freebie)
+            .ToListAsync();
+    }
+    public async Task<long> CountVoidAsync(string? filter, Guid? groupBuyId, DateTime? startDate, DateTime? endDate)
+    {
+        return await ApplyVoidFilters((await GetQueryableAsync()).Include(o => o.GroupBuy), filter, groupBuyId, null, startDate, endDate).CountAsync();
+    }
+    public async Task<List<Order>> GetVoidListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId, List<Guid> orderId, DateTime? startDate = null, DateTime? endDate = null)
+    {
+        return await ApplyVoidFilters(await GetQueryableAsync(), filter, groupBuyId, orderId, startDate, endDate)
+            .OrderBy(sorting)
+            .PageBy(skipCount, maxResultCount)
+            .Include(o => o.GroupBuy)
+            .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.Item)
+            .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.SetItem)
+            .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.Freebie)
+            .ToListAsync();
+    }
+    #endregion
+
+    #region Private Methods
+    private static IQueryable<Order> ApplyFiltersNew(IQueryable<Order> queryable,
+                                                     string? filter,
+                                                     Guid? groupBuyId,
+                                                     List<Guid> orderIds,
+                                                     DateTime? startDate = null,
+                                                     DateTime? endDate = null,
+                                                     OrderStatus? orderStatus = null)
+    {
+        return queryable
+            .WhereIf(groupBuyId.HasValue, x => x.GroupBuyId == groupBuyId)
+            .WhereIf(!filter.IsNullOrWhiteSpace(),
+            x => x.OrderNo.Contains(filter)
+            || (x.CustomerName != null && x.CustomerName.Contains(filter))
+            || (x.CustomerEmail != null && x.CustomerEmail.Contains(filter))
+            ).WhereIf(orderIds != null && orderIds.Any(), x => orderIds.Contains(x.Id))
+            .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate.Value.Date)
+            .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
+            .WhereIf(orderStatus.HasValue, x => x.OrderStatus == orderStatus);
+            //.Where(x => x.IsRefunded == false);
+        //.Where(x => x.OrderType != OrderType.MargeToNew);
+    }
+
+    private static IQueryable<Order> ApplyFilters(IQueryable<Order> queryable,
+                                                  string? filter,
+                                                  Guid? groupBuyId,
+                                                  List<Guid> orderIds,
+                                                  DateTime? startDate = null,
+                                                  DateTime? endDate = null,
+                                                  OrderStatus? orderStatus = null,
+                                                  ShippingStatus? shippingStatus = null)
+    {
+        return queryable
+            .WhereIf(groupBuyId.HasValue, x => x.GroupBuyId == groupBuyId)
+            .WhereIf(!filter.IsNullOrWhiteSpace(),
                 x => x.OrderNo.Contains(filter)
                 || (x.CustomerName != null && x.CustomerName.Contains(filter))
                 || (x.CustomerEmail != null && x.CustomerEmail.Contains(filter))
-                ).WhereIf(orderIds != null && orderIds.Any(), x => orderIds.Contains(x.Id))
-                .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate.Value.Date)
-                .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
-                .WhereIf(orderStatus.HasValue, x => x.OrderStatus == orderStatus);
-                //.Where(x => x.IsRefunded == false);
+                )
+            .WhereIf(orderIds != null && orderIds.Any(), x => orderIds.Contains(x.Id))
+            .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate.Value.Date)
+            .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
+            .WhereIf(orderStatus.HasValue, x => x.OrderStatus == orderStatus)
+            .WhereIf(shippingStatus.HasValue, w => w.ShippingStatus == shippingStatus)
+            .Where(x=>x.IsRefunded==false);
+        //.Where(x => x.OrderType != OrderType.MargeToNew);
+    }
+    private static IQueryable<Order> ApplyReturnFilters(IQueryable<Order> queryable,
+                                                        string? filter,
+                                                        Guid? groupBuyId,
+                                                        List<Guid> orderIds,
+                                                        DateTime? startDate = null,
+                                                        DateTime? endDate = null,
+                                                        OrderStatus? orderStatus = null)
+    {
+        return queryable
+            .WhereIf(groupBuyId.HasValue, x => x.GroupBuyId == groupBuyId)
+            .WhereIf(!filter.IsNullOrWhiteSpace(),
+            x => x.OrderNo.Contains(filter)
+            || (x.CustomerName != null && x.CustomerName.Contains(filter))
+            || (x.CustomerEmail != null && x.CustomerEmail.Contains(filter))
+            ).WhereIf(orderIds != null && orderIds.Any(), x => orderIds.Contains(x.Id))
+            .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate.Value.Date)
+            .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
+            .WhereIf(orderStatus.HasValue, x => x.OrderStatus == orderStatus)
+            .Where(x=>x.OrderStatus==OrderStatus.Returned||x.OrderStatus==OrderStatus.Exchange|| x.IsRefunded == true)
+            ;
+        //.Where(x => x.OrderType != OrderType.MargeToNew);
+    }
+    private static IQueryable<Order> ApplyReconciliationFilters(IQueryable<Order> queryable,
+                                                                string? filter,
+                                                                Guid? groupBuyId,
+                                                                List<Guid> orderIds,
+                                                                DateTime? startDate = null,
+                                                                DateTime? endDate = null)
+    {
+        return queryable
+            .WhereIf(groupBuyId.HasValue, x => x.GroupBuyId == groupBuyId)
+            .WhereIf(!filter.IsNullOrWhiteSpace(),
+            x => x.OrderNo.Contains(filter)
+            || (x.CustomerName != null && x.CustomerName.Contains(filter))
+            || (x.CustomerEmail != null && x.CustomerEmail.Contains(filter))
+            ).WhereIf(orderIds != null && orderIds.Any(), x => orderIds.Contains(x.Id))
+            .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate.Value.Date)
+            .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
+            .Where(x => x.ShippingStatus == ShippingStatus.Shipped)
+            .Where(x=>x.IsVoidInvoice==false);
             //.Where(x => x.OrderType != OrderType.MargeToNew);
-        }
-        private static IQueryable<Order> ApplyFilters(
-            IQueryable<Order> queryable,
-            string? filter,
-            Guid? groupBuyId,
-            List<Guid> orderIds,
-            DateTime? startDate = null,
-            DateTime? endDate = null,
-            OrderStatus? orderStatus = null
-            )
-        {
-            var result= queryable
-                .WhereIf(groupBuyId.HasValue, x => x.GroupBuyId == groupBuyId)
-                .WhereIf(!filter.IsNullOrWhiteSpace(),
-                x => x.OrderNo.Contains(filter)
-                || (x.CustomerName != null && x.CustomerName.Contains(filter))
-                || (x.CustomerEmail != null && x.CustomerEmail.Contains(filter))
-                ).WhereIf(orderIds != null && orderIds.Any(), x => orderIds.Contains(x.Id))
-                .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate.Value.Date)
-                .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
-                .WhereIf(orderStatus.HasValue, x => x.OrderStatus == orderStatus)
-                .Where(x=>x.IsRefunded==false);
-            //.Where(x => x.OrderType != OrderType.MargeToNew);
-         
-            return result;
-        }
-        private static IQueryable<Order> ApplyReturnFilters(
-          IQueryable<Order> queryable,
-          string? filter,
-          Guid? groupBuyId,
-          List<Guid> orderIds,
-          DateTime? startDate = null,
-          DateTime? endDate = null,
-          OrderStatus? orderStatus = null
-          )
-        {
-            return queryable
-                .WhereIf(groupBuyId.HasValue, x => x.GroupBuyId == groupBuyId)
-                .WhereIf(!filter.IsNullOrWhiteSpace(),
-                x => x.OrderNo.Contains(filter)
-                || (x.CustomerName != null && x.CustomerName.Contains(filter))
-                || (x.CustomerEmail != null && x.CustomerEmail.Contains(filter))
-                ).WhereIf(orderIds != null && orderIds.Any(), x => orderIds.Contains(x.Id))
-                .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate.Value.Date)
-                .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
-                .WhereIf(orderStatus.HasValue, x => x.OrderStatus == orderStatus)
-                .Where(x=>x.OrderStatus==OrderStatus.Returned||x.OrderStatus==OrderStatus.Exchange|| x.IsRefunded == true)
-                ;
-            //.Where(x => x.OrderType != OrderType.MargeToNew);
-        }
-        private static IQueryable<Order> ApplyReconciliationFilters(
-         IQueryable<Order> queryable,
-         string? filter,
-         Guid? groupBuyId,
-         List<Guid> orderIds,
-         DateTime? startDate = null,
-         DateTime? endDate = null
-         )
-        {
-            return queryable
-                .WhereIf(groupBuyId.HasValue, x => x.GroupBuyId == groupBuyId)
-                .WhereIf(!filter.IsNullOrWhiteSpace(),
-                x => x.OrderNo.Contains(filter)
-                || (x.CustomerName != null && x.CustomerName.Contains(filter))
-                || (x.CustomerEmail != null && x.CustomerEmail.Contains(filter))
-                ).WhereIf(orderIds != null && orderIds.Any(), x => orderIds.Contains(x.Id))
-                .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate.Value.Date)
-                .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
-                .Where(x => x.ShippingStatus == ShippingStatus.Shipped)
-                .Where(x=>x.IsVoidInvoice==false);
-                //.Where(x => x.OrderType != OrderType.MargeToNew);
-        }
-        private static IQueryable<Order> ApplyVoidFilters(
-         IQueryable<Order> queryable,
-         string? filter,
-         Guid? groupBuyId,
-         List<Guid> orderIds,
-         DateTime? startDate = null,
-         DateTime? endDate = null
-         )
-        {
-            return queryable
-                .WhereIf(groupBuyId.HasValue, x => x.GroupBuyId == groupBuyId)
-                .WhereIf(!filter.IsNullOrWhiteSpace(),
-                x => x.OrderNo.Contains(filter)
-                || (x.CustomerName != null && x.CustomerName.Contains(filter))
-                || (x.CustomerEmail != null && x.CustomerEmail.Contains(filter))
-                ).WhereIf(orderIds != null && orderIds.Any(), x => orderIds.Contains(x.Id))
-                .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate.Value.Date)
-                .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
-                .Where(x => x.ShippingStatus == ShippingStatus.Shipped)
-                .Where(x => x.OrderType != OrderType.MargeToNew)
-                .Where(x=>x.IsVoidInvoice==true);
-        }
-        public async Task<Order> MaxByOrderNumberAsync()
-        {
-            var orders = await (await GetQueryableAsync()).ToListAsync();
-            return orders.OrderByDescending(x => long.Parse(x.OrderNo[^9..])).FirstOrDefault();
-        }
-        public async Task<Order> GetWithDetailsAsync(Guid id)
-        {
-            return await (await GetQueryableAsync())
-                .Where(o => o.Id == id)
-                .Where(x => x.OrderType != OrderType.MargeToNew || x.OrderType != OrderType.SplitToNew)
-                .Include(o => o.GroupBuy)
-                .Include(o => o.OrderItems)
-                    .ThenInclude(oi => oi.Item)
-                    .ThenInclude(i => i.Images)
-                .Include(o => o.OrderItems)
-                    .ThenInclude(oi => oi.SetItem)
-                    .ThenInclude(i => i.Images)
-                .Include(o => o.OrderItems.OrderBy(oi => oi.ItemType))
-                    .ThenInclude(oi => oi.Freebie)
-                    .ThenInclude(i => i.Images)
-                .Include(o => o.StoreComments.OrderByDescending(c => c.CreationTime))
-                    .ThenInclude(c => c.User)
-                .FirstOrDefaultAsync();
-        }
+    }
+    private static IQueryable<Order> ApplyVoidFilters(IQueryable<Order> queryable,
+                                                      string? filter,
+                                                      Guid? groupBuyId,
+                                                      List<Guid> orderIds,
+                                                      DateTime? startDate = null,
+                                                      DateTime? endDate = null)
+    {
+        return queryable
+            .WhereIf(groupBuyId.HasValue, x => x.GroupBuyId == groupBuyId)
+            .WhereIf(!filter.IsNullOrWhiteSpace(),
+            x => x.OrderNo.Contains(filter)
+            || (x.CustomerName != null && x.CustomerName.Contains(filter))
+            || (x.CustomerEmail != null && x.CustomerEmail.Contains(filter))
+            ).WhereIf(orderIds != null && orderIds.Any(), x => orderIds.Contains(x.Id))
+            .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate.Value.Date)
+            .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
+            .Where(x => x.ShippingStatus == ShippingStatus.Shipped)
+            .Where(x => x.OrderType != OrderType.MargeToNew)
+            .Where(x=>x.IsVoidInvoice==true);
+    }
+    #endregion
 
-        public async Task<long> ReturnOrderCountAsync(string? filter, Guid? groupBuyId)
-        {
-            return await ApplyReturnFilters((await GetQueryableAsync()).Include(o => o.GroupBuy), filter, groupBuyId, null).Where(x => x.OrderStatus == OrderStatus.Returned || x.OrderStatus == OrderStatus.Exchange).CountAsync();
-        }
-        public async Task<List<Order>> GetReturnListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId)
-        {
-            return await ApplyReturnFilters(await GetQueryableAsync(), filter, groupBuyId, null)
-                .Where(x => x.OrderStatus == OrderStatus.Returned || x.OrderStatus == OrderStatus.Exchange)
-                .OrderBy(sorting)
-                .PageBy(skipCount, maxResultCount)
-                .Include(o => o.GroupBuy)
-                .Include(o => o.OrderItems)
+    public async Task<Order> MaxByOrderNumberAsync()
+    {
+        var orders = await (await GetQueryableAsync()).ToListAsync();
+        return orders.OrderByDescending(x => long.Parse(x.OrderNo[^9..])).FirstOrDefault();
+    }
+    public async Task<Order> GetWithDetailsAsync(Guid id)
+    {
+        return await (await GetQueryableAsync())
+            .Where(o => o.Id == id)
+            .Where(x => x.OrderType != OrderType.MargeToNew || x.OrderType != OrderType.SplitToNew)
+            .Include(o => o.GroupBuy)
+            .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Item)
-                .Include(o => o.OrderItems)
+                .ThenInclude(i => i.Images)
+            .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.SetItem)
-                .Include(o => o.OrderItems)
+                .ThenInclude(i => i.Images)
+            .Include(o => o.OrderItems.OrderBy(oi => oi.ItemType))
                 .ThenInclude(oi => oi.Freebie)
-                .ToListAsync();
-        }
+                .ThenInclude(i => i.Images)
+            .Include(o => o.StoreComments.OrderByDescending(c => c.CreationTime))
+                .ThenInclude(c => c.User)
+            .FirstOrDefaultAsync();
+    }
 
-        public async Task UpdateOrdersIfIsEnterpricePurchaseAsync(Guid groupBuyId)
+    public async Task<long> ReturnOrderCountAsync(string? filter, Guid? groupBuyId)
+    {
+        return await ApplyReturnFilters((await GetQueryableAsync()).Include(o => o.GroupBuy), filter, groupBuyId, null).Where(x => x.OrderStatus == OrderStatus.Returned || x.OrderStatus == OrderStatus.Exchange).CountAsync();
+    }
+    public async Task<List<Order>> GetReturnListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId)
+    {
+        return await ApplyReturnFilters(await GetQueryableAsync(), filter, groupBuyId, null)
+            .Where(x => x.OrderStatus == OrderStatus.Returned || x.OrderStatus == OrderStatus.Exchange)
+            .OrderBy(sorting)
+            .PageBy(skipCount, maxResultCount)
+            .Include(o => o.GroupBuy)
+            .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.Item)
+            .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.SetItem)
+            .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.Freebie)
+            .ToListAsync();
+    }
+
+    public async Task UpdateOrdersIfIsEnterpricePurchaseAsync(Guid groupBuyId)
+    {
+        List<Order> orders = [.. (await GetQueryableAsync()).Where(w => w.GroupBuyId == groupBuyId)];
+
+        foreach (Order item in orders)
         {
-            List<Order> orders = [.. (await GetQueryableAsync()).Where(w => w.GroupBuyId == groupBuyId)];
-
-            foreach (Order item in orders)
-            {
-                item.ShippingStatus = ShippingStatus.EnterpricePurchase;
-            }
-
-            await UpdateManyAsync(orders);
+            item.ShippingStatus = ShippingStatus.EnterpricePurchase;
         }
+
+        await UpdateManyAsync(orders);
     }
 }

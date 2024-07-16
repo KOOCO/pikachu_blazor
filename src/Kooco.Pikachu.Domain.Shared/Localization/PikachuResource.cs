@@ -34,4 +34,24 @@ public class PikachuResource
     public const string ActivityStartDateWarning = "ActivityStartDateWarning";
 
     public const string ActivityEndDateWarning = "ActivityEndDateWarning";
+
+    public const string Exchange = "Exchange";
+    
+    public const string WaitingForPayment = "WaitingForPayment";
+    
+    public const string PrepareShipment = "PrepareShipment";
+    
+    public const string ToBeShipped = "ToBeShipped";
+    
+    public const string Shipped = "Shipped";
+    
+    public const string Delivered = "Delivered";
+    
+    public const string Completed = "Completed";
+    
+    public const string EnterpricePurchase = "EnterpricePurchase";
+    
+    public const string Return = "Return";
+    
+    public const string Closed = "Closed";
 }

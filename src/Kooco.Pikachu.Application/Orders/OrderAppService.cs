@@ -756,32 +756,40 @@ namespace Kooco.Pikachu.Orders
 
         public async Task<PagedResultDto<OrderDto>> GetListAsync(GetOrderListDto input, bool hideCredentials = false)
         {
-            if (input.Sorting.IsNullOrEmpty())
-            {
-                input.Sorting = $"{nameof(Order.CreationTime)} desc";
-            }
+            if (input.Sorting.IsNullOrEmpty()) input.Sorting = $"{nameof(Order.CreationTime)} desc";
 
-            var totalCount = await _orderRepository.CountAsync(input.Filter, input.GroupBuyId, input.StartDate, input.EndDate, input.OrderStatus);
+            long totalCount = await _orderRepository.CountAsync(input.Filter,
+                                                                input.GroupBuyId,
+                                                                input.StartDate,
+                                                                input.EndDate,
+                                                                input.OrderStatus,
+                                                                input.ShippingStatus);
 
-            var items = await _orderRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.GroupBuyId, input.OrderIds, input.StartDate, input.EndDate, input.OrderStatus);
+            List<Order> items = await _orderRepository.GetListAsync(input.SkipCount,
+                                                                    input.MaxResultCount,
+                                                                    input.Sorting,
+                                                                    input.Filter,
+                                                                    input.GroupBuyId,
+                                                                    input.OrderIds,
+                                                                    input.StartDate,
+                                                                    input.EndDate,
+                                                                    input.OrderStatus,
+                                                                    input.ShippingStatus);
 
             try
             {
-                var dtos = ObjectMapper.Map<List<Order>, List<OrderDto>>(items);
+                List<OrderDto> dtos = ObjectMapper.Map<List<Order>, List<OrderDto>>(items);
 
                 if (hideCredentials)
                 {
-                    var groupbuy = await _groupBuyRepository.GetAsync(input.GroupBuyId.Value);
-                    if (groupbuy.ProtectPrivacyData)
-                    {
-                        dtos.HideCredentials();
-                    }
+                    GroupBuy groupbuy = await _groupBuyRepository.GetAsync(input.GroupBuyId.Value);
+
+                    if (groupbuy.ProtectPrivacyData) dtos.HideCredentials();
                 }
 
                 return new PagedResultDto<OrderDto>
                 {
-                    TotalCount = totalCount,
-                    Items = dtos
+                    TotalCount = totalCount, Items = dtos
                 };
             }
             catch (Exception e)
