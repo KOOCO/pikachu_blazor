@@ -192,7 +192,7 @@
           
             @if (SelectedTabName is "All" || SelectedTabName is PikachuResource.PrepareShipment)
             {
-                @if (Orders.Where(x => x.IsSelected).Count() != 1)
+                @if (Orders.Where(x => x.IsSelected).Count() < 1)
                 {
                     <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
                         <i class="fa fa-print"></i>

@@ -45,7 +45,6 @@ public partial class Order
     private List<ShippingStatus> ShippingStatuses { get; set; } = [];
     private List<DeliveryMethod> DeliveryMethods { get; set; } = [];
     private string SelectedTabName = "All";
-    private DataGridReadDataEventArgs<OrderDto> TabReadData;
     #endregion
 
     #region Methods
@@ -263,17 +262,21 @@ public partial class Order
        
     }
 
-    private async void MergeOrders() {
+    private async void MergeOrders() 
+    {
         var orderIds = Orders.Where(x => x.IsSelected).Select(x => x.Id).ToList();
         await _orderAppService.MergeOrdersAsync(orderIds);
-       await UpdateItemList();
-
+        await UpdateItemList();
     }
 
-    public void NavigateToOrderPrint()
+    public async Task NavigateToOrderPrint()
     {
-        var selectedOrder = Orders.SingleOrDefault(x => x.IsSelected);
-        NavigationManager.NavigateTo($"Orders/OrderShippingDetails/{selectedOrder.Id}");
+        List<OrderDto> selectedOrders = [.. Orders.Where(w => w.IsSelected)];
+
+        foreach (OrderDto selectedOrder in selectedOrders)
+        {
+            await JSRuntime.InvokeVoidAsync("openInNewTab", $"Orders/OrderShippingDetails/{selectedOrder.Id}");
+        }
     }
     
     public async void IssueInvoice()
@@ -307,7 +310,6 @@ public partial class Order
             var orderIds = Orders.Where(x => x.IsSelected).Select(x=>x.Id).ToList();
             Sorting = Sorting != null ? Sorting : "OrderNo Ascending";
 
-
             var remoteStreamContent = await _orderAppService.GetListAsExcelFileAsync(new GetOrderListDto
             {
                 Sorting = Sorting,
@@ -316,6 +318,7 @@ public partial class Order
                 Filter = Filter,
                 OrderIds=orderIds,
             });
+
             using (var responseStream = remoteStreamContent.GetStream())
             {
                 // Create Excel file from the stream
@@ -337,13 +340,10 @@ public partial class Order
                 }
             }
         }
-        catch (Exception e)
+        catch (Exception)
         {
-
-            throw e;
+            throw;
         }
-
-
     }
     #endregion
 }

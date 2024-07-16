@@ -65,6 +65,11 @@ window.openPopup = function (htmlContent) {
     popupWindow.document.write(htmlContent);
     popupWindow.document.close();
 };
+
+window.openInNewTab = function (url) {
+    window.open(url, '_blank');
+}
+
 function submitForm() {
     var formElement = document.getElementById('formid');
     debugger;

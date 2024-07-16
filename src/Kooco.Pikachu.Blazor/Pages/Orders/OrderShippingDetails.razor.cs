@@ -6,43 +6,47 @@ using Microsoft.JSInterop;
 using System;
 using System.Threading.Tasks;
 
-namespace Kooco.Pikachu.Blazor.Pages.Orders
+namespace Kooco.Pikachu.Blazor.Pages.Orders;
+
+public partial class OrderShippingDetails
 {
-    public partial class OrderShippingDetails
+    #region Inject
+    [Parameter]
+    public string id { get; set; }
+    private Guid OrderId { get; set; }
+    private OrderDto Order { get; set; }
+    public StoreCommentDto StoreComment { get; set; }
+    private bool isPrinting = false;
+    #endregion
+
+    #region Methods
+    protected async override Task OnInitializedAsync()
     {
-        [Parameter]
-        public string id { get; set; }
-        private Guid OrderId { get; set; }
-        private OrderDto Order { get; set; }
-        public StoreCommentDto StoreComment { get; set; }
-        private bool isPrinting = false;
-        protected async override Task OnInitializedAsync()
+        try
         {
-            try
-            {
-                OrderId = Guid.Parse(id);
-                await GetOrderDetailsAsync();
-                await base.OnInitializedAsync();
-              
-            }
-            catch(Exception ex)
-            {
-                await _uiMessageService.Error(ex.GetType().ToString());
-                Console.WriteLine(ex.Message);
-            }
+            OrderId = Guid.Parse(id);
+            await GetOrderDetailsAsync();
+            await base.OnInitializedAsync(); 
         }
-        async Task GetOrderDetailsAsync()
+        catch(Exception ex)
         {
-            Order = await _orderAppService.GetWithDetailsAsync(OrderId);
-
-            await InvokeAsync(StateHasChanged);
+            await _uiMessageService.Error(ex.GetType().ToString());
+            Console.WriteLine(ex.Message);
         }
-        private void  PrintDiv()
-        {
-            isPrinting = true;
-            StateHasChanged(); // Trigger a UI update
-             JSRuntime.InvokeVoidAsync("printJS"); 
-        }
-
     }
+    
+    async Task GetOrderDetailsAsync()
+    {
+        Order = await _orderAppService.GetWithDetailsAsync(OrderId);
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void PrintDiv()
+    {
+        isPrinting = true;
+        StateHasChanged(); // Trigger a UI update
+        JSRuntime.InvokeVoidAsync("printJS"); 
+    }
+    #endregion
 }
