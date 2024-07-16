@@ -8,12 +8,12 @@ public enum ShippingStatus
 {
     WaitingForPayment,
     PrepareShipment,
-    Shipped,
-    Completed,
-    Closed,
-    Exchange,
     ToBeShipped,
+    Shipped,
     Delivered,
+    Completed,
+    EnterpricePurchase,
     Return,
-    EnterpricePurchase
+    Closed,
+    Exchange
 }
