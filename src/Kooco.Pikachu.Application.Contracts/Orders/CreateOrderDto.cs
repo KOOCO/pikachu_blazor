@@ -35,14 +35,12 @@ public class CreateOrderDto
     public string? Remarks { get; set; }
     public ReceivingTime? ReceivingTime { get; set; }
     public Guid GroupBuyId { get; set; }
-    public GroupBuyDto GroupBuy { get; set; }
     public int TotalQuantity { get; set; }
     public decimal TotalAmount { get; set; }
     public string? CheckMacValue { get; set; }
     public DateTime? PaymentDate { get; set; }
     public OrderStatus OrderStatus { get; set; }
     public List<OrderItemDto> OrderItems { get; set; }
-    public List<StoreCommentDto> StoreComments { get; set; }
     public bool IsSelected { get; set; } = false;
     public ShippingStatus ShippingStatus { get; set; }
     public DateTime? ShippingDate { get; set; }

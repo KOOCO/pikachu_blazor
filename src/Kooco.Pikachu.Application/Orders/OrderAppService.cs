@@ -1269,7 +1269,7 @@ namespace Kooco.Pikachu.Orders
                         {
                             var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order.Id);
                             OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
-                            order.UpdateOrderItem(order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen && x?.Item.IsFreeShipping == true).ToList(), OrderDelivery.Id);
+                            order.UpdateOrderItem(order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen && x.Item?.IsFreeShipping == true).ToList(), OrderDelivery.Id);
                         }
                     }
                     if (order.OrderItems.Any(x => x.Item?.IsFreeShipping == false))

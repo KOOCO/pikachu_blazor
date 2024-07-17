@@ -5,6 +5,7 @@ using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.PaymentGateways;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,6 +29,8 @@ public class OrderController(
     [HttpPost]
     public Task<OrderDto> CreateAsync(CreateOrderDto input)
     {
+        if (input.CreationTime == DateTime.MinValue) input.CreationTime = DateTime.Now;
+
         return _ordersAppService.CreateAsync(input);
     }
 
