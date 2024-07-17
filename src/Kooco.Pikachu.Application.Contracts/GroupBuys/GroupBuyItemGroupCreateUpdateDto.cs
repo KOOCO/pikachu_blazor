@@ -8,6 +8,7 @@ namespace Kooco.Pikachu.GroupBuys
     {
         public Guid? Id { get; set; }
 
+        public Guid? TenantId { get; set; }
         public Guid GroupBuyId { get; set; }
 
         public int SortOrder { get; set; }

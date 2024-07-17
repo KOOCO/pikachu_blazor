@@ -115,6 +115,21 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<DeliveryTemperatureCostDto, UpdateDeliveryTemperatureCostDto>();
 
         CreateMap<OrderDelivery, OrderDeliveryDto > ();
-        CreateMap<GroupBuyUpdateDto, GroupBuy>().ReverseMap();
+        //CreateMap<GroupBuyUpdateDto, GroupBuy>().ReverseMap();
+        CreateMap<GroupBuyUpdateDto, GroupBuy>()
+            .ForMember(dest => dest.ItemGroups, opt => opt.MapFrom(src => src.ItemGroups));
+
+        CreateMap<GroupBuyItemGroupCreateUpdateDto, GroupBuyItemGroup>()
+            .ForMember(dest => dest.ItemGroupDetails, opt => opt.MapFrom(src => src.ItemDetails));
+
+        CreateMap<GroupBuyItemGroupDetailCreateUpdateDto, GroupBuyItemGroupDetails>();
+
+        CreateMap<GroupBuyItemGroup, GroupBuyItemGroupDto>().ReverseMap();
+        CreateMap<GroupBuyItemGroup, GroupBuyItemGroupCreateUpdateDto>().ReverseMap();
+        CreateMap<GroupBuyItemGroupDto, GroupBuyItemGroupCreateUpdateDto>().ReverseMap();
+
+        CreateMap<GroupBuyItemGroupDetails, GroupBuyItemGroupDetailsDto>().ReverseMap();
+        CreateMap<GroupBuyItemGroupDetails, GroupBuyItemGroupDetailCreateUpdateDto>().ReverseMap();
+        CreateMap<GroupBuyItemGroupDetailsDto, GroupBuyItemGroupDetailCreateUpdateDto>().ReverseMap();
     }
 }

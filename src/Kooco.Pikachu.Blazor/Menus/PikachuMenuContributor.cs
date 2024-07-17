@@ -261,20 +261,22 @@ public class PikachuMenuContributor : IMenuContributor
         url: "/AutomaticEmailing",
         requiredPermissionName: PikachuPermissions.AutomaticEmailing)
         );
-        systemManagment.AddItem(new ApplicationMenuItem(
-      name: "多商戶管理-商戶賬單報表",
-      icon: "fas fa-newspaper",
-      displayName: l["Menu:TenantBillingReport"],
-      //displayName: l["多商戶管理-商戶賬單報表"],
-      url: "/TenantBillingReport",
-      requiredPermissionName: PikachuPermissions.TenentBillReport)
-
-      );
-
 
         if (MultiTenancyConsts.IsEnabled)
         {
             administration.SetSubItemOrder(TenantManagementMenuNames.GroupName, 1);
+
+            ApplicationMenuItem tenantManagementMenu = administration.GetMenuItem(TenantManagementMenuNames.GroupName);
+
+            tenantManagementMenu?.AddItem(
+                new ApplicationMenuItem(
+                    name: "多商戶管理-商戶賬單報表",
+                    icon: "fas fa-newspaper",
+                    displayName: l["Menu:TenantBillingReport"],
+                    url: "/TenantBillingReport",
+                    requiredPermissionName: PikachuPermissions.TenentBillReport
+                )
+            );
         }
         else
         {

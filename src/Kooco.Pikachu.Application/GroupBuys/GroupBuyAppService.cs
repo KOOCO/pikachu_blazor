@@ -4,12 +4,16 @@ using Kooco.Pikachu.DeliveryTempratureCosts;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Freebies.Dtos;
+using Kooco.Pikachu.GroupBuyItemGroups;
+using Kooco.Pikachu.GroupBuyItemGroupsDetails;
 using Kooco.Pikachu.Groupbuys;
+using Kooco.Pikachu.Groupbuys.Interface;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.Orders;
 using Microsoft.Extensions.Localization;
+using Microsoft.IdentityModel.Tokens;
 using MiniExcelLibs;
 using System;
 using System.Collections.Generic;
@@ -23,6 +27,7 @@ using Volo.Abp.Content;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
+using Volo.Abp.ObjectMapping;
 using Volo.Abp.Validation.Localization;
 
 namespace Kooco.Pikachu.GroupBuys
@@ -31,6 +36,7 @@ namespace Kooco.Pikachu.GroupBuys
     public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     {
         private readonly IGroupBuyRepository _groupBuyRepository;
+        private readonly IGroupBuyItemGroupsRepository _GroupBuyItemGroupsRepository;
         private readonly GroupBuyManager _groupBuyManager;
         private readonly IRepository<Image, Guid> _imageRepository;
         private readonly ImageContainerManager _imageContainerManager;
@@ -39,7 +45,9 @@ namespace Kooco.Pikachu.GroupBuys
         private readonly IOrderRepository _orderRepository;
         private readonly IRepository<DeliveryTemperatureCost, Guid> _temperatureRepository;
         private readonly IStringLocalizer<PikachuResource> _l;
-      
+        private readonly IGroupBuyItemGroupDetailsRepository _GroupBuyItemGroupDetailsRepository;
+
+
         public GroupBuyAppService(
             IGroupBuyRepository groupBuyRepository,
             GroupBuyManager groupBuyManager,
@@ -49,8 +57,10 @@ namespace Kooco.Pikachu.GroupBuys
             IDataFilter dataFilter,
             IOrderRepository orderRepository,
             IRepository<DeliveryTemperatureCost, Guid> temperatureRepository,
-            IStringLocalizer<PikachuResource> l
-            )
+            IStringLocalizer<PikachuResource> l,
+            IGroupBuyItemGroupsRepository GroupBuyItemGroupsRepository,
+            IGroupBuyItemGroupDetailsRepository GroupBuyItemGroupDetailsRepository
+        )
         {
             _groupBuyManager = groupBuyManager;
             _groupBuyRepository = groupBuyRepository;
@@ -61,6 +71,8 @@ namespace Kooco.Pikachu.GroupBuys
             _orderRepository = orderRepository;
             _temperatureRepository = temperatureRepository;
             _l = l;
+            _GroupBuyItemGroupsRepository = GroupBuyItemGroupsRepository;
+            _GroupBuyItemGroupDetailsRepository = GroupBuyItemGroupDetailsRepository;
         }
 
         public async Task<GroupBuyDto> CreateAsync(GroupBuyCreateDto input)
@@ -104,6 +116,78 @@ namespace Kooco.Pikachu.GroupBuys
             await _groupBuyRepository.InsertAsync(result);
 
             return ObjectMapper.Map<GroupBuy, GroupBuyDto>(result);
+        }
+
+        public async Task<GroupBuyDto> UpdateAsync(Guid id, GroupBuyUpdateDto input)
+        {
+            try
+            {
+                bool sameName = await _groupBuyRepository.AnyAsync(x => x.GroupBuyName == input.GroupBuyName && x.Id != id);
+
+                if (sameName) throw new BusinessException(PikachuDomainErrorCodes.ItemWithSameNameAlreadyExists);
+
+                GroupBuy groupBuy = await _groupBuyRepository.GetWithDetailsAsync(id);
+
+                groupBuy = ObjectMapper.Map<GroupBuyUpdateDto, GroupBuy>(input);
+
+                if (input?.ItemGroups != null)
+                {
+                    foreach (GroupBuyItemGroupCreateUpdateDto group in input.ItemGroups)
+                    {
+                        if (group.Id.HasValue)
+                        {
+                            GroupBuyItemGroup? itemGroup = groupBuy.ItemGroups.FirstOrDefault(x => x.Id == group.Id);
+
+                            if (itemGroup is not null)
+                            {
+                                itemGroup.SortOrder = group.SortOrder;
+                                itemGroup.GroupBuyModuleType = group.GroupBuyModuleType;
+                                if (group.ItemDetails.Count == 0)
+                                {
+                                    groupBuy.ItemGroups.Remove(itemGroup);
+                                }
+
+                                await _GroupBuyItemGroupsRepository.UpdateAsync(itemGroup);
+
+                                ProcessItemDetails(itemGroup, group.ItemDetails);
+
+                                foreach (GroupBuyItemGroupDetails itemGroupDetails in itemGroup.ItemGroupDetails)
+                                {
+                                    await _GroupBuyItemGroupDetailsRepository.UpdateAsync(itemGroupDetails);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            GroupBuyItemGroup itemGroup = _groupBuyManager.AddItemGroup(
+                                    groupBuy,
+                                    group.SortOrder,
+                                    group.GroupBuyModuleType
+                            );
+
+                            await _GroupBuyItemGroupsRepository.InsertAsync(itemGroup);
+
+                            ProcessItemDetails(itemGroup, group.ItemDetails);
+
+                            foreach (GroupBuyItemGroupDetails itemGroupDetails in itemGroup.ItemGroupDetails)
+                            {
+                                await _GroupBuyItemGroupDetailsRepository.InsertAsync(itemGroupDetails);
+                            }
+                        }
+                    }
+                }
+
+                groupBuy.ItemGroups.RemoveAll(w => w.Id == Guid.Empty);
+
+                await _groupBuyRepository.UpdateAsync(groupBuy, true);
+
+                return ObjectMapper.Map<GroupBuy, GroupBuyDto>(groupBuy);
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
         }
         public async Task<GroupBuyDto> CopyAsync(Guid Id)
         {
@@ -212,51 +296,6 @@ namespace Kooco.Pikachu.GroupBuys
             };
         }
 
-        public async Task<GroupBuyDto> UpdateAsync(Guid id, GroupBuyUpdateDto input)
-        {
-            bool sameName = await _groupBuyRepository.AnyAsync(x => x.GroupBuyName == input.GroupBuyName && x.Id != id);
-
-            if (sameName) throw new BusinessException(PikachuDomainErrorCodes.ItemWithSameNameAlreadyExists);
-
-            GroupBuy groupBuy = await _groupBuyRepository.GetWithDetailsAsync(id);
-
-            groupBuy = ObjectMapper.Map<GroupBuyUpdateDto, GroupBuy>(input);
-
-            if (input?.ItemGroups != null)
-            {
-                foreach (var group in input.ItemGroups)
-                {
-                    if (group.Id.HasValue)
-                    {
-                        var itemGroup = groupBuy.ItemGroups.FirstOrDefault(x => x.Id == group.Id);
-                        if (itemGroup != null)
-                        {
-                            itemGroup.SortOrder = group.SortOrder;
-                            itemGroup.GroupBuyModuleType = group.GroupBuyModuleType;
-                            if (group.ItemDetails.Count == 0)
-                            {
-                                groupBuy.ItemGroups.Remove(itemGroup);
-                            }
-                            ProcessItemDetails(itemGroup, group.ItemDetails);
-                        }
-                    }
-                    else
-                    {
-                        var itemGroup = _groupBuyManager.AddItemGroup(
-                                groupBuy,
-                                group.SortOrder,
-                                group.GroupBuyModuleType
-                         );
-
-                        ProcessItemDetails(itemGroup, group.ItemDetails);
-                    }
-                }
-            }
-
-            await _groupBuyRepository.UpdateAsync(groupBuy);
-
-            return ObjectMapper.Map<GroupBuy, GroupBuyDto>(groupBuy);
-        }
         private void ProcessItemDetails(GroupBuyItemGroup itemGroup, ICollection<GroupBuyItemGroupDetailCreateUpdateDto> itemDetails)
         {
             itemGroup.ItemGroupDetails?.Clear();
