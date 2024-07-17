@@ -555,6 +555,7 @@
     "MedicalSupplies": "0012: Medical Supplies",
     "PetSuppliesandFeed": "0013: Pet Supplies and Feed",
     "PrintedMaterials": "0014: Printed Materials",
-    "Others": "0015: Others"
+    "Others": "0015: Others",
+    "EditRole": "Edit Role"
   }
 }

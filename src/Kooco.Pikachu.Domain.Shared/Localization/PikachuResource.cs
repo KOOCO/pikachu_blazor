@@ -23,6 +23,8 @@ public class PikachuResource
 
     public const string LastPage = "LastPage";
 
+    public const string EditRole = "EditRole";
+
     public const string EditItem = "EditItem";
 
     public const string DeliveryTimePreference = "DeliveryTimePreference";
