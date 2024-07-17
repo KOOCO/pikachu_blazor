@@ -231,12 +231,14 @@
     </div>
     <br />
     <Tabs RenderMode="TabsRenderMode.LazyReload" 
-          SelectedTab="@SelectedTabName" SelectedTabChanged="SelectedTabChanged">
+          SelectedTab="@SelectedTabName" 
+          SelectedTabChanged="SelectedTabChanged"
+          Justified="true">
         <Items>
             <Tab Name="All" TextSize="TextSize.Medium">All</Tab>
             @foreach (string value in Enum.GetNames(typeof(ShippingStatus)).Where(w => w != PikachuResource.Exchange))
             {
-                <Tab Name="@value" TextSize="TextSize.Medium">@L[value]</Tab>
+                <Tab Name="@value" TextSize="TextSize.Small">@L[value]</Tab>
             }
         </Items>
         <Content>
