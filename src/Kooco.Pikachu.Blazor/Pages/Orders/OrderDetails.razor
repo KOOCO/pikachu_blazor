@@ -870,12 +870,13 @@
                                         
                                         <div class="btn-group me-1" role="group" aria-label="Button group with nested dropdown">
                                             @if(context.DeliveryMethod==DeliveryMethod.PostOffice||context.DeliveryMethod==DeliveryMethod.BlackCat1||context.DeliveryMethod==DeliveryMethod.BlackCatFreeze||context.DeliveryMethod==DeliveryMethod.BlackCatFrozen)
-                                           {
-                                            <Button Type="ButtonType.Button" Clicked="()=>CreateOrderLogistics(context)" Class="btn btn-primary">@L["ShipmentNotify"]</Button>
-                                           }
-                                           else{
-                                            <Button Disabled Type="ButtonType.Button" Clicked="()=>CreateOrderLogistics(context)" Class="btn btn-primary">@L["ShipmentNotify"]</Button>
-                                           }
+                                            {
+                                                <Button Type="ButtonType.Button" Clicked="()=>CreateOrderLogistics(context)" Class="btn btn-primary">@L["ShipmentNotify"]</Button>
+                                            }
+                                            else
+                                            {
+                                                <Button Disabled Type="ButtonType.Button" Clicked="()=>CreateOrderLogistics(context)" Class="btn btn-primary">@L["ShipmentNotify"]</Button>
+                                            }
                                             <Button Type="ButtonType.Button" Clicked="() => OpenShipmentModal(context)" style="margin-left: 1px;" Class="btn btn-primary"><Icon Class="dropdown-toggle"></Icon></Button>
 
 

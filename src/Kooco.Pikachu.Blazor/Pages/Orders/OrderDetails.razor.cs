@@ -408,15 +408,20 @@ public partial class OrderDetails
     {
         await loading.Show();
         OrderDeliveryId = deliveryOrder.Id;
-        if (deliveryOrder.DeliveryMethod == DeliveryMethod.SevenToEleven1 || deliveryOrder.DeliveryMethod == DeliveryMethod.FamilyMart1 ||
-           deliveryOrder.DeliveryMethod == DeliveryMethod.SevenToElevenC2C || deliveryOrder.DeliveryMethod == DeliveryMethod.FamilyMart1)
+
+        if (deliveryOrder.DeliveryMethod is DeliveryMethod.SevenToEleven1 || 
+            deliveryOrder.DeliveryMethod is DeliveryMethod.FamilyMart1 ||
+            deliveryOrder.DeliveryMethod is DeliveryMethod.SevenToElevenC2C || 
+            deliveryOrder.DeliveryMethod is DeliveryMethod.FamilyMart1)
         {
             var result = await _storeLogisticsOrderAppService.CreateStoreLogisticsOrderAsync(Order.Id, deliveryOrder.Id);
-            if (result.ResponseCode != "1")
+            
+            if (result.ResponseCode is not "1")
             {
                 await _uiMessageService.Error(result.ResponseMessage);
-
             }
+
+            #region Commented Code
             //    var htmlString = await _storeLogisticsOrderAppService.GetStoreAsync(Order.Id);
             //    StringBuilder htmlForm = new();
             //    htmlForm.Append(htmlString.HtmlString);
@@ -459,11 +464,13 @@ public partial class OrderDetails
             //    //NavigationManager.NavigateTo($"/map-response?htmlString={Uri.EscapeDataString(htmlForm.ToString())}");
             //    await JSRuntime.InvokeVoidAsync("openPopup", html);
             //    //NavigationManager.NavigateTo($"map-response/{htmlForm}");
+            #endregion
         }
         else
         {
             var result = await _storeLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(Order.Id, OrderDeliveryId);
-            if (result.ResponseCode != "1")
+            
+            if (result.ResponseCode is not "1")
             {
                 await _uiMessageService.Error(result.ResponseMessage);
                 await loading.Hide();
