@@ -125,6 +125,25 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
             .ThenInclude(oi => oi.Freebie)
             .ToListAsync();
     }
+
+    public async Task<(int normalCount, int freezeCount, int frozenCount)> GetTotalDeliveryTemperatureCountsAsync()
+    {
+        IQueryable<Order> queryable = await GetQueryableAsync();
+
+        int normalCount = await queryable.Where(order => order.ShippingStatus == ShippingStatus.ToBeShipped)
+                                         .SelectMany(order => order.OrderItems)
+                                         .CountAsync(orderItem => orderItem.DeliveryTemperature == ItemStorageTemperature.Normal);
+
+        int freezeCount = await queryable.Where(order => order.ShippingStatus == ShippingStatus.ToBeShipped)
+                                         .SelectMany(order => order.OrderItems)
+                                         .CountAsync(orderItem => orderItem.DeliveryTemperature == ItemStorageTemperature.Freeze);
+
+        int frozenCount = await queryable.Where(order => order.ShippingStatus == ShippingStatus.ToBeShipped)
+                                         .SelectMany(order => order.OrderItems)
+                                         .CountAsync(orderItem => orderItem.DeliveryTemperature == ItemStorageTemperature.Frozen);
+
+        return (normalCount, freezeCount, frozenCount);
+    }
     #endregion
 
     #region Private Methods

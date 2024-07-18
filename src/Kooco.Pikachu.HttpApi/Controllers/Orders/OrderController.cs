@@ -262,4 +262,9 @@ public class OrderController(
     {
         return _ordersAppService.UpdateOrdersIfIsEnterpricePurchaseAsync(groupBuyId);
     }
+
+    public Task<(int normalCount, int freezeCount, int frozenCount)> GetTotalDeliveryTemperatureCountsAsync()
+    {
+        throw new NotImplementedException();
+    }
 }

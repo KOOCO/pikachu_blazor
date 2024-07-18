@@ -53,5 +53,7 @@ namespace Kooco.Pikachu.Orders
         Task<List<Order>> GetVoidListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId, List<Guid> orderId, DateTime? startDate = null, DateTime? endDate = null);
 
         Task UpdateOrdersIfIsEnterpricePurchaseAsync(Guid groupBuyId);
+
+        Task<(int normalCount, int freezeCount, int frozenCount)> GetTotalDeliveryTemperatureCountsAsync();
     }
 }

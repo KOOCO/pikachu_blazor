@@ -46,6 +46,10 @@ public partial class Order
     private List<ShippingStatus> ShippingStatuses { get; set; } = [];
     private List<DeliveryMethod> DeliveryMethods { get; set; } = [];
     private string SelectedTabName = "All";
+
+    private int NormalCount = 0;
+    private int FreezeCount = 0;
+    private int FrozenCount = 0;
     #endregion
 
     #region Methods
@@ -147,6 +151,13 @@ public partial class Order
             Orders = [.. result.Items];
 
             TotalCount = (int?)result?.TotalCount ?? 0;
+
+            if (Enum.Parse<ShippingStatus>(tabName) is ShippingStatus.ToBeShipped)
+            {
+                (NormalCount, FreezeCount, FrozenCount) = await _orderAppService.GetTotalDeliveryTemperatureCountsAsync();
+            }
+
+            else (NormalCount, FreezeCount, FrozenCount) = (0, 0, 0);
 
             await loading.Hide();
         }

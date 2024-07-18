@@ -228,6 +228,13 @@
 
             <Button Type="ButtonType.Button" Class="btn btn-sm btn-outline-dark" Clicked="DownloadExcel"><i class="fa fa-arrow-down"></i></Button>
         </div>
+
+        @if (SelectedTabName is PikachuResource.ToBeShipped)
+        {
+            <Div Class="col-12 text-lg-end">
+                <h5>Normal: @NormalCount piece(s) Freeze: @FreezeCount piece(s) Frozen: @FrozenCount piece(s)</h5>
+            </Div>
+        }
     </div>
     <br />
     <Tabs RenderMode="TabsRenderMode.LazyReload" 
