@@ -55,9 +55,16 @@
 </style>
 <div class="row justify-content-center">
     <div class="col-md-10 col-sm-12">
+        @{
+            int orderCount = Orders.Count;
+
+            int index = 0;
+        }
         @foreach (OrderDto order in Orders)
         {
-            <Card Class="page-break">
+            index++;
+
+            <Card Class="@(index < orderCount ? "page-break" : "")">
                 <CardBody>
                     <div class="row" id="divToPrint">
                         <h3 class="text-center">@L["OrderShippingDetails"]</h3>
@@ -154,4 +161,4 @@
 </script>
 @code {
 
-    }
+}
