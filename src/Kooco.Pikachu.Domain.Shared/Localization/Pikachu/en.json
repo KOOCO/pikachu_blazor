@@ -561,6 +561,7 @@
     "Pikachu:MinimumAmountReachCannotBeEmpty": "Minimum Amount Reach Cannot be Empty.",
     "Pikachu:MinimumPieceCannotBeEmpty": "Minimum Piece Cannot be Empty.",
     "Pikachu:GetCannotBeEmptyOrZero": "Get Cannot be Empty or Zero.",
-    "Pikachu:GetCannotBeGreaterThanGiftableQuantity": "Get Cannot Be Greater Than Giftable Quantity"
+    "Pikachu:GetCannotBeGreaterThanGiftableQuantity": "Get Cannot Be Greater Than Giftable Quantity",
+    "Pikachu:ProductTypeIsRequired": "Product Type Is Required."
   }
 }

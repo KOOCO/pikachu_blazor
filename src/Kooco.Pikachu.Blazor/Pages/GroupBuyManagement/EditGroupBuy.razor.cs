@@ -929,6 +929,12 @@ public partial class EditGroupBuy
 
             else EditGroupBuyDto.PaymentMethod = string.Empty;
 
+            if (EditGroupBuyDto.ProductType is null)
+            {
+                await _uiMessageService.Warn(L[PikachuDomainErrorCodes.ProductTypeIsRequired]);
+                await Loading.Hide();
+                return;
+            }
             if (EditGroupBuyDto.PaymentMethod.IsNullOrEmpty())
             {
                 await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOnePaymentMethodIsRequired]);
