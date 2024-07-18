@@ -61,6 +61,7 @@ public partial class CreateGroupBuy
     private BlazoredTextEditor ExchangePolicyHtml { get; set; }
     bool CreditCard { get; set; }
     bool BankTransfer { get; set; }
+    bool IsCashOnDelivery { get; set; }
     public string _ProductPicture = "Product Picture";
     private FilePicker LogoPickerCustom { get; set; }
     private FilePicker BannerPickerCustom { get; set; }
@@ -668,31 +669,16 @@ public partial class CreateGroupBuy
             //{
             //    CreateGroupBuyDto.PaymentMethod = string.Join(",", PaymentMethodTags);
             //}
-            if (CreditCard && BankTransfer)
-            {
+            if (CreditCard && BankTransfer && IsCashOnDelivery) CreateGroupBuyDto.PaymentMethod = "Credit Card , Bank Transfer , Cash On Delivery";
 
-                CreateGroupBuyDto.PaymentMethod = "Credit Card , Bank Transfer";
+            else if (CreditCard) CreateGroupBuyDto.PaymentMethod = "Credit Card";
 
+            else if (BankTransfer) CreateGroupBuyDto.PaymentMethod = "Bank Transfer";
 
-            }
-            else if (CreditCard)
-            {
+            else if (IsCashOnDelivery) CreateGroupBuyDto.PaymentMethod = "Cash On Delivery";
 
-                CreateGroupBuyDto.PaymentMethod = "Credit Card";
+            else CreateGroupBuyDto.PaymentMethod = string.Empty;
 
-
-            }
-            else if (BankTransfer)
-            {
-
-                CreateGroupBuyDto.PaymentMethod = "Bank Transfer";
-
-
-            }
-            else {
-
-                CreateGroupBuyDto.PaymentMethod = "";
-            }
             if (CreateGroupBuyDto.PaymentMethod.IsNullOrEmpty())
             {
                 await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOnePaymentMethodIsRequired]);
