@@ -106,11 +106,11 @@
                                             <FieldLabel>@L["DisplayName:Password"] *</FieldLabel>
                                             <Addons>
                                                 <Addon AddonType="AddonType.Body">
-                                                    <TextEdit Role="@TextRole.Password" @bind-Text="NewEntity.Password">
+                                                    <TextEdit Role="@_passwordTextRole" @bind-Text="NewEntity.Password">
                                                     </TextEdit>
                                                 </Addon>
                                                 <Addon AddonType="AddonType.End">
-                                                    <Button Color="Color.Secondary" Clicked="@(() => ChangePasswordTextRole(null))">
+                                                    <Button Color="Color.Secondary" Clicked="@(() => ChangePassword(null))">
                                                         <Icon Name="ShowPassword ? IconName.Eye : IconName.EyeSlash" />
                                                     </Button>
                                                 </Addon>
@@ -223,11 +223,11 @@
                                             <FieldLabel>@L["DisplayName:Password"]</FieldLabel>
                                             <Addons>
                                                 <Addon AddonType="AddonType.Body">
-                                                    <TextEdit Role="@TextRole.Password" @bind-Text="EditingEntity.Password">
+                                                    <TextEdit Role="@_passwordTextRole" @bind-Text="EditingEntity.Password">
                                                     </TextEdit>
                                                 </Addon>
                                                 <Addon AddonType="AddonType.End">
-                                                    <Button Color="Color.Secondary" Clicked="@(() => ChangePasswordTextRole(null))">
+                                                    <Button Color="Color.Secondary" Clicked="@(() => ChangePassword(null))">
                                                         <Icon Name="ShowPassword ? IconName.Eye : IconName.EyeSlash" />
                                                     </Button>
                                                 </Addon>
@@ -297,5 +297,18 @@
 }
 
 @code {
+    TextRole _passwordTextRole = TextRole.Password;
 
+    public void ChangePassword(TextRole? textRole)
+    {
+        if (textRole == null)
+        {
+            ChangePassword(_passwordTextRole == TextRole.Password ? TextRole.Text : TextRole.Password);
+            ShowPassword = !ShowPassword;
+        }
+        else
+        {
+            _passwordTextRole = textRole.Value;
+        }
+    }
 }
