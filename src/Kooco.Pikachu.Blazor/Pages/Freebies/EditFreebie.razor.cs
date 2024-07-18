@@ -17,11 +17,13 @@ using Kooco.Pikachu.FreeBies.Dtos;
 using Blazored.TextEditor;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Localization;
+using Kooco.Pikachu.EnumValues;
 
 namespace Kooco.Pikachu.Blazor.Pages.Freebies;
 
 public partial class EditFreebie
 {
+    #region Inject
     [Parameter]
     public string Id { get; set; }
     private FreebieDto ExistingItem { get; set; }
@@ -39,20 +41,24 @@ public partial class EditFreebie
 
     private UpdateFreebieDto UpdateFreebieDto = new();
     public Guid EditingId { get; private set; }
+    #endregion
 
+    #region Constructor
     public EditFreebie(
         IUiMessageService uiMessageService,
         ImageContainerManager imageContainerManager,
         IFreebieAppService freebieAppService,
         IGroupBuyAppService groupBuyAppService
-        )
+    )
     {
         _uiMessageService = uiMessageService;
         _imageContainerManager = imageContainerManager;
         _freebieAppService = freebieAppService;
         _groupBuyAppService = groupBuyAppService;
     }
+    #endregion
 
+    #region Methods
     protected override async Task OnAfterRenderAsync(bool isFirstRender)
     {
         if (isFirstRender)
@@ -245,6 +251,14 @@ public partial class EditFreebie
         {
             throw new BusinessException(L[PikachuDomainErrorCodes.SelectAtLeastOneGroupBuy]);
         }
+        if (UpdateFreebieDto.FreebieOrderReach is FreebieOrderReach.MinimumAmount && UpdateFreebieDto.MinimumAmount is null)
+        {
+            throw new BusinessException(L[PikachuDomainErrorCodes.MinimumAmountReachCannotBeEmpty]);
+        }
+        if (UpdateFreebieDto.FreebieOrderReach is FreebieOrderReach.MinimumPiece && UpdateFreebieDto.MinimumPiece is null)
+        {
+            throw new BusinessException(L[PikachuDomainErrorCodes.MinimumPieceCannotBeEmpty]);
+        }
     }
 
     private void CancelToFreebieList()
@@ -265,4 +279,5 @@ public partial class EditFreebie
 
         return Task.CompletedTask;
     }
+    #endregion
 }

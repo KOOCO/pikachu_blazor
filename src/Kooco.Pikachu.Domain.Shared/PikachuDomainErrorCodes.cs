@@ -10,6 +10,8 @@ public static class PikachuDomainErrorCodes
     public const string ItemWithSameNameAlreadyExists = "Pikachu:ItemWithSameNameAlreadyExists";
     public const string FreebieWithSameNameAlreadyExists = "Pikachu:FreebieWithSameNameAlreadyExists";
     public const string ItemDetailsCannotBeEmpty = "Pikachu:ItemDetailsCannotBeEmpty";
+    public const string MinimumAmountReachCannotBeEmpty = "Pikachu:MinimumAmountReachCannotBeEmpty";
+    public const string MinimumPieceCannotBeEmpty = "Pikachu:MinimumPieceCannotBeEmpty";
     public const string ItemWithSKUAlreadyExists = "Pikachu:ItemWithSKUAlreadyExists";
     public const string SKUForItemDetailsCannotBeNull = "Pikachu:SKUForItemDetailsCannotBeNull";
     public const string SellingPriceForItemShouldBeGreaterThanZero = "Pikachu:SellingPriceForItemShouldBeGreaterThanZero";

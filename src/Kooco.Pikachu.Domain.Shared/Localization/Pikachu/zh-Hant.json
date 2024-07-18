@@ -573,6 +573,8 @@
     "KinmenCountry": "金門縣",
     "LianjiangCountry": "連江縣",
     "EditRole": "編輯角色",
-    "EditUser": "編輯使用者"
+    "EditUser": "編輯使用者",
+    "Pikachu:MinimumAmountReachCannotBeEmpty": "最低金額不能為空",
+    "Pikachu:MinimumPieceCannotBeEmpty": "最小件數不能為空"
   }
 }

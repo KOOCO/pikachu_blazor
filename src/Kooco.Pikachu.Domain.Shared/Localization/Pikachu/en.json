@@ -557,6 +557,8 @@
     "PrintedMaterials": "0014: Printed Materials",
     "Others": "0015: Others",
     "EditRole": "Edit Role",
-    "EditUser": "Edit User"
+    "EditUser": "Edit User",
+    "Pikachu:MinimumAmountReachCannotBeEmpty": "Minimum Amount Reach Cannot be Empty.",
+    "Pikachu:MinimumPieceCannotBeEmpty": "Minimum Piece Cannot be Empty."
   }
 }

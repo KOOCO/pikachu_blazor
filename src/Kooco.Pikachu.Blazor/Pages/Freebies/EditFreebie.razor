@@ -246,7 +246,7 @@
                 <div class="row mt-1">
                     <div class="col-2">
                     </div>
-                    @if (UpdateFreebieDto.FreebieOrderReach==FreebieOrderReach.MinimumAmount)
+                    @if (UpdateFreebieDto.FreebieOrderReach is FreebieOrderReach.MinimumAmount)
                     {
                         <div class="col-2">
                             <Label>@L["AmountReach"]</Label>
@@ -256,7 +256,8 @@
                                                  Min="0" />
                             </div>
                         </div>
-                    }else
+                    }
+                    else
                     {
                         <div class="col-2">
                             <Label>@L["QuantityReach"]</Label>
