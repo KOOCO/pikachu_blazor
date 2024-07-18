@@ -41,6 +41,8 @@ public partial class EditFreebie
 
     private UpdateFreebieDto UpdateFreebieDto = new();
     public Guid EditingId { get; private set; }
+
+    int freebieAmount = 0;
     #endregion
 
     #region Constructor
@@ -75,6 +77,9 @@ public partial class EditFreebie
 
                 // Map ItemDto to UpdateItemDto
                 UpdateFreebieDto = mapper.Map<UpdateFreebieDto>(ExistingItem);
+
+                freebieAmount = Convert.ToInt32(UpdateFreebieDto.FreebieAmount);
+
                 UpdateFreebieDto.Images = UpdateFreebieDto.Images.OrderBy(x => x.SortNo).ToList();
 
                 GroupBuyList = await _groupBuyAppService.GetGroupBuyLookupAsync();
@@ -209,6 +214,8 @@ public partial class EditFreebie
     {
         try
         {
+            UpdateFreebieDto.FreebieAmount = freebieAmount;
+
             UpdateFreebieDto.ItemDescription = await ItemDescription.GetHTML();
 
             ValidateForm();
@@ -258,6 +265,14 @@ public partial class EditFreebie
         if (UpdateFreebieDto.FreebieOrderReach is FreebieOrderReach.MinimumPiece && UpdateFreebieDto.MinimumPiece is null)
         {
             throw new BusinessException(L[PikachuDomainErrorCodes.MinimumPieceCannotBeEmpty]);
+        }
+        if (!UpdateFreebieDto.UnCondition && UpdateFreebieDto.FreebieQuantity <= 0)
+        {
+            throw new BusinessException(L[PikachuDomainErrorCodes.GetCannotBeEmptyOrZero]);
+        }
+        if (!UpdateFreebieDto.UnCondition && UpdateFreebieDto.FreebieQuantity > freebieAmount)
+        {
+            throw new BusinessException(L[PikachuDomainErrorCodes.GetCannotBeGreaterThanGiftableQuantity]);
         }
     }
 

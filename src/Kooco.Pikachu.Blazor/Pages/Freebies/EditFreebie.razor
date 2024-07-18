@@ -273,7 +273,8 @@
                         <Label l>@L["Get"]</Label>
                         <div class="input-group">
                             <MudNumericField @bind-Value="UpdateFreebieDto.FreebieQuantity"
-                                             Min="0" />
+                                             Min="0"
+                                             Max="@Convert.ToInt32(UpdateFreebieDto.FreebieAmount)" />
                             <Span Class="bg-primary text-light px-2 py-2">@L["Piece"]</Span>
                         </div>
                     </div>
@@ -305,7 +306,7 @@
                     </label>
                 </div>
                 <div class="col-9">
-                    <MudNumericField @bind-Value="UpdateFreebieDto.FreebieAmount"
+                    <MudNumericField @bind-Value="@freebieAmount"
                                      Min="0" />
                 </div>
             </div>

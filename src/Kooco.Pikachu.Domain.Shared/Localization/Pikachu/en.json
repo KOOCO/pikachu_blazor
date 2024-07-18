@@ -213,7 +213,7 @@
     "Get": "Get",
     "Piece": "Piece",
     "ActivityDate": "Activity Date",
-    "FreebieAmount": "Freebie Amount",
+    "FreebieAmount": "Giftable Quantity",
     "WhenOrderReach": "When Order Reach",
     "MinimumAmount": "Minimum Amount",
     "MinimumPiece": "Minimum Piece",
@@ -559,6 +559,8 @@
     "EditRole": "Edit Role",
     "EditUser": "Edit User",
     "Pikachu:MinimumAmountReachCannotBeEmpty": "Minimum Amount Reach Cannot be Empty.",
-    "Pikachu:MinimumPieceCannotBeEmpty": "Minimum Piece Cannot be Empty."
+    "Pikachu:MinimumPieceCannotBeEmpty": "Minimum Piece Cannot be Empty.",
+    "Pikachu:GetCannotBeEmptyOrZero": "Get Cannot be Empty or Zero.",
+    "Pikachu:GetCannotBeGreaterThanGiftableQuantity": "Get Cannot Be Greater Than Giftable Quantity"
   }
 }

@@ -143,7 +143,7 @@
     "Filter": "篩選",
     "First": "前置",
     "Footer": "結尾訊息",
-    "FreebieAmount": "贈品數量",
+    "FreebieAmount": "可贈送數量",
     "FreebiesList": "贈品清單",
     "FreeShipping": "免運費",
     "FreeShippingThreshold": "免運費",
@@ -575,6 +575,8 @@
     "EditRole": "編輯角色",
     "EditUser": "編輯使用者",
     "Pikachu:MinimumAmountReachCannotBeEmpty": "最低金額不能為空",
-    "Pikachu:MinimumPieceCannotBeEmpty": "最小件數不能為空"
+    "Pikachu:MinimumPieceCannotBeEmpty": "最小件數不能為空",
+    "Pikachu:GetCannotBeEmptyOrZero": "獲取不能為空或零。",
+    "Pikachu:GetCannotBeGreaterThanGiftableQuantity": "取得不能大於贈送數量"
   }
 }

@@ -17,6 +17,8 @@ public class PikachuResource
 
     public const string FirstPage = "FirstPage";
 
+    public const string FreebieAmount = "FreebieAmount";
+
     public const string PrevPage = "PrevPage";
 
     public const string NextPage = "NextPage";

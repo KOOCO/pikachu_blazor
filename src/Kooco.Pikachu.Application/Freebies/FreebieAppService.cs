@@ -90,12 +90,12 @@ namespace Kooco.Pikachu.Freebies
         }
         public override async Task<FreebieDto> UpdateAsync(Guid id, UpdateFreebieDto input)
         {
-            var sameName = await _freebieRepository.FirstOrDefaultAsync(item => item.ItemName == input.ItemName);
-            if (sameName != null && sameName.Id != id)
-            {
-                throw new BusinessException(PikachuDomainErrorCodes.ItemWithSameNameAlreadyExists);
-            }
-            var freebie = await _freebieRepository.GetAsync(id);
+            Freebie? sameName = await _freebieRepository.FirstOrDefaultAsync(item => item.ItemName == input.ItemName);
+            
+            if (sameName is not null && sameName.Id != id) throw new BusinessException(PikachuDomainErrorCodes.ItemWithSameNameAlreadyExists);
+
+            Freebie freebie = await _freebieRepository.GetAsync(id);
+
             freebie.ItemName = input.ItemName;
             freebie.ItemDescription = input.ItemDescription;
             freebie.ApplyToAllGroupBuy = input.ApplyToAllGroupBuy;
@@ -106,10 +106,12 @@ namespace Kooco.Pikachu.Freebies
             freebie.MinimumAmount = input.MinimumAmount;
             freebie.MinimumPiece = input.MinimumPiece;
             freebie.FreebieOrderReach = input.FreebieOrderReach;
+            freebie.FreebieQuantity = input.FreebieQuantity;
 
             await _freebieRepository.EnsureCollectionLoadedAsync(freebie, x => x.FreebieGroupBuys);
 
             _freebieManager.RemoveFreebieGroupBuys(freebie, input.FreebieGroupBuys);
+
             foreach (var groupBuyId in input.FreebieGroupBuys)
             {
                 freebie.AddFreebieGroupBuys(freebie.Id, groupBuyId);
@@ -133,6 +135,7 @@ namespace Kooco.Pikachu.Freebies
                 }
             }
             await _freebieRepository.UpdateAsync(freebie);
+
             return ObjectMapper.Map<Freebie, FreebieDto>(freebie);
         }
         public async Task DeleteSingleImageAsync(Guid itemId, string blobImageName)
