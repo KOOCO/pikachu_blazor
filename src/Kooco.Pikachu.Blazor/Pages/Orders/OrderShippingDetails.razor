@@ -1,4 +1,5 @@
-﻿@page "/Orders/OrderShippingDetails/{id}"
+﻿@* @page "/Orders/OrderShippingDetails/{id}" *@
+@page "/Orders/OrderShippingDetails/{Ids}"
 @using Kooco.Pikachu.EnumValues;
 @using Kooco.Pikachu.Localization;
 @using Kooco.Pikachu.OrderItems;
@@ -46,41 +47,45 @@
         #divToPrint, #divToPrint * {
             visibility: visible;
         }
+
+        .page-break {
+            page-break-after: always;
+        }
     }
 </style>
 <div class="row justify-content-center">
     <div class="col-md-10 col-sm-12">
-        <Card>
-            <CardBody>
-                <div class="row" id="divToPrint">
-                    <h3 class="text-center">@L["OrderShippingDetails"]</h3>
-                    @if (Order != null)
-                    {
+        @foreach (OrderDto order in Orders)
+        {
+            <Card Class="page-break">
+                <CardBody>
+                    <div class="row" id="divToPrint">
+                        <h3 class="text-center">@L["OrderShippingDetails"]</h3>
                         <div class="col-12">
                             <table class="w-100">
                                 <tbody>
                                     <tr>
-                                        <td>@L["OrderInformation"]: @Order?.OrderNo</td>
-                                        <td>@L["PaymentMethod"]: @L[Order?.PaymentMethod?.ToString()]</td>
+                                        <td>@L["OrderInformation"]: @order.OrderNo</td>
+                                        <td>@L["PaymentMethod"]: @L[order?.PaymentMethod?.ToString()]</td>
                                     </tr>
                                     <tr>
-                                        <td>@L["OrderDate"]: @Order?.CreationTime</td>
-                                        <td>@L["ShippingMethod"]: @L[Order?.DeliveryMethod?.ToString()] </td>
+                                        <td>@L["OrderDate"]: @order?.CreationTime</td>
+                                        <td>@L["ShippingMethod"]: @L[order?.DeliveryMethod?.ToString()] </td>
                                     </tr>
                                     <tr>
-                                        <td>@L["CustomerName"]:  @Order?.CustomerName</td>
-                                        <td>@L["RecipientName"]:  @Order?.RecipientName</td>
+                                        <td>@L["CustomerName"]:  @order?.CustomerName</td>
+                                        <td>@L["RecipientName"]:  @order?.RecipientName</td>
                                     </tr>
                                     <tr>
-                                        <td>@L["CustomerEmail"]:  @Order?.CustomerEmail</td>
-                                        <td>@L["RecipientPhoneNumber"]:  @Order?.RecipientPhone</td>
+                                        <td>@L["CustomerEmail"]:  @order?.CustomerEmail</td>
+                                        <td>@L["RecipientPhoneNumber"]:  @order?.RecipientPhone</td>
                                     </tr>
                                     <tr>
-                                        <td> @L["CustomerPhone"]: @Order?.CustomerPhone</td>
-                                        <td> @L["RecipientAddress"]: @Order?.AddressDetails</td>
+                                        <td> @L["CustomerPhone"]: @order?.CustomerPhone</td>
+                                        <td> @L["RecipientAddress"]: @order?.AddressDetails</td>
                                     </tr>
                                     <tr>
-                                        <td>@L["RecipientComments"]: @Order?.Remarks</td>
+                                        <td>@L["RecipientComments"]: @order?.Remarks</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -94,9 +99,9 @@
                                     </tr>
                                 </thead>
                                 <tbody class="text-center">
-                                    @if (Order?.OrderItems != null)
+                                    @if (order?.OrderItems != null)
                                     {
-                                        @foreach (OrderItemDto item in Order?.OrderItems)
+                                        @foreach (OrderItemDto item in order?.OrderItems)
                                         {
                                             <tr>
                                                 @if (item.ItemType == ItemType.Item)
@@ -104,7 +109,7 @@
                                                     <td class="text-start" style="width:50%">@item.Item?.ItemName </td>
                                                 }
                                                 else if (item.ItemType == ItemType.SetItem)
-                                                {   
+                                                {
                                                     <td class="text-start" style="width:50%">@item.SetItem?.SetItemName </td>
                                                 }
                                                 else if (item.ItemType == ItemType.Freebie)
@@ -125,15 +130,15 @@
                                     </tr>
                                     <tr>
                                         <td colspan="3" class="text-end">@L["Total"] :</td>
-                                        <td class="text-center">NT $@Order?.TotalAmount.ToString("N0")</td>
+                                        <td class="text-center">NT $@order?.TotalAmount.ToString("N0")</td>
                                     </tr>
                                 </tfoot>
                             </table>
                         </div>
-                    }
-                </div>
-            </CardBody>
-        </Card>
+                    </div>
+                </CardBody>
+            </Card>
+        }
         <div class="row justify-content-center">
             <Button Type="ButtonType.Button" @onclick="PrintDiv" Class="btn btn-sm btn-primary col-md-2">
                 <Icon Class="fa fa-print me-1"></Icon>

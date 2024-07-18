@@ -3,7 +3,9 @@ using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.StoreComments;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Kooco.Pikachu.Blazor.Pages.Orders;
@@ -13,8 +15,12 @@ public partial class OrderShippingDetails
     #region Inject
     [Parameter]
     public string id { get; set; }
+    [Parameter]
+    public string Ids { get; set; }
     private Guid OrderId { get; set; }
+    private List<Guid> OrderIds { get; set; } = [];
     private OrderDto Order { get; set; }
+    private List<OrderDto> Orders { get; set; } = [];
     public StoreCommentDto StoreComment { get; set; }
     private bool isPrinting = false;
     #endregion
@@ -24,8 +30,17 @@ public partial class OrderShippingDetails
     {
         try
         {
-            OrderId = Guid.Parse(id);
-            await GetOrderDetailsAsync();
+            List<Guid> orderIds = JsonConvert.DeserializeObject<List<Guid>>(Ids) ?? [];
+
+            foreach (Guid orderId in orderIds)
+            {
+                OrderIds.Add(orderId);
+
+                OrderDto orderDto = await _orderAppService.GetWithDetailsAsync(orderId);
+
+                Orders.Add(orderDto);
+            }
+
             await base.OnInitializedAsync(); 
         }
         catch(Exception ex)
@@ -33,13 +48,6 @@ public partial class OrderShippingDetails
             await _uiMessageService.Error(ex.GetType().ToString());
             Console.WriteLine(ex.Message);
         }
-    }
-    
-    async Task GetOrderDetailsAsync()
-    {
-        Order = await _orderAppService.GetWithDetailsAsync(OrderId);
-
-        await InvokeAsync(StateHasChanged);
     }
 
     private void PrintDiv()

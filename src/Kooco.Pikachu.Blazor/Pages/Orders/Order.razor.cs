@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.JSInterop;
+using Newtonsoft.Json;
 using NUglify.Html;
 using System;
 using System.Collections.Generic;
@@ -273,10 +274,11 @@ public partial class Order
     {
         List<OrderDto> selectedOrders = [.. Orders.Where(w => w.IsSelected)];
 
-        foreach (OrderDto selectedOrder in selectedOrders)
-        {
-            await JSRuntime.InvokeVoidAsync("openInNewTab", $"Orders/OrderShippingDetails/{selectedOrder.Id}");
-        }
+        List<Guid> selectedIds = [.. selectedOrders.Select(s => s.Id)];
+
+        string selectedIdsStr = JsonConvert.SerializeObject(selectedIds);
+
+        await JSRuntime.InvokeVoidAsync("openInNewTab", $"Orders/OrderShippingDetails/{selectedIdsStr}");
     }
     
     public async void IssueInvoice()
