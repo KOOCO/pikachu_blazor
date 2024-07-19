@@ -34,21 +34,107 @@
 <h3>@L["LogisticsProviderSettings"]</h3>
    <Tabs SelectedTab="@selectedMainTab" SelectedTabChanged="@OnSelectedMainTabChanged">
     <Items>
+        <Tab Name="HomeDelivery">@L["HomeDelivery"]</Tab>
         <Tab Name="GreenWorldLogistics">@L["GreenWorldLogistics"]</Tab>
         <Tab Name="GreenWorldLogisticsC2C">@L["GreenWorldLogisticsC2C"]</Tab>
-       
-
-       
     </Items>
     <Content>
+                <TabPanel Name="HomeDelivery">
+                    <Card>
+                        <CardHeader>
+                            <h4>@L["HomeDelivery"]</h4>
+                        </CardHeader>
+                        <CardBody>
+                            <EditForm Model="@HomeDelivery" OnValidSubmit="UpdateHomeDeliveryAsync">
+                                <DataAnnotationsValidator />
+                                <div class="row">
+                                    <div class="col-3">
+                                        <label for="h-enable-disable-switch" class="form-label pt-0">@L["Enable/Disable"]</label>
+                                    </div>
+                                    <div class="col-8">
+                                        <Switch TValue="bool" id="h-enable-disable-switch" @bind-Checked="HomeDelivery.IsEnabled"></Switch>
+                                    </div>
+                                </div>
+                                @*   <div class="row">
+                                <div class="col-3">
+                                <label for="custom-title" class="form-label">@L["CustomTitle"]<span class="text-danger"> *</span></label>
+                                </div>
+                                <div class="col-8">
+                                <InputText id="custom-title" class="form-control" @bind-Value="HomeDelivery.CustomTitle"></InputText>
+                                <ValidationMessage For="@(() => HomeDelivery.CustomTitle)" />
+                                </div>
+                                </div> *@
+                                <div class="row">
+                                    <div class="col-3">
+                                        <label class="form-label">@L["MainIslands"]<span class="text-danger"> *</span></label>
+                                    </div>
+                                    <div class="col-8">
+                                        @if (LogisticsConsts.MainIslands != null)
+                                        {
+                                            @foreach (var island in LogisticsConsts.MainIslands)
+                                            {
+                                                <label for="@island" class="form-label me-2">
+                                                    <input type="checkbox" class="form-check-input me-1" id="@island" checked="@(HomeDelivery.MainIslands != null && HomeDelivery.MainIslands.Contains(island))" @onchange="(value) => OnMainIslandCheckedChange(island, value)" />
+                                                    @L[island]
+                                                </label>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-3">
+                                        <label class="form-label">@L["OuterIslands"]<span class="text-danger"> *</span></label>
+                                    </div>
+                                    <div class="col-8">
+                                        @if (LogisticsConsts.OuterIslands != null)
+                                        {
+                                            @foreach (var island in LogisticsConsts.OuterIslands)
+                                            {
+                                                <label for="@island" class="form-label me-2">
+                                                    <input type="checkbox" class="form-check-input me-1" id="@island" checked="@(HomeDelivery?.OuterIslands != null && HomeDelivery.OuterIslands.Contains(island))" @onchange="(value) => OnOuterIslandCheckedChange(island, value)" />
+                                                    @L[island]
+                                                </label>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                @*    <div class="row">
+                                <div class="col-3">
+                                <label for="h-threshold" class="form-label">@L["FreeShippingThreshold"]<span class="text-danger"> *</span></label>
+                                </div>
+                                <div class="col-8">
+                                <InputNumber id="h-threshold" class="form-control" @bind-Value="HomeDelivery.FreeShippingThreshold" min="0" DisplayName="Free Shipping Threshold"></InputNumber>
+                                <ValidationMessage For="@(() => HomeDelivery.FreeShippingThreshold)" />
+                                </div>
+                                </div> *@
+                                <div class="row">
+                                    <div class="col-3">
+                                        <label for="h-freight" class="form-label">@L["Cost"]<span class="text-danger"> *</span></label>
+                                    </div>
+                                    <div class="col-8">
+                                        <InputNumber id="h-freight" class="form-control" @bind-Value="HomeDelivery.Freight" min="0"></InputNumber>
+                                        <ValidationMessage For="@(() => HomeDelivery.Freight)" />
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-12 text-center">
+                                        <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
+                                            <i class="fa fa-check"></i>
+                                            @L["SaveSettings"]
+                                        </Button>
+                                    </div>
+                                </div>
+                            </EditForm>
+                        </CardBody>
+                    </Card>
+                </TabPanel>
   <TabPanel Name="GreenWorldLogistics">
-      <Card>
-
-    <CardHeader>
-        <h4>@L["GreenWorldLogistics"]</h4>
-    </CardHeader>
-    <CardBody>
-        <EditForm Model="@GreenWorld" OnValidSubmit="UpdateGreenWorldLogisticsAsync">
+        <Card>
+            <CardHeader>
+                <h4>@L["GreenWorldLogistics"]</h4>
+            </CardHeader>
+            <CardBody>
+                <EditForm Model="@GreenWorld" OnValidSubmit="UpdateGreenWorldLogisticsAsync">
             <DataAnnotationsValidator />
             <div class="row">
                 <div class="col-3">
@@ -208,13 +294,12 @@
                 </div>
             </div>
         </EditForm>
-    </CardBody>
-</Card>
+            </CardBody>
+        </Card>
       <Card>
     <CardBody>
         <Tabs SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
     <Items>
-        <Tab Name="HomeDelivery">@L["HomeDelivery"]</Tab>
         <Tab Name="postoffice">@L["PostOffice"]</Tab>
         <Tab Name="familymart">@L["FamilyMart"]</Tab>
         <Tab Name="7-11">@L["7-11"]</Tab>
@@ -222,99 +307,8 @@
         <Tab Name="b-normal">@L["B-Normal"]</Tab>
         <Tab Name="b-freeze">@L["B-Freeze"]</Tab>
         <Tab Name="b-frozen">@L["B-Frozen"]</Tab>
-
-       
     </Items>
     <Content>
-        <TabPanel Name="HomeDelivery">
-           <Card>
-    <CardHeader>
-        <h4>@L["HomeDelivery"]</h4>
-    </CardHeader>
-    <CardBody>
-        <EditForm Model="@HomeDelivery" OnValidSubmit="UpdateHomeDeliveryAsync">
-            <DataAnnotationsValidator />
-            <div class="row">
-                <div class="col-3">
-                    <label for="h-enable-disable-switch" class="form-label pt-0">@L["Enable/Disable"]</label>
-                </div>
-                <div class="col-8">
-                    <Switch TValue="bool" id="h-enable-disable-switch" @bind-Checked="HomeDelivery.IsEnabled"></Switch>
-                </div>
-            </div>
-          @*   <div class="row">
-                <div class="col-3">
-                    <label for="custom-title" class="form-label">@L["CustomTitle"]<span class="text-danger"> *</span></label>
-                </div>
-                <div class="col-8">
-                    <InputText id="custom-title" class="form-control" @bind-Value="HomeDelivery.CustomTitle"></InputText>
-                    <ValidationMessage For="@(() => HomeDelivery.CustomTitle)" />
-                </div>
-            </div> *@
-            <div class="row">
-                <div class="col-3">
-                    <label class="form-label">@L["MainIslands"]<span class="text-danger"> *</span></label>
-                </div>
-                <div class="col-8">
-                    @if (LogisticsConsts.MainIslands != null)
-                    {
-                        @foreach(var island in LogisticsConsts.MainIslands)
-                        {
-                            <label for="@island" class="form-label me-2">
-                                <input type="checkbox" class="form-check-input me-1" id="@island" checked="@(HomeDelivery.MainIslands != null && HomeDelivery.MainIslands.Contains(island))" @onchange="(value) => OnMainIslandCheckedChange(island, value)" />
-                                @L[island]
-                            </label>
-                        }
-                    }
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-3">
-                    <label class="form-label">@L["OuterIslands"]<span class="text-danger"> *</span></label>
-                </div>
-                <div class="col-8">
-                    @if (LogisticsConsts.OuterIslands != null)
-                    {
-                        @foreach(var island in LogisticsConsts.OuterIslands)
-                        {
-                            <label for="@island" class="form-label me-2">
-                                <input type="checkbox" class="form-check-input me-1" id="@island" checked="@(HomeDelivery?.OuterIslands != null && HomeDelivery.OuterIslands.Contains(island))" @onchange="(value) => OnOuterIslandCheckedChange(island, value)" />
-                                @L[island]
-                            </label>
-                        }
-                    }
-                </div>
-            </div>
-         @*    <div class="row">
-                <div class="col-3">
-                    <label for="h-threshold" class="form-label">@L["FreeShippingThreshold"]<span class="text-danger"> *</span></label>
-                </div>
-                <div class="col-8">
-                    <InputNumber id="h-threshold" class="form-control" @bind-Value="HomeDelivery.FreeShippingThreshold" min="0" DisplayName="Free Shipping Threshold"></InputNumber>
-                    <ValidationMessage For="@(() => HomeDelivery.FreeShippingThreshold)" />
-                </div>
-            </div> *@
-            <div class="row">
-                <div class="col-3">
-                    <label for="h-freight" class="form-label">@L["Cost"]<span class="text-danger"> *</span></label>
-                </div>
-                <div class="col-8">
-                    <InputNumber id="h-freight" class="form-control" @bind-Value="HomeDelivery.Freight" min="0"></InputNumber>
-                    <ValidationMessage For="@(() => HomeDelivery.Freight)" />
-                </div>
-            </div>
-            <div class="row mt-3">
-                <div class="col-12 text-center">
-                    <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
-                        <i class="fa fa-check"></i>
-                        @L["SaveSettings"]
-                    </Button>
-                </div>
-            </div>
-        </EditForm>
-    </CardBody>
-</Card>
-        </TabPanel>
         <TabPanel Name="postoffice">
                     <Card>
                         <CardHeader>
@@ -924,9 +918,9 @@
     </Card>
 
 @code{
-    string selectedTab = "HomeDelivery";
+    string selectedTab = "postoffice";
     string selectedC2CTab = "familymartC2C";
-    string selectedMainTab = "GreenWorldLogistics";
+    string selectedMainTab = "HomeDelivery";
 
     private Task OnSelectedTabChanged( string name )
     {
