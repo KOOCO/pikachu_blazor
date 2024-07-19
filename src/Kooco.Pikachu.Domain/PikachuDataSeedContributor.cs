@@ -8,6 +8,7 @@ using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.EnumValues;
+using Volo.Abp.MultiTenancy;
 
 namespace Kooco.Pikachu
 {
@@ -15,96 +16,100 @@ namespace Kooco.Pikachu
     {
         private readonly IRepository<Item, Guid> _appItemRepository;
         private readonly IRepository<EnumValue, int> _appEnumValueRepository;
+        private readonly IDataFilter<IMultiTenant> _MultiTenantFilter;
 
         public PikachuDataSeedContributor(IRepository<Item, Guid> appItemRepository,
-                                          IRepository<EnumValue, int> appEnumValueRepository)
+                                          IRepository<EnumValue, int> appEnumValueRepository,
+                                          IDataFilter<IMultiTenant> MultiTenantFilter)
         {
             _appItemRepository = appItemRepository;
             _appEnumValueRepository = appEnumValueRepository;
+            _MultiTenantFilter = MultiTenantFilter;
         }
 
         public async Task SeedAsync(DataSeedContext context)
-
         {
-            if (await _appItemRepository.GetCountAsync() <= 0)
+            using (_MultiTenantFilter.Disable())
             {
-                var item = new Item()
+                if (await _appItemRepository.GetCountAsync() <= 0)
                 {
-                    ItemName = "SunShine Umbrella",
-                    ItemDescription = "This is a simple description of demo item",
-                    Returnable = false,
-                    ItemTags = "",
-                    ItemDetails = new List<ItemDetails>()
-                };
-                item.AddItemDetail(
-                    Guid.NewGuid(),
-                    item.ItemName,
-                    "APCJ-Blue-001",
-                    0,
-                    10,
-                    0,
-                    0,
-                    0,
-                    0,
-                    "",
-                    "",
-                    "",
-                    ""
-                    );
+                    var item = new Item()
+                    {
+                        ItemName = "SunShine Umbrella",
+                        ItemDescription = "This is a simple description of demo item",
+                        Returnable = false,
+                        ItemTags = "",
+                        ItemDetails = new List<ItemDetails>()
+                    };
+                    item.AddItemDetail(
+                        Guid.NewGuid(),
+                        item.ItemName,
+                        "APCJ-Blue-001",
+                        0,
+                        10,
+                        0,
+                        0,
+                        0,
+                        0,
+                        "",
+                        "",
+                        "",
+                        ""
+                        );
 
-                await _appItemRepository.InsertAsync(item);
+                    await _appItemRepository.InsertAsync(item);
 
-                item = new Item()
-                {
-                    ItemName = "SunShine Computer",
-                    ItemDescription = "This is a simple description of demo item",
-                    Returnable = false,
-                    ItemTags = "",
-                    ItemDetails = new List<ItemDetails>()
-                };
-                item.AddItemDetail(
-                    Guid.NewGuid(),
-                    item.ItemName,
-                    "APCJ-Blue-002",
-                    0,
-                    10,
-                    0,
-                    0,
-                    0,
-                    0,
-                    "",
-                    "",
-                    "",
-                    ""
-                    );
-                await _appItemRepository.InsertAsync(item);
+                    item = new Item()
+                    {
+                        ItemName = "SunShine Computer",
+                        ItemDescription = "This is a simple description of demo item",
+                        Returnable = false,
+                        ItemTags = "",
+                        ItemDetails = new List<ItemDetails>()
+                    };
+                    item.AddItemDetail(
+                        Guid.NewGuid(),
+                        item.ItemName,
+                        "APCJ-Blue-002",
+                        0,
+                        10,
+                        0,
+                        0,
+                        0,
+                        0,
+                        "",
+                        "",
+                        "",
+                        ""
+                        );
+                    await _appItemRepository.InsertAsync(item);
 
-                item = new Item()
-                {
-                    ItemName = "Lovely Pillow",
-                    ItemDescription = "This is a simple description of demo item",
-                    Returnable = false,
-                    ItemTags = "",
-                    ItemDetails = new List<ItemDetails>()
-                };
-                item.AddItemDetail(
-                    Guid.NewGuid(),
-                    item.ItemName,
-                    "APCJ-Blue-003",
-                    0,
-                    100,
-                    0,
-                    0,
-                    0,
-                    0,
-                    "",
-                    "",
-                    "",
-                    ""
-                    );
-                await _appItemRepository.InsertAsync(item);
+                    item = new Item()
+                    {
+                        ItemName = "Lovely Pillow",
+                        ItemDescription = "This is a simple description of demo item",
+                        Returnable = false,
+                        ItemTags = "",
+                        ItemDetails = new List<ItemDetails>()
+                    };
+                    item.AddItemDetail(
+                        Guid.NewGuid(),
+                        item.ItemName,
+                        "APCJ-Blue-003",
+                        0,
+                        100,
+                        0,
+                        0,
+                        0,
+                        0,
+                        "",
+                        "",
+                        "",
+                        ""
+                        );
+                    await _appItemRepository.InsertAsync(item);
+                }
             }
-
 
             if (await _appEnumValueRepository.GetCountAsync() <= 0)
             {
