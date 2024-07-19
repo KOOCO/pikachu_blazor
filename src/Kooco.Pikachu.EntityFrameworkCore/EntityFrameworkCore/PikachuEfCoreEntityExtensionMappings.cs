@@ -50,6 +50,24 @@ public static class PikachuEfCoreEntityExtensionMappings
                             propertyBuilder.HasMaxLength(8);
                         }
                     );
+
+            ObjectExtensionManager.Instance
+                         .MapEfCoreProperty<Tenant, string>(
+                             Constant.TenantContactPerson,
+                             (entityBuilder, propertyBuilder) =>
+                             {
+                                 propertyBuilder.HasMaxLength(512);
+                             }
+                         );
+
+             ObjectExtensionManager.Instance
+             .MapEfCoreProperty<Tenant, string>(
+                 Constant.TenantContactEmail,
+                 (entityBuilder, propertyBuilder) =>
+                 {
+                     propertyBuilder.HasMaxLength(512);
+                 }
+             );
         });
     }
 }

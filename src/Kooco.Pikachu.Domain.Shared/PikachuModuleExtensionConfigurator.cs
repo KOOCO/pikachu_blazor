@@ -1,8 +1,11 @@
 ﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Localization;
+using Microsoft.Extensions.Localization;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using Volo.Abp.Identity;
+using Volo.Abp.Localization;
 using Volo.Abp.ObjectExtending;
 using Volo.Abp.Threading;
 
@@ -79,6 +82,36 @@ public static class PikachuModuleExtensionConfigurator
                {
                    tenant.AddOrUpdateProperty<Guid?>( //property type: string
                        Constant.TenantOwner, //property name
+                       property =>
+                       {
+                           //validation rules
+                           //property.Attributes.Add(new RequiredAttribute());
+                           //property.Attributes.Add(new StringLengthAttribute(64) { MinimumLength = 4 });
+                           property.Configuration[IdentityModuleExtensionConsts.ConfigurationNames.AllowUserToEdit] = true;
+                       }
+                   );
+                   tenant.AddOrUpdateProperty<Guid?>( //property type: string
+                       Constant.TenantContactPerson, //property name
+                       property =>
+                       {
+                           //validation rules
+                           //property.Attributes.Add(new RequiredAttribute());
+                           //property.Attributes.Add(new StringLengthAttribute(64) { MinimumLength = 4 });
+                           property.Configuration[IdentityModuleExtensionConsts.ConfigurationNames.AllowUserToEdit] = true;
+                       }
+                   );
+                   tenant.AddOrUpdateProperty<Guid?>( //property type: string
+                       Constant.TenantContactTitle, //property name
+                       property =>
+                       {
+                           //validation rules
+                           //property.Attributes.Add(new RequiredAttribute());
+                           //property.Attributes.Add(new StringLengthAttribute(64) { MinimumLength = 4 });
+                           property.Configuration[IdentityModuleExtensionConsts.ConfigurationNames.AllowUserToEdit] = true;
+                       }
+                   );
+                   tenant.AddOrUpdateProperty<Guid?>( //property type: string
+                       Constant.TenantContactEmail, //property name
                        property =>
                        {
                            //validation rules

@@ -578,6 +578,12 @@
     "Pikachu:MinimumPieceCannotBeEmpty": "最小件數不能為空",
     "Pikachu:GetCannotBeEmptyOrZero": "獲取不能為空或零。",
     "Pikachu:GetCannotBeGreaterThanGiftableQuantity": "取得不能大於贈送數量",
-    "Pikachu:ProductTypeIsRequired": "產品類型為必填項。"
+    "Pikachu:ProductTypeIsRequired": "產品類型為必填項。",
+    "TenantAdministrator": "租戶管理者",
+    "TenantContactPerson": "租戶聯絡人",
+    "TenantContactTitle": "租戶聯絡人稱呼",
+    "TenantContactEmail": "租戶聯絡人信箱",
+    "Mr.": "先生",
+    "Ms.": "小姐"
   }
 }

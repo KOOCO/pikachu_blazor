@@ -10,6 +10,9 @@ namespace Kooco.Pikachu
     public static class Constant
     {
         public const string TenantOwner = "TenantOwner";
+        public const string TenantContactPerson = "TenantContactPerson";
+        public const string TenantContactTitle = "TenantContactTitle";
+        public const string TenantContactEmail = "TenantContactEmail";
         public const string ShareProfitPercent = "ShareProfitPercent";
         public const string Logo = "LogoUrl";
         public const string Status = "Status";

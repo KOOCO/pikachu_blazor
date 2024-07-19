@@ -217,24 +217,39 @@
                         }
 
 
-                          <Field>
-
-                        <FieldLabel>@L["TenantOwner"]</FieldLabel>
+                    <Field>
+                        <FieldLabel>@_L["TenantAdministrator"]</FieldLabel>
                         <SelectList TItem="IdentityUserDto"
-            TValue="Guid?"
-            Data="@UsersList"
-            TextField="@((item)=>item.Name)"
-            ValueField="@((item)=>item.Id)"
-            @bind-SelectedValue="@TenantOwnerId"
-            DefaultItemText="Select Tenant Owner" />
-                     
+                                    TValue="Guid?"
+                                    Data="@UsersList"
+                                    TextField="@((item)=>item.Name)"
+                                    ValueField="@((item)=>item.Id)"
+                                    @bind-SelectedValue="@TenantOwnerId"
+                                    DefaultItemText="Select Tenant Administrator" />
                     </Field>
                     <Field>
-                        <FieldLabel>@L["ShareProfit%"]</FieldLabel>
+                        <FieldLabel>@_L["TenantContactPerson"]</FieldLabel>
+                            <TextEdit @bind-Text="@TenantContactPerson"></TextEdit>
+                    </Field>
+                    <Field>
+                        <FieldLabel>@_L["TenantContactTitle"]</FieldLabel>
+                        <select class="form-select form-select" @onchange="OnTenantContactTitleChange">
+                            <option>Select Contact Title</option>
+                            @foreach (string title in TenantContactTitles) {
+                                <option value="@title">@_L[title]</option>
+                            }
+                        </select>
+                    </Field>
+                    <Field>
+                        <FieldLabel>@_L["TenantContactEmail"]</FieldLabel>
+                        <TextEdit @bind-Text="@TenantContactEmail"></TextEdit>
+                    </Field>
+                    <Field>
+                        <FieldLabel>@_L["ShareProfit%"]</FieldLabel>
                         <NumericEdit @bind-Value="@ShareProfitPercentage" />
                     </Field>
                      <Field>
-                         <FieldLabel>@L["ShortCode"]</FieldLabel>
+                         <FieldLabel>@_L["ShortCode"]</FieldLabel>
                                <Validation UsePattern>
     <TextEdit Pattern="^[A-Za-z0-9]{8}$"  MaxLength="8" @bind-Text="@ShortCode">
         <Feedback>
@@ -408,15 +423,41 @@
                         }
                           <Field>
                 
-                        <FieldLabel>@L["TenantOwner"]</FieldLabel>
+                            <FieldLabel>@_L["TenantAdministrator"]</FieldLabel>
                                  <SelectList TItem="IdentityUserDto"
-            TValue="Guid?"
-            Data="@UsersList"
-            TextField="@((item)=>item.Name)"
-            ValueField="@((item)=>item.Id)"
-            @bind-SelectedValue="@TenantOwnerId"
-            DefaultItemText="Select Tenant Owner" />
-                    </Field>
+                                             TValue="Guid?"
+                                             Data="@UsersList"
+                                             TextField="@((item)=>item.Name)"
+                                             ValueField="@((item)=>item.Id)"
+                                             @bind-SelectedValue="@TenantOwnerId"
+                                             DefaultItemText="Select Tenant Administrator" />
+                            </Field>
+                        <Field>
+                            <FieldLabel>@L["TenantContactPerson"]</FieldLabel>
+                            <TextEdit @bind-Text="@TenantContactPerson"></TextEdit>
+                        </Field>
+                        <Field>
+                            <FieldLabel>@_L["TenantContactTitle"]</FieldLabel>
+                            <select class="form-select form-select" @onchange="OnTenantContactTitleChange">
+                                <option>Select Contact Title</option>
+                                @foreach (string title in TenantContactTitles)
+                                {
+                                    if (title == TenantContactTitle)
+                                    {
+                                        <option value="@title" selected>@_L[title]</option>
+                                    }
+
+                                    else
+                                    {
+                                        <option value="@title">@_L[title]</option>
+                                    }
+                                }
+                            </select>
+                        </Field>
+                        <Field>
+                            <FieldLabel>@L["TenantContactEmail"]</FieldLabel>
+                            <TextEdit @bind-Text="@TenantContactEmail"></TextEdit>
+                        </Field>
                     <Field>
                         <FieldLabel>@L["ShareProfit%"]</FieldLabel>
                         <NumericEdit @bind-Value="@ShareProfitPercentage" />

@@ -562,6 +562,12 @@
     "Pikachu:MinimumPieceCannotBeEmpty": "Minimum Piece Cannot be Empty.",
     "Pikachu:GetCannotBeEmptyOrZero": "Get Cannot be Empty or Zero.",
     "Pikachu:GetCannotBeGreaterThanGiftableQuantity": "Get Cannot Be Greater Than Giftable Quantity",
-    "Pikachu:ProductTypeIsRequired": "Product Type Is Required."
+    "Pikachu:ProductTypeIsRequired": "Product Type Is Required.",
+    "TenantAdministrator": "Tenant Administrator",
+    "TenantContactPerson": "Tenant Contact Person",
+    "TenantContactTitle": "Tenant Contact's' Title",
+    "TenantContactEmail": "Tenant Contact Email",
+    "Mr.": "Mr.",
+    "Ms.": "Ms."
   }
 }
