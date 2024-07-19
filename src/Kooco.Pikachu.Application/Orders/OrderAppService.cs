@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -1323,15 +1324,18 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
         using (CurrentTenant.Change(groupBuy.TenantId))
         {
-            var paymentGateway = await _paymentGatewayRepository.FirstOrDefaultAsync(x => x.PaymentIntegrationType == PaymentIntegrationType.EcPay);
-            var paymentGatewayDto = ObjectMapper.Map<PaymentGateway, PaymentGatewayDto>(paymentGateway);
+            PaymentGateway? paymentGateway = await _paymentGatewayRepository.FirstOrDefaultAsync(x => x.PaymentIntegrationType == PaymentIntegrationType.EcPay);
 
-            var properties = typeof(PaymentGatewayDto).GetProperties();
-            foreach (var property in properties)
+            PaymentGatewayDto paymentGatewayDto = ObjectMapper.Map<PaymentGateway, PaymentGatewayDto>(paymentGateway);
+
+            PropertyInfo[] properties = typeof(PaymentGatewayDto).GetProperties();
+
+            foreach (PropertyInfo property in properties)
             {
                 if (property.PropertyType == typeof(string))
                 {
                     var value = (string?)property.GetValue(paymentGatewayDto);
+
                     if (!string.IsNullOrEmpty(value))
                     {
                         var decryptedValue = _stringEncryptionService.Decrypt(value);
