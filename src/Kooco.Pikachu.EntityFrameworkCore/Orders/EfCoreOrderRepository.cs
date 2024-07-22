@@ -79,11 +79,14 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
             .Include(o => o.GroupBuy)
             .Include(o => o.StoreComments)
             .Include(o => o.OrderItems)
-            .ThenInclude(oi => oi.Item)
+                .ThenInclude(oi => oi.Item)
+                .ThenInclude(oi => oi != null ? oi.Images : null)
             .Include(o => o.OrderItems)
-            .ThenInclude(oi => oi.SetItem)
+                .ThenInclude(oi => oi.SetItem)
+                .ThenInclude(i => i != null ? i.Images : null)
             .Include(o => o.OrderItems)
-            .ThenInclude(oi => oi.Freebie)
+                .ThenInclude(oi => oi.Freebie)
+                .ThenInclude(i => i != null ? i.Images : null)
             .ToListAsync();
         return result;
     }

@@ -6,6 +6,7 @@ using Kooco.Pikachu.ElectronicInvoiceSettings;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Localization;
+using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -31,6 +32,7 @@ public partial class Order
     private List<OrderDto> Orders { get; set; } = new();
     private int TotalCount { get; set; }
     private OrderDto SelectedOrder { get; set; }
+    private OrderItemDto SelectedOrderItem { get; set; }
     private Guid? GroupBuyFilter { get; set; }
     private int PageIndex { get; set; } = 1;
     private int PageSize { get; set; } = 10;
