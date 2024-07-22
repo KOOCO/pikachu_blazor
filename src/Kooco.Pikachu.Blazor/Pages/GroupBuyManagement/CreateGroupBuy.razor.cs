@@ -116,6 +116,14 @@ public partial class CreateGroupBuy
         ItemsList.AddRange(SetItemList);
     }
 
+    public void OnProductTypeChange(ChangeEventArgs e)
+    {
+        CreateGroupBuyDto.ProductType = Enum.TryParse<ProductType>(
+            Convert.ToString(e.Value),
+            out ProductType selectedValue
+        ) ? selectedValue : null;
+    }
+
     async Task OnLogoUploadAsync(FileChangedEventArgs e)
     {
         if (e.Files.Length > 1)
@@ -679,6 +687,12 @@ public partial class CreateGroupBuy
 
             else CreateGroupBuyDto.PaymentMethod = string.Empty;
 
+            if (CreateGroupBuyDto.ProductType is null)
+            {
+                await _uiMessageService.Warn(L[PikachuDomainErrorCodes.ProductTypeIsRequired]);
+                await Loading.Hide();
+                return;
+            }
             if (CreateGroupBuyDto.PaymentMethod.IsNullOrEmpty())
             {
                 await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOnePaymentMethodIsRequired]);

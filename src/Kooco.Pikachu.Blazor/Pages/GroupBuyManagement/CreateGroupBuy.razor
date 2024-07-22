@@ -589,8 +589,21 @@
                     }
                 </div>
             </div>
-        
 
+        <Div Class="row">
+            <Div Class="col-2"></Div>
+            <Div Class="col-2">Product Type <span class="text-danger"> *</span></Div>
+            <Div Class="col-8">
+                <select class="form-select"
+                        @onchange=OnProductTypeChange>
+                    <option></option>
+                    @foreach (ProductType value in Enum.GetValues<ProductType>())
+                    {
+                        <option value="@value">@L[value.ToString() ?? string.Empty]</option>
+                    }
+                </select>
+            </Div>
+        </Div>
         <div class="row">
             <div class="col-2">@L["Gateway"]</div>
             <div class="col-2">@L["PaymentMethod"] <span class="text-danger"> *</span></div>

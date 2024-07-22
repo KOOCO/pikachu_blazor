@@ -204,6 +204,7 @@ namespace Kooco.Pikachu.GroupBuys
         public string? HomeDeliveryDeliveryTime { get; set; }
         public string? DeliveredByStoreDeliveryTime { get; set; }
         public TaxType TaxType { get; set; }
+        public ProductType? ProductType { get; set; }
         public GroupBuyCreateDto()
         {
             ShippingMethodList = new List<string>();
