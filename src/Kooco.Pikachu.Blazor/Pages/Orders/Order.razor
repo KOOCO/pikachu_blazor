@@ -252,20 +252,20 @@
         <Content>
             <TabPanel Name="All">
                 <Card>
-                        <CardBody>
-                            <DataGrid TItem="OrderDto"
-                                      Data="@Orders"
-                                      @bind-SelectedRow="@SelectedOrder"
-                                      ReadData="OnDataGridReadAsync"
-                                      TotalItems="TotalCount"
-                                      DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.Id == SelectedOrder?.Id)"
-                                      Responsive
-                                      ShowPager="true"
-                                      PageSize="PageSize"
-                                      RowClicked="ToggleRow"
-                                      RowDoubleClicked="NavigateToOrderDetails"
-                                      SortChanged="OnSortChange">
-                                <DataGridColumns>
+                    <CardBody>
+                        <DataGrid TItem="OrderDto"
+                                  Data="@Orders"
+                                  @bind-SelectedRow="@SelectedOrder"
+                                  ReadData="OnDataGridReadAsync"
+                                  TotalItems="TotalCount"
+                                  DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.Id == SelectedOrder?.Id)"
+                                  Responsive
+                                  ShowPager="true"
+                                  PageSize="PageSize"
+                                  RowClicked="ToggleRow"
+                                  RowDoubleClicked="NavigateToOrderDetails"
+                                  SortChanged="OnSortChange">
+                            <DataGridColumns>
                                     <DataGridCommandColumn />
                                     <DataGridColumn Caption="@L["Select"]" Width="30px">
                                         <DisplayTemplate>
@@ -325,7 +325,7 @@
                                         </DisplayTemplate>
                                     </DataGridColumn>
                                 </DataGridColumns>
-                                <DetailRowTemplate>
+                            <DetailRowTemplate>
                                     @{
                                         var orderItems = (context as OrderDto).OrderItems;
                                         <div class="mx-2 px-3 py-2 border">
@@ -409,30 +409,30 @@
                                         </div>
                                     }
                                 </DetailRowTemplate>
-                                <FirstPageButtonTemplate>@L[PikachuResource.FirstPage]</FirstPageButtonTemplate>
-                                <PreviousPageButtonTemplate>@L[PikachuResource.PrevPage]</PreviousPageButtonTemplate>
-                                <NextPageButtonTemplate>@L[PikachuResource.NextPage]</NextPageButtonTemplate>
-                                <LastPageButtonTemplate>@L[PikachuResource.LastPage]</LastPageButtonTemplate>
-                            </DataGrid>
-                        </CardBody>
-                    </Card>
+                            <FirstPageButtonTemplate>@L[PikachuResource.FirstPage]</FirstPageButtonTemplate>
+                            <PreviousPageButtonTemplate>@L[PikachuResource.PrevPage]</PreviousPageButtonTemplate>
+                            <NextPageButtonTemplate>@L[PikachuResource.NextPage]</NextPageButtonTemplate>
+                            <LastPageButtonTemplate>@L[PikachuResource.LastPage]</LastPageButtonTemplate>
+                        </DataGrid>
+                    </CardBody>
+                </Card>
             </TabPanel>
             <TabPanel Name="WaitingForPayment">
                 <Card>
-                        <CardBody>
-                            <DataGrid TItem="OrderDto"
-                                      Data="@Orders"
-                                      @bind-SelectedRow="@SelectedOrder"
-                                      ReadData="@(async (e) => await OnTabLoadDataGridReadAsync(e, "WaitingForPayment"))"
-                                      TotalItems="TotalCount"
-                                      DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.Id == SelectedOrder?.Id)"
-                                      Responsive
-                                      ShowPager="true"
-                                      PageSize="PageSize"
-                                      RowClicked="ToggleRow"
-                                      RowDoubleClicked="NavigateToOrderDetails"
-                                      SortChanged="OnSortChange">
-                                <DataGridColumns>
+                    <CardBody>
+                        <DataGrid TItem="OrderDto"
+                                  Data="@Orders"
+                                  @bind-SelectedRow="@SelectedOrder"
+                                  ReadData="@(async (e) => await OnTabLoadDataGridReadAsync(e, "WaitingForPayment"))"
+                                  TotalItems="TotalCount"
+                                  DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.Id == SelectedOrder?.Id)"
+                                  Responsive
+                                  ShowPager="true"
+                                  PageSize="PageSize"
+                                  RowClicked="ToggleRow"
+                                  RowDoubleClicked="NavigateToOrderDetails"
+                                  SortChanged="OnSortChange">
+                            <DataGridColumns>
                                     <DataGridCommandColumn />
                                     <DataGridColumn Caption="@L["Select"]" Width="30px">
                                         <DisplayTemplate>
@@ -492,7 +492,7 @@
                                         </DisplayTemplate>
                                     </DataGridColumn>
                                 </DataGridColumns>
-                                <DetailRowTemplate>
+                            <DetailRowTemplate>
                                     @{
                                         var orderItems = (context as OrderDto).OrderItems;
                                         <div class="mx-2 px-3 py-2 border">
@@ -575,13 +575,13 @@
                                         </div>
                                     }
                                 </DetailRowTemplate>
-                                <FirstPageButtonTemplate>@L[PikachuResource.FirstPage]</FirstPageButtonTemplate>
-                                <PreviousPageButtonTemplate>@L[PikachuResource.PrevPage]</PreviousPageButtonTemplate>
-                                <NextPageButtonTemplate>@L[PikachuResource.NextPage]</NextPageButtonTemplate>
-                                <LastPageButtonTemplate>@L[PikachuResource.LastPage]</LastPageButtonTemplate>
-                            </DataGrid>
-                        </CardBody>
-                    </Card>
+                            <FirstPageButtonTemplate>@L[PikachuResource.FirstPage]</FirstPageButtonTemplate>
+                            <PreviousPageButtonTemplate>@L[PikachuResource.PrevPage]</PreviousPageButtonTemplate>
+                            <NextPageButtonTemplate>@L[PikachuResource.NextPage]</NextPageButtonTemplate>
+                            <LastPageButtonTemplate>@L[PikachuResource.LastPage]</LastPageButtonTemplate>
+                        </DataGrid>
+                    </CardBody>
+                </Card>
             </TabPanel>
             <TabPanel Name="PrepareShipment">
                 <Card>
@@ -658,8 +658,93 @@
                                     </DisplayTemplate>
                                 </DataGridColumn>
                             </DataGridColumns>
-                            <DetailRowTemplate>
-                                @{
+                            <DetailRowTemplate Context="order">
+                                <DataGrid TItem="OrderItemDto"
+                                          Data="@order.OrderItems"
+                                          Responsive
+                                          Bordered>
+                                    <DataGridColumns>
+                                        <DataGridColumn Caption="@L["Select"]" Width="30px">
+                                            <DisplayTemplate>
+                                                <input type="checkbox" class="form-check-input" />
+                                            </DisplayTemplate>
+                                        </DataGridColumn>
+                                        <DataGridColumn Caption="@L["Delivery Method"]">
+                                            <DisplayTemplate>@L[order.DeliveryMethod.ToString()]</DisplayTemplate>
+                                        </DataGridColumn>
+                                        <DataGridColumn Caption="@L["Last Updated Date"]">
+                                        </DataGridColumn>
+                                        <DataGridColumn Caption="@L["Edition"]">
+                                        </DataGridColumn>
+                                        <DataGridColumn Caption="@L["Delivery Status"]">
+                                            <DisplayTemplate>@L[order.ShippingStatus.ToString()]</DisplayTemplate>
+                                        </DataGridColumn>
+                                        <DataGridColumn Caption="@L["Delivery Temperature"]">
+                                            <DisplayTemplate>@L[context.DeliveryTemperature.ToString()]</DisplayTemplate>
+                                        </DataGridColumn>
+                                    </DataGridColumns>
+                                    <DetailRowTemplate Context="item">
+                                        <DataGridColumn>
+                                            <DisplayTemplate>
+                                                @if (item.ItemType == ItemType.Item)
+                                                {
+                                                    var firstImage = item.Item?.Images?.FirstOrDefault()?.ImageUrl;
+                                                    @if (!string.IsNullOrEmpty(firstImage))
+                                                    {
+                                                        <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                    }
+                                                    @item.Item?.ItemName
+                                                }
+
+                                                @if (item.ItemType == ItemType.SetItem)
+                                                {
+                                                    var firstImage = item.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
+                                                    @if (!string.IsNullOrEmpty(firstImage))
+                                                    {
+                                                        <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                    }
+                                                    @item.SetItem?.SetItemName
+                                                }
+
+                                                @if (item.ItemType == ItemType.Freebie)
+                                                {
+                                                    var firstImage = item.Freebie?.Images?.FirstOrDefault()?.ImageUrl;
+                                                    @if (!string.IsNullOrEmpty(firstImage))
+                                                    {
+                                                        <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                    }
+                                                    @item.Freebie?.ItemName
+                                                }
+                                            </DisplayTemplate>
+                                        </DataGridColumn>
+                                        <DataGridColumn Caption="Temperature">
+                                            <DisplayTemplate>
+                                                @L[item.DeliveryTemperature.ToString()]
+                                            </DisplayTemplate>
+                                        </DataGridColumn>
+                                        <DataGridColumn Caption="Delivery Cost">
+                                            <DisplayTemplate>
+                                                @item.DeliveryTemperatureCost
+                                            </DisplayTemplate>
+                                        </DataGridColumn>
+                                        <DataGridColumn Caption="Quantity">
+                                            <DisplayTemplate>
+                                                @item.Quantity
+                                            </DisplayTemplate>
+                                        </DataGridColumn>
+                                        <DataGridColumn Caption="Unit Price">
+                                            <DisplayTemplate>
+                                                $@item.ItemPrice.ToString("N2")
+                                            </DisplayTemplate>
+                                        </DataGridColumn>
+                                        <DataGridColumn Caption="Sub Total">
+                                            <DisplayTemplate>
+                                                $@item.TotalAmount.ToString("N2")
+                                            </DisplayTemplate>
+                                        </DataGridColumn>
+                                    </DetailRowTemplate>
+                                </DataGrid>
+                                @* @{
                                     var orderItems = (context as OrderDto).OrderItems;
                                     <div class="mx-2 px-3 py-2 border">
                                         <table>
@@ -739,7 +824,7 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                }
+                                } *@
                             </DetailRowTemplate>
                             <FirstPageButtonTemplate>@L[PikachuResource.FirstPage]</FirstPageButtonTemplate>
                             <PreviousPageButtonTemplate>@L[PikachuResource.PrevPage]</PreviousPageButtonTemplate>
