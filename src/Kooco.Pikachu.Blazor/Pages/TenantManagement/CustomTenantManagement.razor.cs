@@ -16,8 +16,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
+using Volo.Abp.AspNetCore.Components.Web.ExceptionHandling;
 using Volo.Abp.AspNetCore.Components.Web.Extensibility.EntityActions;
 using Volo.Abp.AspNetCore.Components.Web.Extensibility.TableColumns;
 using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars;
@@ -31,6 +34,7 @@ using Volo.Abp.ObjectExtending;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.Blazor;
 using Volo.Abp.TenantManagement.Localization;
+using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 
 namespace Kooco.Pikachu.Blazor.Pages.TenantManagement;
 
@@ -98,7 +102,18 @@ public partial class CustomTenantManagement
         TenantContactTitle = Convert.ToString(e.Value);
     }
 
-    protected override async Task CreateEntityAsync() {
+    protected override async Task CreateEntityAsync() 
+    {
+        if (base.NewEntity.AdminPassword.Length < 6 ||
+            !Regex.IsMatch(base.NewEntity.AdminPassword, @"\W") ||
+            !Regex.IsMatch(base.NewEntity.AdminPassword, "[a-z]") ||
+            !Regex.IsMatch(base.NewEntity.AdminPassword, "[A-Z]"))
+        {
+            await _uiMessageService.Error("Passwords must be at least 6 characters., Passwords must have at least one non alphanumeric character., Passwords must have at least one lowercase ('a'-'z')., Passwords must have at least one uppercase ('A'-'Z').");
+
+            return;
+        }
+
         base.NewEntity.SetProperty("ShareProfitPercent", ShareProfitPercentage);
         base.NewEntity.SetProperty("TenantOwner", TenantOwnerId);
         base.NewEntity.SetProperty("Status", Status);
@@ -106,19 +121,17 @@ public partial class CustomTenantManagement
         base.NewEntity.SetProperty("TenantContactPerson", TenantContactPerson);
         base.NewEntity.SetProperty("TenantContactTitle", TenantContactTitle);
         base.NewEntity.SetProperty("TenantContactEmail", TenantContactEmail);
+
         if (ShortCode == null)
         {
             await _uiMessageService.Warn(L["Short Code Can't Null"]);
             return;
-
         }
         var check = await _myTenantAppService.CheckShortCodeForCreateAsync(ShortCode);
         if (check)
         {
-
             await _uiMessageService.Warn(L["Short Code Already Exsist"]);
             return;
-
         }
 
         base.NewEntity.SetProperty("ShortCode", ShortCode);
