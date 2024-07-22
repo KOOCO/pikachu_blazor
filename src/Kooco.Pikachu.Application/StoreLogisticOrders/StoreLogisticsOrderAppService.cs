@@ -377,7 +377,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
     }
     public async Task<EmapApiResponse> GetStoreAsync(string deliveryMethod)
     {
-        EmapApiResponse result=new EmapApiResponse();
+        EmapApiResponse result = new ();
         //var order=await _orderRepository.GetAsync(orderId);
         //var orderDeliverys= await _deliveryRepository.GetWithDetailsAsync(orderId);
         //var orderDelivery = orderDeliverys.Where(x => x.Id == orderDeliveryId).FirstOrDefault();
@@ -393,30 +393,18 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         //request1.AddHeader("Cookie", "MapInfo=MerchantID=2000132&MerchantTradeNo=ECPay&LogisticsType=CVS&LogisticsSubType=FAMI&IsCollection=N&ServerReplyURL=https%3a%2f%2fwww.ecpay.com.tw%2fServerReplyURL&CallBackFunction=&IsGet=&Device=0");
         request1.AddParameter("MerchantID", "2000132");
         request1.AddParameter("LogisticsType", "CVS");
-        if (deliveryMethod == EnumValues.DeliveryMethod.SevenToEleven1.ToString())
-        {
-            request1.AddParameter("LogisticsSubType", "UNIMART");
 
-           
-        }
-        else if (deliveryMethod == EnumValues.DeliveryMethod.FamilyMart1.ToString())
-        {
-            request1.AddParameter("LogisticsSubType", "FAMI");
-           
-        }
-        else if (deliveryMethod == EnumValues.DeliveryMethod.SevenToElevenC2C.ToString())
-        {
-            request1.AddParameter("LogisticsSubType", "UNIMARTC2C");
-           
-        }
-        else if (deliveryMethod == EnumValues.DeliveryMethod.FamilyMartC2C.ToString())
-        {
-            request1.AddParameter("LogisticsSubType", "FAMIC2C");
-            
-        }
-      
+        if (deliveryMethod == DeliveryMethod.SevenToEleven1.ToString()) request1.AddParameter("LogisticsSubType", "UNIMART");
+
+        else if (deliveryMethod == DeliveryMethod.FamilyMart1.ToString()) request1.AddParameter("LogisticsSubType", "FAMI");
+
+        else if (deliveryMethod == DeliveryMethod.SevenToElevenC2C.ToString()) request1.AddParameter("LogisticsSubType", "UNIMARTC2C");
+
+        else if (deliveryMethod == DeliveryMethod.FamilyMartC2C.ToString()) request1.AddParameter("LogisticsSubType", "FAMIC2C");
+
         request1.AddParameter("ServerReplyURL", "https://ba6ee5b524c5287100a78b51d8b7fc18.m.pipedream.net");
         request1.AddParameter("IsCollection", "N");
+
         RestResponse response1 = await client1.ExecuteAsync(request1);
         
         Console.WriteLine(response1.Content);
@@ -424,15 +412,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         result.CookieName = response1.Cookies.Select(x => x.Name).FirstOrDefault();
         result.CookieValue = response1.Cookies.Select(x => x.Value).FirstOrDefault();
 
-       
-
-       
         return result;
-      
-        
-
-
-       
     }
     public string GenerateCheckMac(string HashKey, string HashIV, string merchantID, string merchantTradeNo, string merchantTradeDate, string logisticsType, string logisticsSubType, int goodsAmount, decimal goodsWeight, string senderName, string senderPhone, string senderZipCode, string senderAddress,
                                 string receiverName, string receiverCellPhone, string receiverZipCode,string receiverAddress, string serverReplyURL)
