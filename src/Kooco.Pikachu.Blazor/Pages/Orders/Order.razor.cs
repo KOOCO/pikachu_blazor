@@ -50,6 +50,7 @@ public partial class Order
     private int NormalCount = 0;
     private int FreezeCount = 0;
     private int FrozenCount = 0;
+    private DeliveryMethod? DeliveryMethod = null;
     #endregion
 
     #region Methods
@@ -111,7 +112,8 @@ public partial class Order
                 Filter = Filter,
                 GroupBuyId=GroupBuyFilter,
                 StartDate=StartDate,
-                EndDate=EndDate
+                EndDate=EndDate,
+                DeliveryMethod = DeliveryMethod
             });
             Orders = result?.Items.ToList() ?? new List<OrderDto>();
             TotalCount = (int?)result?.TotalCount ?? 0;
@@ -124,6 +126,17 @@ public partial class Order
             await _uiMessageService.Error(ex.GetType().ToString());
             Console.WriteLine(ex.ToString());
         }
+    }
+
+    public async Task OnShippingMethodSelectChangeAsync(string e)
+    {
+        if (!e.IsNullOrWhiteSpace() && !e.IsNullOrEmpty()) DeliveryMethod = Enum.Parse<DeliveryMethod>(e);
+
+        else DeliveryMethod = null;
+
+        if (SelectedTabName is "All") await UpdateItemList();
+
+        else await LoadTabAsPerNameAsync(SelectedTabName);
     }
 
     public async Task LoadTabAsPerNameAsync(string tabName)
@@ -143,7 +156,8 @@ public partial class Order
                 GroupBuyId = GroupBuyFilter,
                 StartDate = StartDate,
                 EndDate = EndDate,
-                ShippingStatus = Enum.Parse<ShippingStatus>(tabName)
+                ShippingStatus = Enum.Parse<ShippingStatus>(tabName),
+                DeliveryMethod = DeliveryMethod
             });
 
             Orders = [];

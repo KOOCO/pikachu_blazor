@@ -26,7 +26,8 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
                                        DateTime? startDate,
                                        DateTime? endDate,
                                        OrderStatus? orderStatus = null,
-                                       ShippingStatus? shippingStatus = null)
+                                       ShippingStatus? shippingStatus = null,
+                                       DeliveryMethod? deliveryMethod = null)
     {
         return await ApplyFilters(
             (await GetQueryableAsync()).Include(o => o.GroupBuy), 
@@ -36,7 +37,8 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
             startDate, 
             endDate, 
             orderStatus,
-            shippingStatus
+            shippingStatus,
+            deliveryMethod
         ).CountAsync();
     }
 
@@ -58,9 +60,20 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
                                                 DateTime? startDate = null,
                                                 DateTime? endDate = null,
                                                 OrderStatus? orderStatus = null,
-                                                ShippingStatus? shippingStatus = null)
+                                                ShippingStatus? shippingStatus = null,
+                                                DeliveryMethod? deliveryMethod = null)
     {
-        var result= await ApplyFilters(await GetQueryableAsync(), filter, groupBuyId, orderId, startDate, endDate, orderStatus, shippingStatus)
+        PikachuDbContext dbContext = await GetDbContextAsync();
+
+        var result = await ApplyFilters(await GetQueryableAsync(), 
+                                       filter, 
+                                       groupBuyId, 
+                                       orderId, 
+                                       startDate, 
+                                       endDate, 
+                                       orderStatus, 
+                                       shippingStatus,
+                                       deliveryMethod)
             .OrderBy(sorting)
             .PageBy(skipCount, maxResultCount)
             .Include(o => o.GroupBuy)
@@ -176,9 +189,11 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
                                                   DateTime? startDate = null,
                                                   DateTime? endDate = null,
                                                   OrderStatus? orderStatus = null,
-                                                  ShippingStatus? shippingStatus = null)
+                                                  ShippingStatus? shippingStatus = null,
+                                                  DeliveryMethod? deliveyMethod = null)
     {
-        return queryable
+        queryable = queryable
+            .WhereIf(deliveyMethod.HasValue, w => w.DeliveryMethod == deliveyMethod)
             .WhereIf(groupBuyId.HasValue, x => x.GroupBuyId == groupBuyId)
             .WhereIf(!filter.IsNullOrWhiteSpace(),
                 x => x.OrderNo.Contains(filter)
@@ -190,8 +205,10 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
             .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
             .WhereIf(orderStatus.HasValue, x => x.OrderStatus == orderStatus)
             .WhereIf(shippingStatus.HasValue, w => w.ShippingStatus == shippingStatus)
-            .Where(x=>x.IsRefunded==false);
+            .Where(x => x.IsRefunded == false);
         //.Where(x => x.OrderType != OrderType.MargeToNew);
+
+        return queryable;
     }
     private static IQueryable<Order> ApplyReturnFilters(IQueryable<Order> queryable,
                                                         string? filter,

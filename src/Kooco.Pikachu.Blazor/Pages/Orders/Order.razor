@@ -42,7 +42,8 @@
             </Select>
             <Select TValue="string"
                     Size="Size.Small"
-                    id="shippingMethodSelectElem">
+                    id="shippingMethodSelectElem"
+                    SelectedValueChanged="OnShippingMethodSelectChangeAsync">
                 <SelectItem Value="@string.Empty"> Select Shipping Method </SelectItem>
                 @foreach(string value in Enum.GetNames(typeof(DeliveryMethod)))
                 {
@@ -343,6 +344,7 @@
 
                                                         <td>@context.PostalCode</td>
                                                     </tr>
+
                                                     <tr>
                                                         <td>@L["City"]</td>
 

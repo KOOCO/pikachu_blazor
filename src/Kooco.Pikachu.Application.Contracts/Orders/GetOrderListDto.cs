@@ -14,5 +14,6 @@ namespace Kooco.Pikachu.Orders
         public DateTime? EndDate { get; set; }
         public OrderStatus? OrderStatus { get; set; }
         public ShippingStatus? ShippingStatus { get; set; }
+        public DeliveryMethod? DeliveryMethod { get; set; }
     }
 }

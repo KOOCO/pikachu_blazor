@@ -13,7 +13,8 @@ namespace Kooco.Pikachu.Orders
                               DateTime? startDate = null,
                               DateTime? endDate = null,
                               OrderStatus? orderStatus = null,
-                              ShippingStatus? shippingStatus = null);
+                              ShippingStatus? shippingStatus = null,
+                              DeliveryMethod? deliveryMethod = null);
 
         Task<long> CountAllAsync(string? filter,
                                  Guid? groupBuyId,
@@ -30,7 +31,8 @@ namespace Kooco.Pikachu.Orders
                                        DateTime? startDate = null,
                                        DateTime? endDate = null,
                                        OrderStatus? orderStatus = null,
-                                       ShippingStatus? shippingStatus = null);
+                                       ShippingStatus? shippingStatus = null,
+                                       DeliveryMethod? deliveryMethod = null);
 
         Task<List<Order>> GetAllListAsync(
             int skipCount,

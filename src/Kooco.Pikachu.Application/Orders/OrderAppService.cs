@@ -769,7 +769,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                                                             input.StartDate,
                                                             input.EndDate,
                                                             input.OrderStatus,
-                                                            input.ShippingStatus);
+                                                            input.ShippingStatus,
+                                                            input.DeliveryMethod);
 
         List<Order> items = await _orderRepository.GetListAsync(input.SkipCount,
                                                                 input.MaxResultCount,
@@ -780,7 +781,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                                                                 input.StartDate,
                                                                 input.EndDate,
                                                                 input.OrderStatus,
-                                                                input.ShippingStatus);
+                                                                input.ShippingStatus,
+                                                                input.DeliveryMethod);
 
         try
         {
