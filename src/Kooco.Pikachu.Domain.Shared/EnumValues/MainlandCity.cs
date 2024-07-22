@@ -2,27 +2,26 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Kooco.Pikachu.EnumValues
+namespace Kooco.Pikachu.EnumValues;
+
+public enum MainlandCity
 {
-    public enum MainlandCity
-    {
-        TaipeiCity=1, 
-        NewTaipeiCity, 
-        Keelung, 
-        Taoyuan, 
-        Hsinchu, 
-        Yilan, 
-        Taichung,
-        Miaoli, 
-        Changhua, 
-        Nantou,
-        Yunlin, 
-        Kaohsiung,
-        Tainan,
-        ChiayiCity,
-        ChiayiCounty, 
-        PingDong, 
-        Hualien, 
-        Taitung
-    }
+    TaipeiCity=1, 
+    NewTaipeiCity, 
+    Keelung, 
+    Taoyuan, 
+    Hsinchu, 
+    Yilan, 
+    Taichung,
+    Miaoli, 
+    Changhua, 
+    Nantou,
+    Yunlin, 
+    Kaohsiung,
+    Tainan,
+    ChiayiCity,
+    ChiayiCounty, 
+    PingDong, 
+    Hualien, 
+    Taitung
 }

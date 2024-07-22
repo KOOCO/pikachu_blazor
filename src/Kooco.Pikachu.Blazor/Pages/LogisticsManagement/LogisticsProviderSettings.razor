@@ -212,11 +212,11 @@
                     <label for="sender-postal-code" class="form-label">@L["SenderCity"]<span class="text-danger"> </span></label>
                 </div>
                 <div class="col-8">
-                   <Select  TValue="MainlandCity"
+                   <Select TValue="MainlandCity"
                     Class="form-select "
                             @bind-SelectedValue="GreenWorld.City">
                     <SelectItem Value="0"></SelectItem>
-                    @foreach (var enumValue in Enum.GetValues(typeof(MainlandCity)))
+                    @foreach (object enumValue in Enum.GetValues(typeof(MainlandCity)))
                     {
                         <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
                     }
