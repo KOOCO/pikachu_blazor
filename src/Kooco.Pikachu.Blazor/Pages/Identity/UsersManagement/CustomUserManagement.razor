@@ -57,7 +57,7 @@
                                ShowPager="true"
                                PageSize="PageSize"
                                CurrentPage="@CurrentPage"
-                               Columns="@(TableColumns.Get<UserManagement>())">
+                               Columns="@(CustomUserManagementTableColumns)">
         </AbpExtensibleDataGrid>
     </CardBody>
 </Card>
@@ -297,18 +297,60 @@
 }
 
 @code {
+    private List<TableColumn> CustomUserManagementTableColumns => base.TableColumns.Get<UserManagement>();
+
     TextRole _passwordTextRole = TextRole.Password;
 
     public void ChangePassword(TextRole? textRole)
     {
-        if (textRole == null)
+        if (textRole is null)
         {
             ChangePassword(_passwordTextRole == TextRole.Password ? TextRole.Text : TextRole.Password);
             ShowPassword = !ShowPassword;
         }
-        else
-        {
-            _passwordTextRole = textRole.Value;
-        }
+
+        else _passwordTextRole = textRole.Value;
+    }
+
+    protected override ValueTask SetTableColumnsAsync()
+    {
+        CustomUserManagementTableColumns
+            .AddRange(new TableColumn[]
+            {
+                    new TableColumn
+                    {
+                        Title = L["Actions"],
+                        Actions = EntityActions.Get<UserManagement>(),
+                    },
+                    new TableColumn
+                    {
+                        Title = L["UserName"],
+                        Data = nameof(IdentityUserDto.UserName),
+                        Sortable = true,
+                    },
+                    new TableColumn
+                    {
+                        Title = L["Username"],
+                        Data = nameof(IdentityUserDto.Name),
+                        Sortable = true,
+                    },
+                    new TableColumn
+                    {
+                        Title = L["EmailAddress"],
+                        Data = nameof(IdentityUserDto.Email),
+                        Sortable = true,
+                    },
+                    new TableColumn
+                    {
+                        Title = L["PhoneNumber"],
+                        Data = nameof(IdentityUserDto.PhoneNumber),
+                        Sortable = true,
+                    }
+            });
+
+        CustomUserManagementTableColumns.AddRange(GetExtensionTableColumns(IdentityModuleExtensionConsts.ModuleName,
+            IdentityModuleExtensionConsts.EntityNames.User));
+
+        return ValueTask.CompletedTask;
     }
 }
