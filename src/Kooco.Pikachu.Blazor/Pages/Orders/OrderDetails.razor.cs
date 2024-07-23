@@ -5,6 +5,7 @@ using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.StoreLogisticOrders;
 using Kooco.Pikachu.TestLables;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Html;
@@ -412,14 +413,11 @@ public partial class OrderDetails
         if (deliveryOrder.DeliveryMethod is DeliveryMethod.SevenToEleven1 || 
             deliveryOrder.DeliveryMethod is DeliveryMethod.FamilyMart1 ||
             deliveryOrder.DeliveryMethod is DeliveryMethod.SevenToElevenC2C || 
-            deliveryOrder.DeliveryMethod is DeliveryMethod.FamilyMart1)
+            deliveryOrder.DeliveryMethod is DeliveryMethod.FamilyMartC2C)
         {
-            var result = await _storeLogisticsOrderAppService.CreateStoreLogisticsOrderAsync(Order.Id, deliveryOrder.Id);
+            ResponseResultDto result = await _storeLogisticsOrderAppService.CreateStoreLogisticsOrderAsync(Order.Id, deliveryOrder.Id);
             
-            if (result.ResponseCode is not "1")
-            {
-                await _uiMessageService.Error(result.ResponseMessage);
-            }
+            if (result.ResponseCode is not "1") await _uiMessageService.Error(result.ResponseMessage);
 
             #region Commented Code
             //    var htmlString = await _storeLogisticsOrderAppService.GetStoreAsync(Order.Id);
@@ -468,7 +466,7 @@ public partial class OrderDetails
         }
         else
         {
-            var result = await _storeLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(Order.Id, OrderDeliveryId);
+            ResponseResultDto result = await _storeLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(Order.Id, OrderDeliveryId);
             
             if (result.ResponseCode is not "1")
             {

@@ -177,102 +177,97 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
     public async Task<ResponseResultDto> CreateStoreLogisticsOrderAsync(Guid orderId, Guid orderDeliveryId)
     {
-        ResponseResultDto result = new ResponseResultDto();
-        var order = await _orderRepository.GetWithDetailsAsync(orderId);
-        var orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
-        var orderDelivery = orderDeliverys.Where(x => x.Id == orderDeliveryId).FirstOrDefault();
-       
-        var providers = await _logisticsProvidersAppService.GetAllAsync();
-        var logisticSubType = "";
-        if (orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.SevenToElevenC2C || orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.FamilyMartC2C)
-        {
-            var greenWorld = providers.Where(p => p.LogisticProvider == EnumValues.LogisticProviders.GreenWorldLogisticsC2C).FirstOrDefault();
-            if (greenWorld != null)
-            {
-                GreenWorld = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorld);
-            }
-        }
-        else {
-            var greenWorld = providers.Where(p => p.LogisticProvider == EnumValues.LogisticProviders.GreenWorldLogistics).FirstOrDefault();
-            if (greenWorld != null)
-            {
-                GreenWorld = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorld);
-            }
-        }
-      
+        ResponseResultDto result = new ();
 
-        var homeDelivery = providers.Where(p => p.LogisticProvider == EnumValues.LogisticProviders.HomeDelivery).FirstOrDefault();
-        if (homeDelivery != null)
+        Order order = await _orderRepository.GetWithDetailsAsync(orderId);
+
+        List<OrderDelivery> orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
+
+        OrderDelivery? orderDelivery = orderDeliverys.Where(x => x.Id == orderDeliveryId).FirstOrDefault();
+       
+        List<LogisticsProviderSettingsDto> providers = await _logisticsProvidersAppService.GetAllAsync();
+
+        string logisticSubType = string.Empty;
+        
+        if (orderDelivery is not null && (orderDelivery.DeliveryMethod is DeliveryMethod.SevenToElevenC2C || orderDelivery.DeliveryMethod is DeliveryMethod.FamilyMartC2C))
         {
-            HomeDelivery = ObjectMapper.Map<LogisticsProviderSettingsDto, HomeDeliveryCreateUpdateDto>(homeDelivery);
+            LogisticsProviderSettingsDto? greenWorld = providers.Where(p => p.LogisticProvider == LogisticProviders.GreenWorldLogisticsC2C).FirstOrDefault();
+            
+            if (greenWorld is not null) GreenWorld = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorld);
         }
-        var postOffice = providers.Where(p => p.LogisticProvider == EnumValues.LogisticProviders.PostOffice).FirstOrDefault();
-        if (postOffice != null)
+        
+        else 
         {
-            PostOffice = ObjectMapper.Map<LogisticsProviderSettingsDto, PostOfficeCreateUpdateDto>(postOffice);
+            LogisticsProviderSettingsDto? greenWorld = providers.Where(p => p.LogisticProvider == LogisticProviders.GreenWorldLogistics).FirstOrDefault();
+            
+            if (greenWorld is not null) GreenWorld = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorld);
         }
-        var sevenToEleven = providers.Where(p => p.LogisticProvider == EnumValues.LogisticProviders.SevenToEleven).FirstOrDefault();
-        if (sevenToEleven != null)
-        {
-            SevenToEleven = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(sevenToEleven);
-        }
-        var familyMart = providers.Where(p => p.LogisticProvider == EnumValues.LogisticProviders.FamilyMart).FirstOrDefault();
-        if (familyMart != null)
-        {
-            FamilyMart = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(familyMart);
-        }
-        var sevenToElevenFrozen = providers.Where(p => p.LogisticProvider == EnumValues.LogisticProviders.SevenToElevenFrozen).FirstOrDefault();
-        if (sevenToElevenFrozen != null)
-        {
-            SevenToElevenFrozen = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(sevenToElevenFrozen);
-        }
-        var bNormal = providers.Where(p => p.LogisticProvider == EnumValues.LogisticProviders.BNormal).FirstOrDefault();
-        if (bNormal != null)
-        {
-            BNormal = ObjectMapper.Map<LogisticsProviderSettingsDto, BNormalCreateUpdateDto>(bNormal);
-        }
-        var bFreeze = providers.Where(p => p.LogisticProvider == EnumValues.LogisticProviders.BFreeze).FirstOrDefault();
-        if (bFreeze != null)
-        {
-            BFreeze = ObjectMapper.Map<LogisticsProviderSettingsDto, BNormalCreateUpdateDto>(bFreeze);
-        }
-        var bFrozen = providers.Where(p => p.LogisticProvider == EnumValues.LogisticProviders.BFrozen).FirstOrDefault();
-        if (bFrozen != null)
-        {
-            BFrozen = ObjectMapper.Map<LogisticsProviderSettingsDto, BNormalCreateUpdateDto>(bFreeze);
-        }
-        var options = new RestClientOptions
-        {
-            MaxTimeout = -1,
-        };
-        var client = new RestClient(options);
-        var request = new RestRequest(_configuration["EcPay:LogisticApi"], Method.Post);
-        var marchentDate = DateTime.Now.ToString("yyyy/MM/dd");
+
+        LogisticsProviderSettingsDto? homeDelivery = providers.Where(p => p.LogisticProvider == LogisticProviders.HomeDelivery).FirstOrDefault();
+        
+        if (homeDelivery is not null) HomeDelivery = ObjectMapper.Map<LogisticsProviderSettingsDto, HomeDeliveryCreateUpdateDto>(homeDelivery);
+
+        LogisticsProviderSettingsDto? postOffice = providers.Where(p => p.LogisticProvider == LogisticProviders.PostOffice).FirstOrDefault();
+        
+        if (postOffice is not null) PostOffice = ObjectMapper.Map<LogisticsProviderSettingsDto, PostOfficeCreateUpdateDto>(postOffice);
+
+        LogisticsProviderSettingsDto? sevenToEleven = providers.Where(p => p.LogisticProvider == LogisticProviders.SevenToEleven).FirstOrDefault();
+        
+        if (sevenToEleven is not null) SevenToEleven = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(sevenToEleven);
+
+        LogisticsProviderSettingsDto? familyMart = providers.Where(p => p.LogisticProvider == LogisticProviders.FamilyMart).FirstOrDefault();
+        
+        if (familyMart is not null) FamilyMart = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(familyMart);
+
+        LogisticsProviderSettingsDto? sevenToElevenFrozen = providers.Where(p => p.LogisticProvider == LogisticProviders.SevenToElevenFrozen).FirstOrDefault();
+        
+        if (sevenToElevenFrozen is not null) SevenToElevenFrozen = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(sevenToElevenFrozen);
+
+        LogisticsProviderSettingsDto? bNormal = providers.Where(p => p.LogisticProvider == LogisticProviders.BNormal).FirstOrDefault();
+        
+        if (bNormal is not null) BNormal = ObjectMapper.Map<LogisticsProviderSettingsDto, BNormalCreateUpdateDto>(bNormal);
+
+        LogisticsProviderSettingsDto? bFreeze = providers.Where(p => p.LogisticProvider == LogisticProviders.BFreeze).FirstOrDefault();
+        
+        if (bFreeze is not null) BFreeze = ObjectMapper.Map<LogisticsProviderSettingsDto, BNormalCreateUpdateDto>(bFreeze);
+
+        LogisticsProviderSettingsDto? bFrozen = providers.Where(p => p.LogisticProvider == LogisticProviders.BFrozen).FirstOrDefault();
+        
+        if (bFrozen is not null) BFrozen = ObjectMapper.Map<LogisticsProviderSettingsDto, BNormalCreateUpdateDto>(bFreeze);
+
+        RestClientOptions options = new () { MaxTimeout = -1 };
+
+        RestClient client = new (options);
+
+        RestRequest request = new (_configuration["EcPay:LogisticApi"], Method.Post);
+
+        string marchentDate = DateTime.Now.ToString("yyyy/MM/dd");
+
         request.AddHeader("Accept", "text/html");
         request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
         request.AddParameter("MerchantID", GreenWorld.StoreCode);
         request.AddParameter("MerchantTradeDate", marchentDate);
         request.AddParameter("LogisticsType", "CVS");
 
-        if (orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.SevenToEleven1)
+        if (orderDelivery.DeliveryMethod is DeliveryMethod.SevenToEleven1)
         {
             request.AddParameter("LogisticsSubType", "UNIMART");
 
             logisticSubType = "UNIMART";
         }
-        else if (orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.FamilyMart1)
+        else if (orderDelivery.DeliveryMethod is DeliveryMethod.FamilyMart1)
         {
             request.AddParameter("LogisticsSubType", "FAMI");
             logisticSubType = "FAMI";
         }
-        else if (orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.SevenToElevenC2C)
+        else if (orderDelivery.DeliveryMethod is DeliveryMethod.SevenToElevenC2C)
         {
             request.AddParameter("LogisticsSubType", "UNIMARTC2C");
             logisticSubType = "UNIMARTC2C";
             request.AddParameter("GoodsName", order.GroupBuy.GroupBuyName);
             request.AddParameter("SenderCellPhone", GreenWorld.SenderPhoneNumber);
         }
-        else if (orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.FamilyMartC2C)
+        else if (orderDelivery.DeliveryMethod is DeliveryMethod.FamilyMartC2C)
         {
             request.AddParameter("LogisticsSubType", "FAMIC2C");
             logisticSubType = "FAMIC2C";
@@ -285,7 +280,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         request.AddParameter("ReceiverCellPhone", order.RecipientPhone);
         request.AddParameter("ServerReplyURL", "https://www.ecpay.com.tw/ServerReplyURL");
         request.AddParameter("ReceiverStoreID", order.StoreId);
-        if (orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.SevenToElevenC2C || orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.FamilyMartC2C)
+
+        if (orderDelivery.DeliveryMethod == DeliveryMethod.SevenToElevenC2C || orderDelivery.DeliveryMethod == DeliveryMethod.FamilyMartC2C)
         {
             request.AddParameter("CheckMacValue", GenerateRequestString(GreenWorld.HashKey, GreenWorld.HashIV, GreenWorld.StoreCode, order.OrderNo, marchentDate, "CVS", logisticSubType, Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)), GreenWorld.SenderName, order.RecipientName, order.RecipientPhone,
                 "https://www.ecpay.com.tw/ServerReplyURL", order.StoreId,order.GroupBuy.GroupBuyName,GreenWorld.SenderPhoneNumber));
@@ -293,18 +289,26 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         else {
             request.AddParameter("CheckMacValue", GenerateRequestString(GreenWorld.HashKey, GreenWorld.HashIV, GreenWorld.StoreCode, order.OrderNo, marchentDate, "CVS", logisticSubType, Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)), GreenWorld.SenderName, order.RecipientName, order.RecipientPhone,
                     "https://www.ecpay.com.tw/ServerReplyURL", order.StoreId));
-
         }
+
         //request.AddParameter("IsCollection", "N");
         request.AddParameter("MerchantTradeNo", order.OrderNo);
 
-
         RestResponse response = await client.ExecuteAsync(request);
-         result = ParseApiResponse(response.Content.ToString());
+
+        result = ParseApiResponse(response.Content?.ToString());
+        
         if (result.ResponseCode == "1")
-        {
+        {   
             orderDelivery.DeliveryNo = result.ShippingInfo.BookingNote;
+
+            if (order.DeliveryMethod is DeliveryMethod.FamilyMartC2C) orderDelivery.DeliveryNo = result.ShippingInfo.CVSPaymentNo;
+
+            if (order.DeliveryMethod is DeliveryMethod.SevenToElevenC2C) 
+                orderDelivery.DeliveryNo = string.Concat(result.ShippingInfo.CVSPaymentNo, result.ShippingInfo.CVSValidationNo);
+
             orderDelivery.AllPayLogisticsID = result.ShippingInfo.AllPayLogisticsID;
+            
             await _deliveryRepository.UpdateAsync(orderDelivery);
         }
         return result;
@@ -504,25 +508,31 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
     static ResponseResultDto ParseApiResponse(string apiResponse)
     {
-        var result = new ResponseResultDto();
+        ResponseResultDto result = new ();
 
         // Split the response into response code and key-value pairs
         string[] responseParts = apiResponse.Split('|');
+
         result.ResponseCode = responseParts[0];
+
         if (result.ResponseCode != "1")
         {
             result.ResponseMessage = responseParts[1];
-        return result;
+
+            return result;
         }
         // Split the key-value pairs
         string[] keyValuePairs = responseParts[1].Split('&');
 
         // Parse key-value pairs into dictionary
-        var dataDict = new Dictionary<string, string>();
+        Dictionary<string, string> dataDict = [];
+
         foreach (string kvPair in keyValuePairs)
         {
             string[] parts = kvPair.Split('=');
+
             string key = parts[0];
+            
             string value = parts.Length > 1 ? parts[1] : string.Empty;
 
             dataDict[key] = value;
@@ -534,7 +544,21 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             AllPayLogisticsID = dataDict["AllPayLogisticsID"],
             BookingNote = dataDict["BookingNote"],
             CheckMacValue = dataDict["CheckMacValue"],
-            // Add more properties as needed
+            CVSPaymentNo = dataDict["CVSPaymentNo"],
+            CVSValidationNo = dataDict["CVSValidationNo"],
+            GoodsAmount = dataDict["GoodsAmount"],
+            LogisticsSubType = dataDict["LogisticsSubType"],
+            LogisticsType = dataDict["LogisticsType"],
+            MerchantID = dataDict["MerchantID"],
+            MerchantTradeNo = dataDict["MerchantTradeNo"],
+            ReceiverAddress = dataDict["ReceiverAddress"],
+            ReceiverCellPhone = dataDict["ReceiverCellPhone"],
+            ReceiverEmail = dataDict["ReceiverEmail"],
+            ReceiverName = dataDict["ReceiverName"],
+            ReceiverPhone = dataDict["ReceiverPhone"],
+            RtnCode = dataDict["RtnCode"],
+            RtnMsg = dataDict["RtnMsg"],
+            UpdateStatusDate = dataDict["UpdateStatusDate"]
         };
 
         return result;
