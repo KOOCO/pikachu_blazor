@@ -568,6 +568,8 @@
     "TenantContactTitle": "Tenant Contact's' Title",
     "TenantContactEmail": "Tenant Contact Email",
     "Mr.": "Mr.",
-    "Ms.": "Ms."
+    "Ms.": "Ms.",
+    "DisplayName:Username": "Username",
+    "NameCannotBeEmpty": "Username cannot be empty."
   }
 }

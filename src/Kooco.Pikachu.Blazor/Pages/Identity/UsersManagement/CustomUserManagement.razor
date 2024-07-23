@@ -2,6 +2,7 @@
 @using Kooco.Pikachu.Localization
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.Extensions.Localization
+@using Volo.Abp.AspNetCore.Components.Messages
 @using Volo.Abp.AspNetCore.Components.Web
 @using Volo.Abp.DependencyInjection
 @using Volo.Abp.Identity
@@ -26,11 +27,14 @@
 
 @inject IStringLocalizer<PikachuResource> l
 
+@inject IUiMessageService _UiMessageService;
+
 @attribute [ExposeServices(typeof(Volo.Abp.Identity.Blazor.Pages.Identity.UserManagement))]
 
 @attribute [Dependency(ReplaceServices = true)]
 
 @inherits Volo.Abp.Identity.Blazor.Pages.Identity.UserManagement;
+
 <Card>
     <CardHeader>
         @* ************************* PAGE HEADER ************************* *@
@@ -93,7 +97,7 @@
                                     </Validation>
                                     <Validation MessageLocalizer="@LH.Localize">
                                         <Field>
-                                            <FieldLabel>@L["DisplayName:Name"]</FieldLabel>
+                                            <FieldLabel>@l["DisplayName:Username"]</FieldLabel>
                                             <TextEdit @bind-Text="NewEntity.Name">
                                                 <Feedback>
                                                     <ValidationError />
@@ -210,7 +214,7 @@
                                     </Validation>
                                     <Validation MessageLocalizer="@LH.Localize">
                                         <Field>
-                                            <FieldLabel>@L["DisplayName:Name"]</FieldLabel>
+                                            <FieldLabel>@l["DisplayName:Username"]</FieldLabel>
                                             <TextEdit @bind-Text="EditingEntity.Name">
                                                 <Feedback>
                                                     <ValidationError />
@@ -297,10 +301,13 @@
 }
 
 @code {
+    #region Inject
     private List<TableColumn> CustomUserManagementTableColumns => base.TableColumns.Get<UserManagement>();
 
     TextRole _passwordTextRole = TextRole.Password;
+    #endregion
 
+    #region Methods
     public void ChangePassword(TextRole? textRole)
     {
         if (textRole is null)
@@ -353,4 +360,19 @@
 
         return ValueTask.CompletedTask;
     }
+
+    protected override async Task CreateEntityAsync()
+    {
+        if (base.NewEntity.Name.IsNullOrEmpty()) await _UiMessageService.Error(l[PikachuResource.NameCannotBeEmpty]);
+
+        else await base.CreateEntityAsync();
+    }
+
+    protected async override Task UpdateEntityAsync()
+    {
+        if (base.EditingEntity.Name.IsNullOrEmpty()) await _UiMessageService.Error(l[PikachuResource.NameCannotBeEmpty]);
+
+        else await base.UpdateEntityAsync();
+    }
+    #endregion
 }

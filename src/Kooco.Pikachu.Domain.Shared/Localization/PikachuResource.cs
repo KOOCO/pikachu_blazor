@@ -7,6 +7,8 @@ public class PikachuResource
 {
     public const string UnableToSpecifyDuringPeakPeriods = "UnableToSpecifyDuringPeakPeriods";
 
+    public const string NameCannotBeEmpty = "NameCannotBeEmpty";
+
     public const string CurrentStock = "CurrentStock";
 
     public const string AvailableStock = "AvailableStock";
