@@ -47,6 +47,7 @@ public partial class Order
     private List<KeyValueDto> GroupBuyList { get; set; } = new();
     private List<ShippingStatus> ShippingStatuses { get; set; } = [];
     private List<DeliveryMethod> DeliveryMethods { get; set; } = [];
+    private List<OrderDto> OrdersSelected = [];
     private string SelectedTabName = "All";
 
     private int NormalCount = 0;
@@ -168,13 +169,6 @@ public partial class Order
 
             TotalCount = (int?)result?.TotalCount ?? 0;
 
-            if (Enum.Parse<ShippingStatus>(tabName) is ShippingStatus.ToBeShipped)
-            {
-                (NormalCount, FreezeCount, FrozenCount) = await _orderAppService.GetTotalDeliveryTemperatureCountsAsync();
-            }
-
-            else (NormalCount, FreezeCount, FrozenCount) = (0, 0, 0);
-
             await loading.Hide();
         }
         catch (Exception ex)
@@ -185,17 +179,31 @@ public partial class Order
         }
     }
 
+    public void OnCheckboxValueChanged(bool e, OrderDto order)
+    {
+        order.IsSelected = e;
+
+        if (SelectedTabName is not "ToBeShipped") return;
+
+        if (order.IsSelected) OrdersSelected.Add(order);
+
+        else OrdersSelected.Remove(order);
+
+        NormalCount = OrdersSelected.Sum(order => order.OrderItems.Count(item => item.DeliveryTemperature is ItemStorageTemperature.Normal));
+
+        FreezeCount = OrdersSelected.Sum(order => order.OrderItems.Count(item => item.DeliveryTemperature is ItemStorageTemperature.Freeze));
+
+        FrozenCount = OrdersSelected.Sum(order => order.OrderItems.Count(item => item.DeliveryTemperature is ItemStorageTemperature.Frozen));
+    }
+
     async Task OnSearch(Guid? e=null)
     {
-        if (e == Guid.Empty)
-        {
-            GroupBuyFilter = null;
-        }
-        else { GroupBuyFilter = e; }
-            
-        
-      
+        if (e == Guid.Empty) GroupBuyFilter = null;
+
+        else GroupBuyFilter = e;
+
         PageIndex = 0;
+      
         await UpdateItemList();
     }
   

@@ -780,14 +780,17 @@
                                 <DataGridCommandColumn />
                                 <DataGridColumn Caption="@L["Select"]" Width="30px">
                                     <DisplayTemplate>
-                                        <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
+                                        <Check TValue="bool"
+                                               Checked="@context.IsSelected"
+                                               CheckedChanged=@((e) => OnCheckboxValueChanged(e, context)) />
                                     </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
                                         @{
-                                            var isExpanded = ExpandedRows.Contains(context.Id);
-                                            var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
+                                            bool isExpanded = ExpandedRows.Contains(context.Id);
+
+                                            string chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
                                         }
                                         <i class="@chevronClass"></i>
                                         @L[context.OrderNo]
