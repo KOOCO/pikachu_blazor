@@ -24,7 +24,6 @@ namespace Kooco.Pikachu.StoreLogisticOrders
         public string RtnCode { get; set; }
         public string RtnMsg { get; set; }
         public string UpdateStatusDate { get; set; }
-
-
+        public string ShipmentNo { get; set; }
     }
 }

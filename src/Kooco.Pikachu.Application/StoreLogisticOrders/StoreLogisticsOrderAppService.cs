@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
+using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Kooco.Pikachu.StoreLogisticOrders;
 
@@ -297,22 +298,58 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         RestResponse response = await client.ExecuteAsync(request);
 
         result = ParseApiResponse(response.Content?.ToString());
-        
-        if (result.ResponseCode == "1")
-        {   
+
+        if (result.ResponseCode is "1")
+        {
             orderDelivery.DeliveryNo = result.ShippingInfo.BookingNote;
+
+            if (order.DeliveryMethod is DeliveryMethod.SevenToEleven1 || order.DeliveryMethod is DeliveryMethod.FamilyMart1)
+            {
+                string strResponse = await GenerateShipmentForB2C(result);
+
+                ResponseResultDto responseResultDto = ParseApiResponse(strResponse, true);
+
+                orderDelivery.DeliveryNo = responseResultDto.ShippingInfo.ShipmentNo;
+            }
 
             if (order.DeliveryMethod is DeliveryMethod.FamilyMartC2C) orderDelivery.DeliveryNo = result.ShippingInfo.CVSPaymentNo;
 
-            if (order.DeliveryMethod is DeliveryMethod.SevenToElevenC2C) 
+            if (order.DeliveryMethod is DeliveryMethod.SevenToElevenC2C)
                 orderDelivery.DeliveryNo = string.Concat(result.ShippingInfo.CVSPaymentNo, result.ShippingInfo.CVSValidationNo);
 
             orderDelivery.AllPayLogisticsID = result.ShippingInfo.AllPayLogisticsID;
-            
+
             await _deliveryRepository.UpdateAsync(orderDelivery);
         }
+
         return result;
     }
+
+    public async Task<string> GenerateShipmentForB2C(ResponseResultDto response)
+    {
+        RestClient client = new(new RestClientOptions() { MaxTimeout = -1 });
+
+        RestRequest request = new("https://logistics-stage.ecpay.com.tw/Helper/QueryLogisticsTradeInfo/V3", Method.Post);
+
+        long timeStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
+        request.AddHeader("Accept", "text/html");
+        request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        request.AddParameter("MerchantID", GreenWorld.StoreCode);
+        request.AddParameter("AllPayLogisticsID", response.ShippingInfo.AllPayLogisticsID);
+        request.AddParameter("TimeStamp", timeStamp);
+        request.AddParameter("CheckMacValue", GenerateCheckMac(GreenWorld.HashKey, GreenWorld.HashIV, GreenWorld.StoreCode, response.ShippingInfo.AllPayLogisticsID, timeStamp));
+
+        RestResponse restResponse = await client.ExecuteAsync(request);
+
+        string? str = Convert.ToString(restResponse.Content);
+
+        if (!str.IsNullOrEmpty() && str.Contains(PikachuResource.ShipmentNo)) str = string.Concat("1|", str);
+
+        return str ?? string.Empty;
+    }
+
     public string GenerateRequestString(string HashKey, string HashIV, string merchantID, string merchantTradeNo, string merchantTradeDate, string logisticsType, string logisticsSubType, int goodsAmount, string senderName, string receiverName, string receiverCellPhone, string serverReplyURL, string receiverStoreID,string? goodName=null,string? senderCellNumber =null)
     {
         //string HashKey = "5294y06JbISpM5x9";
@@ -438,41 +475,64 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
        
     }
+
+    public string GenerateCheckMac(string HashKey, string HashIV, string merchantID, string allPayLogisticsID, long timeStamp)
+    {
+        Dictionary<string, string> keyValuePairs = [];
+
+        keyValuePairs.Add("MerchantID", merchantID);
+        keyValuePairs.Add("AllPayLogisticsID", allPayLogisticsID);
+        keyValuePairs.Add("TimeStamp", timeStamp.ToString());
+
+        IOrderedEnumerable<KeyValuePair<string, string>> sortedParameters = keyValuePairs.OrderBy(p => p.Key);
+
+        string requestString = string.Join("&", sortedParameters.Select(p => $"{p.Key}={p.Value}"));
+
+        requestString = $"HashKey={HashKey}&{requestString}&HashIV={HashIV}";
+
+        string urlEncodedData = HttpUtility.UrlEncode(requestString);
+
+        string lowercaseData = urlEncodedData.ToLower();
+
+        using (MD5 md5 = MD5.Create())
+        {
+            byte[] inputBytes = Encoding.UTF8.GetBytes(lowercaseData);
+            byte[] hashBytes = md5.ComputeHash(inputBytes);
+
+            StringBuilder sb = new ();
+            for (int i = 0; i < hashBytes.Length; i++)
+            {
+                sb.Append(hashBytes[i].ToString("X2"));
+            }
+            return sb.ToString();
+        }
+    }
+
     public string GenerateCheckMac(string HashKey, string HashIV, string merchantID, string merchantTradeNo, string merchantTradeDate, string logisticsType, string logisticsSubType, int goodsAmount, decimal goodsWeight, string senderName, string senderPhone, string senderZipCode, string senderAddress,
                                 string receiverName, string receiverCellPhone, string receiverZipCode,string receiverAddress, string serverReplyURL)
     {
         //string HashKey = "5294y06JbISpM5x9";
         //string HashIV = "v77hoKGq4kWxNNIS";
         // Create a dictionary to hold parameters
-        var parameters = new Dictionary<string, string>
-    {
-        { "MerchantID", merchantID },
-        { "MerchantTradeNo", merchantTradeNo },
-        { "MerchantTradeDate", merchantTradeDate },
-        { "LogisticsType", logisticsType },
-        { "LogisticsSubType", logisticsSubType },
-        { "GoodsAmount", goodsAmount.ToString() },
-        { "GoodsWeight", goodsWeight.ToString() },
-
-        
-
-        { "SenderName", senderName },
-        { "SenderPhone", senderPhone},
-        { "SenderZipCode", senderZipCode},
-        { "SenderAddress", senderAddress},
-
-        { "ReceiverName", receiverName },
-
-        { "ReceiverCellPhone", receiverCellPhone },
-        { "ReceiverZipCode", receiverZipCode },
-        { "ReceiverAddress", receiverAddress },
-
-        { "ServerReplyURL", serverReplyURL },
-
-
-        
-
-    };
+        Dictionary<string, string> parameters = new ()
+        {
+            { "MerchantID", merchantID },
+            { "MerchantTradeNo", merchantTradeNo },
+            { "MerchantTradeDate", merchantTradeDate },
+            { "LogisticsType", logisticsType },
+            { "LogisticsSubType", logisticsSubType },
+            { "GoodsAmount", goodsAmount.ToString() },
+            { "GoodsWeight", goodsWeight.ToString() },
+            { "SenderName", senderName },
+            { "SenderPhone", senderPhone},
+            { "SenderZipCode", senderZipCode},
+            { "SenderAddress", senderAddress},
+            { "ReceiverName", receiverName },
+            { "ReceiverCellPhone", receiverCellPhone },
+            { "ReceiverZipCode", receiverZipCode },
+            { "ReceiverAddress", receiverAddress },
+            { "ServerReplyURL", serverReplyURL },
+        };
 
         // Sort parameters alphabetically
         var sortedParameters = parameters.OrderBy(p => p.Key);
@@ -506,7 +566,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         }
     }
 
-    static ResponseResultDto ParseApiResponse(string apiResponse)
+    static ResponseResultDto ParseApiResponse(string apiResponse, bool isSevenElevenB2C = false)
     {
         ResponseResultDto result = new ();
 
@@ -515,7 +575,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         result.ResponseCode = responseParts[0];
 
-        if (result.ResponseCode != "1")
+        if (result.ResponseCode is not "1")
         {
             result.ResponseMessage = responseParts[1];
 
@@ -538,28 +598,32 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             dataDict[key] = value;
         }
 
-        // Create an instance of the ShippingInfo model
-        result.ShippingInfo = new ShippingInfoDto
+        if (isSevenElevenB2C) result.ShippingInfo = new() { ShipmentNo = dataDict["ShipmentNo"] };
+
+        else
         {
-            AllPayLogisticsID = dataDict["AllPayLogisticsID"],
-            BookingNote = dataDict["BookingNote"],
-            CheckMacValue = dataDict["CheckMacValue"],
-            CVSPaymentNo = dataDict["CVSPaymentNo"],
-            CVSValidationNo = dataDict["CVSValidationNo"],
-            GoodsAmount = dataDict["GoodsAmount"],
-            LogisticsSubType = dataDict["LogisticsSubType"],
-            LogisticsType = dataDict["LogisticsType"],
-            MerchantID = dataDict["MerchantID"],
-            MerchantTradeNo = dataDict["MerchantTradeNo"],
-            ReceiverAddress = dataDict["ReceiverAddress"],
-            ReceiverCellPhone = dataDict["ReceiverCellPhone"],
-            ReceiverEmail = dataDict["ReceiverEmail"],
-            ReceiverName = dataDict["ReceiverName"],
-            ReceiverPhone = dataDict["ReceiverPhone"],
-            RtnCode = dataDict["RtnCode"],
-            RtnMsg = dataDict["RtnMsg"],
-            UpdateStatusDate = dataDict["UpdateStatusDate"]
-        };
+            result.ShippingInfo = new ShippingInfoDto
+            {
+                AllPayLogisticsID = dataDict["AllPayLogisticsID"],
+                BookingNote = dataDict["BookingNote"],
+                CheckMacValue = dataDict["CheckMacValue"],
+                CVSPaymentNo = dataDict["CVSPaymentNo"],
+                CVSValidationNo = dataDict["CVSValidationNo"],
+                GoodsAmount = dataDict["GoodsAmount"],
+                LogisticsSubType = dataDict["LogisticsSubType"],
+                LogisticsType = dataDict["LogisticsType"],
+                MerchantID = dataDict["MerchantID"],
+                MerchantTradeNo = dataDict["MerchantTradeNo"],
+                ReceiverAddress = dataDict["ReceiverAddress"],
+                ReceiverCellPhone = dataDict["ReceiverCellPhone"],
+                ReceiverEmail = dataDict["ReceiverEmail"],
+                ReceiverName = dataDict["ReceiverName"],
+                ReceiverPhone = dataDict["ReceiverPhone"],
+                RtnCode = dataDict["RtnCode"],
+                RtnMsg = dataDict["RtnMsg"],
+                UpdateStatusDate = dataDict["UpdateStatusDate"]
+            };
+        }
 
         return result;
     }

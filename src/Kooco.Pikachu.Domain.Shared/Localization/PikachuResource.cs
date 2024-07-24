@@ -9,6 +9,8 @@ public class PikachuResource
 
     public const string NameCannotBeEmpty = "NameCannotBeEmpty";
 
+    public const string ShipmentNo = "ShipmentNo";
+
     public const string CurrentStock = "CurrentStock";
 
     public const string AvailableStock = "AvailableStock";

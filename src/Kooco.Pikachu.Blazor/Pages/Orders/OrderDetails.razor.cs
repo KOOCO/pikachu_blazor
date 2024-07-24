@@ -10,6 +10,7 @@ using Kooco.Pikachu.TestLables;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Html;
 using Microsoft.JSInterop;
+using Polly;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -480,6 +481,19 @@ public partial class OrderDetails
         await loading.Hide();
 
     }
+
+    public bool CheckForDeliveryMethod(DeliveryMethod deliveryMethod)
+    {
+        return deliveryMethod is DeliveryMethod.FamilyMartC2C ||
+               deliveryMethod is DeliveryMethod.FamilyMart1 ||
+               deliveryMethod is DeliveryMethod.SevenToElevenC2C ||
+               deliveryMethod is DeliveryMethod.SevenToEleven1 ||
+               deliveryMethod is DeliveryMethod.PostOffice ||
+               deliveryMethod is DeliveryMethod.BlackCat1 ||
+               deliveryMethod is DeliveryMethod.BlackCatFreeze ||
+               deliveryMethod is DeliveryMethod.BlackCatFrozen;
+    }
+
     private void CloseShipmentModal()
     {
         CreateShipmentModal.Hide();

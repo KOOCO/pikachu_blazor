@@ -869,14 +869,7 @@
                                     {
                                         
                                         <div class="btn-group me-1" role="group" aria-label="Button group with nested dropdown">
-                                            @if (
-                                                context.DeliveryMethod is DeliveryMethod.FamilyMartC2C || 
-                                                context.DeliveryMethod is DeliveryMethod.SevenToElevenC2C ||
-                                                context.DeliveryMethod is DeliveryMethod.PostOffice ||
-                                                context.DeliveryMethod is DeliveryMethod.BlackCat1 ||
-                                                context.DeliveryMethod is DeliveryMethod.BlackCatFreeze ||
-                                                context.DeliveryMethod is DeliveryMethod.BlackCatFrozen
-                                            )
+                                            @if (CheckForDeliveryMethod(context.DeliveryMethod))
                                             {
                                                 <Button Type="ButtonType.Button" Clicked="()=>CreateOrderLogistics(context)" Class="btn btn-primary">@L["ShipmentNotify"]</Button>
                                             }
