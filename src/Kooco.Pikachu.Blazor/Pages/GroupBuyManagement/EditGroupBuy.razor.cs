@@ -123,61 +123,45 @@ public partial class EditGroupBuy
             EditGroupBuyDto = _objectMapper.Map<GroupBuyDto, GroupBuyUpdateDto>(GroupBuy);
             //await LoadHtmlContent();
             EditGroupBuyDto.ShortCode=EditGroupBuyDto.ShortCode==""?null:EditGroupBuyDto.ShortCode;
-            if (!string.IsNullOrEmpty(GroupBuy.ExcludeShippingMethod))
-            {
+            if (!string.IsNullOrEmpty(GroupBuy.ExcludeShippingMethod)) 
                 EditGroupBuyDto.ShippingMethodList = JsonSerializer.Deserialize<List<string>>(GroupBuy.ExcludeShippingMethod);
-            }
+            
             if (!string.IsNullOrEmpty(GroupBuy.SelfPickupDeliveryTime))
-            {
                 SelfPickupTimeList = JsonSerializer.Deserialize<List<string>>(GroupBuy.SelfPickupDeliveryTime);
-            }
-            if (!string.IsNullOrEmpty(GroupBuy.BlackCatDeliveryTime))
-            {
-                BlackCateDeliveryTimeList = JsonSerializer.Deserialize<List<string>>(GroupBuy.BlackCatDeliveryTime);
-            }
-            if (!string.IsNullOrEmpty(GroupBuy.HomeDeliveryDeliveryTime))
-            {
-                HomeDeliveryTimeList = JsonSerializer.Deserialize<List<string>>(GroupBuy.HomeDeliveryDeliveryTime);
-            }
-            if (EditGroupBuyDto.FreeShipping && EditGroupBuyDto.FreeShippingThreshold == null)
-            {
-                EditGroupBuyDto.FreeShippingThreshold = 0;
-               
 
-            }
+            if (!string.IsNullOrEmpty(GroupBuy.BlackCatDeliveryTime))
+                BlackCateDeliveryTimeList = JsonSerializer.Deserialize<List<string>>(GroupBuy.BlackCatDeliveryTime);
+
+            if (!string.IsNullOrEmpty(GroupBuy.HomeDeliveryDeliveryTime))
+                HomeDeliveryTimeList = JsonSerializer.Deserialize<List<string>>(GroupBuy.HomeDeliveryDeliveryTime);
+
+            if (EditGroupBuyDto.FreeShipping && EditGroupBuyDto.FreeShippingThreshold == null)
+                EditGroupBuyDto.FreeShippingThreshold = 0;
+
             if (!GroupBuy.PaymentMethod.IsNullOrEmpty())
             {
                 var payments = GroupBuy.PaymentMethod.Split(",");
                 if (payments.Length > 1)
                 {
                     CreditCard = payments[0].Trim() == "Credit Card" ? true : false;
-                    BankTransfer = payments[0].Trim() == "Credit Card" ? true : false;
-
+                    BankTransfer = payments[1].Trim() == "Bank Transfer" ? true : false;
+                    IsCashOnDelivery = payments[2].Trim() is "Cash On Delivery";
                 }
-                else if (GroupBuy.PaymentMethod == "Credit Card")
-                {
+                else if (GroupBuy.PaymentMethod is "Credit Card") CreditCard = true;
 
-                    CreditCard = true;
+                else if (GroupBuy.PaymentMethod is "Bank Transfer") BankTransfer = true;
 
-                }
-                else if (GroupBuy.PaymentMethod == "Bank Transfer")
-                {
-
-                    BankTransfer = true;
-
-                }
+                else if (GroupBuy.PaymentMethod is "Cash On Delivery") IsCashOnDelivery = true;
             }
             
             EditGroupBuyDto.EntryURL = $"{_configuration["EntryUrl"]?.TrimEnd('/')}/{Id}";
+            
             LoadItemGroups();
-            if (EditValidationsRef != null)
-            {
-                await EditValidationsRef.ClearAll();
-            }
+
+            if (EditValidationsRef is not null) await EditValidationsRef.ClearAll();
             //
             StateHasChanged();
             //await Loading.Hide();
-
         }
         catch (Exception ex)
         {
@@ -186,12 +170,11 @@ public partial class EditGroupBuy
             await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
         }
         finally
-            {
+        {
             //await Loading.Hide();
         }
     }
 
-  
     protected override async Task OnAfterRenderAsync(bool isFirstRender)
     {
         if (isFirstRender)
