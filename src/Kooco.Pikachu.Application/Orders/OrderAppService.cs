@@ -152,6 +152,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     input.OrderType
                     );
             order.StoreId = input.StoreId;
+            order.CVSStoreOutSide = input.CVSStoreOutSide;
             if (input.OrderItems != null)
             {
                 foreach (var item in input.OrderItems)

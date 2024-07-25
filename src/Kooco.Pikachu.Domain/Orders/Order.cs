@@ -76,6 +76,7 @@ namespace Kooco.Pikachu.Orders
         public string? CreditNoteUser { get; set; }
         public OrderType? OrderType { get; set; }
         public string? StoreId { get; set; }
+        public string? CVSStoreOutSide { get; set; }
         public string? TradeNo { get; set; }
         public string? MerchantTradeNo { get; set; }
         public Order() { }
