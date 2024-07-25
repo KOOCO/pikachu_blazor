@@ -104,7 +104,8 @@ public partial class CustomTenantManagement
 
     protected override async Task CreateEntityAsync() 
     {
-        if (base.NewEntity.AdminPassword.Length < 6 ||
+        if (base.NewEntity.AdminPassword is null ||
+            base.NewEntity.AdminPassword.Length < 6 ||
             !Regex.IsMatch(base.NewEntity.AdminPassword, @"\W") ||
             !Regex.IsMatch(base.NewEntity.AdminPassword, "[a-z]") ||
             !Regex.IsMatch(base.NewEntity.AdminPassword, "[A-Z]"))
@@ -299,8 +300,8 @@ public partial class CustomTenantManagement
        
 
     }
-    protected override Task OpenEditModalAsync(TenantDto row) {
-
+    protected override Task OpenEditModalAsync(TenantDto row) 
+    {
         TenantOwnerId = row.GetProperty<Guid?>("TenantOwner");
         ShareProfitPercentage=row.GetProperty<int>("ShareProfitPercent");
         LogoUrl = row.GetProperty<string>("LogoUrl");
@@ -311,8 +312,8 @@ public partial class CustomTenantManagement
         TenantContactPerson = row.GetProperty<string>("TenantContactPerson");
         TenantContactTitle = row.GetProperty<string>("TenantContactTitle");
         TenantContactEmail = row.GetProperty<string>("TenantContactEmail");
-        return base.OpenEditModalAsync(row);
     
+        return base.OpenEditModalAsync(row);
     }
     async Task OnFileUploadAsync(FileChangedEventArgs e)
     {
