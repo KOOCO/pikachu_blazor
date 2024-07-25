@@ -507,8 +507,7 @@
                                             <SelectItem Value="0" ></SelectItem>
                                             @foreach(var item in Enum.GetValues(typeof(SizeEnum)))
                                             {
-                                               <SelectItem Value="@item">@L[item.ToString()]</SelectItem> 
-                                                
+                                               <SelectItem Value="@item">@L[item.ToString()]</SelectItem>    
                                             }
                                         </Select>
                                     </div>
@@ -561,10 +560,7 @@
                                             <SelectItem Value="0" ></SelectItem>
                                             @foreach(var item in Enum.GetValues(typeof(SizeEnum)).Cast<SizeEnum>().Where(item => item != SizeEnum.Cm0004))
                                             {
-                                            
                                                <SelectItem Value="@item">@L[item.ToString()]</SelectItem>
-                                                
-                                                
                                             }
                                         </Select>
                                     </div>
@@ -617,10 +613,7 @@
                                             <SelectItem Value="0" ></SelectItem>
                                              @foreach(var item in Enum.GetValues(typeof(SizeEnum)).Cast<SizeEnum>().Where(item => item != SizeEnum.Cm0004))
                                             {
-                                              
-                                               <SelectItem Value="@item">@L[item.ToString()]</SelectItem>
-                                                
-                                                
+                                               <SelectItem Value="@item">@L[item.ToString()]</SelectItem>   
                                             }
                                         </Select>
                                     </div>
