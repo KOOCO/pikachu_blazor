@@ -587,6 +587,22 @@
     "Ms.": "小姐",
     "DisplayName:Username": "使用者名稱",
     "NameCannotBeEmpty": "使用者名稱不能為空",
-    "CashOnDelivery": "貨到付款"
+    "CashOnDelivery": "貨到付款",
+
+    "GeneralFood": "0001：一般食品",
+    "SpecialityProductsSweets": "0002：名特產/甜產",
+    "AlcoholOilVinegarSauces": "0003：酒/油/醋/醬",
+    "GrainsVegetablesFruits": "0004：穀物蔬果",
+    "SeafoodMeatProducts": "0005：水產/肉品",
+    "ThreeCConsumerElectronics": "0006：3C",
+    "HomeAppliances": "0007：家電",
+    "ClothingandAccessories": "0008：服飾配件",
+    "HouseholdItems": "0009：生活用品",
+    "BeautyandCosmetics": "0010：美容彩妝",
+    "HealthSupplements": "0011：保健食品",
+    "MedicalSupplies": "0012：醫療相關用品",
+    "PetSuppliesandFeed": "0013：寵物用品飼料",
+    "PrintedMaterials": "0014：印刷品",
+    "Others": "0015：其他"
   }
 }
