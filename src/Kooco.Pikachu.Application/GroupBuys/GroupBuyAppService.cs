@@ -84,9 +84,9 @@ namespace Kooco.Pikachu.GroupBuys
                                                         input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy,
                                                         input.NotifyMessage, input.ExcludeShippingMethod, input.IsDefaultPaymentGateWay, input.PaymentMethod, input.GroupBuyCondition, input.CustomerInformation,
                                                         input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription, input.ShortCode, input.IsEnterprise,input.FreeShippingThreshold,input.SelfPickupDeliveryTime,
-                                                        input.BlackCatDeliveryTime,input.HomeDeliveryDeliveryTime,input.DeliveredByStoreDeliveryTime,input.TaxType);
+                                                        input.BlackCatDeliveryTime,input.HomeDeliveryDeliveryTime,input.DeliveredByStoreDeliveryTime,input.TaxType, input.ProductType);
 
-            if (input.ItemGroups != null && input.ItemGroups.Any())
+            if (input.ItemGroups is not null && input.ItemGroups.Any())
             {
                 foreach (var group in input.ItemGroups)
                 {
@@ -94,7 +94,7 @@ namespace Kooco.Pikachu.GroupBuys
                         result,
                         group.SortOrder,
                         group.GroupBuyModuleType
-                        );
+                    );
 
                     if (group.ItemDetails != null && group.ItemDetails.Any())
                     {
@@ -107,7 +107,7 @@ namespace Kooco.Pikachu.GroupBuys
                                 item.SetItemId,
                                 item.ItemType,
                                 item.DisplayText
-                                );
+                            );
                         }
                     }
                 }
@@ -203,7 +203,7 @@ namespace Kooco.Pikachu.GroupBuys
                                                         input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy,
                                                         input.NotifyMessage, input.ExcludeShippingMethod, input.IsDefaultPaymentGateWay, input.PaymentMethod, input.GroupBuyCondition, input.CustomerInformation,
                                                         input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription, ShortCode, input.IsEnterprise,input.FreeShippingThreshold,
-                                                        input.SelfPickupDeliveryTime,input.BlackCatDeliveryTime,input.HomeDeliveryDeliveryTime,input.DeliveredByStoreDeliveryTime,input.TaxType);
+                                                        input.SelfPickupDeliveryTime,input.BlackCatDeliveryTime,input.HomeDeliveryDeliveryTime,input.DeliveredByStoreDeliveryTime,input.TaxType, input.ProductType);
 
             if (input.ItemGroups != null && input.ItemGroups.Any())
             {

@@ -262,13 +262,13 @@ namespace Kooco.Pikachu.GroupBuys
             string? exchangePolicyDescription,
             string shortCode,
             bool isEnterprise,
-             decimal? freeShippingThreshold ,
-             string? selfPickupDeliveryTime,
-             string? blackCatDeliveryTime,
-             string? homeDeliveryDeliveryTime,
-             string? deliveredByStoreDeliveryTime,
-
-                TaxType taxType
+            decimal? freeShippingThreshold ,
+            string? selfPickupDeliveryTime,
+            string? blackCatDeliveryTime,
+            string? homeDeliveryDeliveryTime,
+            string? deliveredByStoreDeliveryTime,
+            TaxType taxType,
+            ProductType? productType
             )
         {
             Id = id;
@@ -311,19 +311,18 @@ namespace Kooco.Pikachu.GroupBuys
             GroupBuyCondition = groupbuyCondition;
             CustomerInformation = customerInformation;
             CustomerInformationDescription = customerInformationDescription;
-
             GroupBuyConditionDescription = groupBuyConditionDescription;
             ExchangePolicyDescription = exchangePolicyDescription;
             ShortCode = shortCode;
             IsEnterprise = isEnterprise;
             FreeShippingThreshold = freeShippingThreshold;
-
             ItemGroups = new List<GroupBuyItemGroup>();
             SelfPickupDeliveryTime = selfPickupDeliveryTime;
             HomeDeliveryDeliveryTime = homeDeliveryDeliveryTime;
             BlackCatDeliveryTime = blackCatDeliveryTime;
             DeliveredByStoreDeliveryTime = deliveredByStoreDeliveryTime;
             TaxType = taxType;
+            ProductType = productType;
         }
 
         public GroupBuyItemGroup AddItemGroup(

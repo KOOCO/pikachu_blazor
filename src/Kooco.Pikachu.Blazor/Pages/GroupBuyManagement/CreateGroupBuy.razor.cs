@@ -802,13 +802,16 @@ public partial class CreateGroupBuy
                 }
             }
 
-            var result = await _groupBuyAppService.CreateAsync(CreateGroupBuyDto);
+            GroupBuyDto result = await _groupBuyAppService.CreateAsync(CreateGroupBuyDto);
+
             foreach (var item in CarouselImages)
             {
                 item.TargetId = result.Id;
                 await _imageAppService.CreateAsync(item);
             }
+
             await Loading.Hide();
+
             NavigationManager.NavigateTo("GroupBuyManagement/GroupBuyList");
         }
         catch (BusinessException ex)

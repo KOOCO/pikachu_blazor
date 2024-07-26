@@ -69,26 +69,24 @@ namespace Kooco.Pikachu.Groupbuys
             string shortCode,
             bool isEnterprise,
             decimal? freeShippingThreshold ,
-             string? selfPickupDeliveryTime,
-             string? blackCatDeliveryTime,
-             string? homeDeliveryDeliveryTime,
-             string? deliveredByStoreDeliveryTime,
-            TaxType taxType
+            string? selfPickupDeliveryTime,
+            string? blackCatDeliveryTime,
+            string? homeDeliveryDeliveryTime,
+            string? deliveredByStoreDeliveryTime,
+            TaxType taxType,
+            ProductType? productType
             )
         {
-            var sameName = await _groupBuyRepository.FirstOrDefaultAsync(x => x.GroupBuyName == groupBuyName);
+            GroupBuy? sameName = await _groupBuyRepository.FirstOrDefaultAsync(x => x.GroupBuyName == groupBuyName);
 
-            if (sameName != null)
-            {
-                throw new BusinessException(PikachuDomainErrorCodes.ItemWithSameNameAlreadyExists);
-            }
+            if (sameName is not null) throw new BusinessException(PikachuDomainErrorCodes.ItemWithSameNameAlreadyExists);
 
             return new GroupBuy(GuidGenerator.Create(), groupBuyNo, status, groupBuyName, entryURL, entryURL2, subjectLine, shortName, logoURL, bannerURL, startTime, endTime, freeShipping,
                 allowShipToOuterTaiwan, allowShipOversea, expectShippingDateFrom, expectShippingDateTo, moneyTransferValidDayBy, moneyTransferValidDays,
                 issueInvoice, autoIssueTriplicateInvoice, invoiceNote, protectPrivacyData, inviteCode, profitShare, metaPixelNo, fBID, iGID, lineID, gAID, gTM,
                 warningMessage, orderContactInfo, exchangePolicy, notifyMessage, excludeShippingMethod, isDefaultPaymentGateway, paymentMethod, groupbuyCondition, 
                 customerInformation,customerInformationDescription,groupBuyConditionDescription,exchangePolicyDescription,shortCode, isEnterprise,freeShippingThreshold,selfPickupDeliveryTime,
-                blackCatDeliveryTime,homeDeliveryDeliveryTime,deliveredByStoreDeliveryTime,taxType);
+                blackCatDeliveryTime,homeDeliveryDeliveryTime,deliveredByStoreDeliveryTime,taxType, productType);
         }
 
 
