@@ -380,21 +380,21 @@
                                                         <td>
                                                             @foreach (var item in orderItems)
                                                             {
-                                                                @if (item.ItemType == ItemType.Item)
+                                                                @if (item.ItemType is ItemType.Item)
                                                                 {
                                                                     <div mb-1>
                                                                         <span>@item.Spec</span>
                                                                         <span>@item.Item?.ItemName x @item.Quantity</span>
                                                                     </div>
                                                                 }
-                                                                @if (item.ItemType == ItemType.SetItem)
+                                                                @if (item.ItemType is ItemType.SetItem)
                                                                 {
                                                                     <div mb-1>
                                                                         <span>@item.Spec</span>
-                                                                        <span>@item.SetItem?.SetItemName x @item.Quantity</span>
+                                                                        <span>- @item.SetItem?.SetItemName x @item.Quantity</span>
                                                                     </div>
                                                                 }
-                                                                @if (item.ItemType == ItemType.Freebie)
+                                                                @if (item.ItemType is ItemType.Freebie)
                                                                 {
                                                                     <div mb-1>
                                                                         <span>@item.Spec</span>
