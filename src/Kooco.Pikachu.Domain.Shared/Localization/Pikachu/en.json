@@ -569,7 +569,8 @@
     "TenantContactEmail": "Tenant Contact Email",
     "Mr.": "Mr.",
     "Ms.": "Ms.",
-    "DisplayName:Username": "Username",
+    "DisplayName:name": "Username",
+    "DisplayName:UserName": "User name",
     "NameCannotBeEmpty": "Username cannot be empty."
   }
 }

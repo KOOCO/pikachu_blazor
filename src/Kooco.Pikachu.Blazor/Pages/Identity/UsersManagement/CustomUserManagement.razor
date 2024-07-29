@@ -87,7 +87,7 @@
                                 <TabPanel Name="UserInformations">
                                     <Validation MessageLocalizer="@LH.Localize">
                                         <Field>
-                                            <FieldLabel>@L["DisplayName:UserName"] *</FieldLabel>
+                                            <FieldLabel>@l["DisplayName:UserName"] *</FieldLabel>
                                             <TextEdit @bind-Text="NewEntity.UserName" Autofocus="true">
                                                 <Feedback>
                                                     <ValidationError />
@@ -97,7 +97,7 @@
                                     </Validation>
                                     <Validation MessageLocalizer="@LH.Localize">
                                         <Field>
-                                            <FieldLabel>@l["DisplayName:Username"]</FieldLabel>
+                                            <FieldLabel>@l["DisplayName:name"]</FieldLabel>
                                             <TextEdit @bind-Text="NewEntity.Name">
                                                 <Feedback>
                                                     <ValidationError />
@@ -204,7 +204,7 @@
                                 <TabPanel Name="UserInformations">
                                     <Validation MessageLocalizer="@LH.Localize">
                                         <Field>
-                                            <FieldLabel>@L["DisplayName:UserName"] *</FieldLabel>
+                                            <FieldLabel>@l["DisplayName:UserName"] *</FieldLabel>
                                             <TextEdit @bind-Text="EditingEntity.UserName" Autofocus="true">
                                                 <Feedback>
                                                     <ValidationError />
@@ -214,7 +214,7 @@
                                     </Validation>
                                     <Validation MessageLocalizer="@LH.Localize">
                                         <Field>
-                                            <FieldLabel>@l["DisplayName:Username"]</FieldLabel>
+                                            <FieldLabel>@l["DisplayName:name"]</FieldLabel>
                                             <TextEdit @bind-Text="EditingEntity.Name">
                                                 <Feedback>
                                                     <ValidationError />
@@ -331,13 +331,13 @@
                     },
                     new TableColumn
                     {
-                        Title = L["UserName"],
+                        Title = l["DisplayName:UserName"],
                         Data = nameof(IdentityUserDto.UserName),
                         Sortable = true,
                     },
                     new TableColumn
                     {
-                        Title = L["Username"],
+                        Title = l["DisplayName:name"],
                         Data = nameof(IdentityUserDto.Name),
                         Sortable = true,
                     },
