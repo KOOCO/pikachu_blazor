@@ -393,6 +393,18 @@
                                                                         <span>@item.Spec</span>
                                                                         <span>- @item.SetItem?.SetItemName x @item.Quantity</span>
                                                                     </div>
+
+                                                                    <div mb-1>
+                                                                        <span>@item.SetItem?.SetItemName x @item.Quantity</span>
+                                                                        <br />
+
+                                                                        @{ List<string> setItemNames = [.. item.Spec.Split(", ")]; }
+
+                                                                        @foreach (string setItemName in setItemNames) 
+                                                                        {
+                                                                            <span>- @setItemName</span><br />
+                                                                        }
+                                                                    </div>
                                                                 }
                                                                 @if (item.ItemType is ItemType.Freebie)
                                                                 {
