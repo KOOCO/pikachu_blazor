@@ -13,6 +13,8 @@ public class PikachuResource
 
     public const string CurrentStock = "CurrentStock";
 
+    public const string ProductType = "ProductType";
+
     public const string AvailableStock = "AvailableStock";
 
     public const string PreOrderQuantity = "PreOrderQuantity";

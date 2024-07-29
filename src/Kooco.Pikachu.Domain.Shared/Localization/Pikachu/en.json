@@ -571,6 +571,7 @@
     "Ms.": "Ms.",
     "DisplayName:name": "Username",
     "DisplayName:UserName": "User name",
-    "NameCannotBeEmpty": "Username cannot be empty."
+    "NameCannotBeEmpty": "Username cannot be empty.",
+    "ProductType": "Product Type"
   }
 }

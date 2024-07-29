@@ -589,7 +589,6 @@
     "DisplayName:UserName": "使用者姓名",
     "NameCannotBeEmpty": "使用者名稱不能為空",
     "CashOnDelivery": "貨到付款",
-
     "GeneralFood": "0001：一般食品",
     "SpecialityProductsSweets": "0002：名特產/甜產",
     "AlcoholOilVinegarSauces": "0003：酒/油/醋/醬",
@@ -604,6 +603,7 @@
     "MedicalSupplies": "0012：醫療相關用品",
     "PetSuppliesandFeed": "0013：寵物用品飼料",
     "PrintedMaterials": "0014：印刷品",
-    "Others": "0015：其他"
+    "Others": "0015：其他",
+    "ProductType": "產品類別"
   }
 }
