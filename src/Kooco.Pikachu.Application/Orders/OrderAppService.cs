@@ -1307,13 +1307,18 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 }
                 await UnitOfWorkManager.Current.SaveChangesAsync();
 
+                OrderDelivery? orderDelivery = await _orderDeliveryRepository.FirstOrDefaultAsync(x => x.OrderId == order.Id);
+
                 if (order.OrderItems.Any(x => x.FreebieId != null))
                 {
-                   
-                    OrderDelivery? OrderDelivery1 = await _orderDeliveryRepository.FirstOrDefaultAsync(x=>x.OrderId==order.Id);
+                    if (orderDelivery is not null)
+                        order.UpdateOrderItem(order.OrderItems.Where(x => x.FreebieId != null).ToList(), orderDelivery.Id);
+                }
 
-                    if (OrderDelivery1 is not null)
-                        order.UpdateOrderItem(order.OrderItems.Where(x => x.FreebieId != null).ToList(), OrderDelivery1.Id);
+                if (order.OrderItems.Any(a => a.SetItemId is not null && a.SetItemId != Guid.Empty)) 
+                {
+                    if (orderDelivery is not null)
+                        order.UpdateOrderItem([.. order.OrderItems.Where(w => w.SetItemId is not null && w.SetItemId != Guid.Empty)], orderDelivery.Id);
                 }
                 
                 await _orderRepository.UpdateAsync(order);

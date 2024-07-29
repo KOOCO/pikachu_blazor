@@ -612,8 +612,6 @@
                         <div class="row">
                             <div class="col-12 d-flex justify-content-between">
                                 <p class="fw-bold">@L["ManualStatusUpdate"]</p>
-
-
                             </div>
                         </div>
                         <div class="row">
@@ -707,7 +705,7 @@
                                             {
                                                 string? firstImage = item.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
 
-                                                <Div Class="mx-4">
+                                                <Div>
                                                     @if (!string.IsNullOrEmpty(firstImage))
                                                     {
                                                         <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
@@ -978,7 +976,7 @@
                                             {
                                                 string? firstImage = item.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
                                                 
-                                                <Div Class="mx-4">
+                                                <Div>
                                                     @if (!string.IsNullOrEmpty(firstImage))
                                                     {
                                                         <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
@@ -1045,13 +1043,9 @@
                                                         <td colspan="6">
                                                             <Table>
                                                                 <tr>
-                                                                    <td style="width: 10%; text-align: right;">
-                                                                        <InputCheckbox class="form-check-input" @bind-Value="setItem.IsSelected" />
-                                                                    </td>
-                                                                    <td class="text-start" style="width: 90%;">
-                                                                        @{
-                                                                            string? firstImage = setItem.Item?.Images?.FirstOrDefault()?.ImageUrl;
-                                                                        }
+                                                                    <td></td>
+                                                                    <td class="text-start" style="width: 100%;">
+                                                                        @{ string? firstImage = setItem.Item?.Images?.FirstOrDefault()?.ImageUrl; }
 
                                                                         <Div>
                                                                             @if (!string.IsNullOrEmpty(firstImage))

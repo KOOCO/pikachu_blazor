@@ -22,9 +22,13 @@ namespace Kooco.Pikachu.OrderDeliveries
         {
             return await (await GetQueryableAsync())
                 .Where(o => o.OrderId == id)
-               
                 .Include(o => o.Items)
                     .ThenInclude(oi => oi.Item)
+                    .ThenInclude(i => i.Images)
+                .Include(o => o.Items)
+                    .ThenInclude(oi => oi.SetItem)
+                    .ThenInclude(i => i.SetItemDetails)
+                    .ThenInclude(i => i.Item)
                     .ThenInclude(i => i.Images)
                 .Include(o => o.Items)
                     .ThenInclude(oi => oi.SetItem)
@@ -32,7 +36,6 @@ namespace Kooco.Pikachu.OrderDeliveries
                 .Include(o => o.Items.OrderBy(oi => oi.ItemType))
                     .ThenInclude(oi => oi.Freebie)
                     .ThenInclude(i => i.Images)
-                
                 .ToListAsync();
         }
     }
