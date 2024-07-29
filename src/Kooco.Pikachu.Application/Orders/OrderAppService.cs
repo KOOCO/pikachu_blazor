@@ -17,6 +17,7 @@ using Microsoft.Extensions.Localization;
 using MiniExcelLibs;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Linq.Dynamic.Core;
@@ -1305,12 +1306,16 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
                 }
                 await UnitOfWorkManager.Current.SaveChangesAsync();
+
                 if (order.OrderItems.Any(x => x.FreebieId != null))
                 {
                    
-                  var  OrderDelivery1 = await _orderDeliveryRepository.FirstOrDefaultAsync(x=>x.OrderId==order.Id);
-                    order.UpdateOrderItem(order.OrderItems.Where(x => x.FreebieId != null).ToList(), OrderDelivery1.Id);
+                    OrderDelivery? OrderDelivery1 = await _orderDeliveryRepository.FirstOrDefaultAsync(x=>x.OrderId==order.Id);
+
+                    if (OrderDelivery1 is not null)
+                        order.UpdateOrderItem(order.OrderItems.Where(x => x.FreebieId != null).ToList(), OrderDelivery1.Id);
                 }
+                
                 await _orderRepository.UpdateAsync(order);
                 await UnitOfWorkManager.Current.SaveChangesAsync();
                 await SendEmailAsync(order.Id);

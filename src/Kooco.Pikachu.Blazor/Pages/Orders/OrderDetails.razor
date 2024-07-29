@@ -689,10 +689,7 @@
                                 {
                                     <tr>
                                         <td>
-                                            @if (item.ItemType is not ItemType.SetItem)
-                                            {
-                                                <InputCheckbox class="form-check-input" @bind-Value="item.IsSelected" />
-                                            }
+                                            <InputCheckbox class="form-check-input" @bind-Value="item.IsSelected" />
                                         </td>
                                         <td class="text-start" style="width: 50%;">
                                             @if (item.ItemType is ItemType.Item)
@@ -760,6 +757,37 @@
                                             </td>
                                         }
                                     </tr>
+
+                                    if (item.ItemType is ItemType.SetItem && 
+                                        item.SetItem is not null && 
+                                        item.SetItem.SetItemDetails is { Count: > 0 })
+                                    {
+                                        @foreach (Items.Dtos.SetItemDetailsDto setItem in item.SetItem.SetItemDetails) 
+                                        {
+                                            <tr>
+                                                <td colspan="5">
+                                                    <Table>
+                                                        <tr>
+                                                            <td style="width: 10%; text-align: right;">
+                                                                <InputCheckbox class="form-check-input" @bind-Value="setItem.IsSelected" />
+                                                            </td>
+                                                            <td class="text-start" style="width: 90%;">
+                                                                @{string? firstImage = setItem.Item?.Images?.FirstOrDefault()?.ImageUrl;}
+
+                                                                <Div>
+                                                                    @if (!string.IsNullOrEmpty(firstImage))
+                                                                    {
+                                                                        <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                                    }
+                                                                    @setItem.Item?.ItemName
+                                                                </Div>
+                                                            </td>
+                                                        </tr>
+                                                    </Table>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
                                 }
                                 <tr>
                                     <td colspan="2" class="text-end">
@@ -916,28 +944,25 @@
                                 </DisplayTemplate>
                             </DataGridColumn>
                 </DataGridColumns>
-                <DetailRowTemplate>
-                 
-                       
-                       <table class="table table-responsive table-striped text-center">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                
-                                 <th>@L["Temperature"]</th>
-                                  <th>@L["DeliveryCost"]</th>
-                                <th>@L["Quantity"]</th>
-                                <th>@L["UnitPrice"]</th>
-                                <th>@L["Subtotal"]</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (context.Items is not null && context.Items.Count is not 0)
-                            {
-                                @foreach (OrderItemDto item in context.Items)
-                                {
+                        <DetailRowTemplate>
+                            <table class="table table-responsive table-striped text-center">
+                                <thead>
                                     <tr>
-                                        <td class="text-start" style="width: 50%;">
+                                        <th></th>
+                                        <th>@L["Temperature"]</th>
+                                        <th>@L["DeliveryCost"]</th>
+                                        <th>@L["Quantity"]</th>
+                                        <th>@L["UnitPrice"]</th>
+                                        <th>@L["Subtotal"]</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (context.Items is not null && context.Items.Count is not 0)
+                                    {
+                                        @foreach (OrderItemDto item in context.Items)
+                                        {
+                                            <tr>
+                                                <td class="text-start" style="width: 50%;">
                                             @if (item.ItemType is ItemType.Item)
                                             {
                                                 string? firstImage = item.Item?.Images?.FirstOrDefault()?.ImageUrl;
@@ -974,7 +999,7 @@
                                             }
 
                                         </td>
-                                        @if (item.IsSelected && IsItemsEditMode)
+                                                @if (item.IsSelected && IsItemsEditMode)
                                         {
                                             var thisItem = EditingItems.FirstOrDefault(e => e.Id == item.Id);
                                             @if (thisItem != null)
@@ -990,7 +1015,7 @@
                                                 </td>
                                             }
                                         }
-                                        else
+                                                else
                                         {
                                             <td>
                                                 @L[item.DeliveryTemperature.ToString()]
@@ -1008,48 +1033,44 @@
                                                 $@item.TotalAmount.ToString("N2")
                                             </td>
                                         }
-                                    </tr>
-                                }
-                                        @*     <tr>
-                                    <td colspan="2" class="text-end">
-                                    @L["Subtotal"]
-                                    </td>
-                                    <td>
-                                    </td>
-                                    <td>
-                                    </td>
-                                    <td>
-                                    $@Order.TotalAmount.ToString("N2")
-                                    </td>
-                                    </tr>
-                                    <tr>
-                                    <td colspan="2" class="text-end">
-                                    @L["DeliveryFee"]
-                                    </td>
-                                    <td>
-                                    </td>
-                                    <td>
-                                    </td>
-                                    <td>
-                                    -
-                                    </td>
-                                    </tr>
-                                    <tr>
-                                    <td colspan="2" class="text-end">
-                                    @L["Total"]
-                                    </td>
-                                    <td>
-                                    </td>
-                                    <td>
-                                    </td>
-                                    <td>
-                                    $@Order.TotalAmount.ToString("N2")
-                                    </td>
-                                    </tr> *@
+                                            </tr>
+
+                                            if (item.ItemType is ItemType.SetItem &&
+                                                item.SetItem is not null &&
+                                                item.SetItem.SetItemDetails is { Count: > 0 })
+                                            {
+                                                @foreach (Items.Dtos.SetItemDetailsDto setItem in item.SetItem.SetItemDetails)
+                                                {
+                                                    <tr>
+                                                        <td colspan="6">
+                                                            <Table>
+                                                                <tr>
+                                                                    <td style="width: 10%; text-align: right;">
+                                                                        <InputCheckbox class="form-check-input" @bind-Value="setItem.IsSelected" />
+                                                                    </td>
+                                                                    <td class="text-start" style="width: 90%;">
+                                                                        @{
+                                                                            string? firstImage = setItem.Item?.Images?.FirstOrDefault()?.ImageUrl;
+                                                                        }
+
+                                                                        <Div>
+                                                                            @if (!string.IsNullOrEmpty(firstImage))
+                                                                            {
+                                                                                <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                                            }
+                                                                            @setItem.Item?.ItemName
+                                                                        </Div>
+                                                                    </td>
+                                                                </tr>
+                                                            </Table>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        }
                                     }
                                 </tbody>
                             </table>
-
                         </DetailRowTemplate>
                     </DataGrid>
                 </CardBody>
@@ -1068,7 +1089,7 @@
                                 <InputTextArea class="form-control" @bind-Value="@StoreComments.Comment"></InputTextArea>
                                 <ValidationMessage For="@(() => StoreComments.Comment)" />
                             </div>
-                             @if (Order.OrderType != OrderType.MargeToNew)
+                            @if (Order.OrderType != OrderType.MargeToNew)
                             {
                                 <div class="col-12 text-end">
                                     <Button Type="ButtonType.Button" Class="btn btn-sm btn-danger me-1" Clicked="() => StoreComments = new()">
@@ -1084,11 +1105,11 @@
                                     else
                                     {
                                         <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
-                                            <i class="fa fa-check"></i>
-                                        @L["Update"]
-                                    </Button>
-                                }
-                            </div>
+                                                <i class="fa fa-check"></i>
+                                            @L["Update"]
+                                        </Button>
+                                    }
+                                </div>
                             }
                         </EditForm>
                     </div>

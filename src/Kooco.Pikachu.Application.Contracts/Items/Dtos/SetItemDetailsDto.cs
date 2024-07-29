@@ -20,4 +20,6 @@ public class SetItemDetailsDto : FullAuditedEntityDto<Guid>
     public Guid ItemId { get; set; }
 
     public int Quantity { get; set; }
+
+    public bool IsSelected { get; set; }
 }
