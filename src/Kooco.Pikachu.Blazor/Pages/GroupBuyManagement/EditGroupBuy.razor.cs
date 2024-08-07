@@ -140,13 +140,15 @@ public partial class EditGroupBuy
 
             if (!GroupBuy.PaymentMethod.IsNullOrEmpty())
             {
-                var payments = GroupBuy.PaymentMethod.Split(",");
+                string[] payments = GroupBuy.PaymentMethod.Split(" , ");
+
                 if (payments.Length > 1)
                 {
-                    CreditCard = payments[0].Trim() == "Credit Card" ? true : false;
-                    BankTransfer = payments[1].Trim() == "Bank Transfer" ? true : false;
-                    IsCashOnDelivery = payments[2].Trim() is "Cash On Delivery";
+                    CreditCard = payments.Contains("Credit Card");
+                    BankTransfer = payments.Contains("Bank Transfer");
+                    IsCashOnDelivery = payments.Contains("Cash On Delivery");
                 }
+                
                 else if (GroupBuy.PaymentMethod is "Credit Card") CreditCard = true;
 
                 else if (GroupBuy.PaymentMethod is "Bank Transfer") BankTransfer = true;
