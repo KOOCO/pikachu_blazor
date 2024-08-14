@@ -8,6 +8,8 @@ namespace Kooco.Pikachu.Orders
 {
     public interface IOrderRepository : IRepository<Order, Guid>
     {
+        Task<Order> GetOrderAsync(Guid groupBuyId, string orderNo, string extraInfo);
+
         Task<long> CountAsync(string? filter,
                               Guid? groupBuyId,
                               DateTime? startDate = null,

@@ -205,6 +205,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
     }
 
+    public async Task<OrderDto> GetOrderAsync(Guid groupBuyId, string orderNo, string extraInfo)
+    {
+        return ObjectMapper.Map<Order, OrderDto>(
+            await _orderRepository.GetOrderAsync(groupBuyId, orderNo, extraInfo)
+        );
+    }
+
     public async Task<OrderDto> GetAsync(Guid id)
     {
         return ObjectMapper.Map<Order, OrderDto>(await _orderRepository.GetAsync(id));

@@ -81,6 +81,12 @@ public class OrderController(
         }
     }
 
+    [HttpGet("get-order-by-orderNo-extraInfo/{groupBuyId}/{orderNo}/{extraInfo}")]
+    public Task<OrderDto> GetOrderAsync(Guid groupBuyId, string orderNo, string extraInfo)
+    {
+        return _ordersAppService.GetOrderAsync(groupBuyId, orderNo, extraInfo);
+    }
+
     [HttpPut("check-mac-value/{id}/{checkMacValue}")]
     public Task AddCheckMacValueAsync(Guid id, string checkMacValue)
     {

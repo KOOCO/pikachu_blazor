@@ -307,6 +307,34 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
             .FirstOrDefaultAsync();
     }
 
+    public async Task<Order> GetOrderAsync(Guid groupBuyId, string orderNo, string extraInfo)
+    {
+        return await (await GetQueryableAsync())
+            .Where(w => w.GroupBuyId == groupBuyId)
+            .Where(w => w.OrderNo == orderNo)
+            .Where(w => w.CustomerEmail == extraInfo || 
+                        w.CustomerName == extraInfo || 
+                        w.CustomerPhone == extraInfo)
+            .Include(o => o.GroupBuy)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Item)
+                .ThenInclude(i => i.Images)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.SetItem)
+                .ThenInclude(i => i.SetItemDetails)
+                .ThenInclude(i => i.Item)
+                .ThenInclude(i => i.Images)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.SetItem)
+                .ThenInclude(i => i.Images)
+            .Include(o => o.OrderItems.OrderBy(oi => oi.ItemType))
+                .ThenInclude(oi => oi.Freebie)
+                .ThenInclude(i => i.Images)
+            .Include(o => o.StoreComments.OrderByDescending(c => c.CreationTime))
+                .ThenInclude(c => c.User)
+            .FirstOrDefaultAsync();
+    }
+
     public async Task<long> ReturnOrderCountAsync(string? filter, Guid? groupBuyId)
     {
         return await ApplyReturnFilters((await GetQueryableAsync()).Include(o => o.GroupBuy), filter, groupBuyId, null).Where(x => x.OrderStatus == OrderStatus.Returned || x.OrderStatus == OrderStatus.Exchange).CountAsync();
