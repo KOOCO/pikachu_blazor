@@ -24,7 +24,7 @@ public class OrderDeliveryController(
      return _orderDeliveryAppService.GetDeliveryOrderAsync(Id);
     }
 
-    [HttpGet]
+    [HttpGet("get-list-by-orderId/{Id}")]
     public Task<List<OrderDeliveryDto>> GetListByOrderAsync(Guid Id)
     {
         return _orderDeliveryAppService.GetListByOrderAsync(Id);
