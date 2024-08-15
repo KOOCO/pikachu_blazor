@@ -3,6 +3,7 @@ using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.PaymentGateways;
+using Kooco.Pikachu.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
@@ -85,6 +86,18 @@ public class OrderController(
     public Task<OrderDto> GetOrderAsync(Guid groupBuyId, string orderNo, string extraInfo)
     {
         return _ordersAppService.GetOrderAsync(groupBuyId, orderNo, extraInfo);
+    }
+
+    [HttpPost("update-merchantTradeNo")]
+    public Task<OrderDto> UpdateMerchantTradeNoAsync([FromBody] OrderPaymentMethodRequest request)
+    {
+        return _ordersAppService.UpdateMerchantTradeNoAsync(request);
+    }
+
+    [HttpPost("update-order-paymentMethod")]
+    public Task<OrderDto> UpdateOrderPaymentMethodAsync([FromBody] OrderPaymentMethodRequest request)
+    {
+        return _ordersAppService.UpdateOrderPaymentMethodAsync(request);
     }
 
     [HttpPut("check-mac-value/{id}/{checkMacValue}")]

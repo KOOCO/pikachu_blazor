@@ -2,6 +2,7 @@
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.PaymentGateways;
+using Kooco.Pikachu.Response;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -14,6 +15,8 @@ namespace Kooco.Pikachu.Orders
     public interface IOrderAppService: IApplicationService
     {
         Task<OrderDto> GetOrderAsync(Guid groupBuyId, string orderNo, string extraInfo);
+        Task<OrderDto> UpdateOrderPaymentMethodAsync(OrderPaymentMethodRequest request);
+        Task<OrderDto> UpdateMerchantTradeNoAsync(OrderPaymentMethodRequest request);
         Task<OrderDto> GetAsync(Guid id);
         Task<PagedResultDto<OrderDto>> GetListAsync(GetOrderListDto input, bool hideCredentials = false);
         Task<OrderDto> CreateAsync(CreateOrderDto input);

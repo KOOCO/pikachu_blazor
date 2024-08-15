@@ -11,6 +11,7 @@ using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.Refunds;
+using Kooco.Pikachu.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.Localization;
@@ -209,6 +210,28 @@ public class OrderAppService : ApplicationService, IOrderAppService
     {
         return ObjectMapper.Map<Order, OrderDto>(
             await _orderRepository.GetOrderAsync(groupBuyId, orderNo, extraInfo)
+        );
+    }
+
+    public async Task<OrderDto> UpdateOrderPaymentMethodAsync(OrderPaymentMethodRequest request)
+    {
+        Order order = await _orderRepository.GetAsync(request.OrderId);
+
+        order.PaymentMethod = request.PaymentMethod;
+
+        return ObjectMapper.Map<Order, OrderDto>( 
+            await _orderRepository.UpdateAsync(order) 
+        );
+    }
+
+    public async Task<OrderDto> UpdateMerchantTradeNoAsync(OrderPaymentMethodRequest request)
+    {
+        Order order = await _orderRepository.GetAsync(request.OrderId);
+
+        order.MerchantTradeNo = request.MerchantTradeNo;
+
+        return ObjectMapper.Map<Order, OrderDto>(
+            await _orderRepository.UpdateAsync(order)
         );
     }
 
