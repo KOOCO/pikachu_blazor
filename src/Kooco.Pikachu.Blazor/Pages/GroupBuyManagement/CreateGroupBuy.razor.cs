@@ -492,9 +492,7 @@ public partial class CreateGroupBuy
                 CreateGroupBuyDto.ShippingMethodList.Remove("FamilyMartC2C");
                 JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "FamilyMartC2C");
             }
-      
-           
-           else if (method == "SevenToElevenC2C" && CreateGroupBuyDto.ShippingMethodList.Contains("SevenToEleven1"))
+            else if (method == "SevenToElevenC2C" && CreateGroupBuyDto.ShippingMethodList.Contains("SevenToEleven1"))
             {
                 CreateGroupBuyDto.ShippingMethodList.Remove("SevenToEleven1");
                 JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "SevenToEleven1");
@@ -514,7 +512,7 @@ public partial class CreateGroupBuy
                 CreateGroupBuyDto.ShippingMethodList.Remove("BlackCatFrozen");
                 JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "BlackCatFrozen");
             }
-            else if (method == "BlackCatfreeze" && CreateGroupBuyDto.ShippingMethodList.Contains("BlackCat1"))
+            else if (method == "BlackCatFreeze" && CreateGroupBuyDto.ShippingMethodList.Contains("BlackCat1"))
             {
                 CreateGroupBuyDto.ShippingMethodList.Remove("BlackCat1");
                 JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "BlackCat1");
