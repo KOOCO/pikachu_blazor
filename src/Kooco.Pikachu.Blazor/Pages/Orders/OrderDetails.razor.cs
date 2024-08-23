@@ -591,16 +591,23 @@ public partial class OrderDetails
         try
         {
             await loading.Show();
-              UpdateOrder.ShippingNumber = shipments.ShippingNumber;
+            
+            UpdateOrder.ShippingNumber = shipments.ShippingNumber;
+            
             UpdateOrder.DeliveryMethod = shipments.ShippingMethod;
+            
             await _orderDeliveryAppService.UpdateShippingDetails(OrderDeliveryId, UpdateOrder);
+            
             await CreateShipmentModal.Hide();
+            
             await GetOrderDetailsAsync();
+            
             await InvokeAsync(StateHasChanged);
         }
         catch (Exception ex)
         {
             await _uiMessageService.Error(ex.GetType().ToString());
+            
             await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
         }
         finally

@@ -1,5 +1,6 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
+using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.TenantEmailing;
@@ -56,17 +57,18 @@ namespace Kooco.Pikachu.OrderDeliveries
         }
         public async Task<OrderDeliveryDto> UpdateShippingDetails(Guid id, CreateOrderDto input)
         {
-            var order = await _orderDeliveryRepository.GetAsync(id);
+            OrderDelivery order = await _orderDeliveryRepository.GetAsync(id);
+
             order.DeliveryMethod = input.DeliveryMethod.Value;
+
             order.DeliveryNo = input.ShippingNumber;
-         
 
             await _orderDeliveryRepository.UpdateAsync(order);
+            
             await UnitOfWorkManager.Current.SaveChangesAsync();
-            if (order.DeliveryNo != null)
-            {
-                await SendEmailAsync(order.OrderId, order.Id);
-            }
+            
+            if (!order.DeliveryNo.IsNullOrEmpty()) await SendEmailAsync(order.OrderId, order.Id);
+
             return ObjectMapper.Map<OrderDelivery, OrderDeliveryDto>(order);
         }
         private async Task SendEmailAsync(Guid id,Guid DeliveryOrderId, OrderStatus? orderStatus = null)
@@ -195,52 +197,67 @@ namespace Kooco.Pikachu.OrderDeliveries
         }
         public async Task UpdateOrderDeliveryStatus(Guid Id)
         {
+            OrderDelivery delivery = await _orderDeliveryRepository.GetAsync(Id);
 
-          var delivery=  await _orderDeliveryRepository.GetAsync(Id);
             delivery.DeliveryStatus = DeliveryStatus.Shipped;
-            delivery.Editor = CurrentUser.Name;
-            await _orderDeliveryRepository.UpdateAsync(delivery);
-            var orderDeliveries= (await _orderDeliveryRepository.GetQueryableAsync()).Where(x => x.OrderId == delivery.OrderId).ToList();
-        if(!orderDeliveries.Any(x=>x.DeliveryStatus!=DeliveryStatus.Shipped))
-            {
-              var order=  await _orderRepository.GetAsync(delivery.OrderId);
-                order.ShippingStatus = ShippingStatus.Shipped;
-                await _orderRepository.UpdateAsync(order);
-                await UnitOfWorkManager.Current.SaveChangesAsync();
-                await SendEmailAsync(order.Id);
+            
+            delivery.Editor = CurrentUser.Name ?? string.Empty;
 
+            await _orderDeliveryRepository.UpdateAsync(delivery);
+
+            List<OrderDelivery> orderDeliveries = [.. (await _orderDeliveryRepository.GetQueryableAsync()).Where(x => x.OrderId == delivery.OrderId)];
+
+            if(!orderDeliveries.Any(a => a.DeliveryStatus != DeliveryStatus.Shipped))
+            {
+                Order order = await _orderRepository.GetAsync(delivery.OrderId);
+
+                order.ShippingStatus = ShippingStatus.Shipped;
+                
+                await _orderRepository.UpdateAsync(order);
+                
+                await UnitOfWorkManager.Current.SaveChangesAsync();
+                
+                await SendEmailAsync(order.Id, delivery.DeliveryNo);
             }
 
         }
-        private async Task SendEmailAsync(Guid id, OrderStatus? orderStatus = null)
+        private async Task SendEmailAsync(Guid id, string deliveryNo, OrderStatus? orderStatus = null)
         {
-            var order = await _orderRepository.GetWithDetailsAsync(id);
-            var groupbuy = await _groupBuyRepository.GetAsync(g => g.Id == order.GroupBuyId);
+            Order order = await _orderRepository.GetWithDetailsAsync(id);
+
+            GroupBuy groupbuy = await _groupBuyRepository.GetAsync(g => g.Id == order.GroupBuyId);
 
             string status = orderStatus == null ? _l[order.ShippingStatus.ToString()] : _l[orderStatus.ToString()];
 
             string subject = $"{groupbuy.GroupBuyName} 訂單#{order.OrderNo} {status}";
 
             string body = File.ReadAllText("wwwroot/EmailTemplates/email.html");
+
             DateTime creationTime = order.CreationTime;
+            
             TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById("China Standard Time"); // UTC+8
+            
             DateTimeOffset creationTimeInTimeZone = TimeZoneInfo.ConvertTime(creationTime, tz);
+            
             string formattedTime = creationTimeInTimeZone.ToString("yyyy-MM-dd HH:mm:ss");
 
             body = body.Replace("{{Greetings}}", "");
+            
             body = body.Replace("{{Footer}}", "");
-            if (order.ShippingStatus == ShippingStatus.WaitingForPayment)
-            {
-                body = body.Replace("{{NotifyMessage}}", groupbuy.NotifyMessage);
-            }
+            
+            if (order.ShippingStatus is ShippingStatus.WaitingForPayment) body = body.Replace("{{NotifyMessage}}", groupbuy.NotifyMessage);
+            
+            else body = body.Replace("{{NotifyMessage}}", "");
+
+            if (!deliveryNo.IsNullOrEmpty()) body = body.Replace("{{DeliveryNo}}", deliveryNo);
+
             else
             {
-                body = body.Replace("{{NotifyMessage}}", "");
-            }
-            string pattern = @"<span class=""spacer""></span>\s*<p>貨運號碼</p>\s*<p>\{\{DeliveryNo\}\}</p>";
+                string pattern = @"<span class=""spacer""></span>\s*<p>貨運號碼</p>\s*<p>\{\{DeliveryNo\}\}</p>";
 
-            // Replace the matched pattern with an empty string
-            body = Regex.Replace(body, pattern, "");
+                body = Regex.Replace(body, pattern, "");
+            }
+
             body = body.Replace("{{GroupBuyName}}", groupbuy.GroupBuyName);
             body = body.Replace("{{OrderNo}}", order.OrderNo);
             body = body.Replace("{{OrderDate}}", formattedTime);
@@ -249,10 +266,9 @@ namespace Kooco.Pikachu.OrderDeliveries
             body = body.Replace("{{CustomerPhone}}", order.CustomerPhone);
             body = body.Replace("{{RecipientName}}", order.RecipientName);
             body = body.Replace("{{RecipientPhone}}", order.RecipientPhone);
-            if (!groupbuy.IsEnterprise)
-            {
-                body = body.Replace("{{PaymentMethod}}", _l[order.PaymentMethod.ToString()]);
-            }
+            
+            if (!groupbuy.IsEnterprise) body = body.Replace("{{PaymentMethod}}", _l[order.PaymentMethod.ToString()]);
+
             body = body.Replace("{{PaymentStatus}}", _l[order.OrderStatus.ToString()]);
             body = body.Replace("{{ShippingMethod}}", $"{_l[order.DeliveryMethod.ToString()]} {order.ShippingNumber}");
             body = body.Replace("{{DeliveryFee}}", "0");

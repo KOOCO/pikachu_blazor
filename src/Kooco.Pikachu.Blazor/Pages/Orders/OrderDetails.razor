@@ -924,16 +924,20 @@
                                             hidden>
                                         Test Label
                                     </Button>
-                                        @if (context.DeliveryStatus == DeliveryStatus.Processing)
+                                        @if (context.DeliveryStatus is DeliveryStatus.Processing)
                                         {
-                                            <Button Type="ButtonType.Button" Clicked="() => OrderItemShipped(context)" Class="btn btn-sm btn-secondary me-1">
+                                            <Button Type="ButtonType.Button" 
+                                                    Clicked="() => OrderItemShipped(context)" 
+                                                    Class="btn btn-sm btn-secondary me-1">
                                                 @L["Shipped"]
                                             </Button>
                                         }
                                         else
                                         {
                                             <Button Type="ButtonType.Button"     
-                                                Disabled Clicked="() => OrderItemShipped(context)" Class="btn btn-sm btn-secondary me-1">
+                                                    Disabled 
+                                                    Clicked="() => OrderItemShipped(context)" 
+                                                    Class="btn btn-sm btn-secondary me-1">
                                                  @L["Shipped"]
                                             </Button>
                                         }
