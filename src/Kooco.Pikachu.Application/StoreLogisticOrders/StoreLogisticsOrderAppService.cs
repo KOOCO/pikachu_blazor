@@ -158,10 +158,11 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         request.AddParameter("ReceiverAddress", receiverAddress);
         request.AddParameter("ServerReplyURL", "https://www.ecpay.com.tw/ServerReplyURL");
         //request.AddParameter("ReceiverStoreID", "123");
-        request.AddParameter("CheckMacValue", GenerateCheckMac(greenWorld.HashKey, greenWorld.HashIV, GreenWorld.StoreCode, "", marchentDate, "HOME", orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.PostOffice ? "POST" : "TCAT", Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)),PostOffice.Weight, GreenWorld.SenderName,GreenWorld.SenderPhoneNumber,
-                                                GreenWorld.SenderPostalCode,GreenWorld.SenderAddress, order.RecipientName, order.RecipientPhone,order.PostalCode, receiverAddress, "https://www.ecpay.com.tw/ServerReplyURL"));
+        request.AddParameter("CheckMacValue", GenerateCheckMac(
+            greenWorld.HashKey, greenWorld.HashIV, GreenWorld.StoreCode, order.OrderNo, marchentDate, "HOME", orderDelivery.DeliveryMethod == EnumValues.DeliveryMethod.PostOffice ? "POST" : "TCAT", Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)),PostOffice.Weight, GreenWorld.SenderName,GreenWorld.SenderPhoneNumber,
+            GreenWorld.SenderPostalCode,GreenWorld.SenderAddress, order.RecipientName, order.RecipientPhone,order.PostalCode, receiverAddress, "https://www.ecpay.com.tw/ServerReplyURL"));
         //request.AddParameter("IsCollection", "N");
-        request.AddParameter("MerchantTradeNo",  "");
+        request.AddParameter("MerchantTradeNo",  order.OrderNo);
 
         RestResponse response = await client.ExecuteAsync(request);
 
