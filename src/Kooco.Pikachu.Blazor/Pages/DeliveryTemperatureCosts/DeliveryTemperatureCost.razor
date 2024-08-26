@@ -1,4 +1,6 @@
 ﻿@page "/DeliveryTemperatureCost"
+
+@using Kooco.Pikachu.DeliveryTemperatureCosts
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.Application.Dtos
 @using Kooco.Pikachu.GroupBuys
@@ -11,54 +13,123 @@
 @using Blazorise.Components;
 @using Blazorise.LoadingIndicator;
 @using Kooco.Pikachu.Items.Dtos;
+
 @inject IStringLocalizer<PikachuResource> L
 @inject NavigationManager NavigationManager
-<h3>@L["DeliveryTemperatureCost"]</h3>
+
+@* <h3>@L["DeliveryTemperatureCost"]</h3> *@
+
+<style>
+    .costLabel {
+        width: 4.333333% !important;
+    }
+
+    .costNumeric {
+        width: 23.666667% !important;
+    }
+
+    .normalLabel {
+        width: 5.333333% !important;
+    }
+</style>
+
+<h3>@L["Delivery By Store Settings"]</h3>
+
 <Card>
     <CardBody>
-        @foreach(var item in temperatureCosts)
+        @foreach(DeliveryTemperatureCostDto item in temperatureCosts)
         {
-        <div class=" col-12 row mb-3 ">
-            <div class="col-1 text-lg-end ">
-                <label>@L["Temperature"]</label>
-            </div>
-            <div class="col-5">
+            <Div Class="row mb-3 ">
+                <Div Class="col-1 text-lg-start normalLabel">
+                    <Label>@(item.Temperature.ToString())</Label>
+                </Div>
+                <Div hidden>
+                    <Select Disabled 
+                            TValue="ItemStorageTemperature"
+                            Class="form-select form-select-sm"
+                            SelectedValue="@item.Temperature"
+                            hidden>
+                        <SelectItem Value="-1"></SelectItem>
+                        @foreach (object enumValue in Enum.GetValues(typeof(ItemStorageTemperature)))
+                        {
+                            <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                        }
+                    </Select>
+                </Div>
+                <Div Class="col-4">
+                    <Select TValue="LogisticProviders?"
+                            Class="form-select form-select-sm"
+                            @onchange=@((e) => OnLogisticProviderChange(e, item.Temperature))>
+                        <SelectItem Value="100">Select Logistics</SelectItem>
+                        @foreach (object enumValue in GetLogisticsProviders(item.Temperature))
+                        {
+                            <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                        }
+                    </Select>
+                </Div>
+                @if (temperatureCosts[0].Id == item.Id)
+                {
+                    <Div Class="col-4">
+                        <Select TValue="DeliveryMethod"
+                                Class="form-select form-select-sm">
+                            <SelectItem Value="100"></SelectItem>
+                            @foreach (object enumValue in GetDeliveryMethods(ItemStorageTemperature.Normal, LogisticProviderNormal))
+                            {
+                                <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                            }
+                        </Select>
+                    </Div>
+                }
+                @if (temperatureCosts[1].Id == item.Id)
+                {
+                    <Div Class="col-4">
+                        <Select TValue="DeliveryMethod"
+                                Class="form-select form-select-sm">
+                            <SelectItem Value="100"></SelectItem>
+                            @foreach (object enumValue in GetDeliveryMethods(ItemStorageTemperature.Freeze, LogisticProviderFreeze))
+                            {
+                                <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                            }
+                        </Select>
+                    </Div>
+                }
+                @if (temperatureCosts[2].Id == item.Id)
+                {
+                    <Div Class="col-4">
+                        <Select TValue="DeliveryMethod"
+                                Class="form-select form-select-sm">
+                            <SelectItem Value="100"></SelectItem>
+                            @foreach (object enumValue in GetDeliveryMethods(ItemStorageTemperature.Frozen, LogisticProviderFrozen))
+                            {
+                                <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                            }
+                        </Select>
+                    </Div>
+                }
+                <Div Class="col-1 text-lg-end costLabel">
+                    <Label>@L["Cost"]</Label>
+                </Div>
+                <Div Class="col-2 costNumeric">
+                    <NumericEdit TValue="decimal" 
+                                 @bind-Value="item.Cost" 
+                                 Class="form-control-sm" />
+                </Div>
+            </Div>
 
-                <Select Disabled TValue="ItemStorageTemperature"
-                    Class="form-select form-select-sm"
-                            SelectedValue="@item.Temperature">
-                    <SelectItem Value="-1"></SelectItem>
-                    @foreach (var enumValue in Enum.GetValues(typeof(ItemStorageTemperature)))
-                    {
-                        <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
-                    }
-                </Select>
-               
-            </div>
-            <div class="col-1 text-lg-end ">
-                <label>@L["Cost"]</label>
-            </div>
-            <div class="col-5">
-
-                <NumericEdit TValue="decimal" @bind-Value="item.Cost" class="form-control-sm" />
-
-             
-
-            </div>
-
-        </div>
+            Index++;
         }
-        <div class="row">
-            <div class="col-12 text-lg-end">
-
-                <Button Type="@ButtonType.Button" class="btn btn-primary" Clicked="UpdateCostAsync">
+        <Div Class="row">
+            <Div Class="col-12 text-lg-end">
+                <Button Type="@ButtonType.Button" 
+                        Class="btn btn-primary" 
+                        Clicked="UpdateCostAsync">
                     <i class="fa fa-check"></i>
                     @L["Save"]
                 </Button>
-            </div>
-        </div>
-        </CardBody>
-        </Card>
+            </Div>
+        </Div>
+    </CardBody>
+</Card>
 
 @code {
 
