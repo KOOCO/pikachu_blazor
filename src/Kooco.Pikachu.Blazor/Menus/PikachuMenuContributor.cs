@@ -207,9 +207,9 @@ public class PikachuMenuContributor : IMenuContributor
             requiredPermissionName: PikachuPermissions.LogisticsSetting)
             )
                 .AddItem(new ApplicationMenuItem(
-            name: "Delivery Temperature Cost",
+            name: "Delivery By Store Settings",
             icon: "fas fa-temperature-low",
-            displayName: l["Menu:DeliveryTemperatureCost"],
+            displayName: l["Menu:DeliveryByStoreSettings"],
             url: "/DeliveryTemperatureCost",
             requiredPermissionName: PikachuPermissions.DeliveryTemperatureCost)
             );

@@ -20,6 +20,7 @@
     "Menu:ElectronicInvoiceSetting": "Electronic Invoice Settings",
     "Menu:CashFlowReconciliationStatement": "Cash Flow Reconciliation Statement",
     "Menu:LogisticsProviderSettings": "Logistics Provider Settings",
+    "Menu:DeliveryByStoreSettings": "Delivery By Store Settings",
     "Menu:DeliveryTemperatureCost": "Delivery Temperature Cost",
     "Menu:SystemManagement": "System Management",
     "Menu:TenantBillingReport": "Tenant Billing Report",
