@@ -6,35 +6,46 @@ using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 
-namespace Kooco.Pikachu.DeliveryTemperatureCosts
+namespace Kooco.Pikachu.DeliveryTemperatureCosts;
+
+[RemoteService(IsEnabled = false)]
+public class DeliveryTemperatureCostAppService : ApplicationService, IDeliveryTemperatureCostAppService
 {
-    [RemoteService(IsEnabled = false)]
-    public class DeliveryTemperatureCostAppService : ApplicationService, IDeliveryTemperatureCostAppService
+    #region Inject
+    private readonly IRepository<DeliveryTemperatureCost, Guid> _repository;
+    #endregion
+
+    #region Constructor
+    public DeliveryTemperatureCostAppService(IRepository<DeliveryTemperatureCost, Guid> repository)
     {
-        private readonly IRepository<DeliveryTemperatureCost, Guid> _repository;
-        public DeliveryTemperatureCostAppService(IRepository<DeliveryTemperatureCost, Guid> repository)
+        _repository = repository;
+    }
+    #endregion
+
+    #region Methods
+    public async Task<List<DeliveryTemperatureCostDto>> GetListAsync()
+    {
+        List<DeliveryTemperatureCost> list = await _repository.GetListAsync();
+
+        return ObjectMapper.Map<List<DeliveryTemperatureCost>, List<DeliveryTemperatureCostDto>>(list);
+    }
+
+    public async Task UpdateCostAsync(List<UpdateDeliveryTemperatureCostDto> Costs)
+    {
+        foreach (UpdateDeliveryTemperatureCostDto item in Costs)
         {
-            _repository = repository;
+            Guid id = item.Id;
 
-        }
-        public async Task<List<DeliveryTemperatureCostDto>> GetListAsync()
-        {
-            var list = await _repository.GetListAsync();
+            DeliveryTemperatureCost deliveryTemperature = await _repository.GetAsync(id);
 
-            return ObjectMapper.Map<List<DeliveryTemperatureCost>, List<DeliveryTemperatureCostDto>>(list);
-        }
+            deliveryTemperature.LogisticProvider = item.LogisticProvider;
 
-        public async Task UpdateCostAsync(List<UpdateDeliveryTemperatureCostDto> Costs)
-        {
-            foreach (var item in Costs)
-            {
-                var id = item.Id;
-                var deliveryTemperature = await _repository.GetAsync(id);
-                deliveryTemperature.Cost = item.Cost;
-                await _repository.UpdateAsync(deliveryTemperature);
+            deliveryTemperature.DeliveryMethod = item.DeliveryMethod;
 
+            deliveryTemperature.Cost = item.Cost;
 
-            }
+            await _repository.UpdateAsync(deliveryTemperature);
         }
     }
+    #endregion
 }

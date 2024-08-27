@@ -91,6 +91,32 @@ public partial class DeliveryTemperatureCost
         };
     }
 
+    public void OnDeliveryMethodChange(ChangeEventArgs e, DeliveryTemperatureCostDto entity)
+    {
+        if (e.Value is "100") entity.DeliveryMethod = null;
+
+        else entity.DeliveryMethod = Enum.Parse<DeliveryMethod>(e.Value.ToString());
+
+        StateHasChanged();
+    }
+
+    public void OnLogisticProviderChange(ChangeEventArgs e, DeliveryTemperatureCostDto entity)
+    {
+        List<ItemStorageTemperature> temperatureCosts = [ItemStorageTemperature.Normal, ItemStorageTemperature.Freeze, ItemStorageTemperature.Frozen];
+
+        foreach (ItemStorageTemperature temperature in temperatureCosts)
+        {
+            if (entity.Temperature == temperature)
+            {
+                if (e.Value is "100") entity.LogisticProvider = null;
+
+                else entity.LogisticProvider = Enum.Parse<LogisticProviders>(e.Value.ToString());
+            }
+        }
+
+        StateHasChanged();
+    }
+
     public void OnLogisticProviderChange(ChangeEventArgs e, ItemStorageTemperature temperature)
     {
         if (temperature is ItemStorageTemperature.Normal)
