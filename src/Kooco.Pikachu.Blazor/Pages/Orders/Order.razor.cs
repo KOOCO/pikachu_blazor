@@ -6,6 +6,7 @@ using Kooco.Pikachu.ElectronicInvoiceSettings;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Localization;
+using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
 using Microsoft.AspNetCore.Components;
@@ -15,6 +16,7 @@ using Microsoft.JSInterop;
 using Newtonsoft.Json;
 using NUglify.Html;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -29,10 +31,12 @@ public partial class Order
 {
     #region Inject
     private bool IsAllSelected { get; set; } = false;
+    private List<OrderDeliveryDto> OrderDeliveries { get; set; }
     private List<OrderDto> Orders { get; set; } = new();
     private int TotalCount { get; set; }
     private OrderDto SelectedOrder { get; set; }
     private OrderItemDto SelectedOrderItem { get; set; }
+    private OrderDeliveryDto SelectedOrderDelivery { get; set; }
     private Guid? GroupBuyFilter { get; set; }
     private int PageIndex { get; set; } = 1;
     private int PageSize { get; set; } = 10;
@@ -74,6 +78,15 @@ public partial class Order
         SelectedTabName = e;
 
         TotalCount = 0;
+
+        StateHasChanged();
+    }
+
+    public async Task OnOrderDeliveryDataReadAsync(DataGridReadDataEventArgs<OrderDeliveryDto> e, Guid orderId)
+    {
+        OrderDeliveries = [];
+
+        OrderDeliveries = await _OrderDeliveryAppService.GetListByOrderAsync(orderId);
 
         StateHasChanged();
     }

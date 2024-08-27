@@ -2,6 +2,7 @@
 @using Kooco.Pikachu.ElectronicInvoiceSettings
 @using Kooco.Pikachu.EnumValues;
 @using Kooco.Pikachu.Localization;
+@using Kooco.Pikachu.OrderDeliveries
 @using Kooco.Pikachu.OrderItems;
 @using Kooco.Pikachu.GroupBuys;
 @using Kooco.Pikachu.Orders;
@@ -15,6 +16,7 @@
 @inject IUiMessageService _uiMessageService;
 @inject IElectronicInvoiceAppService _electronicInvoiceAppService;
 @inject IOrderAppService _orderAppService;
+@inject IOrderDeliveryAppService _OrderDeliveryAppService;
 @inject IGroupBuyAppService _groupBuyAppService;
 @using Microsoft.JSInterop;
 @inject IJSRuntime JSRuntime;
@@ -671,10 +673,11 @@
                                 </DataGridColumn>
                             </DataGridColumns>
                             <DetailRowTemplate Context="order">
-                                <DataGrid TItem="OrderItemDto"
-                                          @bind-SelectedRow="@SelectedOrderItem"
-                                          Data="@order.OrderItems"
-                                          DetailRowTrigger="@((e) => e.Item is not null && e.Item.Id == SelectedOrderItem?.Id && e.Item.DeliveryTemperature == SelectedOrderItem?.DeliveryTemperature)"
+                                <DataGrid TItem="OrderDeliveryDto"
+                                          @bind-SelectedRow="@SelectedOrderDelivery"
+                                          ReadData="@(async (e) => await OnOrderDeliveryDataReadAsync(e, order.Id))"
+                                          Data="OrderDeliveries"
+                                          DetailRowTrigger="@((e) => e.Item.Items?.Count > 0 && e.Item.Id == SelectedOrderDelivery?.Id)"
                                           Responsive
                                           Bordered>
                                     <DataGridColumns>
@@ -694,15 +697,19 @@
                                             <DisplayTemplate>@L[order.ShippingStatus.ToString()]</DisplayTemplate>
                                         </DataGridColumn>
                                         <DataGridColumn Caption="@L["Delivery Temperature"]">
-                                            <DisplayTemplate>@L[context.DeliveryTemperature.ToString()]</DisplayTemplate>
+                                            <DisplayTemplate>
+                                                @if (context.Items.Count > 0)
+                                                {
+                                                    @L[context.Items[0]?.DeliveryTemperature.ToString()]
+                                                }
+                                            </DisplayTemplate>
                                         </DataGridColumn>
                                     </DataGridColumns>
-                                    <DetailRowTemplate Context="item">
+                                    <DetailRowTemplate Context="orderDelivery">
                                         <table class="table table-responsive table-striped text-center">
                                             <thead>
                                                 <tr>
                                                     <th></th>
-
                                                     <th>@L["Temperature"]</th>
                                                     <th>@L["DeliveryCost"]</th>
                                                     <th>@L["Quantity"]</th>
@@ -711,55 +718,97 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr>
-                                                    <td class="text-start" style="width: 50%;">
-                                                        @if (item.ItemType == ItemType.Item)
-                                                        {
-                                                            var firstImage = item.Item?.Images?.FirstOrDefault()?.ImageUrl;
-                                                            @if (!string.IsNullOrEmpty(firstImage))
-                                                            {
-                                                                <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
-                                                            }
-                                                            @item.Item?.ItemName
-                                                        }
+                                                @if (orderDelivery.Items is not null && orderDelivery.Items.Count is not 0)
+                                                {
+                                                    @foreach (OrderItemDto item in orderDelivery.Items)
+                                                    {
+                                                        <tr>
+                                                            <td class="text-start" style="width: 50%;">
+                                                                @if (item.ItemType is ItemType.Item)
+                                                                {
+                                                                    string? firstImage = item.Item?.Images?.FirstOrDefault()?.ImageUrl;
 
-                                                        @if (item.ItemType == ItemType.SetItem)
-                                                        {
-                                                            var firstImage = item.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
-                                                            @if (!string.IsNullOrEmpty(firstImage))
-                                                            {
-                                                                <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
-                                                            }
-                                                            @item.SetItem?.SetItemName
-                                                        }
+                                                                    @if (!string.IsNullOrEmpty(firstImage))
+                                                                    {
+                                                                        <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                                    }
+                                                                    @item.Item?.ItemName
+                                                                }
 
-                                                        @if (item.ItemType == ItemType.Freebie)
-                                                        {
-                                                            var firstImage = item.Freebie?.Images?.FirstOrDefault()?.ImageUrl;
-                                                            @if (!string.IsNullOrEmpty(firstImage))
-                                                            {
-                                                                <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
-                                                            }
-                                                            @item.Freebie?.ItemName
-                                                        }
+                                                                @if (item.ItemType is ItemType.SetItem)
+                                                                {
+                                                                    string? firstImage = item.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
 
-                                                    </td>
-                                                    <td>
-                                                        @L[item.DeliveryTemperature.ToString()]
-                                                    </td>
-                                                    <td>
-                                                        @item.DeliveryTemperatureCost
-                                                    </td>
-                                                    <td>
-                                                        @item.Quantity
-                                                    </td>
-                                                    <td>
-                                                        <span>$@item.ItemPrice.ToString("N2")</span>
-                                                    </td>
-                                                    <td>
-                                                        $@item.TotalAmount.ToString("N2")
-                                                    </td>
-                                                </tr>
+                                                                    <Div>
+                                                                        @if (!string.IsNullOrEmpty(firstImage))
+                                                                        {
+                                                                            <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                                        }
+                                                                        @item.SetItem?.SetItemName
+                                                                    </Div>
+                                                                }
+
+                                                                @if (item.ItemType is ItemType.Freebie)
+                                                                {
+                                                                    string? firstImage = item.Freebie?.Images?.FirstOrDefault()?.ImageUrl;
+
+                                                                    @if (!string.IsNullOrEmpty(firstImage))
+                                                                    {
+                                                                        <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                                    }
+                                                                    @item.Freebie?.ItemName
+                                                                }
+
+                                                            </td>
+                                                            <td>
+                                                                @L[item.DeliveryTemperature.ToString()]
+                                                            </td>
+                                                            <td>
+                                                                @item.DeliveryTemperatureCost
+                                                            </td>
+                                                            <td>
+                                                                @item.Quantity
+                                                            </td>
+                                                            <td>
+                                                                <span>$@item.ItemPrice.ToString("N2")</span>
+                                                            </td>
+                                                            <td>
+                                                                $@item.TotalAmount.ToString("N2")
+                                                            </td>
+                                                        </tr>
+
+                                                        if (item.ItemType is ItemType.SetItem &&
+                                                            item.SetItem is not null &&
+                                                            item.SetItem.SetItemDetails is { Count: > 0 })
+                                                        {
+                                                            @foreach (Items.Dtos.SetItemDetailsDto setItem in item.SetItem.SetItemDetails)
+                                                            {
+                                                                <tr>
+                                                                    <td colspan="6">
+                                                                        <Table>
+                                                                            <tr>
+                                                                                <td></td>
+                                                                                <td class="text-start" style="width: 100%;">
+                                                                                    @{
+                                                                                        string? firstImage = setItem.Item?.Images?.FirstOrDefault()?.ImageUrl;
+                                                                                    }
+
+                                                                                    <Div>
+                                                                                        @if (!string.IsNullOrEmpty(firstImage))
+                                                                                        {
+                                                                                            <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                                                        }
+                                                                                        @setItem.Item?.ItemName
+                                                                                    </Div>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </Table>
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        }
+                                                    }
+                                                }
                                             </tbody>
                                         </table>
                                     </DetailRowTemplate>
@@ -852,10 +901,11 @@
                                 </DataGridColumn>
                             </DataGridColumns>
                             <DetailRowTemplate Context="order">
-                                <DataGrid TItem="OrderItemDto"
-                                          @bind-SelectedRow="@SelectedOrderItem"
-                                          Data="@order.OrderItems"
-                                          DetailRowTrigger="@((e) => e.Item is not null && e.Item.Id == SelectedOrderItem?.Id && e.Item.DeliveryTemperature == SelectedOrderItem?.DeliveryTemperature)"
+                                <DataGrid TItem="OrderDeliveryDto"
+                                          @bind-SelectedRow="@SelectedOrderDelivery"
+                                          ReadData="@(async (e) => await OnOrderDeliveryDataReadAsync(e, order.Id))"
+                                          Data="@OrderDeliveries"
+                                          DetailRowTrigger="@((e) => e.Item.Items?.Count > 0 && e.Item.Id == SelectedOrderItem?.Id)"
                                           Responsive
                                           Bordered>
                                     <DataGridColumns>
@@ -875,15 +925,19 @@
                                             <DisplayTemplate>@L[order.ShippingStatus.ToString()]</DisplayTemplate>
                                         </DataGridColumn>
                                         <DataGridColumn Caption="@L["Delivery Temperature"]">
-                                            <DisplayTemplate>@L[context.DeliveryTemperature.ToString()]</DisplayTemplate>
+                                            <DisplayTemplate>
+                                                @if (context.Items.Count > 0)
+                                                {
+                                                    @L[context.Items[0]?.DeliveryTemperature.ToString()]
+                                                }
+                                            </DisplayTemplate>
                                         </DataGridColumn>
                                     </DataGridColumns>
-                                    <DetailRowTemplate Context="item">
+                                    <DetailRowTemplate Context="orderDelivery">
                                         <table class="table table-responsive table-striped text-center">
                                             <thead>
                                                 <tr>
                                                     <th></th>
-
                                                     <th>@L["Temperature"]</th>
                                                     <th>@L["DeliveryCost"]</th>
                                                     <th>@L["Quantity"]</th>
@@ -892,55 +946,97 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr>
-                                                    <td class="text-start" style="width: 50%;">
-                                                        @if (item.ItemType == ItemType.Item)
-                                                        {
-                                                            var firstImage = item.Item?.Images?.FirstOrDefault()?.ImageUrl;
-                                                            @if (!string.IsNullOrEmpty(firstImage))
-                                                            {
-                                                                <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
-                                                            }
-                                                            @item.Item?.ItemName
-                                                        }
+                                                @if (orderDelivery.Items is not null && orderDelivery.Items.Count is not 0)
+                                                {
+                                                    @foreach (OrderItemDto item in orderDelivery.Items)
+                                                    {
+                                                        <tr>
+                                                            <td class="text-start" style="width: 50%;">
+                                                                @if (item.ItemType is ItemType.Item)
+                                                                {
+                                                                    string? firstImage = item.Item?.Images?.FirstOrDefault()?.ImageUrl;
 
-                                                        @if (item.ItemType == ItemType.SetItem)
-                                                        {
-                                                            var firstImage = item.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
-                                                            @if (!string.IsNullOrEmpty(firstImage))
-                                                            {
-                                                                <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
-                                                            }
-                                                            @item.SetItem?.SetItemName
-                                                        }
+                                                                    @if (!string.IsNullOrEmpty(firstImage))
+                                                                    {
+                                                                        <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                                    }
+                                                                    @item.Item?.ItemName
+                                                                }
 
-                                                        @if (item.ItemType == ItemType.Freebie)
-                                                        {
-                                                            var firstImage = item.Freebie?.Images?.FirstOrDefault()?.ImageUrl;
-                                                            @if (!string.IsNullOrEmpty(firstImage))
-                                                            {
-                                                                <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
-                                                            }
-                                                            @item.Freebie?.ItemName
-                                                        }
+                                                                @if (item.ItemType is ItemType.SetItem)
+                                                                {
+                                                                    string? firstImage = item.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
 
-                                                    </td>
-                                                    <td>
-                                                        @L[item.DeliveryTemperature.ToString()]
-                                                    </td>
-                                                    <td>
-                                                        @item.DeliveryTemperatureCost
-                                                    </td>
-                                                    <td>
-                                                        @item.Quantity
-                                                    </td>
-                                                    <td>
-                                                        <span>$@item.ItemPrice.ToString("N2")</span>
-                                                    </td>
-                                                    <td>
-                                                        $@item.TotalAmount.ToString("N2")
-                                                    </td>
-                                                </tr>
+                                                                    <Div>
+                                                                        @if (!string.IsNullOrEmpty(firstImage))
+                                                                        {
+                                                                            <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                                        }
+                                                                        @item.SetItem?.SetItemName
+                                                                    </Div>
+                                                                }
+
+                                                                @if (item.ItemType is ItemType.Freebie)
+                                                                {
+                                                                    string? firstImage = item.Freebie?.Images?.FirstOrDefault()?.ImageUrl;
+
+                                                                    @if (!string.IsNullOrEmpty(firstImage))
+                                                                    {
+                                                                        <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                                    }
+                                                                    @item.Freebie?.ItemName
+                                                                }
+
+                                                            </td>
+                                                            <td>
+                                                                @L[item.DeliveryTemperature.ToString()]
+                                                            </td>
+                                                            <td>
+                                                                @item.DeliveryTemperatureCost
+                                                            </td>
+                                                            <td>
+                                                                @item.Quantity
+                                                            </td>
+                                                            <td>
+                                                                <span>$@item.ItemPrice.ToString("N2")</span>
+                                                            </td>
+                                                            <td>
+                                                                $@item.TotalAmount.ToString("N2")
+                                                            </td>
+                                                        </tr>
+
+                                                        if (item.ItemType is ItemType.SetItem &&
+                                                        item.SetItem is not null &&
+                                                        item.SetItem.SetItemDetails is { Count: > 0 })
+                                                        {
+                                                            @foreach (Items.Dtos.SetItemDetailsDto setItem in item.SetItem.SetItemDetails)
+                                                            {
+                                                                <tr>
+                                                                    <td colspan="6">
+                                                                        <Table>
+                                                                            <tr>
+                                                                                <td></td>
+                                                                                <td class="text-start" style="width: 100%;">
+                                                                                    @{
+                                                                                        string? firstImage = setItem.Item?.Images?.FirstOrDefault()?.ImageUrl;
+                                                                                    }
+
+                                                                                    <Div>
+                                                                                        @if (!string.IsNullOrEmpty(firstImage))
+                                                                                        {
+                                                                                            <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                                                        }
+                                                                                        @setItem.Item?.ItemName
+                                                                                    </Div>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </Table>
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        }
+                                                    }
+                                                }
                                             </tbody>
                                         </table>
                                     </DetailRowTemplate>
@@ -1030,10 +1126,11 @@
                                 </DataGridColumn>
                             </DataGridColumns>
                             <DetailRowTemplate Context="order">
-                                <DataGrid TItem="OrderItemDto"
-                                          @bind-SelectedRow="@SelectedOrderItem"
-                                          Data="@order.OrderItems"
-                                          DetailRowTrigger="@((e) => e.Item is not null && e.Item.Id == SelectedOrderItem?.Id && e.Item.DeliveryTemperature == SelectedOrderItem?.DeliveryTemperature)"
+                                <DataGrid TItem="OrderDeliveryDto"
+                                          @bind-SelectedRow="@SelectedOrderDelivery"
+                                          ReadData="@(async (e) => await OnOrderDeliveryDataReadAsync(e, order.Id))"
+                                          Data="@OrderDeliveries"
+                                          DetailRowTrigger="@((e) => e.Item.Items?.Count > 0 && e.Item.Id == SelectedOrderItem?.Id)"
                                           Responsive
                                           Bordered>
                                     <DataGridColumns>
@@ -1053,10 +1150,15 @@
                                             <DisplayTemplate>@L[order.ShippingStatus.ToString()]</DisplayTemplate>
                                         </DataGridColumn>
                                         <DataGridColumn Caption="@L["Delivery Temperature"]">
-                                            <DisplayTemplate>@L[context.DeliveryTemperature.ToString()]</DisplayTemplate>
+                                            <DisplayTemplate>
+                                                @if (context.Items.Count > 0)
+                                                {
+                                                    @L[context.Items[0]?.DeliveryTemperature.ToString()]
+                                                }
+                                            </DisplayTemplate>
                                         </DataGridColumn>
                                     </DataGridColumns>
-                                    <DetailRowTemplate Context="item">
+                                    <DetailRowTemplate Context="orderDelivery">
                                         <table class="table table-responsive table-striped text-center">
                                             <thead>
                                                 <tr>
@@ -1070,55 +1172,97 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr>
-                                                    <td class="text-start" style="width: 50%;">
-                                                        @if (item.ItemType == ItemType.Item)
-                                                        {
-                                                            var firstImage = item.Item?.Images?.FirstOrDefault()?.ImageUrl;
-                                                            @if (!string.IsNullOrEmpty(firstImage))
-                                                            {
-                                                                <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
-                                                            }
-                                                            @item.Item?.ItemName
-                                                        }
+                                                @if (orderDelivery.Items is not null && orderDelivery.Items.Count is not 0)
+                                                {
+                                                    @foreach (OrderItemDto item in orderDelivery.Items)
+                                                    {
+                                                        <tr>
+                                                            <td class="text-start" style="width: 50%;">
+                                                                @if (item.ItemType is ItemType.Item)
+                                                                {
+                                                                    string? firstImage = item.Item?.Images?.FirstOrDefault()?.ImageUrl;
 
-                                                        @if (item.ItemType == ItemType.SetItem)
-                                                        {
-                                                            var firstImage = item.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
-                                                            @if (!string.IsNullOrEmpty(firstImage))
-                                                            {
-                                                                <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
-                                                            }
-                                                            @item.SetItem?.SetItemName
-                                                        }
+                                                                    @if (!string.IsNullOrEmpty(firstImage))
+                                                                    {
+                                                                        <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                                    }
+                                                                    @item.Item?.ItemName
+                                                                }
 
-                                                        @if (item.ItemType == ItemType.Freebie)
-                                                        {
-                                                            var firstImage = item.Freebie?.Images?.FirstOrDefault()?.ImageUrl;
-                                                            @if (!string.IsNullOrEmpty(firstImage))
-                                                            {
-                                                                <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
-                                                            }
-                                                            @item.Freebie?.ItemName
-                                                        }
+                                                                @if (item.ItemType is ItemType.SetItem)
+                                                                {
+                                                                    string? firstImage = item.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
 
-                                                    </td>
-                                                    <td>
-                                                        @L[item.DeliveryTemperature.ToString()]
-                                                    </td>
-                                                    <td>
-                                                        @item.DeliveryTemperatureCost
-                                                    </td>
-                                                    <td>
-                                                        @item.Quantity
-                                                    </td>
-                                                    <td>
-                                                        <span>$@item.ItemPrice.ToString("N2")</span>
-                                                    </td>
-                                                    <td>
-                                                        $@item.TotalAmount.ToString("N2")
-                                                    </td>
-                                                </tr>
+                                                                    <Div>
+                                                                        @if (!string.IsNullOrEmpty(firstImage))
+                                                                        {
+                                                                            <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                                        }
+                                                                        @item.SetItem?.SetItemName
+                                                                    </Div>
+                                                                }
+
+                                                                @if (item.ItemType is ItemType.Freebie)
+                                                                {
+                                                                    string? firstImage = item.Freebie?.Images?.FirstOrDefault()?.ImageUrl;
+
+                                                                    @if (!string.IsNullOrEmpty(firstImage))
+                                                                    {
+                                                                        <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                                    }
+                                                                    @item.Freebie?.ItemName
+                                                                }
+
+                                                            </td>
+                                                            <td>
+                                                                @L[item.DeliveryTemperature.ToString()]
+                                                            </td>
+                                                            <td>
+                                                                @item.DeliveryTemperatureCost
+                                                            </td>
+                                                            <td>
+                                                                @item.Quantity
+                                                            </td>
+                                                            <td>
+                                                                <span>$@item.ItemPrice.ToString("N2")</span>
+                                                            </td>
+                                                            <td>
+                                                                $@item.TotalAmount.ToString("N2")
+                                                            </td>
+                                                        </tr>
+
+                                                        if (item.ItemType is ItemType.SetItem &&
+                                                        item.SetItem is not null &&
+                                                        item.SetItem.SetItemDetails is { Count: > 0 })
+                                                        {
+                                                            @foreach (Items.Dtos.SetItemDetailsDto setItem in item.SetItem.SetItemDetails)
+                                                            {
+                                                                <tr>
+                                                                    <td colspan="6">
+                                                                        <Table>
+                                                                            <tr>
+                                                                                <td></td>
+                                                                                <td class="text-start" style="width: 100%;">
+                                                                                    @{
+                                                                                        string? firstImage = setItem.Item?.Images?.FirstOrDefault()?.ImageUrl;
+                                                                                    }
+
+                                                                                    <Div>
+                                                                                        @if (!string.IsNullOrEmpty(firstImage))
+                                                                                        {
+                                                                                            <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                                                        }
+                                                                                        @setItem.Item?.ItemName
+                                                                                    </Div>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </Table>
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        }
+                                                    }
+                                                }
                                             </tbody>
                                         </table>
                                     </DetailRowTemplate>
@@ -1208,10 +1352,11 @@
                                 </DataGridColumn>
                             </DataGridColumns>
                             <DetailRowTemplate Context="order">
-                                <DataGrid TItem="OrderItemDto"
-                                          @bind-SelectedRow="@SelectedOrderItem"
-                                          Data="@order.OrderItems"
-                                          DetailRowTrigger="@((e) => e.Item is not null && e.Item.Id == SelectedOrderItem?.Id && e.Item.DeliveryTemperature == SelectedOrderItem?.DeliveryTemperature)"
+                                <DataGrid TItem="OrderDeliveryDto"
+                                          @bind-SelectedRow="@SelectedOrderDelivery"
+                                          ReadData="@(async (e) => await OnOrderDeliveryDataReadAsync(e, order.Id))"
+                                          Data="@OrderDeliveries"
+                                          DetailRowTrigger="@((e) => e.Item.Items?.Count > 0 && e.Item.Id == SelectedOrderItem?.Id)"
                                           Responsive
                                           Bordered>
                                     <DataGridColumns>
@@ -1231,15 +1376,19 @@
                                             <DisplayTemplate>@L[order.ShippingStatus.ToString()]</DisplayTemplate>
                                         </DataGridColumn>
                                         <DataGridColumn Caption="@L["Delivery Temperature"]">
-                                            <DisplayTemplate>@L[context.DeliveryTemperature.ToString()]</DisplayTemplate>
+                                            <DisplayTemplate>
+                                                @if (context.Items.Count > 0)
+                                                {
+                                                    @L[context.Items[0]?.DeliveryTemperature.ToString()]
+                                                }
+                                            </DisplayTemplate>
                                         </DataGridColumn>
                                     </DataGridColumns>
-                                    <DetailRowTemplate Context="item">
+                                    <DetailRowTemplate Context="orderDelivery">
                                         <table class="table table-responsive table-striped text-center">
                                             <thead>
                                                 <tr>
                                                     <th></th>
-
                                                     <th>@L["Temperature"]</th>
                                                     <th>@L["DeliveryCost"]</th>
                                                     <th>@L["Quantity"]</th>
@@ -1248,55 +1397,97 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr>
-                                                    <td class="text-start" style="width: 50%;">
-                                                        @if (item.ItemType == ItemType.Item)
-                                                        {
-                                                            var firstImage = item.Item?.Images?.FirstOrDefault()?.ImageUrl;
-                                                            @if (!string.IsNullOrEmpty(firstImage))
-                                                            {
-                                                                <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
-                                                            }
-                                                            @item.Item?.ItemName
-                                                        }
+                                                @if (orderDelivery.Items is not null && orderDelivery.Items.Count is not 0)
+                                                {
+                                                    @foreach (OrderItemDto item in orderDelivery.Items)
+                                                    {
+                                                        <tr>
+                                                            <td class="text-start" style="width: 50%;">
+                                                                @if (item.ItemType is ItemType.Item)
+                                                                {
+                                                                    string? firstImage = item.Item?.Images?.FirstOrDefault()?.ImageUrl;
 
-                                                        @if (item.ItemType == ItemType.SetItem)
-                                                        {
-                                                            var firstImage = item.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
-                                                            @if (!string.IsNullOrEmpty(firstImage))
-                                                            {
-                                                                <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
-                                                            }
-                                                            @item.SetItem?.SetItemName
-                                                        }
+                                                                    @if (!string.IsNullOrEmpty(firstImage))
+                                                                    {
+                                                                        <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                                    }
+                                                                    @item.Item?.ItemName
+                                                                }
 
-                                                        @if (item.ItemType == ItemType.Freebie)
-                                                        {
-                                                            var firstImage = item.Freebie?.Images?.FirstOrDefault()?.ImageUrl;
-                                                            @if (!string.IsNullOrEmpty(firstImage))
-                                                            {
-                                                                <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
-                                                            }
-                                                            @item.Freebie?.ItemName
-                                                        }
+                                                                @if (item.ItemType is ItemType.SetItem)
+                                                                {
+                                                                    string? firstImage = item.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
 
-                                                    </td>
-                                                    <td>
-                                                        @L[item.DeliveryTemperature.ToString()]
-                                                    </td>
-                                                    <td>
-                                                        @item.DeliveryTemperatureCost
-                                                    </td>
-                                                    <td>
-                                                        @item.Quantity
-                                                    </td>
-                                                    <td>
-                                                        <span>$@item.ItemPrice.ToString("N2")</span>
-                                                    </td>
-                                                    <td>
-                                                        $@item.TotalAmount.ToString("N2")
-                                                    </td>
-                                                </tr>
+                                                                    <Div>
+                                                                        @if (!string.IsNullOrEmpty(firstImage))
+                                                                        {
+                                                                            <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                                        }
+                                                                        @item.SetItem?.SetItemName
+                                                                    </Div>
+                                                                }
+
+                                                                @if (item.ItemType is ItemType.Freebie)
+                                                                {
+                                                                    string? firstImage = item.Freebie?.Images?.FirstOrDefault()?.ImageUrl;
+
+                                                                    @if (!string.IsNullOrEmpty(firstImage))
+                                                                    {
+                                                                        <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                                    }
+                                                                    @item.Freebie?.ItemName
+                                                                }
+
+                                                            </td>
+                                                            <td>
+                                                                @L[item.DeliveryTemperature.ToString()]
+                                                            </td>
+                                                            <td>
+                                                                @item.DeliveryTemperatureCost
+                                                            </td>
+                                                            <td>
+                                                                @item.Quantity
+                                                            </td>
+                                                            <td>
+                                                                <span>$@item.ItemPrice.ToString("N2")</span>
+                                                            </td>
+                                                            <td>
+                                                                $@item.TotalAmount.ToString("N2")
+                                                            </td>
+                                                        </tr>
+
+                                                        if (item.ItemType is ItemType.SetItem &&
+                                                            item.SetItem is not null &&
+                                                            item.SetItem.SetItemDetails is { Count: > 0 })
+                                                        {
+                                                            @foreach (Items.Dtos.SetItemDetailsDto setItem in item.SetItem.SetItemDetails)
+                                                            {
+                                                                <tr>
+                                                                    <td colspan="6">
+                                                                        <Table>
+                                                                            <tr>
+                                                                                <td></td>
+                                                                                <td class="text-start" style="width: 100%;">
+                                                                                    @{
+                                                                                        string? firstImage = setItem.Item?.Images?.FirstOrDefault()?.ImageUrl;
+                                                                                    }
+
+                                                                                    <Div>
+                                                                                        @if (!string.IsNullOrEmpty(firstImage))
+                                                                                        {
+                                                                                            <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                                                        }
+                                                                                        @setItem.Item?.ItemName
+                                                                                    </Div>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </Table>
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        }
+                                                    }
+                                                }
                                             </tbody>
                                         </table>
                                     </DetailRowTemplate>
@@ -1718,10 +1909,11 @@
                                 </DataGridColumn>
                             </DataGridColumns>
                             <DetailRowTemplate Context="order">
-                                <DataGrid TItem="OrderItemDto"
-                                          @bind-SelectedRow="@SelectedOrderItem"
-                                          Data="@order.OrderItems"
-                                          DetailRowTrigger="@((e) => e.Item is not null && e.Item.Id == SelectedOrderItem?.Id && e.Item.DeliveryTemperature == SelectedOrderItem?.DeliveryTemperature)"
+                                <DataGrid TItem="OrderDeliveryDto"
+                                          @bind-SelectedRow="@SelectedOrderDelivery"
+                                          ReadData="@(async (e) => await OnOrderDeliveryDataReadAsync(e, order.Id))"
+                                          Data="@OrderDeliveries"
+                                          DetailRowTrigger="@((e) => e.Item.Items?.Count > 0 && e.Item.Id == SelectedOrderItem?.Id)"
                                           Responsive
                                           Bordered>
                                     <DataGridColumns>
@@ -1741,15 +1933,19 @@
                                             <DisplayTemplate>@L[order.ShippingStatus.ToString()]</DisplayTemplate>
                                         </DataGridColumn>
                                         <DataGridColumn Caption="@L["Delivery Temperature"]">
-                                            <DisplayTemplate>@L[context.DeliveryTemperature.ToString()]</DisplayTemplate>
+                                            <DisplayTemplate>
+                                                @if (context.Items.Count > 0)
+                                                {
+                                                    @L[context.Items[0]?.DeliveryTemperature.ToString()]
+                                                }
+                                            </DisplayTemplate>
                                         </DataGridColumn>
                                     </DataGridColumns>
-                                    <DetailRowTemplate Context="item">
+                                    <DetailRowTemplate Context="orderDelivery">
                                         <table class="table table-responsive table-striped text-center">
                                             <thead>
                                                 <tr>
                                                     <th></th>
-
                                                     <th>@L["Temperature"]</th>
                                                     <th>@L["DeliveryCost"]</th>
                                                     <th>@L["Quantity"]</th>
@@ -1758,55 +1954,97 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr>
-                                                    <td class="text-start" style="width: 50%;">
-                                                        @if (item.ItemType == ItemType.Item)
-                                                        {
-                                                            var firstImage = item.Item?.Images?.FirstOrDefault()?.ImageUrl;
-                                                            @if (!string.IsNullOrEmpty(firstImage))
-                                                            {
-                                                                <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
-                                                            }
-                                                            @item.Item?.ItemName
-                                                        }
+                                                @if (orderDelivery.Items is not null && orderDelivery.Items.Count is not 0)
+                                                {
+                                                    @foreach (OrderItemDto item in orderDelivery.Items)
+                                                    {
+                                                        <tr>
+                                                            <td class="text-start" style="width: 50%;">
+                                                                @if (item.ItemType is ItemType.Item)
+                                                                {
+                                                                    string? firstImage = item.Item?.Images?.FirstOrDefault()?.ImageUrl;
 
-                                                        @if (item.ItemType == ItemType.SetItem)
-                                                        {
-                                                            var firstImage = item.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
-                                                            @if (!string.IsNullOrEmpty(firstImage))
-                                                            {
-                                                                <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
-                                                            }
-                                                            @item.SetItem?.SetItemName
-                                                        }
+                                                                    @if (!string.IsNullOrEmpty(firstImage))
+                                                                    {
+                                                                        <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                                    }
+                                                                    @item.Item?.ItemName
+                                                                }
 
-                                                        @if (item.ItemType == ItemType.Freebie)
-                                                        {
-                                                            var firstImage = item.Freebie?.Images?.FirstOrDefault()?.ImageUrl;
-                                                            @if (!string.IsNullOrEmpty(firstImage))
-                                                            {
-                                                                <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
-                                                            }
-                                                            @item.Freebie?.ItemName
-                                                        }
+                                                                @if (item.ItemType is ItemType.SetItem)
+                                                                {
+                                                                    string? firstImage = item.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
 
-                                                    </td>
-                                                    <td>
-                                                        @L[item.DeliveryTemperature.ToString()]
-                                                    </td>
-                                                    <td>
-                                                        @item.DeliveryTemperatureCost
-                                                    </td>
-                                                    <td>
-                                                        @item.Quantity
-                                                    </td>
-                                                    <td>
-                                                        <span>$@item.ItemPrice.ToString("N2")</span>
-                                                    </td>
-                                                    <td>
-                                                        $@item.TotalAmount.ToString("N2")
-                                                    </td>
-                                                </tr>
+                                                                    <Div>
+                                                                        @if (!string.IsNullOrEmpty(firstImage))
+                                                                        {
+                                                                            <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                                        }
+                                                                        @item.SetItem?.SetItemName
+                                                                    </Div>
+                                                                }
+
+                                                                @if (item.ItemType is ItemType.Freebie)
+                                                                {
+                                                                    string? firstImage = item.Freebie?.Images?.FirstOrDefault()?.ImageUrl;
+
+                                                                    @if (!string.IsNullOrEmpty(firstImage))
+                                                                    {
+                                                                        <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                                    }
+                                                                    @item.Freebie?.ItemName
+                                                                }
+
+                                                            </td>
+                                                            <td>
+                                                                @L[item.DeliveryTemperature.ToString()]
+                                                            </td>
+                                                            <td>
+                                                                @item.DeliveryTemperatureCost
+                                                            </td>
+                                                            <td>
+                                                                @item.Quantity
+                                                            </td>
+                                                            <td>
+                                                                <span>$@item.ItemPrice.ToString("N2")</span>
+                                                            </td>
+                                                            <td>
+                                                                $@item.TotalAmount.ToString("N2")
+                                                            </td>
+                                                        </tr>
+
+                                                        if (item.ItemType is ItemType.SetItem &&
+                                                        item.SetItem is not null &&
+                                                        item.SetItem.SetItemDetails is { Count: > 0 })
+                                                        {
+                                                            @foreach (Items.Dtos.SetItemDetailsDto setItem in item.SetItem.SetItemDetails)
+                                                            {
+                                                                <tr>
+                                                                    <td colspan="6">
+                                                                        <Table>
+                                                                            <tr>
+                                                                                <td></td>
+                                                                                <td class="text-start" style="width: 100%;">
+                                                                                    @{
+                                                                                        string? firstImage = setItem.Item?.Images?.FirstOrDefault()?.ImageUrl;
+                                                                                    }
+
+                                                                                    <Div>
+                                                                                        @if (!string.IsNullOrEmpty(firstImage))
+                                                                                        {
+                                                                                            <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                                                        }
+                                                                                        @setItem.Item?.ItemName
+                                                                                    </Div>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </Table>
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        }
+                                                    }
+                                                }
                                             </tbody>
                                         </table>
                                     </DetailRowTemplate>
