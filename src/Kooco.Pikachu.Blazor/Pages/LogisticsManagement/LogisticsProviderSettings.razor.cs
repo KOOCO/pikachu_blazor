@@ -26,6 +26,7 @@ public partial class LogisticsProviderSettings
     BNormalCreateUpdateDto BNormal = new();
     BNormalCreateUpdateDto BFreeze = new();
     BNormalCreateUpdateDto BFrozen = new();
+    TCatLogisticsCreateUpdateDto TCatLogistics = new();
     LoadingIndicator Loading { get; set; }
     #endregion
 
