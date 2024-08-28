@@ -15,6 +15,12 @@ namespace Kooco.Pikachu.EnumValues
         BFrozen,
         FamilyMartC2C,
         SevenToElevenC2C,
-
+        TCat,
+        TCatNormal,
+        TCatFreeze,
+        TCatFrozen,
+        TCat711Normal,
+        TCat711Freeze,
+        TCat711Frozen
     }
 }

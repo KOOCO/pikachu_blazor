@@ -30,6 +30,7 @@ namespace Kooco.Pikachu.LogisticsProviders
         public MainlandCity City { get; set; }
         public decimal Weight { get; set; }
         public bool Payment { get; set; }
+        public TCatPaymentMethod? TCatPaymentMethod { get; set; }
         public SizeEnum Size { get; set; }
         public int OuterIslandFreight { get; set; }
         //public int FreeShippingThreshold { get; set; }
@@ -66,5 +67,13 @@ namespace Kooco.Pikachu.LogisticsProviders
         }
 
         public LogisticProviders LogisticProvider { get; set; }
+
+        public string? CustomerId { get; set; }
+        public string? CustomerToken { get; set; }
+        public TCatShippingLabelForm? TCatShippingLabelForm { get; set; }
+        public TCatPickingListForm? TCatPickingListForm { get; set; }
+        public TCatShippingLabelForm711? TCatShippingLabelForm711 { get; set; }
+        public bool DeclaredValue { get; set; }
+        public ReverseLogisticShippingFee? ReverseLogisticShippingFee { get; set; }
     }
 }

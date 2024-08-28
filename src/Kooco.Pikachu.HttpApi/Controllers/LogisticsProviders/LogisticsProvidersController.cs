@@ -85,4 +85,46 @@ public class LogisticsProvidersController(
     {
         return _logisticsProvidersAppService.UpdateGreenWorldC2CAsync(input);
     }
+
+    [HttpPut("t-cat")]
+    public Task UpdateTCatAsync(TCatLogisticsCreateUpdateDto entity)
+    {
+        return _logisticsProvidersAppService.UpdateTCatAsync(entity);
+    }
+
+    [HttpPut("t-cat-normal")]
+    public Task UpdateTCatNormalAsync(TCatNormalCreateUpdateDto input)
+    {
+        return _logisticsProvidersAppService.UpdateTCatNormalAsync(input);
+    }
+
+    [HttpPut("t-cat-freeze")]
+    public Task UpdateTCatFreezeAsync(TCatFreezeCreateUpdateDto input)
+    {
+        return _logisticsProvidersAppService.UpdateTCatFreezeAsync(input);
+    }
+
+    [HttpPut("t-cat-frozen")]
+    public Task UpdateTCatFrozenAsync(TCatFrozenCreateUpdateDto input)
+    {
+        return _logisticsProvidersAppService.UpdateTCatFrozenAsync(input);
+    }
+
+    [HttpPut("t-cat-711-normal")]
+    public Task UpdateTCat711NormalAsync(TCat711NormalCreateUpdate input)
+    {
+        return _logisticsProvidersAppService.UpdateTCat711NormalAsync(input);
+    }
+
+    [HttpPut("t-cat-711-freeze")]
+    public Task UpdateTCat711FreezeAsync(TCat711FreezeCreateUpdateDto input)
+    {
+        return _logisticsProvidersAppService.UpdateTCat711FreezeAsync(input);
+    }
+
+    [HttpPut("t-cat-711-frozen")]
+    public Task UpdateTCat711FrozenAsync(TCat711FrozenCreateUpdateDto input)
+    {
+        return _logisticsProvidersAppService.UpdateTCat711FrozenAsync(input);
+    }
 }

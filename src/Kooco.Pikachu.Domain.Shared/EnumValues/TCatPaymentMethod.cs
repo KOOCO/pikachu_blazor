@@ -4,8 +4,8 @@ using System.Text;
 
 namespace Kooco.Pikachu.EnumValues;
 
-public enum ReverseLogisticShippingFee
+public enum TCatPaymentMethod
 {
-    BorneByStore = 1,
-    BorneByCustomer
+    CashOnly = 1,
+    CardAndMobilePaymentsAccepted,
 }

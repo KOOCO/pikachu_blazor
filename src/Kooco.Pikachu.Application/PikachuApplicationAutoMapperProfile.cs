@@ -110,6 +110,14 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<LogisticsProviderSettingsDto, PostOfficeCreateUpdateDto>();
         CreateMap<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>();
         CreateMap<LogisticsProviderSettingsDto, BNormalCreateUpdateDto>();
+        CreateMap<LogisticsProviderSettingsDto, TCatLogisticsCreateUpdateDto>();
+        CreateMap<LogisticsProviderSettings, TCatLogisticsCreateUpdateDto>();
+        CreateMap<LogisticsProviderSettingsDto, TCatNormalCreateUpdateDto>();
+        CreateMap<LogisticsProviderSettingsDto, TCatFreezeCreateUpdateDto>();
+        CreateMap<LogisticsProviderSettingsDto, TCatFrozenCreateUpdateDto>();
+        CreateMap<LogisticsProviderSettingsDto, TCat711NormalCreateUpdate>();
+        CreateMap<LogisticsProviderSettingsDto, TCat711FreezeCreateUpdateDto>();
+        CreateMap<LogisticsProviderSettingsDto, TCat711FrozenCreateUpdateDto>();
 
         CreateMap<DeliveryTemperatureCost, DeliveryTemperatureCostDto>();
         CreateMap<DeliveryTemperatureCostDto, UpdateDeliveryTemperatureCostDto>();

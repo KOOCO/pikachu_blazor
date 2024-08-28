@@ -7,6 +7,13 @@ namespace Kooco.Pikachu.LogisticsProviders
     public interface ILogisticsProvidersAppService : IApplicationService
     {
         Task<List<LogisticsProviderSettingsDto>> GetAllAsync();
+        Task UpdateTCat711FrozenAsync(TCat711FrozenCreateUpdateDto input);
+        Task UpdateTCat711FreezeAsync(TCat711FreezeCreateUpdateDto input);
+        Task UpdateTCat711NormalAsync(TCat711NormalCreateUpdate input);
+        Task UpdateTCatFrozenAsync(TCatFrozenCreateUpdateDto input);
+        Task UpdateTCatFreezeAsync(TCatFreezeCreateUpdateDto input);
+        Task UpdateTCatNormalAsync(TCatNormalCreateUpdateDto input);
+        Task UpdateTCatAsync(TCatLogisticsCreateUpdateDto entity);
         Task UpdateGreenWorldAsync(GreenWorldLogisticsCreateUpdateDto input);
         Task UpdateHomeDeliveryAsync(HomeDeliveryCreateUpdateDto input);
         Task UpdatePostOfficeAsync(PostOfficeCreateUpdateDto input);

@@ -27,6 +27,12 @@ public partial class LogisticsProviderSettings
     BNormalCreateUpdateDto BFreeze = new();
     BNormalCreateUpdateDto BFrozen = new();
     TCatLogisticsCreateUpdateDto TCatLogistics = new();
+    TCatNormalCreateUpdateDto TCatNormal = new();
+    TCatFreezeCreateUpdateDto TCatFreeze = new();
+    TCatFrozenCreateUpdateDto TCatFrozen = new();
+    TCat711NormalCreateUpdate TCat711Normal = new();
+    TCat711FreezeCreateUpdateDto TCat711Freeze = new();
+    TCat711FrozenCreateUpdateDto TCat711Frozen = new();
     LoadingIndicator Loading { get; set; }
     #endregion
 
@@ -50,6 +56,8 @@ public partial class LogisticsProviderSettings
 
     protected override async Task OnInitializedAsync()
     {
+        Enum.GetValues(typeof(SizeEnum));
+
         try
         {
             await GetAllAsync();
@@ -68,7 +76,7 @@ public partial class LogisticsProviderSettings
 
         LogisticsProviderSettingsDto? greenWorld = providers.Where(p => p.LogisticProvider is LogisticProviders.GreenWorldLogistics).FirstOrDefault();
         
-        if(greenWorld is not null) GreenWorld = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorld);
+        if (greenWorld is not null) GreenWorld = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorld);
 
         LogisticsProviderSettingsDto? greenWorldC2C = providers.Where(p => p.LogisticProvider is LogisticProviders.GreenWorldLogisticsC2C).FirstOrDefault();
         
@@ -113,6 +121,34 @@ public partial class LogisticsProviderSettings
         LogisticsProviderSettingsDto? bFrozen = providers.Where(p => p.LogisticProvider is LogisticProviders.BFrozen).FirstOrDefault();
 
         if (bFrozen is not null) BFrozen = ObjectMapper.Map<LogisticsProviderSettingsDto, BNormalCreateUpdateDto>(bFrozen);
+
+        LogisticsProviderSettingsDto? tCat = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCat);
+
+        if (tCat is not null) TCatLogistics = ObjectMapper.Map<LogisticsProviderSettingsDto, TCatLogisticsCreateUpdateDto>(tCat);
+
+        LogisticsProviderSettingsDto? tCatNormal = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCatNormal);
+
+        if (tCatNormal is not null) TCatNormal = ObjectMapper.Map<LogisticsProviderSettingsDto, TCatNormalCreateUpdateDto>(tCatNormal);
+
+        LogisticsProviderSettingsDto? tCatFreeze = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCatFreeze);
+
+        if (tCatFreeze is not null) TCatFreeze = ObjectMapper.Map<LogisticsProviderSettingsDto, TCatFreezeCreateUpdateDto>(tCatFreeze);
+
+        LogisticsProviderSettingsDto? tCatFrozen = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCatFrozen);
+
+        if (tCatFrozen is not null) TCatFrozen = ObjectMapper.Map<LogisticsProviderSettingsDto, TCatFrozenCreateUpdateDto>(tCatFrozen);
+
+        LogisticsProviderSettingsDto? tCat711Normal = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCat711Normal);
+
+        if (tCat711Normal is not null) TCat711Normal = ObjectMapper.Map<LogisticsProviderSettingsDto, TCat711NormalCreateUpdate>(tCat711Normal);
+
+        LogisticsProviderSettingsDto? tCat711Freeze = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCat711Freeze);
+
+        if (tCat711Freeze is not null) TCat711Freeze = ObjectMapper.Map<LogisticsProviderSettingsDto, TCat711FreezeCreateUpdateDto>(tCat711Freeze);
+
+        LogisticsProviderSettingsDto? tCat711Frozen = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCat711Frozen);
+
+        if (tCat711Frozen is not null) TCat711Frozen = ObjectMapper.Map<LogisticsProviderSettingsDto, TCat711FrozenCreateUpdateDto>(tCat711Frozen);
     }
 
     async Task UpdateGreenWorldLogisticsAsync()
@@ -266,6 +302,81 @@ public partial class LogisticsProviderSettings
             await Loading.Hide();
         }
     }
+    async Task UpdateTCat711NormalAsync()
+    {
+        try
+        {
+            bool confirm = await _uiMessageService.Confirm(L["AreYouSureToUpdate7-11Normal?"]);
+
+            if (!confirm) return;
+            
+            await Loading.Show();
+            
+            await _logisticProvidersAppService.UpdateTCat711NormalAsync(TCat711Normal);
+            
+            await GetAllAsync();
+        }
+        catch (Exception ex)
+        {
+            await _uiMessageService.Error(ex.GetType().ToString());
+            
+            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+        }
+        finally
+        {
+            await Loading.Hide();
+        }
+    }
+    async Task UpdateTCat711FreezeAsync()
+    {
+        try
+        {
+            bool confirm = await _uiMessageService.Confirm(L["AreYouSureToUpdate7-11Freeze?"]);
+
+            if (!confirm) return;
+            
+            await Loading.Show();
+            
+            await _logisticProvidersAppService.UpdateTCat711FreezeAsync(TCat711Freeze);
+            
+            await GetAllAsync();
+        }
+        catch (Exception ex)
+        {
+            await _uiMessageService.Error(ex.GetType().ToString());
+            
+            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+        }
+        finally
+        {
+            await Loading.Hide();
+        }
+    }
+    async Task UpdateTCat711FrozenAsync()
+    {
+        try
+        {
+            bool confirm = await _uiMessageService.Confirm(L["AreYouSureToUpdate7-11Frozen?"]);
+
+            if (!confirm) return;
+            
+            await Loading.Show();
+            
+            await _logisticProvidersAppService.UpdateTCat711FrozenAsync(TCat711Frozen);
+            
+            await GetAllAsync();
+        }
+        catch (Exception ex)
+        {
+            await _uiMessageService.Error(ex.GetType().ToString());
+            
+            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+        }
+        finally
+        {
+            await Loading.Hide();
+        }
+    }
     async Task UpdateFamilyMartAsync()
     {
         try
@@ -339,6 +450,135 @@ public partial class LogisticsProviderSettings
             await Loading.Hide();
         }
     }
+    async Task UpdateTCatNormalAsync()
+    {
+        try
+        {
+            bool confirm = await _uiMessageService.Confirm(L["AreYouSureToUpdateTCatNormal?"]);
+            
+            if (!confirm) return;
+            
+            await Loading.Show();
+
+            if (TCatNormal.Size is 0)
+            {
+                await _uiMessageService.Error("Size Cannot be empty.");
+
+                await Loading.Hide();
+
+                return;
+            }
+
+            if (TCatNormal.Payment && TCatNormal.TCatPaymentMethod is 0)
+            {
+                await _uiMessageService.Error("Payment Method Cannot be empty.");
+
+                await Loading.Hide();
+
+                return;
+            }
+
+            await _logisticProvidersAppService.UpdateTCatNormalAsync(TCatNormal);
+            
+            await GetAllAsync();
+        }
+        catch (Exception ex)
+        {
+            await _uiMessageService.Error(ex.GetType().ToString());
+
+            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+        }
+        finally
+        {
+            await Loading.Hide();
+        }
+    }
+    public async Task UpdateTCatFreezeAsync()
+    {
+        try
+        {
+            bool confirm = await _uiMessageService.Confirm(L["AreYouSureToUpdateTCatFreeze?"]);
+            
+            if (!confirm) return;
+            
+            await Loading.Show();
+
+            if (TCatFreeze.Size is 0)
+            {
+                await _uiMessageService.Error("Size Cannot be empty.");
+
+                await Loading.Hide();
+
+                return;
+            }
+
+            if (TCatFreeze.Payment && TCatFreeze.TCatPaymentMethod is 0)
+            {
+                await _uiMessageService.Error("Payment Method Cannot be empty.");
+
+                await Loading.Hide();
+
+                return;
+            }
+
+            await _logisticProvidersAppService.UpdateTCatFreezeAsync(TCatFreeze);
+            
+            await GetAllAsync();
+        }
+        catch (Exception ex)
+        {
+            await _uiMessageService.Error(ex.GetType().ToString());
+
+            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+        }
+        finally
+        {
+            await Loading.Hide();
+        }
+    }
+    public async Task UpdateTCatFrozenAsync()
+    {
+        try
+        {
+            bool confirm = await _uiMessageService.Confirm(L["AreYouSureToUpdateTCatFrozen?"]);
+            
+            if (!confirm) return;
+            
+            await Loading.Show();
+
+            if (TCatFrozen.Size is 0)
+            {
+                await _uiMessageService.Error("Size Cannot be empty.");
+
+                await Loading.Hide();
+
+                return;
+            }
+
+            if (TCatFrozen.Payment && TCatFrozen.TCatPaymentMethod is 0)
+            {
+                await _uiMessageService.Error("Payment Method Cannot be empty.");
+
+                await Loading.Hide();
+
+                return;
+            }
+
+            await _logisticProvidersAppService.UpdateTCatFrozenAsync(TCatFrozen);
+            
+            await GetAllAsync();
+        }
+        catch (Exception ex)
+        {
+            await _uiMessageService.Error(ex.GetType().ToString());
+
+            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+        }
+        finally
+        {
+            await Loading.Hide();
+        }
+    }
     async Task UpdateBFreezeAsync()
     {
         try
@@ -401,6 +641,33 @@ public partial class LogisticsProviderSettings
             await Loading.Hide();
         }
     }
+
+    public async Task UpdateTCatAsync()
+    {
+        try
+        {
+            bool confirm = await _uiMessageService.Confirm(L["Are you sure you want to update TCat?"]);
+
+            if (!confirm) return;
+
+            await Loading.Show();
+
+            await _logisticProvidersAppService.UpdateTCatAsync(TCatLogistics);
+
+            await GetAllAsync();
+        }
+        catch (Exception ex)
+        {
+            await _uiMessageService.Error(ex.GetType().ToString());
+
+            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+        }
+        finally
+        {
+            await Loading.Hide();
+        }
+    }
+    
     void OnMainIslandCheckedChange(string island, ChangeEventArgs e)
     {
         var value = (bool)(e?.Value ?? false);

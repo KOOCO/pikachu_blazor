@@ -49,5 +49,15 @@ namespace Kooco.Pikachu.LogisticsProviders
         public bool Payment { get; set; }
         public SizeEnum Size { get; set; }
         public int OuterIslandFreight { get; set; }
+
+        public string? CustomerId { get; set; }
+        public string? CustomerToken { get; set; }
+        public TCatShippingLabelForm? TCatShippingLabelForm { get; set; }
+        public TCatPickingListForm? TCatPickingListForm { get; set; }
+        public TCatShippingLabelForm711? TCatShippingLabelForm711 { get; set; }
+        public bool DeclaredValue { get; set; }
+        public ReverseLogisticShippingFee? ReverseLogisticShippingFee { get; set; }
+
+        public TCatPaymentMethod? TCatPaymentMethod { get; set; }
     }
 }

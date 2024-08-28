@@ -17,17 +17,29 @@ public class TCatLogisticsCreateUpdateDto
     public string CustomerToken { get; set; }
 
     [Required(ErrorMessage = "This Field is Required")]
+    [RegularExpression(
+        @"^[\u4e00-\u9fa5a-zA-Z0-9\s`~!@#$%^&*()_+\-=\[\]{};:'"",.?/]*$", 
+        ErrorMessage = "Sender name can only include Chinese characters, English letters, numbers, and specified symbols.")
+    ]
     public string SenderName { get; set; }
 
     [Required(ErrorMessage = "This Field is Required")]
+    [RegularExpression(@"^09\d*$", ErrorMessage = "Phone number must start with 09.")]
     public string SenderPhoneNumber { get; set; }
 
     [Required(ErrorMessage = "This Field is Required")]
     public string SenderAddress { get; set; }
 
-    public TCatShippingLabelForm ShippingLabelForm { get; set; }
-    public TCatPickingListForm PickingListForm { get; set; }
-    public TCatShippingLabelForm711 ShippingLabelForm711 { get; set; }
+    [Required(ErrorMessage = "This Field is Required")]
+    public TCatShippingLabelForm TCatShippingLabelForm { get; set; }
+
+    [Required(ErrorMessage = "This Field is Required")]
+    public TCatPickingListForm TCatPickingListForm { get; set; }
+
+    [Required(ErrorMessage = "This Field is Required")]
+    public TCatShippingLabelForm711 TCatShippingLabelForm711 { get; set; }
     public bool DeclaredValue { get; set; }
+
+    [Required(ErrorMessage = "This Field is Required")]
     public ReverseLogisticShippingFee ReverseLogisticShippingFee { get; set; }
 }
