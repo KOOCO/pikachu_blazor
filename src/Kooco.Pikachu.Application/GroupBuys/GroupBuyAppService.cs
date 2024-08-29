@@ -149,6 +149,9 @@ namespace Kooco.Pikachu.GroupBuys
 
                                 await _GroupBuyItemGroupsRepository.UpdateAsync(itemGroup);
 
+                                if (group.ItemDetails is { Count: > 0 })
+                                    await _GroupBuyItemGroupDetailsRepository.DeleteAsync(d => d.GroupBuyItemGroupId == itemGroup.Id);
+
                                 ProcessItemDetails(itemGroup, group.ItemDetails);
 
                                 foreach (GroupBuyItemGroupDetails itemGroupDetails in itemGroup.ItemGroupDetails)

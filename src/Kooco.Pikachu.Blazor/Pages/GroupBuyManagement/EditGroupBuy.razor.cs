@@ -1004,7 +1004,8 @@ public partial class EditGroupBuy
                     {
                         Id = item.Id,
                         SortOrder = item.SortOrder,
-                        GroupBuyModuleType = item.GroupBuyModuleType
+                        GroupBuyModuleType = item.GroupBuyModuleType,
+                        GroupBuyId = GroupBuy.Id
                     };
 
                     foreach (var itemDetail in item.Selected)
@@ -1017,7 +1018,8 @@ public partial class EditGroupBuy
                                 ItemId = itemDetail.ItemType == ItemType.Item && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
                                 SetItemId = itemDetail.ItemType == ItemType.SetItem && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
                                 ItemType = itemDetail.ItemType,
-                                DisplayText = itemGroup.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor ? itemDetail.Name : null
+                                DisplayText = itemGroup.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor ? itemDetail.Name : null,
+                                GroupBuyItemGroupId = itemGroup.Id!.Value
                             });
                         }
                     }
