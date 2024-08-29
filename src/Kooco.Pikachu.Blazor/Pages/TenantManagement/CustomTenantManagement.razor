@@ -1,6 +1,4 @@
-﻿
-
-@using Volo.Abp.DependencyInjection;
+﻿@using Volo.Abp.DependencyInjection;
 @using Microsoft.AspNetCore.Authorization
 @using Volo.Abp.FeatureManagement.Blazor.Components
 @using Microsoft.AspNetCore.Components.Forms
@@ -22,43 +20,43 @@
 
 
 @attribute [Authorize(TenantManagementPermissions.Tenants.Default)]
-  @attribute [ExposeServices(typeof(Volo.Abp.TenantManagement.Blazor.Pages.TenantManagement.TenantManagement),typeof(CustomTenantManagement))]
+  @attribute [ExposeServices(typeof(Volo.Abp.TenantManagement.Blazor.Pages.TenantManagement.TenantManagement), typeof(CustomTenantManagement))]
    @attribute [Dependency(ReplaceServices = true)]
 @inject IStringLocalizer<PikachuResource> Lo
 @inject IConfiguration _configuration
 @inject AbpBlazorMessageLocalizerHelper<AbpTenantManagementResource> LH
-@inherits  Volo.Abp.TenantManagement.Blazor.Pages.TenantManagement.TenantManagement
+@inherits Volo.Abp.TenantManagement.Blazor.Pages.TenantManagement.TenantManagement
 <Card>
     <CardHeader>
         @* ************************* PAGE HEADER ************************* *@
-        <Volo.Abp.AspNetCore.Components.Web.Theming.Layout.PageHeader Title="@L["Tenants"]"
-                    BreadcrumbItems="@BreadcrumbItems"
-                    Toolbar="@Toolbar">
+        <Volo.Abp.AspNetCore.Components.Web.Theming.Layout.PageHeader Title="@_L["Tenants"]"
+                                                                      BreadcrumbItems="@BreadcrumbItems"
+                                                                      Toolbar="@Toolbar">
         </Volo.Abp.AspNetCore.Components.Web.Theming.Layout.PageHeader>
     </CardHeader>
     <CardBody>
         @* ************************* DATA GRID ************************* *@
         <Kooco.Pikachu.Blazor.Pages.AbpExtensibleDataGrid.CustomAbpExtensibleDataGrid TItem="TenantDto"
-                               Data="@Entities"
-                               ReadData="@OnDataGridReadAsync"
-                               TotalItems="@TotalCount"
-                               ShowPager="true"
-                               PageSize="@PageSize"
-                               CurrentPage="@CurrentPage"
-                               Columns="@TenantManagementTableColumns"
-                               Responsive="true" />
+                                                                                      Data="@Entities"
+                                                                                      ReadData="@OnDataGridReadAsync"
+                                                                                      TotalItems="@TotalCount"
+                                                                                      ShowPager="true"
+                                                                                      PageSize="@PageSize"
+                                                                                      CurrentPage="@CurrentPage"
+                                                                                      Columns="@TenantManagementTableColumns"
+                                                                                      Responsive="true" />
     </CardBody>
 </Card>
 
 @* ************************* CREATE MODAL ************************* *@
-@if ( HasCreatePermission )
+@if (HasCreatePermission)
 {
     <Modal @ref="CreateModal" Closing="@ClosingCreateModal">
         <ModalContent Centered="true">
             <Form>
                 <ModalHeader>
                     <ModalTitle>@L["NewTenant"]</ModalTitle>
-                    <CloseButton Clicked="CloseCreateModalAsync"/>
+                    <CloseButton Clicked="CloseCreateModalAsync" />
                 </ModalHeader>
                 <ModalBody>
                     <Validations @ref="@CreateValidationsRef" Model="@NewEntity" ValidateOnLoad="false">
@@ -67,7 +65,7 @@
                                 <FieldLabel>@L["TenantName"] *</FieldLabel>
                                 <TextEdit @bind-Text="@NewEntity.Name" Autofocus="true">
                                     <Feedback>
-                                        <ValidationError/>
+                                        <ValidationError />
                                     </Feedback>
                                 </TextEdit>
                             </Field>
@@ -77,33 +75,33 @@
                                 <FieldLabel>@L["DisplayName:AdminEmailAddress"] *</FieldLabel>
                                 <TextEdit Role="@TextRole.Email" @bind-Text="@NewEntity.AdminEmailAddress">
                                     <Feedback>
-                                        <ValidationError/>
+                                        <ValidationError />
                                     </Feedback>
                                 </TextEdit>
                             </Field>
                         </Validation>
-                  
+
                         <Validation MessageLocalizer="@LH.Localize">
-						<Field>
-                             <FieldLabel>@L["DisplayName:AdminPassword"] *</FieldLabel>
-                             <Addons>
-                                <Addon AddonType="AddonType.Body">
-                                    <TextEdit Role="ShowPassword ? TextRole.Text : TextRole.Password" @bind-Text="@NewEntity.AdminPassword">
-                                    </TextEdit>
-                                </Addon>
-                                <Addon AddonType="AddonType.End">
-                                    <Button Color="Color.Secondary" Clicked="@(() => TogglePasswordVisibility())">
-                                        <Icon Name="ShowPassword ? IconName.Eye : IconName.EyeSlash" />
-                                    </Button>
-                                </Addon>
-                            </Addons>
-                            <ValidationError Style="display: block" />
-                         </Field>
-                        </Validation>
-                                
                             <Field>
-                                <FieldLabel>@L["UploadLogo"]</FieldLabel>
-                                <FilePicker @ref="FilePickerCustom"
+                                <FieldLabel>@L["DisplayName:AdminPassword"] *</FieldLabel>
+                                <Addons>
+                                    <Addon AddonType="AddonType.Body">
+                                        <TextEdit Role="ShowPassword ? TextRole.Text : TextRole.Password" @bind-Text="@NewEntity.AdminPassword">
+                                        </TextEdit>
+                                    </Addon>
+                                    <Addon AddonType="AddonType.End">
+                                        <Button Color="Color.Secondary" Clicked="@(() => TogglePasswordVisibility())">
+                                            <Icon Name="ShowPassword ? IconName.Eye : IconName.EyeSlash" />
+                                        </Button>
+                                    </Addon>
+                                </Addons>
+                                <ValidationError Style="display: block" />
+                            </Field>
+                        </Validation>
+
+                        <Field>
+                            <FieldLabel>@_L["UploadLogo"]</FieldLabel>
+                            <FilePicker @ref="FilePickerCustom"
                                         Multiple=false
                                         Changed="OnFileUploadAsync"
                                         ShowMode="FilePickerShowMode.List"
@@ -116,7 +114,7 @@
                                         </Div>
                                         <Div Class="ps-2">
                                             <Div>
-                                                 @if (context.File.Status == FileEntryStatus.Ready)
+                                                @if (context.File.Status == FileEntryStatus.Ready)
                                                 {
                                                     <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
                                                 }
@@ -143,23 +141,23 @@
                                     <Progress Value="@FilePickerCustom.GetProgressPercentage()" />
                                 </ButtonsTemplate>
                             </FilePicker>
-                            </Field>
-                              @if(LogoUrl != null)
-                {
-                    <div Class="col-12 row">
-                        <div class="col-12">
-                             
+                        </Field>
+                        @if (LogoUrl != null)
+                        {
+                            <div Class="col-12 row">
+                                <div class="col-12">
+
                                     <div class="image-container">
                                         <Image class="blur-image" Source="@LogoUrl" Text="Item Image" Fluid />
-                                      
+
                                     </div>
-                              
-                          
-                        </div>
-                    </div>
-                }
+
+
+                                </div>
+                            </div>
+                        }
                         <Field>
-                            <FieldLabel>@L["UploadBanner"]</FieldLabel>
+                            <FieldLabel>@_L["UploadBanner"]</FieldLabel>
                             <FilePicker @ref="BannerPickerCustom"
                                         Multiple=false
                                         Changed="OnBannerUploadAsync"
@@ -209,59 +207,60 @@
                                     <div class="image-container">
                                         <Image class="blur-image" Source="@BannerUrl" Text="Item Image" Fluid />
 
-                                     </div>
+                                    </div>
 
 
-                                 </div>
-                             </div>
+                                </div>
+                            </div>
                         }
 
 
-                    <Field>
-                        <FieldLabel>@_L["TenantAdministrator"]</FieldLabel>
-                        <SelectList TItem="IdentityUserDto"
-                                    TValue="Guid?"
-                                    Data="@UsersList"
-                                    TextField="@((item)=>item.Name)"
-                                    ValueField="@((item)=>item.Id)"
-                                    @bind-SelectedValue="@TenantOwnerId"
-                                    DefaultItemText="Select Tenant Administrator" />
-                    </Field>
-                    <Field>
-                        <FieldLabel>@_L["TenantContactPerson"]</FieldLabel>
+                        <Field>
+                            <FieldLabel>@_L["TenantAdministrator"]</FieldLabel>
+                            <SelectList TItem="IdentityUserDto"
+                                        TValue="Guid?"
+                                        Data="@UsersList"
+                                        TextField="@((item)=>item.Name)"
+                                        ValueField="@((item)=>item.Id)"
+                                        @bind-SelectedValue="@TenantOwnerId"
+                                        DefaultItemText=@_L["SelectTenantAdministrator"] />
+                        </Field>
+                        <Field>
+                            <FieldLabel>@_L["TenantContactPerson"]</FieldLabel>
                             <TextEdit @bind-Text="@TenantContactPerson"></TextEdit>
-                    </Field>
-                    <Field>
-                        <FieldLabel>@_L["TenantContactTitle"]</FieldLabel>
-                        <select class="form-select form-select" @onchange="OnTenantContactTitleChange">
-                            <option>Select Contact Title</option>
-                            @foreach (string title in TenantContactTitles) {
-                                <option value="@title">@_L[title]</option>
-                            }
-                        </select>
-                    </Field>
-                    <Field>
-                        <FieldLabel>@_L["TenantContactEmail"]</FieldLabel>
-                        <TextEdit @bind-Text="@TenantContactEmail"></TextEdit>
-                    </Field>
-                    <Field>
-                        <FieldLabel>@_L["ShareProfit%"]</FieldLabel>
-                        <NumericEdit @bind-Value="@ShareProfitPercentage" />
-                    </Field>
-                     <Field>
-                         <FieldLabel>@_L["ShortCode"]</FieldLabel>
-                               <Validation UsePattern>
-    <TextEdit Pattern="^[A-Za-z0-9]{8}$"  MaxLength="8" @bind-Text="@ShortCode">
-        <Feedback>
-            
-            <ValidationError>Pattern does not match!</ValidationError>
-        </Feedback>
-    </TextEdit>
-</Validation>
- </Field>
+                        </Field>
+                        <Field>
+                            <FieldLabel>@_L["TenantContactTitle"]</FieldLabel>
+                            <select class="form-select form-select" @onchange="OnTenantContactTitleChange">
+                                <option>@_L["SelectContactTitle"]</option>
+                                @foreach (string title in TenantContactTitles)
+                                {
+                                    <option value="@title">@_L[title]</option>
+                                }
+                            </select>
+                        </Field>
+                        <Field>
+                            <FieldLabel>@_L["TenantContactEmail"]</FieldLabel>
+                            <TextEdit @bind-Text="@TenantContactEmail"></TextEdit>
+                        </Field>
+                        <Field>
+                            <FieldLabel>@_L["ShareProfit%"]</FieldLabel>
+                            <NumericEdit @bind-Value="@ShareProfitPercentage" />
+                        </Field>
+                        <Field>
+                            <FieldLabel>@_L["ShortCode"]</FieldLabel>
+                            <Validation UsePattern>
+                                <TextEdit Pattern="^[A-Za-z0-9]{8}$" MaxLength="8" @bind-Text="@ShortCode">
+                                    <Feedback>
+
+                                        <ValidationError>Pattern does not match!</ValidationError>
+                                    </Feedback>
+                                </TextEdit>
+                            </Validation>
+                        </Field>
 
                         <Field>
-                            <FieldLabel>@L["Status"]</FieldLabel>
+                            <FieldLabel>@_L["Status"]</FieldLabel>
                             <Select TValue="TenantStatus" @bind-SelectedValue="@Status">
                                 @foreach (int bookTypeValue in Enum.GetValues(typeof(TenantStatus)))
                                 {
@@ -271,12 +270,12 @@
                                 }
                             </Select>
                         </Field>
-                      @*   <ExtensionProperties TEntityType="TenantCreateDto" TResourceType="AbpTenantManagementResource" Entity="@NewEntity" LH="@LH" ModalType="ExtensionPropertyModalType.CreateModal" /> *@
+                        @*   <ExtensionProperties TEntityType="TenantCreateDto" TResourceType="AbpTenantManagementResource" Entity="@NewEntity" LH="@LH" ModalType="ExtensionPropertyModalType.CreateModal" /> *@
                     </Validations>
                 </ModalBody>
                 <ModalFooter>
                     <Button Color="Color.Secondary" Clicked="CloseCreateModalAsync">@L["Cancel"]</Button>
-                    <SubmitButton Clicked="@CreateEntityAsync"/>
+                    <SubmitButton Clicked="@CreateEntityAsync" />
                 </ModalFooter>
             </Form>
         </ModalContent>
@@ -284,14 +283,14 @@
 }
 
 @* ************************* EDIT MODAL ************************* *@
-@if ( HasUpdatePermission )
+@if (HasUpdatePermission)
 {
     <Modal @ref="EditModal" Closing="@ClosingEditModal">
         <ModalContent Centered="true">
             <Form>
                 <ModalHeader>
                     <ModalTitle>@L["Edit"]</ModalTitle>
-                    <CloseButton Clicked="CloseEditModalAsync"/>
+                    <CloseButton Clicked="CloseEditModalAsync" />
                 </ModalHeader>
                 <ModalBody>
                     <Validations @ref="@EditValidationsRef" Model="@EditingEntity" ValidateOnLoad="false">
@@ -300,14 +299,14 @@
                                 <FieldLabel>@L["TenantName"] *</FieldLabel>
                                 <TextEdit @bind-Text="@EditingEntity.Name" Autofocus="true">
                                     <Feedback>
-                                        <ValidationError/>
+                                        <ValidationError />
                                     </Feedback>
                                 </TextEdit>
                             </Field>
                         </Validation>
                         <Field>
-                                <FieldLabel>@L["UploadLogo"]</FieldLabel>
-                                <FilePicker @ref="FilePickerCustom"
+                            <FieldLabel>@_L["UploadLogo"]</FieldLabel>
+                            <FilePicker @ref="FilePickerCustom"
                                         Multiple=false
                                         Changed="OnFileUploadAsync"
                                         ShowMode="FilePickerShowMode.List"
@@ -347,25 +346,25 @@
                                     <Progress Value="@FilePickerCustom.GetProgressPercentage()" />
                                 </ButtonsTemplate>
                             </FilePicker>
-                            </Field>
-                                                           @if(LogoUrl != null)
-                {
-                    <div Class="col-12 row">
-                       
-                        <div class="col-12">
-                          @*   <div class="image-list-container">
-                              *@
+                        </Field>
+                        @if (LogoUrl != null)
+                        {
+                            <div Class="col-12 row">
+
+                                <div class="col-12">
+                                    @*   <div class="image-list-container">
+                            *@
                                     <div class="image-container">
                                         <Image class="blur-image" Source="@LogoUrl" Text="Item Image" Fluid />
-                                      
+
                                     </div>
-                              
-                           @*  </div> *@
-                        </div>
-                    </div>
-                }
+
+                                    @*  </div> *@
+                                </div>
+                            </div>
+                        }
                         <Field>
-                            <FieldLabel>@L["UploadBanner"]</FieldLabel>
+                            <FieldLabel>@_L["UploadBanner"]</FieldLabel>
                             <FilePicker @ref="BannerPickerCustom"
                                         Multiple=false
                                         Changed="OnBannerUploadAsync"
@@ -415,31 +414,31 @@
                                     <div class="image-container">
                                         <Image class="blur-image" Source="@BannerUrl" Text="Item Image" Fluid />
 
-                                     </div>
+                                    </div>
 
 
-                                 </div>
-                             </div>
+                                </div>
+                            </div>
                         }
-                          <Field>
-                
-                            <FieldLabel>@_L["TenantAdministrator"]</FieldLabel>
-                                 <SelectList TItem="IdentityUserDto"
-                                             TValue="Guid?"
-                                             Data="@UsersList"
-                                             TextField="@((item)=>item.Name)"
-                                             ValueField="@((item)=>item.Id)"
-                                             @bind-SelectedValue="@TenantOwnerId"
-                                             DefaultItemText="Select Tenant Administrator" />
-                            </Field>
                         <Field>
-                            <FieldLabel>@L["TenantContactPerson"]</FieldLabel>
+
+                            <FieldLabel>@_L["TenantAdministrator"]</FieldLabel>
+                            <SelectList TItem="IdentityUserDto"
+                                        TValue="Guid?"
+                                        Data="@UsersList"
+                                        TextField="@((item)=>item.Name)"
+                                        ValueField="@((item)=>item.Id)"
+                                        @bind-SelectedValue="@TenantOwnerId"
+                                        DefaultItemText=@_L["SelectTenantAdministrator"] />
+                        </Field>
+                        <Field>
+                            <FieldLabel>@_L["TenantContactPerson"]</FieldLabel>
                             <TextEdit @bind-Text="@TenantContactPerson"></TextEdit>
                         </Field>
                         <Field>
                             <FieldLabel>@_L["TenantContactTitle"]</FieldLabel>
                             <select class="form-select form-select" @onchange="OnTenantContactTitleChange">
-                                <option>Select Contact Title</option>
+                                <option>@_L["SelectContactTitle"]</option>
                                 @foreach (string title in TenantContactTitles)
                                 {
                                     if (title == TenantContactTitle)
@@ -455,26 +454,26 @@
                             </select>
                         </Field>
                         <Field>
-                            <FieldLabel>@L["TenantContactEmail"]</FieldLabel>
+                            <FieldLabel>@_L["TenantContactEmail"]</FieldLabel>
                             <TextEdit @bind-Text="@TenantContactEmail"></TextEdit>
                         </Field>
-                    <Field>
-                        <FieldLabel>@L["ShareProfit%"]</FieldLabel>
-                        <NumericEdit @bind-Value="@ShareProfitPercentage" />
-                    </Field>
-                      <Field>
-                         <FieldLabel>@L["ShortCode"]</FieldLabel>
-                               <Validation UsePattern>
-    <TextEdit Pattern="^[A-Za-z0-9]{8}$"  MaxLength="8" @bind-Text="@ShortCode">
-        <Feedback>
-            
-            <ValidationError>Pattern does not match!</ValidationError>
-        </Feedback>
-    </TextEdit>
-</Validation>
- </Field>
                         <Field>
-                            <FieldLabel>@L["Status"]</FieldLabel>
+                            <FieldLabel>@_L["ShareProfit%"]</FieldLabel>
+                            <NumericEdit @bind-Value="@ShareProfitPercentage" />
+                        </Field>
+                        <Field>
+                            <FieldLabel>@_L["ShortCode"]</FieldLabel>
+                            <Validation UsePattern>
+                                <TextEdit Pattern="^[A-Za-z0-9]{8}$" MaxLength="8" @bind-Text="@ShortCode">
+                                    <Feedback>
+
+                                        <ValidationError>Pattern does not match!</ValidationError>
+                                    </Feedback>
+                                </TextEdit>
+                            </Validation>
+                        </Field>
+                        <Field>
+                            <FieldLabel>@_L["Status"]</FieldLabel>
                             <Select TValue="TenantStatus" @bind-SelectedValue="@Status">
                                 @foreach (int bookTypeValue in Enum.GetValues(typeof(TenantStatus)))
                                 {
@@ -485,11 +484,11 @@
                             </Select>
                         </Field>
                     </Validations>
-                 @*    <ExtensionProperties TEntityType="TenantUpdateDto" TResourceType="AbpTenantManagementResource" Entity="@EditingEntity" LH="@LH" ModalType="ExtensionPropertyModalType.EditModal" /> *@
+                    @*    <ExtensionProperties TEntityType="TenantUpdateDto" TResourceType="AbpTenantManagementResource" Entity="@EditingEntity" LH="@LH" ModalType="ExtensionPropertyModalType.EditModal" /> *@
                 </ModalBody>
                 <ModalFooter>
                     <Button Color="Color.Secondary" Clicked="CloseEditModalAsync">@L["Cancel"]</Button>
-                    <SubmitButton Clicked="@UpdateEntityAsync"/>
+                    <SubmitButton Clicked="@UpdateEntityAsync" />
                 </ModalFooter>
             </Form>
         </ModalContent>
@@ -498,5 +497,5 @@
 
 @if (HasManageFeaturesPermission)
 {
-    <FeatureManagementModal @ref="FeatureManagementModal"/>
+    <FeatureManagementModal @ref="FeatureManagementModal" />
 }

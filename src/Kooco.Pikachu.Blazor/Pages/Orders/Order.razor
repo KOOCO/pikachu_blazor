@@ -46,7 +46,7 @@
                     Size="Size.Small"
                     id="shippingMethodSelectElem"
                     SelectedValueChanged="OnShippingMethodSelectChangeAsync">
-                <SelectItem Value="@string.Empty"> Select Shipping Method </SelectItem>
+                <SelectItem Value="@string.Empty"> @L["SelectShippingMethod"] </SelectItem>
                 @foreach(string value in Enum.GetNames(typeof(DeliveryMethod)))
                 {
                     <SelectItem Value="@value">@L[value]</SelectItem>

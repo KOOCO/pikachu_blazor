@@ -268,6 +268,8 @@ public class PikachuMenuContributor : IMenuContributor
 
             ApplicationMenuItem tenantManagementMenu = administration.GetMenuItem(TenantManagementMenuNames.GroupName);
 
+            tenantManagementMenu.Items[0].DisplayName = l["Tenants"];
+
             tenantManagementMenu?.AddItem(
                 new ApplicationMenuItem(
                     name: "多商戶管理-商戶賬單報表",

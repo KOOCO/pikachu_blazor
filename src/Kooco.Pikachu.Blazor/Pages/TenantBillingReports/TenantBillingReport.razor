@@ -52,28 +52,28 @@
                 </DataGridColumn>
                 <DataGridColumn TItem="GroupBuyReportDto"
                                 Field="@nameof(GroupBuyReportDto.TenantName)"
-                                Caption="@L["Tenant Name"]"
+                                Caption="@L["TenantName"]"
                                 TextAlignment="TextAlignment.Center">
                 </DataGridColumn>
                 <DataGridColumn TItem="GroupBuyReportDto"
                                 Field="@nameof(GroupBuyReportDto.TotalOrder)"
-                                Caption="@L["Total Order"]"
+                                Caption="@L["TotalOrder"]"
                                 TextAlignment="TextAlignment.Center">
                 </DataGridColumn>
                 <DataGridColumn TItem="GroupBuyReportDto"
                                 Field="@nameof(GroupBuyReportDto.WatingForShipment)"
-                                Caption="@L["Wating For Shipment"]"
+                                Caption="@L["WatingForShipment"]"
                                 TextAlignment="TextAlignment.Center">
                 </DataGridColumn>
                 <DataGridColumn TItem="GroupBuyReportDto" Field="@nameof(GroupBuyReportDto.SalesAmount)"
-                                Caption="@L["Sales Amount"]"
+                                Caption="@L["SalesAmount"]"
                                 TextAlignment="TextAlignment.Center">
                     <DisplayTemplate>
                         $@context.SalesAmount.ToString("N0")
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="GroupBuyReportDto" Field="@nameof(GroupBuyReportDto.AmountReceived)"
-                                Caption="@L["Amount Received"]"
+                                Caption="@L["AmountReceived"]"
                                 TextAlignment="TextAlignment.Center">
                     <DisplayTemplate>
                         $@context.AmountReceived.ToString("N0")

@@ -92,9 +92,9 @@ public partial class CustomTenantManagement
     {
         await base.OnInitializedAsync();
         EntryUrl = _configuration["EntryUrl"]?.TrimEnd('/');
-        var users=  await _identityUserAppService.GetListAsync(new GetIdentityUsersInput() {MaxResultCount=1000,SkipCount=0 });
+        var users = await _identityUserAppService.GetListAsync(new GetIdentityUsersInput() { MaxResultCount = 1000, SkipCount = 0 });
         UsersList = users?.Items.ToList();
-    
+
     }
 
     public void OnTenantContactTitleChange(ChangeEventArgs e)
@@ -102,7 +102,7 @@ public partial class CustomTenantManagement
         TenantContactTitle = Convert.ToString(e.Value);
     }
 
-    protected override async Task CreateEntityAsync() 
+    protected override async Task CreateEntityAsync()
     {
         if (base.NewEntity.AdminPassword is null ||
             base.NewEntity.AdminPassword.Length < 6 ||
@@ -136,7 +136,7 @@ public partial class CustomTenantManagement
         }
 
         base.NewEntity.SetProperty("ShortCode", ShortCode);
-        TenantUrl = EntryUrl+"/ShortCode=" + ShortCode ;
+        TenantUrl = EntryUrl + "/ShortCode=" + ShortCode;
         base.NewEntity.SetProperty("TenantUrl", TenantUrl);
         await base.CreateEntityAsync();
         LogoUrl = null;
@@ -151,11 +151,11 @@ public partial class CustomTenantManagement
     }
     protected override ValueTask SetTableColumnsAsync()
     {
-      
+
         var columns = (GetExtensionTableColumns(
             TenantManagementModuleExtensionConsts.ModuleName,
             TenantManagementModuleExtensionConsts.EntityNames.Tenant)).ToList();
-      
+
 
         TenantManagementTableColumns
             .AddRange(new TableColumn[]
@@ -180,7 +180,7 @@ public partial class CustomTenantManagement
 
                },
                 new TableColumn{
-               Title="Banner",
+               Title=L["Banner"],
                Sortable=false,
                //Data=columns[2].Data,
                Component=typeof(BannerTableColumn)
@@ -189,45 +189,45 @@ public partial class CustomTenantManagement
                },
                    new TableColumn
                 {
-                    Title ="Owner" ,
+                    Title = _L["Owner"] ,
                     Sortable = true,
                    ///*Data*/=columns[0].Data,
                     Component=typeof(OwnerNameTableColumn)
                 },
                    new TableColumn
                 {
-                    Title ="Tenant Contact Person" ,
+                    Title =_L["TenantContactPerson"] ,
                     Sortable = true,
                     Data=columns[1].Data
                 },
                    new TableColumn
                 {
-                    Title ="Tenant Contact Email" ,
+                    Title = _L["TenantContactEmail"] ,
                     Sortable = true,
                     Data=columns[3].Data
                 },
 
                   new TableColumn
                 {
-                    Title ="Share Profit %" ,
+                    Title = _L["ShareProfit%"],
                     Sortable = true,
                    Data=columns[4].Data,
                 },
                       new TableColumn
                 {
-                    Title ="Link" ,
+                    Title =_L["Link"] ,
                     Sortable = true,
                    Data=columns[9].Data,
                 },
                     new TableColumn
                 {
-                    Title ="ShortCode" ,
+                    Title =_L["ShortCode"] ,
                     Sortable = true,
                    Data=columns[8].Data,
                 },
                     new TableColumn
                 {
-                    Title ="Status" ,
+                    Title = _L["Status"] ,
                     Sortable = true,
                    Data=Lo["Enum:TenantStatus."+columns[6].Data],
                 },
@@ -236,11 +236,11 @@ public partial class CustomTenantManagement
         //TableColumns.Get<Volo.Abp.TenantManagement.Blazor.Pages.TenantManagement.TenantManagement>().Add(confirmedColumn);
 
         return new ValueTask();
-       
+
 
 
     }
-    protected override  Task OpenCreateModalAsync()
+    protected override Task OpenCreateModalAsync()
     {
         LogoUrl = null;
         ShareProfitPercentage = 0;
@@ -251,10 +251,10 @@ public partial class CustomTenantManagement
         TenantContactPerson = null;
         TenantContactTitle = null;
         TenantContactEmail = null;
-       return base.OpenCreateModalAsync();
-    
+        return base.OpenCreateModalAsync();
+
     }
-    protected  override async  Task UpdateEntityAsync()
+    protected override async Task UpdateEntityAsync()
     {
         if (ShortCode == null)
         {
@@ -262,7 +262,7 @@ public partial class CustomTenantManagement
             return;
 
         }
-        var check = await _myTenantAppService.CheckShortCodeForUpdate(ShortCode,base.EditingEntityId);
+        var check = await _myTenantAppService.CheckShortCodeForUpdate(ShortCode, base.EditingEntityId);
         if (check)
         {
 
@@ -270,7 +270,7 @@ public partial class CustomTenantManagement
             return;
 
         }
-        base.EditingEntity.ExtraProperties.Remove("LogoUrl") ;
+        base.EditingEntity.ExtraProperties.Remove("LogoUrl");
         base.EditingEntity.ExtraProperties.Remove("ShareProfitPercent");
         base.EditingEntity.ExtraProperties.Remove("TenantOwner");
         base.EditingEntity.ExtraProperties.Remove("Status");
@@ -285,25 +285,25 @@ public partial class CustomTenantManagement
         base.EditingEntity.SetProperty("ShareProfitPercent", ShareProfitPercentage);
         base.EditingEntity.SetProperty("TenantOwner", TenantOwnerId);
         base.EditingEntity.SetProperty("Status", Status);
-        base.EditingEntity.SetProperty("BannerUrl",BannerUrl);
+        base.EditingEntity.SetProperty("BannerUrl", BannerUrl);
         base.EditingEntity.SetProperty("ShortCode", ShortCode);
         base.EditingEntity.SetProperty("TenantContactPerson", TenantContactPerson);
         base.EditingEntity.SetProperty("TenantContactTitle", TenantContactTitle);
         base.EditingEntity.SetProperty("TenantContactEmail", TenantContactEmail);
-        TenantUrl = EntryUrl+"/ShortCode=" + ShortCode;
+        TenantUrl = EntryUrl + "/ShortCode=" + ShortCode;
         base.EditingEntity.SetProperty("TenantUrl", TenantUrl);
         LogoUrl = null;
         ShareProfitPercentage = 0;
         TenantOwnerId = null;
         Status = 0;
-         await base.UpdateEntityAsync();
-       
+        await base.UpdateEntityAsync();
+
 
     }
-    protected override Task OpenEditModalAsync(TenantDto row) 
+    protected override Task OpenEditModalAsync(TenantDto row)
     {
         TenantOwnerId = row.GetProperty<Guid?>("TenantOwner");
-        ShareProfitPercentage=row.GetProperty<int>("ShareProfitPercent");
+        ShareProfitPercentage = row.GetProperty<int>("ShareProfitPercent");
         LogoUrl = row.GetProperty<string>("LogoUrl");
         Status = row.GetProperty<TenantStatus>("Status");
         BannerUrl = row.GetProperty<string>("BannerUrl");
@@ -312,7 +312,7 @@ public partial class CustomTenantManagement
         TenantContactPerson = row.GetProperty<string>("TenantContactPerson");
         TenantContactTitle = row.GetProperty<string>("TenantContactTitle");
         TenantContactEmail = row.GetProperty<string>("TenantContactEmail");
-    
+
         return base.OpenEditModalAsync(row);
     }
     async Task OnFileUploadAsync(FileChangedEventArgs e)
@@ -323,7 +323,7 @@ public partial class CustomTenantManagement
             await FilePickerCustom.Clear();
             return;
         }
-      
+
         var count = 0;
         try
         {

@@ -573,6 +573,27 @@
     "DisplayName:name": "Username",
     "DisplayName:UserName": "User name",
     "NameCannotBeEmpty": "Username cannot be empty.",
-    "ProductType": "Product Type"
+    "ProductType": "Product Type",
+    "SelectShippingMethod": "Select Shipping Method",
+    "StoreName": "Store Name",
+    "InvoiceNameDisplay": "Invoice Name Display",
+    "DaysAfterShipmentToGenerateInvoice": "Days After Shipment To Generate Invoice",
+    "SenderPostalCode": "Sender Postal Code",
+    "SenderCity": "Sender City",
+    "SenderAddress": "Sender Address",
+    "Owner": "Owner",
+    "DeliveryByStoreSettings": "Delivery By Store Settings",
+    "Tenants": "Tenants",
+    "ShareProfit%": "Share Profit %",
+    "UploadLogo": "Upload Logo",
+    "UploadBanner": "Upload Banner",
+    "SelectTenantAdministrator": "Select Tenant Administrator",
+    "SelectContactTitle": "Select Contact Title",
+    "Status": "Status",
+    "TenantName": "Tenant Name",
+    "TotalOrder": "Total Order",
+    "WatingForShipment": "Wating For Shipment",
+    "SalesAmount": "Sales Amount",
+    "AmountReceived": "Amount Received"
   }
 }
