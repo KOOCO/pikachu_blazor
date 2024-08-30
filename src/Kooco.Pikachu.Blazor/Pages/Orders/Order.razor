@@ -605,7 +605,7 @@
                                   @bind-SelectedRow="@SelectedOrder"
                                   ReadData="@(async (e) => await OnTabLoadDataGridReadAsync(e, "PrepareShipment"))"
                                   TotalItems="TotalCount"
-                                  DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.Id == SelectedOrder?.Id)"
+                                  DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && IsRowExpanded(e.Item))"
                                   Responsive
                                   ShowPager="true"
                                   PageSize="PageSize"
@@ -622,7 +622,7 @@
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
                                         @{
-                                            var isExpanded = ExpandedRows.Contains(context.Id);
+                                            var isExpanded = IsRowExpanded(context);
                                             var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
                                         }
                                         <i class="@chevronClass"></i>
@@ -676,7 +676,7 @@
                                 <DataGrid TItem="OrderDeliveryDto"
                                           @bind-SelectedRow="@SelectedOrderDelivery"
                                           ReadData="@(async (e) => await OnOrderDeliveryDataReadAsync(e, order.Id))"
-                                          Data="@OrderDeliveries"
+                                          Data="@GetOrderDeliveries(order.Id)"
                                           DetailRowTrigger="@((e) => e.Item.Items?.Count > 0 && e.Item.Id == SelectedOrderDelivery?.Id)"
                                           Responsive
                                           Bordered>
@@ -904,7 +904,7 @@
                                 <DataGrid TItem="OrderDeliveryDto"
                                           @bind-SelectedRow="@SelectedOrderDelivery"
                                           ReadData="@(async (e) => await OnOrderDeliveryDataReadAsync(e, order.Id))"
-                                          Data="@OrderDeliveries"
+                                          Data="@GetOrderDeliveries(order.Id)"
                                           DetailRowTrigger="@((e) => e.Item.Items?.Count > 0 && e.Item.Id == SelectedOrderDelivery?.Id)"
                                           Responsive
                                           Bordered>
@@ -1129,7 +1129,7 @@
                                 <DataGrid TItem="OrderDeliveryDto"
                                           @bind-SelectedRow="@SelectedOrderDelivery"
                                           ReadData="@(async (e) => await OnOrderDeliveryDataReadAsync(e, order.Id))"
-                                          Data="@OrderDeliveries"
+                                          Data="@GetOrderDeliveries(order.Id)"
                                           DetailRowTrigger="@((e) => e.Item.Items?.Count > 0 && e.Item.Id == SelectedOrderDelivery?.Id)"
                                           Responsive
                                           Bordered>
@@ -1355,7 +1355,7 @@
                                 <DataGrid TItem="OrderDeliveryDto"
                                           @bind-SelectedRow="@SelectedOrderDelivery"
                                           ReadData="@(async (e) => await OnOrderDeliveryDataReadAsync(e, order.Id))"
-                                          Data="@OrderDeliveries"
+                                          Data="@GetOrderDeliveries(order.Id)"
                                           DetailRowTrigger="@((e) => e.Item.Items?.Count > 0 && e.Item.Id == SelectedOrderDelivery?.Id)"
                                           Responsive
                                           Bordered>
@@ -1912,7 +1912,7 @@
                                 <DataGrid TItem="OrderDeliveryDto"
                                           @bind-SelectedRow="@SelectedOrderDelivery"
                                           ReadData="@(async (e) => await OnOrderDeliveryDataReadAsync(e, order.Id))"
-                                          Data="@OrderDeliveries"
+                                          Data="@GetOrderDeliveries(order.Id)"
                                           DetailRowTrigger="@((e) => e.Item.Items?.Count > 0 && e.Item.Id == SelectedOrderDelivery?.Id)"
                                           Responsive
                                           Bordered>

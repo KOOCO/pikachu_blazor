@@ -1,6 +1,7 @@
 ﻿using Blazorise;
 using Blazorise.DataGrid;
 using Blazorise.LoadingIndicator;
+using Hangfire.Server;
 using Kooco.Pikachu.Blazor.Pages.ItemManagement;
 using Kooco.Pikachu.ElectronicInvoiceSettings;
 using Kooco.Pikachu.EnumValues;
@@ -32,6 +33,8 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders;
 public partial class Order
 {
     #region Inject
+    private Dictionary<Guid, List<OrderDeliveryDto>> OrderDeliveriesByOrderId { get; set; } = [];
+
     private bool IsAllSelected { get; set; } = false;
     private List<OrderDeliveryDto> OrderDeliveries { get; set; }
     private List<OrderDto> Orders { get; set; } = new();
@@ -90,26 +93,19 @@ public partial class Order
     {
         OrderDeliveries = [];
 
-        OrderDeliveries = await _OrderDeliveryAppService.GetListByOrderAsync(orderId);
-
-        int Index = 0;
-
-        foreach (OrderDeliveryDto orderDelivery in OrderDeliveries)
+        if (!OrderDeliveriesByOrderId.ContainsKey(orderId))
         {
-            if (SelectedOrderDeliveries.ContainsKey(Index))
-            {
-                SelectedOrderDeliveries[Index] = orderDelivery;
-            }
+            List<OrderDeliveryDto> orderDeliveries = await _OrderDeliveryAppService.GetListByOrderAsync(orderId);
 
-            else
-            {
-                SelectedOrderDeliveries.Add(Index, orderDelivery);
-            }
-
-            Index++;
+            OrderDeliveriesByOrderId[orderId] = orderDeliveries;
         }
 
         StateHasChanged();
+    }
+
+    public List<OrderDeliveryDto> GetOrderDeliveries(Guid orderId)
+    {
+        return OrderDeliveriesByOrderId.ContainsKey(orderId) ? OrderDeliveriesByOrderId[orderId] : [];
     }
 
     public async Task OnTabLoadDataGridReadAsync(DataGridReadDataEventArgs<OrderDto> e, string tabName)
@@ -332,6 +328,11 @@ public partial class Order
         {
             ExpandedRows.Add(e.Item.Id);
         }
+    }
+
+    private bool IsRowExpanded(OrderDto order)
+    {
+        return ExpandedOrderId == order.Id;
     }
 
     private async void MergeOrders() 
