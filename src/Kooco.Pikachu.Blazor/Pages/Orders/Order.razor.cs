@@ -12,6 +12,7 @@ using Kooco.Pikachu.Orders;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.EntityFrameworkCore.Update.Internal;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
 using NUglify.Html;
@@ -24,6 +25,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form;
+using static Kooco.Pikachu.Permissions.PikachuPermissions;
 
 namespace Kooco.Pikachu.Blazor.Pages.Orders;
 
@@ -58,6 +60,8 @@ public partial class Order
     private int FreezeCount = 0;
     private int FrozenCount = 0;
     private DeliveryMethod? DeliveryMethod = null;
+
+    private Guid? ExpandedOrderId = null;
     #endregion
 
     #region Methods
@@ -87,6 +91,23 @@ public partial class Order
         OrderDeliveries = [];
 
         OrderDeliveries = await _OrderDeliveryAppService.GetListByOrderAsync(orderId);
+
+        int Index = 0;
+
+        foreach (OrderDeliveryDto orderDelivery in OrderDeliveries)
+        {
+            if (SelectedOrderDeliveries.ContainsKey(Index))
+            {
+                SelectedOrderDeliveries[Index] = orderDelivery;
+            }
+
+            else
+            {
+                SelectedOrderDeliveries.Add(Index, orderDelivery);
+            }
+
+            Index++;
+        }
 
         StateHasChanged();
     }
@@ -299,6 +320,10 @@ public partial class Order
 
     void ToggleRow(DataGridRowMouseEventArgs<OrderDto> e)
     {
+        if (ExpandedOrderId == e.Item.Id) ExpandedOrderId = null;
+
+        else ExpandedOrderId = e.Item.Id;
+
         if (ExpandedRows.Contains(e.Item.Id))
         {
             ExpandedRows.Remove(e.Item.Id);
@@ -307,8 +332,6 @@ public partial class Order
         {
             ExpandedRows.Add(e.Item.Id);
         }
-
-       
     }
 
     private async void MergeOrders() 
