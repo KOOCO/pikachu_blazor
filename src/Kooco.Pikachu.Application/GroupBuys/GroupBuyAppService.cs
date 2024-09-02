@@ -182,7 +182,7 @@ namespace Kooco.Pikachu.GroupBuys
 
                 groupBuy.ItemGroups.RemoveAll(w => w.Id == Guid.Empty);
 
-                await _groupBuyRepository.UpdateAsync(groupBuy, true);
+                await _groupBuyRepository.UpdateAsync(groupBuy);
 
                 return ObjectMapper.Map<GroupBuy, GroupBuyDto>(groupBuy);
             }

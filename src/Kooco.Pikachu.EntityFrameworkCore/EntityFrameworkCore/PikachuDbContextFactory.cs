@@ -17,7 +17,14 @@ public class PikachuDbContextFactory : IDesignTimeDbContextFactory<PikachuDbCont
         var configuration = BuildConfiguration();
 
         var builder = new DbContextOptionsBuilder<PikachuDbContext>()
-            .UseSqlServer(configuration.GetConnectionString("Default"));
+            .UseSqlServer(
+                configuration.GetConnectionString("Default"),
+                sqlServerOptionsAction =>
+                {
+                    sqlServerOptionsAction.EnableRetryOnFailure();
+                    sqlServerOptionsAction.CommandTimeout(120);
+                }
+            );
 
         return new PikachuDbContext(builder.Options);
     }
