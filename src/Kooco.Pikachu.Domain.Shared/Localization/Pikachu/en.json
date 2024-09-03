@@ -1,6 +1,8 @@
 {
   "culture": "en",
   "texts": {
+    "FrontPage": "Front Page",
+    "CopyPageLink": "Copy Link Page",
     "GoodPoint": "Good Point",
     "Menu:Home": "Home",
     "Menu:GroupBuyManagement": "Group Buy Management",

@@ -1,4 +1,6 @@
 ﻿@page "/GroupBuyManagement/GroupBuyList"
+
+@using Microsoft.Extensions.Configuration
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.Application.Dtos
 @using Kooco.Pikachu.GroupBuys
@@ -10,8 +12,11 @@
 @using Blazorise.Components;
 @using Blazorise.LoadingIndicator;
 @using Kooco.Pikachu.Items.Dtos;
+
 @inject IStringLocalizer<PikachuResource> L
 @inject NavigationManager NavigationManager
+@inject IConfiguration _Configuration
+@inject IJSRuntime _JSRuntime
 
 <LoadingIndicator @ref="loading" FullScreen FadeIn>
     <div class="row">
@@ -70,6 +75,25 @@
                                     Caption="@L["TimePeriod"]">
                         <DisplayTemplate>
                             @context.StartTime-@context.EndTime
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn Caption="@L["FrontPage"]" 
+                                    Sortable="false" 
+                                    TextAlignment="TextAlignment.Center">
+                        <DisplayTemplate>
+                            <a href="@context.EntryURL" id="editLink" target="_blank">
+                                <i class="fa fa-external-link" />
+                            </a>
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn Caption="@L["CopyPageLink"]" 
+                                    Sortable="false" 
+                                    TextAlignment="TextAlignment.Center">
+                        <DisplayTemplate>
+                            <Button Type="ButtonType.Button" 
+                                    Clicked="@(() => CopyLinkToClipboard(context.EntryURL))">
+                                <i class="fa fa-link" />
+                            </Button>
                         </DisplayTemplate>
                     </DataGridColumn>
                     <DataGridColumn TItem="GroupBuyDto"
