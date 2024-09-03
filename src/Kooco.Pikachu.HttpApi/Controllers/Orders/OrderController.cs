@@ -106,6 +106,12 @@ public class OrderController(
         return _ordersAppService.AddCheckMacValueAsync(id, checkMacValue);
     }
 
+    [HttpPut("add-values/{id}/{checkMacValue}/{merchantTradeNo}")]
+    public Task AddValuesAsync(Guid id, string checkMacValue, string merchantTradeNo)
+    {
+        return _ordersAppService.AddValuesAsync(id, checkMacValue, merchantTradeNo);
+    }
+
     [HttpPost("payment-gateway-configuration")]
     public Task<PaymentGatewayDto> GetPaymentGatewayConfigurationsAsync([FromBody] Guid id)
     {

@@ -1244,6 +1244,21 @@ public class OrderAppService : ApplicationService, IOrderAppService
     }
 
     [AllowAnonymous]
+    public async Task AddValuesAsync(Guid id, string checkMacValue, string merchantTradeNo)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            Order order = await _orderRepository.GetAsync(id);
+
+            order.MerchantTradeNo = merchantTradeNo;
+
+            order.CheckMacValue = checkMacValue;
+
+            await _orderRepository.UpdateAsync(order);
+        }
+    }
+
+    [AllowAnonymous]
     public async Task AddCheckMacValueAsync(Guid id, string checkMacValue)
     {
         using (_dataFilter.Disable<IMultiTenant>())
