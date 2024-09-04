@@ -10,33 +10,48 @@ using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 
-namespace Kooco.Pikachu.OrderDeliveries
-{
-    public class EfCoreOrderDeliveryRepository : EfCoreRepository<PikachuDbContext, OrderDelivery, Guid>, IOrderDeliveryRepository
-    {
-        public EfCoreOrderDeliveryRepository(IDbContextProvider<PikachuDbContext> dbContextProvider) : base(dbContextProvider)
-        {
+namespace Kooco.Pikachu.OrderDeliveries;
 
-        }
-        public async Task<List<OrderDelivery>> GetWithDetailsAsync(Guid id)
-        {
-            return await (await GetQueryableAsync())
-                .Where(o => o.OrderId == id)
-                .Include(o => o.Items)
-                    .ThenInclude(oi => oi.Item)
-                    .ThenInclude(i => i.Images)
-                .Include(o => o.Items)
-                    .ThenInclude(oi => oi.SetItem)
-                    .ThenInclude(i => i.SetItemDetails)
-                    .ThenInclude(i => i.Item)
-                    .ThenInclude(i => i.Images)
-                .Include(o => o.Items)
-                    .ThenInclude(oi => oi.SetItem)
-                    .ThenInclude(i => i.Images)
-                .Include(o => o.Items.OrderBy(oi => oi.ItemType))
-                    .ThenInclude(oi => oi.Freebie)
-                    .ThenInclude(i => i.Images)
-                .ToListAsync();
-        }
+public class EfCoreOrderDeliveryRepository : 
+    EfCoreRepository<
+        PikachuDbContext, 
+        OrderDelivery, 
+        Guid
+    >, IOrderDeliveryRepository
+{
+    #region Constructor
+    public EfCoreOrderDeliveryRepository(
+        IDbContextProvider<PikachuDbContext> dbContextProvider
+    ) : base(dbContextProvider)
+    {
+
     }
+    #endregion
+
+    #region Methods
+    public async Task<List<OrderDelivery>> GetWithDetailsAsync(Guid id)
+    {
+        List<OrderDelivery> orderDeliveries = await (await GetQueryableAsync())
+            .Where(o => o.OrderId == id)
+            .Include(o => o.Items)
+                .ThenInclude(oi => oi.Item)
+                .ThenInclude(i => i.Images)
+            .Include(o => o.Items)
+                .ThenInclude(oi => oi.SetItem)
+                .ThenInclude(i => i.SetItemDetails)
+                .ThenInclude(i => i.Item)
+                .ThenInclude(i => i.Images)
+            .Include(o => o.Items)
+                .ThenInclude(oi => oi.SetItem)
+                .ThenInclude(i => i.Images)
+            .Include(o => o.Items)
+                .ThenInclude(oi => oi.Freebie)
+                .ThenInclude(i => i.Images)
+            .ToListAsync();
+
+        orderDeliveries = [.. orderDeliveries.OrderBy(od => od.Items.Min(oi => oi.DeliveryTemperature))] ;
+
+        return orderDeliveries;
+    }
+    #endregion
 }
