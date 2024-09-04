@@ -44,7 +44,7 @@ public class EfCoreOrderDeliveryRepository :
             .Include(o => o.Items)
                 .ThenInclude(oi => oi.SetItem)
                 .ThenInclude(i => i.Images)
-            .Include(o => o.Items)
+            .Include(o => o.Items.OrderBy(oi => oi.ItemType))
                 .ThenInclude(oi => oi.Freebie)
                 .ThenInclude(i => i.Images)
             .ToListAsync();
