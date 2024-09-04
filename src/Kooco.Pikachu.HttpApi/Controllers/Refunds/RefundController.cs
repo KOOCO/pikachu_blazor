@@ -30,6 +30,7 @@ public class RefundController(
         return _refundAppService.GetListAsync(input);
     }
 
+    [HttpPost("send-refund-request")]
     public Task SendRefundRequestAsync(Guid id)
     {
         return _refundAppService.SendRefundRequestAsync(id);

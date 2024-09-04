@@ -246,7 +246,8 @@ public class OrderController(
     {
         return _ordersAppService.OrderComplete(id);
     }
-    
+
+    [HttpPost("void-invoice")]
     public Task VoidInvoice(Guid id, string reason)
     {
         return _ordersAppService.VoidInvoice(id, reason);
@@ -256,26 +257,31 @@ public class OrderController(
     {
         return _ordersAppService.GetVoidListAsync(input);
     }
-    
+
+    [HttpPost("credit-note-invoice")]
     public Task CreditNoteInvoice(Guid id, string reason)
     {
         return _ordersAppService.CreditNoteInvoice(id, reason);
     }
 
+    [HttpPost("refund-order-items")]
     public Task<OrderDto> RefundOrderItems(List<Guid> OrderItemIds, Guid OrderId)
     {
        return _ordersAppService.RefundOrderItems(OrderItemIds, OrderId);
     }
 
+    [HttpPost("refund-amount")]
     public Task RefundAmountAsync(double amount, Guid OrderId)
     {
         return _ordersAppService.RefundAmountAsync(amount, OrderId);
     }
 
+    [HttpGet("get-report-list")]
     public Task<PagedResultDto<OrderDto>> GetReportListAsync(GetOrderListDto input, bool hideCredentials = false)
     {
         return _ordersAppService.GetReportListAsync(input, hideCredentials);
     }
+
     [HttpPost("return-order")]
     public Task ReturnOrderAsync(Guid id)
     {
@@ -288,6 +294,7 @@ public class OrderController(
         return _ordersAppService.UpdateOrdersIfIsEnterpricePurchaseAsync(groupBuyId);
     }
 
+    [HttpGet("get-total-delivery-tempCount")]
     public Task<(int normalCount, int freezeCount, int frozenCount)> GetTotalDeliveryTemperatureCountsAsync()
     {
         throw new NotImplementedException();
