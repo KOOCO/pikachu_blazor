@@ -616,25 +616,26 @@
                         </div>
                         <div class="row">
                             <div class="col-12 d-flex justify-content-between">
-                                <Select TValue="ShippingStatus" Class="form-select form-select-sm"
-                                SelectedValue="@Order.ShippingStatus"
-                                SelectedValueChanged="@(e => ShippingStatusChanged(e))">
-                                @if(Order.ShippingStatus!=ShippingStatus.Exchange)
+                                <Select TValue="ShippingStatus" 
+                                        Class="form-select form-select-sm"
+                                        SelectedValue="@Order.ShippingStatus"
+                                        SelectedValueChanged="@(e => ShippingStatusChanged(e))">
+                                @if(Order.ShippingStatus is not ShippingStatus.Exchange)
                                 {
-                                    <SelectItem></SelectItem>
+                                    <SelectItem />
                                     @foreach (var enumValue in Enum.GetValues(typeof(ShippingStatus)))
                                     {
-                                        @if(enumValue.ToString()!="Exchange")
+                                        @if(enumValue.ToString() is not "Exchange")
                                         {
-                                        <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                            <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
                                         }
                                     }
-                                    }
+                                }
                                 </Select>
-                                </div>
-                    </div>
-                </CardBody>
-            </Card>
+                            </div>
+                        </div>
+                    </CardBody>
+                </Card>
             }
         </div>
     </div>

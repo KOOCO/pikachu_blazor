@@ -168,11 +168,19 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         ResponseResultDto result = ParseApiResponse(response.Content.ToString());
         
-        if (result.ResponseCode == "1")
+        if (result.ResponseCode is "1")
         {
             orderDelivery.DeliveryNo = result.ShippingInfo.BookingNote;
+            
             orderDelivery.AllPayLogisticsID = result.ShippingInfo.AllPayLogisticsID;
+
+            orderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
+
             await _deliveryRepository.UpdateAsync(orderDelivery);
+
+            order.ShippingStatus = ShippingStatus.ToBeShipped;
+
+            await _orderRepository.UpdateAsync(order);
         }
         return result;
     }
@@ -320,7 +328,13 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             orderDelivery.AllPayLogisticsID = result.ShippingInfo.AllPayLogisticsID;
 
+            orderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
+
             await _deliveryRepository.UpdateAsync(orderDelivery);
+
+            order.ShippingStatus = ShippingStatus.ToBeShipped;
+
+            await _orderRepository.UpdateAsync(order);
         }
 
         return result;

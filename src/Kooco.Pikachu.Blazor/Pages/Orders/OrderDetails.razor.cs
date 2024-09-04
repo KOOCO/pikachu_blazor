@@ -50,6 +50,7 @@ public partial class OrderDetails
     private readonly IObjectMapper _ObjectMapper;
     #endregion
 
+    #region Constructor
     public OrderDetails(
         ITestLableAppService testLableAppService,
         IObjectMapper ObjectMapper
@@ -59,7 +60,9 @@ public partial class OrderDetails
         _ObjectMapper = ObjectMapper;
         Order = new();
     }
+    #endregion
 
+    #region Methods
     protected async override Task OnAfterRenderAsync(bool isFirstRender)
     {
         if (isFirstRender)
@@ -409,6 +412,7 @@ public partial class OrderDetails
     private async void CreateOrderLogistics(OrderDeliveryDto deliveryOrder)
     {
         await loading.Show();
+
         OrderDeliveryId = deliveryOrder.Id;
 
         if (deliveryOrder.DeliveryMethod is DeliveryMethod.SevenToEleven1 || 
@@ -479,7 +483,6 @@ public partial class OrderDetails
         await GetOrderDetailsAsync();
         await InvokeAsync(StateHasChanged);
         await loading.Hide();
-
     }
 
     public bool CheckForDeliveryMethod(DeliveryMethod deliveryMethod)
@@ -861,11 +864,9 @@ public partial class OrderDetails
         {
             await loading.Show();
            
-            
-           
-            if (selectedValue == ShippingStatus.PrepareShipment )
+            if (selectedValue is ShippingStatus.PrepareShipment)
             {
-                PaymentResult paymentResult = new PaymentResult();
+                PaymentResult paymentResult = new ();
                 paymentResult.OrderId = Order.Id;
                 await _orderAppService.HandlePaymentAsync(paymentResult);
                 await GetOrderDetailsAsync();
@@ -873,7 +874,7 @@ public partial class OrderDetails
                 await loading.Hide();
 
             }
-            else if (selectedValue == ShippingStatus.Shipped )
+            else if (selectedValue is ShippingStatus.Shipped)
             {
                 await _orderAppService.OrderShipped(Order.Id);
                 await GetOrderDetailsAsync();
@@ -881,14 +882,14 @@ public partial class OrderDetails
                 await loading.Hide();
 
             }
-            else if (selectedValue == ShippingStatus.Completed)
+            else if (selectedValue is ShippingStatus.Completed)
             {
                 await _orderAppService.OrderComplete(Order.Id);
                 await GetOrderDetailsAsync();
                 await base.OnInitializedAsync();
                 await loading.Hide();
             }
-            else if (selectedValue == ShippingStatus.Closed )
+            else if (selectedValue is ShippingStatus.Closed )
             {
                 await _orderAppService.OrderClosed(Order.Id);
                 await GetOrderDetailsAsync();
@@ -900,13 +901,11 @@ public partial class OrderDetails
         catch (Exception ex)
         {
             await _uiMessageService.Error(ex.GetType().ToString());
-
         }
         finally
         {
             await loading.Hide();
         }
-
     }
     public class StoreCommentsModel
     {
@@ -915,7 +914,7 @@ public partial class OrderDetails
         [Required(ErrorMessage = "This Field Is Required")]
         public string Comment { get; set; }
     }
-
+    #endregion
 }
 public class ModificationTrack
 {
