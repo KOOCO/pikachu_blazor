@@ -596,6 +596,8 @@
     "TotalOrder": "Total Order",
     "WatingForShipment": "Wating For Shipment",
     "SalesAmount": "Sales Amount",
-    "AmountReceived": "Amount Received"
+    "AmountReceived": "Amount Received",
+    "MerchantTradeNo": "Merchant Trade No",
+    "TradeNo": "Trade No"
   }
 }

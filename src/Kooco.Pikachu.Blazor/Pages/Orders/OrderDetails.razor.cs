@@ -31,6 +31,7 @@ public partial class OrderDetails
     public string id { get; set; }
     private Guid OrderId { get; set; }
     private OrderDto Order { get; set; }
+    private decimal? OrderDeliveryCost { get; set; } = 0.00m;
     private CreateOrderDto UpdateOrder { get; set; } = new();
     private StoreCommentsModel StoreComments = new();
     private ModificationTrack ModificationTrack = new();
@@ -48,6 +49,11 @@ public partial class OrderDetails
     string? CheckoutForm { get; set; } = null;
     private readonly ITestLableAppService _testLableAppService;
     private readonly IObjectMapper _ObjectMapper;
+
+    private bool isDeliveryCostDisplayed = false;
+    private bool isNormal = false;
+    private bool isFreeze = false;
+    private bool isFrozen = false;
     #endregion
 
     #region Constructor
@@ -95,9 +101,42 @@ public partial class OrderDetails
         }
     }
 
+    private decimal GetDeliveryCost(ItemStorageTemperature item)
+    {
+        if (Order.DeliveryMethod is DeliveryMethod.DeliveredByStore)
+        {
+            switch (item)
+            {
+                case ItemStorageTemperature.Normal:
+                    return Order.DeliveryCostForNormal ?? 0.00m;
+                case ItemStorageTemperature.Freeze:
+                    return Order.DeliveryCostForFreeze ?? 0.00m;
+                case ItemStorageTemperature.Frozen:
+                    return Order.DeliveryCostForFrozen ?? 0.00m;
+            }
+        }
+
+        return 0.00m;
+    }
+
+    private void SetTotalAmount(OrderDeliveryDto entity)
+    {
+        if (isNormal || isFreeze || isFrozen) 
+            entity.TotalAmount = (OrderDeliveryCost ?? 0.00m);
+
+        else entity.TotalAmount = 0.00m;
+    }
+
     async Task GetOrderDetailsAsync()
     {
         Order = await _orderAppService.GetWithDetailsAsync(OrderId);
+
+        if (Order.DeliveryMethod is not DeliveryMethod.SelfPickup &&
+            Order.DeliveryMethod is not DeliveryMethod.DeliveredByStore)
+        {
+            OrderDeliveryCost = Order.DeliveryCost;
+        }
+
         OrderDeliveries = await _orderDeliveryAppService.GetListByOrderAsync(OrderId);
 
         OrderDeliveries = [.. OrderDeliveries.Where(w => w.Items.Count > 0)];

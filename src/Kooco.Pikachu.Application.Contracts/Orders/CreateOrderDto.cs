@@ -69,4 +69,8 @@ public class CreateOrderDto
     public string? StoreId { get; set; }
     public string? CVSStoreOutSide { get; set; }
     public string MerchantTradeNo { get; set; }
+    public decimal? DeliveryCostForNormal { get; set; }
+    public decimal? DeliveryCostForFreeze { get; set; }
+    public decimal? DeliveryCostForFrozen { get; set; }
+    public decimal? DeliveryCost { get; set; }
 }

@@ -156,6 +156,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
             order.StoreId = input.StoreId;
             order.CVSStoreOutSide = input.CVSStoreOutSide;
             order.ShippingStatus = input.ShippingStatus;
+            order.DeliveryCostForNormal = input.DeliveryCostForNormal;
+            order.DeliveryCostForFreeze = input.DeliveryCostForFreeze;
+            order.DeliveryCostForFrozen = input.DeliveryCostForFrozen;
+            order.DeliveryCost = input.DeliveryCost;
             if (input.OrderItems != null)
             {
                 foreach (var item in input.OrderItems)
@@ -789,7 +793,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
     public async Task<OrderDto> GetWithDetailsAsync(Guid id)
     {
-        var order = await _orderRepository.GetWithDetailsAsync(id);
+        Order order = await _orderRepository.GetWithDetailsAsync(id);
+
         return ObjectMapper.Map<Order, OrderDto>(order);
     }
 

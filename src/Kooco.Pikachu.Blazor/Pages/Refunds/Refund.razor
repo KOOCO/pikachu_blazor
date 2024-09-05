@@ -52,9 +52,15 @@
                     </DisplayTemplate>
                  </DataGridColumn>
                     <DataGridColumn TItem="RefundDto"
-                                    Caption="@L["ParentOrderNo"]">
+                                    Caption="@L["MerchantTradeNo"]">
                         <DisplayTemplate>
                             @context.Order.MerchantTradeNo
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn TItem="RefundDto"
+                                    Caption="@L["TradeNo"]">
+                        <DisplayTemplate>
+                            @context.Order.TradeNo
                         </DisplayTemplate>
                     </DataGridColumn>
                  <DataGridColumn TItem="RefundDto"

@@ -640,9 +640,7 @@
         </div>
     </div>
 
-
     <div class="row">
-
         <div class="col-6">
             <h4 class="d-inline-block">@L["OrderItems"]</h4>
         </div>
@@ -831,6 +829,7 @@
             </Card>
         </div>
     </div>
+    
     <div class="row">
         <div class="col-6">
             <h4 class="d-inline-block">@L["OrderDelivery"]</h4>
@@ -948,6 +947,18 @@
                             </DataGridColumn>
                 </DataGridColumns>
                         <DetailRowTemplate>
+                            @{
+                                isDeliveryCostDisplayed = false;
+
+                                isNormal = context.Items.Any(i => i.DeliveryTemperature is ItemStorageTemperature.Normal);
+
+                                isFreeze = context.Items.Any(i => i.DeliveryTemperature is ItemStorageTemperature.Freeze) && 
+                                           OrderDeliveries.Count(a => a.Items.Any(af => af.DeliveryTemperature is ItemStorageTemperature.Normal)) is 0;
+
+                                isFrozen = context.Items.Any(i => i.DeliveryTemperature is ItemStorageTemperature.Frozen) && 
+                                           OrderDeliveries.Count(a => a.Items.Any(af => af.DeliveryTemperature is ItemStorageTemperature.Normal)) is 0 &&
+                                           OrderDeliveries.Count(a => a.Items.Any(af => af.DeliveryTemperature is ItemStorageTemperature.Freeze)) is 0;
+                            }
                             <table class="table table-responsive table-striped text-center">
                                 <thead>
                                     <tr>
@@ -1023,7 +1034,25 @@
                                                         @L[item.DeliveryTemperature.ToString()]
                                                     </td>
                                                     <td>
-                                                        @item.DeliveryTemperatureCost
+                                                        @if (!isDeliveryCostDisplayed && isNormal ||
+                                                             !isDeliveryCostDisplayed && isFreeze || 
+                                                             !isDeliveryCostDisplayed && isFrozen)
+                                                        {
+                                                            if (Order.DeliveryMethod == DeliveryMethod.DeliveredByStore)
+                                                            {
+                                                                @GetDeliveryCost(item.DeliveryTemperature).ToString("N2")
+                                                            }
+                                                            else
+                                                            {
+                                                                @(OrderDeliveryCost?.ToString("N2") ?? "0.00")
+                                                            }
+
+                                                            isDeliveryCostDisplayed = true;
+                                                        }
+                                                        else
+                                                        {
+                                                            @(0.00.ToString("N2"))
+                                                        }
                                                     </td>
                                                     <td>
                                                         @item.Quantity
@@ -1032,7 +1061,9 @@
                                                         <span>$@item.ItemPrice.ToString("N2")</span>
                                                     </td>
                                                     <td>
-                                                        $@((item.TotalAmount + item.DeliveryTemperatureCost).ToString("N2"))
+                                                        $@CalculateItemTotal(item, !isDeliveryCostDisplayed && isNormal ||
+                                                                                   !isDeliveryCostDisplayed && isFreeze ||
+                                                                                   !isDeliveryCostDisplayed && isFrozen).ToString("N2")
                                                     </td>
                                                 }
                                             </tr>
@@ -1073,7 +1104,12 @@
                                             <td class="text-center" style="width: 10%;" />
                                             <td class="text-center" style="width: 10%;" />
                                             <td>
-                                                $@((context.Items.Sum(s => s.TotalAmount) + context.Items.Sum(s => s.DeliveryTemperatureCost)).ToString("N2"))
+                                                @{ SetTotalAmount(context); Task.Delay(500); }
+
+                                                $@((context.Items.Sum(s => s.TotalAmount) 
+                                                    + (Order.DeliveryMethod is DeliveryMethod.DeliveredByStore 
+                                                        ? context.Items.Sum(s => s.DeliveryTemperatureCost) 
+                                                          : context.TotalAmount!.Value)).ToString("N2"))
                                             </td>
                                         </tr>
                                     }
@@ -1377,5 +1413,34 @@
 </LoadingIndicator>
 
 @code {
+    private Dictionary<Guid, bool> _deliveryCostRendered = new Dictionary<Guid, bool>();
 
+    private decimal CalculateItemTotal(OrderItemDto item, bool includeDeliveryCost)
+    {
+        var itemTotal = item.TotalAmount;
+
+        if (Order.DeliveryMethod == DeliveryMethod.DeliveredByStore)
+        {
+            // Add specific delivery cost based on temperature
+            itemTotal += GetDeliveryCost(item.DeliveryTemperature);
+        }
+        else if (includeDeliveryCost)
+        {
+            // Only add the order-wide delivery cost for the first applicable item
+            itemTotal += OrderDeliveryCost ?? 0.00M;
+        }
+
+        return itemTotal;
+    }
+
+    private bool ShouldDisplayDeliveryCost(Guid itemId)
+    {
+        if (!_deliveryCostRendered.ContainsKey(itemId))
+        {
+            _deliveryCostRendered[itemId] = true;
+            return true;
+        }
+
+        return false;
+    }
 }
