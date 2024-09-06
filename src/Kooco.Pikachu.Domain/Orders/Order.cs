@@ -83,6 +83,7 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public decimal? DeliveryCostForFreeze { get; set; }
     public decimal? DeliveryCostForFrozen { get; set; }
     public decimal? DeliveryCost { get; set; }
+    public string? GWSR { get; set; }
     public Order() { }
 
     public Order(

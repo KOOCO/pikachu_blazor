@@ -1278,12 +1278,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
     [AllowAnonymous]
     public async Task HandlePaymentAsync(PaymentResult paymentResult)
     {
-        if (paymentResult.SimulatePaid == 0)
+        if (paymentResult.SimulatePaid is 0)
         {
-            Order order = new Order();
+            Order order = new ();
+
             using (_dataFilter.Disable<IMultiTenant>())
             {
-                if (paymentResult.OrderId == null)
+                if (paymentResult.OrderId is null)
                 {
                     order = await _orderRepository
                                    .FirstOrDefaultAsync(o => o.OrderNo == paymentResult.MerchantTradeNo)
@@ -1291,15 +1292,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
                     order = await _orderRepository.GetWithDetailsAsync(order.Id);
 
-                    if (paymentResult.CustomField1 != order.CheckMacValue)
-                    {
-                        throw new Exception();
-                    }
+                    if (paymentResult.CustomField1 != order.CheckMacValue) throw new Exception();
 
-                    if (paymentResult.TradeAmt != order.TotalAmount)
-                    {
-                        throw new Exception();
-                    }
+                    if (paymentResult.TradeAmt != order.TotalAmount) throw new Exception();
                 }
                 else {
                     order = await _orderRepository
@@ -1307,6 +1302,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                                       ?? throw new EntityNotFoundException();
                     order = await _orderRepository.GetWithDetailsAsync(order.Id);
                 }
+
+                order.GWSR = paymentResult.GWSR;
                 order.TradeNo = paymentResult.TradeNo;
                 order.ShippingStatus = ShippingStatus.PrepareShipment;
                 order.PrepareShipmentBy = CurrentUser.Name ?? "System";

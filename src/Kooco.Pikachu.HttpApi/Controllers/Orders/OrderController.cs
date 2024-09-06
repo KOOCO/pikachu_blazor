@@ -5,6 +5,7 @@ using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.Response;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using System;
@@ -48,7 +49,7 @@ public class OrderController(
                 requestBody = await reader.ReadToEndAsync();
             }
 
-            var form = await Request.ReadFormAsync();
+            IFormCollection form = await Request.ReadFormAsync();
 
             bool validRtnCode = int.TryParse(form["RtnCode"], out int rtnCode);
             bool validTradeAmt = int.TryParse(form["TradeAmt"], out int tradeAmt);
@@ -70,7 +71,8 @@ public class OrderController(
                 TradeDate = form["TradeDate"],
                 SimulatePaid = validSimulatePaid ? simulatePaid : 0,
                 CheckMacValue = form["CheckMacValue"],
-                CustomField1 = form["CustomField1"]
+                CustomField1 = form["CustomField1"],
+                GWSR = form["gwsr"]
             };
 
             await _ordersAppService.HandlePaymentAsync(paymentResult);
