@@ -924,7 +924,7 @@
                                             hidden>
                                         Test Label
                                     </Button>
-                                        @if (context.DeliveryStatus is DeliveryStatus.Processing)
+                                        @if (context.DeliveryStatus is DeliveryStatus.ToBeShipped)
                                         {
                                             <Button Type="ButtonType.Button" 
                                                     Clicked="() => OrderItemShipped(context)" 
