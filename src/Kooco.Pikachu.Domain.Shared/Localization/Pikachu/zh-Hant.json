@@ -1,6 +1,11 @@
 {
   "culture": "zh-Hant",
   "texts": {
+    "Paid": "已付款’",
+    "PaymentStatus": "款項狀態",
+    "RefundChannel": "退款渠道",
+    "AutomaticRefund": "自動退款",
+    "ManualProcessing": "人工處理",
     "FrontPage": "頭版",
     "CopyPageLink": "複製連結頁面",
     "7-11": "7-11",

@@ -5,20 +5,30 @@ using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.StoreLogisticOrders;
 using Kooco.Pikachu.TestLables;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Html;
+using Microsoft.Extensions.Configuration;
 using Microsoft.JSInterop;
 using Polly;
+using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 using Volo.Abp;
+using Volo.Abp.Http.Modeling;
 using Volo.Abp.ObjectMapping;
 
 
@@ -54,16 +64,26 @@ public partial class OrderDetails
     private bool isNormal = false;
     private bool isFreeze = false;
     private bool isFrozen = false;
+
+    private readonly IConfiguration _Configuration;
+
+    private readonly IPaymentGatewayAppService _PaymentGatewayAppService;
+
+    private string? PaymentStatus;
     #endregion
 
     #region Constructor
     public OrderDetails(
         ITestLableAppService testLableAppService,
-        IObjectMapper ObjectMapper
+        IObjectMapper ObjectMapper,
+        IConfiguration Configuration,
+        IPaymentGatewayAppService PaymentGatewayAppService
     )
     {
         _testLableAppService = testLableAppService;
         _ObjectMapper = ObjectMapper;
+        _Configuration = Configuration;
+        _PaymentGatewayAppService = PaymentGatewayAppService;
         Order = new();
     }
     #endregion
@@ -140,6 +160,8 @@ public partial class OrderDetails
         OrderDeliveries = await _orderDeliveryAppService.GetListByOrderAsync(OrderId);
 
         OrderDeliveries = [.. OrderDeliveries.Where(w => w.Items.Count > 0)];
+
+        PaymentStatus = await GetPaymentStatus();
 
         await InvokeAsync(StateHasChanged);
     }
@@ -534,6 +556,105 @@ public partial class OrderDetails
                deliveryMethod is DeliveryMethod.BlackCat1 ||
                deliveryMethod is DeliveryMethod.BlackCatFreeze ||
                deliveryMethod is DeliveryMethod.BlackCatFrozen;
+    }
+
+    private async Task<string> GetPaymentStatus()
+    {
+        if (Order.PaymentMethod is PaymentMethods.CreditCard)
+        {
+            List<PaymentGatewayDto> paymentGateways = await _PaymentGatewayAppService.GetAllAsync();
+
+            PaymentGatewayDto? ecpay = paymentGateways.FirstOrDefault(w => w.PaymentIntegrationType == PaymentIntegrationType.EcPay);
+
+            if (ecpay is null) return string.Empty;
+
+            RestClientOptions options = new() { MaxTimeout = -1 };
+
+            RestClient client = new(options);
+
+            RestRequest request = new(_Configuration["EcPay:SingleCreditCardTransactionApi"], Method.Post);
+
+            string HashKey = ecpay.HashKey ?? string.Empty;
+            
+            string HashIV = ecpay.HashIV ?? string.Empty;
+            
+            string MerchantId = ecpay.MerchantId ?? string.Empty;
+
+            string totalAmount = Order.TotalAmount.ToString(Order.TotalAmount % 1 is 0 ? "0" : string.Empty);
+
+            request.AddHeader("Accept", "text/html");
+            request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+            request.AddParameter("MerchantID", MerchantId);
+            request.AddParameter("CreditRefundId", Order.GWSR);
+            request.AddParameter("CreditAmount", totalAmount);
+            request.AddParameter("CreditCheckCode", "52482296");
+            request.AddParameter("CheckMacValue", GenerateCheckMac(HashKey,
+                                                                   HashIV,
+                                                                   MerchantId,
+                                                                   Order.GWSR,
+                                                                   totalAmount,
+                                                                   "52482296"));
+
+            RestResponse response = await client.ExecuteAsync(request);
+
+            PaymentStatus? paymentStatus = JsonSerializer.Deserialize<PaymentStatus>(response.Content);
+
+            if (paymentStatus is null || paymentStatus.RtnValue?.status is null) return string.Empty;
+
+            return paymentStatus.RtnValue?.status;
+        }
+
+        if (Order.PaymentMethod is PaymentMethods.BankTransfer ||
+            Order.PaymentMethod is PaymentMethods.CashOnDelivery) return L["Paid"];
+
+        return string.Empty;
+    }
+
+    public string GenerateCheckMac(string HashKey, string HashIV, string merchantID, string gwsr, string totalAmount, string creditCheckCode)
+    {
+        Dictionary<string, string> parameters = new ()
+        {
+            { "MerchantID", merchantID },
+            { "CreditRefundId", gwsr },
+            { "CreditAmount", totalAmount },
+            { "CreditCheckCode", creditCheckCode }
+        };
+
+        IEnumerable<string>? param = parameters.ToDictionary().Keys
+                                      .OrderBy(o => o)
+                                      .Select(s => s + "=" + parameters.ToDictionary()[s]);
+
+        string collectionValue = string.Join("&", param);
+
+        collectionValue = $"HashKey={HashKey}" + "&" + collectionValue + $"&HashIV={HashIV}";
+
+        collectionValue = WebUtility.UrlEncode(collectionValue).ToLower();
+
+        return ComputeSHA256Hash(collectionValue);
+    }
+
+    public string ComputeSHA256Hash(string rawData)
+    {
+        byte[] bytes = SHA256.HashData(Encoding.UTF8.GetBytes(rawData));
+
+        StringBuilder builder = new();
+
+        for (int i = 0; i < bytes.Length; i++)
+        {
+            builder.Append(bytes[i].ToString("x2"));
+        }
+
+        return builder.ToString().ToUpper();
+    }
+
+    private string GetRefundChannel()
+    {
+        if (Order.PaymentMethod is PaymentMethods.CreditCard) return L["AutomaticRefund"];
+
+        if (Order.PaymentMethod is PaymentMethods.BankTransfer || 
+            Order.PaymentMethod is PaymentMethods.CashOnDelivery) return L["ManualProcessing"];
+
+        return string.Empty;
     }
 
     private void CloseShipmentModal()
@@ -1000,4 +1121,28 @@ public class RefundOrder
     public Guid? OrderId { get; set; }
     public List<Guid> OrderItemIds { get; set; }
     public double Amount { get; set; }
+}
+
+public class PaymentStatus
+{
+    public string? RtnMsg { get; set; }
+    public RtnValue? RtnValue { get; set; }
+}
+
+public class RtnValue
+{
+    public string? TradeID { get; set; }
+    public string? amount { get; set; }
+    public string? clsamt { get; set; }
+    public string? authtime { get; set; }
+    public string? status { get; set; }
+    public CloseData[]? close_data { get; set; }
+}
+
+public class CloseData
+{
+    public string? status { get; set; }
+    public string? sno { get; set; }
+    public string? amount { get; set; }
+    public string? datetime { get; set; }
 }

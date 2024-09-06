@@ -1,6 +1,7 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
@@ -108,20 +109,24 @@ namespace Kooco.Pikachu.PaymentGateways
 
         public async Task<List<PaymentGatewayDto>> GetAllAsync()
         {
-            var paymentGateways = await _paymentGatewayRepository.GetListAsync();
-            var paymentGatewayDtos = ObjectMapper.Map<List<PaymentGateway>, List<PaymentGatewayDto>>(paymentGateways);
+            List<PaymentGateway> paymentGateways = await _paymentGatewayRepository.GetListAsync();
 
-            foreach (var paymentGatewayDto in paymentGatewayDtos)
+            List<PaymentGatewayDto> paymentGatewayDtos = ObjectMapper.Map<List<PaymentGateway>, List<PaymentGatewayDto>>(paymentGateways);
+
+            foreach (PaymentGatewayDto paymentGatewayDto in paymentGatewayDtos)
             {
-                var properties = typeof(PaymentGatewayDto).GetProperties();
-                foreach (var property in properties)
+                PropertyInfo[] properties = typeof(PaymentGatewayDto).GetProperties();
+
+                foreach (PropertyInfo property in properties)
                 {
                     if (property.PropertyType == typeof(string))
                     {
-                        var value = (string?)property.GetValue(paymentGatewayDto);
+                        string? value = (string?)property.GetValue(paymentGatewayDto);
+
                         if (!string.IsNullOrEmpty(value))
                         {
-                            var decryptedValue = _stringEncryptionService.Decrypt(value);
+                            string? decryptedValue = _stringEncryptionService.Decrypt(value);
+
                             property.SetValue(paymentGatewayDto, decryptedValue);
                         }
                     }

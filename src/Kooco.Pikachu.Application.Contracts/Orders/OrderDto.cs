@@ -75,4 +75,5 @@ public class OrderDto : FullAuditedEntityDto<Guid>
     public decimal? DeliveryCostForFrozen { get; set; }
     public decimal? DeliveryCost { get; set; }
     public string? TradeNo { get; set; }
+    public string? GWSR { get; set; }
 }

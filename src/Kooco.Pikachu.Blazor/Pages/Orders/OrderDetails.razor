@@ -1248,6 +1248,19 @@
                     <ModalBody>
 
                         <DataAnnotationsValidator />
+                        <Div Class="row">
+                            <Div Class="col-6">
+                                <Label>
+                                    @L["RefundChannel"]: @(GetRefundChannel())
+                                </Label>
+                            </Div>
+                            <Div Class="col-6">
+                                <Label>
+                                    @L["PaymentStatus"]: @(PaymentStatus)
+                                </Label>
+                            </Div>
+                        </Div>
+
                         <div class="row my-2">
                             <label class="form-label">@L["RefundWholeOrder"]</label>
                         <div class="col-12">

@@ -1,6 +1,10 @@
 {
   "culture": "en",
   "texts": {
+    "PaymentStatus": "Payment Status",
+    "RefundChannel": "Refund Channel",
+    "AutomaticRefund": "Automatic Refund",
+    "ManualProcessing": "Manual Processing",
     "FrontPage": "Front Page",
     "CopyPageLink": "Copy Link Page",
     "GoodPoint": "Good Point",
