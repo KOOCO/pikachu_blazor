@@ -585,13 +585,13 @@ public partial class OrderDetails
             request.AddHeader("Accept", "text/html");
             request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
             request.AddParameter("MerchantID", MerchantId);
-            request.AddParameter("CreditRefundId", Order.GWSR);
+            request.AddParameter("CreditRefundId", (Order.GWSR ?? 0).ToString());
             request.AddParameter("CreditAmount", totalAmount);
             request.AddParameter("CreditCheckCode", "52482296");
             request.AddParameter("CheckMacValue", GenerateCheckMac(HashKey,
                                                                    HashIV,
                                                                    MerchantId,
-                                                                   Order.GWSR,
+                                                                   Order.GWSR ?? 0,
                                                                    totalAmount,
                                                                    "52482296"));
 
@@ -610,12 +610,12 @@ public partial class OrderDetails
         return string.Empty;
     }
 
-    public string GenerateCheckMac(string HashKey, string HashIV, string merchantID, string gwsr, string totalAmount, string creditCheckCode)
+    public string GenerateCheckMac(string HashKey, string HashIV, string merchantID, int gwsr, string totalAmount, string creditCheckCode)
     {
         Dictionary<string, string> parameters = new ()
         {
             { "MerchantID", merchantID },
-            { "CreditRefundId", gwsr },
+            { "CreditRefundId", gwsr.ToString() },
             { "CreditAmount", totalAmount },
             { "CreditCheckCode", creditCheckCode }
         };

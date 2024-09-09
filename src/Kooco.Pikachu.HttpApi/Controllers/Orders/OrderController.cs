@@ -52,11 +52,12 @@ public class OrderController(
             IFormCollection form = await Request.ReadFormAsync();
 
             bool validRtnCode = int.TryParse(form["RtnCode"], out int rtnCode);
+            bool validGWSR = int.TryParse(form["gwsr"], out int gwsr);
             bool validTradeAmt = int.TryParse(form["TradeAmt"], out int tradeAmt);
             bool validPaymentTypeChargeFee = int.TryParse(form["PaymentTypeChargeFee"], out int paymentTypeChargeFee);
             bool validSimulatePaid = int.TryParse(form["SimulatePaid"], out int simulatePaid);
 
-            var paymentResult = new PaymentResult
+            PaymentResult paymentResult = new ()
             {
                 MerchantID = form["MerchantID"],
                 MerchantTradeNo = form["MerchantTradeNo"],
@@ -72,10 +73,11 @@ public class OrderController(
                 SimulatePaid = validSimulatePaid ? simulatePaid : 0,
                 CheckMacValue = form["CheckMacValue"],
                 CustomField1 = form["CustomField1"],
-                GWSR = form["gwsr"]
+                GWSR = validGWSR ? gwsr : 0
             };
 
             await _ordersAppService.HandlePaymentAsync(paymentResult);
+
             return Ok("1|OK");
         }
         catch

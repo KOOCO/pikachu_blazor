@@ -24,6 +24,6 @@ public class PaymentResult
     public string CustomField4 { get; set; }
     public string CheckMacValue { get; set; }
     public string RequestBody { get; set; }
-    public string GWSR { get; set; }
+    public int GWSR { get; set; }
     public Guid? OrderId { get; set; }
 }
