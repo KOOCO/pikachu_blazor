@@ -31,27 +31,40 @@ public class EfCoreOrderDeliveryRepository :
     #region Methods
     public async Task<List<OrderDelivery>> GetWithDetailsAsync(Guid id)
     {
-        List<OrderDelivery> orderDeliveries = await (await GetQueryableAsync())
-            .Where(o => o.OrderId == id)
-            .Include(o => o.Items)
-                .ThenInclude(oi => oi.Item)
-                .ThenInclude(i => i.Images)
-            .Include(o => o.Items)
-                .ThenInclude(oi => oi.SetItem)
-                .ThenInclude(i => i.SetItemDetails)
-                .ThenInclude(i => i.Item)
-                .ThenInclude(i => i.Images)
-            .Include(o => o.Items)
-                .ThenInclude(oi => oi.SetItem)
-                .ThenInclude(i => i.Images)
-            .Include(o => o.Items.OrderBy(oi => oi.ItemType))
-                .ThenInclude(oi => oi.Freebie)
-                .ThenInclude(i => i.Images)
-            .ToListAsync();
+        try
+        {
+            List<OrderDelivery> orderDeliveries = await (await GetQueryableAsync())
+                .Where(o => o.OrderId == id)
+                .Include(o => o.Items)
+                    .ThenInclude(oi => oi.Item)
+                    .ThenInclude(i => i.Images)
+                .Include(o => o.Items)
+                    .ThenInclude(oi => oi.SetItem)
+                    .ThenInclude(i => i.SetItemDetails)
+                    .ThenInclude(i => i.Item)
+                    .ThenInclude(i => i.Images)
+                .Include(o => o.Items)
+                    .ThenInclude(oi => oi.SetItem)
+                    .ThenInclude(i => i.Images)
+                .Include(o => o.Items.OrderBy(oi => oi.ItemType))
+                    .ThenInclude(oi => oi.Freebie)
+                    .ThenInclude(i => i.Images)
+                .ToListAsync();
 
-        orderDeliveries = [.. orderDeliveries.OrderBy(od => od.Items.Min(oi => oi.DeliveryTemperature))] ;
+            orderDeliveries =
+            [
+                .. orderDeliveries
+                            .OrderBy<OrderDelivery, ItemStorageTemperature>(od => od.Items is { Count: > 0 }
+                                ? od.Items.Min(oi => oi.DeliveryTemperature) : ItemStorageTemperature.Normal)
+            ];
 
-        return orderDeliveries;
+            return orderDeliveries;
+        }
+        catch (Exception ex)
+        {
+
+            throw;
+        }
     }
     #endregion
 }
