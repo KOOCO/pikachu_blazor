@@ -671,45 +671,60 @@ public partial class OrderDetails
         {
             if (refunds.IsRefundOrder)
             {
-
                 await ApplyRefund();
+
                 await RefundModal.Hide();
             }
             else if (refunds.IsRefundItems)
             {
-              await  loading.Show();
-                var orderItemIds = Order?.OrderItems.Where(x => x.IsSelected).Select(x => x.Id).ToList();
+                await loading.Show();
+                
+                List<Guid>? orderItemIds = [.. Order?.OrderItems.Where(x => x.IsSelected).Select(x => x.Id)];
+                
                 if (orderItemIds.Count < 1)
                 {
                     await _uiMessageService.Error("Please Select Order Item");
+                    
                     await loading.Hide();
+                
                     return;
                 }
-                refunds.OrderItemIds=orderItemIds;
+                
+                refunds.OrderItemIds = orderItemIds;
+                
                 await _orderAppService.RefundOrderItems(orderItemIds, OrderId);
+                
                 await loading.Hide();
-                await RefundModal.Hide();
 
+                await RefundModal.Hide();
             }
-            else {
+            else 
+            {
                 await loading.Show();
-             if(refunds.Amount==0)
+
+                if(refunds.Amount is 0)
                 {
                     await _uiMessageService.Error("Please Enter Amount");
+                    
                     await loading.Hide();
+
                     return;
-
                 }
-             if(refunds.Amount>(double)Order.TotalAmount) {
 
+                if(refunds.Amount > (double)Order.TotalAmount) 
+                {
                     await _uiMessageService.Error("Enter amount is greater than order amount");
+
                     await loading.Hide();
+
                     return;
                 }
+                
                 await _orderAppService.RefundAmountAsync(refunds.Amount, OrderId);
+                
                 await loading.Hide();
-                await RefundModal.Hide();
 
+                await RefundModal.Hide();
             }
         }
         catch (Exception ex)
@@ -871,12 +886,14 @@ public partial class OrderDetails
     {
         try
         {
+            bool confimation = await _uiMessageService.Confirm(L["AreYouSureToRefundThisOrder?"]);
           
-            var confimation = await _uiMessageService.Confirm(L["AreYouSureToRefundThisOrder?"]);
             if (confimation)
             {
                 await loading.Show();
+                
                 await _refundAppService.CreateAsync(OrderId);
+                
                 await GetOrderDetailsAsync();
             }
         }
@@ -887,6 +904,7 @@ public partial class OrderDetails
         catch (Exception ex)
         {
             await _uiMessageService.Error(ex.GetType().ToString());
+
             await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
         }
         finally

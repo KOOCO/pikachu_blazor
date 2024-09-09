@@ -6,7 +6,7 @@ using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.Permissions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using MiniExcelLibs;
+using Microsoft.Extensions.Configuration;
 using RestSharp;
 using System;
 using System.Collections.Generic;
@@ -15,6 +15,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Web;
 using Volo.Abp;
@@ -36,6 +37,8 @@ public class RefundAppService : ApplicationService, IRefundAppService
     private readonly IPaymentGatewayAppService _PaymentGatewayAppService;
     private readonly IEmailSender _EmailSender;
     GreenWorldLogisticsCreateUpdateDto GreenWorld { get; set; }
+
+    private readonly IConfiguration _Configuration;
     #endregion
 
     #region Constructor
@@ -44,7 +47,8 @@ public class RefundAppService : ApplicationService, IRefundAppService
         IOrderRepository orderRepository,
         IRepository<PaymentGateway, Guid> paymentGatewayRepository,
         IEmailSender EmailSender,
-        IPaymentGatewayAppService PaymentGatewayAppService
+        IPaymentGatewayAppService PaymentGatewayAppService,
+        IConfiguration Configuration
     )
     {
         _refundRepository = refundRepository;
@@ -53,6 +57,8 @@ public class RefundAppService : ApplicationService, IRefundAppService
         _EmailSender = EmailSender;
         GreenWorld = new();
         _PaymentGatewayAppService = PaymentGatewayAppService;
+
+        _Configuration = Configuration;
     }
     #endregion
 
@@ -119,6 +125,90 @@ public class RefundAppService : ApplicationService, IRefundAppService
     public async Task SendEmailAsync(string to, string subject, string body)
     {
         await _EmailSender.SendAsync(to, subject, body);
+    }
+
+    public async Task CheckStatusAndRequestRefundAsync(Guid id)
+    {
+        Refund refund = await _refundRepository.GetAsync(id);
+
+        Order order = await _orderRepository.GetAsync(refund.OrderId);
+
+        PaymentGatewayDto? ecpay = (await _PaymentGatewayAppService.GetAllAsync()).FirstOrDefault(f => f.PaymentIntegrationType is PaymentIntegrationType.EcPay) ??
+                                    throw new UserFriendlyException("Please Set Ecpay Setting First"); ;
+
+        string status = await GetPaymentStatus(order);
+    }
+
+    private async Task<string> GetPaymentStatus(Order order)
+    {
+        if (order.PaymentMethod is PaymentMethods.CreditCard)
+        {
+            List<PaymentGatewayDto> paymentGateways = await _PaymentGatewayAppService.GetAllAsync();
+
+            PaymentGatewayDto? ecpay = paymentGateways.FirstOrDefault(w => w.PaymentIntegrationType == PaymentIntegrationType.EcPay);
+
+            if (ecpay is null) return string.Empty;
+
+            RestClientOptions options = new() { MaxTimeout = -1 };
+
+            RestClient client = new(options);
+
+            RestRequest request = new(_Configuration["EcPay:SingleCreditCardTransactionApi"], Method.Post);
+
+            string HashKey = ecpay.HashKey ?? string.Empty;
+
+            string HashIV = ecpay.HashIV ?? string.Empty;
+
+            string MerchantId = ecpay.MerchantId ?? string.Empty;
+
+            string totalAmount = order.TotalAmount.ToString(order.TotalAmount % 1 is 0 ? "0" : string.Empty);
+
+            request.AddHeader("Accept", "text/html");
+            request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+            request.AddParameter("MerchantID", MerchantId);
+            request.AddParameter("CreditRefundId", (order.GWSR ?? 0).ToString());
+            request.AddParameter("CreditAmount", totalAmount);
+            request.AddParameter("CreditCheckCode", "52482296");
+            request.AddParameter("CheckMacValue", GenerateCheckMac(HashKey,
+                                                                   HashIV,
+                                                                   MerchantId,
+                                                                   order.GWSR ?? 0,
+                                                                   totalAmount,
+                                                                   "52482296"));
+
+            RestResponse response = await client.ExecuteAsync(request);
+
+            PaymentStatus? paymentStatus = JsonSerializer.Deserialize<PaymentStatus>(response.Content);
+
+            if (paymentStatus is null || paymentStatus.RtnValue?.status is null) return string.Empty;
+
+            return paymentStatus.RtnValue?.status ?? string.Empty;
+        }
+
+        return string.Empty;
+    }
+
+    public string GenerateCheckMac(string HashKey, string HashIV, string merchantID, int gwsr, string totalAmount, string creditCheckCode)
+    {
+        Dictionary<string, string> parameters = new()
+        {
+            { "MerchantID", merchantID },
+            { "CreditRefundId", gwsr.ToString() },
+            { "CreditAmount", totalAmount },
+            { "CreditCheckCode", creditCheckCode }
+        };
+
+        IEnumerable<string>? param = parameters.ToDictionary().Keys
+                                      .OrderBy(o => o)
+                                      .Select(s => s + "=" + parameters.ToDictionary()[s]);
+
+        string collectionValue = string.Join("&", param);
+
+        collectionValue = $"HashKey={HashKey}" + "&" + collectionValue + $"&HashIV={HashIV}";
+
+        collectionValue = WebUtility.UrlEncode(collectionValue).ToLower();
+
+        return ComputeSHA256Hash(collectionValue);
     }
 
     public async Task SendRefundRequestAsync(Guid id)
@@ -188,7 +278,6 @@ public class RefundAppService : ApplicationService, IRefundAppService
     }
     public string GenerateCheckMac(string HashKey, string HashIV, string merchantID, string merchantTradeNo, string tradeNo,string action,string totalamount)
     {
-        // Create a dictionary to hold parameters
         var parameters = new Dictionary<string, string>
         {
             { "MerchantID", merchantID },
@@ -198,6 +287,7 @@ public class RefundAppService : ApplicationService, IRefundAppService
             { "TotalAmount", totalamount },
            
         };
+
         IEnumerable<string>? param = parameters.ToDictionary().Keys
                                       .OrderBy(o => o)
                                       .Select(s => s + "=" + parameters.ToDictionary()[s]);
@@ -209,36 +299,6 @@ public class RefundAppService : ApplicationService, IRefundAppService
         collectionValue = WebUtility.UrlEncode(collectionValue).ToLower();
 
         return ComputeSHA256Hash(collectionValue);
-        //// Sort parameters alphabetically
-        //var sortedParameters = parameters.OrderBy(p => p.Key);
-
-        //// Construct the request string
-        //string requestString = string.Join("&", sortedParameters.Select(p => $"{p.Key}={p.Value}"));
-
-        //// Add HashKey and HashIV
-        //requestString = $"HashKey={HashKey}&{requestString}&HashIV={HashIV}";
-
-        //// URL encode the entire string
-        ////requestString = $"HashKey={HashKey}&{requestString}&HashIV={HashIV}";
-        //string urlEncodedData = HttpUtility.UrlEncode(requestString);
-
-        //// Step 5: Convert to lowercase
-        //string lowercaseData = urlEncodedData.ToLower();
-
-        //// Step 6: Create MD5 hash
-        //using (MD5 md5 = MD5.Create())
-        //{
-        //    byte[] inputBytes = Encoding.UTF8.GetBytes(lowercaseData);
-        //    byte[] hashBytes = md5.ComputeHash(inputBytes);
-
-        //    // Convert byte array to hex string
-        //    StringBuilder sb = new StringBuilder();
-        //    for (int i = 0; i < hashBytes.Length; i++)
-        //    {
-        //        sb.Append(hashBytes[i].ToString("X2")); // To hexadecimal string
-        //    }
-        //    return sb.ToString(); // Step 7: Convert to uppercase implicitly
-        //}
     }
     public string ComputeSHA256Hash(string rawData)
     {
@@ -262,4 +322,28 @@ public class RefundResponse {
     public string RtnMsg { get; set; }
     public int RtnCode { get; set; }
 
+}
+
+public class PaymentStatus
+{
+    public string? RtnMsg { get; set; }
+    public RtnValue? RtnValue { get; set; }
+}
+
+public class RtnValue
+{
+    public string? TradeID { get; set; }
+    public string? amount { get; set; }
+    public string? clsamt { get; set; }
+    public string? authtime { get; set; }
+    public string? status { get; set; }
+    public CloseData[]? close_data { get; set; }
+}
+
+public class CloseData
+{
+    public string? status { get; set; }
+    public string? sno { get; set; }
+    public string? amount { get; set; }
+    public string? datetime { get; set; }
 }

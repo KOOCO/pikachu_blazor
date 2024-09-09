@@ -85,7 +85,8 @@
                                  Caption="@L["RefundReview"]">
                      <DisplayTemplate>
                          <Div  >
-                            @if (!(context.RefundReview == RefundReviewStatus.Proccessing && context.Order.PaymentMethod == PaymentMethods.CreditCard))
+                            @if (!(context.RefundReview is RefundReviewStatus.Proccessing && 
+                                   context.Order.PaymentMethod is PaymentMethods.CreditCard))
                              {
                                 <Select Disabled TValue="RefundReviewStatus" Class="form-select form-select-sm mb-1" 
                                            SelectedValue="@context.RefundReview" 
@@ -96,7 +97,8 @@
                                     }
                                 </Select>
                             }
-                            else if(context.RefundReview==RefundReviewStatus.Proccessing&& context.Order.PaymentMethod==PaymentMethods.CreditCard)
+                            else if(context.RefundReview is RefundReviewStatus.Proccessing && 
+                                    context.Order.PaymentMethod is PaymentMethods.CreditCard)
                             {
                                 <Select  TValue="RefundReviewStatus" Class="form-select form-select-sm mb-1"
                                         SelectedValue="@context.RefundReview"
@@ -110,10 +112,18 @@
                                     }
                                 </Select>
                             }
-                            @if (CanProcessRefund&&context.RefundReview==RefundReviewStatus.PendingReview)
+                            @if (CanProcessRefund && context.RefundReview is RefundReviewStatus.PendingReview)
                             {
-                                <Button Type="ButtonType.Button" Clicked="@(e => RefundApproved(context))" Class="btn btn-sm btn-primary">Approve</Button>
-                                <Button Type="ButtonType.Button" Clicked="@(e => RefundReject(context))" Class="btn btn-sm btn-danger">Reject</Button>
+                                <Button Type="ButtonType.Button" 
+                                        Clicked="@(e => RefundApproved(context))" 
+                                        Class="btn btn-sm btn-primary">
+                                    Approve
+                                </Button>
+                                <Button Type="ButtonType.Button" 
+                                        Clicked="@(e => RefundReject(context))" 
+                                        Class="btn btn-sm btn-danger">
+                                    Reject
+                                </Button>
                             }
                         </Div>
                      </DisplayTemplate>
