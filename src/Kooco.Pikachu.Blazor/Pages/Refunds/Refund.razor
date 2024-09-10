@@ -34,86 +34,110 @@
  </div>
 
  <Card>
-     <CardBody>
-         <DataGrid TItem="RefundDto"
+    <CardBody>
+        <DataGrid TItem="RefundDto"
                    Data="Refunds"
                    ReadData="OnDataGridReadAsync"
                    TotalItems="TotalCount"
                    ShowPager="true"
                    PageSize="PageSize"
-                  RowDoubleClicked="NavigateToOrderDetails"
-                      Responsive="true"
+                   RowDoubleClicked="NavigateToOrderDetails"
+                   Responsive="true"
                    SortChanged="OnSortChange">
-             <DataGridColumns>
+            <DataGridColumns>
                  <DataGridColumn TItem="RefundDto"
                                  Caption="@L["OrderNo"]">
-                    <DisplayTemplate>
-                        @context.Order.OrderNo
-                    </DisplayTemplate>
+                     <DisplayTemplate>
+                         @context.Order.OrderNo
+                     </DisplayTemplate>
                  </DataGridColumn>
-                    <DataGridColumn TItem="RefundDto"
-                                    Caption="@L["MerchantTradeNo"]">
-                        <DisplayTemplate>
-                            @context.Order.MerchantTradeNo
-                        </DisplayTemplate>
-                    </DataGridColumn>
-                    <DataGridColumn TItem="RefundDto"
-                                    Caption="@L["TradeNo"]">
-                        <DisplayTemplate>
-                            @context.Order.TradeNo
-                        </DisplayTemplate>
-                    </DataGridColumn>
+                 <DataGridColumn TItem="RefundDto"
+                                 Caption="@L["MerchantTradeNo"]">
+                     <DisplayTemplate>
+                         @context.Order.MerchantTradeNo
+                     </DisplayTemplate>
+                 </DataGridColumn>
+                 <DataGridColumn TItem="RefundDto"
+                                 Caption="@L["TradeNo"]">
+                     <DisplayTemplate>
+                         @context.Order.TradeNo
+                     </DisplayTemplate>
+                 </DataGridColumn>
                  <DataGridColumn TItem="RefundDto"
                                  Caption="@L["SubmissionTime"]">
-                     <DisplayTemplate>
-                         @context.CreationTime.ToShortDateString() @context.CreationTime.ToShortTimeString()
-                     </DisplayTemplate>
+                    <DisplayTemplate>
+                        @context.CreationTime.ToShortDateString() @context.CreationTime.ToShortTimeString()
+                    </DisplayTemplate>
                  </DataGridColumn>
                  <DataGridColumn TItem="RefundDto"
                                  Caption="@L["ReviewCompletionTime"]">
-                     <DisplayTemplate>
-                         @context.ReviewCompletionTime?.ToShortDateString() @context.ReviewCompletionTime?.ToShortTimeString()
-                     </DisplayTemplate>
+                    <DisplayTemplate>
+                        @context.ReviewCompletionTime?.ToShortDateString() @context.ReviewCompletionTime?.ToShortTimeString()
+                    </DisplayTemplate>
                  </DataGridColumn>
                  <DataGridColumn TItem="RefundDto"
                                  Caption="@L["CustomerName"]">
-                     <DisplayTemplate>
-                         @context.Order.CustomerName
-                     </DisplayTemplate>
+                    <DisplayTemplate>
+                        @context.Order.CustomerName
+                    </DisplayTemplate>
                  </DataGridColumn>
-                 <DataGridColumn Width="15%" TItem="RefundDto"
+                 <DataGridColumn Width="15%" 
+                                 TItem="RefundDto"
                                  Caption="@L["RefundReview"]">
-                     <DisplayTemplate>
-                         <Div  >
-                            @if (!(context.RefundReview is RefundReviewStatus.Proccessing && 
-                                   context.Order.PaymentMethod is PaymentMethods.CreditCard))
-                             {
-                                <Select Disabled TValue="RefundReviewStatus" Class="form-select form-select-sm mb-1" 
-                                           SelectedValue="@context.RefundReview" 
-                                           SelectedValueChanged="@(e => RefundReviewChanged(e, context))">
-                                    @foreach (var enumValue in Enum.GetValues(typeof(RefundReviewStatus)))
+                    <DisplayTemplate>
+                        @if (!(context.RefundReview is RefundReviewStatus.Proccessing && 
+                               context.Order.PaymentMethod is PaymentMethods.CreditCard))
+                        {
+                            <Div Class="d-flex">
+                                <Select Disabled 
+                                        TValue="RefundReviewStatus" 
+                                        Class="form-select form-select-sm mb-1" 
+                                        SelectedValue="@context.RefundReview" 
+                                        SelectedValueChanged="@(e => RefundReviewChanged(e, context))">
+                                    @foreach (object enumValue in Enum.GetValues(typeof(RefundReviewStatus)))
                                     {
                                         <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
                                     }
                                 </Select>
-                            }
-                            else if(context.RefundReview is RefundReviewStatus.Proccessing && 
-                                    context.Order.PaymentMethod is PaymentMethods.CreditCard)
-                            {
-                                <Select  TValue="RefundReviewStatus" Class="form-select form-select-sm mb-1"
+
+                                @if (context.RefundReview is RefundReviewStatus.Fail) 
+                                {
+                                    <Button Class="btn-white"
+                                            Clicked="@((e) => RefundApproved(context))">
+                                        <i class="fas fa-rotate" />
+                                    </Button>
+                                }
+                            </Div>
+                        }
+                        else if (context.RefundReview is RefundReviewStatus.Proccessing && 
+                                 context.Order.PaymentMethod is PaymentMethods.CreditCard)
+                        {
+                            <Div Class="d-flex">
+                                <Select TValue="RefundReviewStatus" 
+                                        Class="form-select form-select-sm mb-1"
                                         SelectedValue="@context.RefundReview"
                                         SelectedValueChanged="@(e => RefundReviewChanged(e, context))">
-                                    @foreach (var enumValue in Enum.GetValues(typeof(RefundReviewStatus)))
+                                    @foreach (object enumValue in Enum.GetValues(typeof(RefundReviewStatus)))
                                     {
-                                        @if(enumValue.ToString() == "Success" || enumValue.ToString() == "Fail")
+                                        @if(enumValue.ToString() is "Success" || enumValue.ToString() is "Fail")
                                         {
                                             <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
                                         }
                                     }
-                                </Select>
-                            }
-                            @if (CanProcessRefund && context.RefundReview is RefundReviewStatus.PendingReview)
-                            {
+                                </Select>zd
+
+                                @if (context.RefundReview is RefundReviewStatus.Fail) 
+                                {
+                                    <Button Class="btn-white"
+                                            Clicked="@((e) => RefundApproved(context))">
+                                        <i class="fas fa-rotate" />
+                                    </Button>
+                                }
+                            </Div>
+                        }
+                        @if (CanProcessRefund && context.RefundReview is RefundReviewStatus.PendingReview)
+                        {
+                            <Div>
                                 <Button Type="ButtonType.Button" 
                                         Clicked="@(e => RefundApproved(context))" 
                                         Class="btn btn-sm btn-primary">
@@ -124,8 +148,8 @@
                                         Class="btn btn-sm btn-danger">
                                     Reject
                                 </Button>
-                            }
-                        </Div>
+                            </Div>
+                        }
                      </DisplayTemplate>
                  </DataGridColumn>
                 <DataGridColumn TItem="RefundDto"

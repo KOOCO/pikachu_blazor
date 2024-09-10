@@ -141,6 +141,8 @@ public class RefundAppService : ApplicationService, IRefundAppService
 
         string status = await GetPaymentStatus(order, ecpay);
 
+        if (status.IsNullOrEmpty()) return;
+
         if (order.OrderRefundType is not null && order.OrderRefundType is OrderRefundType.PartialRefund)
         {
             if (status is "已授權")
