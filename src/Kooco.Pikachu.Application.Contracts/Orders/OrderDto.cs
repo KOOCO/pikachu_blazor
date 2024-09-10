@@ -76,4 +76,5 @@ public class OrderDto : FullAuditedEntityDto<Guid>
     public decimal? DeliveryCost { get; set; }
     public string? TradeNo { get; set; }
     public int? GWSR { get; set; }
+    public OrderRefundType? OrderRefundType { get; set; }
 }

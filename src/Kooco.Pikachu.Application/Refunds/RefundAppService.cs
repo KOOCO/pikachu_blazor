@@ -97,19 +97,22 @@ public class RefundAppService : ApplicationService, IRefundAppService
 
     public async Task<RefundDto> UpdateRefundReviewAsync(Guid id, RefundReviewStatus input)
     {
-        var refund = await _refundRepository.GetAsync(id);
+        Refund refund = await _refundRepository.GetAsync(id);
+
         refund.RefundReview = input;
-        if (input == RefundReviewStatus.Proccessing||input==RefundReviewStatus.ReturnedApplication)
+
+        if (input is RefundReviewStatus.Proccessing || 
+            input is RefundReviewStatus.ReturnedApplication)
         {
             refund.ReviewCompletionTime = DateTime.Now;
+
             refund.Approver = CurrentUser.Name;
         }
-        if (input == RefundReviewStatus.Fail || input == RefundReviewStatus.Success)
-        {
-           
+        if (input is RefundReviewStatus.Fail || input is RefundReviewStatus.Success) 
             refund.Refunder = CurrentUser.Name;
-        }
+
         await _refundRepository.UpdateAsync(refund);
+        
         return ObjectMapper.Map<Refund, RefundDto>(refund);
     }
 
@@ -136,16 +139,42 @@ public class RefundAppService : ApplicationService, IRefundAppService
         PaymentGatewayDto? ecpay = (await _PaymentGatewayAppService.GetAllAsync()).FirstOrDefault(f => f.PaymentIntegrationType is PaymentIntegrationType.EcPay) ??
                                     throw new UserFriendlyException("Please Set Ecpay Setting First"); ;
 
-        string status = await GetPaymentStatus(order);
+        string status = await GetPaymentStatus(order, ecpay);
+
+        if (order.OrderRefundType is not null && order.OrderRefundType is OrderRefundType.PartialRefund)
+        {
+            if (status is "已授權")
+            {
+                await SendRefundRequestAsync(refund, order, ecpay, "C");
+
+                await SendRefundRequestAsync(refund, order, ecpay, "R", true);
+            }
+
+            else if (status is "已關帳" || status is "要關帳") await SendRefundRequestAsync(refund, order, ecpay, "R", true);
+        }
+
+        else
+        {
+            if (status is "已授權") await SendRefundRequestAsync(refund, order, ecpay, "N", true);
+
+            else if (status is "已關帳") await SendRefundRequestAsync(refund, order, ecpay, "R", true);
+
+            else if (status is "要關帳")
+            {
+                await SendRefundRequestAsync(refund, order, ecpay, "E");
+
+                await SendRefundRequestAsync(refund, order, ecpay, "N", true);
+            }
+        }
+
+        await UpdateRefundReviewAsync(id, refund.RefundReview);
     }
 
-    private async Task<string> GetPaymentStatus(Order order)
+    private async Task<string> GetPaymentStatus(Order order, PaymentGatewayDto? ecpay)
     {
         if (order.PaymentMethod is PaymentMethods.CreditCard)
         {
             List<PaymentGatewayDto> paymentGateways = await _PaymentGatewayAppService.GetAllAsync();
-
-            PaymentGatewayDto? ecpay = paymentGateways.FirstOrDefault(w => w.PaymentIntegrationType == PaymentIntegrationType.EcPay);
 
             if (ecpay is null) return string.Empty;
 
@@ -209,6 +238,61 @@ public class RefundAppService : ApplicationService, IRefundAppService
         collectionValue = WebUtility.UrlEncode(collectionValue).ToLower();
 
         return ComputeSHA256Hash(collectionValue);
+    }
+
+    public async Task SendRefundRequestAsync(Refund refund, Order order, PaymentGatewayDto? ecpay, string action, bool sendEmail = false)
+    {
+        string logisticSubType = string.Empty;
+
+        RestClientOptions options = new() { MaxTimeout = -1 };
+
+        RestClient client = new(options);
+
+        RestRequest request = new("https://payment.ecpay.com.tw/CreditDetail/DoAction", Method.Post);
+
+        string HashKey = ecpay.HashKey ?? string.Empty;
+        string HashIV = ecpay.HashIV ?? string.Empty;
+        string MerchantId = ecpay.MerchantId ?? string.Empty;
+        request.AddHeader("Accept", "text/html");
+        request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+        request.AddParameter("MerchantID", MerchantId);
+        request.AddParameter("MerchantTradeNo", (refund.Order?.MerchantTradeNo) ?? (refund.Order?.OrderNo));
+        request.AddParameter("TradeNo", refund.Order?.TradeNo);
+        request.AddParameter("TotalAmount", (int)(refund.Order?.TotalAmount));
+        request.AddParameter("Action", action);
+        request.AddParameter("CheckMacValue", GenerateCheckMac(HashKey,
+                                                               HashIV,
+                                                               MerchantId,
+                                                               refund.Order?.MerchantTradeNo ?? refund.Order?.OrderNo,
+                                                               refund.Order?.TradeNo,
+                                                               action,
+                                                               ((int)refund.Order?.TotalAmount).ToString()));
+
+        RestResponse response = await client.ExecuteAsync(request);
+
+        NameValueCollection queryParams = HttpUtility.ParseQueryString(response.Content);
+
+        RefundResponse result = new()
+        {
+            MerchantID = queryParams["MerchantID"] ?? string.Empty,
+            MerchantTradeNo = queryParams["MerchantTradeNo"] ?? string.Empty,
+            TradeNo = queryParams["TradeNo"] ?? string.Empty,
+            RtnMsg = queryParams["RtnMsg"] ?? string.Empty,
+            RtnCode = int.Parse(queryParams["RtnCode"])
+        };
+
+        if (result is not null && sendEmail)
+        {
+            if (result.RtnCode is 1)
+            {
+                refund.RefundReview = RefundReviewStatus.Success;
+
+                if (!order.CustomerEmail.IsNullOrEmpty())
+                    await SendEmailForRefundAsync(order.CustomerEmail, order.OrderNo);
+            }
+
+            else refund.RefundReview = RefundReviewStatus.Fail;
+        }
     }
 
     public async Task SendRefundRequestAsync(Guid id)
@@ -284,8 +368,7 @@ public class RefundAppService : ApplicationService, IRefundAppService
             { "MerchantTradeNo", merchantTradeNo },
             { "TradeNo", tradeNo },
             { "Action", action },
-            { "TotalAmount", totalamount },
-           
+            { "TotalAmount", totalamount }
         };
 
         IEnumerable<string>? param = parameters.ToDictionary().Keys

@@ -153,9 +153,7 @@ public partial class OrderDetails
 
         if (Order.DeliveryMethod is not DeliveryMethod.SelfPickup &&
             Order.DeliveryMethod is not DeliveryMethod.DeliveredByStore)
-        {
-            OrderDeliveryCost = Order.DeliveryCost;
-        }
+                OrderDeliveryCost = Order.DeliveryCost;
 
         OrderDeliveries = await _orderDeliveryAppService.GetListByOrderAsync(OrderId);
 

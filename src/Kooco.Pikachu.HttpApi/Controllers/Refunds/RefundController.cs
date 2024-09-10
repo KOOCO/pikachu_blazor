@@ -18,6 +18,12 @@ public class RefundController(
     IRefundAppService _refundAppService
     ) : AbpController, IRefundAppService
 {
+    [HttpGet("check-status-and-request-refund")]
+    public Task CheckStatusAndRequestRefundAsync(Guid id)
+    {
+        throw new NotImplementedException();
+    }
+
     [HttpPost("{id}")]
     public Task CreateAsync(Guid orderId)
     {
