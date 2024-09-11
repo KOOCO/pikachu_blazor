@@ -27,6 +27,8 @@ public class TCatLogisticsCreateUpdateDto
     [RegularExpression(@"^09\d*$", ErrorMessage = "Phone number must start with 09.")]
     public string SenderPhoneNumber { get; set; }
 
+    public string SenderPostalCode { get; set; }
+
     [Required(ErrorMessage = "This Field is Required")]
     public string SenderAddress { get; set; }
 
