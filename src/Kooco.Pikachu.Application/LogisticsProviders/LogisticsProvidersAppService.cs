@@ -417,7 +417,8 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
 
             RootObject? rootObject = JsonConvert.DeserializeObject<RootObject>(responseBody);
 
-            if (rootObject is not null && rootObject.IsOK is "Y") return rootObject.Data.Addresses.First().PostNumber;
+            if (rootObject is not null && rootObject.IsOK is "Y") 
+                return rootObject.Data.Addresses.First().PostNumber.Remove(0, 3).Replace("-", string.Empty);
         }
 
         return string.Empty;
