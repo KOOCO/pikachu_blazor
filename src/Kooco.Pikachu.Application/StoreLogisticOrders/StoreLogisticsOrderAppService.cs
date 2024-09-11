@@ -1,20 +1,25 @@
 ﻿using Azure;
 using Azure.Core;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.Response;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -42,10 +47,16 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
     BNormalCreateUpdateDto BNormal { get; set; }
     BNormalCreateUpdateDto BFreeze { get; set; }
     BNormalCreateUpdateDto BFrozen { get; set; }
+    TCatLogisticsCreateUpdateDto TCatLogistics { get; set; }
+    TCatNormalCreateUpdateDto TCatNormal { get; set; }
+    TCatFreezeCreateUpdateDto TCatFreeze { get; set; }
+    TCatFrozenCreateUpdateDto TCatFrozen { get; set; }
 
     private IStringLocalizer<PikachuResource> _L;
 
     private readonly IConfiguration _configuration;
+
+    private readonly IGroupBuyAppService _GroupBuyAppService;
     #endregion
 
     #region Constructor
@@ -54,7 +65,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         IOrderRepository orderRepository,
         ILogisticsProvidersAppService logisticsProvidersAppService, 
         IConfiguration configuration,
-        IStringLocalizer<PikachuResource> L
+        IStringLocalizer<PikachuResource> L,
+        IGroupBuyAppService GroupBuyAppService
     ) 
     {   
         _orderRepository = orderRepository;
@@ -71,6 +83,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         BFreeze = new();
         BFrozen = new();
         _L = L;
+        _GroupBuyAppService = GroupBuyAppService;
     }
     #endregion
 
@@ -183,6 +196,202 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             await _orderRepository.UpdateAsync(order);
         }
         return result;
+    }
+
+    public async Task GenerateDeliveryNumberForTCatDeliveryAsync(OrderDto order, OrderDeliveryDto orderDelivery)
+    {
+        List<LogisticsProviderSettingsDto> providers = await _logisticsProvidersAppService.GetAllAsync();
+
+        LogisticsProviderSettingsDto? tCat = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCat);
+
+        if (tCat is not null) TCatLogistics = ObjectMapper.Map<LogisticsProviderSettingsDto, TCatLogisticsCreateUpdateDto>(tCat);
+
+        LogisticsProviderSettingsDto? tCatNormal = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCatNormal);
+
+        if (tCatNormal is not null) TCatNormal = ObjectMapper.Map<LogisticsProviderSettingsDto, TCatNormalCreateUpdateDto>(tCatNormal);
+
+        LogisticsProviderSettingsDto? tCatFreeze = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCatFreeze);
+
+        if (tCatFreeze is not null) TCatFreeze = ObjectMapper.Map<LogisticsProviderSettingsDto, TCatFreezeCreateUpdateDto>(tCatFreeze);
+
+        LogisticsProviderSettingsDto? tCatFrozen = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCatFrozen);
+
+        if (tCatFrozen is not null) TCatFrozen = ObjectMapper.Map<LogisticsProviderSettingsDto, TCatFrozenCreateUpdateDto>(tCatFrozen);
+
+        string thermosphere = string.Empty; string spec = string.Empty; string isSwipe = string.Empty;
+
+        if (orderDelivery.Items is { Count: > 0 } &&
+            orderDelivery.Items.First().DeliveryTemperature is ItemStorageTemperature.Normal)
+        {
+            thermosphere = "0001";
+
+            spec = GetSpec(TCatNormal.Size);
+
+            isSwipe = TCatNormal.TCatPaymentMethod is TCatPaymentMethod.CardAndMobilePaymentsAccepted ? "Y" : "N";
+        }
+
+        else if (orderDelivery.Items is { Count: > 0 } &&
+                 orderDelivery.Items.First().DeliveryTemperature is ItemStorageTemperature.Freeze)
+        {
+            thermosphere = "0002";
+
+            spec = GetSpec(TCatFreeze.Size);
+
+            isSwipe = TCatFreeze.TCatPaymentMethod is TCatPaymentMethod.CardAndMobilePaymentsAccepted ? "Y" : "N";
+        }
+
+        else if (orderDelivery.Items is { Count: > 0 } &&
+                 orderDelivery.Items.First().DeliveryTemperature is ItemStorageTemperature.Frozen)
+        {
+            thermosphere = "0003";
+
+            spec = GetSpec(TCatFrozen.Size);
+
+            isSwipe = TCatFrozen.TCatPaymentMethod is TCatPaymentMethod.CardAndMobilePaymentsAccepted ? "Y" : "N";
+        }
+
+        string deliveryTime = order.ReceivingTime switch 
+        { 
+            ReceivingTime.Before13PM => "01",
+            ReceivingTime.Between14To18PM => "02",
+            _ => "04"
+        };
+
+        string collectionAmount = GetCollectionAmount(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost);
+
+        string isDeclare = TCatLogistics.DeclaredValue &&
+                           IsOrderAmountValid(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost) ? "Y" : "N";
+
+        PrintOBTRequest request = new ()
+        {
+            CustomerId = TCatLogistics.CustomerId,
+            CustomerToken = TCatLogistics.CustomerToken,
+            PrintType = "01",
+            PrintOBTType = $"0{(int)TCatLogistics.TCatShippingLabelForm}",
+            Orders = 
+            [
+                new OrderOBT
+                {
+                    OBTNumber = string.Empty,
+                    OrderId = order.OrderNo,
+                    Thermosphere = thermosphere,
+                    Spec = spec,
+                    ReceiptLocation = "01",
+                    ReceiptStationNo = string.Empty,
+                    RecipientName = order.RecipientName ?? string.Empty,
+                    RecipientTel = string.Empty,
+                    RecipientMobile = order.RecipientPhone ?? string.Empty,
+                    RecipientAddress = $"{order.City}{order.AddressDetails}",
+                    SenderName = TCatLogistics.SenderName,
+                    SenderTel = string.Empty,
+                    SenderMobile = TCatLogistics.SenderPhoneNumber,
+                    SenderZipCode = TCatLogistics.SenderPostalCode,
+                    SenderAddress = TCatLogistics.SenderAddress,
+                    ShipmentDate = DateTime.Now.AddDays(1).ToString("yyyyMMdd"),
+                    DeliveryDate = DateTime.Now.AddDays(2).ToString("yyyyMMdd"),
+                    DeliveryTime = deliveryTime,
+                    IsFreight = "N",
+                    IsCollection = order.PaymentMethod is PaymentMethods.CashOnDelivery ? "Y" : "N",
+                    CollectionAmount = collectionAmount,
+                    IsSwipe = isSwipe,
+                    IsMobilePay = isSwipe,
+                    IsDeclare = isDeclare,
+                    DeclareAmount = isDeclare is "Y" ? GetDeclareAmount(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost) : 0,
+                    ProductTypeId = GetProductType(order.GroupBuy.ProductType),
+                    ProductName = GetProductName(order.GroupBuy.GroupBuyName),
+                    Memo = string.Empty
+                }
+            ]
+        };
+
+        var jsonContent = JsonConvert.SerializeObject(request);
+        var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+        using (var httpClient = new HttpClient())
+        {
+            var response = await httpClient.PostAsync("https://egs.suda.com.tw:8443/api/Egs/PrintOBT", content);
+            var responseContent = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(responseContent);
+        }
+    }
+
+    public bool IsOrderAmountValid(decimal? totalAmount, decimal? deliveryCost)
+    {
+        decimal totalAmountValue = totalAmount is not null ? totalAmount.Value : 0.00m;
+
+        decimal deliveryCostValue = deliveryCost is not null ? deliveryCost.Value : 0.00m;
+
+        decimal totalValue = totalAmountValue + deliveryCostValue;
+
+        return totalValue > 20000;
+    }
+
+    public decimal GetDeclareAmount(decimal? totalAmount, decimal? deliveryCost)
+    {
+        decimal totalAmountValue = totalAmount is not null ? totalAmount.Value : 0.00m;
+
+        decimal deliveryCostValue = deliveryCost is not null ? deliveryCost.Value : 0.00m;
+
+        decimal totalValue = totalAmountValue + deliveryCostValue;
+
+        totalValue = totalValue.IsBetween(20000, 100001) ? totalValue : 0;
+
+        return totalValue;
+    }
+
+    public string GetCollectionAmount(decimal? totalAmount, decimal? deliveryCost)
+    {
+        decimal totalAmountValue = totalAmount is not null ? totalAmount.Value : 0.00m;
+
+        decimal deliveryCostValue = deliveryCost is not null ? deliveryCost.Value : 0.00m;
+
+        decimal totalValue = totalAmountValue + deliveryCostValue;
+
+        totalValue = totalValue.IsBetween(0, 100001) ? totalValue : 0;
+
+        return totalValue.ToString("N2");
+    }
+
+    public string GetProductName(string groupBuyName)
+    {
+        if (groupBuyName.Length <= 20) return groupBuyName;
+
+        return groupBuyName[..20];
+    }
+
+    public string GetProductType(ProductType? type)
+    {
+        return type switch
+        {
+            ProductType.GeneralFood => "0001",
+            ProductType.SpecialityProductsSweets => "0002",
+            ProductType.AlcoholOilVinegarSauces => "0003",
+            ProductType.GrainsVegetablesFruits => "0004",
+            ProductType.SeafoodMeatProducts => "0005",
+            ProductType.ThreeCConsumerElectronics => "0006",
+            ProductType.HomeAppliances => "0007",
+            ProductType.ClothingandAccessories => "0008",
+            ProductType.HouseholdItems => "0009",
+            ProductType.BeautyandCosmetics => "0010",
+            ProductType.HealthSupplements => "0011",
+            ProductType.MedicalSupplies => "0012",
+            ProductType.PetSuppliesandFeed => "0013",
+            ProductType.PrintedMaterials => "0014",
+            ProductType.Others => "0015",
+            _ => string.Empty
+        };
+    }
+
+    public string GetSpec(SizeEnum size)
+    {
+        return size switch
+        {
+            SizeEnum.Cm0001 => "0001",
+            SizeEnum.Cm0002 => "0002",
+            SizeEnum.Cm0003 => "0003",
+            SizeEnum.Cm0004 => "0004",
+            _ => string.Empty,
+        };
     }
 
     public async Task<ResponseResultDto> CreateStoreLogisticsOrderAsync(Guid orderId, Guid orderDeliveryId)
