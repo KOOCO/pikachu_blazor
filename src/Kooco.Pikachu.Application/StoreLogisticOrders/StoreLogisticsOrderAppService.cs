@@ -304,15 +304,17 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             ]
         };
 
-        var jsonContent = JsonConvert.SerializeObject(request);
-        var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+        string jsonContent = JsonConvert.SerializeObject(request);
 
-        using (var httpClient = new HttpClient())
-        {
-            var response = await httpClient.PostAsync("https://egs.suda.com.tw:8443/api/Egs/PrintOBT", content);
-            var responseContent = await response.Content.ReadAsStringAsync();
-            Console.WriteLine(responseContent);
-        }
+        StringContent content = new (jsonContent, Encoding.UTF8, "application/json");
+
+        using HttpClient httpClient = new();
+
+        HttpResponseMessage response = await httpClient.PostAsync("https://egs.suda.com.tw:8443/api/Egs/PrintOBT", content);
+
+        string responseContent = await response.Content.ReadAsStringAsync();
+
+        Console.WriteLine(responseContent);
     }
 
     public bool IsOrderAmountValid(decimal? totalAmount, decimal? deliveryCost)

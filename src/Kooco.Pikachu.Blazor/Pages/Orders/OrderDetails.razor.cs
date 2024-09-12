@@ -528,10 +528,10 @@ public partial class OrderDetails
             //    //NavigationManager.NavigateTo($"map-response/{htmlForm}");
             #endregion
         }
-        //else if (deliveryOrder.DeliveryMethod is DeliveryMethod.TCatDelivery)
-        //{
-            
-        //}
+        else if (deliveryOrder.DeliveryMethod is DeliveryMethod.TCatDeliveryNormal)
+        {
+            await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCatDeliveryAsync(Order, deliveryOrder);
+        }
         else
         {
             ResponseResultDto result = await _storeLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(Order.Id, OrderDeliveryId);

@@ -1,5 +1,7 @@
 ﻿using Asp.Versioning;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.OrderDeliveries;
+using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Refunds;
 using Kooco.Pikachu.StoreLogisticOrders;
 using Microsoft.AspNetCore.Mvc;
@@ -32,6 +34,13 @@ namespace Kooco.Pikachu.Controllers.StoreLogisticOrders
 
             return _storeLogisticsOrderAppService.CreateStoreLogisticsOrderAsync( orderId,  orderDeliveryId);
         }
+
+        [HttpGet("generate-deliveryNumber-for-tCatDelivery")]
+        public Task GenerateDeliveryNumberForTCatDeliveryAsync(OrderDto order, OrderDeliveryDto orderDelivery)
+        {
+            throw new NotImplementedException();
+        }
+
         [HttpGet("get-store/{deliveryMethod}")]
         public Task<EmapApiResponse> GetStoreAsync(string deliveryMethod)
         {

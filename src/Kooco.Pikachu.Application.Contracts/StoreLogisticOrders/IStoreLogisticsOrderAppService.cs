@@ -1,4 +1,6 @@
 ﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.OrderDeliveries;
+using Kooco.Pikachu.Orders;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,10 +11,12 @@ namespace Kooco.Pikachu.StoreLogisticOrders
 {
     public interface IStoreLogisticsOrderAppService: IApplicationService
     {
-
         Task<ResponseResultDto> CreateStoreLogisticsOrderAsync(Guid orderId, Guid orderDeliveryId);
-        Task<ResponseResultDto> CreateHomeDeliveryShipmentOrderAsync(Guid orderId, Guid orderDeliveryId);
-        Task<EmapApiResponse> GetStoreAsync(string deliveryMethod);
 
+        Task GenerateDeliveryNumberForTCatDeliveryAsync(OrderDto order, OrderDeliveryDto orderDelivery);
+
+        Task<ResponseResultDto> CreateHomeDeliveryShipmentOrderAsync(Guid orderId, Guid orderDeliveryId);
+
+        Task<EmapApiResponse> GetStoreAsync(string deliveryMethod);
     }
 }
