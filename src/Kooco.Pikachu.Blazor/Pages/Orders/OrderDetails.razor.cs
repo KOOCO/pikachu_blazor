@@ -528,10 +528,10 @@ public partial class OrderDetails
             //    //NavigationManager.NavigateTo($"map-response/{htmlForm}");
             #endregion
         }
-        else if (deliveryOrder.DeliveryMethod is DeliveryMethod.TCatDelivery)
-        {
+        //else if (deliveryOrder.DeliveryMethod is DeliveryMethod.TCatDelivery)
+        //{
             
-        }
+        //}
         else
         {
             ResponseResultDto result = await _storeLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(Order.Id, OrderDeliveryId);
@@ -557,7 +557,13 @@ public partial class OrderDetails
                deliveryMethod is DeliveryMethod.PostOffice ||
                deliveryMethod is DeliveryMethod.BlackCat1 ||
                deliveryMethod is DeliveryMethod.BlackCatFreeze ||
-               deliveryMethod is DeliveryMethod.BlackCatFrozen;
+               deliveryMethod is DeliveryMethod.BlackCatFrozen ||
+               deliveryMethod is DeliveryMethod.TCatDeliveryNormal ||
+               deliveryMethod is DeliveryMethod.TCatDeliveryFreeze ||
+               deliveryMethod is DeliveryMethod.TCatDeliveryFrozen ||
+               deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenNormal ||
+               deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFreeze || 
+               deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFrozen;
     }
 
     private async Task<string> GetPaymentStatus()

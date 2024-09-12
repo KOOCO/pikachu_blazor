@@ -1,6 +1,12 @@
 {
   "culture": "en",
   "texts": {
+    "TCatDeliveryNormal": "t-Cat Normal",
+    "TCatDeliveryFreeze": "t-Cat Freeze",
+    "TCatDeliveryFrozen": "t-Cat Frozen",
+    "TCatDeliverySevenElevenNormal": "t-Cat 7-11 Normal",
+    "TCatDeliverySevenElevenFreeze": "t-Cat 7-11 Freeze",
+    "TCatDeliverySevenElevenFrozen": "t-Cat 7-11 Frozen",
     "PaymentStatus": "Payment Status",
     "RefundChannel": "Refund Channel",
     "AutomaticRefund": "Automatic Refund",

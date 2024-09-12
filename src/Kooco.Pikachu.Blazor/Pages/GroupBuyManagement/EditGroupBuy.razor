@@ -486,8 +486,13 @@
                             @if ((EditGroupBuyDto.ExcludeShippingMethod is not null) && 
                                 ((EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1")) || 
                                 (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFreeze")) || 
-                                (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFrozen")) ||
-                                (EditGroupBuyDto.ExcludeShippingMethod.Contains(PikachuResource.TCatDelivery))))
+                                (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFrozen")) || 
+                                (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryNormal")) ||
+                                (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryFreeze")) || 
+                                (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryFrozen")) || 
+                                (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenNormal")) ||
+                                (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenFreeze")) ||
+                                (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenFrozen"))))
                             {
                                 <label for="@island" class="form-label">
                                     <input type="checkbox" 

@@ -484,26 +484,40 @@
                 <div class="col-8">
                     @if (DeliveryTimeConts.BlackCat != null)
                     {
-                        @foreach(var island in DeliveryTimeConts.BlackCat)
+                        @foreach(string island in DeliveryTimeConts.BlackCat)
                         {
-                        @if ((CreateGroupBuyDto.ExcludeShippingMethod != null) && ((CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1")) || (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFreeze"))||(CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFrozen"))))
-                        {
-                            <label for="@island" class="form-label">
-
-                            <input  type="checkbox" class="form-check-input me-1" id="@island" checked="@(CreateGroupBuyDto.BlackCatDeliveryTime != null && CreateGroupBuyDto.BlackCatDeliveryTime.Contains(island))" @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)" />
-                                @L[island]
-                            </label>
-                        }
-                        else
-                        {
-                            <label for="@island" class="form-label">
-
-                                <input disabled type="checkbox" class="form-check-input me-1" id="@island" checked="@(CreateGroupBuyDto.BlackCatDeliveryTime != null && CreateGroupBuyDto.BlackCatDeliveryTime.Contains(island))" @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)" />
-                                @L[island]
-                            </label>
-
-
-                        }
+                            @if ((CreateGroupBuyDto.ExcludeShippingMethod is not null) && 
+                                ((CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1")) || 
+                                (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFreeze")) ||
+                                (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFrozen")) ||
+                                (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryNormal")) ||
+                                (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryFreeze")) ||
+                                (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryFrozen")) ||
+                                (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenNormal")) ||
+                                (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenFreeze")) ||
+                                (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenFrozen"))))
+                            {
+                                <label for="@island" class="form-label">
+                                    <input type="checkbox" 
+                                           class="form-check-input me-1" 
+                                           id="@island" 
+                                           checked="@(CreateGroupBuyDto.BlackCatDeliveryTime != null && CreateGroupBuyDto.BlackCatDeliveryTime.Contains(island))" 
+                                           @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)" />
+                                        @L[island]
+                                </label>
+                            }
+                            else
+                            {
+                                <label for="@island" class="form-label">
+                                    <input disabled 
+                                           type="checkbox" 
+                                           class="form-check-input me-1" 
+                                           id="@island" 
+                                           checked="@(CreateGroupBuyDto.BlackCatDeliveryTime != null && CreateGroupBuyDto.BlackCatDeliveryTime.Contains(island))" 
+                                           @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)" />
+                                    @L[island]
+                                </label>
+                            }
                         }
                     }
                 </div>

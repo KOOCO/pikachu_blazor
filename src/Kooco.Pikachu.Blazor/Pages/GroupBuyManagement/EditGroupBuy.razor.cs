@@ -643,7 +643,7 @@ public partial class EditGroupBuy
     }
     void OnShippingMethodCheckedChange(string method, ChangeEventArgs e)
     {
-        var value = (bool)(e?.Value ?? false);
+        bool value = (bool)(e?.Value ?? false);
 
         if (value)
         {
