@@ -202,16 +202,20 @@
         border: 1px solid lightgrey !important;
     }
 
-.invalid{
+.invalid {
     border: 1px solid red !important;
 }
 
-.validation-message{
+.validation-message {
     font-size: smaller;
     margin-top: 2px;
     color: red;
 }
 
-.search-bar{
+.search-bar {
     border-color: lightgrey;
+}
+
+.b-table tbody tr {
+    cursor: default !important;
 }

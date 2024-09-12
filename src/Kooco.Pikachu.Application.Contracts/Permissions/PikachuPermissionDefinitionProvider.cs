@@ -14,11 +14,11 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
         myGroup.AddPermission(PikachuPermissions.GroupBuyList, L("Permission:GroupBuyList"));
         myGroup.AddPermission(PikachuPermissions.GroupBuyReport, L("Permission:GroupBuyReport"));
         myGroup.AddPermission(PikachuPermissions.GroupBuyPageConfig, L("Permission:GroupBuyPageConfig"));
-        
+
 
         var myGroup1 = context.AddGroup(PikachuPermissions.ProductManagement);
         myGroup1.AddPermission(PikachuPermissions.InventoryReport, L("Permission:InventoryReport"));
-        
+
         myGroup1.AddPermission(PikachuPermissions.GoodsList, L("Permission:ProductList"));
         myGroup1.AddPermission(PikachuPermissions.GoodsGroupingSetting, L("Permission:ProductGroupingSetting"));
         //myGroup.AddPermission(PikachuPermissions.StockReport, L("Permission:StockReport"));
@@ -29,8 +29,8 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
         var orderPermissions = myGroup2.AddPermission(PikachuPermissions.Orders.Default, L("Permission:Orders"));
         orderPermissions.AddChild(PikachuPermissions.Orders.AddStoreComment, L("Permission:AddStoreComments"));
         myGroup2.AddPermission(PikachuPermissions.ReturnExchangeOrder, L("Permission:ReturnExchangeOrder"));
-        
-       
+
+
 
         var refundPermissions = myGroup2.AddPermission(PikachuPermissions.Refund.Default, L("Permission:Refunds"));
         refundPermissions.AddChild(PikachuPermissions.Refund.Create, L("Permission:Create"));
@@ -44,13 +44,13 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
 
         var myGroup5 = context.AddGroup(PikachuPermissions.SystemManagement);
         myGroup.AddPermission(PikachuPermissions.RefundAuditList, L("Permission:RefundReviewingList"));
-      
+
         myGroup5.AddPermission(PikachuPermissions.EmailSettings, L("Permission:EmailSettings"));
         myGroup5.AddPermission(PikachuPermissions.AutomaticEmailing, L("Permission:AutomaticEmailing"));
         myGroup5.AddPermission(PikachuPermissions.PaymentGatewaySetting, L("Permission:PaymentSetting"));
         myGroup5.AddPermission(PikachuPermissions.DeliveryTemperatureCost, L("Permission:DeliveryTemperatureCost"));
-      
-        
+
+
         myGroup5.AddPermission(PikachuPermissions.TenentList, L("Permission:TenentList"));
         myGroup5.AddPermission(PikachuPermissions.TenentBillReport, L("Permission:TenentBillReport"));
         myGroup5.AddPermission(PikachuPermissions.PermissionSetting, L("Permission:PermissionSetting"));
@@ -70,7 +70,11 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
         setItemDetailsPermission.AddChild(PikachuPermissions.SetItemDetails.Update, L("Permission:Update"));
         setItemDetailsPermission.AddChild(PikachuPermissions.SetItemDetails.Delete, L("Permission:Delete"));
 
-       
+        var memberManagementGroup = context.AddGroup(PikachuPermissions.MembersManagement, L(PikachuPermissions.MembersManagement));
+        var memberPermissions = memberManagementGroup.AddPermission(PikachuPermissions.Members.Default, L("Permission:Members"));
+        memberPermissions.AddChild(PikachuPermissions.Members.Create, L("Permission:Create"));
+        memberPermissions.AddChild(PikachuPermissions.Members.Edit, L("Permission:Edit"));
+        memberPermissions.AddChild(PikachuPermissions.Members.Delete, L("Permission:Delete"));
     }
 
     private static LocalizableString L(string name)

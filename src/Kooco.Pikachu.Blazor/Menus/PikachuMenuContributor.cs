@@ -148,6 +148,20 @@ public class PikachuMenuContributor : IMenuContributor
         requiredPermissionName: PikachuPermissions.Orders.Default)
         );
 
+        var membersMenu = new ApplicationMenuItem(
+            PikachuMenus.Members,
+            displayName: l["Menu:Members"],
+            icon: "fas fa-users",
+            order: 4
+            );
+        membersMenu.AddItem(new ApplicationMenuItem(
+            name: PikachuMenus.MembersList,
+            displayName: l["Menu:MembersList"],
+            url: "/Members",
+            requiredPermissionName: PikachuPermissions.Members.Default
+            ));
+        context.Menu.AddItem(membersMenu);
+
         var paymentManagement = new ApplicationMenuItem(
                 PikachuMenus.PaymentManagement,
                 displayName: l["Menu:PaymentManagement"],
