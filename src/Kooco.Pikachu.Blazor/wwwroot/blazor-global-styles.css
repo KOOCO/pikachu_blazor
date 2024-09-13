@@ -243,6 +243,75 @@
 .card h3,
 .card h4,
 .card h5,
-.card h6{
+.card h6 {
     color: #000;
 }
+
+.ff-inter {
+    font-family: "Inter";
+}
+
+.bg-lightgrey {
+    background-color: lightgrey;
+}
+
+.bg-success-light {
+    background: #F0FDF9;
+}
+
+.bg-warning-light {
+    background: #FFFAEB;
+}
+
+.bg-danger-light {
+    background: #FEF3F2;
+}
+
+.payment-card {
+    padding: 40px 20px;
+    border-radius: 20px;
+    color: #000;
+}
+
+    .payment-card > .member-payment-card {
+        display: flex;
+        justify-content: start;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+        .payment-card > .member-payment-card img {
+            height: 50px;
+            width: auto;
+        }
+
+.rounded-cards .card {
+    border-radius: 20px;
+}
+
+.btn-delete {
+    border: 1px solid #F0443880;
+    border-radius: 12px;
+    color: #F04438;
+    font-weight: 600;
+    font-size: 14px;
+    background: transparent;
+    padding: 10px 20px;
+}
+
+    .btn-delete:hover {
+        background-color: #F04438;
+        color: white;
+    }
+
+    .btn-delete:active {
+        background-color: #F0443890;
+        color: white;
+    }
+
+    .btn-delete:disabled {
+        color: #F0443890;
+        background-color: transparent;
+        cursor: not-allowed;
+    }

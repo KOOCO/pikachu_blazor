@@ -618,6 +618,9 @@
     "Menu:MembersList": "Members List",
     "BasicDetails": "Basic Details",
     "UserId": "User Id",
-    "LoginMethod": "Login Method"
+    "LoginMethod": "Login Method",
+    "DataManagement": "Data Management",
+    "DeleteAccount": "Delete Account",
+    "DeleteMemberCautionMessage": "Remove this customer's chart if requested, if not please be aware that what has been deleted can never be brought back."
   }
 }
