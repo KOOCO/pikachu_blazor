@@ -257,7 +257,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             _ => "04"
         };
 
-        string collectionAmount = GetCollectionAmount(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost);
+        int collectionAmount = GetCollectionAmount(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost);
 
         string isDeclare = TCatLogistics.DeclaredValue &&
                            IsOrderAmountValid(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost) ? "Y" : "N";
@@ -281,7 +281,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                     RecipientName = order.RecipientName ?? string.Empty,
                     RecipientTel = string.Empty,
                     RecipientMobile = order.RecipientPhone ?? string.Empty,
-                    RecipientAddress = $"{order.City}{order.AddressDetails}",
+                    RecipientAddress = $"{_L[order.City]}{order.AddressDetails}",
                     SenderName = TCatLogistics.SenderName,
                     SenderTel = string.Empty,
                     SenderMobile = TCatLogistics.SenderPhoneNumber,
@@ -328,7 +328,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         return totalValue > 20000;
     }
 
-    public decimal GetDeclareAmount(decimal? totalAmount, decimal? deliveryCost)
+    public int GetDeclareAmount(decimal? totalAmount, decimal? deliveryCost)
     {
         decimal totalAmountValue = totalAmount is not null ? totalAmount.Value : 0.00m;
 
@@ -338,10 +338,10 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         totalValue = totalValue.IsBetween(20000, 100001) ? totalValue : 0;
 
-        return totalValue;
+        return (int)totalValue;
     }
 
-    public string GetCollectionAmount(decimal? totalAmount, decimal? deliveryCost)
+    public int GetCollectionAmount(decimal? totalAmount, decimal? deliveryCost)
     {
         decimal totalAmountValue = totalAmount is not null ? totalAmount.Value : 0.00m;
 
@@ -351,7 +351,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         totalValue = totalValue.IsBetween(0, 100001) ? totalValue : 0;
 
-        return totalValue.ToString("N2");
+        return (int)totalValue;
     }
 
     public string GetProductName(string groupBuyName)

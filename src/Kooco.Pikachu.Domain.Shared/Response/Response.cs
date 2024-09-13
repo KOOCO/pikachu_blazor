@@ -47,11 +47,11 @@ public class OrderOBT
     public string DeliveryTime { get; set; }
     public string IsFreight { get; set; }
     public string IsCollection { get; set; }
-    public string CollectionAmount { get; set; }
+    public int CollectionAmount { get; set; }
     public string IsSwipe { get; set; }
     public string IsMobilePay { get; set; }
     public string IsDeclare { get; set; }
-    public decimal DeclareAmount { get; set; }
+    public int DeclareAmount { get; set; }
     public string ProductTypeId { get; set; }
     public string ProductName { get; set; }
     public string Memo { get; set; }
