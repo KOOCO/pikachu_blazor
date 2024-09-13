@@ -247,10 +247,6 @@
     color: #000;
 }
 
-.ff-inter {
-    font-family: "Inter";
-}
-
 .bg-lightgrey {
     background-color: lightgrey;
 }
@@ -315,3 +311,12 @@
         background-color: transparent;
         cursor: not-allowed;
     }
+
+.nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
+    --bs-nav-tabs-link-active-color: #6366F1 !important;
+    --bs-nav-tabs-link-active-border-color: #6366F1 !important;
+}
+
+.nav-tabs .nav-item .nav-link.active {
+    border-bottom: 3px solid #6366F1;
+}
