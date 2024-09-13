@@ -1,4 +1,6 @@
 using Kooco.Pikachu.Members;
+using Kooco.Pikachu.Permissions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Threading.Tasks;
@@ -13,11 +15,15 @@ public partial class MemberDetails
 
     string SelectedTab = "Details";
 
+    private bool CanEditMember { get; set; }
+    private bool CanDeleteMember { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         try
         {
             Member = await MemberAppService.GetAsync(Id);
+            await SetPermissionsAsync();
         }
         catch (Exception ex)
         {
@@ -26,10 +32,21 @@ public partial class MemberDetails
         await base.OnInitializedAsync();
     }
 
+    private async Task SetPermissionsAsync()
+    {
+        CanEditMember = await AuthorizationService.IsGrantedAnyAsync(PikachuPermissions.Members.Edit);
+        CanDeleteMember = await AuthorizationService.IsGrantedAnyAsync(PikachuPermissions.Members.Delete);
+    }
+
     private Task OnSelectedTabChanged(string name)
     {
         SelectedTab = name;
 
         return Task.CompletedTask;
+    }
+
+    private void NavigateToMember()
+    {
+        NavigationManager.NavigateTo("/Members");
     }
 }

@@ -1,0 +1,159 @@
+﻿@using Kooco.Pikachu.Members
+@using Volo.Abp.AspNetCore.Components.Notifications
+@inherits PikachuComponentBase
+@inject IMemberAppService MemberAppService
+@inject NavigationManager NavigationManager
+
+<Row>
+    <Column ColumnSize="ColumnSize.Is4">
+        <Card>
+            <CardBody Class="px-0">
+                <h4 class="px-3">@L["BasicDetails"]</h4>
+                <Div Class="px-3">
+                    <h6 class="m-0">@L["LoginMethod"]</h6>
+                    <Span>Account and password</Span>
+                </Div>
+                <Divider Class="my-2"></Divider>
+                <Div Class="px-3">
+                    <h6 class="m-0">@L["Email"]</h6>
+                    <Span>@Member?.Email</Span>
+                </Div>
+                <Divider Class="my-2"></Divider>
+                <Div Class="px-3">
+                    <h6 class="m-0">@L["Phone"]</h6>
+                    <Span>@Member?.PhoneNumber</Span>
+                </Div>
+                <Divider Class="my-2"></Divider>
+                <Div Class="px-3">
+                    <h6 class="m-0">@L["Birthday"]</h6>
+                    <Span>2000/01/01</Span>
+                </Div>
+                <Divider Class="my-2"></Divider>
+                <Div Class="px-3">
+                    <h6 class="m-0">@L["PostCode"]</h6>
+                    <Span>407</Span>
+                </Div>
+                <Divider Class="my-2"></Divider>
+                <Div Class="px-3">
+                    <h6 class="m-0">@L["City"]</h6>
+                    <Span>New York</Span>
+                </Div>
+                <Divider Class="my-2"></Divider>
+                <Div Class="px-3">
+                    <h6 class="m-0">@L["Address"]</h6>
+                    <Span>House #25</Span>
+                </Div>
+            </CardBody>
+        </Card>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is8">
+        <Card>
+            <CardBody>
+                <h4>@L["Payment"]</h4>
+                <Row Class="py-3" HorizontalGutter="10">
+                    <Column ColumnSize="ColumnSize.Is4">
+                        <Div Class="payment-card bg-success-light">
+                            <Div Class="member-payment-card">
+                                <Div>
+                                    <img src="/images/icons/payment-icon-paid.png" />
+                                </Div>
+                                <Div>
+                                    <h5 class="m-0">@L["Paid"]</h5>
+                                    <h3 class="fw-bolder m-0">$50 (2)</h3>
+                                </Div>
+                            </Div>
+                        </Div>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is4">
+                        <Div Class="payment-card bg-warning-light">
+                            <Div Class="member-payment-card">
+                                <Div>
+                                    <img src="/images/icons/payment-icon-unpaid.png" />
+                                </Div>
+                                <Div>
+                                    <h5 class="m-0">@L["Unpaid/Due"]</h5>
+                                    <h3 class="fw-bolder m-0">$12 (1)</h3>
+                                </Div>
+                            </Div>
+                        </Div>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is4">
+                        <Div Class="payment-card bg-danger-light">
+                            <Div Class="member-payment-card">
+                                <Div>
+                                    <img src="/images/icons/payment-icon-refund.png" />
+                                </Div>
+                                <Div>
+                                    <h5 class="m-0">@L["Refunded"]</h5>
+                                    <h3 class="fw-bolder m-0">$0 (0)</h3>
+                                </Div>
+                            </Div>
+                        </Div>
+                    </Column>
+                </Row>
+            </CardBody>
+        </Card>
+
+        @if (CanDeleteMember)
+        {
+            <Card>
+                <CardBody>
+                    <h4>@L["DataManagement"]</h4>
+                    @if (!IsDeleting)
+                    {
+                        <button class="btn-delete" @onclick="DeleteAsync">
+                            @L["DeleteAccount"]
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="btn-delete" disabled>
+                            <div class="spinner-border" role="status"></div>
+                            @L["DeleteAccount"]
+                        </button>
+                    }
+                    <p class="mt-2">@L["DeleteMemberCautionMessage"]</p>
+                </CardBody>
+            </Card>
+        }
+    </Column>
+</Row>
+
+@code {
+    [Parameter]
+    public MemberDto? Member { get; set; }
+
+    [Parameter]
+    public EventCallback<MemberDto> OnDelete { get; set; }
+
+    [Parameter]
+    public bool CanDeleteMember { get; set; }
+
+    bool IsDeleting = false;
+
+    private async Task DeleteAsync()
+    {
+        try
+        {
+            if (!CanDeleteMember) return;
+
+            var confirmation = await Message.Confirm(L["AreYouSureToDeleteThisMember"]);
+            if (confirmation)
+            {
+                IsDeleting = true;
+                StateHasChanged();
+                await MemberAppService.DeleteAsync(Member.Id);
+                await OnDelete.InvokeAsync(Member);
+            }
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
+        finally
+        {
+            IsDeleting = false;
+            StateHasChanged();
+        }
+    }
+}

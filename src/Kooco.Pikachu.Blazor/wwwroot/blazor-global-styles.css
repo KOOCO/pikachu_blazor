@@ -320,3 +320,9 @@
 .nav-tabs .nav-item .nav-link.active {
     border-bottom: 3px solid #6366F1;
 }
+
+button .spinner-border {
+    --bs-spinner-width: 15px;
+    --bs-spinner-height: 15px;
+    --bs-spinner-border-width: 2px;
+}

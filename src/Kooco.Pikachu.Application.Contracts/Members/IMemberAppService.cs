@@ -9,4 +9,5 @@ public interface IMemberAppService : IApplicationService
 {
     Task<MemberDto> GetAsync(Guid id);
     Task<PagedResultDto<MemberDto>> GetListAsync(GetMemberListDto input);
+    Task DeleteAsync(Guid id);
 }

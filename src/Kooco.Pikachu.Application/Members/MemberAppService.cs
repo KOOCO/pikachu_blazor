@@ -50,4 +50,11 @@ public class MemberAppService(IRepository<IdentityUser, Guid> identityUserReposi
                     })]
         };
     }
+
+    [Authorize(PikachuPermissions.Members.Delete)]
+    public async Task DeleteAsync(Guid id)
+    {
+        var member = await identityUserRepository.GetAsync(id);
+        await identityUserRepository.DeleteAsync(member);
+    }
 }
