@@ -615,6 +615,9 @@
     "Permission:Edit": "Edit",
     "Permission:Delete": "Delete",
     "Menu:Members": "Members",
-    "Menu:MembersList": "Members List"
+    "Menu:MembersList": "Members List",
+    "BasicDetails": "Basic Details",
+    "UserId": "User Id",
+    "LoginMethod": "Login Method"
   }
 }

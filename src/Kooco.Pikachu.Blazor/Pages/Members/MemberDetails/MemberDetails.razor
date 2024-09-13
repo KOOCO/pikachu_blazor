@@ -1,0 +1,77 @@
+﻿@page "/Members/Details/{Id:guid}"
+@using Kooco.Pikachu.Members
+@using Kooco.Pikachu.Permissions
+@attribute [Authorize(PikachuPermissions.Members.Default)]
+@inherits PikachuComponentBase
+@inject IMemberAppService MemberAppService
+@inject NavigationManager NavigationManager
+
+<h5 Class="text-dark mb-3">
+    <Span Class="cursor-pointer" @onclick="@(() => NavigationManager.NavigateTo("Members"))">
+        <Icon Name="IconName.ArrowLeft" Class="me-1"></Icon>
+        @L["Members"]
+    </Span>
+</h5>
+<Div Class="text-dark d-flex align-items-center justify-content-between">
+    <Div>
+        <h4 class="m-0 mb-1">@Member?.Email</h4>
+        @L["UserId"]: @Member?.Id
+    </Div>
+    <Button Color="Color.Light" Size="Size.Small">
+        @L["Edit"]
+        <Icon Name="IconName.Pen" Class="ms-1"></Icon>
+    </Button>
+</Div>
+<Divider></Divider>
+<Tabs SelectedTab="@SelectedTab" SelectedTabChanged="@OnSelectedTabChanged">
+    <Items>
+        <Tab Name="Details">@L["Details"]</Tab>
+    </Items>
+    <Content>
+        <TabPanel Name="Details">
+            <Row>
+                <Column ColumnSize="ColumnSize.Is4">
+                    <Card>
+                        <CardBody>
+                            <h5>@L["BasicDetails"]</h5>
+                            <Div>
+                                <h6 class="m-0">@L["LoginMethod"]</h6>
+                                <Span>Account and password</Span>
+                            </Div>
+                            <Divider Class="my-2"></Divider>
+                            <Div>
+                                <h6 class="m-0">@L["Email"]</h6>
+                                <Span>@Member?.Email</Span>
+                            </Div>
+                            <Divider Class="my-2"></Divider>
+                            <Div>
+                                <h6 class="m-0">@L["Phone"]</h6>
+                                <Span>@Member?.PhoneNumber</Span>
+                            </Div>
+                            <Divider Class="my-2"></Divider>
+                            <Div>
+                                <h6 class="m-0">@L["Birthday"]</h6>
+                                <Span>2000/01/01</Span>
+                            </Div>
+                            <Divider Class="my-2"></Divider>
+                            <Div>
+                                <h6 class="m-0">@L["PostCode"]</h6>
+                                <Span>407</Span>
+                            </Div>
+                            <Divider Class="my-2"></Divider>
+                            <Div>
+                                <h6 class="m-0">@L["City"]</h6>
+                                <Span>New York</Span>
+                            </Div>
+                            <Divider Class="my-2"></Divider>
+                            <Div>
+                                <h6 class="m-0">@L["Address"]</h6>
+                                <Span>House #25</Span>
+                            </Div>
+                        </CardBody>
+                    </Card>
+                </Column>
+            </Row>
+        </TabPanel>
+    </Content>
+</Tabs>

@@ -219,3 +219,30 @@
 .b-table tbody tr {
     cursor: default !important;
 }
+
+.nav.nav-tabs {
+    background: transparent;
+}
+
+.nav-tabs .nav-item {
+    padding: 5px 10px;
+}
+
+.tab-content {
+    padding: 10px 0;
+    background: transparent !important;
+}
+
+.tab-pane .card {
+    border-color: #ffffff;
+    background-color: #ffffff;
+}
+
+.card h1,
+.card h2,
+.card h3,
+.card h4,
+.card h5,
+.card h6{
+    color: #000;
+}

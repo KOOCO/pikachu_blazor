@@ -73,7 +73,7 @@ public partial class Members
 
     private void EditMember(MemberDto member)
     {
-        NavigationManager.NavigateTo("/Members/Edit/" + member.Id);
+        NavigationManager.NavigateTo("/Members/Details/" + member.Id);
     }
 
     private async Task ExportAsync()
