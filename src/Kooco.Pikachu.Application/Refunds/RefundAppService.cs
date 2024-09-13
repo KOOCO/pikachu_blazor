@@ -141,7 +141,12 @@ public class RefundAppService : ApplicationService, IRefundAppService
 
         string status = await GetPaymentStatus(order, ecpay);
 
-        if (status.IsNullOrEmpty()) return;
+        if (status.IsNullOrEmpty())
+        {
+            await UpdateRefundReviewAsync(id, RefundReviewStatus.Fail);
+
+            return;
+        }
 
         if (order.OrderRefundType is not null && order.OrderRefundType is OrderRefundType.PartialRefund)
         {

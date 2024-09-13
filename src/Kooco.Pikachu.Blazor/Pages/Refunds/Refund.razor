@@ -124,9 +124,10 @@
                                             <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
                                         }
                                     }
-                                </Select>zd
+                                </Select>
 
-                                @if (context.RefundReview is RefundReviewStatus.Fail) 
+                                @if (context.RefundReview is RefundReviewStatus.Fail ||
+                                     context.RefundReview is RefundReviewStatus.Proccessing) 
                                 {
                                     <Button Class="btn-white"
                                             Clicked="@((e) => RefundApproved(context))">
