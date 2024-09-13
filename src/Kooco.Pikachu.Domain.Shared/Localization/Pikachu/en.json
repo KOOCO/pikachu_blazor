@@ -608,6 +608,13 @@
     "SalesAmount": "Sales Amount",
     "AmountReceived": "Amount Received",
     "MerchantTradeNo": "Merchant Trade No",
-    "TradeNo": "Trade No"
+    "TradeNo": "Trade No",
+    "MembersManagement": "Members Management",
+    "Permission:Members": "Members",
+    "Permission:Create": "Create",
+    "Permission:Edit": "Edit",
+    "Permission:Delete": "Delete",
+    "Menu:Members": "Members",
+    "Menu:MembersList": "Members List"
   }
 }

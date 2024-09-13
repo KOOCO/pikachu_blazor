@@ -1,0 +1,92 @@
+﻿@page "/Members"
+@attribute [Authorize(PikachuPermissions.Members.Default)]
+@using Kooco.Pikachu.Localization
+@using Kooco.Pikachu.Members
+@using Kooco.Pikachu.Permissions
+@using Microsoft.Extensions.Localization
+@inherits PikachuComponentBase
+@inject IMemberAppService MemberAppService
+@inject NavigationManager NavigationManager
+
+<Div>
+    <Row>
+        <Column ColumnSize="ColumnSize.Is6">
+            <h3 class="text-dark">@L["Members"]</h3>
+        </Column>
+        <Column ColumnSize="ColumnSize.Is6" TextAlignment="TextAlignment.End">
+            <Button Type="ButtonType.Button" Size="Size.Small" Color="Color.Primary" Clicked="ExportAsync">
+                <Icon Name="IconName.FileDownload"></Icon>
+                @L["Export"]
+            </Button>
+        </Column>
+    </Row>
+</Div>
+<Card>
+    <CardBody>
+        <Div Class="input-group">
+            <TextEdit @bind-Text="Filters.Filter" />
+            <Button Color="Color.Primary" Clicked="ApplyFilters">
+                <Icon Class="fas fa-search"></Icon>
+            </Button>
+        </Div>
+    </CardBody>
+</Card>
+<Card>
+    <CardBody>
+        <DataGrid TItem="MemberDto"
+                  Data="MembersList"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  PageSize="PageSize"
+                  CurrentPage="CurrentPage"
+                  Hoverable
+                  Narrow
+                  Responsive
+                  Striped
+                  @bind-SelectedRow="@SelectedMember"
+                  SelectionMode="DataGridSelectionMode.Multiple"
+                  @bind-SelectedRows="SelectedMembers"
+                  RowSelectable="RowSelectableHandler">
+            <DataGridColumns>
+                <DataGridMultiSelectColumn TItem="MemberDto" Width="30px"></DataGridMultiSelectColumn>
+                <DataGridCommandColumn TItem="MemberDto" />
+                <DataGridColumn TItem="MemberDto"
+                                Field="@nameof(MemberDto.UserName)"
+                                Caption="@L["Name"]">
+                    <DisplayTemplate>
+                        <Div Class="d-flex align-items-center gap-1">
+                            <Div Class="cursor-pointer" @ondblclick="() => EditMember(context)">
+                                <img class="img-fluid rounded-circle" style="height: 40px;" src="https://e7.pngegg.com/pngimages/799/987/png-clipart-computer-icons-avatar-icon-design-avatar-heroes-computer-wallpaper-thumbnail.png" alt="Alternate Text" />
+                            </Div>
+                            <Div>
+                                <h6 class="text-dark m-0 cursor-pointer" @ondblclick="() => EditMember(context)">@context.UserName</h6>
+                                <Span Class="cursor-pointer" @ondblclick="() => EditMember(context)">@context.Email</Span>
+                            </Div>
+                        </Div>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="MemberDto"
+                                Field="@nameof(MemberDto.PhoneNumber)"
+                                Caption="@L["Phone"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="MemberDto"
+                                Field="@nameof(MemberDto.Orders)"
+                                Caption="@L["Orders"]">
+                    <DisplayTemplate>
+                        @context.Orders.ToString("N0")
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="MemberDto"
+                                Field="@nameof(MemberDto.Spent)"
+                                Caption="@L["Spent"]">
+                    <DisplayTemplate>
+                        $ @context.Spent.ToString("N2")
+                    </DisplayTemplate>
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
+
+

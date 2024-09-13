@@ -16,4 +16,7 @@ public class PikachuMenus
     //系統管理(包含權限)
     public const string SystemManagement = Prefix + "SystemManagement";
 
+
+    public const string Members = Prefix + ".Members";
+    public const string MembersList = Prefix + ".MembersList";
 }

@@ -20,6 +20,8 @@ using Kooco.Pikachu.DeliveryTemperatureCosts;
 using Kooco.Pikachu.DeliveryTempratureCosts;
 using Kooco.Pikachu.OrderDeliveries;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
+using Kooco.Pikachu.Members;
 
 namespace Kooco.Pikachu;
 
@@ -139,5 +141,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<GroupBuyItemGroupDetails, GroupBuyItemGroupDetailsDto>().ReverseMap();
         CreateMap<GroupBuyItemGroupDetails, GroupBuyItemGroupDetailCreateUpdateDto>().ReverseMap();
         CreateMap<GroupBuyItemGroupDetailsDto, GroupBuyItemGroupDetailCreateUpdateDto>().ReverseMap();
+
+        CreateMap<IdentityUser, MemberDto>();
     }
 }
