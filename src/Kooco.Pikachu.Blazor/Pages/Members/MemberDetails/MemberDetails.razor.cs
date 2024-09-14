@@ -45,6 +45,12 @@ public partial class MemberDetails
         return Task.CompletedTask;
     }
 
+    private void EditMember()
+    {
+        if (Member?.Id == null) return;
+        NavigationManager.NavigateTo("/Members/Edit/" + Member.Id);
+    }
+
     private void NavigateToMember()
     {
         NavigationManager.NavigateTo("/Members");

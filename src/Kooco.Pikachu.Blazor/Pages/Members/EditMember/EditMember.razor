@@ -1,0 +1,117 @@
+﻿@page "/Members/Edit/{Id:guid}"
+@using Kooco.Pikachu.Blazor.Pages.Members.MemberDetails
+@using Kooco.Pikachu.Localization
+@using Kooco.Pikachu.Members
+@using Kooco.Pikachu.Permissions
+@using Volo.Abp.AspNetCore.Components.Web
+@attribute [Authorize(PikachuPermissions.Members.Edit)]
+@inherits PikachuComponentBase
+@inject IMemberAppService MemberAppService
+@inject NavigationManager NavigationManager
+@inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
+
+<Div Class="rounded-cards">
+    <h5 Class="text-dark mb-lg-2 mt-lg-3">
+        <Span Class="cursor-pointer" @onclick="NavigateToMemberDetails">
+            <Icon Name="IconName.ArrowLeft" Class="me-1"></Icon>
+            @Member?.UserName
+        </Span>
+    </h5>
+    <MemberDetailsHeader Member="Member"></MemberDetailsHeader>
+    @if (Member != null)
+    {
+        <Card>
+            <CardBody>
+                <h4>@L["EditMember"]</h4>
+                <Form>
+                    <Validations @ref="@ValidationsRef" Model="@EditingMember" ValidateOnLoad="false">
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is12.Is6.OnFullHD">
+                                <Validation MessageLocalizer="@LH.Localize">
+                                    <Field>
+                                        <FieldLabel>@L["FullName"]</FieldLabel>
+                                        <TextEdit @bind-Text="@EditingMember.Name">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </TextEdit>
+                                    </Field>
+                                </Validation>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is12.Is6.OnFullHD">
+                                <Validation MessageLocalizer="@LH.Localize">
+                                    <Field>
+                                        <FieldLabel>@L["EmailAddress"]</FieldLabel>
+                                        <TextEdit @bind-Text="@EditingMember.Email">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </TextEdit>
+                                    </Field>
+                                </Validation>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is12.Is6.OnFullHD">
+                                <Validation MessageLocalizer="@LH.Localize">
+                                    <Field>
+                                        <FieldLabel>@L["PhoneNumber"]</FieldLabel>
+                                        <TextEdit @bind-Text="@EditingMember.PhoneNumber">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </TextEdit>
+                                    </Field>
+                                </Validation>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is12.Is6.OnFullHD">
+                                <Validation MessageLocalizer="@LH.Localize">
+                                    <Field>
+                                        <FieldLabel>@L["Birthday"]</FieldLabel>
+                                        <DateEdit TValue="DateTime?" @bind-Date="@EditingMember.Birthday">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </DateEdit>
+                                    </Field>
+                                </Validation>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is12.Is6.OnFullHD">
+                                <Validation MessageLocalizer="@LH.Localize">
+                                    <Field>
+                                        <FieldLabel>@L["City"]</FieldLabel>
+                                        <TextEdit @bind-Text="@EditingMember.City">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </TextEdit>
+                                    </Field>
+                                </Validation>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is12.Is6.OnFullHD">
+                                <Validation MessageLocalizer="@LH.Localize">
+                                    <Field>
+                                        <FieldLabel>@L["Address"]</FieldLabel>
+                                        <TextEdit @bind-Text="@EditingMember.Address">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </TextEdit>
+                                    </Field>
+                                </Validation>
+                            </Column>
+                        </Row>
+                    </Validations>
+                    <Button Color="Color.Primary"
+                            Type="@ButtonType.Submit"
+                            PreventDefaultOnSubmit="true"
+                            Clicked="UpdateAsync">
+                        @L["Update"]
+                    </Button>
+                    <Button Color="Color.Light"
+                            Clicked="NavigateToMemberDetails">
+                        @L["Cancel"]
+                    </Button>
+                </Form>
+            </CardBody>
+        </Card>
+    }
+</Div>

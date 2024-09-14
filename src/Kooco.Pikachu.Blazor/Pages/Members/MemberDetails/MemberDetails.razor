@@ -13,29 +13,18 @@
             @L["Members"]
         </Span>
     </h5>
-    <Card>
-        <CardBody>
-            <Div Class="text-dark d-flex align-items-center justify-content-between">
-                <Div>
-                    <h4 class="m-0 mb-1">@Member?.Email</h4>
-                    @L["UserId"]:
-                    <Span Class="bg-lightgrey rounded-3" Style="padding: 1px 10px;">@Member?.Id</Span>
-                </Div>
-                <Button Color="Color.Light" Size="Size.Small">
-                    @L["Edit"]
-                    <Icon Name="IconName.Pen" Class="ms-1"></Icon>
-                </Button>
-            </Div>
-        </CardBody>
-    </Card>
-    <Tabs SelectedTab="@SelectedTab" SelectedTabChanged="@OnSelectedTabChanged">
-        <Items>
-            <Tab Name="Details">@L["Details"]</Tab>
-        </Items>
-        <Content>
-            <TabPanel Name="Details">
-                <MemberDetailsTab Member="Member" CanDeleteMember="CanDeleteMember" OnDelete="@NavigateToMember" />
-            </TabPanel>
-        </Content>
-    </Tabs>
+    <MemberDetailsHeader Member="Member" CanEditMember="CanEditMember"></MemberDetailsHeader>
+    @if (Member != null)
+    {
+        <Tabs SelectedTab="@SelectedTab" SelectedTabChanged="@OnSelectedTabChanged">
+            <Items>
+                <Tab Name="Details">@L["Details"]</Tab>
+            </Items>
+            <Content>
+                <TabPanel Name="Details">
+                    <MemberDetailsTab Member="Member" CanDeleteMember="CanDeleteMember" OnDelete="@NavigateToMember" />
+                </TabPanel>
+            </Content>
+        </Tabs>
+    }
 </Div>

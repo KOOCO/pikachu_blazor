@@ -101,13 +101,13 @@
                     <h4>@L["DataManagement"]</h4>
                     @if (!IsDeleting)
                     {
-                        <button class="btn-delete" @onclick="DeleteAsync">
+                        <button class="btn btn-outline-danger" @onclick="DeleteAsync">
                             @L["DeleteAccount"]
                         </button>
                     }
                     else
                     {
-                        <button class="btn-delete" disabled>
+                        <button class="btn btn-outline-danger" disabled>
                             <div class="spinner-border" role="status"></div>
                             @L["DeleteAccount"]
                         </button>

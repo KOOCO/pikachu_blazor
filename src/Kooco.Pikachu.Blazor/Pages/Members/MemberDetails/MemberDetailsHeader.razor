@@ -1,0 +1,39 @@
+﻿@using Kooco.Pikachu.Members
+@inherits PikachuComponentBase
+@inject NavigationManager NavigationManager
+
+<Card>
+    <CardBody>
+        @if (Member != null)
+        {
+            <Div Class="text-dark d-flex align-items-center justify-content-between">
+                <Div>
+                    <h4 class="m-0 mb-1">@Member?.Email</h4>
+                    @L["UserId"]:
+                    <Span Class="bg-lightgrey rounded-3" Style="padding: 1px 10px;">@Member?.Id</Span>
+                </Div>
+                @if (CanEditMember)
+                {
+                    <Button Color="Color.Light" Size="Size.Small" Clicked="@(() => NavigationManager.NavigateTo("/Members/Edit/" + Member.Id))">
+                        @L["Edit"]
+                        <Icon Name="IconName.Pen" Class="ms-1"></Icon>
+                    </Button>
+                }
+            </Div>
+        }
+        else
+        {
+            <Div Class="text-center">
+                <Span Class="spinner-border text-primary"></Span>
+            </Div>
+        }
+    </CardBody>
+</Card>
+
+@code {
+    [Parameter]
+    public MemberDto Member { get; set; }
+
+    [Parameter]
+    public bool CanEditMember { get; set; }
+}

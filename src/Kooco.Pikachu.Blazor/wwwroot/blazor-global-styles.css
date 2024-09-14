@@ -1,3 +1,12 @@
+:root {
+    --pik-primary: #6366F1;
+    --pik-primary-light: #6366F190 --pik-success-light: #F0FDF9;
+    --pik-warning-light: #FFFAEB;
+    --pik-danger: #F04438;
+    --pik-danger-border: #F0443880;
+    --pik-danger-light: #FEF3F2;
+}
+
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;
@@ -104,10 +113,6 @@
 .form-control,
 .form-select {
     border-radius: 0.15rem;
-}
-
-.btn {
-    border-radius: 0.25rem;
 }
 
 .image-list-container {
@@ -252,15 +257,15 @@
 }
 
 .bg-success-light {
-    background: #F0FDF9;
+    background: var(--pik-success-light);
 }
 
 .bg-warning-light {
-    background: #FFFAEB;
+    background: var(--pik-warning-light);
 }
 
 .bg-danger-light {
-    background: #FEF3F2;
+    background: var(--pik-danger-light);
 }
 
 .payment-card {
@@ -286,10 +291,46 @@
     border-radius: 20px;
 }
 
+.btn {
+    --bs-btn-font-family: "Inter";
+    --bs-btn-border-radius: 0.75rem;
+}
+
+.btn-primary {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: var(--pik-primary);
+    --bs-btn-border-color: var(--pik-primary);
+    --bs-btn-disabled-bg: var(--pik-primary-light);
+    --bs-btn-disabled-border-color: var(--pik-primary);
+}
+
+.btn-light {
+    --bs-btn-bg: #fff;
+    --bs-btn-border-color: #fff;
+    --bs-btn-color: #000;
+}
+
+.btn-outline-danger {
+    --bs-btn-color: var(--pik-danger);
+    --bs-btn-border-color: var(--pik-danger-border);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--pik-danger);
+    --bs-btn-hover-border-color: var(--pik-danger);
+    --bs-btn-focus-shadow-rgb: 192, 13, 73;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: var(--pik-danger);
+    --bs-btn-active-border-color: var(--pik-danger);
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: var(--pik-danger-light);
+    --bs-btn-disabled-bg: transparent;
+    --bs-btn-disabled-border-color: var(--pik-danger-light);
+    --bs-gradient: none;
+}
+
 .btn-delete {
-    border: 1px solid #F0443880;
+    border: 1px solid var(--pik-danger-border);
     border-radius: 12px;
-    color: #F04438;
+    color: var(--pik-danger);
     font-weight: 600;
     font-size: 14px;
     background: transparent;
@@ -313,12 +354,12 @@
     }
 
 .nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
-    --bs-nav-tabs-link-active-color: #6366F1 !important;
-    --bs-nav-tabs-link-active-border-color: #6366F1 !important;
+    --bs-nav-tabs-link-active-color: var(--pik-primary) !important;
+    --bs-nav-tabs-link-active-border-color: var(--pik-primary) !important;
 }
 
 .nav-tabs .nav-item .nav-link.active {
-    border-bottom: 3px solid #6366F1;
+    border-bottom: 3px solid var(--pik-primary);
 }
 
 button .spinner-border {

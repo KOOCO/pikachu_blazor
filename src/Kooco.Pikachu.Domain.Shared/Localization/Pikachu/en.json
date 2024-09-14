@@ -622,6 +622,10 @@
     "DataManagement": "Data Management",
     "DeleteAccount": "Delete Account",
     "DeleteMemberCautionMessage": "Remove this customer's chart if requested, if not please be aware that what has been deleted can never be brought back.",
-    "AreYouSureToDeleteThisMember": "Please be aware that once this member is deleted, it can never be restored. Do you wish to delete it?"
+    "AreYouSureToDeleteThisMember": "Please be aware that once this member is deleted, it can never be restored. Do you wish to delete it?",
+    "EditMember": "Edit Member",
+    "FullName": "Full Name",
+    "EmailAddress": "Email Address",
+    "PhoneNumber": "Phone Number"
   }
 }

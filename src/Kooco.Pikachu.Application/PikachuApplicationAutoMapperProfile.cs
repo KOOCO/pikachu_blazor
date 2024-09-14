@@ -123,7 +123,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<DeliveryTemperatureCost, DeliveryTemperatureCostDto>();
         CreateMap<DeliveryTemperatureCostDto, UpdateDeliveryTemperatureCostDto>();
 
-        CreateMap<OrderDelivery, OrderDeliveryDto > ();
+        CreateMap<OrderDelivery, OrderDeliveryDto>();
         //CreateMap<GroupBuyUpdateDto, GroupBuy>().ReverseMap();
         CreateMap<GroupBuyUpdateDto, GroupBuy>()
             .ForMember(dest => dest.ItemGroups, opt => opt.MapFrom(src => src.ItemGroups));
@@ -142,5 +142,6 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<GroupBuyItemGroupDetailsDto, GroupBuyItemGroupDetailCreateUpdateDto>().ReverseMap();
 
         CreateMap<IdentityUser, MemberDto>();
+        CreateMap<MemberDto, UpdateMemberDto>();
     }
 }
