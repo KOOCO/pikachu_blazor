@@ -14,7 +14,7 @@
                 </Div>
                 @if (CanEditMember)
                 {
-                    <Button Color="Color.Light" Size="Size.Small" Clicked="@(() => NavigationManager.NavigateTo("/Members/Edit/" + Member.Id))">
+                    <Button Class="pk-btn pk-btn-light" Size="Size.Small" Clicked="@(() => NavigationManager.NavigateTo("/Members/Edit/" + Member.Id))">
                         @L["Edit"]
                         <Icon Name="IconName.Pen" Class="ms-1"></Icon>
                     </Button>

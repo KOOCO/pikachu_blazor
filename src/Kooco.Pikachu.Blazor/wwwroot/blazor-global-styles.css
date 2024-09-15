@@ -1,11 +1,4 @@
-:root {
-    --pik-primary: #6366F1;
-    --pik-primary-light: #6366F190 --pik-success-light: #F0FDF9;
-    --pik-warning-light: #FFFAEB;
-    --pik-danger: #F04438;
-    --pik-danger-border: #F0443880;
-    --pik-danger-light: #FEF3F2;
-}
+
 
 #blazor-error-ui {
     background: lightyellow;
@@ -257,15 +250,15 @@
 }
 
 .bg-success-light {
-    background: var(--pik-success-light);
+    background: var(--pk-success-light);
 }
 
 .bg-warning-light {
-    background: var(--pik-warning-light);
+    background: var(--pk-bg-warning-light);
 }
 
 .bg-danger-light {
-    background: var(--pik-danger-light);
+    background: var(--pk-bg-danger-light);
 }
 
 .payment-card {
@@ -291,78 +284,65 @@
     border-radius: 20px;
 }
 
-.btn {
-    --bs-btn-font-family: "Inter";
-    --bs-btn-border-radius: 0.75rem;
+:root {
+    --pk-font-family: "Inter";
+    --pk-primary: #6366F1;
+    --pk-primary-light: #6366F190;
+    --pk-success-light: #F0FDF9;
+    --pk-bg-warning-light: #FFFAEB;
+    --pk-danger: #F04438;
+    --pk-danger-light: #F0443890;
+    --pk-bg-danger-light: #FEF3F2;
 }
 
-.btn-primary {
-    --bs-btn-color: #fff;
-    --bs-btn-bg: var(--pik-primary);
-    --bs-btn-border-color: var(--pik-primary);
-    --bs-btn-disabled-bg: var(--pik-primary-light);
-    --bs-btn-disabled-border-color: var(--pik-primary);
-}
-
-.btn-light {
-    --bs-btn-bg: #fff;
-    --bs-btn-border-color: #fff;
-    --bs-btn-color: #000;
-}
-
-.btn-outline-danger {
-    --bs-btn-color: var(--pik-danger);
-    --bs-btn-border-color: var(--pik-danger-border);
-    --bs-btn-hover-color: #fff;
-    --bs-btn-hover-bg: var(--pik-danger);
-    --bs-btn-hover-border-color: var(--pik-danger);
-    --bs-btn-focus-shadow-rgb: 192, 13, 73;
-    --bs-btn-active-color: #fff;
-    --bs-btn-active-bg: var(--pik-danger);
-    --bs-btn-active-border-color: var(--pik-danger);
-    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-    --bs-btn-disabled-color: var(--pik-danger-light);
-    --bs-btn-disabled-bg: transparent;
-    --bs-btn-disabled-border-color: var(--pik-danger-light);
-    --bs-gradient: none;
-}
-
-.btn-delete {
-    border: 1px solid var(--pik-danger-border);
-    border-radius: 12px;
-    color: var(--pik-danger);
+.pk-btn {
+    font-family: var(--pk-font-family);
+    font-size: 14px;
+    border-width: 1px;
+    border-color: transparent;
+    border-radius: 0.75rem;
     font-weight: 600;
     font-size: 14px;
-    background: transparent;
-    padding: 10px 20px;
+    padding: 0.75rem 1rem;
 }
 
-    .btn-delete:hover {
+.pk-btn-light {
+    background: #fff;
+    color: #000;
+}
+
+.pk-btn-outline-danger {
+    border-color: var(--pk-danger-light);
+    color: var(--pk-danger);
+    background: transparent;
+}
+
+    .pk-btn-outline-danger:hover {
         background-color: #F04438;
         color: white;
     }
 
-    .btn-delete:active {
+    .pk-btn-outline-danger:active {
         background-color: #F0443890;
         color: white;
     }
 
-    .btn-delete:disabled {
+    .pk-btn-outline-danger:disabled {
         color: #F0443890;
         background-color: transparent;
         cursor: not-allowed;
     }
 
 .nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
-    --bs-nav-tabs-link-active-color: var(--pik-primary) !important;
-    --bs-nav-tabs-link-active-border-color: var(--pik-primary) !important;
+    --bs-nav-tabs-link-active-color: var(--pk-primary) !important;
+    --bs-nav-tabs-link-active-border-color: var(--pk-primary) !important;
 }
 
 .nav-tabs .nav-item .nav-link.active {
-    border-bottom: 3px solid var(--pik-primary);
+    border-bottom: 3px solid var(--pk-primary);
 }
 
-button .spinner-border {
+.pk-btn .spinner-border {
     --bs-spinner-width: 15px;
     --bs-spinner-height: 15px;
     --bs-spinner-border-width: 2px;

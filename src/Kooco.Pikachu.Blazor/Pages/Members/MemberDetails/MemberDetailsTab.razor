@@ -99,19 +99,10 @@
             <Card>
                 <CardBody>
                     <h4>@L["DataManagement"]</h4>
-                    @if (!IsDeleting)
-                    {
-                        <button class="btn btn-outline-danger" @onclick="DeleteAsync">
-                            @L["DeleteAccount"]
-                        </button>
-                    }
-                    else
-                    {
-                        <button class="btn btn-outline-danger" disabled>
-                            <div class="spinner-border" role="status"></div>
-                            @L["DeleteAccount"]
-                        </button>
-                    }
+                    <PikachuButton Class="pk-btn-outline-danger" Loading="IsDeleting" Clicked="DeleteAsync">
+                        @L["DeleteAccount"]
+                    </PikachuButton>
+
                     <p class="mt-2">@L["DeleteMemberCautionMessage"]</p>
                 </CardBody>
             </Card>
