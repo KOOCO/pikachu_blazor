@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
@@ -12,7 +13,7 @@ using Volo.Abp.Identity;
 namespace Kooco.Pikachu.Members;
 
 [Authorize(PikachuPermissions.Members.Default)]
-public class MemberAppService(IRepository<IdentityUser, Guid> identityUserRepository) : PikachuAppService, IMemberAppService
+public class MemberAppService(IRepository<IdentityUser, Guid> identityUserRepository, IdentityUserManager identityUserManager) : PikachuAppService, IMemberAppService
 {
     public async Task<MemberDto> GetAsync(Guid id)
     {
@@ -56,5 +57,19 @@ public class MemberAppService(IRepository<IdentityUser, Guid> identityUserReposi
     {
         var member = await identityUserRepository.GetAsync(id);
         await identityUserRepository.DeleteAsync(member);
+    }
+
+    [Authorize(PikachuPermissions.Members.Edit)]
+    public async Task UpdateAsync(Guid id, UpdateMemberDto input)
+    {
+        Check.NotNull(input, nameof(input));
+
+        var member = await identityUserRepository.GetAsync(id);
+
+        member.Name = input.Name;
+
+        await identityUserManager.SetEmailAsync(member, input.Email);
+        await identityUserManager.SetPhoneNumberAsync(member, input.PhoneNumber);
+        await identityUserManager.UpdateAsync(member);
     }
 }

@@ -626,6 +626,8 @@
     "EditMember": "Edit Member",
     "FullName": "Full Name",
     "EmailAddress": "Email Address",
-    "PhoneNumber": "Phone Number"
+    "PhoneNumber": "Phone Number",
+    "DefaultAddress": "Default Address",
+    "EditAddress": "Edit Address"
   }
 }

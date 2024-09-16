@@ -1,4 +1,4 @@
-﻿<button class="pk-btn @Class" @onclick="Clicked" disabled="@(Disabled || Loading)">
+﻿<button class="pk-btn @Class" @onclick="Clicked" disabled="@(Disabled || Loading)" type="@Type">
     @if (Loading)
     {
         <div class="spinner-border" role="status"></div>
@@ -21,6 +21,9 @@
 
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string Type { get; set; } = "button";
 
     private async Task ClickedHandler()
     {

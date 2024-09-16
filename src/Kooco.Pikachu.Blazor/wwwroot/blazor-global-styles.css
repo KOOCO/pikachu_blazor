@@ -1,5 +1,3 @@
-
-
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;
@@ -246,7 +244,7 @@
 }
 
 .bg-lightgrey {
-    background-color: lightgrey;
+    background-color: var(--pk-lightgrey);
 }
 
 .bg-success-light {
@@ -288,16 +286,21 @@
     --pk-font-family: "Inter";
     --pk-primary: #6366F1;
     --pk-primary-light: #6366F190;
+    --pk-primary-dark: #4549ED;
     --pk-success-light: #F0FDF9;
     --pk-bg-warning-light: #FFFAEB;
     --pk-danger: #F04438;
     --pk-danger-light: #F0443890;
     --pk-bg-danger-light: #FEF3F2;
+    --pk-light: #FFF;
+    --pk-semi-light: #FFFFFF80;
+    --pk-dark: #000;
+    --pk-semi-dark: #00000080;
+    --pk-lightgrey: #E9E9E9;
 }
 
 .pk-btn {
     font-family: var(--pk-font-family);
-    font-size: 14px;
     border-width: 1px;
     border-color: transparent;
     border-radius: 0.75rem;
@@ -306,10 +309,47 @@
     padding: 0.75rem 1rem;
 }
 
-.pk-btn-light {
-    background: #fff;
-    color: #000;
+    .pk-btn:disabled {
+        cursor: not-allowed;
+    }
+
+.pk-btn-sm {
+    font-size: 12px;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
 }
+
+.pk-btn-primary {
+    background-color: var(--pk-primary);
+    color: var(--pk-light);
+}
+
+    .pk-btn-primary:hover {
+        background-color: var(--pk-primary-dark);
+    }
+
+    .pk-btn-primary:active {
+        background-color: var(--pk-primary);
+    }
+
+    .pk-btn-primary:disabled {
+        background-color: var(--pk-primary-light);
+        color: var(--pk-light);
+    }
+
+.pk-btn-light {
+    background: var(--pk-light);
+    color: var(--pk-dark);
+}
+
+    .pk-btn-light:hover {
+        background-color: var(--pk-lightgrey);
+    }
+
+    .pk-btn-light:disabled {
+        color: var(--pk-semi-dark);
+    }
 
 .pk-btn-outline-danger {
     border-color: var(--pk-danger-light);
@@ -318,19 +358,18 @@
 }
 
     .pk-btn-outline-danger:hover {
-        background-color: #F04438;
-        color: white;
+        background-color: var(--pk-danger);
+        color: var(--pk-light);
     }
 
     .pk-btn-outline-danger:active {
-        background-color: #F0443890;
-        color: white;
+        background-color: var(--pk-danger-light);
+        color: var(--pk-light);
     }
 
     .pk-btn-outline-danger:disabled {
-        color: #F0443890;
+        color: var(--pk-danger-light);
         background-color: transparent;
-        cursor: not-allowed;
     }
 
 .nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {

@@ -21,8 +21,8 @@ public class UpdateMemberDto
     public DateTime? Birthday { get; set; } = new DateTime(2000, 1, 1);
 
     [Required]
-    public string City { get; set; } = "New York";
+    public string City { get; set; }
 
     [Required]
-    public string Address { get; set; } = "47 W 13th St, New York, NY 10011, USA";
+    public string Address { get; set; }
 }

@@ -14,10 +14,10 @@
                 </Div>
                 @if (CanEditMember)
                 {
-                    <Button Class="pk-btn pk-btn-light" Size="Size.Small" Clicked="@(() => NavigationManager.NavigateTo("/Members/Edit/" + Member.Id))">
+                    <PikachuButton Class="pk-btn-light" Clicked="@(() => NavigationManager.NavigateTo("/Members/Edit/" + Member.Id))">
                         @L["Edit"]
                         <Icon Name="IconName.Pen" Class="ms-1"></Icon>
-                    </Button>
+                    </PikachuButton>
                 }
             </Div>
         }

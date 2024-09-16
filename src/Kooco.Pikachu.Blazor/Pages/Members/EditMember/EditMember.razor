@@ -22,14 +22,26 @@
     {
         <Card>
             <CardBody>
-                <h4>@L["EditMember"]</h4>
+                <Div Class="d-flex align-items-center justify-content-between">
+                    <h4>@L["EditMember"]</h4>
+                    <Div Class="d-flex align-items-center gap-1">
+                        <FieldLabel>@L["Address"]</FieldLabel>
+                        <Select TValue="Guid?" SelectedValue="@SelectedAddressId" SelectedValueChanged="@OnSelectedValueChanged" Size="Size.Small">
+                            <SelectItem Value="(Guid?)null" selected Disabled></SelectItem>
+                            @foreach (var address in AddressList)
+                            {
+                                <SelectItem Value="@address.Id">@address.Address, @address.City</SelectItem>
+                            }
+                        </Select>
+                    </Div>
+                </Div>
                 <Form>
                     <Validations @ref="@ValidationsRef" Model="@EditingMember" ValidateOnLoad="false">
                         <Row>
                             <Column ColumnSize="ColumnSize.Is12.Is6.OnFullHD">
                                 <Validation MessageLocalizer="@LH.Localize">
                                     <Field>
-                                        <FieldLabel>@L["FullName"]</FieldLabel>
+                                        <FieldLabel>@L["FullName"] *</FieldLabel>
                                         <TextEdit @bind-Text="@EditingMember.Name">
                                             <Feedback>
                                                 <ValidationError />
@@ -41,7 +53,7 @@
                             <Column ColumnSize="ColumnSize.Is12.Is6.OnFullHD">
                                 <Validation MessageLocalizer="@LH.Localize">
                                     <Field>
-                                        <FieldLabel>@L["EmailAddress"]</FieldLabel>
+                                        <FieldLabel>@L["EmailAddress"] *</FieldLabel>
                                         <TextEdit @bind-Text="@EditingMember.Email">
                                             <Feedback>
                                                 <ValidationError />
@@ -53,7 +65,7 @@
                             <Column ColumnSize="ColumnSize.Is12.Is6.OnFullHD">
                                 <Validation MessageLocalizer="@LH.Localize">
                                     <Field>
-                                        <FieldLabel>@L["PhoneNumber"]</FieldLabel>
+                                        <FieldLabel>@L["PhoneNumber"] *</FieldLabel>
                                         <TextEdit @bind-Text="@EditingMember.PhoneNumber">
                                             <Feedback>
                                                 <ValidationError />
@@ -65,7 +77,7 @@
                             <Column ColumnSize="ColumnSize.Is12.Is6.OnFullHD">
                                 <Validation MessageLocalizer="@LH.Localize">
                                     <Field>
-                                        <FieldLabel>@L["Birthday"]</FieldLabel>
+                                        <FieldLabel>@L["Birthday"] *</FieldLabel>
                                         <DateEdit TValue="DateTime?" @bind-Date="@EditingMember.Birthday">
                                             <Feedback>
                                                 <ValidationError />
@@ -74,11 +86,19 @@
                                     </Field>
                                 </Validation>
                             </Column>
+                            <Divider></Divider>
+                            <Div Class="d-flex align-items-center justify-content-between mb-2">
+                                <h6 class="mb-0">@L["DefaultAddress"]</h6>
+                                <PikachuButton Class="pk-btn-sm pk-btn-light">
+                                    @L["EditAddress"]
+                                    <Icon Name="IconName.Pen" Class="ms-1"></Icon>
+                                </PikachuButton>
+                            </Div>
                             <Column ColumnSize="ColumnSize.Is12.Is6.OnFullHD">
                                 <Validation MessageLocalizer="@LH.Localize">
                                     <Field>
-                                        <FieldLabel>@L["City"]</FieldLabel>
-                                        <TextEdit @bind-Text="@EditingMember.City">
+                                        <FieldLabel>@L["City"] *</FieldLabel>
+                                        <TextEdit @bind-Text="@EditingMember.City" ReadOnly>
                                             <Feedback>
                                                 <ValidationError />
                                             </Feedback>
@@ -89,8 +109,8 @@
                             <Column ColumnSize="ColumnSize.Is12.Is6.OnFullHD">
                                 <Validation MessageLocalizer="@LH.Localize">
                                     <Field>
-                                        <FieldLabel>@L["Address"]</FieldLabel>
-                                        <TextEdit @bind-Text="@EditingMember.Address">
+                                        <FieldLabel>@L["Address"] *</FieldLabel>
+                                        <TextEdit @bind-Text="@EditingMember.Address" ReadOnly>
                                             <Feedback>
                                                 <ValidationError />
                                             </Feedback>
@@ -100,16 +120,12 @@
                             </Column>
                         </Row>
                     </Validations>
-                    <Button Color="Color.Primary"
-                            Type="@ButtonType.Submit"
-                            PreventDefaultOnSubmit="true"
-                            Clicked="UpdateAsync">
+                    <PikachuButton Class="pk-btn-primary" Loading="IsUpdating" Clicked="UpdateAsync">
                         @L["Update"]
-                    </Button>
-                    <Button Color="Color.Light"
-                            Clicked="NavigateToMemberDetails">
+                    </PikachuButton>
+                    <PikachuButton Class="pk-btn-light" Disabled="IsUpdating" Clicked="NavigateToMemberDetails">
                         @L["Cancel"]
-                    </Button>
+                    </PikachuButton>
                 </Form>
             </CardBody>
         </Card>
