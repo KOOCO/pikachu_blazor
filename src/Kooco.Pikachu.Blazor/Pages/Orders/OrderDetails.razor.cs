@@ -529,14 +529,21 @@ public partial class OrderDetails
             //    //NavigationManager.NavigateTo($"map-response/{htmlForm}");
             #endregion
         }
+
         else if (deliveryOrder.DeliveryMethod is DeliveryMethod.TCatDeliveryNormal ||
                  deliveryOrder.DeliveryMethod is DeliveryMethod.TCatDeliveryFreeze ||
-                 deliveryOrder.DeliveryMethod is DeliveryMethod.TCatDeliveryFrozen ||
-                 deliveryOrder.DeliveryMethod is DeliveryMethod.TCatDeliverySevenElevenNormal ||
+                 deliveryOrder.DeliveryMethod is DeliveryMethod.TCatDeliveryFrozen)
+        {
+            PrintObtResponse? response = await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCatDeliveryAsync(Order.Id, deliveryOrder.Id);
+
+            if (response is null || response.Data is null) await _uiMessageService.Error(response.Message);
+        }
+        
+        else if (deliveryOrder.DeliveryMethod is DeliveryMethod.TCatDeliverySevenElevenNormal ||
                  deliveryOrder.DeliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFreeze ||
                  deliveryOrder.DeliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFrozen)
         {
-            PrintObtResponse? response = await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCatDeliveryAsync(Order.Id, deliveryOrder.Id);
+            PrintOBTB2SResponse? response = await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCat711DeliveryAsync(Order.Id, deliveryOrder.Id);
 
             if (response is null || response.Data is null) await _uiMessageService.Error(response.Message);
         }

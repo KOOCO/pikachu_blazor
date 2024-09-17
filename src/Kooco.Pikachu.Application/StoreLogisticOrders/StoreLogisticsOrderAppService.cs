@@ -54,6 +54,9 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
     TCatNormalCreateUpdateDto TCatNormal { get; set; }
     TCatFreezeCreateUpdateDto TCatFreeze { get; set; }
     TCatFrozenCreateUpdateDto TCatFrozen { get; set; }
+    TCat711NormalCreateUpdate TCat711Normal { get; set; }
+    TCat711FreezeCreateUpdateDto TCat711Freeze { get; set; }
+    TCat711FrozenCreateUpdateDto TCat711Frozen { get; set; }
 
     private IStringLocalizer<PikachuResource> _L;
 
@@ -323,7 +326,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         using HttpClient httpClient = new();
 
-        HttpResponseMessage response = await httpClient.PostAsync("https://egs.suda.com.tw:8443/api/Egs/PrintOBT", content);
+        HttpResponseMessage response = await httpClient.PostAsync(_configuration["T-Cat:PrintOBT"], content);
 
         string responseContent = await response.Content.ReadAsStringAsync();
 
@@ -331,6 +334,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         if (printObtResponse is null || printObtResponse.Data is null) return printObtResponse;
 
+        orderDelivery.SrvTranId = printObtResponse.SrvTranId;
+        orderDelivery.FileNo = printObtResponse.Data.FileNo;
         orderDelivery.AllPayLogisticsID = printObtResponse.SrvTranId;
         orderDelivery.LastModificationTime = DateTime.ParseExact(printObtResponse.Data.PrintDateTime, 
                                                                  "yyyyMMddHHmmss", 
@@ -345,6 +350,111 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         await _orderRepository.UpdateAsync(order);
 
         return printObtResponse;
+    }
+
+    public async Task<PrintOBTB2SResponse?> GenerateDeliveryNumberForTCat711DeliveryAsync(Guid orderId, Guid orderDeliveryId)
+    {
+        Order order = await _orderRepository.GetAsync(orderId);
+
+        List<OrderDelivery> orderDeliveries = await _deliveryRepository.GetWithDetailsAsync(orderId);
+
+        OrderDelivery orderDelivery = orderDeliveries.First(f => f.Id == orderDeliveryId);
+
+        GroupBuyDto groupBuy = await _GroupBuyAppService.GetAsync(order.GroupBuyId);
+
+        List<LogisticsProviderSettingsDto> providers = await _logisticsProvidersAppService.GetAllAsync();
+
+        LogisticsProviderSettingsDto? tCat = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCat);
+
+        if (tCat is not null) TCatLogistics = ObjectMapper.Map<LogisticsProviderSettingsDto, TCatLogisticsCreateUpdateDto>(tCat);
+
+        LogisticsProviderSettingsDto? tCat711Normal = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCat711Normal);
+
+        if (tCat711Normal is not null) TCat711Normal = ObjectMapper.Map<LogisticsProviderSettingsDto, TCat711NormalCreateUpdate>(tCat711Normal);
+
+        LogisticsProviderSettingsDto? tCat711Freeze = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCat711Freeze);
+
+        if (tCat711Freeze is not null) TCat711Freeze = ObjectMapper.Map<LogisticsProviderSettingsDto, TCat711FreezeCreateUpdateDto>(tCat711Freeze);
+
+        LogisticsProviderSettingsDto? tCat711Frozen = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCat711Frozen);
+
+        if (tCat711Frozen is not null) TCat711Frozen = ObjectMapper.Map<LogisticsProviderSettingsDto, TCat711FrozenCreateUpdateDto>(tCat711Frozen);
+
+        string thermosphere = string.Empty;
+
+        if (orderDelivery.Items is { Count: > 0 } &&
+            orderDelivery.Items.First().DeliveryTemperature is ItemStorageTemperature.Normal) thermosphere = "0001";
+
+        else if (orderDelivery.Items is { Count: > 0 } &&
+                 orderDelivery.Items.First().DeliveryTemperature is ItemStorageTemperature.Freeze) thermosphere = "0002";
+
+        else if (orderDelivery.Items is { Count: > 0 } &&
+                 orderDelivery.Items.First().DeliveryTemperature is ItemStorageTemperature.Frozen) thermosphere = "0003";
+
+        int collectionAmount = order.PaymentMethod is PaymentMethods.CashOnDelivery ?
+                                GetCollectionAmount(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost, true) :
+                                0;
+
+        PrintOBTB2SRequest request = new()
+        {
+            CustomerId = TCatLogistics.CustomerId,
+            CustomerToken = TCatLogistics.CustomerToken,
+            PrintType = "01",
+            PrintOBTType = $"0{(int)TCatLogistics.TCatShippingLabelForm711}",
+            Orders =
+            [
+                new OrderOBTB2S
+                {
+                    OBTNumber = string.Empty,
+                    OrderId = order.OrderNo,
+                    Thermosphere = thermosphere,
+                    Spec = "0003",
+                    ReceiveStoreId = order.StoreId ?? string.Empty,
+                    RecipientName = order.RecipientName ?? string.Empty,
+                    RecipientTel = string.Empty,
+                    RecipientMobile = order.RecipientPhone ?? string.Empty,
+                    SenderName = TCatLogistics.SenderName,
+                    SenderTel = string.Empty,
+                    SenderMobile = TCatLogistics.SenderPhoneNumber,
+                    SenderZipCode = TCatLogistics.SenderPostalCode,
+                    SenderAddress = TCatLogistics.SenderAddress,
+                    IsCollection = order.PaymentMethod is PaymentMethods.CashOnDelivery ? "Y" : "N",
+                    CollectionAmount = collectionAmount,
+                    Memo = string.Empty
+                }
+            ]
+        };
+
+        string jsonContent = JsonConvert.SerializeObject(request);
+
+        StringContent content = new(jsonContent, Encoding.UTF8, "application/json");
+
+        using HttpClient httpClient = new();
+
+        HttpResponseMessage response = await httpClient.PostAsync(_configuration["T-Cat:PrintOBTByB2S"], content);
+
+        string responseContent = await response.Content.ReadAsStringAsync();
+
+        PrintOBTB2SResponse? printObtB2SResponse = JsonConvert.DeserializeObject<PrintOBTB2SResponse>(responseContent);
+
+        if (printObtB2SResponse is null || printObtB2SResponse.Data is null) return printObtB2SResponse;
+
+        orderDelivery.SrvTranId = printObtB2SResponse.SrvTranId;
+        orderDelivery.FileNo = printObtB2SResponse.Data.FileNo;
+        orderDelivery.AllPayLogisticsID = printObtB2SResponse.Data.Orders.First().OBTNumber;
+        orderDelivery.LastModificationTime = DateTime.ParseExact(printObtB2SResponse.Data.PrintDateTime,
+                                                                 "yyyyMMddHHmmss",
+                                                                 System.Globalization.CultureInfo.InvariantCulture);
+        orderDelivery.DeliveryNo = printObtB2SResponse.Data.Orders.First().DeliveryId;
+        orderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
+
+        await _deliveryRepository.UpdateAsync(orderDelivery);
+
+        order.ShippingStatus = ShippingStatus.ToBeShipped;
+
+        await _orderRepository.UpdateAsync(order);
+
+        return printObtB2SResponse;
     }
 
     public bool IsOrderAmountValid(decimal? totalAmount, decimal? deliveryCost)
@@ -371,7 +481,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         return (int)totalValue;
     }
 
-    public int GetCollectionAmount(decimal? totalAmount, decimal? deliveryCost)
+    public int GetCollectionAmount(decimal? totalAmount, decimal? deliveryCost, bool isFor711 = false)
     {
         decimal totalAmountValue = totalAmount is not null ? totalAmount.Value : 0.00m;
 
@@ -379,7 +489,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         decimal totalValue = totalAmountValue + deliveryCostValue;
 
-        totalValue = totalValue.IsBetween(0, 100001) ? totalValue : 0;
+        totalValue = totalValue.IsBetween(0, isFor711 ? 20000 : 100001) ? totalValue : 0;
 
         return (int)totalValue;
     }

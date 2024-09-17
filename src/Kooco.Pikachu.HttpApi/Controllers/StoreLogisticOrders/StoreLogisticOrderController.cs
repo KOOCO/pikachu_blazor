@@ -42,6 +42,12 @@ namespace Kooco.Pikachu.Controllers.StoreLogisticOrders
             throw new NotImplementedException();
         }
 
+        [HttpGet("generate-deliveryNumber-fortCatDelivery711")]
+        public Task<PrintOBTB2SResponse?> GenerateDeliveryNumberForTCat711DeliveryAsync(Guid orderId, Guid orderDeliveryId)
+        {
+            throw new NotImplementedException();
+        }
+
         [HttpGet("get-store/{deliveryMethod}")]
         public Task<EmapApiResponse> GetStoreAsync(string deliveryMethod)
         {
