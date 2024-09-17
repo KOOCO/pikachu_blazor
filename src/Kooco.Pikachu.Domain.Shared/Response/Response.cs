@@ -56,3 +56,24 @@ public class OrderOBT
     public string ProductName { get; set; }
     public string Memo { get; set; }
 }
+
+public class PrintObtResponse
+{
+    public string SrvTranId { get; set; }
+    public string IsOK { get; set; }
+    public string Message { get; set; }
+    public PrintObtData? Data { get; set; }
+}
+
+public class PrintObtData
+{
+    public string PrintDateTime { get; set; }
+    public List<PrintObtOrders> Orders { get; set; } 
+    public string FileNo { get; set; }
+}
+
+public class PrintObtOrders
+{
+    public string OBTNumber { get; set; }
+    public string OrderId { get; set; }
+}

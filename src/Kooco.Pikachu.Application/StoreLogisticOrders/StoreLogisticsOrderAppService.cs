@@ -1,6 +1,8 @@
-﻿using Azure;
+﻿using AutoMapper;
+using Azure;
 using Azure.Core;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.LogisticsProviders;
@@ -22,6 +24,7 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
@@ -198,8 +201,16 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         return result;
     }
 
-    public async Task GenerateDeliveryNumberForTCatDeliveryAsync(OrderDto order, OrderDeliveryDto orderDelivery)
+    public async Task<PrintObtResponse?> GenerateDeliveryNumberForTCatDeliveryAsync(Guid orderId, Guid orderDeliveryId)
     {
+        Order order = await _orderRepository.GetAsync(orderId);
+
+        List<OrderDelivery> orderDeliveries = await _deliveryRepository.GetWithDetailsAsync(orderId);
+
+        OrderDelivery orderDelivery = orderDeliveries.First(f => f.Id == orderDeliveryId);
+
+        GroupBuyDto groupBuy = await _GroupBuyAppService.GetAsync(order.GroupBuyId);
+
         List<LogisticsProviderSettingsDto> providers = await _logisticsProvidersAppService.GetAllAsync();
 
         LogisticsProviderSettingsDto? tCat = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCat);
@@ -257,7 +268,9 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             _ => "04"
         };
 
-        int collectionAmount = GetCollectionAmount(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost);
+        int collectionAmount = order.PaymentMethod is PaymentMethods.CashOnDelivery ? 
+                                GetCollectionAmount(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost) :
+                                0;
 
         string isDeclare = TCatLogistics.DeclaredValue &&
                            IsOrderAmountValid(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost) ? "Y" : "N";
@@ -297,8 +310,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                     IsMobilePay = isSwipe,
                     IsDeclare = isDeclare,
                     DeclareAmount = isDeclare is "Y" ? GetDeclareAmount(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost) : 0,
-                    ProductTypeId = GetProductType(order.GroupBuy.ProductType),
-                    ProductName = GetProductName(order.GroupBuy.GroupBuyName),
+                    ProductTypeId = GetProductType(groupBuy.ProductType),
+                    ProductName = GetProductName(groupBuy.GroupBuyName),
                     Memo = string.Empty
                 }
             ]
@@ -314,7 +327,24 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         string responseContent = await response.Content.ReadAsStringAsync();
 
-        Console.WriteLine(responseContent);
+        PrintObtResponse? printObtResponse = JsonConvert.DeserializeObject<PrintObtResponse>(responseContent);
+
+        if (printObtResponse is null || printObtResponse.Data is null) return printObtResponse;
+
+        orderDelivery.AllPayLogisticsID = printObtResponse.SrvTranId;
+        orderDelivery.LastModificationTime = DateTime.ParseExact(printObtResponse.Data.PrintDateTime, 
+                                                                 "yyyyMMddHHmmss", 
+                                                                 System.Globalization.CultureInfo.InvariantCulture);
+        orderDelivery.DeliveryNo = printObtResponse.Data.Orders.First().OBTNumber;
+        orderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
+
+        await _deliveryRepository.UpdateAsync(orderDelivery);
+
+        order.ShippingStatus = ShippingStatus.ToBeShipped;
+
+        await _orderRepository.UpdateAsync(order);
+
+        return printObtResponse;
     }
 
     public bool IsOrderAmountValid(decimal? totalAmount, decimal? deliveryCost)

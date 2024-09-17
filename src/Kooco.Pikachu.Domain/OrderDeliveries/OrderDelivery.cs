@@ -30,7 +30,7 @@ namespace Kooco.Pikachu.OrderDeliveries
 
         {
             Id = id;
-        DeliveryMethod = deliveryMethod;
+            DeliveryMethod = deliveryMethod;
             DeliveryStatus = deliveryStatus;
             AllPayLogisticsID = allPayLogisticsID;
             DeliveryNo= deliveryNo;

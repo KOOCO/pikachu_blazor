@@ -6,6 +6,7 @@ using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
+using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.Orders;
 using System;
 using System.Collections.Generic;
@@ -35,6 +36,7 @@ namespace Kooco.Pikachu.Blazor
             CreateMap<OrderDto, CreateOrderDto>();
             CreateMap<GroupBuyReport, GroupBuyReportDto>();
 
+            CreateMap<OrderDeliveryDto, OrderDelivery>().ReverseMap();
         }
         
     }
