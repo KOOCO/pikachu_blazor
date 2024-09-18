@@ -234,6 +234,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         string thermosphere = string.Empty; string spec = string.Empty; string isSwipe = string.Empty;
 
+        string isCollection = string.Empty; int collectionAmount = 0;
+
         if (orderDelivery.Items is { Count: > 0 } &&
             orderDelivery.Items.First().DeliveryTemperature is ItemStorageTemperature.Normal)
         {
@@ -241,7 +243,13 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             spec = GetSpec(TCatNormal.Size);
 
-            isSwipe = TCatNormal.TCatPaymentMethod is TCatPaymentMethod.CardAndMobilePaymentsAccepted ? "Y" : "N";
+            isCollection = TCatNormal.Payment ? "Y" : "N";
+
+            collectionAmount = TCatNormal.Payment ?
+                                GetCollectionAmount(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost) :
+                                0;
+
+            isSwipe = TCatNormal.Payment && TCatNormal.TCatPaymentMethod is TCatPaymentMethod.CardAndMobilePaymentsAccepted ? "Y" : "N";
         }
 
         else if (orderDelivery.Items is { Count: > 0 } &&
@@ -251,7 +259,13 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             spec = GetSpec(TCatFreeze.Size);
 
-            isSwipe = TCatFreeze.TCatPaymentMethod is TCatPaymentMethod.CardAndMobilePaymentsAccepted ? "Y" : "N";
+            isCollection = TCatFreeze.Payment ? "Y" : "N";
+
+            collectionAmount = TCatFreeze.Payment ?
+                                GetCollectionAmount(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost) :
+                                0;
+
+            isSwipe = TCatFreeze.Payment && TCatFreeze.TCatPaymentMethod is TCatPaymentMethod.CardAndMobilePaymentsAccepted ? "Y" : "N";
         }
 
         else if (orderDelivery.Items is { Count: > 0 } &&
@@ -261,7 +275,13 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             spec = GetSpec(TCatFrozen.Size);
 
-            isSwipe = TCatFrozen.TCatPaymentMethod is TCatPaymentMethod.CardAndMobilePaymentsAccepted ? "Y" : "N";
+            isCollection = TCatFrozen.Payment ? "Y" : "N";
+
+            collectionAmount = TCatFrozen.Payment ?
+                                GetCollectionAmount(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost) :
+                                0;
+
+            isSwipe = TCatFrozen.Payment && TCatFrozen.TCatPaymentMethod is TCatPaymentMethod.CardAndMobilePaymentsAccepted ? "Y" : "N";
         }
 
         string deliveryTime = order.ReceivingTime switch 
@@ -270,10 +290,6 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             ReceivingTime.Between14To18PM => "02",
             _ => "04"
         };
-
-        int collectionAmount = order.PaymentMethod is PaymentMethods.CashOnDelivery ? 
-                                GetCollectionAmount(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost) :
-                                0;
 
         string isDeclare = TCatLogistics.DeclaredValue &&
                            IsOrderAmountValid(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost) ? "Y" : "N";
@@ -307,7 +323,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                     DeliveryDate = DateTime.Now.AddDays(2).ToString("yyyyMMdd"),
                     DeliveryTime = deliveryTime,
                     IsFreight = "N",
-                    IsCollection = order.PaymentMethod is PaymentMethods.CashOnDelivery ? "Y" : "N",
+                    IsCollection = isCollection,
                     CollectionAmount = collectionAmount,
                     IsSwipe = isSwipe,
                     IsMobilePay = isSwipe,
