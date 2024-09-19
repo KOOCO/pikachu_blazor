@@ -182,5 +182,21 @@ public static class PikachuModuleExtensionConfigurator
        );
                });
            });
+
+        ObjectExtensionManager.Instance.Modules()
+            .ConfigureIdentity(identity =>
+            {
+                identity.ConfigureUser(user =>
+                {
+                    user.AddOrUpdateProperty<DateTime?>(
+                        "Birthday",
+                        property =>
+                        {
+                            //validation rules
+                            property.Attributes.Add(new RequiredAttribute());
+                        }
+                    );
+                });
+            });
     }
 }

@@ -33,7 +33,7 @@
                             <SelectItem Value="(Guid?)null" selected Disabled></SelectItem>
                             @foreach (var address in UserAddresses)
                             {
-                                <SelectItem Value="@address.Id">@address.Street, @address.City @address.PostalCode</SelectItem>
+                                <SelectItem Value="@address.Id">@address.Address, @address.City @address.PostalCode</SelectItem>
                             }
                         </Select>
                     </Div>
@@ -112,8 +112,8 @@
                             <Column ColumnSize="ColumnSize.Is12.Is6.OnFullHD">
                                 <Validation MessageLocalizer="@LH.Localize">
                                     <Field>
-                                        <FieldLabel>@L["Street"] *</FieldLabel>
-                                        <TextEdit @bind-Text="@EditingMember.Street" ReadOnly>
+                                        <FieldLabel>@L["Address"] *</FieldLabel>
+                                        <TextEdit @bind-Text="@EditingMember.Address" ReadOnly>
                                             <Feedback>
                                                 <ValidationError />
                                             </Feedback>

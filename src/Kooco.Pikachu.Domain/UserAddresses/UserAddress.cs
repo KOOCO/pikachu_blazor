@@ -12,7 +12,7 @@ public class UserAddress : FullAuditedEntity<Guid>, IMultiTenant
     public Guid UserId { get; set; }
     public string PostalCode { get; private set; }
     public string City { get; private set; }
-    public string Street { get; private set; }
+    public string Address { get; private set; }
     public string RecipientName { get; private set; }
     public string RecipientPhoneNumber { get; private set; }
     public bool IsDefault { get; private set; }
@@ -26,7 +26,7 @@ public class UserAddress : FullAuditedEntity<Guid>, IMultiTenant
         Guid userId,
         string postalCode,
         string city,
-        string street,
+        string address,
         string recipientName,
         string recipientPhoneNumber,
         bool isDefault
@@ -35,7 +35,7 @@ public class UserAddress : FullAuditedEntity<Guid>, IMultiTenant
         UserId = userId;
         SetPostalCode(postalCode);
         SetCity(city);
-        SetStreet(street);
+        SetAddress(address);
         SetRecipientName(recipientName);
         SetRecipientPhoneNumber(recipientPhoneNumber);
         SetIsDefault(isDefault);
@@ -63,15 +63,15 @@ public class UserAddress : FullAuditedEntity<Guid>, IMultiTenant
         RecipientName = Check.NotNullOrWhiteSpace(recipientName, nameof(recipientName), maxLength: UserAddressConsts.MaxRecipientNameLength);
     }
 
-    internal UserAddress ChangeStreet(string street)
+    internal UserAddress ChangeAddress(string address)
     {
-        SetStreet(street);
+        SetAddress(address);
         return this;
     }
 
-    private void SetStreet(string street)
+    private void SetAddress(string address)
     {
-        Street = Check.NotNullOrWhiteSpace(street, nameof(street), maxLength: UserAddressConsts.MaxStreetLength);
+        Address = Check.NotNullOrWhiteSpace(address, nameof(address), maxLength: UserAddressConsts.MaxAddressLength);
     }
 
     internal UserAddress ChangeCity(string city)

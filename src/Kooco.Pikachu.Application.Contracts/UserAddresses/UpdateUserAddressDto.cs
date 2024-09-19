@@ -17,8 +17,8 @@ namespace Kooco.Pikachu.UserAddresses
         public string City { get; set; }
 
         [Required]
-        [MaxLength(UserAddressConsts.MaxStreetLength)]
-        public string Street { get; set; }
+        [MaxLength(UserAddressConsts.MaxAddressLength)]
+        public string Address { get; set; }
 
         [Required]
         [MaxLength(UserAddressConsts.MaxRecipientNameLength)]

@@ -27,5 +27,5 @@ public class UpdateMemberDto
     public string City { get; set; }
 
     [Required]
-    public string Street { get; set; }
+    public string Address { get; set; }
 }

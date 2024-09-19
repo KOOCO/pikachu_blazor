@@ -59,7 +59,7 @@ public partial class EditMember
     async Task SetSelectedAddress()
     {
         EditingMember.DefaultAddressId = SelectedAddress?.Id;
-        EditingMember.Street = SelectedAddress?.Street;
+        EditingMember.Address = SelectedAddress?.Address;
         EditingMember.City = SelectedAddress?.City;
         await InvokeAsync(StateHasChanged);
     }

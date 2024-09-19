@@ -9,9 +9,9 @@ public interface IUserAddressRepository : IRepository<UserAddress, Guid>
 {
     Task RemoveDefaultUserAddressesAsync(Guid userId);
     Task<long> GetCountAsync(string? filter, Guid? userId, string? postalCode,
-        string? city, string? street, string? recipientName, string? recipientPhoneNumber, bool? isDefault);
+        string? city, string? address, string? recipientName, string? recipientPhoneNumber, bool? isDefault);
     Task<List<UserAddress>> GetListAsync(int skipCount, int maxResultCount, string sorting, string? filter,
-        Guid? userId, string? postalCode, string? city, string? street, string? recipientName,
+        Guid? userId, string? postalCode, string? city, string? address, string? recipientName,
         string? recipientPhoneNumber, bool? isDefault);
     Task<UserAddress?> GetDefaultAddressAsync(Guid userId);
 }
