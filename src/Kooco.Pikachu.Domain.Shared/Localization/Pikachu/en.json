@@ -630,6 +630,7 @@
     "DefaultAddress": "Default Address",
     "EditAddress": "Edit Address",
     "Permission:UserAdresses": "User Adresses",
-    "Permission:SetIsDefault":  "Set Default"
+    "Permission:SetIsDefault": "Set Default",
+    "PostalCode": "Postal Code"
   }
 }

@@ -1,0 +1,71 @@
+﻿@using Kooco.Pikachu.Localization
+@using Kooco.Pikachu.UserAddresses
+@using Volo.Abp.AspNetCore.Components.Web
+@inherits PikachuComponentBase
+@inject IUserAddressAppService UserAddressAppService
+@inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
+
+<Modal @ref="Modal">
+    <ModalContent IsCentered="true">
+        <Form>
+            <ModalHeader>
+                <ModalTitle>@L["Edit"]</ModalTitle>
+                <CloseButton Clicked="CloseModal" />
+            </ModalHeader>
+            <ModalBody>
+                <Validations @ref="@ValidationsRef" Model="@EditingUserAddress" ValidateOnLoad="false">
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel>@L["RecipientName"]<Span Class="text-danger"> *</Span></FieldLabel>
+                            <TextEdit @bind-Text="@EditingUserAddress.RecipientName">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                        <Field>
+                            <FieldLabel>@L["RecipientPhoneNumber"]<Span Class="text-danger"> *</Span></FieldLabel>
+                            <TextEdit @bind-Text="@EditingUserAddress.RecipientPhoneNumber">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                        <Field>
+                            <FieldLabel>@L["Street"]<Span Class="text-danger"> *</Span></FieldLabel>
+                            <TextEdit @bind-Text="@EditingUserAddress.Street">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                        <Field>
+                            <FieldLabel>@L["City"]<Span Class="text-danger"> *</Span></FieldLabel>
+                            <TextEdit @bind-Text="@EditingUserAddress.City">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                        <Field>
+                            <FieldLabel>@L["PostalCode"]<Span Class="text-danger"> *</Span></FieldLabel>
+                            <TextEdit @bind-Text="@EditingUserAddress.PostalCode">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+                </Validations>
+            </ModalBody>
+            <ModalFooter>
+                <PikachuButton Class="pk-btn-light" Disabled="IsLoading" Clicked="CloseModal">
+                    @L["Cancel"]
+                </PikachuButton>
+                <PikachuButton Class="pk-btn-primary" Loading="IsLoading" Clicked="UpdateAsync">
+                    @L["Update"]
+                </PikachuButton>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>

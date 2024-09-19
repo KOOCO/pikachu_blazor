@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Services;
 
 namespace Kooco.Pikachu.UserAddresses;
@@ -45,19 +46,21 @@ public class UserAddressManager(IUserAddressRepository userAddressRepository) : 
             userAddress.UserId = userId;
         }
 
-        if (isDefault)
-        {
-            await userAddressRepository.RemoveDefaultUserAddressesAsync(userId);
-        }
-
         userAddress.ChangePostalCode(postalCode);
         userAddress.ChangeCity(city);
         userAddress.ChangeStreet(street);
         userAddress.ChangeRecipientName(recipientName);
         userAddress.ChangeRecipientPhoneNumber(recipientPhoneNumber);
-        userAddress.SetIsDefault(isDefault);
+        await SetIsDefaultAsync(userAddress, isDefault);
 
         await userAddressRepository.UpdateAsync(userAddress);
+        return userAddress;
+    }
+
+    public async Task<UserAddress> SetIsDefaultAsync(Guid userAddressId, bool isDefault)
+    {
+        var userAddress = await userAddressRepository.GetAsync(userAddressId);
+        await SetIsDefaultAsync(userAddress, isDefault);
         return userAddress;
     }
 
@@ -69,5 +72,11 @@ public class UserAddressManager(IUserAddressRepository userAddressRepository) : 
         }
         userAddress.SetIsDefault(isDefault);
         return userAddress;
+    }
+
+    public async Task<UserAddress?> GetDefaultAddressAsync(Guid userId)
+    {
+        var defaultAddress = await userAddressRepository.GetDefaultAddressAsync(userId);
+        return defaultAddress;
     }
 }

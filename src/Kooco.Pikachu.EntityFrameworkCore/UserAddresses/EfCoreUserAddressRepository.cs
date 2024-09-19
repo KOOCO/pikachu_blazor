@@ -10,7 +10,8 @@ using Volo.Abp.EntityFrameworkCore;
 
 namespace Kooco.Pikachu.UserAddresses;
 
-public class EfCoreUserAddressRepository(IDbContextProvider<PikachuDbContext> dbContextProvider) : EfCoreRepository<PikachuDbContext, UserAddress, Guid>(dbContextProvider), IUserAddressRepository
+public class EfCoreUserAddressRepository(IDbContextProvider<PikachuDbContext> dbContextProvider
+    ) : EfCoreRepository<PikachuDbContext, UserAddress, Guid>(dbContextProvider), IUserAddressRepository
 {
     public async Task<long> GetCountAsync(string? filter, Guid? userId, string? postalCode, string? city,
         string? street, string? recipientName, string? recipientPhoneNumber, bool? isDefault)
@@ -30,9 +31,14 @@ public class EfCoreUserAddressRepository(IDbContextProvider<PikachuDbContext> db
     {
         var dbContext = await GetDbContextAsync();
 
-        var userAddresses = dbContext.UserAddresses
+        var userAddresses = await dbContext.UserAddresses
                             .Where(x => x.UserId == userId)
-                            .ExecuteUpdate(address => address.SetProperty(a => a.IsDefault, a => false));
+                            .ToListAsync();
+        foreach (var address in userAddresses)
+        {
+            address.SetIsDefault(false);
+        }
+        await dbContext.SaveChangesAsync();
     }
 
     public async Task<IQueryable<UserAddress>> GetFilteredQueryableAsync(string? filter, Guid? userId, string? postalCode, string? city,
@@ -51,5 +57,16 @@ public class EfCoreUserAddressRepository(IDbContextProvider<PikachuDbContext> db
             .WhereIf(!filter.IsNullOrWhiteSpace(), x => x.PostalCode.Contains(filter)
             || x.City.Contains(filter) || x.Street.Contains(filter)
             || x.RecipientName.Contains(filter) || x.RecipientPhoneNumber.Contains(filter));
+    }
+
+    public async Task<UserAddress?> GetDefaultAddressAsync(Guid userId)
+    {
+        var queryable = await GetQueryableAsync();
+
+        var defaultAddress = await queryable
+            .Where(q => q.UserId == userId && q.IsDefault)
+            .FirstOrDefaultAsync();
+
+        return defaultAddress;
     }
 }

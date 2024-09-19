@@ -21,8 +21,11 @@ public class UpdateMemberDto
     public DateTime? Birthday { get; set; } = new DateTime(2000, 1, 1);
 
     [Required]
+    public Guid? DefaultAddressId { get; set; }
+
+    [Required]
     public string City { get; set; }
 
     [Required]
-    public string Address { get; set; }
+    public string Street { get; set; }
 }

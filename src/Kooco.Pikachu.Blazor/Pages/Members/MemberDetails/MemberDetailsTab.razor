@@ -1,4 +1,5 @@
 ﻿@using Kooco.Pikachu.Members
+@using Kooco.Pikachu.UserAddresses
 @using Volo.Abp.AspNetCore.Components.Notifications
 @inherits PikachuComponentBase
 @inject IMemberAppService MemberAppService
@@ -30,18 +31,18 @@
                 </Div>
                 <Divider Class="my-2"></Divider>
                 <Div Class="px-3">
-                    <h6 class="m-0">@L["PostCode"]</h6>
-                    <Span>407</Span>
+                    <h6 class="m-0">@L["PostalCode"]</h6>
+                    <Span>@(DefaultAddress?.PostalCode ?? "N/A")</Span>
                 </Div>
                 <Divider Class="my-2"></Divider>
                 <Div Class="px-3">
                     <h6 class="m-0">@L["City"]</h6>
-                    <Span>New York</Span>
+                    <Span>@(DefaultAddress?.City ?? "N/A")</Span>
                 </Div>
                 <Divider Class="my-2"></Divider>
                 <Div Class="px-3">
-                    <h6 class="m-0">@L["Address"]</h6>
-                    <Span>House #25</Span>
+                    <h6 class="m-0">@L["Street"]</h6>
+                    <Span>@(DefaultAddress?.Street ?? "N/A")</Span>
                 </Div>
             </CardBody>
         </Card>
@@ -121,6 +122,25 @@
     public bool CanDeleteMember { get; set; }
 
     bool IsDeleting = false;
+
+    private UserAddressDto? DefaultAddress { get; set; }
+
+    protected async override Task OnAfterRenderAsync(bool firstLoad)
+    {
+        if (firstLoad)
+        {
+            try
+            {
+                DefaultAddress = await MemberAppService.GetDefaultAddressAsync(Member.Id);
+                await InvokeAsync(StateHasChanged);
+            }
+            catch (Exception ex)
+            {
+                await HandleErrorAsync(ex);
+            }
+        }
+        await base.OnAfterRenderAsync(firstLoad);
+    }
 
     private async Task DeleteAsync()
     {

@@ -1,5 +1,7 @@
 ﻿using Kooco.Pikachu.Permissions;
+using Kooco.Pikachu.UserAddresses;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +11,13 @@ using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
+using IdentityUser = Volo.Abp.Identity.IdentityUser;
 
 namespace Kooco.Pikachu.Members;
 
 [Authorize(PikachuPermissions.Members.Default)]
-public class MemberAppService(IRepository<IdentityUser, Guid> identityUserRepository, IdentityUserManager identityUserManager) : PikachuAppService, IMemberAppService
+public class MemberAppService(IRepository<IdentityUser, Guid> identityUserRepository,
+    IdentityUserManager identityUserManager, UserAddressManager userAddressManager) : PikachuAppService, IMemberAppService
 {
     public async Task<MemberDto> GetAsync(Guid id)
     {
@@ -60,16 +64,26 @@ public class MemberAppService(IRepository<IdentityUser, Guid> identityUserReposi
     }
 
     [Authorize(PikachuPermissions.Members.Edit)]
-    public async Task UpdateAsync(Guid id, UpdateMemberDto input)
+    public async Task<MemberDto> UpdateAsync(Guid id, UpdateMemberDto input)
     {
         Check.NotNull(input, nameof(input));
+        Check.NotDefaultOrNull(input.DefaultAddressId, nameof(input.DefaultAddressId));
 
         var member = await identityUserRepository.GetAsync(id);
 
         member.Name = input.Name;
 
-        await identityUserManager.SetEmailAsync(member, input.Email);
-        await identityUserManager.SetPhoneNumberAsync(member, input.PhoneNumber);
-        await identityUserManager.UpdateAsync(member);
+        (await identityUserManager.SetEmailAsync(member, input.Email)).CheckErrors();
+        (await identityUserManager.SetPhoneNumberAsync(member, input.PhoneNumber)).CheckErrors();
+        (await identityUserManager.UpdateAsync(member)).CheckErrors();
+
+        await userAddressManager.SetIsDefaultAsync(input.DefaultAddressId.Value, true);
+        return ObjectMapper.Map<IdentityUser, MemberDto>(member);
+    }
+
+    public async Task<UserAddressDto?> GetDefaultAddressAsync(Guid id)
+    {
+        var defaultAddress = await userAddressManager.GetDefaultAddressAsync(id);
+        return ObjectMapper.Map<UserAddress?, UserAddressDto?>(defaultAddress);
     }
 }

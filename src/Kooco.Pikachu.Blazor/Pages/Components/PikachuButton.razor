@@ -1,7 +1,7 @@
 ﻿<button class="pk-btn @Class" @onclick="Clicked" disabled="@(Disabled || Loading)" type="@Type">
     @if (Loading)
     {
-        <div class="spinner-border" role="status"></div>
+        <div class="spinner-border" style="margin-right: 3px" role="status"></div>
     }
     @ChildContent
 </button>

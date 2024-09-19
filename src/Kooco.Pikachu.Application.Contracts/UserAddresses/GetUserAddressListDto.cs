@@ -12,5 +12,5 @@ public class GetUserAddressListDto : PagedAndSortedResultRequestDto
     public string? Street { get; set; }
     public string? RecipientName { get; set; }
     public string? RecipientPhoneNumber { get; set; }
-    public bool IsDefault { get; set; }
+    public bool? IsDefault { get; set; }
 }

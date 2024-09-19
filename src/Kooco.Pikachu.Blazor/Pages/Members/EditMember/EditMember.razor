@@ -1,12 +1,15 @@
 ﻿@page "/Members/Edit/{Id:guid}"
 @using Kooco.Pikachu.Blazor.Pages.Members.MemberDetails
+@using Kooco.Pikachu.Blazor.Pages.UserAddresses
 @using Kooco.Pikachu.Localization
 @using Kooco.Pikachu.Members
 @using Kooco.Pikachu.Permissions
+@using Kooco.Pikachu.UserAddresses
 @using Volo.Abp.AspNetCore.Components.Web
 @attribute [Authorize(PikachuPermissions.Members.Edit)]
 @inherits PikachuComponentBase
 @inject IMemberAppService MemberAppService
+@inject IUserAddressAppService UserAddressAppService
 @inject NavigationManager NavigationManager
 @inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
 
@@ -28,9 +31,9 @@
                         <FieldLabel>@L["Address"]</FieldLabel>
                         <Select TValue="Guid?" SelectedValue="@SelectedAddressId" SelectedValueChanged="@OnSelectedValueChanged" Size="Size.Small">
                             <SelectItem Value="(Guid?)null" selected Disabled></SelectItem>
-                            @foreach (var address in AddressList)
+                            @foreach (var address in UserAddresses)
                             {
-                                <SelectItem Value="@address.Id">@address.Address, @address.City</SelectItem>
+                                <SelectItem Value="@address.Id">@address.Street, @address.City @address.PostalCode</SelectItem>
                             }
                         </Select>
                     </Div>
@@ -86,10 +89,10 @@
                                     </Field>
                                 </Validation>
                             </Column>
-                            <Divider></Divider>
+                            <Divider Class="my-3"></Divider>
                             <Div Class="d-flex align-items-center justify-content-between mb-2">
                                 <h6 class="mb-0">@L["DefaultAddress"]</h6>
-                                <PikachuButton Class="pk-btn-sm pk-btn-light">
+                                <PikachuButton Class="pk-btn-sm pk-btn-light" Disabled="SelectedAddress == null" Clicked="EditAddress">
                                     @L["EditAddress"]
                                     <Icon Name="IconName.Pen" Class="ms-1"></Icon>
                                 </PikachuButton>
@@ -109,8 +112,8 @@
                             <Column ColumnSize="ColumnSize.Is12.Is6.OnFullHD">
                                 <Validation MessageLocalizer="@LH.Localize">
                                     <Field>
-                                        <FieldLabel>@L["Address"] *</FieldLabel>
-                                        <TextEdit @bind-Text="@EditingMember.Address" ReadOnly>
+                                        <FieldLabel>@L["Street"] *</FieldLabel>
+                                        <TextEdit @bind-Text="@EditingMember.Street" ReadOnly>
                                             <Feedback>
                                                 <ValidationError />
                                             </Feedback>
@@ -120,14 +123,18 @@
                             </Column>
                         </Row>
                     </Validations>
-                    <PikachuButton Class="pk-btn-primary" Loading="IsUpdating" Clicked="UpdateAsync">
-                        @L["Update"]
-                    </PikachuButton>
-                    <PikachuButton Class="pk-btn-light" Disabled="IsUpdating" Clicked="NavigateToMemberDetails">
-                        @L["Cancel"]
-                    </PikachuButton>
+                    <Div Class="text-end">
+                        <PikachuButton Class="pk-btn-light" Disabled="IsUpdating" Clicked="NavigateToMemberDetails">
+                            @L["Cancel"]
+                        </PikachuButton>
+                        <PikachuButton Class="pk-btn-primary" Loading="IsUpdating" Clicked="UpdateAsync">
+                            @L["Update"]
+                        </PikachuButton>
+                    </Div>
                 </Form>
             </CardBody>
         </Card>
     }
 </Div>
+
+<EditUserAddressModal @ref="EditUserAddressModal" OnModalClosed="OnEditUserAddressModalClosed"></EditUserAddressModal>
