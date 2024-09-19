@@ -21,6 +21,7 @@ using Kooco.Pikachu.DeliveryTempratureCosts;
 using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.Members;
 using Volo.Abp.Identity;
+using Kooco.Pikachu.UserAddresses;
 
 namespace Kooco.Pikachu;
 
@@ -144,5 +145,8 @@ public class PikachuApplicationAutoMapperProfile : Profile
 
         CreateMap<IdentityUser, MemberDto>();
         CreateMap<MemberDto, UpdateMemberDto>();
+
+        CreateMap<UserAddress, UserAddressDto>();
+        CreateMap<UserAddressDto, UpdateUserAddressDto>();
     }
 }

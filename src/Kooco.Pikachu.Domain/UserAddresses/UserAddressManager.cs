@@ -17,6 +17,11 @@ public class UserAddressManager(IUserAddressRepository userAddressRepository) : 
         Check.NotNullOrWhiteSpace(recipientName, nameof(recipientName), maxLength: UserAddressConsts.MaxRecipientNameLength);
         Check.NotNullOrWhiteSpace(recipientPhoneNumber, nameof(recipientPhoneNumber), maxLength: UserAddressConsts.MaxRecipientPhoneNumberLength);
 
+        if (isDefault)
+        {
+            await userAddressRepository.RemoveDefaultUserAddressesAsync(userId);
+        }
+
         var userAddress = new UserAddress(GuidGenerator.Create(), userId, postalCode, city, street,
             recipientName, recipientPhoneNumber, isDefault);
 
@@ -40,6 +45,11 @@ public class UserAddressManager(IUserAddressRepository userAddressRepository) : 
             userAddress.UserId = userId;
         }
 
+        if (isDefault)
+        {
+            await userAddressRepository.RemoveDefaultUserAddressesAsync(userId);
+        }
+
         userAddress.ChangePostalCode(postalCode);
         userAddress.ChangeCity(city);
         userAddress.ChangeStreet(street);
@@ -51,12 +61,13 @@ public class UserAddressManager(IUserAddressRepository userAddressRepository) : 
         return userAddress;
     }
 
-    //public async Task<UserAddress> SetIsDefault(UserAddress userAddress, bool isDefault)
-    //{
-    //    if (isDefault)
-    //    {
-    //        var queryable = await userAddressRepository.GetQueryableAsync();
-    //        //queryable.Where(x => x.IsDefault).Executeupdate
-    //    }
-    //}
+    public async Task<UserAddress> SetIsDefaultAsync(UserAddress userAddress, bool isDefault)
+    {
+        if (isDefault)
+        {
+            await userAddressRepository.RemoveDefaultUserAddressesAsync(userAddress.UserId);
+        }
+        userAddress.SetIsDefault(isDefault);
+        return userAddress;
+    }
 }

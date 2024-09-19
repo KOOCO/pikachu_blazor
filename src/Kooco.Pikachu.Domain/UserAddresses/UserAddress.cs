@@ -1,18 +1,25 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
+using Volo.Abp.Identity;
+using Volo.Abp.MultiTenancy;
 
 namespace Kooco.Pikachu.UserAddresses;
 
-public class UserAddress : FullAuditedEntity<Guid>
+public class UserAddress : FullAuditedEntity<Guid>, IMultiTenant
 {
     public Guid UserId { get; set; }
-    public string? PostalCode { get; private set; }
-    public string? City { get; private set; }
-    public string? Street { get; private set; }
-    public string? RecipientName { get; private set; }
-    public string? RecipientPhoneNumber { get; private set; }
-    public bool IsDefault { get; set; }
+    public string PostalCode { get; private set; }
+    public string City { get; private set; }
+    public string Street { get; private set; }
+    public string RecipientName { get; private set; }
+    public string RecipientPhoneNumber { get; private set; }
+    public bool IsDefault { get; private set; }
+    public Guid? TenantId { get; set; }
+    
+    [ForeignKey(nameof(UserId))]
+    public IdentityUser? User { get; set; }
 
     public UserAddress(
         Guid id,

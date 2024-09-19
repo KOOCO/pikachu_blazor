@@ -87,4 +87,13 @@ public static class PikachuPermissions
         public const string Edit = Default + ".Edit";
         public const string Delete = Default + ".Delete";
     }
+
+    public static class UserAddresses
+    {
+        public const string Default = MembersManagement + ".UserAddresses";
+        public const string Create = Default + ".Create";
+        public const string Edit = Default + ".Edit";
+        public const string Delete = Default + ".Delete";
+        public const string SetIsDefault = Default + ".SetIsDefault";
+    }
 }

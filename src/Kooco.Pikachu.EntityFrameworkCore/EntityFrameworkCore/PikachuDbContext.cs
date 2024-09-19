@@ -31,6 +31,7 @@ using Kooco.Pikachu.AutomaticEmails;
 using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.DeliveryTempratureCosts;
 using Kooco.Pikachu.OrderDeliveries;
+using Kooco.Pikachu.UserAddresses;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -95,6 +96,8 @@ public class PikachuDbContext :
     public DbSet<LogisticsProviderSettings> LogisticsProviderSettings { get; set; }
     public DbSet<DeliveryTemperatureCost> DeliveryTemperatureCosts { get; set; }
     public DbSet<OrderDelivery> OrderDeliveries { get; set; }
+    public DbSet<UserAddress> UserAddresses { get; set; }
+
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
     {
@@ -137,7 +140,7 @@ public class PikachuDbContext :
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "ItemDetails", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
-           
+
         });
 
         builder.Entity<Image>(b =>
@@ -216,9 +219,9 @@ public class PikachuDbContext :
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "OrderDeliveries", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
-           
+
             b.HasMany(o => o.Items).WithOne().HasForeignKey(d => d.DeliveryOrderId);
-           
+
             b.HasOne<Order>().WithMany().HasForeignKey(d => d.OrderId);
 
         });
@@ -253,7 +256,7 @@ public class PikachuDbContext :
             b.ToTable(PikachuConsts.DbTablePrefix + "PaymentGateways", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
         });
-        
+
         builder.Entity<ElectronicInvoiceSetting>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "ElectronicInvoiceSettings", PikachuConsts.DbSchema, table => table.HasComment(""));
@@ -282,15 +285,21 @@ public class PikachuDbContext :
 
             b.HasOne(x => x.GroupBuy).WithMany().IsRequired(false).OnDelete(DeleteBehavior.Cascade);
         });
-        
+
         builder.Entity<LogisticsProviderSettings>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "LogisticsProviderSettings", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
 
-           // b.Ignore(x => x.LogisticsSubTypesList);
+            // b.Ignore(x => x.LogisticsSubTypesList);
             b.Ignore(x => x.MainIslandsList);
             b.Ignore(x => x.OuterIslandsList);
+        });
+
+        builder.Entity<UserAddress>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "UserAddresses", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
         });
     }
 }
