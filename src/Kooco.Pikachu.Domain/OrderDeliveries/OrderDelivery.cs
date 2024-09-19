@@ -18,7 +18,8 @@ namespace Kooco.Pikachu.OrderDeliveries
         public  DeliveryStatus DeliveryStatus { get; set; }
         public string? DeliveryNo { get; set; }
         
-       
+        public string? SrvTranId { get; set; }
+        public string? FileNo { get; set; }
         public Guid OrderId { get; set; }
         public ICollection<OrderItem> Items  { get; set; }
 
@@ -30,7 +31,7 @@ namespace Kooco.Pikachu.OrderDeliveries
 
         {
             Id = id;
-        DeliveryMethod = deliveryMethod;
+            DeliveryMethod = deliveryMethod;
             DeliveryStatus = deliveryStatus;
             AllPayLogisticsID = allPayLogisticsID;
             DeliveryNo= deliveryNo;

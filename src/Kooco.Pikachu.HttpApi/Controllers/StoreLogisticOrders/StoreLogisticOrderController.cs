@@ -3,6 +3,7 @@ using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Refunds;
+using Kooco.Pikachu.Response;
 using Kooco.Pikachu.StoreLogisticOrders;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -36,7 +37,13 @@ namespace Kooco.Pikachu.Controllers.StoreLogisticOrders
         }
 
         [HttpGet("generate-deliveryNumber-for-tCatDelivery")]
-        public Task GenerateDeliveryNumberForTCatDeliveryAsync(OrderDto order, OrderDeliveryDto orderDelivery)
+        public Task<PrintObtResponse?> GenerateDeliveryNumberForTCatDeliveryAsync(Guid orderId, Guid orderDeliveryId)
+        {
+            throw new NotImplementedException();
+        }
+
+        [HttpGet("generate-deliveryNumber-fortCatDelivery711")]
+        public Task<PrintOBTB2SResponse?> GenerateDeliveryNumberForTCat711DeliveryAsync(Guid orderId, Guid orderDeliveryId)
         {
             throw new NotImplementedException();
         }

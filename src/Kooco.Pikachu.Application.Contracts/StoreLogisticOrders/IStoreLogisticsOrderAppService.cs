@@ -1,6 +1,7 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.Response;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,7 +14,9 @@ namespace Kooco.Pikachu.StoreLogisticOrders
     {
         Task<ResponseResultDto> CreateStoreLogisticsOrderAsync(Guid orderId, Guid orderDeliveryId);
 
-        Task GenerateDeliveryNumberForTCatDeliveryAsync(OrderDto order, OrderDeliveryDto orderDelivery);
+        Task<PrintObtResponse?> GenerateDeliveryNumberForTCatDeliveryAsync(Guid orderId, Guid orderDeliveryId);
+
+        Task<PrintOBTB2SResponse?> GenerateDeliveryNumberForTCat711DeliveryAsync(Guid orderId, Guid orderDeliveryId);
 
         Task<ResponseResultDto> CreateHomeDeliveryShipmentOrderAsync(Guid orderId, Guid orderDeliveryId);
 

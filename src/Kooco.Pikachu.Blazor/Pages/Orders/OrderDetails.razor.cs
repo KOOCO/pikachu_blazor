@@ -6,6 +6,7 @@ using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.PaymentGateways;
+using Kooco.Pikachu.Response;
 using Kooco.Pikachu.StoreLogisticOrders;
 using Kooco.Pikachu.TestLables;
 using Microsoft.AspNetCore.Components;
@@ -528,9 +529,23 @@ public partial class OrderDetails
             //    //NavigationManager.NavigateTo($"map-response/{htmlForm}");
             #endregion
         }
-        else if (deliveryOrder.DeliveryMethod is DeliveryMethod.TCatDeliveryNormal)
+
+        else if (deliveryOrder.DeliveryMethod is DeliveryMethod.TCatDeliveryNormal ||
+                 deliveryOrder.DeliveryMethod is DeliveryMethod.TCatDeliveryFreeze ||
+                 deliveryOrder.DeliveryMethod is DeliveryMethod.TCatDeliveryFrozen)
         {
-            await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCatDeliveryAsync(Order, deliveryOrder);
+            PrintObtResponse? response = await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCatDeliveryAsync(Order.Id, deliveryOrder.Id);
+
+            if (response is null || response.Data is null) await _uiMessageService.Error(response.Message);
+        }
+        
+        else if (deliveryOrder.DeliveryMethod is DeliveryMethod.TCatDeliverySevenElevenNormal ||
+                 deliveryOrder.DeliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFreeze ||
+                 deliveryOrder.DeliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFrozen)
+        {
+            PrintOBTB2SResponse? response = await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCat711DeliveryAsync(Order.Id, deliveryOrder.Id);
+
+            if (response is null || response.Data is null) await _uiMessageService.Error(response.Message);
         }
         else
         {

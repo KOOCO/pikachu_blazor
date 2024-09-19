@@ -56,3 +56,75 @@ public class OrderOBT
     public string ProductName { get; set; }
     public string Memo { get; set; }
 }
+
+public class PrintObtResponse
+{
+    public string SrvTranId { get; set; }
+    public string IsOK { get; set; }
+    public string Message { get; set; }
+    public PrintObtData? Data { get; set; }
+}
+
+public class PrintObtData
+{
+    public string PrintDateTime { get; set; }
+    public List<PrintObtOrders> Orders { get; set; } 
+    public string FileNo { get; set; }
+}
+
+public class PrintObtOrders
+{
+    public string OBTNumber { get; set; }
+    public string OrderId { get; set; }
+}
+
+public class PrintOBTB2SRequest
+{
+    public string CustomerId { get; set; }
+    public string CustomerToken { get; set; }
+    public string PrintType { get; set; }
+    public string PrintOBTType { get; set; }
+    public OrderOBTB2S[] Orders { get; set; }
+}
+
+public class OrderOBTB2S
+{
+    public string OBTNumber { get; set; }
+    public string OrderId { get; set; }
+    public string Thermosphere { get; set; }
+    public string Spec { get; set; }
+    public string ReceiveStoreId { get; set; }
+    public string RecipientName { get; set; }
+    public string RecipientTel { get; set; }
+    public string RecipientMobile { get; set; }
+    public string SenderName { get; set; }
+    public string SenderTel { get; set; }
+    public string SenderMobile { get; set; }
+    public string SenderZipCode { get; set; }
+    public string SenderAddress { get; set; }
+    public string IsCollection { get; set; }
+    public int CollectionAmount { get; set; }
+    public string Memo { get; set; }
+}
+
+public class PrintOBTB2SResponse
+{
+    public string SrvTranId { get; set; }
+    public string IsOK { get; set; }
+    public string Message { get; set; }
+    public PrintOBTB2SData? Data { get; set; }
+}
+
+public class PrintOBTB2SData
+{
+    public string PrintDateTime { get; set; }
+    public List<PrintOBTB2SOrders> Orders { get; set; }
+    public string FileNo { get; set; }
+}
+
+public class PrintOBTB2SOrders
+{
+    public string OBTNumber { get; set; }
+    public string OrderId { get; set; }
+    public string DeliveryId { get; set; }
+}

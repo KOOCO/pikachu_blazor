@@ -1097,6 +1097,21 @@
                                                 }
                                             }
                                         }
+                                        @if (Order.DeliveryMethod is DeliveryMethod.DeliveredByStore)
+                                        {
+                                            <tr>
+                                                <td class="text-center" style="width: 50%;" />
+                                                <td class="text-center" style="width: 10%;">Delivery Cost</td>
+                                                <td class="text-center" style="width: 10%;" />
+                                                <td class="text-center" style="width: 10%;" />
+                                                <td class="text-center" style="width: 10%;" />
+                                                <td>
+                                                    $@(context.Items.GroupBy(s => s.DeliveryTemperatureCost)
+                                                                    .Select(s => s.Key)
+                                                                    .FirstOrDefault())
+                                                </td>
+                                            </tr>
+                                        }
                                         <tr>
                                             <td class="text-center" style="width: 50%;" />
                                             <td class="text-center" style="width: 10%;">Total</td>
@@ -1106,10 +1121,14 @@
                                             <td>
                                                 @{ SetTotalAmount(context); Task.Delay(500); }
 
-                                                $@((context.Items.Sum(s => s.TotalAmount) 
+                                                $@(
+                                                    (context.Items.Sum(s => s.TotalAmount) 
                                                     + (Order.DeliveryMethod is DeliveryMethod.DeliveredByStore 
-                                                        ? context.Items.Sum(s => s.DeliveryTemperatureCost) 
-                                                          : context.TotalAmount!.Value)).ToString("N2"))
+                                                        ? context.Items.GroupBy(s => s.DeliveryTemperatureCost)
+                                                                       .Select(s => s.Key)
+                                                                       .FirstOrDefault() 
+                                                          : context.TotalAmount!.Value)).ToString("N2")
+                                                )
                                             </td>
                                         </tr>
                                     }
