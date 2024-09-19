@@ -628,6 +628,8 @@
     "EmailAddress": "Email Address",
     "PhoneNumber": "Phone Number",
     "DefaultAddress": "Default Address",
-    "EditAddress": "Edit Address"
+    "EditAddress": "Edit Address",
+    "Permission:UserAdresses": "User Adresses",
+    "Permission:SetIsDefault":  "Set Default"
   }
 }
