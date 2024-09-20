@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using System;
 using Volo.Abp.Identity;
 using Volo.Abp.ObjectExtending;
@@ -60,14 +61,40 @@ public static class PikachuEfCoreEntityExtensionMappings
                              }
                          );
 
-             ObjectExtensionManager.Instance
-             .MapEfCoreProperty<Tenant, string>(
-                 Constant.TenantContactEmail,
-                 (entityBuilder, propertyBuilder) =>
-                 {
-                     propertyBuilder.HasMaxLength(512);
-                 }
-             );
+            ObjectExtensionManager.Instance
+            .MapEfCoreProperty<Tenant, string>(
+                Constant.TenantContactEmail,
+                (entityBuilder, propertyBuilder) =>
+                {
+                    propertyBuilder.HasMaxLength(512);
+                }
+            );
+
+            #region IdentityUser
+            ObjectExtensionManager.Instance
+                .MapEfCoreProperty<IdentityUser, DateTime?>(Constant.Birthday);
+
+            ObjectExtensionManager.Instance
+                .MapEfCoreProperty<IdentityUser, string?>(Constant.FacebookId,
+                (entityBuilder, propertyBuilder) =>
+                {
+                    propertyBuilder.HasMaxLength(100);
+                });
+
+            ObjectExtensionManager.Instance
+                .MapEfCoreProperty<IdentityUser, string?>(Constant.GoogleId,
+                (entityBuilder, propertyBuilder) =>
+                {
+                    propertyBuilder.HasMaxLength(100);
+                });
+
+            ObjectExtensionManager.Instance
+            .MapEfCoreProperty<IdentityUser, string?>(Constant.LineId,
+            (entityBuilder, propertyBuilder) =>
+            {
+                propertyBuilder.HasMaxLength(100);
+            });
+            #endregion
         });
     }
 }

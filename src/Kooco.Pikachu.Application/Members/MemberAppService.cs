@@ -75,6 +75,10 @@ public class MemberAppService(IRepository<IdentityUser, Guid> identityUserReposi
 
         (await identityUserManager.SetEmailAsync(member, input.Email)).CheckErrors();
         (await identityUserManager.SetPhoneNumberAsync(member, input.PhoneNumber)).CheckErrors();
+        
+        member.ExtraProperties.Remove(Constant.Birthday);
+        member.ExtraProperties.TryAdd(Constant.Birthday, input.Birthday);
+
         (await identityUserManager.UpdateAsync(member)).CheckErrors();
 
         await userAddressManager.SetIsDefaultAsync(input.DefaultAddressId.Value, true);

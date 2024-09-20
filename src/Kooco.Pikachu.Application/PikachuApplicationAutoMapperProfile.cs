@@ -22,6 +22,7 @@ using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.Members;
 using Volo.Abp.Identity;
 using Kooco.Pikachu.UserAddresses;
+using System.Collections.Generic;
 
 namespace Kooco.Pikachu;
 
@@ -143,7 +144,8 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<GroupBuyItemGroupDetails, GroupBuyItemGroupDetailCreateUpdateDto>().ReverseMap();
         CreateMap<GroupBuyItemGroupDetailsDto, GroupBuyItemGroupDetailCreateUpdateDto>().ReverseMap();
 
-        CreateMap<IdentityUser, MemberDto>();
+        CreateMap<IdentityUser, MemberDto>()
+            .ForMember(dest => dest.Birthday, opt => opt.MapFrom(src => src.ExtraProperties.GetValueOrDefault(Constant.Birthday)));
         CreateMap<MemberDto, UpdateMemberDto>();
 
         CreateMap<UserAddress, UserAddressDto>();

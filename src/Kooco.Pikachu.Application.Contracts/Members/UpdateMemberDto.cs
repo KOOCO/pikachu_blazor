@@ -18,7 +18,7 @@ public class UpdateMemberDto
 
     [Required]
     [DataType(DataType.DateTime)]
-    public DateTime? Birthday { get; set; } = new DateTime(2000, 1, 1);
+    public DateTime? Birthday { get; set; }
 
     [Required]
     public Guid? DefaultAddressId { get; set; }
