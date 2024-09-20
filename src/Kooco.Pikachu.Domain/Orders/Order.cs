@@ -9,6 +9,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Volo.Abp.Domain.Entities.Auditing;
+using Volo.Abp.Identity;
 using Volo.Abp.MultiTenancy;
 
 namespace Kooco.Pikachu.Orders;
@@ -69,7 +70,7 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public string? VoidReason { get; set; }
     public string? CreditNoteReason { get; set; }
     public DateTime? InvoiceDate { get; set; }
-    public  IssueInvoiceStatus? IssueStatus { get; set; }
+    public IssueInvoiceStatus? IssueStatus { get; set; }
     public InvoiceStatus InvoiceStatus { get; set; }
     public string? VoidUser { get; set; }
     public DateTime? CreditNoteDate { get; set; }
@@ -85,6 +86,12 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public decimal? DeliveryCost { get; set; }
     public int? GWSR { get; set; }
     public OrderRefundType? OrderRefundType { get; set; }
+
+    public Guid? UserId { get; set; }
+
+    [ForeignKey(nameof(UserId))]
+    public IdentityUser? User { get; set; }
+
     public Order() { }
 
     public Order(
@@ -117,7 +124,8 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
         decimal totalAmount,
         OrderReturnStatus? orderReturnStatus,
         OrderType? orderType,
-        Guid? splitFromId=null
+        Guid? splitFromId = null,
+        Guid? userId = null
      )
     {
         Id = id;
@@ -131,7 +139,7 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
         InvoiceType = invoiceType;
         InvoiceNumber = invoiceNumber;
         UniformNumber = uniformNumber;
-        CarrierId= carrierId;
+        CarrierId = carrierId;
         TaxTitle = taxTitle;
         IsAsSameBuyer = isAsSameBuyer;
         RecipientName = recipientName;
@@ -159,6 +167,7 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
         CompletedBy = "";
         PrepareShipmentBy = "";
         ShippedBy = "";
+        UserId = userId;
     }
 
     public void AddOrderItem(
@@ -193,12 +202,12 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
                 ));
     }
     public void UpdateOrderItem(
-      List<OrderItem> items,Guid DeliveryOrderId
+      List<OrderItem> items, Guid DeliveryOrderId
 
-     
+
       )
     {
-       foreach ( OrderItem item in items )
+        foreach (OrderItem item in items)
         {
 
             item.DeliveryOrderId = DeliveryOrderId;

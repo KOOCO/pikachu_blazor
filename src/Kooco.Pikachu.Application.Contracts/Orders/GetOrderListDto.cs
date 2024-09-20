@@ -15,5 +15,6 @@ namespace Kooco.Pikachu.Orders
         public OrderStatus? OrderStatus { get; set; }
         public ShippingStatus? ShippingStatus { get; set; }
         public DeliveryMethod? DeliveryMethod { get; set; }
+        public Guid? UserId { get; set; }
     }
 }

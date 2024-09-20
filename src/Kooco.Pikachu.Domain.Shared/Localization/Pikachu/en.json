@@ -631,6 +631,7 @@
     "EditAddress": "Edit Address",
     "Permission:UserAdresses": "User Adresses",
     "Permission:SetIsDefault": "Set Default",
-    "PostalCode": "Postal Code"
+    "PostalCode": "Postal Code",
+    "ToggleFilters": "Toggle Filters"
   }
 }

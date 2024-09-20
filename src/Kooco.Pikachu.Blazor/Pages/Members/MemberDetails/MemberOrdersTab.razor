@@ -1,0 +1,183 @@
+﻿@using Kooco.Pikachu.EnumValues
+@using Kooco.Pikachu.GroupBuys
+@using Kooco.Pikachu.Members
+@using Kooco.Pikachu.Orders
+@inherits PikachuComponentBase
+@inject IMemberAppService MemberAppService
+
+<Card>
+    <CardBody>
+        <h4>@L["Orders"]</h4>
+        <Row HorizontalGutter="10">
+            <Column ColumnSize="ColumnSize.Is4">
+                <Div Class="pk-card bg-success-light">
+                    <Div Class="pk-card-inner">
+                        <Div>
+                            <img src="/images/icons/icon-success-light.png" />
+                        </Div>
+                        <Div>
+                            <h5 class="m-0">@L["Open"]</h5>
+                            <h3 class="fw-bolder m-0">$50 (2)</h3>
+                        </Div>
+                    </Div>
+                </Div>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is4">
+                <Div Class="pk-card bg-warning-light">
+                    <Div Class="pk-card-inner">
+                        <Div>
+                            <img src="/images/icons/icon-warning-light.png" />
+                        </Div>
+                        <Div>
+                            <h5 class="m-0">@L["Exchange"]</h5>
+                            <h3 class="fw-bolder m-0">$12 (1)</h3>
+                        </Div>
+                    </Div>
+                </Div>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is4">
+                <Div Class="pk-card bg-danger-light">
+                    <Div Class="pk-card-inner">
+                        <Div>
+                            <img src="/images/icons/icon-danger-light.png" />
+                        </Div>
+                        <Div>
+                            <h5 class="m-0">@L["Return"]</h5>
+                            <h3 class="fw-bolder m-0">$0 (0)</h3>
+                        </Div>
+                    </Div>
+                </Div>
+            </Column>
+        </Row>
+    </CardBody>
+</Card>
+@if (FiltersVisible)
+{
+    <Card>
+        <CardBody>
+            <Row Gutter="(10, 10)">
+                <Column ColumnSize="ColumnSize.Is12">
+                    <TextEdit Placeholder="Search" @bind-Text="OrderFilters.Filter"></TextEdit>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12.Is2.OnFullHD">
+                    <FieldLabel>@L["From"]</FieldLabel>
+                    <DateEdit TValue="DateTime?" Size="Size.Small" @bind-Date="OrderFilters.StartDate"></DateEdit>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12.Is2.OnFullHD">
+                    <FieldLabel>@L["To"]</FieldLabel>
+                    <DateEdit TValue="DateTime?" Size="Size.Small" @bind-Date="OrderFilters.EndDate"></DateEdit>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12.Is2.OnFullHD">
+                    <FieldLabel>@L["GroupBuy"]</FieldLabel>
+                    <Select TValue="Guid?" Size="Size.Small" @bind-SelectedValue="OrderFilters.GroupBuyId">
+                        <SelectItem Value="(Guid?)null"></SelectItem>
+                        @foreach (var groupbuy in GroupBuysLookup)
+                        {
+                            <SelectItem Value="groupbuy.Id">@groupbuy.Name</SelectItem>
+                        }
+                    </Select>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12.Is2.OnFullHD">
+                    <FieldLabel>@L["ShippingMethod"]</FieldLabel>
+                    <Select TValue="DeliveryMethod?" Size="Size.Small" @bind-SelectedValue="OrderFilters.DeliveryMethod">
+                        <SelectItem Value="(DeliveryMethod?)null"></SelectItem>
+                        @foreach (DeliveryMethod deliveryMethod in Enum.GetValues(typeof(DeliveryMethod)))
+                        {
+                            <SelectItem Value="deliveryMethod">@L[deliveryMethod.ToString()]</SelectItem>
+                        }
+                    </Select>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12.Is2.OnFullHD">
+                    <FieldLabel>@L["ShippingStatus"]</FieldLabel>
+                    <Select TValue="ShippingStatus?" Size="Size.Small" @bind-SelectedValue="OrderFilters.ShippingStatus">
+                        <SelectItem Value="(ShippingStatus?)null"></SelectItem>
+                        @foreach (ShippingStatus shippingStatus in Enum.GetValues(typeof(ShippingStatus)))
+                        {
+                            <SelectItem Value="shippingStatus">@L[shippingStatus.ToString()]</SelectItem>
+                        }
+                    </Select>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12.Is2.OnFullHD">
+                    <Div Class="d-flex align-items-end gap-1 h-100">
+                        <PikachuButton Class="pk-btn-sm pk-btn-primary" Clicked="ApplyFilters">
+                            <Icon Name="IconName.Filter"></Icon>
+                            @L["Filter"]
+                        </PikachuButton>
+                        <PikachuButton Class="pk-btn-sm pk-btn-light" Clicked="ResetFilters">
+                            <Icon Name="IconName.Undo"></Icon>
+                            @L["Reset"]
+                        </PikachuButton>
+                    </Div>
+                </Column>
+            </Row>
+        </CardBody>
+    </Card>
+}
+<Card>
+    <CardBody>
+        <Div Class="text-end">
+            <PikachuButton Clicked="() => FiltersVisible = !FiltersVisible">
+                @if (!FiltersVisible)
+                {
+                    <Icon Name="IconName.ArrowDown" Class="me-1"></Icon>
+                }
+                else
+                {
+                    <Icon Name="IconName.ArrowUp" Class="me-1"></Icon>
+                }
+                @L["ToggleFilters"]
+            </PikachuButton>
+        </Div>
+        <DataGrid TItem="OrderDto"
+                  Data="MemberOrders"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  PageSize="PageSize"
+                  CurrentPage="CurrentPage"
+                  Narrow
+                  Responsive>
+            <DataGridColumns>
+                <DataGridColumn TItem="OrderDto"
+                                Field="@nameof(OrderDto.OrderNo)"
+                                Caption="@L["OrderNo"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="OrderDto"
+                                Field="@nameof(OrderDto.CreationTime)"
+                                Caption="@L["OrderDate"]">
+                    <DisplayTemplate>
+                        @context.CreationTime.ToShortDateString() @context.CreationTime.ToShortTimeString()
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="OrderDto"
+                                Field="@nameof(OrderDto.OrderStatus)"
+                                Caption="@L["OrderStatus"]">
+                    <DisplayTemplate>
+                        @L[context.OrderStatus.ToString()]
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="OrderDto"
+                                Field="@nameof(OrderDto.ShippingStatus)"
+                                Caption="@L["ShippingStatus"]">
+                    <DisplayTemplate>
+                        @L[context.ShippingStatus.ToString()]
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="OrderDto"
+                                Field="@nameof(OrderDto.PaymentMethod)"
+                                Caption="@L["PaymentMethod"]">
+                    <DisplayTemplate>
+                        @L[context.PaymentMethod?.ToString()]
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="OrderDto"
+                                Field="@nameof(OrderDto.TotalAmount)"
+                                Caption="@L["CheckoutAmount"]">
+                    <DisplayTemplate>
+                        $ @context.TotalAmount.ToString("N2")
+                    </DisplayTemplate>
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>

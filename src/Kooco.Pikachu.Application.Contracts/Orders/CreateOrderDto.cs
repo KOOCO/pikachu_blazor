@@ -73,4 +73,6 @@ public class CreateOrderDto
     public decimal? DeliveryCostForFreeze { get; set; }
     public decimal? DeliveryCostForFrozen { get; set; }
     public decimal? DeliveryCost { get; set; }
+
+    public Guid? UserId { get; set; }
 }

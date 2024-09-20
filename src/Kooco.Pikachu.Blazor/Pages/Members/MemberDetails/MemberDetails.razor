@@ -7,22 +7,24 @@
 @inject NavigationManager NavigationManager
 
 <Div Class="rounded-cards">
-    <h5 Class="text-dark mb-lg-2 mt-lg-3">
-        <Span Class="cursor-pointer" @onclick="NavigateToMember">
-            <Icon Name="IconName.ArrowLeft" Class="me-1"></Icon>
-            @L["Members"]
-        </Span>
-    </h5>
+    <PikachuButton Clicked="NavigateToMember">
+        <Icon Name="IconName.ArrowLeft" Class="me-1"></Icon>
+        @L["Members"]
+    </PikachuButton>
     <MemberDetailsHeader Member="Member" CanEditMember="CanEditMember"></MemberDetailsHeader>
     @if (Member != null)
     {
-        <Tabs SelectedTab="@SelectedTab" SelectedTabChanged="@OnSelectedTabChanged">
+        <Tabs RenderMode="TabsRenderMode.LazyLoad" SelectedTab="@SelectedTab" SelectedTabChanged="@OnSelectedTabChanged">
             <Items>
                 <Tab Name="Details">@L["Details"]</Tab>
+                <Tab Name="Orders">@L["Orders"]</Tab>
             </Items>
             <Content>
                 <TabPanel Name="Details">
                     <MemberDetailsTab Member="Member" CanDeleteMember="CanDeleteMember" OnDelete="@NavigateToMember" />
+                </TabPanel>
+                <TabPanel Name="Orders">
+                    <MemberOrdersTab Member="Member"></MemberOrdersTab>
                 </TabPanel>
             </Content>
         </Tabs>

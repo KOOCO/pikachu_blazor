@@ -152,7 +152,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     input.TotalQuantity,
                     input.TotalAmount,
                     input.ReturnStatus,
-                    input.OrderType
+                    input.OrderType,
+                    userId: input.UserId
                     );
             order.StoreId = input.StoreId;
             order.CVSStoreOutSide = input.CVSStoreOutSide;

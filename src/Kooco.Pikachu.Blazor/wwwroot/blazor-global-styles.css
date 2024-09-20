@@ -212,6 +212,16 @@
     border-color: lightgrey;
 }
 
+.b-table thead {
+    background: #F8F9FA;
+}
+
+    .b-table thead th {
+        font-weight: 600;
+        color: #000;
+        font-size: 13px;
+    }
+
 .b-table tbody tr {
     cursor: default !important;
 }
@@ -259,13 +269,13 @@
     background: var(--pk-bg-danger-light);
 }
 
-.payment-card {
+.pk-card {
     padding: 40px 20px;
     border-radius: 20px;
     color: #000;
 }
 
-    .payment-card > .member-payment-card {
+    .pk-card > .pk-card-inner {
         display: flex;
         justify-content: start;
         align-items: center;
@@ -273,7 +283,7 @@
         gap: 10px;
     }
 
-        .payment-card > .member-payment-card img {
+        .pk-card > .pk-card-inner img {
             height: 50px;
             width: auto;
         }
@@ -283,7 +293,7 @@
 }
 
 :root {
-    --pk-font-family: "Inter";
+    --pk-font-family: Inter, sans-serif;
     --pk-primary: #6366F1;
     --pk-primary-light: #6366F190;
     --pk-primary-dark: #4549ED;
@@ -303,6 +313,7 @@
     font-family: var(--pk-font-family);
     border-width: 1px;
     border-color: transparent;
+    background: transparent;
     border-radius: 0.75rem;
     font-weight: 600;
     font-size: 14px;

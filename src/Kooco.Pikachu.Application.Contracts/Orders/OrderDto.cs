@@ -77,4 +77,6 @@ public class OrderDto : FullAuditedEntityDto<Guid>
     public string? TradeNo { get; set; }
     public int? GWSR { get; set; }
     public OrderRefundType? OrderRefundType { get; set; }
+
+    public Guid? UserId { get; set; }
 }

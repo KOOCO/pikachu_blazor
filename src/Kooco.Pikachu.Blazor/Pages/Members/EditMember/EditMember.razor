@@ -14,12 +14,10 @@
 @inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
 
 <Div Class="rounded-cards">
-    <h5 Class="text-dark mb-lg-2 mt-lg-3">
-        <Span Class="cursor-pointer" @onclick="NavigateToMemberDetails">
-            <Icon Name="IconName.ArrowLeft" Class="me-1"></Icon>
-            @Member?.UserName
-        </Span>
-    </h5>
+    <PikachuButton Clicked="NavigateToMemberDetails">
+        <Icon Name="IconName.ArrowLeft" Class="me-1"></Icon>
+        @Member?.UserName
+    </PikachuButton>
     <MemberDetailsHeader Member="Member"></MemberDetailsHeader>
     @if (Member != null)
     {

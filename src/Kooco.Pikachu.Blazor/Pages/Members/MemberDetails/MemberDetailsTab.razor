@@ -3,7 +3,6 @@
 @using Volo.Abp.AspNetCore.Components.Notifications
 @inherits PikachuComponentBase
 @inject IMemberAppService MemberAppService
-@inject NavigationManager NavigationManager
 
 <Row>
     <Column ColumnSize="ColumnSize.Is4">
@@ -53,10 +52,10 @@
                 <h4>@L["Payment"]</h4>
                 <Row Class="py-3" HorizontalGutter="10">
                     <Column ColumnSize="ColumnSize.Is4">
-                        <Div Class="payment-card bg-success-light">
-                            <Div Class="member-payment-card">
+                        <Div Class="pk-card bg-success-light">
+                            <Div Class="pk-card-inner">
                                 <Div>
-                                    <img src="/images/icons/payment-icon-paid.png" />
+                                    <img src="/images/icons/icon-success-light.png" />
                                 </Div>
                                 <Div>
                                     <h5 class="m-0">@L["Paid"]</h5>
@@ -66,10 +65,10 @@
                         </Div>
                     </Column>
                     <Column ColumnSize="ColumnSize.Is4">
-                        <Div Class="payment-card bg-warning-light">
-                            <Div Class="member-payment-card">
+                        <Div Class="pk-card bg-warning-light">
+                            <Div Class="pk-card-inner">
                                 <Div>
-                                    <img src="/images/icons/payment-icon-unpaid.png" />
+                                    <img src="/images/icons/icon-warning-light.png" />
                                 </Div>
                                 <Div>
                                     <h5 class="m-0">@L["Unpaid/Due"]</h5>
@@ -79,10 +78,10 @@
                         </Div>
                     </Column>
                     <Column ColumnSize="ColumnSize.Is4">
-                        <Div Class="payment-card bg-danger-light">
-                            <Div Class="member-payment-card">
+                        <Div Class="pk-card bg-danger-light">
+                            <Div Class="pk-card-inner">
                                 <Div>
-                                    <img src="/images/icons/payment-icon-refund.png" />
+                                    <img src="/images/icons/icon-danger-light.png" />
                                 </Div>
                                 <Div>
                                     <h5 class="m-0">@L["Refunded"]</h5>

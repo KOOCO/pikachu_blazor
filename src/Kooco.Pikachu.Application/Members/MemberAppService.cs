@@ -1,4 +1,7 @@
-﻿using Kooco.Pikachu.Permissions;
+﻿using Kooco.Pikachu.Groupbuys;
+using Kooco.Pikachu.Items.Dtos;
+using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.UserAddresses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -15,9 +18,11 @@ using IdentityUser = Volo.Abp.Identity.IdentityUser;
 
 namespace Kooco.Pikachu.Members;
 
+[RemoteService(IsEnabled = false)]
 [Authorize(PikachuPermissions.Members.Default)]
 public class MemberAppService(IRepository<IdentityUser, Guid> identityUserRepository,
-    IdentityUserManager identityUserManager, UserAddressManager userAddressManager) : PikachuAppService, IMemberAppService
+    IdentityUserManager identityUserManager, UserAddressManager userAddressManager,
+    IOrderRepository orderRepository, IGroupBuyRepository groupBuyRepository) : PikachuAppService, IMemberAppService
 {
     public async Task<MemberDto> GetAsync(Guid id)
     {
@@ -75,7 +80,7 @@ public class MemberAppService(IRepository<IdentityUser, Guid> identityUserReposi
 
         (await identityUserManager.SetEmailAsync(member, input.Email)).CheckErrors();
         (await identityUserManager.SetPhoneNumberAsync(member, input.PhoneNumber)).CheckErrors();
-        
+
         member.ExtraProperties.Remove(Constant.Birthday);
         member.ExtraProperties.TryAdd(Constant.Birthday, input.Birthday);
 
@@ -89,5 +94,39 @@ public class MemberAppService(IRepository<IdentityUser, Guid> identityUserReposi
     {
         var defaultAddress = await userAddressManager.GetDefaultAddressAsync(id);
         return ObjectMapper.Map<UserAddress?, UserAddressDto?>(defaultAddress);
+    }
+
+    public async Task<PagedResultDto<OrderDto>> GetMemberOrdersAsync(GetOrderListDto input)
+    {
+        if (input.Sorting.IsNullOrWhiteSpace())
+        {
+            input.Sorting = nameof(Order.CreationTime) + " DESC";
+        }
+
+        var queryable = await orderRepository.GetQueryableAsync();
+
+        queryable = queryable
+                .WhereIf(input.UserId.HasValue, x => x.UserId == input.UserId)
+                .WhereIf(!input.Filter.IsNullOrWhiteSpace(), x => x.OrderNo.Contains(input.Filter))
+                .WhereIf(input.StartDate.HasValue, x => x.CreationTime.Date >= input.StartDate.Value.Date)
+                .WhereIf(input.EndDate.HasValue, x => x.CreationTime.Date <= input.EndDate.Value)
+                .WhereIf(input.GroupBuyId.HasValue, x => x.GroupBuyId == input.GroupBuyId)
+                .WhereIf(input.ShippingStatus.HasValue, x => x.ShippingStatus == input.ShippingStatus)
+                .WhereIf(input.DeliveryMethod.HasValue, x => x.DeliveryMethod == input.DeliveryMethod);
+
+        var totalCount = await AsyncExecuter.LongCountAsync(queryable);
+        var items = await AsyncExecuter.ToListAsync(queryable.OrderBy(input.Sorting).PageBy(input.SkipCount, input.MaxResultCount));
+
+        return new PagedResultDto<OrderDto>
+        {
+            TotalCount = totalCount,
+            Items = ObjectMapper.Map<List<Order>, List<OrderDto>>(items)
+        };
+    }
+
+    public async Task<List<KeyValueDto>> GetGroupBuyLookupAsync()
+    {
+        var queryable = await groupBuyRepository.GetQueryableAsync();
+        return [.. queryable.Select(x => new KeyValueDto { Id = x.Id, Name = x.GroupBuyName })];
     }
 }

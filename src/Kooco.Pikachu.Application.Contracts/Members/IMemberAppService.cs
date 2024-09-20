@@ -1,5 +1,8 @@
-﻿using Kooco.Pikachu.UserAddresses;
+﻿using Kooco.Pikachu.Items.Dtos;
+using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.UserAddresses;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -13,4 +16,6 @@ public interface IMemberAppService : IApplicationService
     Task DeleteAsync(Guid id);
     Task<MemberDto> UpdateAsync(Guid id, UpdateMemberDto input);
     Task<UserAddressDto?> GetDefaultAddressAsync(Guid id);
+    Task<PagedResultDto<OrderDto>> GetMemberOrdersAsync(GetOrderListDto input);
+    Task<List<KeyValueDto>> GetGroupBuyLookupAsync();
 }
