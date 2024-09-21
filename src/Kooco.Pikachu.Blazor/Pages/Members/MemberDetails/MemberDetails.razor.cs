@@ -12,6 +12,7 @@ public partial class MemberDetails
     [Parameter]
     public Guid Id { get; set; }
     private MemberDto Member { get; set; }
+    private MemberOrderStatsDto OrderStats { get; set; }
 
     string SelectedTab = "Details";
 
@@ -32,6 +33,22 @@ public partial class MemberDetails
         await base.OnInitializedAsync();
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstLoad)
+    {
+        if (firstLoad)
+        {
+            try
+            {
+                OrderStats = await MemberAppService.GetMemberOrderStatsAsync(Id);
+            }
+            catch (Exception ex)
+            {
+                await HandleErrorAsync(ex);
+            }
+        }
+        await base.OnAfterRenderAsync(firstLoad);
+    }
+
     private async Task SetPermissionsAsync()
     {
         CanEditMember = await AuthorizationService.IsGrantedAnyAsync(PikachuPermissions.Members.Edit);
@@ -43,12 +60,6 @@ public partial class MemberDetails
         SelectedTab = name;
 
         return Task.CompletedTask;
-    }
-
-    private void EditMember()
-    {
-        if (Member?.Id == null) return;
-        NavigationManager.NavigateTo("/Members/Edit/" + Member.Id);
     }
 
     private void NavigateToMember()

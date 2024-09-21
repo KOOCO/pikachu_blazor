@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.Groupbuys;
+﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Permissions;
@@ -94,6 +95,36 @@ public class MemberAppService(IRepository<IdentityUser, Guid> identityUserReposi
     {
         var defaultAddress = await userAddressManager.GetDefaultAddressAsync(id);
         return ObjectMapper.Map<UserAddress?, UserAddressDto?>(defaultAddress);
+    }
+
+    public async Task<MemberOrderStatsDto> GetMemberOrderStatsAsync(Guid id)
+    {
+        var queryable = (await orderRepository.GetQueryableAsync()).Where(x => x.UserId == id);
+
+        var paidQueryable = queryable.Where(x => x.PaymentDate.HasValue);
+        var unpaidQueryable = queryable.Where(x => !x.PaymentDate.HasValue);
+        var refundedQueryable = queryable.Where(x => x.OrderStatus == OrderStatus.Refund && x.IsRefunded);
+
+        var openQueryable = queryable.Where(x => x.OrderStatus == OrderStatus.Open);
+        var exchangeQueryable = queryable.Where(x => x.OrderStatus == OrderStatus.Exchange && x.ExchangeTime.HasValue);
+        var returnedQueryable = queryable.Where(x => x.OrderStatus == OrderStatus.Returned && x.ReturnStatus != OrderReturnStatus.Pending && x.ReturnStatus != OrderReturnStatus.Reject);
+
+        return new MemberOrderStatsDto
+        {
+            PaidCount = paidQueryable.Count(),
+            PaidAmount = paidQueryable.Sum(paid => paid.TotalAmount),
+            UnpaidCount = unpaidQueryable.Count(),
+            UnpaidAmount = unpaidQueryable.Sum(unpaid => unpaid.TotalAmount),
+            RefundCount = refundedQueryable.Count(),
+            RefundAmount = refundedQueryable.Sum(refund => refund.TotalAmount),
+
+            OpenCount = openQueryable.Count(),
+            OpenAmount = openQueryable.Sum(open => open.TotalAmount),
+            ExchangeCount = exchangeQueryable.Count(),
+            ExchangeAmount = exchangeQueryable.Sum(exchange => exchange.TotalAmount),
+            ReturnCount = returnedQueryable.Count(),
+            ReturnAmount = returnedQueryable.Sum(ret => ret.TotalAmount)
+        };
     }
 
     public async Task<PagedResultDto<OrderDto>> GetMemberOrdersAsync(GetOrderListDto input)

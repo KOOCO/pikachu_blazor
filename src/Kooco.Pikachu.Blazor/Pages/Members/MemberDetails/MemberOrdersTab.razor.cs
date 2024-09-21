@@ -16,6 +16,10 @@ public partial class MemberOrdersTab
 {
     [Parameter]
     public MemberDto? Member { get; set; }
+
+    [Parameter]
+    public MemberOrderStatsDto? OrderStats { get; set; }
+
     private List<KeyValueDto> GroupBuysLookup { get; set; }
     private IReadOnlyList<OrderDto> MemberOrders { get; set; }
     private int PageSize { get; } = LimitedResultRequestDto.DefaultMaxResultCount;
@@ -31,6 +35,7 @@ public partial class MemberOrdersTab
         MemberOrders = [];
         GroupBuysLookup = [];
         OrderFilters = new();
+        OrderStats = new();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

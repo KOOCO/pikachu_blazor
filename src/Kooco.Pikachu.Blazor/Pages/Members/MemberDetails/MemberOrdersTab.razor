@@ -10,43 +10,13 @@
         <h4>@L["Orders"]</h4>
         <Row HorizontalGutter="10">
             <Column ColumnSize="ColumnSize.Is4">
-                <Div Class="pk-card bg-success-light">
-                    <Div Class="pk-card-inner">
-                        <Div>
-                            <img src="/images/icons/icon-success-light.png" />
-                        </Div>
-                        <Div>
-                            <h5 class="m-0">@L["Open"]</h5>
-                            <h3 class="fw-bolder m-0">$50 (2)</h3>
-                        </Div>
-                    </Div>
-                </Div>
+                <PikachuCard Type="success" Title="@L["Open"]" Amount="OrderStats.OpenAmount" Count="OrderStats.OpenCount"></PikachuCard>
             </Column>
             <Column ColumnSize="ColumnSize.Is4">
-                <Div Class="pk-card bg-warning-light">
-                    <Div Class="pk-card-inner">
-                        <Div>
-                            <img src="/images/icons/icon-warning-light.png" />
-                        </Div>
-                        <Div>
-                            <h5 class="m-0">@L["Exchange"]</h5>
-                            <h3 class="fw-bolder m-0">$12 (1)</h3>
-                        </Div>
-                    </Div>
-                </Div>
+                <PikachuCard Type="warning" Title="@L["Exchange"]" Amount="OrderStats.ExchangeAmount" Count="OrderStats.ExchangeCount"></PikachuCard>
             </Column>
             <Column ColumnSize="ColumnSize.Is4">
-                <Div Class="pk-card bg-danger-light">
-                    <Div Class="pk-card-inner">
-                        <Div>
-                            <img src="/images/icons/icon-danger-light.png" />
-                        </Div>
-                        <Div>
-                            <h5 class="m-0">@L["Return"]</h5>
-                            <h3 class="fw-bolder m-0">$0 (0)</h3>
-                        </Div>
-                    </Div>
-                </Div>
+                <PikachuCard Type="danger" Title="@L["Return"]" Amount="OrderStats.ReturnAmount" Count="OrderStats.ReturnCount"></PikachuCard>
             </Column>
         </Row>
     </CardBody>

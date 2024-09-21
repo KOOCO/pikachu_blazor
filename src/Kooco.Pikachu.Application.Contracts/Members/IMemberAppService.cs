@@ -18,4 +18,5 @@ public interface IMemberAppService : IApplicationService
     Task<UserAddressDto?> GetDefaultAddressAsync(Guid id);
     Task<PagedResultDto<OrderDto>> GetMemberOrdersAsync(GetOrderListDto input);
     Task<List<KeyValueDto>> GetGroupBuyLookupAsync();
+    Task<MemberOrderStatsDto> GetMemberOrderStatsAsync(Guid id);
 }

@@ -54,6 +54,12 @@ public class MemberController(IMemberAppService memberAppService) : PikachuContr
         return memberAppService.GetMemberOrdersAsync(input);
     }
 
+    [HttpGet("member-order-stats/{id}")]
+    public Task<MemberOrderStatsDto> GetMemberOrderStatsAsync(Guid id)
+    {
+        return memberAppService.GetMemberOrderStatsAsync(id);
+    }
+
     [HttpPut("{id}")]
     public Task<MemberDto> UpdateAsync(Guid id, UpdateMemberDto input)
     {

@@ -21,10 +21,10 @@
             </Items>
             <Content>
                 <TabPanel Name="Details">
-                    <MemberDetailsTab Member="Member" CanDeleteMember="CanDeleteMember" OnDelete="@NavigateToMember" />
+                    <MemberDetailsTab Member="Member" OrderStats="OrderStats" CanDeleteMember="CanDeleteMember" OnDelete="@NavigateToMember" />
                 </TabPanel>
                 <TabPanel Name="Orders">
-                    <MemberOrdersTab Member="Member"></MemberOrdersTab>
+                    <MemberOrdersTab Member="Member" OrderStats="OrderStats"></MemberOrdersTab>
                 </TabPanel>
             </Content>
         </Tabs>

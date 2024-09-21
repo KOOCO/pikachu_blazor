@@ -52,48 +52,17 @@
                 <h4>@L["Payment"]</h4>
                 <Row Class="py-3" HorizontalGutter="10">
                     <Column ColumnSize="ColumnSize.Is4">
-                        <Div Class="pk-card bg-success-light">
-                            <Div Class="pk-card-inner">
-                                <Div>
-                                    <img src="/images/icons/icon-success-light.png" />
-                                </Div>
-                                <Div>
-                                    <h5 class="m-0">@L["Paid"]</h5>
-                                    <h3 class="fw-bolder m-0">$50 (2)</h3>
-                                </Div>
-                            </Div>
-                        </Div>
+                        <PikachuCard Type="success" Title="@L["Paid"]" Amount="OrderStats.PaidAmount" Count="OrderStats.PaidCount"></PikachuCard>
                     </Column>
                     <Column ColumnSize="ColumnSize.Is4">
-                        <Div Class="pk-card bg-warning-light">
-                            <Div Class="pk-card-inner">
-                                <Div>
-                                    <img src="/images/icons/icon-warning-light.png" />
-                                </Div>
-                                <Div>
-                                    <h5 class="m-0">@L["Unpaid/Due"]</h5>
-                                    <h3 class="fw-bolder m-0">$12 (1)</h3>
-                                </Div>
-                            </Div>
-                        </Div>
+                        <PikachuCard Type="warning" Title="@L["Unpaid/Due"]" Amount="OrderStats.UnpaidAmount" Count="OrderStats.UnpaidCount"></PikachuCard>
                     </Column>
                     <Column ColumnSize="ColumnSize.Is4">
-                        <Div Class="pk-card bg-danger-light">
-                            <Div Class="pk-card-inner">
-                                <Div>
-                                    <img src="/images/icons/icon-danger-light.png" />
-                                </Div>
-                                <Div>
-                                    <h5 class="m-0">@L["Refunded"]</h5>
-                                    <h3 class="fw-bolder m-0">$0 (0)</h3>
-                                </Div>
-                            </Div>
-                        </Div>
+                        <PikachuCard Type="danger" Title="@L["Refunded"]" Amount="OrderStats.RefundAmount" Count="OrderStats.RefundCount"></PikachuCard>
                     </Column>
                 </Row>
             </CardBody>
         </Card>
-
         @if (CanDeleteMember)
         {
             <Card>
@@ -120,9 +89,17 @@
     [Parameter]
     public bool CanDeleteMember { get; set; }
 
+    [Parameter]
+    public MemberOrderStatsDto? OrderStats { get; set; }
+
     bool IsDeleting = false;
 
     private UserAddressDto? DefaultAddress { get; set; }
+
+    public MemberDetailsTab()
+    {
+        OrderStats = new();
+    }
 
     protected async override Task OnAfterRenderAsync(bool firstLoad)
     {
