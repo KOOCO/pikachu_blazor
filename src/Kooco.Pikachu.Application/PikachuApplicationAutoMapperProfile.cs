@@ -23,6 +23,7 @@ using Kooco.Pikachu.Members;
 using Volo.Abp.Identity;
 using Kooco.Pikachu.UserAddresses;
 using System.Collections.Generic;
+using Kooco.Pikachu.UserShoppingCredits;
 
 namespace Kooco.Pikachu;
 
@@ -150,5 +151,8 @@ public class PikachuApplicationAutoMapperProfile : Profile
 
         CreateMap<UserAddress, UserAddressDto>();
         CreateMap<UserAddressDto, UpdateUserAddressDto>();
+
+        CreateMap<UserShoppingCredit, UserShoppingCreditDto>();
+        CreateMap<UserShoppingCreditDto, UpdateUserShoppingCreditDto>();
     }
 }

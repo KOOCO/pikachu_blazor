@@ -632,6 +632,10 @@
     "Permission:UserAdresses": "User Adresses",
     "Permission:SetIsDefault": "Set Default",
     "PostalCode": "Postal Code",
-    "ToggleFilters": "Toggle Filters"
+    "ToggleFilters": "Toggle Filters",
+    "Permission:UserShoppingCredits": "User Shopping Credits",
+    "Permission:SetIsActive": "Set Active",
+    "MustBeGreaterThanToday": "{0} must be greater than today.",
+    "Pikachu:ExpirationDateCannotBePast": "The Expiration Date for User Shopping Credits can not be in the past."
   }
 }

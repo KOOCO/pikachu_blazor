@@ -81,6 +81,12 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
         userAddressPermissions.AddChild(PikachuPermissions.UserAddresses.Edit, L("Permission:Edit"));
         userAddressPermissions.AddChild(PikachuPermissions.UserAddresses.Delete, L("Permission:Delete"));
         userAddressPermissions.AddChild(PikachuPermissions.UserAddresses.SetIsDefault, L("Permission:SetIsDefault"));
+
+        var userShoppingCreditPermissions = memberManagementGroup.AddPermission(PikachuPermissions.UserShoppingCredits.Default, L("Permission:UserShoppingCredits"));
+        userShoppingCreditPermissions.AddChild(PikachuPermissions.UserShoppingCredits.Create, L("Permission:Create"));
+        userShoppingCreditPermissions.AddChild(PikachuPermissions.UserShoppingCredits.Edit, L("Permission:Edit"));
+        userShoppingCreditPermissions.AddChild(PikachuPermissions.UserShoppingCredits.Delete, L("Permission:Delete"));
+        userShoppingCreditPermissions.AddChild(PikachuPermissions.UserShoppingCredits.SetIsActive, L("Permission:SetIsActive"));
     }
 
     private static LocalizableString L(string name)

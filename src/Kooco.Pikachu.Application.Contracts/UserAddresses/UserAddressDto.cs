@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kooco.Pikachu.Members;
+using System;
 
 namespace Kooco.Pikachu.UserAddresses;
 
@@ -12,4 +13,5 @@ public class UserAddressDto
     public string RecipientName { get; set; }
     public string RecipientPhoneNumber { get; set; }
     public bool IsDefault { get; set; }
+    public MemberDto? User { get; set; }
 }

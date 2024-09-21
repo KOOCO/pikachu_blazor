@@ -32,6 +32,7 @@ using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.DeliveryTempratureCosts;
 using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.UserAddresses;
+using Kooco.Pikachu.UserShoppingCredits;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -97,6 +98,7 @@ public class PikachuDbContext :
     public DbSet<DeliveryTemperatureCost> DeliveryTemperatureCosts { get; set; }
     public DbSet<OrderDelivery> OrderDeliveries { get; set; }
     public DbSet<UserAddress> UserAddresses { get; set; }
+    public DbSet<UserShoppingCredit> UserShoppingCredits { get; set; }
 
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
@@ -299,6 +301,12 @@ public class PikachuDbContext :
         builder.Entity<UserAddress>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "UserAddresses", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+        });
+
+        builder.Entity<UserShoppingCredit>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "UserShoppingCredits", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
         });
     }
