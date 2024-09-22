@@ -124,6 +124,7 @@ public partial class EditMember
 
     private void NavigateToMemberDetails()
     {
+        if (Member is null) return;
         NavigationManager.NavigateTo("/Members/Details/" + Member.Id);
     }
 }

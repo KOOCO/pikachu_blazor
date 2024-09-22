@@ -432,3 +432,11 @@
     --bs-spinner-height: 15px;
     --bs-spinner-border-width: 2px;
 }
+
+.rounded-cards .form-label {
+    color: #000;
+}
+
+.was-validated .form-check-input:invalid ~ .form-check-label, .form-check-input.is-invalid ~ .form-check-label {
+    color: unset;
+}

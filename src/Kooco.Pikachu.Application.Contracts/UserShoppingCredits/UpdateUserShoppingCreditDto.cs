@@ -3,7 +3,7 @@ using System;
 
 namespace Kooco.Pikachu.UserShoppingCredits;
 
-public class UpdateUserShoppingCreditDto
+public class UpdateUserShoppingCreditDto : ICreateUpdateUserShoppingCreditDto
 {
     [Required]
     public Guid UserId { get; set; }
@@ -23,4 +23,7 @@ public class UpdateUserShoppingCreditDto
     public DateTime? ExpirationDate { get; set; }
 
     public bool IsActive { get; set; }
+
+    [Required]
+    public bool? CanExpire { get; set; }
 }

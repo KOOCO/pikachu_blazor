@@ -635,7 +635,6 @@
     "ToggleFilters": "Toggle Filters",
     "Permission:UserShoppingCredits": "User Shopping Credits",
     "Permission:SetIsActive": "Set Active",
-    "MustBeGreaterThanToday": "{0} must be greater than today.",
     "Pikachu:ExpirationDateCannotBePast": "The Expiration Date for User Shopping Credits can not be in the past.",
     "GrantShoppingCredits": "Grant Shopping Credits",
     "ShoppingCredits": "Shopping Credits",
@@ -645,6 +644,9 @@
     "UsagePeriod": "Usage Period",
     "NoExpiry": "No Expiry",
     "SendNotification": "Send Notification",
-    "TransactionDetails": "Transaction Details"
+    "TransactionDetails": "Transaction Details",
+    "TransactionDescription": "Transaction Description",
+    "AmountString": "Amount",
+    "SelectionIsRequired": "The Usage Period field is required."
   }
 }

@@ -46,7 +46,21 @@ public partial class CreateShoppingCredits
 
     private async Task CreateAsync()
     {
-        await ValidationsRef.ValidateAll();
+        try
+        {
+            if (await ValidationsRef.ValidateAll())
+            {
+                IsLoading = true;
+                await UserShoppingCreditAppService.CreateAsync(NewUserShoppingCredit);
+                IsLoading = false;
+                NavigateToMemberDetails();
+            }
+        }
+        catch (Exception ex)
+        {
+            IsLoading = false;
+            await HandleErrorAsync(ex);
+        }
     }
 
     private void NavigateToMemberDetails()
