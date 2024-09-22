@@ -23,6 +23,12 @@ public class CreateUserShoppingCreditDto
     public DateTime? ExpirationDate { get; set; }
 
     public bool IsActive { get; set; } = true;
+
+    [Required(ErrorMessage = "SelectionRequired")]
+    public bool? CanExpire { get; set; }
+
+    public bool SendEmail { get; set; }
+    public bool SendSms { get; set; }
 }
 
 public class MustBeGreaterThanTodayAttribute : ValidationAttribute

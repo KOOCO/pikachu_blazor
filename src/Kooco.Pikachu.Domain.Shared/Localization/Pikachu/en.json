@@ -636,6 +636,15 @@
     "Permission:UserShoppingCredits": "User Shopping Credits",
     "Permission:SetIsActive": "Set Active",
     "MustBeGreaterThanToday": "{0} must be greater than today.",
-    "Pikachu:ExpirationDateCannotBePast": "The Expiration Date for User Shopping Credits can not be in the past."
+    "Pikachu:ExpirationDateCannotBePast": "The Expiration Date for User Shopping Credits can not be in the past.",
+    "GrantShoppingCredits": "Grant Shopping Credits",
+    "ShoppingCredits": "Shopping Credits",
+    "GrantedAmount": "Granted Amount",
+    "SelectionRequired": "Selection is required.",
+    "Limited,ValidTo": "Limited, valid to",
+    "UsagePeriod": "Usage Period",
+    "NoExpiry": "No Expiry",
+    "SendNotification": "Send Notification",
+    "TransactionDetails": "Transaction Details"
   }
 }

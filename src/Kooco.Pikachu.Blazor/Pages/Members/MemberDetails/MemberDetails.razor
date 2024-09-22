@@ -18,6 +18,7 @@
             <Items>
                 <Tab Name="Details">@L["Details"]</Tab>
                 <Tab Name="Orders">@L["Orders"]</Tab>
+                <Tab Name="ShoppingCredits">@L["ShoppingCredits"]</Tab>
             </Items>
             <Content>
                 <TabPanel Name="Details">
@@ -25,6 +26,9 @@
                 </TabPanel>
                 <TabPanel Name="Orders">
                     <MemberOrdersTab Member="Member" OrderStats="OrderStats"></MemberOrdersTab>
+                </TabPanel>
+                <TabPanel Name="ShoppingCredits">
+                    <MemberShoppingCreditsTab Member="Member"></MemberShoppingCreditsTab>
                 </TabPanel>
             </Content>
         </Tabs>

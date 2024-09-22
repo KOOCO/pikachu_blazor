@@ -1,0 +1,94 @@
+﻿@page "/Members/ShoppingCredits/Grant/{MemberId:guid}"
+@page "/Members/ShoppingCredits/Create/{MemberId:guid}"
+@using Kooco.Pikachu.Blazor.Pages.Members.MemberDetails
+@using Kooco.Pikachu.Localization
+@using Kooco.Pikachu.Members
+@using Kooco.Pikachu.Permissions
+@using Kooco.Pikachu.UserShoppingCredits
+@using Volo.Abp.AspNetCore.Components.Web
+@attribute [Authorize(PikachuPermissions.UserShoppingCredits.Create)]
+@inherits PikachuComponentBase
+@inject IMemberAppService MemberAppService
+@inject IUserShoppingCreditAppService UserShoppingCreditAppService
+@inject NavigationManager NavigationManager
+@inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
+
+<Div Class="rounded-cards">
+    <PikachuButton Clicked="NavigateToMemberDetails">
+        <Icon Name="IconName.ArrowLeft" Class="me-1"></Icon>
+        @Member?.UserName
+    </PikachuButton>
+    <MemberDetailsHeader Member="Member"></MemberDetailsHeader>
+    @if (NewUserShoppingCredit != null)
+    {
+        <Card>
+            <CardBody>
+                <Form>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                            <h4>@L["GrantShoppingCredits"]</h4>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                            <Validations @ref="@ValidationsRef" Model="@NewUserShoppingCredit" ValidateOnLoad="false">
+                                <Validation MessageLocalizer="@LH.Localize">
+                                    <Field>
+                                        <FieldLabel>@L["GrantedAmount"] *</FieldLabel>
+                                        <NumericEdit @bind-Value="@NewUserShoppingCredit.Amount">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </NumericEdit>
+                                    </Field>
+                                </Validation>
+                                <Validation MessageLocalizer="@LH.Localize">
+                                    <Field>
+                                        <FieldLabel>@L["UsagePeriod"] *</FieldLabel>
+                                        <RadioGroup TValue="bool?" Name="CanExpire" @bind-CheckedValue="NewUserShoppingCredit.CanExpire">
+                                            <Radio Value="@(false)">@L["NoExpiry"]</Radio>
+                                            <Radio Value="@(true)">@L["Limited,ValidTo"]</Radio>
+                                        </RadioGroup>
+                                    </Field>
+                                </Validation>
+                                <Validation MessageLocalizer="@LH.Localize">
+                                    <Field>
+                                        <DateEdit @bind-Date="@NewUserShoppingCredit.ExpirationDate">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </DateEdit>
+                                    </Field>
+                                </Validation>
+                                <Divider></Divider>
+                                <Validation MessageLocalizer="@LH.Localize">
+                                    <Field>
+                                        <FieldLabel>@L["TransactionDetails"]</FieldLabel>
+                                        <TextEdit @bind-Text="@NewUserShoppingCredit.TransactionDescription">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </TextEdit>
+                                    </Field>
+                                </Validation>
+                                <Field>
+                                    <FieldLabel>@L["SendNotification"] *</FieldLabel>
+                                    <Check TValue="bool" @bind-Checked="@NewUserShoppingCredit.SendEmail">@L["Email"]</Check>
+                                    <Check TValue="bool" @bind-Checked="@NewUserShoppingCredit.SendSms">@L["SMS"]</Check>
+                                </Field>
+                            </Validations>
+                        </Column>
+                    </Row>
+                </Form>
+            </CardBody>
+        </Card>
+        <Div Class="text-end">
+            <PikachuButton Class="pk-btn-transparent" Disabled="IsLoading" Clicked="NavigateToMemberDetails">
+                @L["Cancel"]
+            </PikachuButton>
+            <PikachuButton Class="pk-btn-primary" Loading="IsLoading" Clicked="CreateAsync">
+                @L["Create"]
+            </PikachuButton>
+        </Div>
+    }
+</Div>
+
+

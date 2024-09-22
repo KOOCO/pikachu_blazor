@@ -1,0 +1,29 @@
+﻿@using Kooco.Pikachu.Members
+@inherits PikachuComponentBase
+@inject IMemberAppService MemberAppService
+@inject NavigationManager NavigationManager
+
+<Card>
+    <CardBody>
+        <Div Class="d-flex justify-content-between align-items-center">
+            <h4>@L["ShoppingCredits"]</h4>
+            @if (CanCreateShoppingCredits)
+            {
+                <PikachuButton Class="pk-btn-sm pk-btn-outline-primary" Clicked="GrantShoppingCredits">@L["GrantShoppingCredits"]</PikachuButton>
+            }
+        </Div>
+        <Row HorizontalGutter="10">
+            @* <Column ColumnSize="ColumnSize.Is4">
+            <PikachuCard Type="success" Title="@L["Open"]" Amount="OrderStats.OpenAmount" Count="OrderStats.OpenCount"></PikachuCard>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is4">
+            <PikachuCard Type="warning" Title="@L["Exchange"]" Amount="OrderStats.ExchangeAmount" Count="OrderStats.ExchangeCount"></PikachuCard>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is4">
+            <PikachuCard Type="danger" Title="@L["Return"]" Amount="OrderStats.ReturnAmount" Count="OrderStats.ReturnCount"></PikachuCard>
+            </Column> *@
+        </Row>
+    </CardBody>
+</Card>
+
+
