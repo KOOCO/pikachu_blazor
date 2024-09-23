@@ -7,6 +7,8 @@ public class PikachuMenus
 
     public const string GroupBuyManagement = Prefix + "GroupBuyManagement";
     public const string ProductManagement = Prefix + "ProductManagement";
+
+    public const string Promotions = Prefix + "Promotions";
     public const string OrderManagement = Prefix + "OrderManagement";
     public const string PaymentManagement = Prefix + "PaymentManagement";
     //物流(後勤)

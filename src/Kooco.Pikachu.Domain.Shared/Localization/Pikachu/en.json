@@ -632,6 +632,18 @@
     "Permission:UserAdresses": "User Adresses",
     "Permission:SetIsDefault": "Set Default",
     "PostalCode": "Postal Code",
-    "ToggleFilters": "Toggle Filters"
+    "ToggleFilters": "Toggle Filters",
+
+    //Add On Products
+    "AddOnProducts": "Add-on Products",
+    "Permission:AddOnProducts": "Add-on Products",
+    "Menu:Promotions": "Promotions",
+    "Permission:Promotions": "Promotions",
+    "Name": "Name",
+    "SellingQuantity": "Selling Quantity",
+    "Time": "Time",
+    "From": "From",
+    "To": "To"
+
   }
 }

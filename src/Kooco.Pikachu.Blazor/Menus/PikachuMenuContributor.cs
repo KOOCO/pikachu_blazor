@@ -162,6 +162,25 @@ public class PikachuMenuContributor : IMenuContributor
             ));
         context.Menu.AddItem(membersMenu);
 
+        var promotions =
+new ApplicationMenuItem(
+  PikachuMenus.ProductManagement,
+  displayName: l["Menu:Promotions"],
+  //"商品設定",
+  icon: "fas fa-gift",
+  order: 5
+);
+
+    
+        promotions.AddItem(new ApplicationMenuItem(
+   name: "AddOnProducts",
+
+   displayName: l["AddOnProducts"],
+   url: "/add-on-products",
+   requiredPermissionName: PikachuPermissions.AddOnProducts.Default)
+   );
+        context.Menu.AddItem(promotions);
+
         var paymentManagement = new ApplicationMenuItem(
                 PikachuMenus.PaymentManagement,
                 displayName: l["Menu:PaymentManagement"],

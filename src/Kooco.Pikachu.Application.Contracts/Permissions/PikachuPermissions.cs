@@ -36,6 +36,7 @@ public static class PikachuPermissions
     public const string DeliveryTemperatureCost = "DeliveryTemperatureCost";
 
     public const string MembersManagement = "MembersManagement";
+    public const string Promotions = "Promotions";
     /// <summary>
     /// 
     /// </summary>
@@ -95,5 +96,11 @@ public static class PikachuPermissions
         public const string Edit = Default + ".Edit";
         public const string Delete = Default + ".Delete";
         public const string SetIsDefault = Default + ".SetIsDefault";
+    }
+
+    public static class AddOnProducts
+    {
+        public const string Default = ".AddOnProducts";
+
     }
 }
