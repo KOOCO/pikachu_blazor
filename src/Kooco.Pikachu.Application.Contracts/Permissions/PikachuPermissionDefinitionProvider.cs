@@ -87,6 +87,9 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
         userShoppingCreditPermissions.AddChild(PikachuPermissions.UserShoppingCredits.Edit, L("Permission:Edit"));
         userShoppingCreditPermissions.AddChild(PikachuPermissions.UserShoppingCredits.Delete, L("Permission:Delete"));
         userShoppingCreditPermissions.AddChild(PikachuPermissions.UserShoppingCredits.SetIsActive, L("Permission:SetIsActive"));
+
+        var promotion = context.AddGroup(PikachuPermissions.Promotions, L("Permission:Promotions"));
+        var addonProducts = promotion.AddPermission(PikachuPermissions.AddOnProducts.Default, L("Permission:AddOnProducts"));
     }
 
     private static LocalizableString L(string name)

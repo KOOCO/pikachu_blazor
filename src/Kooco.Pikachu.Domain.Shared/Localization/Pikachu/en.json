@@ -648,5 +648,17 @@
     "TransactionDescription": "Transaction Description",
     "AmountString": "Amount",
     "SelectionIsRequired": "The Usage Period field is required."
+
+    //Add On Products
+    "AddOnProducts": "Add-on Products",
+    "Permission:AddOnProducts": "Add-on Products",
+    "Menu:Promotions": "Promotions",
+    "Permission:Promotions": "Promotions",
+    "Name": "Name",
+    "SellingQuantity": "Selling Quantity",
+    "Time": "Time",
+    "From": "From",
+    "To": "To"
+
   }
 }

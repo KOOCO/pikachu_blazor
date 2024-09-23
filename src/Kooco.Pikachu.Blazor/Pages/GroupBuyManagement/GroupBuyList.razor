@@ -61,6 +61,7 @@
                       RowDoubleClicked="OnEditItem"
                       SortChanged="OnSortChange">
                 <DataGridColumns>
+
                     <DataGridColumn TItem="GroupBuyDto" Caption="@L["Select"]" Width="30px">
                         <DisplayTemplate>
                             <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
