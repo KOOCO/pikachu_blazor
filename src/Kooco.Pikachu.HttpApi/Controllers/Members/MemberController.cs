@@ -3,6 +3,7 @@ using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Members;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.UserAddresses;
+using Kooco.Pikachu.UserCumulativeCredits;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -52,6 +53,12 @@ public class MemberController(IMemberAppService memberAppService) : PikachuContr
     public Task<PagedResultDto<MemberCreditRecordDto>> GetMemberCreditRecordAsync(Guid id, GetMemberCreditRecordListDto input)
     {
         return memberAppService.GetMemberCreditRecordAsync(id, input);
+    }
+
+    [HttpGet("{id}/cumulative_credits")]
+    public Task<UserCumulativeCreditDto> GetMemberCumulativeCreditAsync(Guid id)
+    {
+        return memberAppService.GetMemberCumulativeCreditAsync(id);
     }
 
     [HttpGet("member-orders")]

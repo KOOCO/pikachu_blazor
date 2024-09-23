@@ -6,10 +6,10 @@
         <Div>
             <h5 class="m-0">@Title</h5>
             <h3 class="fw-bolder m-0">
-                $@Amount.ToString("N0")
+                $@((Amount ?? 0).ToString("N0"))
                 @if (CountVisible)
                 {
-                    <Span>&nbsp;(@Count.ToString("N0"))</Span>
+                    <Span>&nbsp;(@((Count ?? 0).ToString("N0")))</Span>
                 }
             </h3>
         </Div>
@@ -23,11 +23,11 @@
     public string Title { get; set; }
 
     [Parameter]
-    public decimal Amount { get; set; }
+    public decimal? Amount { get; set; }
 
     [Parameter]
-    public int Count { get; set; }
+    public int? Count { get; set; }
 
     [Parameter]
-    public bool CountVisible { get; set; } = true;
+    public bool CountVisible { get; set; } = false;
 }

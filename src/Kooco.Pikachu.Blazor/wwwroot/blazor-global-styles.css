@@ -327,7 +327,7 @@
 
 .pk-btn-sm {
     font-size: 13px;
-    padding: 0.5rem 0.75rem;
+    padding: 0.4rem 0.75rem;
     border-radius: 0.5rem;
     font-weight: 500;
 }
@@ -439,4 +439,10 @@
 
 .was-validated .form-check-input:invalid ~ .form-check-label, .form-check-input.is-invalid ~ .form-check-label {
     color: unset;
+}
+
+.search-bar {
+    padding-left: 50px;
+    background: url('https://cdn-icons-png.flaticon.com/512/54/54481.png') no-repeat 15px center;
+    background-size: 20px 20px;
 }

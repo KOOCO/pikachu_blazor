@@ -648,6 +648,17 @@
     "TransactionDescription": "Transaction Description",
     "AmountString": "Amount",
     "SelectionIsRequired": "The Usage Period field is required.",
+    "UsageTimeFrom": "Usage Time From",
+    "UsageTimeTo": "Usage Time To",
+    "ExpiryDateFrom": "Expiry Date From",
+    "ExpiryDateTo": "Expiry Date To",
+    "MinRemainingCredits": "Min Remaining Credits",
+    "MaxRemainingCredits": "Max Remaining Credits",
+    "MinAmount": "Min Amount",
+    "MaxAmount": "Max Amount",
+    "UsageTime": "Usage Time",
+    "ExpiryDate": "Expiry Date",
+    "RemainingCredits": "Remaining Credits",
 
     //Add On Products
     "AddOnProducts": "Add-on Products",

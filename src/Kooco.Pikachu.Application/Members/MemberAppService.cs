@@ -4,6 +4,7 @@ using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.UserAddresses;
+using Kooco.Pikachu.UserCumulativeCredits;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -23,7 +24,8 @@ namespace Kooco.Pikachu.Members;
 [Authorize(PikachuPermissions.Members.Default)]
 public class MemberAppService(IMemberRepository memberRepository,
     IdentityUserManager identityUserManager, UserAddressManager userAddressManager,
-    IOrderRepository orderRepository, IGroupBuyRepository groupBuyRepository) : PikachuAppService, IMemberAppService
+    IOrderRepository orderRepository, IGroupBuyRepository groupBuyRepository,
+    UserCumulativeCreditManager userCumulativeCreditManager) : PikachuAppService, IMemberAppService
 {
     public async Task<MemberDto> GetAsync(Guid id)
     {
@@ -170,6 +172,12 @@ public class MemberAppService(IMemberRepository memberRepository,
             TotalCount = totalCount,
             Items = ObjectMapper.Map<List<MemberCreditRecordModel>, List<MemberCreditRecordDto>>(items)
         };
+    }
+
+    public async Task<UserCumulativeCreditDto> GetMemberCumulativeCreditAsync(Guid id)
+    {
+        var userCumulativeCredit = await userCumulativeCreditManager.FindByUserIdAsync(id);
+        return ObjectMapper.Map<UserCumulativeCredit, UserCumulativeCreditDto>(userCumulativeCredit);
     }
 
     public async Task<List<KeyValueDto>> GetGroupBuyLookupAsync()
