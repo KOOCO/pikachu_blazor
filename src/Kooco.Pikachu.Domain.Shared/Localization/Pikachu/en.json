@@ -647,7 +647,7 @@
     "TransactionDetails": "Transaction Details",
     "TransactionDescription": "Transaction Description",
     "AmountString": "Amount",
-    "SelectionIsRequired": "The Usage Period field is required."
+    "SelectionIsRequired": "The Usage Period field is required.",
 
     //Add On Products
     "AddOnProducts": "Add-on Products",
@@ -659,6 +659,5 @@
     "Time": "Time",
     "From": "From",
     "To": "To"
-
   }
 }
