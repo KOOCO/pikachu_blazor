@@ -19,4 +19,5 @@ public interface IMemberAppService : IApplicationService
     Task<PagedResultDto<OrderDto>> GetMemberOrdersAsync(GetOrderListDto input);
     Task<List<KeyValueDto>> GetGroupBuyLookupAsync();
     Task<MemberOrderStatsDto> GetMemberOrderStatsAsync(Guid id);
+    Task<PagedResultDto<MemberCreditRecordDto>> GetMemberCreditRecordAsync(Guid id, GetMemberCreditRecordListDto input);
 }

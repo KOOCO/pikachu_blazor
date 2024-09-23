@@ -154,5 +154,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
 
         CreateMap<UserShoppingCredit, UserShoppingCreditDto>();
         CreateMap<UserShoppingCreditDto, UpdateUserShoppingCreditDto>();
+
+        CreateMap<MemberCreditRecordModel, MemberCreditRecordDto>().ReverseMap();
     }
 }

@@ -3,6 +3,7 @@ using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.StoreComments;
+using Kooco.Pikachu.UserShoppingCredits;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -87,6 +88,20 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public int? GWSR { get; set; }
     public OrderRefundType? OrderRefundType { get; set; }
 
+    public int CreditDeductionAmount { get; set; }
+
+    public Guid? CreditDeductionRecordId { get; set; }
+
+    [ForeignKey(nameof(CreditDeductionRecordId))]
+    public UserShoppingCredit? CreditDeductionRecord { get; set; }
+
+    public int RefundAmount { get; set; }
+
+    public Guid? RefundRecordId { get; set; }
+
+    [ForeignKey(nameof(RefundRecordId))]
+    public UserShoppingCredit? RefundRecord { get; set; }
+
     public Guid? UserId { get; set; }
 
     [ForeignKey(nameof(UserId))]
@@ -125,7 +140,9 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
         OrderReturnStatus? orderReturnStatus,
         OrderType? orderType,
         Guid? splitFromId = null,
-        Guid? userId = null
+        Guid? userId = null,
+        int creditDeductionAmount = 0,
+        Guid? creditDeductionRecordId = null
      )
     {
         Id = id;
@@ -168,6 +185,8 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
         PrepareShipmentBy = "";
         ShippedBy = "";
         UserId = userId;
+        CreditDeductionAmount = creditDeductionAmount;
+        CreditDeductionRecordId = creditDeductionRecordId;
     }
 
     public void AddOrderItem(

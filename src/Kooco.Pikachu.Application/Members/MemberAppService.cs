@@ -21,13 +21,13 @@ namespace Kooco.Pikachu.Members;
 
 [RemoteService(IsEnabled = false)]
 [Authorize(PikachuPermissions.Members.Default)]
-public class MemberAppService(IRepository<IdentityUser, Guid> identityUserRepository,
+public class MemberAppService(IMemberRepository memberRepository,
     IdentityUserManager identityUserManager, UserAddressManager userAddressManager,
     IOrderRepository orderRepository, IGroupBuyRepository groupBuyRepository) : PikachuAppService, IMemberAppService
 {
     public async Task<MemberDto> GetAsync(Guid id)
     {
-        var member = await identityUserRepository.GetAsync(id);
+        var member = await memberRepository.GetAsync(id);
         return ObjectMapper.Map<IdentityUser, MemberDto>(member);
     }
 
@@ -38,18 +38,12 @@ public class MemberAppService(IRepository<IdentityUser, Guid> identityUserReposi
             input.Sorting = nameof(IdentityUser.UserName);
         }
 
-        var queryable = await identityUserRepository.GetQueryableAsync();
-
-        queryable = queryable
-            .WhereIf(!string.IsNullOrWhiteSpace(input.Filter), q => q.UserName.Contains(input.Filter)
-            || q.PhoneNumber.Contains(input.Filter) || q.Email.Contains(input.Filter));
-
         var random = new Random();
         var amount = random.Next(100, 1000);
         return new PagedResultDto<MemberDto>
         {
-            TotalCount = queryable.Count(),
-            Items = [..queryable.OrderBy(input.Sorting).PageBy(input.SkipCount, input.MaxResultCount)
+            TotalCount = await memberRepository.GetCountAsync(input.Filter),
+            Items = (await memberRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter))
                     .Select(x => new MemberDto
                     {
                         Id = x.Id,
@@ -58,15 +52,15 @@ public class MemberAppService(IRepository<IdentityUser, Guid> identityUserReposi
                         PhoneNumber = x.PhoneNumber,
                         Orders = random.Next(0, 15),
                         Spent = random.Next(0, 15) * amount
-                    })]
+                    }).ToList()
         };
     }
 
     [Authorize(PikachuPermissions.Members.Delete)]
     public async Task DeleteAsync(Guid id)
     {
-        var member = await identityUserRepository.GetAsync(id);
-        await identityUserRepository.DeleteAsync(member);
+        var member = await memberRepository.GetAsync(id);
+        await memberRepository.DeleteAsync(member);
     }
 
     [Authorize(PikachuPermissions.Members.Edit)]
@@ -75,7 +69,7 @@ public class MemberAppService(IRepository<IdentityUser, Guid> identityUserReposi
         Check.NotNull(input, nameof(input));
         Check.NotDefaultOrNull(input.DefaultAddressId, nameof(input.DefaultAddressId));
 
-        var member = await identityUserRepository.GetAsync(id);
+        var member = await memberRepository.GetAsync(id);
 
         member.Name = input.Name;
 
@@ -152,6 +146,29 @@ public class MemberAppService(IRepository<IdentityUser, Guid> identityUserReposi
         {
             TotalCount = totalCount,
             Items = ObjectMapper.Map<List<Order>, List<OrderDto>>(items)
+        };
+    }
+
+    public async Task<PagedResultDto<MemberCreditRecordDto>> GetMemberCreditRecordAsync(Guid id, GetMemberCreditRecordListDto input)
+    {
+        if (input.Sorting.IsNullOrWhiteSpace())
+        {
+            input.Sorting = nameof(MemberCreditRecordModel.UsageTime) + " DESC";
+        }
+
+        Check.NotDefaultOrNull<Guid>(id, nameof(id));
+
+        var totalCount = await memberRepository.GetMemberCreditRecordCountAsync(input.Filter, input.UsageTimeFrom, input.UsageTimeTo,
+            input.ExpiryDateFrom, input.ExpiryDateTo, input.MinRemainingCredits, input.MaxRemainingCredits, input.MinAmount, input.MaxAmount, id);
+
+        var items = await memberRepository.GetMemberCreditRecordListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter,
+            input.UsageTimeFrom, input.UsageTimeTo, input.ExpiryDateFrom, input.ExpiryDateTo, input.MinRemainingCredits, input.MaxRemainingCredits,
+            input.MinAmount, input.MaxAmount, id);
+
+        return new PagedResultDto<MemberCreditRecordDto>
+        {
+            TotalCount = totalCount,
+            Items = ObjectMapper.Map<List<MemberCreditRecordModel>, List<MemberCreditRecordDto>>(items)
         };
     }
 

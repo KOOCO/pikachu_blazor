@@ -48,6 +48,12 @@ public class MemberController(IMemberAppService memberAppService) : PikachuContr
         return memberAppService.GetListAsync(input);
     }
 
+    [HttpGet("{id}/credit_records")]
+    public Task<PagedResultDto<MemberCreditRecordDto>> GetMemberCreditRecordAsync(Guid id, GetMemberCreditRecordListDto input)
+    {
+        return memberAppService.GetMemberCreditRecordAsync(id, input);
+    }
+
     [HttpGet("member-orders")]
     public Task<PagedResultDto<OrderDto>> GetMemberOrdersAsync(GetOrderListDto input)
     {
