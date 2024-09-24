@@ -109,6 +109,7 @@
         {
             try
             {
+                if (Member is null) return;
                 DefaultAddress = await MemberAppService.GetDefaultAddressAsync(Member.Id);
                 await InvokeAsync(StateHasChanged);
             }
