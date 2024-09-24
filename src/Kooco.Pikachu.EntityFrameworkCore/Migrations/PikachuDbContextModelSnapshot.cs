@@ -1703,6 +1703,12 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("CreatorId");
 
+                    b.Property<int>("CreditDeductionAmount")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("CreditDeductionRecordId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("CreditNoteDate")
                         .HasColumnType("datetime2");
 
@@ -1846,6 +1852,12 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<string>("RecipientPhone")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("RefundAmount")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("RefundRecordId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
 
@@ -1907,7 +1919,11 @@ namespace Kooco.Pikachu.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreditDeductionRecordId");
+
                     b.HasIndex("GroupBuyId");
+
+                    b.HasIndex("RefundRecordId");
 
                     b.HasIndex("UserId");
 
@@ -2270,6 +2286,187 @@ namespace Kooco.Pikachu.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("AppUserAddresses", null, t =>
+                        {
+                            t.HasComment("");
+                        });
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.UserCumulativeCredits.UserCumulativeCredit", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<int>("TotalAmount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalDeductions")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalRefunds")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AppUserCumulativeCredits", null, t =>
+                        {
+                            t.HasComment("");
+                        });
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.UserCumulativeOrders.UserCumulativeOrder", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<int>("TotalExchanges")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalOrders")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalReturns")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AppUserCumulativeOrders", null, t =>
+                        {
+                            t.HasComment("");
+                        });
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.UserShoppingCredits.UserShoppingCredit", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Amount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<int>("CurrentRemainingCredits")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<DateTime?>("ExpirationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("TenantId");
+
+                    b.Property<string>("TransactionDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AppUserShoppingCredits", null, t =>
                         {
                             t.HasComment("");
                         });
@@ -4208,17 +4405,29 @@ namespace Kooco.Pikachu.Migrations
 
             modelBuilder.Entity("Kooco.Pikachu.Orders.Order", b =>
                 {
+                    b.HasOne("Kooco.Pikachu.UserShoppingCredits.UserShoppingCredit", "CreditDeductionRecord")
+                        .WithMany()
+                        .HasForeignKey("CreditDeductionRecordId");
+
                     b.HasOne("Kooco.Pikachu.GroupBuys.GroupBuy", "GroupBuy")
                         .WithMany()
                         .HasForeignKey("GroupBuyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Kooco.Pikachu.UserShoppingCredits.UserShoppingCredit", "RefundRecord")
+                        .WithMany()
+                        .HasForeignKey("RefundRecordId");
+
                     b.HasOne("Volo.Abp.Identity.IdentityUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
 
+                    b.Navigation("CreditDeductionRecord");
+
                     b.Navigation("GroupBuy");
+
+                    b.Navigation("RefundRecord");
 
                     b.Navigation("User");
                 });
@@ -4248,6 +4457,39 @@ namespace Kooco.Pikachu.Migrations
                 });
 
             modelBuilder.Entity("Kooco.Pikachu.UserAddresses.UserAddress", b =>
+                {
+                    b.HasOne("Volo.Abp.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.UserCumulativeCredits.UserCumulativeCredit", b =>
+                {
+                    b.HasOne("Volo.Abp.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.UserCumulativeOrders.UserCumulativeOrder", b =>
+                {
+                    b.HasOne("Volo.Abp.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.UserShoppingCredits.UserShoppingCredit", b =>
                 {
                     b.HasOne("Volo.Abp.Identity.IdentityUser", "User")
                         .WithMany()

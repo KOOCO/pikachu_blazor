@@ -56,7 +56,9 @@ namespace Kooco.Pikachu.Orders
              OrderReturnStatus? orderReturnStatus,
              OrderType? orderType,
              Guid? splitFromId = null,
-             Guid? userId = null
+             Guid? userId = null,
+             int creditDeductionAmount = 0,
+             Guid? creditDeductionRecordId = null
              )
         {
             //string orderNo = await GenerateOrderNoAsync(groupBuyId);
@@ -95,7 +97,9 @@ namespace Kooco.Pikachu.Orders
                 orderReturnStatus,
                 orderType,
                 splitFromId,
-                userId
+                userId,
+                creditDeductionAmount,
+                creditDeductionRecordId
                 );
         }
 

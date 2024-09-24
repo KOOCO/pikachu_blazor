@@ -1,0 +1,151 @@
+﻿@using Kooco.Pikachu.Members
+@inherits PikachuComponentBase
+@inject IMemberAppService MemberAppService
+@inject NavigationManager NavigationManager
+
+<Card>
+    <CardBody>
+        <Div Class="d-flex justify-content-between align-items-center mb-2">
+            <h4 class="m-0">@L["ShoppingCredits"]</h4>
+            @if (CanCreateShoppingCredits)
+            {
+                <PikachuButton Class="pk-btn-sm pk-btn-outline-primary" Clicked="GrantShoppingCredits">@L["GrantShoppingCredits"]</PikachuButton>
+            }
+        </Div>
+        <Row HorizontalGutter="10">
+            <Column ColumnSize="ColumnSize.Is4">
+                <PikachuCard Type="success" Title="@L["Amount"]" Amount="CumulativeCredits?.TotalAmount"></PikachuCard>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is4">
+                <PikachuCard Type="warning" Title="@L["Deductions"]" Amount="CumulativeCredits?.TotalDeductions"></PikachuCard>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is4">
+                <PikachuCard Type="danger" Title="@L["Refunds"]" Amount="CumulativeCredits?.TotalRefunds"></PikachuCard>
+            </Column>
+        </Row>
+    </CardBody>
+</Card>
+@if (FiltersVisible)
+{
+    <Card>
+        <CardBody>
+            <Row Gutter="(10, 10)">
+                <Column ColumnSize="ColumnSize.Is12">
+                    <TextEdit Class="search-bar" Placeholder="Search" @bind-Text="CreditRecordFilters.Filter"></TextEdit>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12.Is2.OnFullHD">
+                    <FieldLabel>@L["UsageTimeFrom"]</FieldLabel>
+                    <DateEdit TValue="DateTime?" Size="Size.Small" @bind-Date="CreditRecordFilters.UsageTimeFrom"></DateEdit>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12.Is2.OnFullHD">
+                    <FieldLabel>@L["UsageTimeTo"]</FieldLabel>
+                    <DateEdit TValue="DateTime?" Size="Size.Small" @bind-Date="CreditRecordFilters.UsageTimeFrom"></DateEdit>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12.Is2.OnFullHD">
+                    <FieldLabel>@L["MinAmount"]</FieldLabel>
+                    <NumericEdit TValue="int?" Size="Size.Small" @bind-Value="CreditRecordFilters.MinAmount"></NumericEdit>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12.Is2.OnFullHD">
+                    <FieldLabel>@L["MaxAmount"]</FieldLabel>
+                    <NumericEdit TValue="int?" Size="Size.Small" @bind-Value="CreditRecordFilters.MaxAmount"></NumericEdit>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12.Is2.OnFullHD">
+                    <FieldLabel>@L["ExpiryDateFrom"]</FieldLabel>
+                    <DateEdit TValue="DateTime?" Size="Size.Small" @bind-Date="CreditRecordFilters.ExpiryDateFrom"></DateEdit>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12.Is2.OnFullHD">
+                    <FieldLabel>@L["ExpiryDateTo"]</FieldLabel>
+                    <DateEdit TValue="DateTime?" Size="Size.Small" @bind-Date="CreditRecordFilters.ExpiryDateTo"></DateEdit>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12.Is2.OnFullHD">
+                    <FieldLabel>@L["MinRemainingCredits"]</FieldLabel>
+                    <NumericEdit TValue="int?" Size="Size.Small" @bind-Value="CreditRecordFilters.MinRemainingCredits"></NumericEdit>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12.Is2.OnFullHD">
+                    <FieldLabel>@L["MaxRemainingCredits"]</FieldLabel>
+                    <NumericEdit TValue="int?" Size="Size.Small" @bind-Value="CreditRecordFilters.MaxRemainingCredits"></NumericEdit>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12.Is2.OnFullHD">
+                    <Div Class="d-flex align-items-end gap-1 h-100">
+                        <PikachuButton Class="pk-btn-sm pk-btn-primary" Clicked="ApplyFilters">
+                            <Icon Name="IconName.Filter"></Icon>
+                            @L["Filter"]
+                        </PikachuButton>
+                        <PikachuButton Class="pk-btn-sm pk-btn-light" Clicked="ResetFilters">
+                            <Icon Name="IconName.Undo"></Icon>
+                            @L["Reset"]
+                        </PikachuButton>
+                    </Div>
+                </Column>
+            </Row>
+        </CardBody>
+    </Card>
+}
+<Card>
+    <CardBody>
+        <Div Class="text-end">
+            <PikachuButton Clicked="() => FiltersVisible = !FiltersVisible">
+                @if (!FiltersVisible)
+                {
+                    <Icon Name="IconName.ArrowDown" Class="me-1"></Icon>
+                }
+                else
+                {
+                    <Icon Name="IconName.ArrowUp" Class="me-1"></Icon>
+                }
+                @L["ToggleFilters"]
+            </PikachuButton>
+        </Div>
+        <DataGrid TItem="MemberCreditRecordDto"
+                  Data="MemberCreditRecords"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  PageSize="PageSize"
+                  CurrentPage="CurrentPage"
+                  Narrow
+                  Responsive>
+            <DataGridColumns>
+                <DataGridColumn TItem="MemberCreditRecordDto"
+                                Field="@nameof(MemberCreditRecordDto.UsageTime)"
+                                Caption="@L["UsageTime"]">
+                    <DisplayTemplate>
+                        @context.UsageTime.ToShortDateString() @context.UsageTime.ToShortTimeString()
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="MemberCreditRecordDto"
+                                Field="@nameof(MemberCreditRecordDto.TransactionDescription)"
+                                Caption="@L["TransactionDescription"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="MemberCreditRecordDto"
+                                Field="@nameof(MemberCreditRecordDto.Amount)"
+                                Caption="@L["Amount"]">
+                    <DisplayTemplate>
+                        +@context.Amount.ToString("N0")
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="MemberCreditRecordDto"
+                                Field="@nameof(MemberCreditRecordDto.ExpirationDate)"
+                                Caption="@L["ExpiryDate"]">
+                    <DisplayTemplate>
+                        @if (context.ExpirationDate.HasValue)
+                        {
+                            @context.ExpirationDate?.ToShortDateString() @context.ExpirationDate?.ToShortTimeString()
+                        }
+                        else
+                        {
+                            <Span>--</Span>
+                        }
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="MemberCreditRecordDto"
+                                Field="@nameof(MemberCreditRecordDto.RemainingCredits)"
+                                Caption="@L["RemainingCredits"]">
+                    <DisplayTemplate>
+                        $@context.RemainingCredits.ToString("N0")
+                    </DisplayTemplate>
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
