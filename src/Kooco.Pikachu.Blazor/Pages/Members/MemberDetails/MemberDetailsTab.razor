@@ -1,5 +1,7 @@
 ﻿@using Kooco.Pikachu.Members
 @using Kooco.Pikachu.UserAddresses
+@using Microsoft.Extensions.Logging
+@using Serilog
 @using Volo.Abp.AspNetCore.Components.Notifications
 @inherits PikachuComponentBase
 @inject IMemberAppService MemberAppService
@@ -109,9 +111,20 @@
         {
             try
             {
-                if (Member is null) return;
+                if (Member == null)
+                {
+                    Logger.Log(LogLevel.Debug, "Member is null in OnAfterRenderAsync");
+                    return;
+                }
+
                 DefaultAddress = await MemberAppService.GetDefaultAddressAsync(Member.Id);
-                await InvokeAsync(StateHasChanged);
+
+                if (DefaultAddress == null)
+                {
+                    Logger.Log(LogLevel.Debug, "DefaultAddress is null after API call");
+                }
+
+                StateHasChanged();
             }
             catch (Exception ex)
             {
