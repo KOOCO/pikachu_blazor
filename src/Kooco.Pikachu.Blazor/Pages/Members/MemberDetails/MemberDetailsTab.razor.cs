@@ -32,33 +32,29 @@ public partial class MemberDetailsTab
         DefaultAddress = new();
     }
 
-    protected async override Task OnAfterRenderAsync(bool firstLoad)
+    protected async override Task OnInitializedAsync()
     {
-        if (firstLoad)
+        try
         {
-            try
+            if (Member == null)
             {
-                if (Member == null)
-                {
-                    Logger.Log(LogLevel.Debug, "Member is null in OnAfterRenderAsync");
-                    return;
-                }
-
-                DefaultAddress = await MemberAppService.GetDefaultAddressAsync(Member.Id) ?? new();
-
-                if (DefaultAddress == null)
-                {
-                    Logger.Log(LogLevel.Debug, "DefaultAddress is null after API call");
-                }
-
-                StateHasChanged();
+                Logger.Log(LogLevel.Debug, "Member is null in OnAfterRenderAsync");
+                return;
             }
-            catch (Exception ex)
+
+            DefaultAddress = await MemberAppService.GetDefaultAddressAsync(Member.Id) ?? new();
+
+            if (DefaultAddress == null)
             {
-                await HandleErrorAsync(ex);
+                Logger.Log(LogLevel.Debug, "DefaultAddress is null after API call");
             }
+
+            StateHasChanged();
         }
-        await base.OnAfterRenderAsync(firstLoad);
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
     }
 
     private async Task DeleteAsync()

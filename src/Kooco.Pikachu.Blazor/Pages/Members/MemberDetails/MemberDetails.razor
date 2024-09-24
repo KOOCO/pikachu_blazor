@@ -20,10 +20,12 @@
         </Items>
         <Content>
             <TabPanel Name="Details">
-                @if (Member != null && OrderStats != null)
-                {
-                    <MemberDetailsTab Member="Member" OrderStats="OrderStats" CanDeleteMember="CanDeleteMember" OnDelete="@NavigateToMember" />
-                }
+                <div>
+                    @if (Member != null && OrderStats != null)
+                    {
+                        <MemberDetailsTab Member="Member" OrderStats="OrderStats" CanDeleteMember="CanDeleteMember" OnDelete="@NavigateToMember" />
+                    }
+                </div>
             </TabPanel>
             <TabPanel Name="Orders">
                 @if (Member != null)
