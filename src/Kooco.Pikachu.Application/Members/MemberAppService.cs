@@ -50,6 +50,7 @@ public class MemberAppService(IMemberRepository memberRepository,
                     {
                         Id = x.Id,
                         UserName = x.UserName,
+                        Name = x.Name,
                         Email = x.Email,
                         PhoneNumber = x.PhoneNumber,
                         Orders = random.Next(0, 15),
@@ -176,7 +177,7 @@ public class MemberAppService(IMemberRepository memberRepository,
 
     public async Task<UserCumulativeCreditDto> GetMemberCumulativeCreditAsync(Guid id)
     {
-        var userCumulativeCredit = await userCumulativeCreditManager.FindByUserIdAsync(id);
+        var userCumulativeCredit = await userCumulativeCreditManager.FirstOrDefaultByUserIdAsync(id);
         return ObjectMapper.Map<UserCumulativeCredit, UserCumulativeCreditDto>(userCumulativeCredit);
     }
 

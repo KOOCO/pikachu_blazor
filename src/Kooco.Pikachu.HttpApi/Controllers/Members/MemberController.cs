@@ -43,7 +43,7 @@ public class MemberController(IMemberAppService memberAppService) : PikachuContr
         return memberAppService.GetGroupBuyLookupAsync();
     }
 
-    [HttpGet]
+    [HttpGet("list")]
     public Task<PagedResultDto<MemberDto>> GetListAsync(GetMemberListDto input)
     {
         return memberAppService.GetListAsync(input);

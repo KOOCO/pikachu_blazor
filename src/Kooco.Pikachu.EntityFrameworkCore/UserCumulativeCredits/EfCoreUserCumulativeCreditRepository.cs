@@ -12,6 +12,12 @@ namespace Kooco.Pikachu.UserCumulativeCredits;
 
 public class EfCoreUserCumulativeCreditRepository(IDbContextProvider<PikachuDbContext> dbContextProvider) : EfCoreRepository<PikachuDbContext, UserCumulativeCredit, Guid>(dbContextProvider), IUserCumulativeCreditRepository
 {
+    public async Task<UserCumulativeCredit?> FirstOrDefaultByUserIdAsync(Guid userId)
+    {
+        var queryable = await GetQueryableAsync();
+        return await queryable.FirstOrDefaultAsync(x => x.UserId == userId);
+    }
+
     public async Task<long> GetCountAsync(Guid? userId, int? minTotalAmount, int? maxTotalAmount, int? minTotalDeductions,
         int? maxTotalDeductions, int? minTotalRefunds, int? maxTotalRefunds)
     {

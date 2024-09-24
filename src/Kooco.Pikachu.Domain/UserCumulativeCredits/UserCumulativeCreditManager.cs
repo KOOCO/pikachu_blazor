@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Volo.Abp;
-using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Services;
 
 namespace Kooco.Pikachu.UserCumulativeCredits;
@@ -32,9 +31,9 @@ public class UserCumulativeCreditManager(IUserCumulativeCreditRepository userCum
         return userCumulativeCredit;
     }
 
-    public async Task<UserCumulativeCredit?> FindByUserIdAsync(Guid userId)
+    public async Task<UserCumulativeCredit?> FirstOrDefaultByUserIdAsync(Guid userId)
     {
-        var userCumulativeCredit = await userCumulativeCreditRepository.FirstOrDefaultAsync(x => x.UserId == userId);
+        var userCumulativeCredit = await userCumulativeCreditRepository.FirstOrDefaultByUserIdAsync(userId);
         return userCumulativeCredit;
     }
 }
