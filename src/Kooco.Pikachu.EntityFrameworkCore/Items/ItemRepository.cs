@@ -43,6 +43,17 @@ public class ItemRepository : EfCoreRepository<PikachuDbContext, Item, Guid>, II
         dbContext.Items.RemoveRange(dbContext.Items.Where(item => ids.Contains(item.Id)));
         dbContext.GroupBuyItemGroupDetails.RemoveRange(dbContext.GroupBuyItemGroupDetails.Where(gd => ids.Contains(gd.ItemId ?? Guid.Empty)));
     }
+    public async Task<List<ItemWithItemType>> GetItemsAllLookupAsync()
+    {
+        return await (await GetQueryableAsync())
+            
+            .Select(x => new ItemWithItemType
+            {
+                Id = x.Id,
+                Name = x.ItemName,
+                
+            }).ToListAsync();
+    }
 
     public async Task<List<ItemWithItemType>> GetItemsLookupAsync()
     {
@@ -112,5 +123,14 @@ public class ItemRepository : EfCoreRepository<PikachuDbContext, Item, Guid>, II
             .WhereIf(maxAvailableTime.HasValue, x => x.LimitAvaliableTimeStart <= maxAvailableTime || x.LimitAvaliableTimeEnd <= maxAvailableTime)
             .WhereIf(isFreeShipping.HasValue, x => x.IsFreeShipping == isFreeShipping)
             .WhereIf(isAvailable.HasValue, x => x.IsItemAvaliable == isAvailable);
+    }
+
+    public async Task<Item> GetFirstImage(Guid id)
+    {
+        return (await GetQueryableAsync())
+            .Include(x => x.Images)
+            .Where(x=>x.Id==id)
+            
+            .FirstOrDefault();
     }
 }

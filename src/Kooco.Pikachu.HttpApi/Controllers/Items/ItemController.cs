@@ -98,14 +98,19 @@ public class ItemController(
         return _itemAppService.GetItemsListAsync(input);
     }
 
-    [HttpGet("get-all-items-lookup")]
-    public Task<List<KeyValueDto>> GetAllItemsLookupAsync()
-    {
-        return _itemAppService.GetAllItemsLookupAsync();
-    }
+    //[HttpGet("get-all-items-lookup")]
+    //public Task<List<KeyValueDto>> GetAllItemsLookupAsync()
+    //{
+    //    return _itemAppService.GetAllItemsLookupAsync();
+    //}
     [HttpPost("copy-item/{id}")]
     public Task<ItemDto> CopyAysnc(Guid Id)
     {
         return _itemAppService.CopyAysnc(Id);
+    }
+    [HttpGet("get-all-items-lookup")]
+    public Task<List<KeyValueDto>> GetAllItemsLookupAsync()
+    {
+        return _itemAppService.GetAllItemsLookupAsync();
     }
 }

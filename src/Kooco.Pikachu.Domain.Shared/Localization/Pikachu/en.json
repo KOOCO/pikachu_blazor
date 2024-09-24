@@ -643,7 +643,33 @@
     "SellingQuantity": "Selling Quantity",
     "Time": "Time",
     "From": "From",
-    "To": "To"
+    "To": "To",
+
+    "NewAddOnProducts": "New Add-On Products",
+    
+    "AddOnProduct": "Add-On Product",
+    "SelectProduct": "Select a Product",
+    "AddOnProductAmount": "Add-On Product Amount",
+    "AddOnLimitPerOrder": "Add-On Limit Per Order",
+    "AvailableQuantity": "Available Quantity",
+    "Unlimited": "Unlimited (until the original product is out of stock)",
+    "AvailableQuantity:": "Available Quantity:",
+    "(Can'texceedthecurrentstockoftheoriginalproduct)": "(Can't exceed the current stock of the original product)",
+    "DisplayOfOriginalPrice": "Display Of Original Price",
+    "Donotdisplayoriginalprice": "Do not display original price",
+    "Displayproduct'soriginalprice": "Display product's original price",
+    "Displayproduct'sgroupbuyprice": "Display product's groupbuy price",
+    "EventPeriod": "Event Period",
+    
+    "AddOnSettings": "Add-On Settings",
+    "Conditions": "Conditions",
+    "Nominimumspendingrequirement": "No minimum spending requirement",
+    "Mustmeetaspecifiedspendingthreshold": "Must meet a specified spending threshold",
+    "Eligibleadd-onrange": "Eligible add-on range",
+    "Groupbuys": "Groupbuys",
+    "AllGroupBuys": "All GroupBuys",
+    "SpecificGroupBuys": "Specific GroupBuys",
+    "SelectaGroupBuys": "Select a GroupBuys"
 
   }
 }

@@ -61,7 +61,7 @@ namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
                     EndDate = DateTime.Now.AddDays(10),
                     AddOnConditions = "Must purchase main product",
                     MinimumSpendAmount = 50,
-                    GroupBuysScope = "GroupA",
+                    GroupbuysScope = "GroupA",
                     Status=true,
                     SellingQuantity=10,
                     
@@ -79,7 +79,7 @@ namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
                     EndDate = DateTime.Now.AddDays(15),
                     AddOnConditions = "Limited to one per customer",
                     MinimumSpendAmount = 100,
-                    GroupBuysScope = "GroupB",
+                    GroupbuysScope = "GroupB",
                     Status = true,
                     SellingQuantity = 10,
                 });
@@ -96,7 +96,7 @@ namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
                     EndDate = DateTime.Now.AddDays(7),
                     AddOnConditions = "Available for VIP members only",
                     MinimumSpendAmount = 150,
-                    GroupBuysScope = "GroupC",
+                    GroupbuysScope = "GroupC",
                     Status = true,
                     SellingQuantity = 10,
                 });
@@ -113,7 +113,7 @@ namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
                     EndDate = DateTime.Now.AddDays(12),
                     AddOnConditions = "Valid for weekend purchases",
                     MinimumSpendAmount = 75,
-                    GroupBuysScope = "GroupD",
+                    GroupbuysScope = "GroupD",
                     Status = true,
                     SellingQuantity = 10,
                 });
@@ -147,6 +147,13 @@ namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
        private  void OnAddOnProductStatusChanged(int id) 
         {
             return;
+        }
+
+        void CreateNewAddOnProduct()
+        {
+            NavigationManager.NavigateTo("/new-add-on-products");
+
+
         }
     }
 } 

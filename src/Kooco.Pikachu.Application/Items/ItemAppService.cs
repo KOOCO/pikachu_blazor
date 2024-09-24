@@ -379,8 +379,8 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
 
     public async Task<string?> GetFirstImageUrlAsync(Guid id)
     {
-        var item = await _itemRepository.GetAsync(id);
-        await _itemRepository.EnsureCollectionLoadedAsync(item, i => i.Images);
+        var item = await _itemRepository.GetFirstImage(id);
+      
         return item.Images.OrderBy(x => x.SortNo).FirstOrDefault()?.ImageUrl;
     }
 
@@ -390,11 +390,7 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
         return ObjectMapper.Map<List<ItemWithItemType>, List<ItemWithItemTypeDto>>(items);
     }
 
-    public async Task<List<KeyValueDto>> GetAllItemsLookupAsync()
-    {
-        var items = await _itemRepository.GetQueryableAsync();
-        return items.Select(x => new KeyValueDto { Id = x.Id, Name = x.ItemName }).ToList();
-    }
+  
 
     /// <summary>
     /// This Method Returns the Desired Result For the Store Front End.
@@ -437,5 +433,12 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
             TotalCount = totalCount,
             Items = ObjectMapper.Map<List<ItemListViewModel>, List<ItemListDto>>(items)
         };
+    }
+
+    public async Task<List<KeyValueDto>> GetAllItemsLookupAsync()
+    {
+        var items = await _itemRepository.GetItemsAllLookupAsync();
+       var list= items.Select(x => new KeyValueDto { Id = x.Id, Name = x.Name }).ToList();
+        return list;
     }
 }

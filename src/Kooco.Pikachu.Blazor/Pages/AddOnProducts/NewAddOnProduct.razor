@@ -1,0 +1,166 @@
+﻿@page "/new-add-on-products"
+@attribute [Authorize]
+@using Kooco.Pikachu.Items.Dtos
+@using Kooco.Pikachu.Localization
+@using Kooco.Pikachu.AddOnProducts
+@using Kooco.Pikachu.GroupBuys
+@using Kooco.Pikachu.Items
+@using Kooco.Pikachu.Permissions
+@using Microsoft.Extensions.Localization
+
+@inherits PikachuComponentBase
+@inject GroupBuyAppService GroupBuyAppService
+
+@inject NavigationManager NavigationManager
+<Div>
+    <Row>
+        <Column ColumnSize="ColumnSize.Is6">
+            <h3 class="text-dark">@L["NewAddOnProducts"]</h3>
+        </Column>
+
+    </Row>
+</Div>
+<Card>
+    <CardBody>
+        <Row VerticalGutter="10">
+            <Column ColumnSize="ColumnSize.Is3">
+        <h4 class="text-dark">@L["BasicDetails"]</h4>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is9">
+       <Label>@L["AddOnProduct"]</Label>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <AntDesign.Select TItem="KeyValueDto"
+                            TItemValue="Guid"
+                            DataSource="@Products"
+                            @bind-Value="@CreateAddOnProduct.ProductId"
+                                      LabelName="@nameof(KeyValueDto.Name)"
+                                      ValueName="@nameof(KeyValueDto.Id)"
+                            Placeholder="Select a Product"
+                            DefaultActiveFirstOption="false"
+                            EnableSearch
+                            
+                            OnSelectedItemChanged="OnSelectedProductChangedHandler"
+                            >
+                    </AntDesign.Select>
+                </Column>
+                @if (Item.ItemName != null && Item.ItemDescription != null)
+                {
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <AntDesign.Descriptions Title="Product Info">
+                        <AntDesign.DescriptionsItem Title="@L["ProductImage"]"><AntDesign.Image Width="100px" Src="@itemimageUrl" /></AntDesign.DescriptionsItem>
+    <AntDesign.DescriptionsItem Title="@L["ProductName"]">@Item?.ItemName</AntDesign.DescriptionsItem>
+                       @*      <AntDesign.DescriptionsItem Title="@L["ProductDescription"]">@((MarkupString)Item?.ItemDescription)</AntDesign.DescriptionsItem> *@
+    
+</AntDesign.Descriptions>
+                     </Column>
+                     }
+                <Row >
+                <Column ColumnSize="ColumnSize.Is6">
+                <Label>@L["AddOnProductAmount"]</Label>
+                <NumericEdit @bind-Value="CreateAddOnProduct.AddOnAmount" TValue="int"  />
+                </Column>
+                <Column ColumnSize="ColumnSize.Is6">
+                    <Label>@L["AddOnLimitPerOrder"]</Label>
+                        <NumericEdit @bind-Value="CreateAddOnProduct.AddOnLimitPerOrder" TValue=" int" />
+                </Column>
+                </Row>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Label>@L["AvailableQuantity"]</Label>
+                    <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="QuantitySetting" @bind-CheckedValue="@CreateAddOnProduct.QuantitySetting">
+                    <Radio  Value="@("unlimited")">@L["Unlimited"]</Radio>
+                    <Radio  Value="@("available")">@L["AvailableQuantity:"] <NumericEdit @bind-Value="CreateAddOnProduct.AvailableQuantity" TValue="int" />@L["(Can'texceedthecurrentstockoftheoriginalproduct)"] </Radio>
+                       </RadioGroup>
+                  
+                    </Column>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Label>@L["DisplayOfOriginalPrice"]</Label>
+                    <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="displayPrice" @bind-CheckedValue="@CreateAddOnProduct.DisplayOriginalPrice">
+                    <Radio  Value="@("NoPrice")">@L["Donotdisplayoriginalprice"]</Radio>
+                    <Radio  Value="@("ProductPrice")">@L["Displayproduct'soriginalprice"] </Radio>
+                    <Radio  Value="@("GroupBuyPrice")">@L["Displayproduct'sgroupbuyprice"] </Radio>
+                    </RadioGroup>
+                </Column>
+    </Column>
+         
+    </Row>
+    </CardBody>
+</Card>
+<Card>
+    <CardBody>
+          <Row VerticalGutter="10">
+            <Column ColumnSize="ColumnSize.Is3">
+        <h4 class="text-dark">@L["EventPeriod"]</h4>
+    </Column>
+            <Column ColumnSize="ColumnSize.Is9">
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is6">
+                        <Label>@L["From"]</Label>
+                        <DateEdit TValue="DateTime" />
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is6">
+                        <Label>@L["To"]</Label>
+                        <DateEdit TValue="DateTime" />
+                    </Column>
+                </Row>
+            </Column>
+    </Row>
+    </CardBody>
+</Card>
+<Card>
+    <CardBody>
+        <Row VerticalGutter="10">
+            <Column ColumnSize="ColumnSize.Is3">
+                <h4 class="text-dark">@L["AddOnSettings"]</h4>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is9">
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Label>@L["Conditions"]</Label>
+                    <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="AddOnCondition" @bind-CheckedValue="@CreateAddOnProduct.AddOnConditions">
+                    <Radio  Value="@("NoRequirement")">@L["Nominimumspendingrequirement"]</Radio>
+                    <Radio  Value="@("Requirment")">@L["Mustmeetaspecifiedspendingthreshold"]</Radio>
+                    </RadioGroup>
+
+                </Column>
+            </Column>
+        </Row>
+    </CardBody>
+</Card>
+<Card>
+    <CardBody>
+        <Row VerticalGutter="10">
+            <Column ColumnSize="ColumnSize.Is3">
+                <h4 class="text-dark">@L["Eligableadd-onrange"]</h4>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is9">
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Label>@L["Groupbuys"]</Label>
+                    <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="Groupbuys" @bind-CheckedValue="@CreateAddOnProduct.GroupbuysScope">
+                    <Radio  Value="@("AllGroupbuys")">@L["AllGroupBuys"]</Radio>
+                    <Radio  Value="@("SpecificGroupbuys")">@L["SpecificGroupBuys"]</Radio>
+                    </RadioGroup>
+
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <AntDesign.Select Mode="multiple"
+                    TItem="GroupBuyDto"
+                                      TItemValue="GroupBuyDto"
+                                     @bind-Values="@SelectedGroupBuy"
+                                     
+                                      Placeholder="@L["SelectaGroupBuys"]"
+                                     
+                                      
+                                      EnableSearch
+                                     >
+                                      <SelectOptions>
+			            @foreach(var item in Groupbuys)
+			{
+                                <AntDesign.SelectOption TItemValue="GroupBuyDto" TItem="GroupBuyDto" Value=@item Label=@item.GroupBuyName />
+			}
+		</SelectOptions>
+                    </AntDesign.Select>
+
+                </Column>
+            </Column>
+        </Row>
+    </CardBody>
+</Card>

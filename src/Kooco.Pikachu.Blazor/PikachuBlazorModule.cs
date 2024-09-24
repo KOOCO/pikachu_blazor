@@ -83,7 +83,7 @@ public class PikachuBlazorModule : AbpModule
         });
 
         context.Services.AddBlazoriseRichTextEdit();
-
+        context.Services.AddAntDesign();
 
         PreConfigure<OpenIddictBuilder>(builder =>
         {

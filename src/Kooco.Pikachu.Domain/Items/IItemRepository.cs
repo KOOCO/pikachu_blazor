@@ -16,6 +16,8 @@ public interface IItemRepository : IRepository<Item, Guid>
     Task<IQueryable<Item>> GetWithImagesAsync(int? maxResultCount = null);
     Task DeleteManyAsync(List<Guid> ids);
     Task<List<ItemWithItemType>> GetItemsLookupAsync();
+    Task<List<ItemWithItemType>> GetItemsAllLookupAsync();
+    Task<Item> GetFirstImage(Guid id);
     Task<long> LongCountAsync(
                         Guid? itemId = null,
                         DateTime? minAvailableTime = null,
