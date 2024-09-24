@@ -25,13 +25,6 @@ public partial class MemberDetailsTab
 
     private UserAddressDto? DefaultAddress { get; set; }
 
-    public MemberDetailsTab()
-    {
-        Member = new();
-        OrderStats = new();
-        DefaultAddress = new();
-    }
-
     protected async override Task OnInitializedAsync()
     {
         try
@@ -42,14 +35,14 @@ public partial class MemberDetailsTab
                 return;
             }
 
-            DefaultAddress = await MemberAppService.GetDefaultAddressAsync(Member.Id) ?? new();
+            DefaultAddress = await MemberAppService.GetDefaultAddressAsync(Member.Id);
 
             if (DefaultAddress == null)
             {
                 Logger.Log(LogLevel.Debug, "DefaultAddress is null after API call");
             }
 
-            StateHasChanged();
+            //StateHasChanged();
         }
         catch (Exception ex)
         {
