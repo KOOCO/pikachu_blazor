@@ -811,62 +811,35 @@
                             </DropdownItem>
                         </DropdownMenu>
                     </Dropdown>
-                    @if (SelectedTemplate is GroupBuyTemplateType.PikachuOne)
-                    {
-                        <Dropdown Disabled=IsSelectedModule>
-                            <DropdownToggle Color="Color.Primary">
-                                @L["SelectModule"]
-                            </DropdownToggle>
-                            <DropdownMenu>
+                    <Dropdown Disabled=IsSelectedModule>
+                        <DropdownToggle Color="Color.Primary">
+                            @L["SelectModule"]
+                        </DropdownToggle>
+                        <DropdownMenu>
+                            @if (SelectedTemplate is GroupBuyTemplateType.PikachuOne)
+                            {
                                 @foreach (GroupBuyModuleType module in GetPikachuOneList())
                                 {
                                     <DropdownItem Clicked='@(() => AddProductItem(module))'>
                                         @L[module.ToString()]
                                     </DropdownItem>
                                 }
-                            </DropdownMenu>
-                        </Dropdown>
-                    }
-                    else if (SelectedTemplate is GroupBuyTemplateType.PikachuTwo)
-                    {
-                        <Dropdown Disabled=IsSelectedModule>
-                            <DropdownToggle Color="Color.Primary">
-                                @L["SelectModule"]
-                            </DropdownToggle>
-                            <DropdownMenu>
+                            }
+                            else if (SelectedTemplate is GroupBuyTemplateType.PikachuTwo)
+                            {
                                 @foreach (GroupBuyModuleType module in GetPikachuTwoList())
                                 {
                                     <DropdownItem Clicked='@(() => AddProductItem(module))'>
                                         @L[module.ToString()]
                                     </DropdownItem>
                                 }
-                            </DropdownMenu>
-                        </Dropdown>
-                    }
-                }
-            </div>
-        </div>
-        @* <div class="row">
-            <div class="col-2"><label>@L["AddModule"]</label></div>
-            <div class="col-3">
-                @if (CollapseItem.Count < 20)
-                {
-                    <Dropdown>
-                        <DropdownToggle Color="Color.Primary">
-                            @L["SelectModule"]
-                        </DropdownToggle>
-                        <DropdownMenu>
-                            @foreach (GroupBuyModuleType groupBuyDropdownValue in Enum.GetValues(typeof(GroupBuyModuleType)))
-                            {
-                                <DropdownItem Clicked='@(()=>AddProductItem(@groupBuyDropdownValue))'>
-                                    @L[groupBuyDropdownValue.ToString()]
-                                </DropdownItem>
                             }
                         </DropdownMenu>
                     </Dropdown>
                 }
             </div>
-        </div> *@
+        </div>
+
         <div ondragover="event.preventDefault();">
             @foreach (var module in CollapseItem)
             {
