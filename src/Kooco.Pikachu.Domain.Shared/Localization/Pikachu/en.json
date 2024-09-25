@@ -698,7 +698,35 @@
     "SelectaGroupBuys": "Select a GroupBuys",
 
     "DiscountCodes": "Discount Codes",
-    "Permission:DiscountCodes": "Discount Codes"
+    "Permission:DiscountCodes": "Discount Codes",
+    "EventName": "Event Name",
+    "NewDiscountCode": "New Discount Code",
+    "Add-On Product": "Add-On Product",
+    "DiscountCode": "Discount Code",
+    "NoCodeRequiredForDiscount": "No Code Required For Discount",
+    "CustomCode:": "Custom Code:",
+    "NumberOfIssuedCodes": "Number Of Issued Codes",
+    "MaximumUsePerPerson": "Maximum Use Per Person",
+    "DiscountRange": "Discount Range",
+
+    "AllProducts": "All Products",
+    "SpecificProducts": "Specific Products",
+    "SelectaProduct": "Select a Product",
+    "DiscountMethod": "Discount Method",
+    "DirectDiscount": "Direct Discount",
+    "MinimumSpendDiscount,RequiresSpending$": "Minimum Spend Amount,Requires Spending $",
+    "AllShippingMethods": "All Shipping Methods",
+    "SpecificShippingMethods": "Specific Shipping Methods",
+    "SelectaShippingMethod": "Select a Shipping Method",
+    "ShippingDiscount": "ShippingDiscount",
+    "DiscountOf$": "Discount Of ($)",
+    "DiscountOf%": "Discount Of (%)",
+    "ShippingSettings": "ShippingSettings",
+    "AllMethods": "All Methods",
+    "SpecificMethods": "Specific Methods",
+    "SelectaShippings": "Select a Shippings",
+    "DiscountAmount": "Discount Amount",
+   
 
   }
 }

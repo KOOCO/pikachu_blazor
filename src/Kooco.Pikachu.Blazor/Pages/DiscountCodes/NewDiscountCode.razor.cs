@@ -1,36 +1,36 @@
 ﻿using Blazorise;
-using Kooco.Pikachu.AddOnProducts;
+
 using Kooco.Pikachu.GroupBuys;
-using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
-using Kooco.Pikachu.Members;
-using Kooco.Pikachu.UserAddresses;
-using Microsoft.AspNetCore.Components;
-using System;
+using Kooco.Pikachu.Items;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System;
+using Kooco.Pikachu.DiscountCodes;
+using Kooco.Pikachu.EnumValues;
 
-namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
+namespace Kooco.Pikachu.Blazor.Pages.DiscountCodes
 {
-    public partial class NewAddOnProduct
+    public partial class NewDiscountCode
     {
-        [Parameter]
-        public Guid Id { get; set; }
-        string itemimageUrl = "";
-        private AddOnProductDto AddOnProduct { get; set; }
-        private CreateAddOnProductDto CreateAddOnProduct { get; set; }
+        
+        private CreateDiscountCodeDto CreateDiscountCode { get; set; }
         private IReadOnlyList<GroupBuyDto> Groupbuys { get; set; }
         private IReadOnlyList<KeyValueDto> Products { get; set; }
         IEnumerable<GroupBuyDto> SelectedGroupBuy { get; set; }
+        IEnumerable<KeyValueDto> SelectedProducts { get; set; }
+        IEnumerable<DeliveryMethod> SelectedShippings { get; set; }
         private Validations ValidationsRef;
-        private ItemDto Item { get; set; }
+       
         private readonly ItemAppService _itemAppService;
-        public NewAddOnProduct(ItemAppService itemAppService)
+        public NewDiscountCode(ItemAppService itemAppService)
         {
-            CreateAddOnProduct = new();
-            Item= new ItemDto();
-            Groupbuys = [];
+            CreateDiscountCode = new();
+            Products = [];
+             Groupbuys = [];
             SelectedGroupBuy = [];
+            SelectedProducts = [];
+            SelectedShippings = [];
             _itemAppService = itemAppService;
         }
         protected override async Task OnInitializedAsync()
@@ -53,12 +53,12 @@ namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
             {
                 var data = await GroupBuyAppService.GetListAsync(new GetGroupBuyInput
                 {
-                    
+
                     MaxResultCount = 1000
                 });
                 Groupbuys = data.Items;
 
-               
+
                 return;
             }
             catch (Exception ex)
@@ -70,7 +70,7 @@ namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
         {
             try
             {
-                
+
                 var data = await _itemAppService.GetAllItemsLookupAsync();
                 Products = data;
 
@@ -82,16 +82,12 @@ namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
                 await HandleErrorAsync(ex);
             }
         }
-
-        private async void OnSelectedProductChangedHandler(KeyValueDto value)
+        void NavigateToDiscountCodes()
         {
-            Item = await _itemAppService.GetAsync(value.Id);
-            itemimageUrl = await _itemAppService.GetFirstImageUrlAsync(value.Id);
-            StateHasChanged();
+            NavigationManager.NavigateTo("/discount-code");
+        
         }
-        void NavigateToAddOnProducts() {
 
-            NavigationManager.NavigateTo("/add-on-product");
-        }
+
     }
 }

@@ -127,9 +127,9 @@ namespace Kooco.Pikachu.Blazor.Pages.DiscountCodes
             return;
         }
 
-        void CreateNewAddOnProduct()
+        void CreateNewDiscountCode()
         {
-            NavigationManager.NavigateTo("/new-add-on-products");
+            NavigationManager.NavigateTo("/new-discount-code");
 
 
         }

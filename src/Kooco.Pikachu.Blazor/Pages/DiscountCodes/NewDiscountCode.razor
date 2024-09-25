@@ -1,0 +1,201 @@
+﻿@page "/new-discount-code"
+@attribute [Authorize]
+@using Kooco.Pikachu.EnumValues
+@using Kooco.Pikachu.Items.Dtos
+@using Kooco.Pikachu.Localization
+@using Kooco.Pikachu.DiscountCodes
+@using Kooco.Pikachu.GroupBuys
+@using Kooco.Pikachu.Items
+@using Kooco.Pikachu.Permissions
+@using Microsoft.Extensions.Localization
+
+@inherits PikachuComponentBase
+@inject GroupBuyAppService GroupBuyAppService
+
+@inject NavigationManager NavigationManager
+ <Div>
+    <Row>
+        <Column ColumnSize="ColumnSize.Is6">
+            <h3 class="text-dark">@L["NewDiscountCode"]</h3>
+        </Column>
+
+    </Row>
+</Div>
+<Card>
+    <CardBody>
+        <Row VerticalGutter="10">
+            <Column ColumnSize="ColumnSize.Is3">
+                <h4 class="text-dark">@L["BasicDetails"]</h4>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is9">
+                <Label>@L["EventName"]</Label>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <TextEdit @bind-Text="CreateDiscountCode.EventName" />
+                      
+                </Column>
+
+                <Column ColumnSize="ColumnSize.Is12">
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is6">
+                                <Label>@L["From"]</Label>
+                                <DateEdit @bind-Date="CreateDiscountCode.StartDate" TValue="DateTime" />
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is6">
+                                <Label>@L["To"]</Label>
+                            <DateEdit @bind-Date="CreateDiscountCode.EndDate" TValue="DateTime" />
+                            </Column>
+                        </Row>
+                        </Column>
+                 <Divider></Divider>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Label>@L["DiscountCode"]</Label>
+                    <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="DiscountCode" @bind-CheckedValue="@CreateDiscountCode.DiscountCodeValue">
+                        <Radio Value="@("NoCodeRequired")">@L["NoCodeRequiredForDiscount"]</Radio>
+                        <Radio Value="@("CodeRequired")">@L["CustomCode:"] <TextEdit @bind-Value="CreateDiscountCode.SpecifiedCode"  /> </Radio>
+                    </RadioGroup>
+
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is6">
+                            <Label>@L["NoOfIssuedCodes"]</Label>
+                            <NumericEdit @bind-Number="CreateDiscountCode.AvailableQuantity" TValue="int" />
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is6">
+                            <Label>@L["MaximunUsePerPerson"]</Label>
+                            <NumericEdit @bind-Number="CreateDiscountCode.MaxUsePerPerson" TValue="int"  />
+                        </Column>
+                    </Row>
+                </Column>
+        
+            </Column>
+
+        </Row>
+    </CardBody>
+</Card>
+<Card>
+    <CardBody>
+        <Row VerticalGutter="10">
+            <Column ColumnSize="ColumnSize.Is3">
+                <h4 class="text-dark">@L["DiscountRange"]</h4>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is9">
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Label>@L["Groupbuys"]</Label>
+                    <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="Groupbuys" @bind-CheckedValue="@CreateDiscountCode.GroupBuysScope">
+                        <Radio Value="@("AllGroupbuys")">@L["AllGroupBuys"]</Radio>
+                        <Radio Value="@("SpecificGroupbuys")">@L["SpecificGroupBuys"]</Radio>
+                    </RadioGroup>
+
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <AntDesign.Select Mode="multiple"
+                                      TItem="GroupBuyDto"
+                                      TItemValue="GroupBuyDto"
+                                      @bind-Values="@SelectedGroupBuy"
+                                      Placeholder="@L["SelectaGroupBuys"]"
+                                      EnableSearch>
+                        <SelectOptions>
+                            @foreach (var item in Groupbuys)
+                            {
+                                <AntDesign.SelectOption TItemValue="GroupBuyDto" TItem="GroupBuyDto" Value=@item Label=@item.GroupBuyName />
+                            }
+                        </SelectOptions>
+                    </AntDesign.Select>
+
+                </Column>
+           
+            <Divider></Divider>
+            
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Label>@L["Products"]</Label>
+                    <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="Products" @bind-CheckedValue="@CreateDiscountCode.ProductsScope">
+                        <Radio Value="@("AllProducts")">@L["AllProducts"]</Radio>
+                        <Radio Value="@("SpecificProducts")">@L["SpecificProducts"]</Radio>
+                    </RadioGroup>
+
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <AntDesign.Select Mode="multiple"
+                                      TItem="KeyValueDto"
+                                      TItemValue="KeyValueDto"
+                                      @bind-Values="@SelectedProducts"
+                                      Placeholder="@L["SelectaProducts"]"
+                                      EnableSearch>
+                        <SelectOptions>
+                            @foreach (var item in Products)
+                            {
+                                <AntDesign.SelectOption TItemValue="KeyValueDto" TItem="KeyValueDto" Value=@item Label=@item.Name />
+                            }
+                        </SelectOptions>
+                    </AntDesign.Select>
+
+                </Column>
+            </Column>
+           
+        </Row>
+    </CardBody>
+</Card>
+<Card>
+    <CardBody>
+        <Row VerticalGutter="10">
+            <Column ColumnSize="ColumnSize.Is3">
+                <h4 class="text-dark">@L["DiscountMethod"]</h4>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is9">
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Label>@L["DiscountMethod"]</Label>
+                    <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="DiscountMethod" @bind-CheckedValue="@CreateDiscountCode.DiscountMethod">
+                        <Radio Value="@("DirectDiscount")">@L["DirectDiscount"]</Radio>
+                        <Radio Value="@("RequireSpendings")">@L["MinimumSpendDiscount,RequiresSpending$"]<NumericEdit @bind-Number="CreateDiscountCode.MinimumSpendAmount" TValue="int"/></Radio>
+                        <Radio Value="@("ShippingDiscount")">@L["ShippingDiscount"]</Radio>
+                    </RadioGroup>
+
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Label>@L["ShippingSettings"]</Label>
+                    <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="ShippingSettings" @bind-CheckedValue="@CreateDiscountCode.ShippingDiscountScope">
+                        <Radio Value="@("AllMethods")">@L["AllMethods"]</Radio>
+                        
+                        <Radio Value="@("SpecificMethods")">@L["SpecificMethods"]</Radio>
+                    </RadioGroup>
+
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <AntDesign.Select Mode="multiple"
+                                      TItem="DeliveryMethod"
+                                      TItemValue="DeliveryMethod"
+                                      @bind-Values="@SelectedShippings"
+                                      Placeholder="@L["SelectaShippings"]"
+                                      EnableSearch>
+                        <SelectOptions>
+                            @foreach (var item in Enum.GetNames(typeof(DeliveryMethod)))
+                            {
+                                <AntDesign.SelectOption TItemValue="DeliveryMethod" TItem="DeliveryMethod" Label=@L[item] />
+                            }
+                        </SelectOptions>
+                    </AntDesign.Select>
+
+                </Column>
+                <Divider></Divider>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Label>@L["DiscountAmount"]</Label>
+
+                    <Radio Group="DiscountAmount" Value="@("Amount")">@L["DiscountOf$"]<NumericEdit @bind-Number="CreateDiscountCode.DiscountAmount" TValue="int" /></Radio>
+                    <Radio Group="DiscountAmount" Value="@("Percentage")">@L["DiscountOf%"]<NumericEdit @bind-Number="CreateDiscountCode.DiscountPercentage" Max="100" TValue="int" /></Radio>
+                    
+
+                </Column>
+            </Column>
+          
+        </Row>
+    </CardBody>
+</Card>
+<Div Class="text-end">
+    <PikachuButton Class="pk-btn-light"  Clicked="NavigateToDiscountCodes">
+        @L["Cancel"]
+    </PikachuButton>
+    <PikachuButton Class="pk-btn-primary"  >
+        @L["Create"]
+    </PikachuButton>
+</Div>
