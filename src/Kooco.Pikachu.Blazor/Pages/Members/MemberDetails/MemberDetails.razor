@@ -12,25 +12,33 @@
         @L["Members"]
     </PikachuButton>
     <MemberDetailsHeader Member="Member" CanEditMember="CanEditMember"></MemberDetailsHeader>
-    @if (Member != null)
-    {
-        <Tabs RenderMode="TabsRenderMode.LazyLoad" SelectedTab="@SelectedTab" SelectedTabChanged="@OnSelectedTabChanged">
-            <Items>
-                <Tab Name="Details">@L["Details"]</Tab>
-                <Tab Name="Orders">@L["Orders"]</Tab>
-                <Tab Name="ShoppingCredits">@L["ShoppingCredits"]</Tab>
-            </Items>
-            <Content>
-                <TabPanel Name="Details">
-                    <MemberDetailsTab Member="Member" OrderStats="OrderStats" CanDeleteMember="CanDeleteMember" OnDelete="@NavigateToMember" />
-                </TabPanel>
-                <TabPanel Name="Orders">
+    <Tabs RenderMode="TabsRenderMode.LazyLoad" SelectedTab="@SelectedTab" SelectedTabChanged="@OnSelectedTabChanged">
+        <Items>
+            <Tab Name="Details">@L["Details"]</Tab>
+            <Tab Name="Orders">@L["Orders"]</Tab>
+            <Tab Name="ShoppingCredits">@L["ShoppingCredits"]</Tab>
+        </Items>
+        <Content>
+            <TabPanel Name="Details">
+                <div>
+                    @if (Member != null && OrderStats != null)
+                    {
+                        <MemberDetailsTab Member="Member" OrderStats="OrderStats" CanDeleteMember="CanDeleteMember" OnDelete="@NavigateToMember" />
+                    }
+                </div>
+            </TabPanel>
+            <TabPanel Name="Orders">
+                @if (Member != null)
+                {
                     <MemberOrdersTab Member="Member" OrderStats="OrderStats"></MemberOrdersTab>
-                </TabPanel>
-                <TabPanel Name="ShoppingCredits">
+                }
+            </TabPanel>
+            <TabPanel Name="ShoppingCredits">
+                @if (Member != null)
+                {
                     <MemberShoppingCreditsTab Member="Member"></MemberShoppingCreditsTab>
-                </TabPanel>
-            </Content>
-        </Tabs>
-    }
+                }
+            </TabPanel>
+        </Content>
+    </Tabs>
 </Div>

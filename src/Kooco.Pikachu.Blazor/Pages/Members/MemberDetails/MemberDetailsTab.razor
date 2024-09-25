@@ -1,50 +1,55 @@
 ﻿@using Kooco.Pikachu.Members
 @using Kooco.Pikachu.UserAddresses
+@using Microsoft.Extensions.Logging
+@using Serilog
 @using Volo.Abp.AspNetCore.Components.Notifications
 @inherits PikachuComponentBase
 @inject IMemberAppService MemberAppService
 
 <Row>
     <Column ColumnSize="ColumnSize.Is4">
-        <Card>
-            <CardBody Class="px-0">
-                <h4 class="px-3">@L["BasicDetails"]</h4>
-                <Div Class="px-3">
-                    <h6 class="m-0">@L["LoginMethod"]</h6>
-                    <Span>Account and password</Span>
-                </Div>
-                <Divider Class="my-2"></Divider>
-                <Div Class="px-3">
-                    <h6 class="m-0">@L["Email"]</h6>
-                    <Span>@Member?.Email</Span>
-                </Div>
-                <Divider Class="my-2"></Divider>
-                <Div Class="px-3">
-                    <h6 class="m-0">@L["Phone"]</h6>
-                    <Span>@Member?.PhoneNumber</Span>
-                </Div>
-                <Divider Class="my-2"></Divider>
-                <Div Class="px-3">
-                    <h6 class="m-0">@L["Birthday"]</h6>
-                    <Span>@Member.Birthday?.ToString("yyyy/MM/dd")</Span>
-                </Div>
-                <Divider Class="my-2"></Divider>
-                <Div Class="px-3">
-                    <h6 class="m-0">@L["PostalCode"]</h6>
-                    <Span>@(DefaultAddress?.PostalCode ?? "N/A")</Span>
-                </Div>
-                <Divider Class="my-2"></Divider>
-                <Div Class="px-3">
-                    <h6 class="m-0">@L["City"]</h6>
-                    <Span>@(DefaultAddress?.City ?? "N/A")</Span>
-                </Div>
-                <Divider Class="my-2"></Divider>
-                <Div Class="px-3">
-                    <h6 class="m-0">@L["Address"]</h6>
-                    <Span>@(DefaultAddress?.Address ?? "N/A")</Span>
-                </Div>
-            </CardBody>
-        </Card>
+        @if (Member != null)
+        {
+            <Card>
+                <CardBody Class="px-0">
+                    <h4 class="px-3">@L["BasicDetails"]</h4>
+                    <Div Class="px-3">
+                        <h6 class="m-0">@L["LoginMethod"]</h6>
+                        <Span>Account and password</Span>
+                    </Div>
+                    <Divider Class="my-2"></Divider>
+                    <Div Class="px-3">
+                        <h6 class="m-0">@L["Email"]</h6>
+                        <Span>@Member?.Email</Span>
+                    </Div>
+                    <Divider Class="my-2"></Divider>
+                    <Div Class="px-3">
+                        <h6 class="m-0">@L["Phone"]</h6>
+                        <Span>@Member?.PhoneNumber</Span>
+                    </Div>
+                    <Divider Class="my-2"></Divider>
+                    <Div Class="px-3">
+                        <h6 class="m-0">@L["Birthday"]</h6>
+                        <Span>@Member?.Birthday?.ToString("yyyy/MM/dd")</Span>
+                    </Div>
+                    <Divider Class="my-2"></Divider>
+                    <Div Class="px-3">
+                        <h6 class="m-0">@L["PostalCode"]</h6>
+                        <Span>@(DefaultAddress?.PostalCode ?? "N/A")</Span>
+                    </Div>
+                    <Divider Class="my-2"></Divider>
+                    <Div Class="px-3">
+                        <h6 class="m-0">@L["City"]</h6>
+                        <Span>@(DefaultAddress?.City ?? "N/A")</Span>
+                    </Div>
+                    <Divider Class="my-2"></Divider>
+                    <Div Class="px-3">
+                        <h6 class="m-0">@L["Address"]</h6>
+                        <Span>@(DefaultAddress?.Address ?? "N/A")</Span>
+                    </Div>
+                </CardBody>
+            </Card>
+        }
     </Column>
     <Column ColumnSize="ColumnSize.Is8">
         <Card>
@@ -52,13 +57,13 @@
                 <h4>@L["Payment"]</h4>
                 <Row Class="py-3" HorizontalGutter="10">
                     <Column ColumnSize="ColumnSize.Is4">
-                        <PikachuCard Type="success" Title="@L["Paid"]" Amount="OrderStats.PaidAmount" Count="OrderStats.PaidCount"></PikachuCard>
+                        <PikachuCard Type="success" Title="@L["Paid"]" Amount="OrderStats?.PaidAmount" Count="OrderStats?.PaidCount"></PikachuCard>
                     </Column>
                     <Column ColumnSize="ColumnSize.Is4">
-                        <PikachuCard Type="warning" Title="@L["Unpaid/Due"]" Amount="OrderStats.UnpaidAmount" Count="OrderStats.UnpaidCount"></PikachuCard>
+                        <PikachuCard Type="warning" Title="@L["Unpaid/Due"]" Amount="OrderStats?.UnpaidAmount" Count="OrderStats?.UnpaidCount"></PikachuCard>
                     </Column>
                     <Column ColumnSize="ColumnSize.Is4">
-                        <PikachuCard Type="danger" Title="@L["Refunded"]" Amount="OrderStats.RefundAmount" Count="OrderStats.RefundCount"></PikachuCard>
+                        <PikachuCard Type="danger" Title="@L["Refunded"]" Amount="OrderStats?.RefundAmount" Count="OrderStats?.RefundCount"></PikachuCard>
                     </Column>
                 </Row>
             </CardBody>
@@ -78,69 +83,3 @@
         }
     </Column>
 </Row>
-
-@code {
-    [Parameter]
-    public MemberDto? Member { get; set; }
-
-    [Parameter]
-    public EventCallback<MemberDto> OnDelete { get; set; }
-
-    [Parameter]
-    public bool CanDeleteMember { get; set; }
-
-    [Parameter]
-    public MemberOrderStatsDto? OrderStats { get; set; }
-
-    bool IsDeleting = false;
-
-    private UserAddressDto? DefaultAddress { get; set; }
-
-    public MemberDetailsTab()
-    {
-        OrderStats = new();
-    }
-
-    protected async override Task OnAfterRenderAsync(bool firstLoad)
-    {
-        if (firstLoad)
-        {
-            try
-            {
-                DefaultAddress = await MemberAppService.GetDefaultAddressAsync(Member.Id);
-                await InvokeAsync(StateHasChanged);
-            }
-            catch (Exception ex)
-            {
-                await HandleErrorAsync(ex);
-            }
-        }
-        await base.OnAfterRenderAsync(firstLoad);
-    }
-
-    private async Task DeleteAsync()
-    {
-        try
-        {
-            if (!CanDeleteMember) return;
-
-            var confirmation = await Message.Confirm(L["AreYouSureToDeleteThisMember"]);
-            if (confirmation)
-            {
-                IsDeleting = true;
-                StateHasChanged();
-                await MemberAppService.DeleteAsync(Member.Id);
-                await OnDelete.InvokeAsync(Member);
-            }
-        }
-        catch (Exception ex)
-        {
-            await HandleErrorAsync(ex);
-        }
-        finally
-        {
-            IsDeleting = false;
-            StateHasChanged();
-        }
-    }
-}
