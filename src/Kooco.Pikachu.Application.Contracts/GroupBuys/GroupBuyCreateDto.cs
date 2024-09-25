@@ -205,6 +205,10 @@ namespace Kooco.Pikachu.GroupBuys
         public string? DeliveredByStoreDeliveryTime { get; set; }
         public TaxType TaxType { get; set; }
         public ProductType? ProductType { get; set; }
+        public string? FacebookLink { get; set; }
+        public string? InstagramLink { get; set; }
+        public string? LINELink { get; set; }
+
         public GroupBuyCreateDto()
         {
             ShippingMethodList = new List<string>();
