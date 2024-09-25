@@ -672,7 +672,7 @@
     "To": "To",
 
     "NewAddOnProducts": "New Add-On Products",
-    
+
     "AddOnProduct": "Add-On Product",
     "SelectProduct": "Select a Product",
     "AddOnProductAmount": "Add-On Product Amount",
@@ -686,7 +686,7 @@
     "Displayproduct'soriginalprice": "Display product's original price",
     "Displayproduct'sgroupbuyprice": "Display product's groupbuy price",
     "EventPeriod": "Event Period",
-    
+
     "AddOnSettings": "Add-On Settings",
     "Conditions": "Conditions",
     "Nominimumspendingrequirement": "No minimum spending requirement",
@@ -695,7 +695,10 @@
     "Groupbuys": "Groupbuys",
     "AllGroupBuys": "All GroupBuys",
     "SpecificGroupBuys": "Specific GroupBuys",
-    "SelectaGroupBuys": "Select a GroupBuys"
+    "SelectaGroupBuys": "Select a GroupBuys",
+
+    "DiscountCodes": "Discount Codes",
+    "Permission:DiscountCodes": "Discount Codes"
 
   }
 }

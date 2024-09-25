@@ -179,6 +179,14 @@ new ApplicationMenuItem(
    url: "/add-on-products",
    requiredPermissionName: PikachuPermissions.AddOnProducts.Default)
    );
+
+        promotions.AddItem(new ApplicationMenuItem(
+   name: "DiscountCodes",
+
+   displayName: l["DiscountCodes"],
+   url: "/discount-code",
+   requiredPermissionName: PikachuPermissions.DiscountCodes.Default)
+   );
         context.Menu.AddItem(promotions);
 
         var paymentManagement = new ApplicationMenuItem(
