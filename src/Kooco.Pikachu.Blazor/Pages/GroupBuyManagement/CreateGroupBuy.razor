@@ -818,6 +818,59 @@
         <Divider></Divider>
         <div class="row">
             <div class="col-2"><label>@L["AddModule"]</label></div>
+            <div class="col-2 d-flex gap-2">
+                @if (CollapseItem.Count < 20)
+                {
+                    <Dropdown>
+                        <DropdownToggle Color="Color.Primary">
+                            @L["SelectTemplate"]
+                        </DropdownToggle>
+                        <DropdownMenu>
+                            <DropdownItem Clicked='@(() => SelectTemplate(GroupBuyTemplateType.PikachuOne))'>
+                                @L["PikachuOne"]
+                            </DropdownItem>
+                            <DropdownItem Clicked='@(() => SelectTemplate(GroupBuyTemplateType.PikachuTwo))'>
+                                @L["PikachuTwo"]
+                            </DropdownItem>
+                        </DropdownMenu>
+                    </Dropdown>
+                    @if (SelectedTemplate is GroupBuyTemplateType.PikachuOne)
+                    {
+                        <Dropdown Disabled=IsSelectedModule>
+                            <DropdownToggle Color="Color.Primary">
+                                @L["SelectModule"]
+                            </DropdownToggle>
+                            <DropdownMenu>
+                                @foreach (GroupBuyModuleType module in GetPikachuOneList())
+                                {
+                                    <DropdownItem Clicked='@(() => AddProductItem(module))'>
+                                        @L[module.ToString()]
+                                    </DropdownItem>
+                                }
+                            </DropdownMenu>
+                        </Dropdown>
+                    }
+                    else if (SelectedTemplate is GroupBuyTemplateType.PikachuTwo)
+                    {
+                        <Dropdown Disabled=IsSelectedModule>
+                            <DropdownToggle Color="Color.Primary">
+                                @L["SelectModule"]
+                            </DropdownToggle>
+                            <DropdownMenu>
+                                @foreach (GroupBuyModuleType module in GetPikachuTwoList())
+                                {
+                                    <DropdownItem Clicked='@(() => AddProductItem(module))'>
+                                        @L[module.ToString()]
+                                    </DropdownItem>
+                                }
+                            </DropdownMenu>
+                        </Dropdown>
+                    }
+                }
+            </div>
+        </div>
+        @* <div class="row">
+            <div class="col-2"><label>@L["AddModule"]</label></div>
             <div class="col-10">
                 @if (CollapseItem.Count < 20)
                 {
@@ -836,7 +889,7 @@
                     </Dropdown>
                 }
             </div>
-        </div>
+        </div> *@
         <div ondragover="event.preventDefault();">
             @foreach (var module in CollapseItem)
             {
@@ -848,6 +901,19 @@
                                     <AccordionToggle>
                                         <i class="fa fa-trash text-danger me-2" @onclick="@(()=>RemoveCollapseItem(@module.Index))"></i>
                                         @L[module.GroupBuyModuleType.ToString()]
+
+                                        @if (module.IsWarnedForInCompatible)
+                                        {
+                                            <Tooltip Text="@($"Incompatible Module for {L[SelectedTemplate.ToString()]}")" 
+                                                     TriggerTargetId="tooltip-custom-target" 
+                                                     Inline
+                                                     Style="margin-left: 5px;">
+                                                <Badge Color="Color.Warning">
+                                                    <i class="fas fa-circle-info" />
+                                                </Badge>
+                                            </Tooltip>
+                                        }
+
                                     </AccordionToggle>
                                 </CollapseHeader>
                                 <CollapseBody>

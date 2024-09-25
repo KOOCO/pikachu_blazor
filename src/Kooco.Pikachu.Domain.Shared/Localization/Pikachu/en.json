@@ -1,6 +1,10 @@
 {
   "culture": "en",
   "texts": {
+    "Pikachu:InCompatibleModule": "Cannot save due to incompatible modules.",
+    "PikachuOne": "Pikachu 1.0",
+    "PikachuTwo": "Pikachu 2.0",
+    "SelectTemplate": "Select Template",
     "TCatDeliveryNormal": "t-Cat Normal",
     "TCatDeliveryFreeze": "t-Cat Freeze",
     "TCatDeliveryFrozen": "t-Cat Frozen",
@@ -725,8 +729,8 @@
     "AllMethods": "All Methods",
     "SpecificMethods": "Specific Methods",
     "SelectaShippings": "Select a Shippings",
-    "DiscountAmount": "Discount Amount",
-   
+    "DiscountAmount": "Discount Amount"
+
 
   }
 }

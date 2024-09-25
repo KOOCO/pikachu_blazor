@@ -83,6 +83,10 @@ public partial class CreateGroupBuy
     public bool IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery = false;
 
     public bool IsUnableToSpecifyDuringPeakPeriodsForDeliveredByStore = false;
+
+    public GroupBuyTemplateType SelectedTemplate;
+
+    public bool IsSelectedModule = true;
     #endregion
 
     #region Constructor
@@ -114,6 +118,43 @@ public partial class CreateGroupBuy
         SetItemList = await _setItemAppService.GetItemsLookupAsync();
         ItemsList = await _itemAppService.GetItemsLookupAsync();
         ItemsList.AddRange(SetItemList);
+    }
+
+    private void SelectTemplate(GroupBuyTemplateType template)
+    {
+        SelectedTemplate = template;
+
+        IsSelectedModule = false;
+
+        List<GroupBuyModuleType> templateModules = new();
+
+        if (SelectedTemplate is GroupBuyTemplateType.PikachuOne) templateModules = [.. GetPikachuOneList()];
+
+        else if (SelectedTemplate is GroupBuyTemplateType.PikachuTwo) templateModules = [.. GetPikachuTwoList()];
+
+        if (templateModules is { Count: > 0 })
+        {
+            foreach (CollapseItem module in CollapseItem)
+            {
+                if (templateModules.Contains(module.GroupBuyModuleType)) module.IsWarnedForInCompatible = false;
+
+                else module.IsWarnedForInCompatible = true;
+            }
+        }
+    }
+
+    public IEnumerable<GroupBuyModuleType> GetPikachuOneList()
+    {
+        return Enum.GetValues(typeof(GroupBuyModuleType))
+                   .Cast<GroupBuyModuleType>()
+                   .Where(m => m >= GroupBuyModuleType.ProductDescriptionModule && m <= GroupBuyModuleType.IndexAnchor);
+    }
+
+    public IEnumerable<GroupBuyModuleType> GetPikachuTwoList()
+    {
+        return Enum.GetValues(typeof(GroupBuyModuleType))
+                   .Cast<GroupBuyModuleType>()
+                   .Where(m => m == GroupBuyModuleType.ProductGroupModule || m == GroupBuyModuleType.IndexAnchor);
     }
 
     public void OnProductTypeChange(ChangeEventArgs e)
@@ -404,7 +445,24 @@ public partial class CreateGroupBuy
             };
         }
         CollapseItem.Add(collapseItem);
+
+        List<GroupBuyModuleType> templateModules = new();
+
+        if (SelectedTemplate is GroupBuyTemplateType.PikachuOne) templateModules = [.. GetPikachuOneList()];
+
+        else if (SelectedTemplate is GroupBuyTemplateType.PikachuTwo) templateModules = [.. GetPikachuTwoList()];
+
+        if (templateModules is { Count: > 0 }) 
+        {
+            foreach(CollapseItem module in CollapseItem)
+            {
+                if (templateModules.Contains(module.GroupBuyModuleType)) module.IsWarnedForInCompatible = false;
+
+                else module.IsWarnedForInCompatible = true;
+            }
+        }
     }
+
     void SelfPickupDeliveryTimeCheckedChange(string method, ChangeEventArgs e)
     {
         if (method is PikachuResource.UnableToSpecifyDuringPeakPeriods)
@@ -627,6 +685,14 @@ public partial class CreateGroupBuy
         try
         {
             await Loading.Show();
+
+            if (CollapseItem.Any(a => a.IsWarnedForInCompatible))
+            {
+                await _uiMessageService.Warn(L[PikachuDomainErrorCodes.InCompatibleModule]);
+                await Loading.Hide();
+                return;
+            }
+
             if (CreateGroupBuyDto.GroupBuyName.IsNullOrWhiteSpace())
             {
                 await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyNameCannotBeNull]);
@@ -909,6 +975,7 @@ public class CollapseItem
     public int SortOrder { get; set; }
     public List<ItemWithItemTypeDto> Selected { get; set; }
     public bool IsModified = false;
+    public bool IsWarnedForInCompatible = false;
     public CollapseItem()
     {
         Selected = [];
