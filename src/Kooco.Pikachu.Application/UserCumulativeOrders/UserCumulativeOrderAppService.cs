@@ -50,7 +50,7 @@ public class UserCumulativeOrderAppService(UserCumulativeOrderManager userCumula
         return new PagedResultDto<UserCumulativeOrderDto>
         {
             TotalCount = totalCount,
-            Items = ObjectMapper.Map<List<UserCumulativeOrder>, List<UserCumulativeOrderDto>>(input)
+            Items = ObjectMapper.Map<List<UserCumulativeOrder>, List<UserCumulativeOrderDto>>(items)
         };
     }
 
