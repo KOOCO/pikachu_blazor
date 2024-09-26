@@ -4,6 +4,8 @@ using Kooco.Pikachu.Members;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.UserAddresses;
 using Kooco.Pikachu.UserCumulativeCredits;
+using Kooco.Pikachu.UserCumulativeFinancials;
+using Kooco.Pikachu.UserCumulativeOrders;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -56,9 +58,21 @@ public class MemberController(IMemberAppService memberAppService) : PikachuContr
     }
 
     [HttpGet("{id}/cumulative_credits")]
-    public Task<UserCumulativeCreditDto> GetMemberCumulativeCreditAsync(Guid id)
+    public Task<UserCumulativeCreditDto> GetMemberCumulativeCreditsAsync(Guid id)
     {
-        return memberAppService.GetMemberCumulativeCreditAsync(id);
+        return memberAppService.GetMemberCumulativeCreditsAsync(id);
+    }
+
+    [HttpGet("{id}/cumulative-orders")]
+    public Task<UserCumulativeOrderDto> GetMemberCumulativeOrdersAsync(Guid id)
+    {
+        return memberAppService.GetMemberCumulativeOrdersAsync(id);
+    }
+
+    [HttpGet("{id}/cumulative-financials")]
+    public Task<UserCumulativeFinancialDto> GetMemberCumulativeFinancialsAsync(Guid id)
+    {
+        return memberAppService.GetMemberCumulativeFinancialsAsync(id);
     }
 
     [HttpGet("member-orders")]
@@ -67,11 +81,11 @@ public class MemberController(IMemberAppService memberAppService) : PikachuContr
         return memberAppService.GetMemberOrdersAsync(input);
     }
 
-    [HttpGet("member-order-stats/{id}")]
-    public Task<MemberOrderStatsDto> GetMemberOrderStatsAsync(Guid id)
-    {
-        return memberAppService.GetMemberOrderStatsAsync(id);
-    }
+    //[HttpGet("member-order-stats/{id}")]
+    //public Task<MemberCumulativeStatsDto> GetMemberCumulativeStatsAsync(Guid id)
+    //{
+    //    return memberAppService.GetMemberCumulativeStatsAsync(id);
+    //}
 
     [HttpPut("{id}")]
     public Task<MemberDto> UpdateAsync(Guid id, UpdateMemberDto input)

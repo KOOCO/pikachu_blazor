@@ -10,7 +10,7 @@ namespace Kooco.Pikachu.Members;
 public interface IMemberRepository : IIdentityUserRepository, IRepository<IdentityUser, Guid>
 {
     Task<long> GetCountAsync(string? filter);
-    Task<List<IdentityUser>> GetListAsync(int skipCount, int maxResultCount, string sorting, string? filter);
+    Task<List<MemberModel>> GetListAsync(int skipCount, int maxResultCount, string sorting, string? filter);
 
     Task<long> GetMemberCreditRecordCountAsync(string? filter, DateTime? usageTimeFrom, DateTime? usageTimeTo,
         DateTime? expiryTimeFrom, DateTime? expiryTimeTo, int? minRemainingCredits, int? maxRemainingCredits,

@@ -5,6 +5,8 @@ using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.UserAddresses;
 using Kooco.Pikachu.UserCumulativeCredits;
+using Kooco.Pikachu.UserCumulativeFinancials;
+using Kooco.Pikachu.UserCumulativeOrders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -14,7 +16,6 @@ using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
-using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
 
@@ -22,10 +23,10 @@ namespace Kooco.Pikachu.Members;
 
 [RemoteService(IsEnabled = false)]
 [Authorize(PikachuPermissions.Members.Default)]
-public class MemberAppService(IMemberRepository memberRepository,
-    IdentityUserManager identityUserManager, UserAddressManager userAddressManager,
-    IOrderRepository orderRepository, IGroupBuyRepository groupBuyRepository,
-    UserCumulativeCreditManager userCumulativeCreditManager) : PikachuAppService, IMemberAppService
+public class MemberAppService(IMemberRepository memberRepository, IdentityUserManager identityUserManager,
+    UserAddressManager userAddressManager, IOrderRepository orderRepository, IGroupBuyRepository groupBuyRepository,
+    UserCumulativeCreditManager userCumulativeCreditManager, UserCumulativeOrderManager userCumulativeOrderManager,
+    UserCumulativeFinancialManager userCumulativeFinancialManager) : PikachuAppService, IMemberAppService
 {
     public async Task<MemberDto> GetAsync(Guid id)
     {
@@ -40,22 +41,12 @@ public class MemberAppService(IMemberRepository memberRepository,
             input.Sorting = nameof(IdentityUser.UserName);
         }
 
-        var random = new Random();
-        var amount = random.Next(100, 1000);
+        var totalCount = await memberRepository.GetCountAsync(input.Filter);
+        var items = await memberRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter);
         return new PagedResultDto<MemberDto>
         {
-            TotalCount = await memberRepository.GetCountAsync(input.Filter),
-            Items = (await memberRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter))
-                    .Select(x => new MemberDto
-                    {
-                        Id = x.Id,
-                        UserName = x.UserName,
-                        Name = x.Name,
-                        Email = x.Email,
-                        PhoneNumber = x.PhoneNumber,
-                        Orders = random.Next(0, 15),
-                        Spent = random.Next(0, 15) * amount
-                    }).ToList()
+            TotalCount = totalCount,
+            Items = ObjectMapper.Map<List<MemberModel>, List<MemberDto>>(items)
         };
     }
 
@@ -94,7 +85,7 @@ public class MemberAppService(IMemberRepository memberRepository,
         return ObjectMapper.Map<UserAddress?, UserAddressDto?>(defaultAddress);
     }
 
-    public async Task<MemberOrderStatsDto> GetMemberOrderStatsAsync(Guid id)
+    public async Task<MemberCumulativeStatsDto> GetMemberCumulativeStatsAsync(Guid id)
     {
         var queryable = (await orderRepository.GetQueryableAsync()).Where(x => x.UserId == id);
 
@@ -106,7 +97,7 @@ public class MemberAppService(IMemberRepository memberRepository,
         var exchangeQueryable = queryable.Where(x => x.OrderStatus == OrderStatus.Exchange && x.ExchangeTime.HasValue);
         var returnedQueryable = queryable.Where(x => x.OrderStatus == OrderStatus.Returned && x.ReturnStatus != OrderReturnStatus.Pending && x.ReturnStatus != OrderReturnStatus.Reject);
 
-        return new MemberOrderStatsDto
+        return new MemberCumulativeStatsDto
         {
             PaidCount = paidQueryable.Count(),
             PaidAmount = paidQueryable.Sum(paid => paid.TotalAmount),
@@ -175,10 +166,22 @@ public class MemberAppService(IMemberRepository memberRepository,
         };
     }
 
-    public async Task<UserCumulativeCreditDto> GetMemberCumulativeCreditAsync(Guid id)
+    public async Task<UserCumulativeCreditDto> GetMemberCumulativeCreditsAsync(Guid id)
     {
         var userCumulativeCredit = await userCumulativeCreditManager.FirstOrDefaultByUserIdAsync(id);
         return ObjectMapper.Map<UserCumulativeCredit, UserCumulativeCreditDto>(userCumulativeCredit);
+    }
+
+    public async Task<UserCumulativeOrderDto> GetMemberCumulativeOrdersAsync(Guid id)
+    {
+        var userCumulativeOrder = await userCumulativeOrderManager.FirstOrDefaultByUserIdAsync(id);
+        return ObjectMapper.Map<UserCumulativeOrder, UserCumulativeOrderDto>(userCumulativeOrder);
+    }
+
+    public async Task<UserCumulativeFinancialDto> GetMemberCumulativeFinancialsAsync(Guid id)
+    {
+        var userCumulativeFinancial = await userCumulativeFinancialManager.FirstOrDefaultByUserIdAsync(id);
+        return ObjectMapper.Map<UserCumulativeFinancial, UserCumulativeFinancialDto>(userCumulativeFinancial);
     }
 
     public async Task<List<KeyValueDto>> GetGroupBuyLookupAsync()

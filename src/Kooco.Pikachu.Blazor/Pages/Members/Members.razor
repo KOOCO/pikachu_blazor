@@ -71,17 +71,17 @@
                                 Caption="@L["Phone"]">
                 </DataGridColumn>
                 <DataGridColumn TItem="MemberDto"
-                                Field="@nameof(MemberDto.Orders)"
+                                Field="@nameof(MemberDto.TotalOrders)"
                                 Caption="@L["Orders"]">
                     <DisplayTemplate>
-                        @context.Orders.ToString("N0")
+                        @context.TotalOrders.ToString("N0")
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="MemberDto"
-                                Field="@nameof(MemberDto.Spent)"
+                                Field="@nameof(MemberDto.TotalSpent)"
                                 Caption="@L["Spent"]">
                     <DisplayTemplate>
-                        $ @context.Spent.ToString("N2")
+                        $ @context.TotalSpent.ToString("N2")
                     </DisplayTemplate>
                 </DataGridColumn>
             </DataGridColumns>

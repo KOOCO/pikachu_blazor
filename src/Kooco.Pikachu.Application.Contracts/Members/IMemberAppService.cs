@@ -2,6 +2,8 @@
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.UserAddresses;
 using Kooco.Pikachu.UserCumulativeCredits;
+using Kooco.Pikachu.UserCumulativeFinancials;
+using Kooco.Pikachu.UserCumulativeOrders;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -19,7 +21,9 @@ public interface IMemberAppService : IApplicationService
     Task<UserAddressDto?> GetDefaultAddressAsync(Guid id);
     Task<PagedResultDto<OrderDto>> GetMemberOrdersAsync(GetOrderListDto input);
     Task<List<KeyValueDto>> GetGroupBuyLookupAsync();
-    Task<MemberOrderStatsDto> GetMemberOrderStatsAsync(Guid id);
+    //Task<MemberCumulativeStatsDto> GetMemberCumulativeStatsAsync(Guid id);
     Task<PagedResultDto<MemberCreditRecordDto>> GetMemberCreditRecordAsync(Guid id, GetMemberCreditRecordListDto input);
-    Task<UserCumulativeCreditDto> GetMemberCumulativeCreditAsync(Guid id);
+    Task<UserCumulativeCreditDto> GetMemberCumulativeCreditsAsync(Guid id);
+    Task<UserCumulativeOrderDto> GetMemberCumulativeOrdersAsync(Guid id);
+    Task<UserCumulativeFinancialDto> GetMemberCumulativeFinancialsAsync(Guid id);
 }

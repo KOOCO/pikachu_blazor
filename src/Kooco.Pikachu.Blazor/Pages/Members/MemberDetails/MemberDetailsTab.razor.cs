@@ -1,7 +1,7 @@
 using Kooco.Pikachu.Members;
 using Kooco.Pikachu.UserAddresses;
+using Kooco.Pikachu.UserCumulativeFinancials;
 using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 
@@ -18,31 +18,22 @@ public partial class MemberDetailsTab
     [Parameter]
     public bool CanDeleteMember { get; set; }
 
-    [Parameter]
-    public MemberOrderStatsDto? OrderStats { get; set; }
+    private UserCumulativeFinancialDto? CumulativeFinancials { get; set; }
 
     bool IsDeleting = false;
 
     private UserAddressDto? DefaultAddress { get; set; }
 
-    protected async override Task OnInitializedAsync()
+    protected async override Task OnParametersSetAsync()
     {
         try
         {
-            if (Member == null)
+            if (Member != null)
             {
-                Logger.Log(LogLevel.Debug, "Member is null in OnAfterRenderAsync");
-                return;
+                DefaultAddress = await MemberAppService.GetDefaultAddressAsync(Member.Id);
+                CumulativeFinancials = await MemberAppService.GetMemberCumulativeFinancialsAsync(Member.Id);
+                StateHasChanged();
             }
-
-            DefaultAddress = await MemberAppService.GetDefaultAddressAsync(Member.Id);
-
-            if (DefaultAddress == null)
-            {
-                Logger.Log(LogLevel.Debug, "DefaultAddress is null after API call");
-            }
-
-            //StateHasChanged();
         }
         catch (Exception ex)
         {

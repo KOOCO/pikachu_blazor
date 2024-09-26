@@ -3,6 +3,7 @@ using Blazorise.DataGrid;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Members;
 using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.UserCumulativeOrders;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
@@ -16,10 +17,7 @@ public partial class MemberOrdersTab
 {
     [Parameter]
     public MemberDto? Member { get; set; }
-
-    [Parameter]
-    public MemberOrderStatsDto? OrderStats { get; set; }
-
+    private UserCumulativeOrderDto? CumulativeOrders { get; set; }
     private List<KeyValueDto> GroupBuysLookup { get; set; }
     private IReadOnlyList<OrderDto> MemberOrders { get; set; }
     private int PageSize { get; } = LimitedResultRequestDto.DefaultMaxResultCount;
@@ -35,7 +33,6 @@ public partial class MemberOrdersTab
         MemberOrders = [];
         GroupBuysLookup = [];
         OrderFilters = new();
-        OrderStats = new();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -53,6 +50,21 @@ public partial class MemberOrdersTab
             }
         }
         await base.OnAfterRenderAsync(firstRender);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            if (Member != null)
+            {
+                CumulativeOrders = await MemberAppService.GetMemberCumulativeOrdersAsync(Member.Id) ?? new();
+            }
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
     }
 
     private async Task GetMemberOrdersAsync()

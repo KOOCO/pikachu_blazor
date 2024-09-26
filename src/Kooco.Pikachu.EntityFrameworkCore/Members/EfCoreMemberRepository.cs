@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using Volo.Abp.Data;
 using Volo.Abp.EntityFrameworkCore;
-using Volo.Abp.Identity;
 using Volo.Abp.Identity.EntityFrameworkCore;
 
 namespace Kooco.Pikachu.Members;
@@ -28,15 +28,38 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
         return queryable.Count();
     }
 
-    public async Task<List<IdentityUser>> GetListAsync(int skipCount, int maxResultCount, string sorting, string? filter)
+    public async Task<List<MemberModel>> GetListAsync(int skipCount, int maxResultCount, string sorting, string? filter)
     {
-        var queryable = await GetQueryableAsync();
-        queryable = queryable
-            .WhereIf(!string.IsNullOrWhiteSpace(filter), q => q.UserName.Contains(filter)
-            || q.PhoneNumber.Contains(filter) || q.Email.Contains(filter));
-        return await queryable.OrderBy(sorting).PageBy(skipCount, maxResultCount).ToListAsync();
-    }
+        var dbContext = await GetPikachuDbContextAsync();
+        var query = from user in dbContext.Users
+                    join cumulativeOrder in dbContext.UserCumulativeOrders on user.Id equals cumulativeOrder.UserId into ordersGroup
+                    from cumulativeOrder in ordersGroup.DefaultIfEmpty() // Left join to allow nulls
+                    join cumulativeFinancial in dbContext.UserCumulativeFinancials on user.Id equals cumulativeFinancial.UserId into financialsGroup
+                    from cumulativeFinancial in financialsGroup.DefaultIfEmpty() // Left join to allow nulls
+                    where string.IsNullOrWhiteSpace(filter)
+                          || user.UserName.Contains(filter)
+                          || user.PhoneNumber.Contains(filter)
+                          || user.Email.Contains(filter)
+                    select new MemberModel
+                    {
+                        Id = user.Id,
+                        UserName = user.UserName,
+                        Name = user.Name,
+                        PhoneNumber = user.PhoneNumber,
+                        Email = user.Email,
+                        Birthday = (DateTime?)user.GetProperty(Constant.Birthday, null),
+                        TotalOrders = cumulativeOrder != null ? cumulativeOrder.TotalOrders : 0,
+                        TotalSpent = cumulativeFinancial != null ? cumulativeFinancial.TotalSpent : 0
+                    };
 
+
+        var members = await query.OrderBy(sorting)
+                                 .Skip(skipCount)
+                                 .Take(maxResultCount)
+                                 .ToListAsync();
+
+        return members;
+    }
 
     public async Task<long> GetMemberCreditRecordCountAsync(string? filter, DateTime? usageTimeFrom, DateTime? usageTimeTo,
         DateTime? expirationTimeFrom, DateTime? expirationTimeTo, int? minRemainingCredits, int? maxRemainingCredits,

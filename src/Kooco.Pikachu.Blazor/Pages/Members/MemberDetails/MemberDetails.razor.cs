@@ -12,18 +12,12 @@ public partial class MemberDetails
     [Parameter]
     public Guid Id { get; set; }
     private MemberDto Member { get; set; }
-    private MemberOrderStatsDto OrderStats { get; set; }
+    //private MemberCumulativeStatsDto CumulativeFinancials { get; set; }
 
     string SelectedTab = "Details";
 
     private bool CanEditMember { get; set; }
     private bool CanDeleteMember { get; set; }
-
-    public MemberDetails()
-    {
-        Member = new();
-        OrderStats = new();
-    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -45,7 +39,7 @@ public partial class MemberDetails
         {
             try
             {
-                OrderStats = await MemberAppService.GetMemberOrderStatsAsync(Id);
+                //CumulativeFinancials = await MemberAppService.GetMemberCumulativeStatsAsync(Id);
             }
             catch (Exception ex)
             {

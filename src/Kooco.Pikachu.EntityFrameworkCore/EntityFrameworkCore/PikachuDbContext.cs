@@ -35,6 +35,7 @@ using Kooco.Pikachu.UserAddresses;
 using Kooco.Pikachu.UserShoppingCredits;
 using Kooco.Pikachu.UserCumulativeCredits;
 using Kooco.Pikachu.UserCumulativeOrders;
+using Kooco.Pikachu.UserCumulativeFinancials;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -103,6 +104,7 @@ public class PikachuDbContext :
     public DbSet<UserShoppingCredit> UserShoppingCredits { get; set; }
     public DbSet<UserCumulativeCredit> UserCumulativeCredits { get; set; }
     public DbSet<UserCumulativeOrder> UserCumulativeOrders { get; set; }
+    public DbSet<UserCumulativeFinancial> UserCumulativeFinancials { get; set; }
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
     {
@@ -324,5 +326,12 @@ public class PikachuDbContext :
             b.ToTable(PikachuConsts.DbTablePrefix + "UserCumulativeOrders", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
         });
+
+        builder.Entity<UserCumulativeFinancial>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "UserCumulativeFinancials", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+        });
     }
 }
+

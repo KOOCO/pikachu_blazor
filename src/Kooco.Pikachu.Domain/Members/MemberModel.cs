@@ -1,8 +1,9 @@
 ﻿using System;
+using Volo.Abp.Identity;
 
 namespace Kooco.Pikachu.Members;
 
-public class MemberDto
+public class MemberModel
 {
     public Guid Id { get; set; }
     public string UserName { get; set; }

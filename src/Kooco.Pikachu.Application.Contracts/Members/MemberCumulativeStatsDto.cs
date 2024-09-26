@@ -1,6 +1,6 @@
 ﻿namespace Kooco.Pikachu.Members;
 
-public class MemberOrderStatsDto
+public class MemberCumulativeStatsDto
 {
     public int PaidCount { get; set; }
     public decimal PaidAmount { get; set; }

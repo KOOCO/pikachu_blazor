@@ -10,13 +10,13 @@
         <h4>@L["Orders"]</h4>
         <Row HorizontalGutter="10">
             <Column ColumnSize="ColumnSize.Is4">
-                <PikachuCard Type="success" Title="@L["Open"]" Amount="OrderStats.OpenAmount" Count="OrderStats.OpenCount"></PikachuCard>
+                <PikachuCard Type="success" Title="@L["Open"]" Amount="CumulativeOrders?.TotalOrders"></PikachuCard>
             </Column>
             <Column ColumnSize="ColumnSize.Is4">
-                <PikachuCard Type="warning" Title="@L["Exchange"]" Amount="OrderStats.ExchangeAmount" Count="OrderStats.ExchangeCount"></PikachuCard>
+                <PikachuCard Type="warning" Title="@L["Exchange"]" Amount="CumulativeOrders?.TotalExchanges"></PikachuCard>
             </Column>
             <Column ColumnSize="ColumnSize.Is4">
-                <PikachuCard Type="danger" Title="@L["Return"]" Amount="OrderStats.ReturnAmount" Count="OrderStats.ReturnCount"></PikachuCard>
+                <PikachuCard Type="danger" Title="@L["Return"]" Amount="CumulativeOrders?.TotalReturns"></PikachuCard>
             </Column>
         </Row>
     </CardBody>
