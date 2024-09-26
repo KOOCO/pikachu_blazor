@@ -19,8 +19,11 @@
     </Row>
 </Div>
 <Row>
-    <Column ColumnSize="ColumnSize.Is3">
-    <Column ColumnSize="ColumnSize.Is12">
+    @{
+        var columnSize = ColumnSize.Is3.OnQuadHD.Is3.OnFullHD.Is3.OnDesktop.Is3.OnTablet.Is12.OnMobile.Is12;
+    }
+    <Column ColumnSize="@columnSize">
+        <Column ColumnSize="ColumnSize.Is12">
        
             <Card>
             <CardHeader>
@@ -89,7 +92,7 @@
                         <h3>@L["UseSettings"]</h3>
                     </Column>
                     <Column Class="text-end" ColumnSize="ColumnSize.Is6">
-                        <Button><Icon Name="IconName.Pen" IconSize="IconSize.Large"></Icon></Button>
+                        <Button Clicked="NavigateToUseSetting"><Icon Name="IconName.Pen" IconSize="IconSize.Large"></Icon></Button>
                     </Column>
                 </Row>
             </CardHeader>
@@ -150,7 +153,10 @@
 
     </Column>
     </Column>
-      <Column ColumnSize="ColumnSize.Is9">
+    @{
+        var columnSize1 = ColumnSize.Is9.OnQuadHD.Is9.OnFullHD.Is9.OnDesktop.Is9.OnTablet.Is12.OnMobile.Is12;
+    }
+    <Column ColumnSize="@columnSize1">
     <Column ColumnSize="ColumnSize.Is12">
         <Card>
             <CardBody>

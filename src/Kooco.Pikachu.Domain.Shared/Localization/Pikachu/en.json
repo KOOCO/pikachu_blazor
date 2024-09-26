@@ -731,25 +731,43 @@
     "SelectaShippings": "Select a Shippings",
     "DiscountAmount": "Discount Amount",
 
-    
+
     "GetSettings": "Get Settings",
     "RegistrationBounsPoint": "Registration Bonus Point",
-    
+
     "BirthdayBounsPoint": "Birthday Bonus Point",
     "ShoppingCashbackPoints": "Shopping Cashback Points",
     "UseSettings": "Use Settings",
     "AllowUsage": "Allow Usage",
-    
+
     "UnifiedCalculation": "Unified Calculation",
     "UseableforGroupbuying": "Usable for Group Buying",
     "SpecificGroupbuy": "Specific Group Buy",
     "UseableforProducts": "Usable for Products",
-   
+
     "IssuedPoints": "Issued Points",
     "Today": "Today",
     "ThisWeek": "This Week",
     "ThisMonth": "This Month",
-    "RedeemedPoints": "Redeemed Points"
+    "RedeemedPoints": "Redeemed Points",
+
+
+    "DeductionMethod": "Deduction Method",
+    "UnifiedCalculation:": "Unified Calculation",
+    "StagedCalculation": "Staged Calculation",
+    "Spend": "Spend",
+    "ToReceivePoints": "To Receive Points",
+    "ApplicableItems": "Applicable Items",
+
+    "ShippingFees": "Shipping Fees",
+    "UsableScope": "Usable Scope",
+    "UsableforGroupbuying": "Usable for Group Buying",
+    "AllGroupbuys": "All Group Buys",
+    "SpecificGroupbuys": "Specific Group Buys",
+
+    "SelectaProducts": "Select Products",
+
+    "Create": "Create"
 
 
   }

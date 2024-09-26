@@ -2,5 +2,12 @@
 {
     public partial class ShoppingCredit
     {
+
+
+        void NavigateToUseSetting() {
+
+            NavigationManager.NavigateTo("/use-setting");
+        
+        }
     }
 }
