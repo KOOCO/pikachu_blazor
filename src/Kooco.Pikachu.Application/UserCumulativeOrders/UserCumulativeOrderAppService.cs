@@ -7,8 +7,8 @@ using Volo.Abp.Application.Dtos;
 
 namespace Kooco.Pikachu.UserCumulativeOrders;
 
-[RemoteService(IsEnabled = false)]
 [Authorize]
+[RemoteService(IsEnabled = false)]
 public class UserCumulativeOrderAppService(UserCumulativeOrderManager userCumulativeOrderManager,
     IUserCumulativeOrderRepository userCumulativeOrderRepository) : PikachuAppService, IUserCumulativeOrderAppService
 {

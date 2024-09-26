@@ -38,7 +38,7 @@ public class UserCumulativeCredit : FullAuditedEntity<Guid>
 
     private void SetTotalAmount(int totalAmount)
     {
-        TotalAmount = Check.Range(totalAmount, nameof(totalAmount), 0, int.MaxValue);
+        TotalAmount = Check.Range(totalAmount, nameof(TotalAmount), 0, int.MaxValue);
     }
 
     public UserCumulativeCredit ChangeTotalDeductions(int totalDeductions)
@@ -49,7 +49,7 @@ public class UserCumulativeCredit : FullAuditedEntity<Guid>
 
     private void SetTotalDeductions(int totalDeductions)
     {
-        TotalDeductions = Check.Range(totalDeductions, nameof(totalDeductions), 0, int.MaxValue);
+        TotalDeductions = Check.Range(totalDeductions, nameof(TotalDeductions), 0, int.MaxValue);
     }
 
     public UserCumulativeCredit ChangeTotalRefunds(int totalRefunds)
@@ -60,6 +60,6 @@ public class UserCumulativeCredit : FullAuditedEntity<Guid>
 
     private void SetTotalRefunds(int totalRefunds)
     {
-        TotalRefunds = Check.Range(totalRefunds, nameof(totalRefunds), 0, int.MaxValue);
+        TotalRefunds = Check.Range(totalRefunds, nameof(TotalRefunds), 0, int.MaxValue);
     }
 }

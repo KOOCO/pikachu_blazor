@@ -25,6 +25,8 @@ using Kooco.Pikachu.UserAddresses;
 using System.Collections.Generic;
 using Kooco.Pikachu.UserShoppingCredits;
 using Kooco.Pikachu.UserCumulativeCredits;
+using Kooco.Pikachu.UserCumulativeOrders;
+using Kooco.Pikachu.UserCumulativeFinancials;
 
 namespace Kooco.Pikachu;
 
@@ -155,10 +157,16 @@ public class PikachuApplicationAutoMapperProfile : Profile
 
         CreateMap<UserShoppingCredit, UserShoppingCreditDto>();
         CreateMap<UserShoppingCreditDto, UpdateUserShoppingCreditDto>();
-        
+
         CreateMap<MemberCreditRecordModel, MemberCreditRecordDto>().ReverseMap();
-        
+
         CreateMap<UserCumulativeCredit, UserCumulativeCreditDto>();
         CreateMap<UserCumulativeCreditDto, UpdateUserCumulativeCreditDto>();
+
+        CreateMap<UserCumulativeOrder, UserCumulativeOrderDto>();
+        CreateMap<UserCumulativeOrderDto, UpdateUserCumulativeOrderDto>();
+
+        CreateMap<UserCumulativeFinancial, UserCumulativeFinancialDto>();
+        CreateMap<UserCumulativeFinancialDto, UpdateUserCumulativeFinancialDto>();
     }
 }

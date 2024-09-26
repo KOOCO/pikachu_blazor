@@ -38,7 +38,7 @@ public class UserCumulativeOrder : FullAuditedEntity<Guid>
 
     private void SetTotalOrders(int totalOrders)
     {
-        TotalOrders = Check.Range(totalOrders, nameof(totalOrders), 0, int.MaxValue);
+        TotalOrders = Check.Range(totalOrders, nameof(TotalOrders), 0, int.MaxValue);
     }
 
     public UserCumulativeOrder ChangeTotalExchanges(int totalExchanges)
@@ -49,7 +49,7 @@ public class UserCumulativeOrder : FullAuditedEntity<Guid>
 
     private void SetTotalExchanges(int totalExchanges)
     {
-        TotalExchanges = Check.Range(totalExchanges, nameof(totalExchanges), 0, int.MaxValue);
+        TotalExchanges = Check.Range(totalExchanges, nameof(TotalExchanges), 0, int.MaxValue);
     }
 
     public UserCumulativeOrder ChangeTotalReturns(int totalReturns)
@@ -60,6 +60,6 @@ public class UserCumulativeOrder : FullAuditedEntity<Guid>
 
     private void SetTotalReturns(int totalReturns)
     {
-        TotalReturns = Check.Range(totalReturns, nameof(totalReturns), 0, int.MaxValue);
+        TotalReturns = Check.Range(totalReturns, nameof(TotalReturns), 0, int.MaxValue);
     }
 }
