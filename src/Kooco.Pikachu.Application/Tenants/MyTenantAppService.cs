@@ -29,6 +29,12 @@ namespace Kooco.Pikachu.Tenants
             return await _customTenantRepository.CheckShortCodeForUpdate(shortCode, Id);
         }
 
+        public async Task<TenantDto?> FindByNameAsync(string name)
+        {
+            var tenant = await _tenantRepository.FindByNameAsync(name);
+            return ObjectMapper.Map<Tenant?, TenantDto?>(tenant);
+        }
+
         [AllowAnonymous]
 
         public async Task<TenantDto> GetTenantAsync(string shortCode)

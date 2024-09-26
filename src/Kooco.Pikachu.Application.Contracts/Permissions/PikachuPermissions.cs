@@ -112,4 +112,9 @@ public static class PikachuPermissions
         public const string Default = ".AddOnProducts";
 
     }
+    public static class DiscountCodes
+    {
+        public const string Default = ".DiscountCodes";
+
+    }
 }

@@ -8,6 +8,7 @@ public static class PikachuDomainErrorCodes
     public const string GetCannotBeEmptyOrZero = "Pikachu:GetCannotBeEmptyOrZero";
     public const string GetCannotBeGreaterThanGiftableQuantity = "Pikachu:GetCannotBeGreaterThanGiftableQuantity";
     public const string GroupBuyNameCannotBeNull = "Pikachu:GroupBuyNameCannotBeNull";
+    public const string InCompatibleModule = "Pikachu:InCompatibleModule";
     public const string GroupBuyShortCodeCannotBeNull = "Pikachu:GroupBuyShortCodeCannotBeNull";
     public const string ItemWithSameNameAlreadyExists = "Pikachu:ItemWithSameNameAlreadyExists";
     public const string FreebieWithSameNameAlreadyExists = "Pikachu:FreebieWithSameNameAlreadyExists";

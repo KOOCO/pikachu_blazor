@@ -83,6 +83,10 @@ public partial class EditGroupBuy
     public bool IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery = false;
 
     public bool IsUnableToSpecifyDuringPeakPeriodsForDeliveredByStore = false;
+
+    public GroupBuyTemplateType SelectedTemplate;
+
+    public bool IsSelectedModule = true;
     #endregion
 
     #region Constructor
@@ -175,6 +179,43 @@ public partial class EditGroupBuy
         {
             //await Loading.Hide();
         }
+    }
+
+    private void SelectTemplate(GroupBuyTemplateType template)
+    {
+        SelectedTemplate = template;
+
+        IsSelectedModule = false;
+
+        List<GroupBuyModuleType> templateModules = new();
+
+        if (SelectedTemplate is GroupBuyTemplateType.PikachuOne) templateModules = [.. GetPikachuOneList()];
+
+        else if (SelectedTemplate is GroupBuyTemplateType.PikachuTwo) templateModules = [.. GetPikachuTwoList()];
+
+        if (templateModules is { Count: > 0 })
+        {
+            foreach (CollapseItem module in CollapseItem)
+            {
+                if (templateModules.Contains(module.GroupBuyModuleType)) module.IsWarnedForInCompatible = false;
+
+                else module.IsWarnedForInCompatible = true;
+            }
+        }
+    }
+
+    public IEnumerable<GroupBuyModuleType> GetPikachuOneList()
+    {
+        return Enum.GetValues(typeof(GroupBuyModuleType))
+                   .Cast<GroupBuyModuleType>()
+                   .Where(m => m >= GroupBuyModuleType.ProductDescriptionModule && m <= GroupBuyModuleType.IndexAnchor);
+    }
+
+    public IEnumerable<GroupBuyModuleType> GetPikachuTwoList()
+    {
+        return Enum.GetValues(typeof(GroupBuyModuleType))
+                   .Cast<GroupBuyModuleType>()
+                   .Where(m => m == GroupBuyModuleType.ProductGroupModule || m == GroupBuyModuleType.IndexAnchor);
     }
 
     protected override async Task OnAfterRenderAsync(bool isFirstRender)
@@ -380,6 +421,22 @@ public partial class EditGroupBuy
             };
         }
         CollapseItem.Add(collapseItem);
+
+        List<GroupBuyModuleType> templateModules = new();
+
+        if (SelectedTemplate is GroupBuyTemplateType.PikachuOne) templateModules = [.. GetPikachuOneList()];
+
+        else if (SelectedTemplate is GroupBuyTemplateType.PikachuTwo) templateModules = [.. GetPikachuTwoList()];
+
+        if (templateModules is { Count: > 0 })
+        {
+            foreach (CollapseItem module in CollapseItem)
+            {
+                if (templateModules.Contains(module.GroupBuyModuleType)) module.IsWarnedForInCompatible = false;
+
+                else module.IsWarnedForInCompatible = true;
+            }
+        }
     }
 
     async Task OnLogoUploadAsync(FileChangedEventArgs e)
@@ -871,6 +928,14 @@ public partial class EditGroupBuy
             //    return;
             //}
             await Loading.Show();
+
+            if (CollapseItem.Any(a => a.IsWarnedForInCompatible))
+            {
+                await _uiMessageService.Warn(L[PikachuDomainErrorCodes.InCompatibleModule]);
+                await Loading.Hide();
+                return;
+            }
+
             var check = false;
             string shortCode = EditGroupBuyDto.ShortCode;
             if (!string.IsNullOrEmpty(shortCode))

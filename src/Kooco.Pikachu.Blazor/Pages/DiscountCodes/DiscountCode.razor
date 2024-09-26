@@ -1,0 +1,125 @@
+﻿@page "/discount-code"
+@attribute [Authorize]
+@using Kooco.Pikachu.Localization
+@using Kooco.Pikachu.DiscountCodes
+@using Kooco.Pikachu.Permissions
+@using Microsoft.Extensions.Localization
+@inherits PikachuComponentBase
+
+@inject NavigationManager NavigationManager
+
+<Div>
+    <Row>
+        <Column ColumnSize="ColumnSize.Is6">
+            <h3 class="text-dark">@L["DiscountCodes"]</h3>
+        </Column>
+        <Column ColumnSize="ColumnSize.Is6" TextAlignment="TextAlignment.End">
+            <Button  Type="ButtonType.Button" Size="Size.Small" Color="Color.Primary" Clicked="CreateNewDiscountCode">
+                <Icon Name="IconName.Add"></Icon>
+                @L["New"]
+            </Button>
+        </Column>
+    </Row>
+</Div>
+<Card>
+    <CardBody>
+
+        @{
+            var columnSize = ColumnSize.Is2.OnQuadHD.Is3.OnFullHD.Is4.OnDesktop.Is6.OnTablet.Is12;
+        }
+        <Row VerticalGutter="10">
+            <Column ColumnSize="ColumnSize.Is12">
+                <TextEdit @bind-Text="Filters.Filter" Placeholder="@L["Search"]"></TextEdit>
+            </Column>
+            <Column ColumnSize="columnSize">
+                <Label>@L["From"]</Label>
+                <DateEdit TValue="DateTime?" @bind-Date="Filters.From" Size="Size.Small"></DateEdit>
+            </Column>
+            <Column ColumnSize="columnSize">
+                <Label>@L["To"]</Label>
+                <DateEdit TValue="DateTime?" @bind-Date="Filters.To" Size="Size.Small"></DateEdit>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is12.IsAuto.OnTablet" Class="d-flex align-items-end justify-content-center justify-content-sm-start">
+                <Button Class="btn-sm btn-outline-primary me-1">
+                    <Icon Class="fa-undo"></Icon>
+                    @L["Reset"]
+                </Button>
+                <Button Class="btn-sm btn-primary">
+                    <Icon Class="fa-filter"></Icon>
+                    @L["Filter"]
+                </Button>
+            </Column>
+        </Row>
+    </CardBody>
+</Card>
+<Card>
+    <CardBody>
+        <DataGrid TItem="DiscountCodeDto"
+                  Data="DiscountCodeList"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  PageSize="PageSize"
+                  CurrentPage="CurrentPage"
+                  Hoverable
+                  Narrow
+                  Responsive
+                  Striped
+                
+                  SelectionMode="DataGridSelectionMode.Multiple"
+                  
+                  RowSelectable="RowSelectableHandler">
+            <DataGridColumns>
+                @*   <DataGridMultiSelectColumn TItem="AddOnProductDto" Width="30px"></DataGridMultiSelectColumn> *@
+                <DataGridCommandColumn TItem="DiscountCodeDto" />
+                <DataGridColumn TItem="DiscountCodeDto"
+                                Field="@nameof(DiscountCodeDto.EventName)"
+                                Caption="@L["Name"]">
+
+                </DataGridColumn>
+                <DataGridColumn TItem="DiscountCodeDto"
+                                Field="@nameof(DiscountCodeDto.AvailableQuantity)"
+                                Caption="@L["Quantity"]">
+                    <DisplayTemplate>
+                        <AntDesign.Progress  Percent=@context.AvailableQuantity ShowInfo="false" />
+                        <br />
+                        <Span>@context.TotalQuantity @L["discountcode"]</Span>
+                        <br />
+                        <Span>@context.AvailableQuantity @L["available"]</Span>
+                    </DisplayTemplate>
+                </DataGridColumn>
+
+                <DataGridColumn TItem="DiscountCodeDto"
+                                Field="@nameof(DiscountCodeDto.SpecifiedCode)"
+                                Caption="@L["Code"]">
+                    <DisplayTemplate>
+                        <Copy Text="@context.DiscountCodeValue"></Copy>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="DiscountCodeDto"
+                                Field="@nameof(DiscountCodeDto.StartDate)"
+                                Caption="@L["Time"]">
+                    <DisplayTemplate>
+                        @context.StartDate-@context.EndDate
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="DiscountCodeDto" Field="@nameof(DiscountCodeDto.Status)"
+                                Caption="@L["Status"]">
+                    <DisplayTemplate>
+                        <Switch TValue="bool" Checked="@context.Status" CheckedChanged="@(() => OnDiscountCodeStatusChanged(context.Id))"></Switch>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridEntityActionsColumn TItem="DiscountCodeDto">
+                    <DisplayTemplate>
+                        <EntityActions TItem="DiscountCodeDto">
+                            <EntityAction TItem="DiscountCodeDto"
+                                          Text="@L["Edit"]" />
+                        </EntityActions>
+                    </DisplayTemplate>
+                </DataGridEntityActionsColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
+
+

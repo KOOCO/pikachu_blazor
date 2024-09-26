@@ -86,6 +86,12 @@ namespace Kooco.Pikachu.GroupBuys
                                                         input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription, input.ShortCode, input.IsEnterprise,input.FreeShippingThreshold,input.SelfPickupDeliveryTime,
                                                         input.BlackCatDeliveryTime,input.HomeDeliveryDeliveryTime,input.DeliveredByStoreDeliveryTime,input.TaxType, input.ProductType);
 
+            if (!input.FacebookLink.IsNullOrEmpty()) result.FacebookLink = input.FacebookLink;
+
+            if (!input.InstagramLink.IsNullOrEmpty()) result.InstagramLink = input.InstagramLink;
+            
+            if (!input.LINELink.IsNullOrEmpty()) result.LINELink = input.LINELink;
+
             if (input.ItemGroups is not null && input.ItemGroups.Any())
             {
                 foreach (var group in input.ItemGroups)

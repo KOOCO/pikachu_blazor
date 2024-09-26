@@ -1,0 +1,71 @@
+﻿
+@using Kooco.Pikachu.Localization
+@using Microsoft.Extensions.Localization
+@using Volo.Abp.AspNetCore.Components.Notifications
+@inject IJSRuntime JSRuntime
+@inject IUiNotificationService UiNotificationService
+@inject IStringLocalizer<PikachuResource> L
+
+<Span Style="cursor: pointer;">
+    <Text CopyToClipboard="true" @onclick="() => CopyToClipboard(_text)">
+        @if (ShouldDisplayText && IconAlignment != Alignment.Start)
+        {
+            <Span>
+                @_displayText
+            </Span>
+        }
+        @if (!_text.IsNullOrWhiteSpace() && ShouldDisplayIcon)
+        {
+            <Span TextColor="TextColor.Primary">
+                <Icon Class="fa-copy mx-1"></Icon>
+            </Span>
+        }
+        @if (ShouldDisplayText && IconAlignment == Alignment.Start)
+        {
+            <Span>
+                @_displayText
+            </Span>
+        }
+    </Text>
+</Span>
+
+@code {
+
+    [Parameter]
+    public object? Text { get; set; }
+
+    [Parameter]
+    public object? DisplayText { get; set; }
+
+    [Parameter]
+    public bool ShouldDisplayText { get; set; } = true;
+
+    [Parameter]
+    public bool ShouldDisplayIcon { get; set; } = true;
+
+    [Parameter]
+    public Alignment IconAlignment { get; set; } = Alignment.End;
+
+    private string? _text { get { return Text?.ToString(); } }
+
+    private string? _displayText { get { return DisplayText?.ToString(); } }
+
+    protected override void OnParametersSet()
+    {
+        DisplayText ??= _text;
+    }
+
+    private async Task CopyToClipboard(string? text)
+    {
+        try
+        {
+            text ??= string.Empty;
+            await JSRuntime.InvokeVoidAsync("clipboard.copy", text);
+            await UiNotificationService.Success(L["TextCopied", text]);
+        }
+        catch
+        {
+            await UiNotificationService.Error(L["UnableToCopyText"]);
+        }
+    }
+}

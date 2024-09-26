@@ -128,6 +128,30 @@
                 </span>
             </div>
         </div>
+        <Div Class="row">
+            <Div Class="col-2">
+                <label>@L["Facebook"]</label>
+            </Div>
+            <Div Class="col-9">
+                <TextEdit @bind-Text="@CreateGroupBuyDto.FacebookLink" />
+            </Div>
+        </Div>
+        <Div Class="row">
+            <Div Class="col-2">
+                <label>@L["Instagram"]</label>
+            </Div>
+            <Div Class="col-9">
+                <TextEdit @bind-Text="@CreateGroupBuyDto.InstagramLink" />
+            </Div>
+        </Div>
+        <Div Class="row">
+            <Div Class="col-2">
+                <label>@L["LINE"]</label>
+            </Div>
+            <Div Class="col-9">
+                <TextEdit @bind-Text="@CreateGroupBuyDto.LINELink" />
+            </Div>
+        </Div>
         <div class="row">
             <div class="col-2">
                 <label>
@@ -794,25 +818,51 @@
         <Divider></Divider>
         <div class="row">
             <div class="col-2"><label>@L["AddModule"]</label></div>
-            <div class="col-10">
+            <div class="col-2 d-flex gap-2">
                 @if (CollapseItem.Count < 20)
                 {
                     <Dropdown>
                         <DropdownToggle Color="Color.Primary">
+                            @L["SelectTemplate"]
+                        </DropdownToggle>
+                        <DropdownMenu>
+                            <DropdownItem Clicked='@(() => SelectTemplate(GroupBuyTemplateType.PikachuOne))'>
+                                @L["PikachuOne"]
+                            </DropdownItem>
+                            <DropdownItem Clicked='@(() => SelectTemplate(GroupBuyTemplateType.PikachuTwo))'>
+                                @L["PikachuTwo"]
+                            </DropdownItem>
+                        </DropdownMenu>
+                    </Dropdown>
+                    <Dropdown Disabled=IsSelectedModule>
+                        <DropdownToggle Color="Color.Primary">
                             @L["SelectModule"]
                         </DropdownToggle>
                         <DropdownMenu>
-                            @foreach (GroupBuyModuleType groupBuyDropdownValue in Enum.GetValues(typeof(GroupBuyModuleType)))
+                            @if (SelectedTemplate is GroupBuyTemplateType.PikachuOne)
                             {
-                                <DropdownItem Clicked='@(()=>AddProductItem(@groupBuyDropdownValue))'>
-                                    @L[groupBuyDropdownValue.ToString()]
-                                </DropdownItem>
+                                @foreach (GroupBuyModuleType module in GetPikachuOneList())
+                                {
+                                    <DropdownItem Clicked='@(() => AddProductItem(module))'>
+                                        @L[module.ToString()]
+                                    </DropdownItem>
+                                }
+                            }
+                            else if (SelectedTemplate is GroupBuyTemplateType.PikachuTwo)
+                            {
+                                @foreach (GroupBuyModuleType module in GetPikachuTwoList())
+                                {
+                                    <DropdownItem Clicked='@(() => AddProductItem(module))'>
+                                        @L[module.ToString()]
+                                    </DropdownItem>
+                                }
                             }
                         </DropdownMenu>
                     </Dropdown>
                 }
             </div>
         </div>
+        
         <div ondragover="event.preventDefault();">
             @foreach (var module in CollapseItem)
             {
@@ -824,6 +874,19 @@
                                     <AccordionToggle>
                                         <i class="fa fa-trash text-danger me-2" @onclick="@(()=>RemoveCollapseItem(@module.Index))"></i>
                                         @L[module.GroupBuyModuleType.ToString()]
+
+                                        @if (module.IsWarnedForInCompatible)
+                                        {
+                                            <Tooltip Text="@($"Incompatible Module for {L[SelectedTemplate.ToString()]}")" 
+                                                     TriggerTargetId="tooltip-custom-target" 
+                                                     Inline
+                                                     Style="margin-left: 5px;">
+                                                <Badge Color="Color.Warning">
+                                                    <i class="fas fa-circle-info" />
+                                                </Badge>
+                                            </Tooltip>
+                                        }
+
                                     </AccordionToggle>
                                 </CollapseHeader>
                                 <CollapseBody>

@@ -90,6 +90,8 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
 
         var promotion = context.AddGroup(PikachuPermissions.Promotions, L("Permission:Promotions"));
         var addonProducts = promotion.AddPermission(PikachuPermissions.AddOnProducts.Default, L("Permission:AddOnProducts"));
+
+        var discountCodes= promotion.AddPermission(PikachuPermissions.DiscountCodes.Default, L("Permission:DiscountCodes"));
     }
 
     private static LocalizableString L(string name)

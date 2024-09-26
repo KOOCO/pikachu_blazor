@@ -41,6 +41,7 @@ using Volo.Abp.BackgroundJobs;
 using Volo.Abp.BackgroundJobs.Hangfire;
 using Volo.Abp.Identity.Blazor.Server;
 using Volo.Abp.Modularity;
+using Volo.Abp.MultiTenancy;
 using Volo.Abp.OpenIddict;
 using Volo.Abp.SettingManagement.Blazor.Server;
 using Volo.Abp.Swashbuckle;
@@ -212,7 +213,14 @@ public class PikachuBlazorModule : AbpModule
         ConfigureMenu(context);
         ConfigureSignalRHubOptions();
         ConfigureHangfire(context, configuration);
-  
+
+        if (!hostingEnvironment.IsDevelopment())
+        {
+            Configure<AbpTenantResolveOptions>(options =>
+            {
+                options.TenantResolvers.Insert(0, new MyDomainTenantResolveContributor());
+            });
+        }
         context.Services.AddScoped<CustomTenantManagement>();
         context.Services.AddCors(options =>
         {
@@ -388,7 +396,7 @@ public class PikachuBlazorModule : AbpModule
         {
             app.UseMultiTenancy();
         }
-     
+
         app.UseUnitOfWork();
         app.UseAuthorization();
         app.UseSwagger();
@@ -403,7 +411,7 @@ public class PikachuBlazorModule : AbpModule
         });
 
         app.UseConfiguredEndpoints();
-    
+
     }
 
     // This method is required for the Image Upload in blazor

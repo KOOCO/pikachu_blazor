@@ -19,12 +19,18 @@ public partial class MemberDetails
     private bool CanEditMember { get; set; }
     private bool CanDeleteMember { get; set; }
 
+    public MemberDetails()
+    {
+        Member = new();
+        OrderStats = new();
+    }
+
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            Member = await MemberAppService.GetAsync(Id);
             await SetPermissionsAsync();
+            Member = await MemberAppService.GetAsync(Id);
         }
         catch (Exception ex)
         {
