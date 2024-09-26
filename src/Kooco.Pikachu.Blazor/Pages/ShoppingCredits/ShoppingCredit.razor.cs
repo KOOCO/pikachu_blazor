@@ -9,5 +9,11 @@
             NavigationManager.NavigateTo("/use-setting");
         
         }
+        void NavigateToGetSetting()
+        {
+
+            NavigationManager.NavigateTo("/get-setting");
+
+        }
     }
 }

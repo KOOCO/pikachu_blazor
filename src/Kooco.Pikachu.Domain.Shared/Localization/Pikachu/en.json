@@ -767,8 +767,22 @@
 
     "SelectaProducts": "Select Products",
 
-    "Create": "Create"
-
+    "Create": "Create",
+   
+    "EarnedPoints": "Earned Points",
+  
+    "Limited,validfordays": "Limited, valid for days",
+    
+    "CalculationMethod": "Calculation Method",
+ 
+    "StageSettings": "Stage Settings",
+   
+    "Add-OnProducts": "Add-On Products",
+    
+    "ApplicableforGroupbuying": "Applicable for Group Buying",
+ 
+    "ApplicableforProducts": "Applicable for Products"
+    
 
   }
 }
