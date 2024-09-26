@@ -1,0 +1,160 @@
+﻿@page "/use-setting"
+@attribute [Authorize]
+@using Kooco.Pikachu.EnumValues
+@using Kooco.Pikachu.Items.Dtos
+@using Kooco.Pikachu.Localization
+
+@using Kooco.Pikachu.GroupBuys
+@using Kooco.Pikachu.Items
+@using Kooco.Pikachu.Permissions
+@using Microsoft.Extensions.Localization
+
+@inherits PikachuComponentBase
+@inject GroupBuyAppService GroupBuyAppService
+
+@inject NavigationManager NavigationManager
+<Div>
+    <Row>
+        <Column ColumnSize="ColumnSize.Is6">
+            <h3 class="text-dark">@L["UseSettings"]</h3>
+        </Column>
+
+    </Row>
+</Div>
+<Card>
+    <CardBody>
+        <Row VerticalGutter="10">
+            <Column ColumnSize="ColumnSize.Is3">
+                <h4 class="text-dark">@L["AllowUsage"]</h4>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is9">
+               
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Switch TValue="bool" Checked="true" />
+
+                </Column>
+
+            </Column>
+
+        </Row>
+    </CardBody>
+</Card>
+<Card>
+    <CardBody>
+        <Row VerticalGutter="10">
+            <Column ColumnSize="ColumnSize.Is3">
+                <h4 class="text-dark">@L["DiscountMethod"]</h4>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is9">
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Label>@L["DeductionMethod"]</Label>
+                    <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="DeductionMethod" >
+                        <Radio Value="@("UnifiedCalculation")">@L["UnifiedCalculation:"]<NumericEdit Max="100" TValue="int" />%</Radio>
+                        <Radio Value="@("StagedCalculation")">@L["StagedCalculation"]</Radio>
+                    </RadioGroup>
+
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is6">
+                    <Label>@L["DeductionMethod"]</Label>
+                        </Column>
+                        <Column Class="text-end" ColumnSize="ColumnSize.Is6">
+                            <Button><Icon Name="IconName.Add"></Icon></Button>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is6">
+                            <Label>@L["Spend"]</Label>
+                            <NumericEdit  TValue="int" />
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is6">
+                            <Label>@L["ToReceivePoints"]</Label>
+                            <NumericEdit  TValue="int" />
+                        </Column>
+                    </Row>
+                    </Column>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Label>@L["ApplicableItems"]</Label>
+                    <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="ApplicableItems">
+                        <Radio Value="@("AddOnProducts")">@L["Add-OnProducts:"]<NumericEdit  TValue="int" /></Radio>
+                        <Radio Value="@("ShippingFees")">@L["ShippingFees"]</Radio>
+                    </RadioGroup>
+
+                </Column>
+             
+            </Column>
+
+        </Row>
+    </CardBody>
+</Card>
+<Card>
+    <CardBody>
+        <Row VerticalGutter="10">
+            <Column ColumnSize="ColumnSize.Is3">
+                <h4 class="text-dark">@L["UsableScope"]</h4>
+            </Column>
+           
+            <Column ColumnSize="ColumnSize.Is9">
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Label>@L["UsableforGroupbuying"]</Label>
+                    <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="Groupbuys">
+                        <Radio Value="@("AllGroupbuys")">@L["AllGroupbuys"]</Radio>
+                        <Radio Value="@("SpecificGroupbuys")">@L["SpecificGroupbuys"]</Radio>
+                    </RadioGroup>
+
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <AntDesign.Select Mode="multiple"
+                                      TItem="GroupBuyDto"
+                                      TItemValue="GroupBuyDto"
+                                      @bind-Values="@SelectedGroupBuy"
+                                      Placeholder="@L["SelectaGroupBuys"]"
+                                      EnableSearch>
+                        <SelectOptions>
+                            @foreach (var item in Groupbuys)
+                            {
+                                <AntDesign.SelectOption TItemValue="GroupBuyDto" TItem="GroupBuyDto" Value=@item Label=@item.GroupBuyName />
+                            }
+                        </SelectOptions>
+                    </AntDesign.Select>
+
+                </Column>
+
+                <Divider></Divider>
+
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Label>@L["UseableforProducts"]</Label>
+                    <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="Products" >
+                        <Radio Value="@("AllProducts")">@L["AllProducts"]</Radio>
+                        <Radio Value="@("SpecificProducts")">@L["SpecificProducts"]</Radio>
+                    </RadioGroup>
+
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <AntDesign.Select Mode="multiple"
+                                      TItem="KeyValueDto"
+                                      TItemValue="KeyValueDto"
+                                      @bind-Values="@SelectedProducts"
+                                      Placeholder="@L["SelectaProducts"]"
+                                      EnableSearch>
+                        <SelectOptions>
+                            @foreach (var item in Products)
+                            {
+                                <AntDesign.SelectOption TItemValue="KeyValueDto" TItem="KeyValueDto" Value=@item Label=@item.Name />
+                            }
+                        </SelectOptions>
+                    </AntDesign.Select>
+
+                </Column>
+            </Column>
+
+        </Row>
+    </CardBody>
+</Card>
+<Div Class="text-end">
+    <PikachuButton Class="pk-btn-light" Clicked="NavigateToShoppingCredits">
+        @L["Cancel"]
+    </PikachuButton>
+    <PikachuButton Class="pk-btn-primary">
+        @L["Create"]
+    </PikachuButton>
+</Div>

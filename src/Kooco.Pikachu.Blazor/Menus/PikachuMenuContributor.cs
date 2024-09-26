@@ -171,7 +171,7 @@ new ApplicationMenuItem(
   order: 5
 );
 
-    
+
         promotions.AddItem(new ApplicationMenuItem(
    name: "AddOnProducts",
 
@@ -187,6 +187,13 @@ new ApplicationMenuItem(
    url: "/discount-code",
    requiredPermissionName: PikachuPermissions.DiscountCodes.Default)
    );
+        promotions.AddItem(new ApplicationMenuItem(
+name: "ShoppingCredits",
+
+displayName: l["ShoppingCredits"],
+url: "/shopping-credit",
+requiredPermissionName: PikachuPermissions.ShoppingCredits.Default)
+);
         context.Menu.AddItem(promotions);
 
         var paymentManagement = new ApplicationMenuItem(
