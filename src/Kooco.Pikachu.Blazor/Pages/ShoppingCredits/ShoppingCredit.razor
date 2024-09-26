@@ -1,0 +1,193 @@
+﻿@page "/shopping-credit"
+@attribute [Authorize]
+@using Kooco.Pikachu.Localization
+
+@using Kooco.Pikachu.Permissions
+@using Microsoft.Extensions.Localization
+@inherits PikachuComponentBase
+
+@inject NavigationManager NavigationManager
+
+<Div>
+    <Row>
+        <Column ColumnSize="ColumnSize.Is6">
+            <h3 class="text-dark">@L["ShoppingCredits"]</h3>
+        </Column>
+        <Column ColumnSize="ColumnSize.Is6" TextAlignment="TextAlignment.End">
+          
+        </Column>
+    </Row>
+</Div>
+<Row>
+    <Column ColumnSize="ColumnSize.Is3">
+    <Column ColumnSize="ColumnSize.Is12">
+       
+            <Card>
+            <CardHeader>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is6">
+                <h3 >@L["GetSettings"]</h3>
+                    </Column>
+                    <Column Class="text-end" ColumnSize="ColumnSize.Is6">
+                       <Button><Icon Name="IconName.Pen" IconSize="IconSize.Large"></Icon></Button>
+                    </Column>
+                </Row>
+            </CardHeader>
+               
+                <CardBody Class="px-0">
+                   
+                    <Row Class="px-3">
+                        <Column ColumnSize="ColumnSize.Is4">
+                        <h5> @L["RegistrationBounsPoint"]</h5>
+                        </Column>
+                    <Column TextAlignment="TextAlignment.End" ColumnSize="ColumnSize.Is4">
+                        <h5 class="text-success">13,153</h5>
+                        <Span>@L["NoExpiry"]</Span>
+                    </Column>
+                    <Column Class="d-flex flex-row-reverse"  ColumnSize="ColumnSize.Is4">
+                       <Switch Color="Color.Primary" TValue="bool" Checked="true"></Switch>
+                    </Column>
+                    </Row>
+                    <Divider Class="my-2"></Divider>
+                <Row Class="px-3">
+                    <Column ColumnSize="ColumnSize.Is4">
+                        <h5> @L["BirthdayBounsPoint"]</h5>
+                    </Column>
+                    <Column TextAlignment="TextAlignment.End" ColumnSize="ColumnSize.Is4">
+                        <h5 class="text-success">13,153</h5>
+                        <Span>@L["NoExpiry"]</Span>
+                    </Column>
+                    <Column Class="d-flex flex-row-reverse" ColumnSize="ColumnSize.Is4">
+                        <Switch Color="Color.Primary" TValue="bool" Checked="true"></Switch>
+                    </Column>
+                </Row>
+                    <Divider Class="my-2"></Divider>
+                <Row Class="px-3">
+                    <Column ColumnSize="ColumnSize.Is4">
+                        <h5> @L["ShoppingCashbackPoints"]</h5>
+                    </Column>
+                    <Column TextAlignment="TextAlignment.End" ColumnSize="ColumnSize.Is4">
+                        <h5 class="text-success">13,153</h5>
+                        <Span>@L["NoExpiry"]</Span>
+                    </Column>
+                    <Column Class="d-flex flex-row-reverse" ColumnSize="ColumnSize.Is4">
+                        <Switch Color="Color.Primary" TValue="bool" Checked="true"></Switch>
+                    </Column>
+                </Row>
+                  
+                </CardBody>
+            </Card>
+        
+    </Column>
+   
+    <Column ColumnSize="ColumnSize.Is12">
+
+        <Card>
+            <CardHeader>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is6">
+                        <h3>@L["UseSettings"]</h3>
+                    </Column>
+                    <Column Class="text-end" ColumnSize="ColumnSize.Is6">
+                        <Button><Icon Name="IconName.Pen" IconSize="IconSize.Large"></Icon></Button>
+                    </Column>
+                </Row>
+            </CardHeader>
+
+            <CardBody Class="px-0">
+
+                <Row Class="px-3">
+                    <Column ColumnSize="ColumnSize.Is6">
+                        <h5> @L["AllowUsage"]</h5>
+                    </Column>
+                    
+                    <Column Class="d-flex flex-row-reverse" ColumnSize="ColumnSize.Is6">
+                        <Switch Color="Color.Primary" TValue="bool" Checked="true"></Switch>
+                    </Column>
+                </Row>
+                <Divider Class="my-2"></Divider>
+                <Row Class="px-3">
+                    <Column ColumnSize="ColumnSize.Is6">
+                        <h5> @L["DiscountMethod"]</h5>
+                    </Column>
+                   
+                    <Column Class="d-flex flex-row-reverse" ColumnSize="ColumnSize.Is6">
+                           
+                               
+                               <h6>@L["UnifiedCalculation"]</h6>
+                            
+                    </Column>
+                </Row>
+                <Divider Class="my-2"></Divider>
+                <Row Class="px-3">
+                        <Column ColumnSize="ColumnSize.Is6">
+                            <h5> @L["UseableforGroupbuying"]</h5>
+                        </Column>
+
+                        <Column Class="d-flex flex-row-reverse" ColumnSize="ColumnSize.Is6">
+
+
+                            <h6>@L["SpecificGroupbuy"]</h6>
+
+                        </Column>
+                </Row>
+                    <Divider Class="my-2"></Divider>
+                    <Row Class="px-3">
+                        <Column ColumnSize="ColumnSize.Is6">
+                            <h5> @L["UseableforProducts"]</h5>
+                        </Column>
+
+                        <Column Class="d-flex flex-row-reverse" ColumnSize="ColumnSize.Is6">
+
+
+                            <h6>@L["AllProducts"]</h6>
+
+                        </Column>
+                    </Row>
+
+            </CardBody>
+        </Card>
+
+    </Column>
+    </Column>
+      <Column ColumnSize="ColumnSize.Is9">
+    <Column ColumnSize="ColumnSize.Is12">
+        <Card>
+            <CardBody>
+                <h4>@L["IssuedPoints"]</h4>
+                <Row Class="py-3" HorizontalGutter="10">
+                    <Column ColumnSize="ColumnSize.Is4">
+                        <PikachuCard Type="danger" Title="@L["Today"]" Amount="125"></PikachuCard>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is4">
+                        <PikachuCard Type="warning" Title="@L["ThisWeek"]" Amount="99"></PikachuCard>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is4">
+                        <PikachuCard Type="success" Title="@L["ThisMonth"]" Amount="32"></PikachuCard>
+                    </Column>
+                </Row>
+            </CardBody>
+        </Card>
+
+    </Column>
+    <Column ColumnSize="ColumnSize.Is12">
+        <Card>
+            <CardBody>
+                <h4>@L["RedeemedPoints"]</h4>
+                <Row Class="py-3" HorizontalGutter="10">
+                    <Column ColumnSize="ColumnSize.Is4">
+                        <PikachuCard Type="danger" Title="@L["Today"]" Amount="125"></PikachuCard>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is4">
+                        <PikachuCard Type="warning" Title="@L["ThisWeek"]" Amount="99"></PikachuCard>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is4">
+                        <PikachuCard Type="success" Title="@L["ThisMonth"]" Amount="32"></PikachuCard>
+                    </Column>
+                </Row>
+            </CardBody>
+        </Card>
+
+    </Column>
+    </Column>
+</Row>
