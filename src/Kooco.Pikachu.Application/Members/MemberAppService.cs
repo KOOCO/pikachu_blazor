@@ -1,8 +1,8 @@
-﻿using Kooco.Pikachu.EnumValues;
-using Kooco.Pikachu.Groupbuys;
+﻿using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Permissions;
+using Kooco.Pikachu.PikachuAccounts;
 using Kooco.Pikachu.UserAddresses;
 using Kooco.Pikachu.UserCumulativeCredits;
 using Kooco.Pikachu.UserCumulativeFinancials;
@@ -26,7 +26,8 @@ namespace Kooco.Pikachu.Members;
 public class MemberAppService(IMemberRepository memberRepository, IdentityUserManager identityUserManager,
     UserAddressManager userAddressManager, IOrderRepository orderRepository, IGroupBuyRepository groupBuyRepository,
     UserCumulativeCreditManager userCumulativeCreditManager, UserCumulativeOrderManager userCumulativeOrderManager,
-    UserCumulativeFinancialManager userCumulativeFinancialManager) : PikachuAppService, IMemberAppService
+    UserCumulativeFinancialManager userCumulativeFinancialManager,
+    IPikachuAccountAppService pikachuAccountAppService) : PikachuAppService, IMemberAppService
 {
     public async Task<MemberDto> GetAsync(Guid id)
     {
@@ -158,5 +159,18 @@ public class MemberAppService(IMemberRepository memberRepository, IdentityUserMa
     {
         var queryable = await groupBuyRepository.GetQueryableAsync();
         return [.. queryable.Select(x => new KeyValueDto { Id = x.Id, Name = x.GroupBuyName })];
+    }
+
+    [AllowAnonymous]
+    public async Task<MemberLoginResponseDto> LoginAsync(MemberLoginInputDto input)
+    {
+        Check.NotNull(input, nameof(input));
+
+        var loginResult = await pikachuAccountAppService.LoginAsync(input);
+        if (loginResult is null)
+        {
+            return new MemberLoginResponseDto(false);
+        }
+        return ObjectMapper.Map<PikachuLoginResponseDto, MemberLoginResponseDto>(loginResult);
     }
 }

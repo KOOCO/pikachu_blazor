@@ -27,6 +27,7 @@ using Kooco.Pikachu.UserShoppingCredits;
 using Kooco.Pikachu.UserCumulativeCredits;
 using Kooco.Pikachu.UserCumulativeOrders;
 using Kooco.Pikachu.UserCumulativeFinancials;
+using Kooco.Pikachu.PikachuAccounts;
 
 namespace Kooco.Pikachu;
 
@@ -169,5 +170,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
 
         CreateMap<UserCumulativeFinancial, UserCumulativeFinancialDto>();
         CreateMap<UserCumulativeFinancialDto, UpdateUserCumulativeFinancialDto>();
+
+        CreateMap<PikachuLoginResponseDto, MemberLoginResponseDto>();
     }
 }
