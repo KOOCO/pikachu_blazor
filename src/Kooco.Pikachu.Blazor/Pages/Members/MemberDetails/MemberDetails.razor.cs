@@ -12,7 +12,6 @@ public partial class MemberDetails
     [Parameter]
     public Guid Id { get; set; }
     private MemberDto Member { get; set; }
-    //private MemberCumulativeStatsDto CumulativeFinancials { get; set; }
 
     string SelectedTab = "Details";
 
@@ -31,22 +30,6 @@ public partial class MemberDetails
             await HandleErrorAsync(ex);
         }
         await base.OnInitializedAsync();
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstLoad)
-    {
-        if (firstLoad)
-        {
-            try
-            {
-                //CumulativeFinancials = await MemberAppService.GetMemberCumulativeStatsAsync(Id);
-            }
-            catch (Exception ex)
-            {
-                await HandleErrorAsync(ex);
-            }
-        }
-        await base.OnAfterRenderAsync(firstLoad);
     }
 
     private async Task SetPermissionsAsync()

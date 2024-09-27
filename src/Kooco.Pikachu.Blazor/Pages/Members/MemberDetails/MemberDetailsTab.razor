@@ -57,13 +57,13 @@
                 <h4>@L["Payment"]</h4>
                 <Row Class="py-3" HorizontalGutter="10">
                     <Column ColumnSize="ColumnSize.Is4">
-                        <PikachuCard Type="success" Title="@L["Paid"]" Amount="CumulativeFinancials?.TotalPaid"></PikachuCard>
+                        <PikachuCard Type="success" Title="@L["Paid"]" Amount="CumulativeFinancials?.TotalPaid" AmountVisible="true"></PikachuCard>
                     </Column>
                     <Column ColumnSize="ColumnSize.Is4">
-                        <PikachuCard Type="warning" Title="@L["Unpaid/Due"]" Amount="CumulativeFinancials?.TotalUnpaid"></PikachuCard>
+                        <PikachuCard Type="warning" Title="@L["Unpaid/Due"]" Amount="CumulativeFinancials?.TotalUnpaid" AmountVisible="true"></PikachuCard>
                     </Column>
                     <Column ColumnSize="ColumnSize.Is4">
-                        <PikachuCard Type="danger" Title="@L["Refunded"]" Amount="CumulativeFinancials?.TotalRefunded"></PikachuCard>
+                        <PikachuCard Type="danger" Title="@L["Refunded"]" Amount="CumulativeFinancials?.TotalRefunded" AmountVisible="true"></PikachuCard>
                     </Column>
                 </Row>
             </CardBody>

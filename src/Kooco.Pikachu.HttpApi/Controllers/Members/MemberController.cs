@@ -81,12 +81,6 @@ public class MemberController(IMemberAppService memberAppService) : PikachuContr
         return memberAppService.GetMemberOrdersAsync(input);
     }
 
-    //[HttpGet("member-order-stats/{id}")]
-    //public Task<MemberCumulativeStatsDto> GetMemberCumulativeStatsAsync(Guid id)
-    //{
-    //    return memberAppService.GetMemberCumulativeStatsAsync(id);
-    //}
-
     [HttpPut("{id}")]
     public Task<MemberDto> UpdateAsync(Guid id, UpdateMemberDto input)
     {
