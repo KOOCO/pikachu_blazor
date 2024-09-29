@@ -36,6 +36,7 @@ using Kooco.Pikachu.UserShoppingCredits;
 using Kooco.Pikachu.UserCumulativeCredits;
 using Kooco.Pikachu.UserCumulativeOrders;
 using Kooco.Pikachu.UserCumulativeFinancials;
+using Kooco.Pikachu.AddOnProducts;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -104,6 +105,8 @@ public class PikachuDbContext :
     public DbSet<UserShoppingCredit> UserShoppingCredits { get; set; }
     public DbSet<UserCumulativeCredit> UserCumulativeCredits { get; set; }
     public DbSet<UserCumulativeOrder> UserCumulativeOrders { get; set; }
+    public DbSet<AddOnProduct> AddOnProducts { get; set; }
+    public DbSet<AddOnProductSpecificGroupbuy> AddOnProductSpecificGroupbuys { get; set; }
     public DbSet<UserCumulativeFinancial> UserCumulativeFinancials { get; set; }
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
@@ -324,6 +327,16 @@ public class PikachuDbContext :
         builder.Entity<UserCumulativeOrder>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "UserCumulativeOrders", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+        });
+        builder.Entity<AddOnProduct>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "AddOnProducts", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+        });
+        builder.Entity<AddOnProductSpecificGroupbuy>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "AddOnProductSpecificGroupbuys", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
         });
 

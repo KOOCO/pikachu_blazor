@@ -6,8 +6,10 @@ using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Members;
 using Kooco.Pikachu.UserAddresses;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
@@ -18,12 +20,15 @@ namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
         public Guid Id { get; set; }
         string itemimageUrl = "";
         private AddOnProductDto AddOnProduct { get; set; }
-        private CreateAddOnProductDto CreateAddOnProduct { get; set; }
+        private bool IsUpdating { get; set; }
+        private CreateUpdateAddOnProductDto CreateAddOnProduct { get; set; }
         private IReadOnlyList<GroupBuyDto> Groupbuys { get; set; }
         private IReadOnlyList<KeyValueDto> Products { get; set; }
-        IEnumerable<GroupBuyDto> SelectedGroupBuy { get; set; }
+        IEnumerable<Guid> SelectedGroupBuy { get; set; }
         private Validations ValidationsRef;
         private ItemDto Item { get; set; }
+        private ValidationMessageStore? messageStore;
+        private EditContext? editContext;
         private readonly ItemAppService _itemAppService;
         public NewAddOnProduct(ItemAppService itemAppService)
         {
@@ -32,14 +37,30 @@ namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
             Groupbuys = [];
             SelectedGroupBuy = [];
             _itemAppService = itemAppService;
+            editContext = new(CreateAddOnProduct);
+            messageStore = new(editContext);
         }
         protected override async Task OnInitializedAsync()
         {
             try
             {
+             
                 await FetchProducts();
                 await FetchGroupBuys();
-                StateHasChanged();
+                await InvokeAsync(StateHasChanged);
+                if (Id != Guid.Empty)
+                {
+                    var addon = await AddOnProductAppService.GetAsync(Id);
+                    if (addon != null)
+                    {
+
+                        CreateAddOnProduct = ObjectMapper.Map<AddOnProductDto, CreateUpdateAddOnProductDto>(addon);
+                        CreateAddOnProduct.GroupBuyIds = addon.AddOnProductSpecificGroupbuys.Select(x => x.Id).ToList();
+                    SelectedGroupBuy= addon.AddOnProductSpecificGroupbuys.Select(x => x.GroupbuyId);
+                    }
+
+                }
+                await InvokeAsync(StateHasChanged);
             }
             catch (Exception ex)
             {
@@ -82,16 +103,56 @@ namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
                 await HandleErrorAsync(ex);
             }
         }
-
-        private async void OnSelectedProductChangedHandler(KeyValueDto value)
+        private async Task HandleValidSubmit()
         {
-            Item = await _itemAppService.GetAsync(value.Id);
-            itemimageUrl = await _itemAppService.GetFirstImageUrlAsync(value.Id);
+            messageStore?.Clear();
+            IsUpdating = true;
+            if (CreateAddOnProduct.GroupbuysScope == "AllGroupbuys")
+            {
+                CreateAddOnProduct.GroupBuyIds = Groupbuys.Select(x => x.Id).ToList();
+            }
+            else
+            {
+                CreateAddOnProduct.GroupBuyIds = SelectedGroupBuy.ToList();
+            }
+            // Custom validation logic
+            if (CreateAddOnProduct.ProductId==Guid.Empty)
+            {
+                messageStore?.Add(() => CreateAddOnProduct.ProductId, "Select at least one.");
+                IsUpdating = false;
+                return;
+            }
+            if (CreateAddOnProduct.GroupBuyIds.Count == 0)
+            {
+                messageStore?.Add(() => CreateAddOnProduct.GroupBuyIds, "Select at least one.");
+                IsUpdating = false;
+                return;
+            }
+            
+            if (await ValidationsRef.ValidateAll())
+            {
+                if (Id == Guid.Empty)
+                {
+                    await AddOnProductAppService.CreateAsync(CreateAddOnProduct);
+                }
+                else {
+
+                    await AddOnProductAppService.UpdateAsync(Id, CreateAddOnProduct);
+                }
+                IsUpdating = false;
+                NavigateToAddOnProducts();
+            }
+            IsUpdating = false;
+        }
+        private async Task OnSelectedProductChangedHandler()
+        {
+            Item = await _itemAppService.GetAsync(CreateAddOnProduct.ProductId);
+            itemimageUrl = await _itemAppService.GetFirstImageUrlAsync(CreateAddOnProduct.ProductId);
             StateHasChanged();
         }
         void NavigateToAddOnProducts() {
 
-            NavigationManager.NavigateTo("/add-on-product");
+            NavigationManager.NavigateTo("/add-on-products");
         }
     }
 }

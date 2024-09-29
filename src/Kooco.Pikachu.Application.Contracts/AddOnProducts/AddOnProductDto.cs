@@ -5,11 +5,11 @@ using Volo.Abp.Application.Dtos;
 
 namespace Kooco.Pikachu.AddOnProducts
 {
-    public class AddOnProductDto:AuditedEntityDto<int>
+    public class AddOnProductDto:AuditedEntityDto<Guid>
     {
     
         public string ProductName { get; set; }
-        public int ProductId { get; set; }
+        public Guid ProductId { get; set; }
         public int AddOnAmount { get; set; }
         public int AddOnLimitPerOrder { get; set; }
         public string QuantitySetting { get; set; }
@@ -22,5 +22,6 @@ namespace Kooco.Pikachu.AddOnProducts
         public string GroupbuysScope { get; set; }
         public bool Status { get; set; }
         public int SellingQuantity { get; set; }
+        public List<AddOnProductSpecificGroupbuyDto> AddOnProductSpecificGroupbuys { get; set; } = new();
     }
 }

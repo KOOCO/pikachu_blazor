@@ -6,10 +6,10 @@ using Volo.Abp.Application.Dtos;
 
 namespace Kooco.Pikachu.AddOnProducts
 {
-    public class GetAddOnProductList : PagedAndSortedResultRequestDto
+    public class GetAddOnProductListDto : PagedAndSortedResultRequestDto
     {
         public string? Filter { get; set; }
-        public DateTime? From { get; set;}
-        public DateTime? To { get; set;}
+        public DateTime? StartDate { get; set;}
+        public DateTime? EndDate { get; set;}
     }
 }

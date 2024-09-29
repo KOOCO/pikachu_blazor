@@ -4,6 +4,7 @@ using Kooco.Pikachu.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    partial class PikachuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240927052155_Add AddonProduct and AddonProductSpecificGroupBuy")]
+    partial class AddAddonProductandAddonProductSpecificGroupBuy
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2466,66 +2469,6 @@ namespace Kooco.Pikachu.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Kooco.Pikachu.UserCumulativeFinancials.UserCumulativeFinancial", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
-
-                    b.Property<int>("TotalPaid")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TotalRefunded")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TotalSpent")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TotalUnpaid")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AppUserCumulativeFinancials", null, t =>
-                        {
-                            t.HasComment("");
-                        });
-                });
-
             modelBuilder.Entity("Kooco.Pikachu.UserCumulativeOrders.UserCumulativeOrder", b =>
                 {
                     b.Property<Guid>("Id")
@@ -4676,17 +4619,6 @@ namespace Kooco.Pikachu.Migrations
                 });
 
             modelBuilder.Entity("Kooco.Pikachu.UserCumulativeCredits.UserCumulativeCredit", b =>
-                {
-                    b.HasOne("Volo.Abp.Identity.IdentityUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Kooco.Pikachu.UserCumulativeFinancials.UserCumulativeFinancial", b =>
                 {
                     b.HasOne("Volo.Abp.Identity.IdentityUser", "User")
                         .WithMany()

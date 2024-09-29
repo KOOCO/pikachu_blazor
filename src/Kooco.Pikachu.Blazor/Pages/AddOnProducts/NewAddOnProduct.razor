@@ -1,4 +1,5 @@
 ﻿@page "/new-add-on-products"
+@page "/new-add-on-products/{Id:guid}"
 @attribute [Authorize]
 @using Kooco.Pikachu.Items.Dtos
 @using Kooco.Pikachu.Localization
@@ -7,19 +8,29 @@
 @using Kooco.Pikachu.Items
 @using Kooco.Pikachu.Permissions
 @using Microsoft.Extensions.Localization
+@using Volo.Abp.AspNetCore.Components.Web
 
 @inherits PikachuComponentBase
 @inject GroupBuyAppService GroupBuyAppService
-
+@inject AddOnProductAppService AddOnProductAppService
+@inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
 @inject NavigationManager NavigationManager
 <Div>
     <Row>
         <Column ColumnSize="ColumnSize.Is6">
+            @if(Id!=Guid.Empty)
+            {
+                 <h3 class="text-dark">@L["UpdateAddOnProducts"]</h3>                
+            }
+            else{
             <h3 class="text-dark">@L["NewAddOnProducts"]</h3>
+            }
         </Column>
 
     </Row>
 </Div>
+<Form >
+    <Validations  @ref="@ValidationsRef" Model="@CreateAddOnProduct" ValidateOnLoad="false">
 <Card>
     <CardBody>
         <Row VerticalGutter="10">
@@ -27,9 +38,13 @@
         <h4 class="text-dark">@L["BasicDetails"]</h4>
     </Column>
     <Column ColumnSize="ColumnSize.Is9">
-       <Label>@L["AddOnProduct"]</Label>
+                       
+  <EditForm EditContext="editContext">
+                            <Field>
+                        <FieldLabel>@L["AddOnProduct"]*</FieldLabel>
                 <Column ColumnSize="ColumnSize.Is12">
-                    <AntDesign.Select TItem="KeyValueDto"
+                    <AntDesign.Select 
+                        TItem="KeyValueDto"
                             TItemValue="Guid"
                             DataSource="@Products"
                             @bind-Value="@CreateAddOnProduct.ProductId"
@@ -41,8 +56,15 @@
                             
                             OnSelectedItemChanged="OnSelectedProductChangedHandler"
                             >
+                           
+                                               
+                                         
                     </AntDesign.Select>
-                </Column>
+                                <ValidationMessage For="() => CreateAddOnProduct!.ProductId" />
+                                 
+                                </Column>
+                            </Field>
+                        </EditForm>
                 @if (Item.ItemName != null && Item.ItemDescription != null)
                 {
                     <Column ColumnSize="ColumnSize.Is12">
@@ -56,29 +78,66 @@
                      }
                 <Row >
                 <Column ColumnSize="ColumnSize.Is6">
-                <Label>@L["AddOnProductAmount"]</Label>
-                <NumericEdit @bind-Value="CreateAddOnProduct.AddOnAmount" TValue="int"  />
+   <Validation MessageLocalizer="@LH.Localize">
+                                    <Field>
+                        <FieldLabel>@L["AddOnProductAmount"]*</FieldLabel>
+                                        <NumericEdit TValue="int" @bind-Value="CreateAddOnProduct.AddOnAmount">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                </NumericEdit>
+                </Field>
+                </Validation>
                 </Column>
                 <Column ColumnSize="ColumnSize.Is6">
+                       <Validation MessageLocalizer="@LH.Localize">
                     <Label>@L["AddOnLimitPerOrder"]</Label>
-                        <NumericEdit @bind-Value="CreateAddOnProduct.AddOnLimitPerOrder" TValue=" int" />
+                        <NumericEdit @bind-Value="CreateAddOnProduct.AddOnLimitPerOrder" TValue=" int" >
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                        </NumericEdit>
+                        </Validation>
                 </Column>
                 </Row>
                 <Column ColumnSize="ColumnSize.Is12">
+                    <Validation MessageLocalizer="@LH.Localize">
                     <Label>@L["AvailableQuantity"]</Label>
                     <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="QuantitySetting" @bind-CheckedValue="@CreateAddOnProduct.QuantitySetting">
-                    <Radio  Value="@("unlimited")">@L["Unlimited"]</Radio>
-                    <Radio  Value="@("available")">@L["AvailableQuantity:"] <NumericEdit @bind-Value="CreateAddOnProduct.AvailableQuantity" TValue="int" />@L["(Can'texceedthecurrentstockoftheoriginalproduct)"] </Radio>
-                       </RadioGroup>
-                  
+                   <ChildContent>
+                        <Radio  Value="@("unlimited")">@L["Unlimited"] </Radio>
+                                        <Radio Value="@("available")">
+                                            @L["AvailableQuantity:"]@if (CreateAddOnProduct.QuantitySetting == "unlimited" || CreateAddOnProduct.QuantitySetting.IsNullOrWhiteSpace())
+                                            {
+                                                <NumericEdit Disabled @bind-Value="CreateAddOnProduct.AvailableQuantity" TValue="int" />
+                                            }
+                                            else
+                                            
+                                            {
+                                                 <NumericEdit  @bind-Value="CreateAddOnProduct.AvailableQuantity" TValue="int" />
+                                            }
+                                            @L["(Can'texceedthecurrentstockoftheoriginalproduct)"] </Radio>
+                   </ChildContent>
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                </RadioGroup>
+                  </Validation>
                     </Column>
                 <Column ColumnSize="ColumnSize.Is12">
+                      <Validation MessageLocalizer="@LH.Localize">
                     <Label>@L["DisplayOfOriginalPrice"]</Label>
                     <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="displayPrice" @bind-CheckedValue="@CreateAddOnProduct.DisplayOriginalPrice">
-                    <Radio  Value="@("NoPrice")">@L["Donotdisplayoriginalprice"]</Radio>
+                   <ChildContent>
+                        <Radio  Value="@("NoPrice")">@L["Donotdisplayoriginalprice"]</Radio>
                     <Radio  Value="@("ProductPrice")">@L["Displayproduct'soriginalprice"] </Radio>
                     <Radio  Value="@("GroupBuyPrice")">@L["Displayproduct'sgroupbuyprice"] </Radio>
+                    </ChildContent>
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
                     </RadioGroup>
+                    </Validation>
                 </Column>
     </Column>
          
@@ -94,12 +153,24 @@
             <Column ColumnSize="ColumnSize.Is9">
                 <Row>
                     <Column ColumnSize="ColumnSize.Is6">
+                          <Validation MessageLocalizer="@LH.Localize">
                         <Label>@L["From"]</Label>
-                        <DateEdit TValue="DateTime" />
+                        <DateEdit TValue="DateTime"  @bind-Date="CreateAddOnProduct.StartDate">
+                            <Feedback>
+                                <ValidationError/>
+                            </Feedback>
+                        </DateEdit>
+                        </Validation>
                     </Column>
                     <Column ColumnSize="ColumnSize.Is6">
+                        <Validation MessageLocalizer="@LH.Localize">
                         <Label>@L["To"]</Label>
-                        <DateEdit TValue="DateTime" />
+                                    <DateEdit TValue="DateTime" @bind-Date="CreateAddOnProduct.EndDate">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                        </DateEdit>
+                        </Validation>
                     </Column>
                 </Row>
             </Column>
@@ -114,12 +185,27 @@
             </Column>
             <Column ColumnSize="ColumnSize.Is9">
                 <Column ColumnSize="ColumnSize.Is12">
+                      <Validation MessageLocalizer="@LH.Localize">
                     <Label>@L["Conditions"]</Label>
                     <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="AddOnCondition" @bind-CheckedValue="@CreateAddOnProduct.AddOnConditions">
-                    <Radio  Value="@("NoRequirement")">@L["Nominimumspendingrequirement"]</Radio>
-                    <Radio  Value="@("Requirment")">@L["Mustmeetaspecifiedspendingthreshold"]</Radio>
+                    <ChildContent>
+                        <Radio  Value="@("NoRequirement")">@L["Nominimumspendingrequirement"]</Radio>
+                    <Radio  Value="@("Requirment")">@L["Mustmeetaspecifiedspendingthreshold"]
+                                            @if (CreateAddOnProduct.AddOnConditions == "NoRequirement" || CreateAddOnProduct.AddOnConditions.IsNullOrWhiteSpace())
+                                            {
+                                                <NumericEdit Disabled @bind-Value="CreateAddOnProduct.MinimumSpendAmount" TValue="int" />
+                                            }
+                                            else
+                                            {
+                                                <NumericEdit @bind-Value="CreateAddOnProduct.MinimumSpendAmount" TValue="int" />
+                                            }
+                    </Radio>
+                    </ChildContent>
+                    <Feedback>
+                        <ValidationError/>
+                    </Feedback>
                     </RadioGroup>
-
+                    </Validation>
                 </Column>
             </Column>
         </Row>
@@ -133,17 +219,25 @@
             </Column>
             <Column ColumnSize="ColumnSize.Is9">
                 <Column ColumnSize="ColumnSize.Is12">
+                     <Validation MessageLocalizer="@LH.Localize">
                     <Label>@L["Groupbuys"]</Label>
                     <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="Groupbuys" @bind-CheckedValue="@CreateAddOnProduct.GroupbuysScope">
-                    <Radio  Value="@("AllGroupbuys")">@L["AllGroupBuys"]</Radio>
+                   <ChildContent>
+                        <Radio  Value="@("AllGroupbuys")">@L["AllGroupBuys"]</Radio>
                     <Radio  Value="@("SpecificGroupbuys")">@L["SpecificGroupBuys"]</Radio>
+                   </ChildContent>
+                   <Feedback>
+                       <ValidationError/>
+                   </Feedback>
                     </RadioGroup>
+                    </Validation>
 
                 </Column>
                 <Column ColumnSize="ColumnSize.Is12">
+                    <EditForm EditContext="editContext">
                     <AntDesign.Select Mode="multiple"
-                    TItem="GroupBuyDto"
-                                      TItemValue="GroupBuyDto"
+                    TItem="Guid"
+                                      TItemValue="Guid"
                                      @bind-Values="@SelectedGroupBuy"
                                      
                                       Placeholder="@L["SelectaGroupBuys"]"
@@ -154,21 +248,33 @@
                                       <SelectOptions>
 			            @foreach(var item in Groupbuys)
 			{
-                                <AntDesign.SelectOption TItemValue="GroupBuyDto" TItem="GroupBuyDto" Value=@item Label=@item.GroupBuyName />
+                                            <AntDesign.SelectOption TItem="Guid" TItemValue="Guid" Value=@item.Id Label=@item.GroupBuyName />
 			}
-		</SelectOptions>
-                    </AntDesign.Select>
 
+		</SelectOptions>
+
+                    </AntDesign.Select>
+                                <ValidationMessage For="() => CreateAddOnProduct!.GroupBuyIds" />
+                    </EditForm>
                 </Column>
             </Column>
         </Row>
     </CardBody>
 </Card>
+</Validations>
+</Form>
 <Div Class="text-end">
-    <PikachuButton Class="pk-btn-light" Clicked="NavigateToAddOnProducts">
+    <PikachuButton Class="pk-btn-light" Disabled="IsUpdating" Clicked="NavigateToAddOnProducts">
         @L["Cancel"]
     </PikachuButton>
-    <PikachuButton Class="pk-btn-primary">
-        @L["Create"]
+        <PikachuButton Class="pk-btn-primary" Loading="IsUpdating" Clicked="HandleValidSubmit">
+        @if (Id != Guid.Empty)
+        {
+            @L["Update"]
+        }
+        else{
+    @L["Create"]
+    }
+
     </PikachuButton>
 </Div>
