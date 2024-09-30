@@ -3,31 +3,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Kooco.Pikachu.UserAddresses;
 
-public class CreateUserAddressDto
+public class CreateUserAddressDto : CreateUpdateUserAddressBaseDto
 {
     [Required]
-    public Guid? UserId { get; set; }
-
-    [Required]
-    [MaxLength(UserAddressConsts.MaxPostalCodeLength)]
-    public string PostalCode { get; set; }
-
-    [Required]
-    [MaxLength(UserAddressConsts.MaxCityLength)]
-    public string City { get; set; }
-
-    [Required]
-    [MaxLength(UserAddressConsts.MaxAddressLength)]
-    public string Address { get; set; }
-
-    [Required]
-    [MaxLength(UserAddressConsts.MaxRecipientNameLength)]
-    public string RecipientName { get; set; }
-
-    [Required]
-    [MaxLength(UserAddressConsts.MaxRecipientPhoneNumberLength)]
-    public string RecipientPhoneNumber { get; set; }
-
-    [Required]
-    public bool IsDefault { get; set; }
+    public virtual Guid? UserId { get; set; }
 }

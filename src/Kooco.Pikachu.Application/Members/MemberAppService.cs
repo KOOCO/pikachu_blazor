@@ -161,6 +161,17 @@ public class MemberAppService(IMemberRepository memberRepository, IdentityUserMa
         return [.. queryable.Select(x => new KeyValueDto { Id = x.Id, Name = x.GroupBuyName })];
     }
 
+    public async Task<UserAddressDto> CreateMemberAddressAsync(Guid id, CreateUpdateMemberAddressDto input)
+    {
+        Check.NotDefaultOrNull<Guid>(id, nameof(id));
+        Check.NotNull(input, nameof(input));
+
+        var userAddress = await userAddressManager.CreateAsync(id, input.PostalCode, input.City, input.Address, input.RecipientName,
+            input.RecipientPhoneNumber, input.IsDefault);
+
+        return ObjectMapper.Map<UserAddress, UserAddressDto>(userAddress);
+    }
+
     [AllowAnonymous]
     public async Task<MemberLoginResponseDto> LoginAsync(MemberLoginInputDto input)
     {
