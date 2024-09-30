@@ -27,7 +27,7 @@ public class MemberAppService(IMemberRepository memberRepository, IdentityUserMa
     UserAddressManager userAddressManager, IOrderRepository orderRepository, IGroupBuyRepository groupBuyRepository,
     UserCumulativeCreditManager userCumulativeCreditManager, UserCumulativeOrderManager userCumulativeOrderManager,
     UserCumulativeFinancialManager userCumulativeFinancialManager,
-    IPikachuAccountAppService pikachuAccountAppService) : PikachuAppService, IMemberAppService
+    IPikachuAccountAppService pikachuAccountAppService, IUserAddressRepository userAddressRepository) : PikachuAppService, IMemberAppService
 {
     public async Task<MemberDto> GetAsync(Guid id)
     {
@@ -170,6 +170,24 @@ public class MemberAppService(IMemberRepository memberRepository, IdentityUserMa
             input.RecipientPhoneNumber, input.IsDefault);
 
         return ObjectMapper.Map<UserAddress, UserAddressDto>(userAddress);
+    }
+
+    public async Task<UserAddressDto> UpdateMemberAddressAsync(Guid id, Guid addressId, CreateUpdateMemberAddressDto input)
+    {
+        Check.NotDefaultOrNull<Guid>(id, nameof(id));
+        Check.NotNull(input, nameof(input));
+
+        var userAddress = await userAddressManager.GetByIdAsync(addressId);
+        await userAddressManager.UpdateAsync(userAddress, id, input.PostalCode, input.City, input.Address, input.RecipientName,
+            input.RecipientPhoneNumber, input.IsDefault);
+
+        return ObjectMapper.Map<UserAddress, UserAddressDto>(userAddress);
+    }
+
+    public async Task<List<UserAddressDto>> GetMemberAddressListAsync(Guid id)
+    {
+        var queryable = await userAddressRepository.GetFilteredQueryableAsync(userId: id);
+        return ObjectMapper.Map<List<UserAddress>, List<UserAddressDto>>([.. queryable]);
     }
 
     [AllowAnonymous]

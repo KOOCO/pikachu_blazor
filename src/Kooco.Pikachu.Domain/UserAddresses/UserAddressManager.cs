@@ -78,4 +78,10 @@ public class UserAddressManager(IUserAddressRepository userAddressRepository) : 
         var defaultAddress = await userAddressRepository.GetDefaultAddressAsync(userId);
         return defaultAddress;
     }
+
+    public async Task<UserAddress> GetByIdAsync(Guid id)
+    {
+        var userAddress = await userAddressRepository.GetAsync(id);
+        return userAddress;
+    }
 }

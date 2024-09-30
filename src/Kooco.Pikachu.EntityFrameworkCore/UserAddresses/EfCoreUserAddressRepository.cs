@@ -41,8 +41,16 @@ public class EfCoreUserAddressRepository(IDbContextProvider<PikachuDbContext> db
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task<IQueryable<UserAddress>> GetFilteredQueryableAsync(string? filter, Guid? userId, string? postalCode, string? city,
-        string? address, string? recipientName, string? recipientPhoneNumber, bool? isDefault)
+    public async Task<IQueryable<UserAddress>> GetFilteredQueryableAsync(
+            string? filter = null,
+            Guid? userId = null,
+            string? postalCode = null,
+            string? city = null,
+            string? address = null,
+            string? recipientName = null,
+            string? recipientPhoneNumber = null,
+            bool? isDefault = null
+            )
     {
         var queryable = await GetQueryableAsync();
 

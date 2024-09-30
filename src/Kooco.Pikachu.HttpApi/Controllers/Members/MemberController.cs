@@ -93,6 +93,18 @@ public class MemberController(IMemberAppService memberAppService) : PikachuContr
         return memberAppService.CreateMemberAddressAsync(id, input);
     }
 
+    [HttpPut("{id}/addresses/{addressId}")]
+    public Task<UserAddressDto> UpdateMemberAddressAsync(Guid id, Guid addressId, CreateUpdateMemberAddressDto input)
+    {
+        return memberAppService.UpdateMemberAddressAsync(id, addressId, input);
+    }
+
+    [HttpGet("{id}/addresses")]
+    public Task<List<UserAddressDto>> GetMemberAddressListAsync(Guid id)
+    {
+        return memberAppService.GetMemberAddressListAsync(id);
+    }
+
     [HttpPost("login")]
     public Task<MemberLoginResponseDto> LoginAsync(MemberLoginInputDto input)
     {

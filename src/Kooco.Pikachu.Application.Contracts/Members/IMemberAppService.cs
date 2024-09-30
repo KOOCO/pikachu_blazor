@@ -26,6 +26,8 @@ public interface IMemberAppService : IApplicationService
     Task<UserCumulativeOrderDto> GetMemberCumulativeOrdersAsync(Guid id);
     Task<UserCumulativeFinancialDto> GetMemberCumulativeFinancialsAsync(Guid id);
     Task<UserAddressDto> CreateMemberAddressAsync(Guid id, CreateUpdateMemberAddressDto input);
+    Task<UserAddressDto> UpdateMemberAddressAsync(Guid id, Guid addressId, CreateUpdateMemberAddressDto input);
+    Task<List<UserAddressDto>> GetMemberAddressListAsync(Guid id);
     Task<MemberLoginResponseDto> LoginAsync(MemberLoginInputDto input);
     Task<MemberDto> RegisterAsync(CreateMemberDto input);
 }
