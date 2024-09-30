@@ -92,4 +92,10 @@ public class MemberController(IMemberAppService memberAppService) : PikachuContr
     {
         return memberAppService.LoginAsync(input);
     }
+
+    [HttpPost("register")]
+    public Task<MemberDto> RegisterAsync(CreateMemberDto input)
+    {
+        return memberAppService.RegisterAsync(input);
+    }
 }

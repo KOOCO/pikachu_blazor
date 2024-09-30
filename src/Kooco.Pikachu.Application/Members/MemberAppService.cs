@@ -173,4 +173,14 @@ public class MemberAppService(IMemberRepository memberRepository, IdentityUserMa
         }
         return ObjectMapper.Map<PikachuLoginResponseDto, MemberLoginResponseDto>(loginResult);
     }
+
+    [AllowAnonymous]
+    public async Task<MemberDto> RegisterAsync(CreateMemberDto input)
+    {
+        Check.NotNull(input, nameof(input));
+
+        input.Role = Constant.MemberRole;
+        var identityUser = await pikachuAccountAppService.RegisterAsync(input);
+        return ObjectMapper.Map<IdentityUserDto, MemberDto>(identityUser);
+    }
 }
