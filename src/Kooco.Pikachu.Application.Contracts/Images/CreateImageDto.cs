@@ -10,6 +10,8 @@ namespace Kooco.Pikachu.Images
         public ImageType ImageType { get; set; }
         public Guid TargetId { get; set; }
         public int SortNo { get; set; }
+        public string? Link { get; set; }
+        public int? ModuleNumber { get; set; }
 
         public CreateImageDto()
         {
@@ -22,7 +24,7 @@ namespace Kooco.Pikachu.Images
             ImageType imageType,
             Guid? targetId = null,
             int sortNo = 1
-            )
+        )
         {
             Name = name;
             BlobImageName = blobImageName;

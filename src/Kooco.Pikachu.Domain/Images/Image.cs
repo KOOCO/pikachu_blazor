@@ -37,6 +37,10 @@ namespace Kooco.Pikachu.Images
         /// </summary>
         public int SortNo { get; set; }
 
+        public string? Link { get; set; }
+
+        public int? ModuleNumber { get; set; }
+
         public Image()
         {
             

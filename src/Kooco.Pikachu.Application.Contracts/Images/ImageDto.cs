@@ -11,5 +11,7 @@ namespace Kooco.Pikachu.Images
         public ImageType ImageType { get; set; }
         public Guid? TargetId { get; set; }
         public int SortNo { get; set; }
+        public string? Link { get; set; }
+        public int? ModuleNumber { get; set; }
     }
 }

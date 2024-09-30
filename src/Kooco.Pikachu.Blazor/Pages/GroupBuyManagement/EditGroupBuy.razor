@@ -2,6 +2,7 @@
 
 @using Kooco.Pikachu.EnumValues;
 @using Kooco.Pikachu.GroupBuys;
+@using Kooco.Pikachu.Images
 @using Kooco.Pikachu.Items.Dtos;
 @using Kooco.Pikachu.Orders
 @using Microsoft.Extensions.Configuration;
@@ -285,77 +286,7 @@
                 </div>
             }
         </div>
-        <div class="row">
-            <div class="col-2">
-                <label>@L["CarouselImages"]<Span><Tooltip Text="@L["uploadUpto5Images"]">
-                <Icon class="fa-question-circle "></Icon></Tooltip></Span></label>
-            </div>
-            <div class="col-10">
-                <Field>
-                    <FilePicker @ref="CarouselPickerCustom"
-                                Multiple
-                                 Disabled="CarouselImages.Count>=5"
-                                Changed="OnCarouselUploadAsync"
-                                ShowMode="FilePickerShowMode.List"
-                                Accept=".jpg, .png, .svg ,.jpeg,.webp">
-                        <FileTemplate>
-                            <Div Flex="Flex.JustifyContent.Between">
-                                <Div>
-                                    <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
-                                    <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
-                                </Div>
-                                <Div Class="ps-2">
-                                    <Div>
-                                            @if (context.File.Status == FileEntryStatus.Ready)
-                                        {
-                                            <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
-                                        }
-                                        else if (context.File.Status == FileEntryStatus.Uploading)
-                                        {
-                                            <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
-                                        }
-                                        else if (context.File.Status == FileEntryStatus.Uploaded)
-                                        {
-                                            <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
-                                        }
-                                        else if (context.File.Status == FileEntryStatus.Error)
-                                        {
-                                            <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
-                                        }
-                                    </Div>
-                                    <Div>
-                                        <Icon TextColor="TextColor.Danger" Name="IconName.Delete" class="cursor-pointer" Clicked="context.RemoveFile" />
-                                    </Div>
-                                </Div>
-                            </Div>
-                        </FileTemplate>
-                        <ButtonsTemplate>
-                            <Progress Value="@CarouselPickerCustom.GetProgressPercentage()" />
-                        </ButtonsTemplate>
-                    </FilePicker>
-                </Field>
-
-            </div>
-            @if(CarouselImages.Count > 0)
-            {
-                <div Class="row">
-                    <div class="col-2"></div>
-                    <div class="col-10">
-                        <div class="image-list-container">
-                            @foreach (var image in CarouselImages)
-                            {
-                                <div class="image-container">
-                                    <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image" Fluid />
-                                    <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName)">
-                                        <i class="fa fa-trash"></i>
-                                    </button>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
+        
         <Divider></Divider>
 
         <div class="row">
@@ -867,26 +798,110 @@
                                     </AccordionToggle>
                                 </CollapseHeader>
                                 <CollapseBody>
-                                    @if(module.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule)
-                                        {
-                                            <div class="d-flex justify-content-end">
-                                                <div style="width: 60px;">
-                                                    <select class="form-control form-control-sm" @onchange="(e) => OnProductGroupValueChange(e, module)">
-                                                        @if (module.Selected.Count == 3)
+                                    @if(module.GroupBuyModuleType is GroupBuyModuleType.ProductGroupModule)
+                                    {
+                                        <div class="d-flex justify-content-end">
+                                            <div style="width: 60px;">
+                                                <select class="form-control form-control-sm" @onchange="(e) => OnProductGroupValueChange(e, module)">
+                                                    @if (module.Selected.Count == 3)
                                                         {
                                                             <option selected="selected" value="3">3</option>
                                                             <option value="4">4</option>
                                                         } 
-                                                        else if (module.Selected.Count == 4)
+                                                    else if (module.Selected.Count == 4)
                                                         {
                                                             <option value="3">3</option>
                                                             <option selected="selected" value="4">4</option>
                                                         }
-                                                    </select>
-                                                </div>
+                                                </select>
                                             </div>
+                                        </div>
+                                    }
 
+                                    @if (module.GroupBuyModuleType is GroupBuyModuleType.CarouselImages)
+                                    {
+                                        foreach (List<CreateImageDto> carouselImages in CarouselModules)
+                                        {
+                                            <div class="row">
+                                                <div class="col-2">
+                                                    <label>
+                                                        @L["CarouselImages"]<Span>
+                                                            <Tooltip Text="@L["uploadUpto5Images"]">
+                                                                <Icon class="fa-question-circle" />
+                                                            </Tooltip>
+                                                        </Span>
+                                                    </label>
+                                                </div>
+                                                <div class="col-10 ">
+                                                    <Field>
+                                                        <FilePicker @ref="CarouselFilePickers[CarouselModules.IndexOf(carouselImages)]"
+                                                                    Disabled="carouselImages.Count >= 5"
+                                                                    Multiple
+                                                                    Changed="@(async (e) => await OnCarouselUploadAsync(e, 
+                                                                                                                        carouselImages, 
+                                                                                                                        CarouselModules.IndexOf(carouselImages) + 1,
+                                                                                                                        CarouselFilePickers[CarouselModules.IndexOf(carouselImages)]))"
+                                                                    ShowMode="FilePickerShowMode.List"
+                                                                    Accept=".jpg, .png, .svg, .jpeg, .webp">
+                                                            <FileTemplate>
+                                                                <Div Flex="Flex.JustifyContent.Between">
+                                                                    <Div>
+                                                                        <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
+                                                                        <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                                                    </Div>
+                                                                    <Div Class="ps-2">
+                                                                        <Div>
+                                                                            @if (context.File.Status is FileEntryStatus.Ready)
+                                                                            {
+                                                                                <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
+                                                                            }
+                                                                            else if (context.File.Status is FileEntryStatus.Uploading)
+                                                                            {
+                                                                                <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
+                                                                            }
+                                                                            else if (context.File.Status is FileEntryStatus.Uploaded)
+                                                                            {
+                                                                                <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
+                                                                            }
+                                                                            else if (context.File.Status is FileEntryStatus.Error)
+                                                                            {
+                                                                                <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
+                                                                            }
+                                                                        </Div>
+                                                                        <Div>
+                                                                            <Icon TextColor="TextColor.Danger" Name="IconName.Delete" class="cursor-pointer" Clicked="context.RemoveFile" />
+                                                                        </Div>
+                                                                    </Div>
+                                                                </Div>
+                                                            </FileTemplate>
+                                                            <ButtonsTemplate>
+                                                                <Progress Value="@CarouselFilePickers[CarouselModules.IndexOf(carouselImages)].GetProgressPercentage()" />
+                                                            </ButtonsTemplate>
+                                                        </FilePicker>
+                                                    </Field>
+                                                </div>
+                                                @if (carouselImages.Count > 0)
+                                                {
+                                                    <div Class="row">
+                                                        <div class="col-2"></div>
+                                                        <div class="col-10">
+                                                            <div class="image-list-container">
+                                                                @foreach (CreateImageDto image in carouselImages)
+                                                                {
+                                                                    <div class="image-container">
+                                                                        <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image" Fluid />
+                                                                         <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName, carouselImages)">
+                                                                            <i class="fa fa-trash"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
                                         }
+                                    }
 
                                     <div class="row mt-2">
                                         @foreach(var selectedItem in module.Selected)
