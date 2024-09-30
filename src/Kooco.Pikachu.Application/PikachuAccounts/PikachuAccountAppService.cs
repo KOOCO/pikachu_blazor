@@ -1,14 +1,23 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Kooco.Pikachu.EnumValues;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using RestSharp;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Data;
+using Volo.Abp.Identity;
+using Volo.Abp.Validation;
+using IdentityUser = Volo.Abp.Identity.IdentityUser;
 
 namespace Kooco.Pikachu.PikachuAccounts;
 
 [RemoteService(IsEnabled = false)]
-public class PikachuAccountAppService(IConfiguration configuration) : PikachuAppService, IPikachuAccountAppService
+public class PikachuAccountAppService(IConfiguration configuration, IdentityUserManager identityUserManager, IIdentityRoleRepository identityRoleRepository) : PikachuAppService, IPikachuAccountAppService
 {
     public async Task<PikachuLoginResponseDto> LoginAsync(PikachuLoginInputDto input)
     {
@@ -56,5 +65,93 @@ public class PikachuAccountAppService(IConfiguration configuration) : PikachuApp
             result.ErrorDescription = errorDescriptionElement.GetString();
         }
         return result;
+    }
+
+    public async Task<IdentityUserDto> RegisterAsync(PikachuRegisterInputDto input)
+    {
+        Check.NotNull(input, nameof(input));
+
+        if (input.Method != LoginMethod.UserNameOrPassword)
+        {
+            throw new UserFriendlyException("NotImplementedYet");
+        }
+
+        ValidateRegister(input);
+
+        var identityUser = new IdentityUser(GuidGenerator.Create(), input.UserName, input.Email, CurrentTenant.Id)
+        {
+            Name = input.Name
+        };
+
+        if (!input.PhoneNumber.IsNullOrWhiteSpace())
+        {
+            identityUser.SetPhoneNumber(input.PhoneNumber, false);
+        }
+        if (input.Birthday.HasValue)
+        {
+            identityUser.SetProperty(Constant.Birthday, input.Birthday);
+        }
+
+        if (!input.Role.IsNullOrWhiteSpace())
+        {
+            var role = (await identityRoleRepository.FindByNormalizedNameAsync(input.Role)) ?? throw new UserFriendlyException("RoleNotFound");
+            identityUser.AddRole(role.Id);
+        }
+
+        (await identityUserManager.CreateAsync(identityUser)).CheckErrors();
+        return ObjectMapper.Map<IdentityUser, IdentityUserDto>(identityUser);
+    }
+
+    private static void ValidateRegister(PikachuRegisterInputDto input)
+    {
+        var result = new List<ValidationResult>();
+        var requiredMembers = new List<string>();
+
+        if (input.Method == LoginMethod.UserNameOrPassword)
+        {
+            if (input.Email.IsNullOrWhiteSpace())
+            {
+                requiredMembers.Add(nameof(input.Email));
+            }
+
+            if (input.UserName.IsNullOrWhiteSpace())
+            {
+                requiredMembers.Add(nameof(input.UserName));
+            }
+
+            if (input.Name.IsNullOrWhiteSpace())
+            {
+                requiredMembers.Add(nameof(input.Name));
+            }
+
+            if (input.Password.IsNullOrWhiteSpace())
+            {
+                requiredMembers.Add(nameof(input.Password));
+            }
+
+            if (input.ConfirmPassword.IsNullOrWhiteSpace())
+            {
+                requiredMembers.Add(nameof(input.ConfirmPassword));
+            }
+
+            if (!string.Equals(input.Password, input.ConfirmPassword, StringComparison.Ordinal))
+            {
+                result.Add(new ValidationResult(errorMessage: "PasswordsDoNotMatch", memberNames: [nameof(input.Password), nameof(input.ConfirmPassword)]));
+            }
+        }
+
+        else
+        {
+            if (input.ThirdPartyToken.IsNullOrWhiteSpace())
+            {
+                requiredMembers.Add(nameof(input.ThirdPartyToken));
+            }
+        }
+
+        if (requiredMembers.Count > 0 || result.Count > 0)
+        {
+            result.Add(new ValidationResult(errorMessage: "FieldsRequired", memberNames: requiredMembers));
+            throw new AbpValidationException(result);
+        }
     }
 }

@@ -24,5 +24,7 @@ namespace Kooco.Pikachu
         public const string FacebookId = "FacebookId";
         public const string LineId = "LineId";
         public const string GoogleId = "GoogleId";
+
+        public const string MemberRole = "MEMBER";
     }
 }

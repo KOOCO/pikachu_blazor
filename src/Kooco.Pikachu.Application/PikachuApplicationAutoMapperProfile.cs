@@ -152,6 +152,8 @@ public class PikachuApplicationAutoMapperProfile : Profile
 
         CreateMap<IdentityUser, MemberDto>()
             .ForMember(dest => dest.Birthday, opt => opt.MapFrom(src => src.ExtraProperties.GetValueOrDefault(Constant.Birthday)));
+        CreateMap<IdentityUserDto, MemberDto>()
+            .ForMember(dest => dest.Birthday, opt => opt.MapFrom(src => src.ExtraProperties.GetValueOrDefault(Constant.Birthday)));
         CreateMap<MemberDto, UpdateMemberDto>();
         CreateMap<MemberModel, MemberDto>();
 
