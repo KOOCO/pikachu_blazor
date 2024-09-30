@@ -1,21 +1,27 @@
-﻿using System;
+﻿using Kooco.Pikachu.Permissions;
+using Microsoft.AspNetCore.Authorization;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Domain.Repositories;
 
 namespace Kooco.Pikachu.AddOnProducts
 {
+    [RemoteService(IsEnabled = false)]
+    [Authorize(PikachuPermissions.AddOnProducts.Default)]
     public class AddOnProductAppService(IAddOnProductRepository addOnProductRepository, AddOnProductManager addOnProductManager) : PikachuAppService, IAddOnProductAppService
     {
+        [Authorize(PikachuPermissions.AddOnProducts.Create)]
         public async Task<AddOnProductDto> CreateAsync(CreateUpdateAddOnProductDto input)
         {
             var addonProduct = await addOnProductManager.CreateAsync(input.AddOnAmount, input.AddOnLimitPerOrder, input.QuantitySetting, input.AvailableQuantity, input.DisplayOriginalPrice, input.StartDate, input.EndDate, input.AddOnConditions, input.MinimumSpendAmount, input.GroupbuysScope, input.Status, input.SellingQuantity, input.ProductId, input.GroupBuyIds);
             return ObjectMapper.Map<AddOnProduct, AddOnProductDto>(addonProduct);
         }
-
+        [Authorize(PikachuPermissions.AddOnProducts.Delete)]
         public async Task DeleteAsync(Guid Id)
         {
             await addOnProductRepository.DeleteAsync(Id);
@@ -43,7 +49,8 @@ namespace Kooco.Pikachu.AddOnProducts
 
             };
         }
-            public async Task<AddOnProductDto> UpdateAsync(Guid Id,CreateUpdateAddOnProductDto input)
+        [Authorize(PikachuPermissions.AddOnProducts.Edit)]
+        public async Task<AddOnProductDto> UpdateAsync(Guid Id,CreateUpdateAddOnProductDto input)
             {
                 var addonProduct = await addOnProductManager.UpdateAsync(Id,input.AddOnAmount, input.AddOnLimitPerOrder, input.QuantitySetting, input.AvailableQuantity, input.DisplayOriginalPrice, input.StartDate, input.EndDate, input.AddOnConditions, input.MinimumSpendAmount, input.GroupbuysScope, input.Status, input.SellingQuantity, input.ProductId, input.GroupBuyIds);
                 return ObjectMapper.Map<AddOnProduct, AddOnProductDto>(addonProduct);
