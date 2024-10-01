@@ -11,7 +11,7 @@ namespace Kooco.Pikachu.DiscountCodes
         public string EventName { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public string DiscountCodeValue { get; set; } // Renamed to avoid conflict with class name
+        public string Code { get; set; } // Renamed to avoid conflict with class name
         public string SpecifiedCode { get; set; }
         public int AvailableQuantity { get; set; }
         public int TotalQuantity { get; set; }
@@ -24,5 +24,9 @@ namespace Kooco.Pikachu.DiscountCodes
         public int DiscountPercentage { get; set; }
         public int DiscountAmount { get; set; }
         public bool Status { get; set; }
+        public List<DiscountCodeSpecificGroupbuyDto> DiscountSpecificGroupbuys { get; set; } = new();
+        public List<DiscountCodeSpecificProductDto> DiscountSpecificProducts { get; set; } = new();
+        public int[] SpecificShippingMethods { get; set; }
+
     }
 }

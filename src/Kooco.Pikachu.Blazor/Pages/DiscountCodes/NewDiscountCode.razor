@@ -1,4 +1,5 @@
 ﻿@page "/new-discount-code"
+@page "/new-discount-code/{Id:guid}"
 @attribute [Authorize]
 @using Kooco.Pikachu.EnumValues
 @using Kooco.Pikachu.Items.Dtos
@@ -8,63 +9,114 @@
 @using Kooco.Pikachu.Items
 @using Kooco.Pikachu.Permissions
 @using Microsoft.Extensions.Localization
-
+@using Volo.Abp.AspNetCore.Components.Web
+@inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
 @inherits PikachuComponentBase
 @inject GroupBuyAppService GroupBuyAppService
-
+@inject DiscountCodeAppService DiscountCodeAppService
 @inject NavigationManager NavigationManager
  <Div>
     <Row>
         <Column ColumnSize="ColumnSize.Is6">
+             @if(Id!=Guid.Empty)
+            {
+                <h3 class="text-dark">@L["UpdateDiscountCode"]</h3>                
+            }
+            else{
             <h3 class="text-dark">@L["NewDiscountCode"]</h3>
+            }
         </Column>
 
     </Row>
 </Div>
+ <Form >
+    <Validations @ref="@ValidationsRef" Model="@CreateDiscountCode" ValidateOnLoad="false">
 <Card>
+   
     <CardBody>
         <Row VerticalGutter="10">
             <Column ColumnSize="ColumnSize.Is3">
                 <h4 class="text-dark">@L["BasicDetails"]</h4>
             </Column>
             <Column ColumnSize="ColumnSize.Is9">
-                <Label>@L["EventName"]</Label>
+               
+                      <Validation MessageLocalizer="@LH.Localize">
+                <Label>@L["EventName"]*</Label>
                 <Column ColumnSize="ColumnSize.Is12">
-                    <TextEdit @bind-Text="CreateDiscountCode.EventName" />
-                      
+                    <TextEdit @bind-Text="CreateDiscountCode.EventName" >
+                        <Feedback>
+                                        <ValidationError />
+                        </Feedback>
+                    </TextEdit>
+                     
                 </Column>
+                </Validation>
+                 
+                    
 
                 <Column ColumnSize="ColumnSize.Is12">
                         <Row>
+                            <Validation MessageLocalizer="@LH.Localize">
                             <Column ColumnSize="ColumnSize.Is6">
                                 <Label>@L["From"]</Label>
-                                <DateEdit @bind-Date="CreateDiscountCode.StartDate" TValue="DateTime" />
+                                <DateEdit @bind-Date="CreateDiscountCode.StartDate" TValue="DateTime" >
+                                <Feedback><ValidationError/></Feedback>    
+                                </DateEdit>
                             </Column>
+                            </Validation>
+                              <Validation MessageLocalizer="@LH.Localize">
                             <Column ColumnSize="ColumnSize.Is6">
                                 <Label>@L["To"]</Label>
-                            <DateEdit @bind-Date="CreateDiscountCode.EndDate" TValue="DateTime" />
+                            <DateEdit @bind-Date="CreateDiscountCode.EndDate" TValue="DateTime" >
+                            <ValidationError/>    
+                            </DateEdit>
                             </Column>
+                            </Validation>
                         </Row>
                         </Column>
                  <Divider></Divider>
                 <Column ColumnSize="ColumnSize.Is12">
+                      <Validation MessageLocalizer="@LH.Localize">
                     <Label>@L["DiscountCode"]</Label>
-                    <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="DiscountCode" @bind-CheckedValue="@CreateDiscountCode.DiscountCodeValue">
-                        <Radio Value="@("NoCodeRequired")">@L["NoCodeRequiredForDiscount"]</Radio>
-                        <Radio Value="@("CodeRequired")">@L["CustomCode:"] <TextEdit @bind-Value="CreateDiscountCode.SpecifiedCode"  /> </Radio>
+                    <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="DiscountCode" @bind-CheckedValue="@CreateDiscountCode.Code">
+                       <ChildContent>                    
+                           <Radio Value="@("NoCodeRequired")">@L["NoCodeRequiredForDiscount"]</Radio>
+                        <Radio Value="@("CodeRequired")">@L["CustomCode:"]
+                                            @if (CreateDiscountCode.Code=="NoCodeRequired"||CreateDiscountCode.Code.IsNullOrWhiteSpace())
+                                            {
+                                                <TextEdit  Disabled @bind-Text="CreateDiscountCode.SpecifiedCode"  /> 
+                                            }
+                                            else
+                                            {
+                                                <TextEdit  @bind-Text="CreateDiscountCode.SpecifiedCode" />
+                                            }
+                                            </Radio>
+                                    </ChildContent>
+                    <Feedback>
+                        <ValidationError/>
+                    </Feedback>
                     </RadioGroup>
+                    </Validation>
 
                 </Column>
                 <Column ColumnSize="ColumnSize.Is12">
                     <Row>
+                          <Validation MessageLocalizer="@LH.Localize">
                         <Column ColumnSize="ColumnSize.Is6">
                             <Label>@L["NoOfIssuedCodes"]</Label>
-                            <NumericEdit @bind-Number="CreateDiscountCode.AvailableQuantity" TValue="int" />
+                            <NumericEdit @bind-Value="CreateDiscountCode.AvailableQuantity" TValue="int" >
+                            <ValidationError/>   
+                            </NumericEdit>
                         </Column>
+                        </Validation>
+                          <Validation MessageLocalizer="@LH.Localize">
                         <Column ColumnSize="ColumnSize.Is6">
                             <Label>@L["MaximunUsePerPerson"]</Label>
-                            <NumericEdit @bind-Number="CreateDiscountCode.MaxUsePerPerson" TValue="int"  />
+                                        <NumericEdit @bind-Value="CreateDiscountCode.MaxUsePerPerson" TValue="int">
+                            <ValidationError/>   
+                            </NumericEdit>
                         </Column>
+                        </Validation>
                     </Row>
                 </Column>
         
@@ -81,54 +133,76 @@
             </Column>
             <Column ColumnSize="ColumnSize.Is9">
                 <Column ColumnSize="ColumnSize.Is12">
+                     <Validation MessageLocalizer="@LH.Localize">
                     <Label>@L["Groupbuys"]</Label>
-                    <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="Groupbuys" @bind-CheckedValue="@CreateDiscountCode.GroupBuysScope">
+                    <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="Groupbuys" @bind-CheckedValue="@CreateDiscountCode.GroupbuysScope">
+                       <ChildContent>
                         <Radio Value="@("AllGroupbuys")">@L["AllGroupBuys"]</Radio>
                         <Radio Value="@("SpecificGroupbuys")">@L["SpecificGroupBuys"]</Radio>
+                        </ChildContent>
+                        <Feedback>
+                            <ValidationError/>
+                        </Feedback>
                     </RadioGroup>
+                    </Validation>
 
                 </Column>
                 <Column ColumnSize="ColumnSize.Is12">
+                    <EditForm EditContext="editContext">   
                     <AntDesign.Select Mode="multiple"
-                                      TItem="GroupBuyDto"
-                                      TItemValue="GroupBuyDto"
+                                      TItem="Guid"
+                                      TItemValue="Guid"
+                                      
                                       @bind-Values="@SelectedGroupBuy"
                                       Placeholder="@L["SelectaGroupBuys"]"
                                       EnableSearch>
                         <SelectOptions>
                             @foreach (var item in Groupbuys)
                             {
-                                <AntDesign.SelectOption TItemValue="GroupBuyDto" TItem="GroupBuyDto" Value=@item Label=@item.GroupBuyName />
+                                <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@item.GroupBuyName />
                             }
                         </SelectOptions>
                     </AntDesign.Select>
+                                <ValidationMessage For="() => CreateDiscountCode!.GroupbuyIds" />
+                    </EditForm>
+                 
 
                 </Column>
            
             <Divider></Divider>
             
                 <Column ColumnSize="ColumnSize.Is12">
+                                         <Validation MessageLocalizer="@LH.Localize">
                     <Label>@L["Products"]</Label>
                     <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="Products" @bind-CheckedValue="@CreateDiscountCode.ProductsScope">
+                       <ChildContent>
                         <Radio Value="@("AllProducts")">@L["AllProducts"]</Radio>
                         <Radio Value="@("SpecificProducts")">@L["SpecificProducts"]</Radio>
+                        </ChildContent>
+                       <Feedback>
+                        <ValidationError/>
+                        </Feedback>
                     </RadioGroup>
-
+                    </Validation>
                 </Column>
                 <Column ColumnSize="ColumnSize.Is12">
+                  <EditForm EditContext="editContext">   
+
                     <AntDesign.Select Mode="multiple"
-                                      TItem="KeyValueDto"
-                                      TItemValue="KeyValueDto"
+                                      TItem="Guid"
+                                      TItemValue="Guid"
                                       @bind-Values="@SelectedProducts"
                                       Placeholder="@L["SelectaProducts"]"
                                       EnableSearch>
                         <SelectOptions>
                             @foreach (var item in Products)
                             {
-                                <AntDesign.SelectOption TItemValue="KeyValueDto" TItem="KeyValueDto" Value=@item Label=@item.Name />
+                                <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@item.Name />
                             }
                         </SelectOptions>
                     </AntDesign.Select>
+                                <ValidationMessage For="() => CreateDiscountCode!.ProductIds" />
+                    </EditForm>
 
                 </Column>
             </Column>
@@ -144,24 +218,45 @@
             </Column>
             <Column ColumnSize="ColumnSize.Is9">
                 <Column ColumnSize="ColumnSize.Is12">
+                     <Validation MessageLocalizer="@LH.Localize">
                     <Label>@L["DiscountMethod"]</Label>
                     <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="DiscountMethod" @bind-CheckedValue="@CreateDiscountCode.DiscountMethod">
+                        <ChildContent>
                         <Radio Value="@("DirectDiscount")">@L["DirectDiscount"]</Radio>
-                        <Radio Value="@("RequireSpendings")">@L["MinimumSpendDiscount,RequiresSpending$"]<NumericEdit @bind-Number="CreateDiscountCode.MinimumSpendAmount" TValue="int"/></Radio>
+                        <Radio Value="@("RequireSpendings")">@L["MinimumSpendDiscount,RequiresSpending$"]
+                                            @if (CreateDiscountCode.DiscountMethod == "DirectDiscount" || CreateDiscountCode.DiscountMethod == "ShippingDiscount" || CreateDiscountCode.DiscountMethod.IsNullOrEmpty())
+                           {
+                                                <NumericEdit Disabled @bind-Value="CreateDiscountCode.MinimumSpendAmount" TValue="int"/>
+                                            }
+                                            else
+                                            {
+                                                <NumericEdit  @bind-Value="CreateDiscountCode.MinimumSpendAmount" TValue="int" />
+                                            }
+                                        </Radio>
                         <Radio Value="@("ShippingDiscount")">@L["ShippingDiscount"]</Radio>
+                   </ChildContent>
                     </RadioGroup>
+                    </Validation>
 
                 </Column>
                 <Column ColumnSize="ColumnSize.Is12">
+                    <Validation MessageLocalizer="@LH.Localize">
                     <Label>@L["ShippingSettings"]</Label>
                     <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="ShippingSettings" @bind-CheckedValue="@CreateDiscountCode.ShippingDiscountScope">
+                       <ChildContent>
                         <Radio Value="@("AllMethods")">@L["AllMethods"]</Radio>
                         
                         <Radio Value="@("SpecificMethods")">@L["SpecificMethods"]</Radio>
+                        </ChildContent>
+                        <Feedback>
+                        <ValidationError/>
+                        </Feedback>
                     </RadioGroup>
+                    </Validation>
 
                 </Column>
                 <Column ColumnSize="ColumnSize.Is12">
+                            <EditForm EditContext="editContext">
                     <AntDesign.Select Mode="multiple"
                                       TItem="DeliveryMethod"
                                       TItemValue="DeliveryMethod"
@@ -175,15 +270,21 @@
                             }
                         </SelectOptions>
                     </AntDesign.Select>
+                                <ValidationMessage For="() => CreateDiscountCode!.SpecificShippingMethods" />
+                    </EditForm>
 
                 </Column>
                 <Divider></Divider>
                 <Column ColumnSize="ColumnSize.Is12">
+                     
                     <Label>@L["DiscountAmount"]</Label>
+                     
+                    <Radio Group="DiscountAmount" Value="@("Amount")">@L["DiscountOf$"]<NumericEdit @bind-Value="CreateDiscountCode.DiscountAmount" TValue="int" />
 
-                    <Radio Group="DiscountAmount" Value="@("Amount")">@L["DiscountOf$"]<NumericEdit @bind-Number="CreateDiscountCode.DiscountAmount" TValue="int" /></Radio>
-                    <Radio Group="DiscountAmount" Value="@("Percentage")">@L["DiscountOf%"]<NumericEdit @bind-Number="CreateDiscountCode.DiscountPercentage" Max="100" TValue="int" /></Radio>
-                    
+                    </Radio>
+                  
+                    <Radio Group="DiscountAmount" Value="@("Percentage")">@L["DiscountOf%"]<NumericEdit @bind-Value="CreateDiscountCode.DiscountPercentage" Max="100" TValue="int" /></Radio>
+                   
 
                 </Column>
             </Column>
@@ -191,11 +292,13 @@
         </Row>
     </CardBody>
 </Card>
+</Validations>
+</Form>
 <Div Class="text-end">
-    <PikachuButton Class="pk-btn-light"  Clicked="NavigateToDiscountCodes">
+    <PikachuButton Class="pk-btn-light" Disabled="IsUpdating" Clicked="NavigateToDiscountCodes">
         @L["Cancel"]
     </PikachuButton>
-    <PikachuButton Class="pk-btn-primary"  >
+    <PikachuButton Class="pk-btn-primary" Loading="IsUpdating" Clicked="HandleValidSubmit">
         @L["Create"]
     </PikachuButton>
 </Div>

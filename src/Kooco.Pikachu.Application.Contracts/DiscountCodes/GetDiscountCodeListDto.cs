@@ -5,10 +5,10 @@ using Volo.Abp.Application.Dtos;
 
 namespace Kooco.Pikachu.DiscountCodes
 {
-    public class GetDiscountCodeList : PagedAndSortedResultRequestDto
+    public class GetDiscountCodeListDto : PagedAndSortedResultRequestDto
     {
         public string? Filter { get; set; }
-        public DateTime? From { get; set; }
-        public DateTime? To { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
     }
 }

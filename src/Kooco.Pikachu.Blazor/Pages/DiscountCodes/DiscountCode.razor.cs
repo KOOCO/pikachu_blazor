@@ -8,18 +8,20 @@ using Volo.Abp.Application.Dtos;
 using Kooco.Pikachu.DiscountCodes;
 using System.Linq;
 using Blazorise;
+using AntDesign;
+using SortDirection = Blazorise.SortDirection;
 
 namespace Kooco.Pikachu.Blazor.Pages.DiscountCodes
 {
     public partial class DiscountCode
     {
-        public List<DiscountCodeDto> DiscountCodeList { get; set; }
+        public IReadOnlyList<DiscountCodeDto> DiscountCodeList { get; set; }
         private int PageSize { get; } = LimitedResultRequestDto.DefaultMaxResultCount;
         private int CurrentPage { get; set; } = 1;
         private string CurrentSorting { get; set; }
         private int TotalCount { get; set; }
 
-        private GetDiscountCodeList Filters { get; set; }
+        private GetDiscountCodeListDto Filters { get; set; }
 
         private Dictionary<string, string> _gradients = new()
     {
@@ -41,65 +43,22 @@ namespace Kooco.Pikachu.Blazor.Pages.DiscountCodes
         {
             try
             {
+                var result=await DiscountCodeAppService.GetListAsync(new GetDiscountCodeListDto
+                    {
+                    MaxResultCount = PageSize,
+                    SkipCount = (CurrentPage - 1) * PageSize,
+                    Sorting = CurrentSorting,
+                    Filter=Filters.Filter,
+                    StartDate=Filters.StartDate,
+                    EndDate=Filters.EndDate,
+                });
 
-                Filters.MaxResultCount = PageSize;
-                Filters.SkipCount = (CurrentPage - 1) * PageSize;
-                Filters.Sorting = CurrentSorting;
-
-
-
-
-
-
-                // Adding dummy data one by one
-                var discountCode1 = new DiscountCodeDto
-                {
-                    Id = Guid.NewGuid(),
-                    EventName = "Holiday Sale",
-                    StartDate = DateTime.Now,
-                    EndDate = DateTime.Now.AddDays(7),
-                    DiscountCodeValue = "HOLIDAY2024",
-                    SpecifiedCode = "HOLIDAY",
-                    AvailableQuantity = 10,
-                    TotalQuantity=90,
-                    MaxUsePerPerson = 1,
-                    GroupBuysScope = "All",
-                    ProductsScope = "All",
-                    DiscountMethod = "Percentage",
-                    MinimumSpendAmount = 50,
-                    ShippingDiscountScope = "Free",
-                    DiscountPercentage = 20,
-                    DiscountAmount = 0,
-                    Status=true
-                };
-                DiscountCodeList.Add(discountCode1);
-
-                var discountCode2 = new DiscountCodeDto
-                {
-                    Id = Guid.NewGuid(),
-                    EventName = "New Year Special",
-                    StartDate = DateTime.Now.AddDays(10),
-                    EndDate = DateTime.Now.AddDays(17),
-                    DiscountCodeValue = "NEWYEAR2024",
-                    SpecifiedCode = "NEWYEAR",
-                    AvailableQuantity = 50,
-                    MaxUsePerPerson = 2,
-                    GroupBuysScope = "VIP Members",
-                    ProductsScope = "Selected Items",
-                    DiscountMethod = "Amount",
-                    MinimumSpendAmount = 100,
-                    ShippingDiscountScope = "Standard",
-                    DiscountPercentage = 0,
-                    DiscountAmount = 25,
-                    TotalQuantity=80,
-                    Status=true,
-                };
-                DiscountCodeList.Add(discountCode2);
+                DiscountCodeList = result.Items;
+                TotalCount = (int)result.TotalCount;
 
 
 
-
-                TotalCount = 4;
+            
             }
             catch (Exception ex)
             {
@@ -126,7 +85,19 @@ namespace Kooco.Pikachu.Blazor.Pages.DiscountCodes
         {
             return;
         }
+        async void DeleteAddOn(Guid id)
+        {
+            await DiscountCodeAppService.DeleteAsync(id);
+            await _message.Success("DiscountCodeDeletedSucessfully");
+            await GetDiscountCodesAsync();
+            await InvokeAsync(StateHasChanged);
+        }
+        
+       void NavigateToEditPage(Guid id)
+        {
+            NavigationManager.NavigateTo("/new-discount-code/" + id);
 
+        }
         void CreateNewDiscountCode()
         {
             NavigationManager.NavigateTo("/new-discount-code");

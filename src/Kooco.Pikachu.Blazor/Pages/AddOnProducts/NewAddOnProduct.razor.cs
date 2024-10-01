@@ -18,17 +18,19 @@ namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
     {
         [Parameter]
         public Guid Id { get; set; }
+        private bool IsUpdating { get; set; }
+        private ValidationMessageStore? messageStore;
+        private EditContext? editContext;
         string itemimageUrl = "";
         private AddOnProductDto AddOnProduct { get; set; }
-        private bool IsUpdating { get; set; }
+       
         private CreateUpdateAddOnProductDto CreateAddOnProduct { get; set; }
         private IReadOnlyList<GroupBuyDto> Groupbuys { get; set; }
         private IReadOnlyList<KeyValueDto> Products { get; set; }
         IEnumerable<Guid> SelectedGroupBuy { get; set; }
         private Validations ValidationsRef;
         private ItemDto Item { get; set; }
-        private ValidationMessageStore? messageStore;
-        private EditContext? editContext;
+       
         private readonly ItemAppService _itemAppService;
         public NewAddOnProduct(ItemAppService itemAppService)
         {
@@ -55,7 +57,7 @@ namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
                     {
 
                         CreateAddOnProduct = ObjectMapper.Map<AddOnProductDto, CreateUpdateAddOnProductDto>(addon);
-                        CreateAddOnProduct.GroupBuyIds = addon.AddOnProductSpecificGroupbuys.Select(x => x.Id).ToList();
+                        CreateAddOnProduct.GroupBuyIds = addon.AddOnProductSpecificGroupbuys.Select(x => x.GroupbuyId).ToList();
                     SelectedGroupBuy= addon.AddOnProductSpecificGroupbuys.Select(x => x.GroupbuyId);
                     }
 

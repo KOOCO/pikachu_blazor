@@ -29,6 +29,7 @@ using Kooco.Pikachu.UserCumulativeOrders;
 using Kooco.Pikachu.UserCumulativeFinancials;
 using Kooco.Pikachu.PikachuAccounts;
 using Kooco.Pikachu.AddOnProducts;
+using Kooco.Pikachu.DiscountCodes;
 
 namespace Kooco.Pikachu;
 
@@ -173,6 +174,15 @@ public class PikachuApplicationAutoMapperProfile : Profile
 
         CreateMap<AddOnProductDto, CreateUpdateAddOnProductDto>();
 
+
+        CreateMap<DiscountCode, DiscountCodeDto>();
+        CreateMap<DiscountSpecificGroupbuy, DiscountCodeSpecificGroupbuyDto>();
+        CreateMap<DiscountSpecificProduct, DiscountCodeSpecificProductDto>();
+        CreateMap<DiscountCodeUsage, DiscountCodeUsageDto>();
+        CreateMap<DiscountCodeDto, CreateUpdateDiscountCodeDto>();
+
+        CreateMap<AddOnProductDto, CreateUpdateAddOnProductDto>();
+
         CreateMap<UserCumulativeOrder, UserCumulativeOrderDto>();
         CreateMap<UserCumulativeOrderDto, UpdateUserCumulativeOrderDto>();
 
@@ -180,5 +190,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<UserCumulativeFinancialDto, UpdateUserCumulativeFinancialDto>();
 
         CreateMap<PikachuLoginResponseDto, MemberLoginResponseDto>();
+
+
     }
 }

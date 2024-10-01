@@ -37,6 +37,7 @@ using Kooco.Pikachu.UserCumulativeCredits;
 using Kooco.Pikachu.UserCumulativeOrders;
 using Kooco.Pikachu.UserCumulativeFinancials;
 using Kooco.Pikachu.AddOnProducts;
+using Kooco.Pikachu.DiscountCodes;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -108,6 +109,11 @@ public class PikachuDbContext :
     public DbSet<AddOnProduct> AddOnProducts { get; set; }
     public DbSet<AddOnProductSpecificGroupbuy> AddOnProductSpecificGroupbuys { get; set; }
     public DbSet<UserCumulativeFinancial> UserCumulativeFinancials { get; set; }
+    public DbSet<DiscountCode> DiscountCodes { get; set; }
+    public DbSet<DiscountSpecificGroupbuy> DiscountSpecificGroupbuys { get; set; }
+    public DbSet<DiscountSpecificProduct> DiscountSpecificProducts { get; set; }
+    public DbSet<DiscountCodeUsage> DiscountCodeUsages { get; set; }
+
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
     {
@@ -343,6 +349,26 @@ public class PikachuDbContext :
         builder.Entity<UserCumulativeFinancial>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "UserCumulativeFinancials", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+        });
+        builder.Entity<DiscountCode>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "DiscountCodes", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+        });
+        builder.Entity<DiscountSpecificGroupbuy>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "DiscountSpecificGroupbuys", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+        });
+        builder.Entity<DiscountSpecificProduct>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "DiscountSpecificProducts", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+        });
+        builder.Entity<DiscountCodeUsage>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "DiscountCodeUsages", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
         });
     }

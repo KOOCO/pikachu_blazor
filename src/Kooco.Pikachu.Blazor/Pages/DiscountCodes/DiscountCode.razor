@@ -5,7 +5,8 @@
 @using Kooco.Pikachu.Permissions
 @using Microsoft.Extensions.Localization
 @inherits PikachuComponentBase
-
+@inject IDiscountCodeAppService DiscountCodeAppService
+@inject IMessageService _message
 @inject NavigationManager NavigationManager
 
 <Div>
@@ -33,11 +34,11 @@
             </Column>
             <Column ColumnSize="columnSize">
                 <Label>@L["From"]</Label>
-                <DateEdit TValue="DateTime?" @bind-Date="Filters.From" Size="Size.Small"></DateEdit>
+                <DateEdit TValue="DateTime?" @bind-Date="Filters.StartDate" Size="Size.Small"></DateEdit>
             </Column>
             <Column ColumnSize="columnSize">
                 <Label>@L["To"]</Label>
-                <DateEdit TValue="DateTime?" @bind-Date="Filters.To" Size="Size.Small"></DateEdit>
+                <DateEdit TValue="DateTime?" @bind-Date="Filters.EndDate" Size="Size.Small"></DateEdit>
             </Column>
             <Column ColumnSize="ColumnSize.Is12.IsAuto.OnTablet" Class="d-flex align-items-end justify-content-center justify-content-sm-start">
                 <Button Class="btn-sm btn-outline-primary me-1">
@@ -93,7 +94,7 @@
                                 Field="@nameof(DiscountCodeDto.SpecifiedCode)"
                                 Caption="@L["Code"]">
                     <DisplayTemplate>
-                        <Copy Text="@context.DiscountCodeValue"></Copy>
+                        <Copy Text="@context.SpecifiedCode"></Copy>
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="DiscountCodeDto"
@@ -113,7 +114,10 @@
                     <DisplayTemplate>
                         <EntityActions TItem="DiscountCodeDto">
                             <EntityAction TItem="DiscountCodeDto"
-                                          Text="@L["Edit"]" />
+                                          Text="@L["Edit"]" Clicked="()=>NavigateToEditPage(context.Id)" />
+                            <EntityAction TItem="DiscountCodeDto"
+                                          Text="@L["Delete"]"
+                                          Clicked="()=>DeleteAddOn(context.Id)" />
                         </EntityActions>
                     </DisplayTemplate>
                 </DataGridEntityActionsColumn>
