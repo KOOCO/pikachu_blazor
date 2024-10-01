@@ -1,5 +1,6 @@
 ﻿@page "/Members"
 @attribute [Authorize(PikachuPermissions.Members.Default)]
+@using Kooco.Pikachu.Blazor.Helpers
 @using Kooco.Pikachu.Localization
 @using Kooco.Pikachu.Members
 @using Kooco.Pikachu.Permissions
@@ -7,6 +8,7 @@
 @inherits PikachuComponentBase
 @inject IMemberAppService MemberAppService
 @inject NavigationManager NavigationManager
+@inject ExcelDownloadHelper ExcelDownloadHelper
 
 <Div>
     <Row>
@@ -14,10 +16,11 @@
             <h3 class="text-dark">@L["Members"]</h3>
         </Column>
         <Column ColumnSize="ColumnSize.Is6" TextAlignment="TextAlignment.End">
-            <Button Type="ButtonType.Button" Size="Size.Small" Color="Color.Primary" Clicked="ExportAsync">
+            <PikachuButton Class="pk-btn-sm pk-btn-primary" Clicked="ExportAsync"
+                           Disabled="SelectedMembers == null || SelectedMembers.Count == 0">
                 <Icon Name="IconName.FileDownload"></Icon>
                 @L["Export"]
-            </Button>
+            </PikachuButton>
         </Column>
     </Row>
 </Div>

@@ -2,6 +2,7 @@ using Blazorise.Bootstrap5;
 using Blazorise.Icons.FontAwesome;
 using Blazorise.RichTextEdit;
 using Hangfire;
+using Kooco.Pikachu.Blazor.Helpers;
 using Kooco.Pikachu.Blazor.Menus;
 using Kooco.Pikachu.Blazor.Pages.TenantManagement;
 using Kooco.Pikachu.EntityFrameworkCore;
@@ -222,6 +223,7 @@ public class PikachuBlazorModule : AbpModule
             });
         }
         context.Services.AddScoped<CustomTenantManagement>();
+        context.Services.AddScoped<ExcelDownloadHelper>();
         context.Services.AddCors(options =>
         {
             options.AddDefaultPolicy(builder =>
