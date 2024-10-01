@@ -41,7 +41,7 @@ public partial class MemberOrdersTab
         {
             try
             {
-                await GetMemberOrdersAsync();
+                await GetMemberOrderRecordsAsync();
                 GroupBuysLookup = await MemberAppService.GetGroupBuyLookupAsync();
             }
             catch (Exception ex)
@@ -67,13 +67,14 @@ public partial class MemberOrdersTab
         }
     }
 
-    private async Task GetMemberOrdersAsync()
+    private async Task GetMemberOrderRecordsAsync()
     {
         try
         {
             if (Member is null) return;
-            var result = await MemberAppService.GetMemberOrdersAsync(
-                new GetOrderListDto
+            var result = await MemberAppService.GetMemberOrderRecordsAsync(
+                Member.Id,
+                new GetMemberOrderRecordsDto
                 {
                     MaxResultCount = PageSize,
                     SkipCount = (CurrentPage - 1) * PageSize,
@@ -83,8 +84,7 @@ public partial class MemberOrdersTab
                     StartDate = OrderFilters.StartDate,
                     EndDate = OrderFilters.EndDate,
                     ShippingStatus = OrderFilters.ShippingStatus,
-                    DeliveryMethod = OrderFilters.DeliveryMethod,
-                    UserId = Member.Id
+                    DeliveryMethod = OrderFilters.DeliveryMethod
                 }
             );
 
@@ -105,7 +105,7 @@ public partial class MemberOrdersTab
             .JoinAsString(",");
         CurrentPage = e.Page;
 
-        await GetMemberOrdersAsync();
+        await GetMemberOrderRecordsAsync();
 
         await InvokeAsync(StateHasChanged);
     }
@@ -114,7 +114,7 @@ public partial class MemberOrdersTab
     {
         CurrentPage = 1;
 
-        await GetMemberOrdersAsync();
+        await GetMemberOrderRecordsAsync();
 
         await InvokeAsync(StateHasChanged);
     }
@@ -125,7 +125,7 @@ public partial class MemberOrdersTab
 
         OrderFilters = new();
 
-        await GetMemberOrdersAsync();
+        await GetMemberOrderRecordsAsync();
 
         await InvokeAsync(StateHasChanged);
     }

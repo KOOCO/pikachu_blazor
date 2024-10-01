@@ -86,7 +86,7 @@ public class MemberAppService(IMemberRepository memberRepository, IdentityUserMa
         return ObjectMapper.Map<UserAddress?, UserAddressDto?>(defaultAddress);
     }
 
-    public async Task<PagedResultDto<OrderDto>> GetMemberOrdersAsync(GetOrderListDto input)
+    public async Task<PagedResultDto<OrderDto>> GetMemberOrderRecordsAsync(Guid id, GetMemberOrderRecordsDto input)
     {
         if (input.Sorting.IsNullOrWhiteSpace())
         {
@@ -96,7 +96,7 @@ public class MemberAppService(IMemberRepository memberRepository, IdentityUserMa
         var queryable = await orderRepository.GetQueryableAsync();
 
         queryable = queryable
-                .WhereIf(input.UserId.HasValue, x => x.UserId == input.UserId)
+                .Where(x => x.UserId == id)
                 .WhereIf(!input.Filter.IsNullOrWhiteSpace(), x => x.OrderNo.Contains(input.Filter))
                 .WhereIf(input.StartDate.HasValue, x => x.CreationTime.Date >= input.StartDate.Value.Date)
                 .WhereIf(input.EndDate.HasValue, x => x.CreationTime.Date <= input.EndDate.Value)

@@ -75,10 +75,10 @@ public class MemberController(IMemberAppService memberAppService) : PikachuContr
         return memberAppService.GetMemberCumulativeFinancialsAsync(id);
     }
 
-    [HttpGet("member-orders")]
-    public Task<PagedResultDto<OrderDto>> GetMemberOrdersAsync(GetOrderListDto input)
+    [HttpGet("{id}/order-records")]
+    public Task<PagedResultDto<OrderDto>> GetMemberOrderRecordsAsync(Guid id, [FromQuery] GetMemberOrderRecordsDto input)
     {
-        return memberAppService.GetMemberOrdersAsync(input);
+        return memberAppService.GetMemberOrderRecordsAsync(id, input);
     }
 
     [HttpPut("{id}")]

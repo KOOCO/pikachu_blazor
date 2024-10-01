@@ -19,7 +19,7 @@ public interface IMemberAppService : IApplicationService
     Task DeleteAsync(Guid id);
     Task<MemberDto> UpdateAsync(Guid id, UpdateMemberDto input);
     Task<UserAddressDto?> GetDefaultAddressAsync(Guid id);
-    Task<PagedResultDto<OrderDto>> GetMemberOrdersAsync(GetOrderListDto input);
+    Task<PagedResultDto<OrderDto>> GetMemberOrderRecordsAsync(Guid id, GetMemberOrderRecordsDto input);
     Task<List<KeyValueDto>> GetGroupBuyLookupAsync();
     Task<PagedResultDto<MemberCreditRecordDto>> GetMemberCreditRecordAsync(Guid id, GetMemberCreditRecordListDto input);
     Task<UserCumulativeCreditDto> GetMemberCumulativeCreditsAsync(Guid id);
