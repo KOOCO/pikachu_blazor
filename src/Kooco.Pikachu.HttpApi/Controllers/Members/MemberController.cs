@@ -33,12 +33,6 @@ public class MemberController(IMemberAppService memberAppService) : PikachuContr
         return memberAppService.GetAsync(id);
     }
 
-    [HttpGet("default-address/{id}")]
-    public Task<UserAddressDto?> GetDefaultAddressAsync(Guid id)
-    {
-        return memberAppService.GetDefaultAddressAsync(id);
-    }
-
     [HttpGet("groupbuy-lookup")]
     public Task<List<KeyValueDto>> GetGroupBuyLookupAsync()
     {
@@ -99,7 +93,13 @@ public class MemberController(IMemberAppService memberAppService) : PikachuContr
         return memberAppService.UpdateMemberAddressAsync(id, addressId, input);
     }
 
-    [HttpGet("{id}/addresses")]
+    [HttpGet("{id}/addresses/default")]
+    public Task<UserAddressDto?> GetDefaultAddressAsync(Guid id)
+    {
+        return memberAppService.GetDefaultAddressAsync(id);
+    }
+
+    [HttpGet("{id}/addresses/list")]
     public Task<List<UserAddressDto>> GetMemberAddressListAsync(Guid id)
     {
         return memberAppService.GetMemberAddressListAsync(id);
