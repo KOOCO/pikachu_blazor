@@ -34,6 +34,8 @@ public partial class EditGroupBuy
 
     private const int MaxtextCount = 60;
 
+    private Modal AddLinkModal { get; set; }
+    private CreateImageDto SelectedImageDto = new();
     private GroupBuyDto GroupBuy { get; set; }
     private GroupBuyUpdateDto EditGroupBuyDto { get; set; }
     private List<CreateImageDto> CarouselImages { get; set; }
@@ -205,6 +207,27 @@ public partial class EditGroupBuy
                 else module.IsWarnedForInCompatible = true;
             }
         }
+    }
+
+    private void OpenAddLinkModal(CreateImageDto createImageDto)
+    {
+        SelectedImageDto = createImageDto;
+
+        AddLinkModal.Show();
+    }
+    private void CloseAddLinkModal()
+    {
+        AddLinkModal.Hide();
+    }
+    private async Task ApplyAddLinkAsync()
+    {
+        await AddLinkModal.Hide();
+
+        await InvokeAsync(StateHasChanged);
+    }
+    private Task OnModalClosing(ModalClosingEventArgs e)
+    {
+        return Task.CompletedTask;
     }
 
     public IEnumerable<GroupBuyModuleType> GetPikachuOneList()

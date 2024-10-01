@@ -31,6 +31,8 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
 public partial class CreateGroupBuy
 {
     #region Inject
+    private Modal AddLinkModal { get; set; }
+    private CreateImageDto SelectedImageDto = new ();
     private const int maxtextCount = 60;
     private const int MaxAllowedFilesPerUpload = 5;
     private const int TotalMaxAllowedFiles = 5;
@@ -146,6 +148,27 @@ public partial class CreateGroupBuy
                 else module.IsWarnedForInCompatible = true;
             }
         }
+    }
+
+    private void OpenAddLinkModal(CreateImageDto createImageDto)
+    {
+        SelectedImageDto = createImageDto;
+
+        AddLinkModal.Show();
+    }
+    private void CloseAddLinkModal()
+    {
+        AddLinkModal.Hide();
+    }
+    private async Task ApplyAddLinkAsync()
+    {
+        await AddLinkModal.Hide();
+
+        await InvokeAsync(StateHasChanged);
+    }
+    private Task OnModalClosing(ModalClosingEventArgs e)
+    {
+        return Task.CompletedTask;
     }
 
     public IEnumerable<GroupBuyModuleType> GetPikachuOneList()

@@ -890,22 +890,35 @@
                                                 </div>
                                                 @if (carouselImages.Count > 0)
                                                 {
-                                                    <div Class="row">
-                                                        <div class="col-2"></div>
-                                                        <div class="col-10">
-                                                            <div class="image-list-container">
-                                                                @foreach (CreateImageDto image in carouselImages)
+                                                    <Div Class="row">
+                                                        <Div Class="col-2"></Div>
+                                                        <Div Class="col-10">
+                                                            <Div Class="image-list-container">
+                                                                <Div Class="d-flex flex-wrap">
+                                                                    @foreach (CreateImageDto image in carouselImages)
+                                                                    {
+                                                                        <Div Class="image-container">
+                                                                            <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image" Fluid />
+                                                                            <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName, carouselImages)">
+                                                                                <i class="fa fa-trash"></i>
+                                                                            </button>
+                                                                        </Div>
+                                                                    }
+                                                                </Div>
+
+                                                                @foreach (CreateImageDto createImageDto in carouselImages)
                                                                 {
-                                                                    <div class="image-container">
-                                                                        <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image" Fluid />
-                                                                        <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName, carouselImages)">
-                                                                            <i class="fa fa-trash"></i>
+                                                                    <Div Class="col-2">
+                                                                        <button type="button"
+                                                                                class="btn btn-primary @(carouselImages.IndexOf(createImageDto) > 0 ? "mx-1" : "")"
+                                                                                @onclick="() => OpenAddLinkModal(createImageDto)">
+                                                                            @L["Add Link"]
                                                                         </button>
-                                                                    </div>
+                                                                    </Div>
                                                                 }
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                            </Div>
+                                                        </Div>
+                                                    </Div>
                                                 }
                                             </div>
                                         }
@@ -1248,14 +1261,36 @@
 <div class="row">
     <div class="col-12 text-lg-end">
         <Button Type="@ButtonType.Button" class="btn btn-danger" Clicked="BackToGroupBuyList">@L["Cancel"]</Button>
-            <Button Type="@ButtonType.Button" class="btn btn-primary" Clicked="CreateEntityAsync"> <i class="fa fa-check"></i> @L["Save"]</Button>
-        </div>
+        <Button Type="@ButtonType.Button" class="btn btn-primary" Clicked="CreateEntityAsync"> <i class="fa fa-check"></i> @L["Save"]</Button>
     </div>
-    @code {
+</div>
+
+<Modal @ref="AddLinkModal" Closing="@OnModalClosing">
+    <ModalContent IsCentered="true">
+        <EditForm Model="@SelectedImageDto" OnValidSubmit="ApplyAddLinkAsync">
+            <ModalHeader>
+                <ModalTitle>@L["AddLink"]</ModalTitle>
+                <CloseButton Clicked="CloseAddLinkModal" />
+            </ModalHeader>
+            <ModalBody>
+                <DataAnnotationsValidator />
+                <div class="row my-2">
+                    <label class="form-label">@L["AddLink"]</label>
+                    <div class="col-12 mb-2">
+                        <InputText class="form-control" @bind-Value="@SelectedImageDto.Link" />
+                    </div>
+                </div>
+            </ModalBody>
+            <ModalFooter>
+                <Button Type="ButtonType.Submit" Class="btn btn-primary">
+                    <i class="fa fa-check"></i>
+                    @L["Save"]
+                </Button>
+            </ModalFooter>
+        </EditForm>
+    </ModalContent>
+</Modal>
+
+@code {
 
 }
-
-
-
-
-
