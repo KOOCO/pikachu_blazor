@@ -38,6 +38,7 @@ using Kooco.Pikachu.UserCumulativeOrders;
 using Kooco.Pikachu.UserCumulativeFinancials;
 using Kooco.Pikachu.AddOnProducts;
 using Kooco.Pikachu.DiscountCodes;
+using Kooco.Pikachu.ShopCarts;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -113,7 +114,7 @@ public class PikachuDbContext :
     public DbSet<DiscountSpecificGroupbuy> DiscountSpecificGroupbuys { get; set; }
     public DbSet<DiscountSpecificProduct> DiscountSpecificProducts { get; set; }
     public DbSet<DiscountCodeUsage> DiscountCodeUsages { get; set; }
-
+    public DbSet<ShopCart> ShopCarts { get; set; }
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
     {
@@ -370,6 +371,22 @@ public class PikachuDbContext :
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "DiscountCodeUsages", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
+        });
+
+        builder.Entity<ShopCart>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "ShopCarts", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+
+            b.HasMany(x => x.CartItems).WithOne(x => x.ShopCart).HasForeignKey(x => x.ShopCartId);
+        });
+
+        builder.Entity<CartItem>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "CartItems", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+
+            b.HasOne(x => x.ShopCart).WithMany(x => x.CartItems).HasForeignKey(x => x.ShopCartId);
         });
     }
 }

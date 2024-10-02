@@ -107,6 +107,11 @@ public static class PikachuPermissions
         public const string SetIsActive = Default + ".SetIsActive";
     }
 
+    public static class ShopCarts
+    {
+        public const string Default = MembersManagement + ".ShopCarts";
+    }
+
     public static class AddOnProducts
     {
         public const string Default =".AddOnProducts";

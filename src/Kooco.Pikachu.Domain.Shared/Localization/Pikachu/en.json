@@ -663,6 +663,8 @@
     "UsageTime": "Usage Time",
     "ExpiryDate": "Expiry Date",
     "RemainingCredits": "Remaining Credits",
+    "Pikachu:ShopCartForUserAlreadyExists": "Shop Cart for this User Id already exists.",
+    "Permission:ShopCart": "Shop Carts",
 
     //Add On Products
     "AddOnProducts": "Add-on Products",
@@ -769,21 +771,21 @@
     "SelectaProducts": "Select Products",
 
     "Create": "Create",
-   
+
     "EarnedPoints": "Earned Points",
-  
+
     "Limited,validfordays": "Limited, valid for days",
-    
+
     "CalculationMethod": "Calculation Method",
- 
+
     "StageSettings": "Stage Settings",
-   
+
     "Add-OnProducts": "Add-On Products",
-    
+
     "ApplicableforGroupbuying": "Applicable for Group Buying",
- 
+
     "ApplicableforProducts": "Applicable for Products"
-    
+
 
   }
 }
