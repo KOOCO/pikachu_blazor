@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,10 +13,15 @@ namespace Kooco.Pikachu.ShopCarts;
 
 public class EfCoreShopCartRepository(IDbContextProvider<PikachuDbContext> dbContextProvider) : EfCoreRepository<PikachuDbContext, ShopCart, Guid>(dbContextProvider), IShopCartRepository
 {
-    public async Task<ShopCart> FindByUserIdAsync(Guid userId, bool includeDetails = false)
+    public async Task<ShopCart> FindByUserIdAsync(Guid userId, bool includeDetails = false, bool exception = false)
     {
         var queryable = (await GetQueryableAsync()).Where(x => x.UserId == userId);
-        return await IncludeDetails(queryable, includeDetails).FirstOrDefaultAsync();
+        var shopCart = await IncludeDetails(queryable, includeDetails).FirstOrDefaultAsync();
+        if (exception && shopCart == null)
+        {
+            throw new EntityNotFoundException(typeof(ShopCart), userId);
+        }
+        return shopCart;
     }
 
     public async Task<long> GetCountAsync(string? filter, Guid? userId, bool includeDetails = false)
@@ -53,5 +59,21 @@ public class EfCoreShopCartRepository(IDbContextProvider<PikachuDbContext> dbCon
                     .ThenInclude(x => x.Item);
         }
         return queryable;
+    }
+
+    public async Task<CartItem> FindCartItemAsync(Guid userId, Guid itemId, bool includeDetails = false)
+    {
+        var queryable = (await GetQueryableAsync())
+                        .Where(x => x.UserId == userId)
+                        .Include(x => x.CartItems)
+                        .SelectMany(x => x.CartItems)
+                        .Where(x => x.ItemId == itemId);
+
+        if (includeDetails)
+        {
+            queryable = queryable.Include(x => x.Item);
+        }
+
+        return await queryable.FirstOrDefaultAsync();
     }
 }

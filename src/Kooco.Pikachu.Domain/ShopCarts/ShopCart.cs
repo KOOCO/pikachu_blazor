@@ -23,6 +23,7 @@ public class ShopCart(Guid id, Guid userId) : FullAuditedAggregateRoot<Guid>(id)
     {
         var cartItem = new CartItem(id, Id, itemId, quantity, unitPrice);
         CartItems ??= new List<CartItem>();
+        ValidateExistingCartItem(cartItem.ItemId);
         CartItems.Add(cartItem);
         return this;
     }
@@ -31,6 +32,7 @@ public class ShopCart(Guid id, Guid userId) : FullAuditedAggregateRoot<Guid>(id)
     {
         Check.NotNull(cartItem, nameof(cartItem));
         CartItems ??= new List<CartItem>();
+        ValidateExistingCartItem(cartItem.ItemId);
         CartItems.Add(cartItem);
         return this;
     }
@@ -41,6 +43,7 @@ public class ShopCart(Guid id, Guid userId) : FullAuditedAggregateRoot<Guid>(id)
         CartItems ??= new List<CartItem>();
         foreach (var cartItem in cartItems)
         {
+            ValidateExistingCartItem(cartItem.ItemId);
             CartItems.Add(cartItem);
         }
         return this;
@@ -67,5 +70,14 @@ public class ShopCart(Guid id, Guid userId) : FullAuditedAggregateRoot<Guid>(id)
         Check.NotNull(cartItem, nameof(cartItem));
         CartItems?.Remove(cartItem);
         return this;
+    }
+
+    public void ValidateExistingCartItem(Guid itemId)
+    {
+        var existing = CartItems.FirstOrDefault(x => x.ItemId == itemId);
+        if (existing != null)
+        {
+            throw new CartItemForUserAlreadyExistsException();
+        }
     }
 }

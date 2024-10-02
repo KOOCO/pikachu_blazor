@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Domain.Repositories;
 
 namespace Kooco.Pikachu.ShopCarts;
 
@@ -66,5 +67,18 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
     {
         var shopCart = await shopCartRepository.FindByUserIdAsync(userId);
         await shopCartRepository.DeleteAsync(shopCart);
+    }
+
+    public async Task<ShopCartDto> AddCartItemAsync(Guid userId, CreateCartItemDto input)
+    {
+        Check.NotDefaultOrNull<Guid>(userId, nameof(userId));
+        Check.NotNull(input, nameof(input));
+        Check.NotDefaultOrNull(input.ItemId, nameof(input.ItemId));
+
+        var shopCart = await shopCartRepository.FindByUserIdAsync(userId, exception: true);
+        await shopCartRepository.EnsureCollectionLoadedAsync(shopCart, s => s.CartItems);
+        shopCartManager.AddCartItem(shopCart, input.ItemId.Value, input.Quantity, input.UnitPrice);
+        await shopCartRepository.UpdateAsync(shopCart);
+        return ObjectMapper.Map<ShopCart, ShopCartDto>(shopCart);
     }
 }

@@ -37,4 +37,10 @@ public class ShopCartController(IShopCartAppService shopCartAppService) : Pikach
     {
         return shopCartAppService.FindByUserIdAsync(userId);
     }
+
+    [HttpPost("{userId}/cart-items")]
+    public Task<ShopCartDto> AddCartItemAsync(Guid userId, CreateCartItemDto input)
+    {
+        return shopCartAppService.AddCartItemAsync(userId, input);
+    }
 }

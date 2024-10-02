@@ -47,4 +47,5 @@ public static class PikachuDomainErrorCodes
     public const string DeliverdByStoreMethodIsRequired = "Pikachu:DeliverdByStoreMethodIsRequired";
     public const string ExpirationDateCannotBePast = "Pikachu:ExpirationDateCannotBePast";
     public const string ShopCartForUserAlreadyExists = "Pikachu:ShopCartForUserAlreadyExists";
+    public const string CartItemForUserAlreadyExists = "Pikachu:CartItemForUserAlreadyExists";
 }

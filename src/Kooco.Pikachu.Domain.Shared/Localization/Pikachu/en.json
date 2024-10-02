@@ -664,6 +664,7 @@
     "ExpiryDate": "Expiry Date",
     "RemainingCredits": "Remaining Credits",
     "Pikachu:ShopCartForUserAlreadyExists": "Shop Cart for this User Id already exists.",
+    "Pikachu:CartItemForUserAlreadyExists": "Cart Item for this Shop Cart already exists.",
     "Permission:ShopCart": "Shop Carts",
 
     //Add On Products

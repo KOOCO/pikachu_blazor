@@ -13,4 +13,5 @@ public interface IShopCartAppService : IApplicationService
     Task<PagedResultDto<ShopCartDto>> GetListAsync(GetShopCartListDto input);
     Task<ShopCartDto?> FindByUserIdAsync(Guid userId);
     Task DeleteByUserIdAsync(Guid userId);
+    Task<ShopCartDto> AddCartItemAsync(Guid userId, CreateCartItemDto input);
 }
