@@ -43,4 +43,16 @@ public class ShopCartController(IShopCartAppService shopCartAppService) : Pikach
     {
         return shopCartAppService.AddCartItemAsync(userId, input);
     }
+
+    [HttpPut("cart-items/{cartItemId}")]
+    public Task<ShopCartDto> UpdateCartItemAsync(Guid cartItemId, CreateCartItemDto input)
+    {
+        return shopCartAppService.UpdateCartItemAsync(cartItemId, input);
+    }
+
+    [HttpDelete("cart-items/{cartItemId}")]
+    public Task<ShopCartDto> DeleteCartItemAsync(Guid cartItemId)
+    {
+        return shopCartAppService.DeleteCartItemAsync(cartItemId);
+    }
 }

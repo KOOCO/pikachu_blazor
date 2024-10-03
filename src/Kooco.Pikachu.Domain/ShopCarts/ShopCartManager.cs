@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Services;
 
 namespace Kooco.Pikachu.ShopCarts;
@@ -59,6 +61,35 @@ public class ShopCartManager(IShopCartRepository shopCartRepository) : DomainSer
 
         shopCart.SetCartItems(cartItems);
         return shopCart;
+    }
+
+    public CartItem UpdateCartItem(ShopCart shopCart, Guid cartItemId, Guid itemId, int quantity, int unitPrice)
+    {
+        Check.NotNull(shopCart, nameof(shopCart));
+        Check.NotDefaultOrNull<Guid>(cartItemId, nameof(cartItemId));
+        Check.NotDefaultOrNull<Guid>(itemId, nameof(itemId));
+        Check.Range(quantity, nameof(quantity), 0, int.MaxValue);
+        Check.Range(unitPrice, nameof(unitPrice), 0, int.MaxValue);
+
+        var cartItem = shopCart.CartItems.FirstOrDefault(x => x.Id == cartItemId)
+                            ?? throw new EntityNotFoundException(typeof(CartItem), cartItemId);
+
+        if (itemId != cartItem.ItemId)
+        {
+            cartItem.ItemId = itemId;
+        }
+
+        if (quantity != cartItem.Quantity)
+        {
+            cartItem.ChangeQuantity(quantity);
+        }
+
+        if (unitPrice != cartItem.UnitPrice)
+        {
+            cartItem.ChangeUnitPrice(unitPrice);
+        }
+
+        return cartItem;
     }
 
     public ShopCart RemoveCartItem(ShopCart shopCart, CartItem cartItem)
