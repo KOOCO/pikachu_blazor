@@ -413,6 +413,16 @@ namespace Kooco.Pikachu.GroupBuys
             }
         }
 
+        public async Task<List<ImageDto>> GetBannerImagesAsync(Guid id)
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                return ObjectMapper.Map<List<Image>, List<ImageDto>>(
+                    await _imageRepository.GetListAsync(x => x.TargetId == id && x.ImageType == ImageType.GroupBuyBannerImage)
+                );
+            }
+        }
+
         /// <summary>
         /// This Method Returns the Desired Result For the Store Front End.
         /// Do not change unless you want to make changes in the Store Front End Code
