@@ -1,0 +1,17 @@
+﻿@using Volo.Abp.Data
+@using Volo.Abp.TenantManagement
+
+<Copy Text="@Domain" IsLink="true"></Copy>
+
+@code {
+    [Parameter]
+    public object Data { get; set; }
+
+    public string? Domain { get; set; }
+
+    protected override void OnInitialized()
+    {
+        var tenant = Data.As<TenantDto>();
+        Domain = tenant.GetProperty<string>(Constant.Domain);
+    }
+}

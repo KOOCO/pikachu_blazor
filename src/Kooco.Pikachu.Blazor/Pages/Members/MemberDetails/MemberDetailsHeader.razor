@@ -10,7 +10,9 @@
                 <Div>
                     <h4 class="m-0 mb-1">@Member?.Email</h4>
                     @L["UserId"]:
-                    <Span Class="bg-lightgrey rounded-3" Style="padding: 1px 10px;">@Member?.Id</Span>
+                    <Span Class="bg-lightgrey rounded-3" Style="padding: 1px 10px;">
+                        <Copy Text="@Member?.Id" ShouldDisplayIcon="false"></Copy>
+                    </Span>
                 </Div>
                 @if (CanEditMember)
                 {

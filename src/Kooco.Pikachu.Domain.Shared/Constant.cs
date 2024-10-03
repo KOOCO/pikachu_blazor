@@ -19,6 +19,7 @@ namespace Kooco.Pikachu
         public const string BannerUrl = "BannerUrl";
         public const string ShortCode = "ShortCode";
         public const string TenantUrl = "TenantUrl";
+        public const string Domain = "Domain";
 
         public const string Birthday = "Birthday";
         public const string FacebookId = "FacebookId";

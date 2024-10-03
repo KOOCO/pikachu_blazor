@@ -70,6 +70,15 @@ public static class PikachuEfCoreEntityExtensionMappings
                 }
             );
 
+            ObjectExtensionManager.Instance
+            .MapEfCoreProperty<Tenant, string>(
+                Constant.Domain,
+                (entityBuilder, propertyBuilder) =>
+                {
+                    propertyBuilder.HasMaxLength(512);
+                }
+            );
+
             #region IdentityUser
             ObjectExtensionManager.Instance
                 .MapEfCoreProperty<IdentityUser, DateTime?>(Constant.Birthday);
