@@ -1,32 +1,38 @@
-﻿
-@using Kooco.Pikachu.Localization
+﻿@using Kooco.Pikachu.Localization
 @using Microsoft.Extensions.Localization
 @using Volo.Abp.AspNetCore.Components.Notifications
 @inject IJSRuntime JSRuntime
 @inject IUiNotificationService UiNotificationService
 @inject IStringLocalizer<PikachuResource> L
+@inject NavigationManager NavigationManager
 
 <Span Style="cursor: pointer;">
-    <Text CopyToClipboard="true" @onclick="() => CopyToClipboard(_text)">
-        @if (ShouldDisplayText && IconAlignment != Alignment.Start)
-        {
-            <Span>
-                @_displayText
-            </Span>
-        }
-        @if (!_text.IsNullOrWhiteSpace() && ShouldDisplayIcon)
-        {
-            <Span TextColor="TextColor.Primary">
+    @if (ShouldDisplayText && IconAlignment != Alignment.Start)
+    {
+        <Span @onclick="CopyToClipboard">
+            @_displayText
+        </Span>
+    }
+    @if (!_text.IsNullOrWhiteSpace() && ShouldDisplayIcon)
+    {
+        <Span>
+            <Span @onclick="CopyToClipboard" Class="text-dark">
                 <Icon Class="fa-copy mx-1"></Icon>
             </Span>
-        }
-        @if (ShouldDisplayText && IconAlignment == Alignment.Start)
-        {
-            <Span>
-                @_displayText
-            </Span>
-        }
-    </Text>
+            @if (IsLink)
+            {
+                <a href="@_text" target="_blank" class="text-dark">
+                    <Icon Class="fa-arrow-up-right-from-square mx-1"></Icon>
+                </a>
+            }
+        </Span>
+    }
+    @if (ShouldDisplayText && IconAlignment == Alignment.Start)
+    {
+        <Span>
+            @_displayText
+        </Span>
+    }
 </Span>
 
 @code {
@@ -46,6 +52,9 @@
     [Parameter]
     public Alignment IconAlignment { get; set; } = Alignment.End;
 
+    [Parameter]
+    public bool IsLink { get; set; } = false;
+
     private string? _text { get { return Text?.ToString(); } }
 
     private string? _displayText { get { return DisplayText?.ToString(); } }
@@ -55,13 +64,12 @@
         DisplayText ??= _text;
     }
 
-    private async Task CopyToClipboard(string? text)
+    private async Task CopyToClipboard()
     {
         try
         {
-            text ??= string.Empty;
-            await JSRuntime.InvokeVoidAsync("clipboard.copy", text);
-            await UiNotificationService.Success(L["TextCopied", text]);
+            await JSRuntime.InvokeVoidAsync("clipboard.copy", _text);
+            await UiNotificationService.Success(L["TextCopied", _text]);
         }
         catch
         {

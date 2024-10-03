@@ -1,15 +1,8 @@
-﻿
-
-using Blazorise;
+﻿using Blazorise;
 using Kooco.Pikachu.AzureStorage.Image;
-using Kooco.Pikachu.Blazor.Pages.ItemManagement;
 using Kooco.Pikachu.EnumValues;
-using Kooco.Pikachu.Images;
-using Kooco.Pikachu.Items;
-using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.Tenants;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using System;
@@ -18,23 +11,14 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
-using Volo.Abp.AspNetCore.Components.Web.ExceptionHandling;
-using Volo.Abp.AspNetCore.Components.Web.Extensibility.EntityActions;
 using Volo.Abp.AspNetCore.Components.Web.Extensibility.TableColumns;
-using Volo.Abp.AspNetCore.Components.Web.Theming.PageToolbars;
-using Volo.Abp.BlazoriseUI;
 using Volo.Abp.Data;
-using Volo.Abp.DependencyInjection;
-using Volo.Abp.FeatureManagement.Blazor.Components;
 using Volo.Abp.Identity;
-using Volo.Abp.Identity.Blazor.Pages.Identity;
 using Volo.Abp.ObjectExtending;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.Blazor;
 using Volo.Abp.TenantManagement.Localization;
-using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 
 namespace Kooco.Pikachu.Blazor.Pages.TenantManagement;
 
@@ -61,6 +45,8 @@ public partial class CustomTenantManagement
     public string TenantContactPerson { get; set; }
     public string TenantContactTitle { get; set; }
     public string TenantContactEmail { get; set; }
+    public string? Domain { get; set; }
+
     private readonly IUiMessageService _uiMessageService;
     private readonly ImageContainerManager _imageContainerManager;
     private readonly IIdentityUserAppService _identityUserAppService;
@@ -122,6 +108,7 @@ public partial class CustomTenantManagement
         base.NewEntity.SetProperty("TenantContactPerson", TenantContactPerson);
         base.NewEntity.SetProperty("TenantContactTitle", TenantContactTitle);
         base.NewEntity.SetProperty("TenantContactEmail", TenantContactEmail);
+        base.NewEntity.SetProperty(Constant.Domain, Domain);
 
         if (ShortCode == null)
         {
@@ -148,10 +135,10 @@ public partial class CustomTenantManagement
         TenantContactPerson = null;
         TenantContactTitle = null;
         TenantContactEmail = null;
+        Domain = null;
     }
     protected override ValueTask SetTableColumnsAsync()
     {
-
         var columns = (GetExtensionTableColumns(
             TenantManagementModuleExtensionConsts.ModuleName,
             TenantManagementModuleExtensionConsts.EntityNames.Tenant)).ToList();
@@ -219,6 +206,11 @@ public partial class CustomTenantManagement
                     Sortable = true,
                    Data=columns[9].Data,
                 },
+                new() {
+                    Title = _L["Domain"] ,
+                    Sortable = true,
+                    Component = typeof(DomainTableColumn)
+                },
                     new TableColumn
                 {
                     Title =_L["ShortCode"] ,
@@ -251,6 +243,7 @@ public partial class CustomTenantManagement
         TenantContactPerson = null;
         TenantContactTitle = null;
         TenantContactEmail = null;
+        Domain = null;
         return base.OpenCreateModalAsync();
 
     }
@@ -260,15 +253,12 @@ public partial class CustomTenantManagement
         {
             await _uiMessageService.Warn(L["Short Code Can't Null"]);
             return;
-
         }
         var check = await _myTenantAppService.CheckShortCodeForUpdate(ShortCode, base.EditingEntityId);
         if (check)
         {
-
             await _uiMessageService.Warn(L["Short Code Already Exsist"]);
             return;
-
         }
         base.EditingEntity.ExtraProperties.Remove("LogoUrl");
         base.EditingEntity.ExtraProperties.Remove("ShareProfitPercent");
@@ -278,9 +268,10 @@ public partial class CustomTenantManagement
         base.EditingEntity.ExtraProperties.Remove("TenantContactPerson");
         base.EditingEntity.ExtraProperties.Remove("TenantContactTitle");
         base.EditingEntity.ExtraProperties.Remove("TenantContactEmail");
-
+        base.EditingEntity.ExtraProperties.Remove(Constant.Domain);
         base.EditingEntity.ExtraProperties.Remove("ShortCode");
         base.EditingEntity.ExtraProperties.Remove("TenantUrl");
+
         base.EditingEntity.SetProperty("LogoUrl", LogoUrl);
         base.EditingEntity.SetProperty("ShareProfitPercent", ShareProfitPercentage);
         base.EditingEntity.SetProperty("TenantOwner", TenantOwnerId);
@@ -290,6 +281,7 @@ public partial class CustomTenantManagement
         base.EditingEntity.SetProperty("TenantContactPerson", TenantContactPerson);
         base.EditingEntity.SetProperty("TenantContactTitle", TenantContactTitle);
         base.EditingEntity.SetProperty("TenantContactEmail", TenantContactEmail);
+        base.EditingEntity.SetProperty(Constant.Domain, Domain);
         TenantUrl = EntryUrl + "/ShortCode=" + ShortCode;
         base.EditingEntity.SetProperty("TenantUrl", TenantUrl);
         LogoUrl = null;
@@ -312,7 +304,7 @@ public partial class CustomTenantManagement
         TenantContactPerson = row.GetProperty<string>("TenantContactPerson");
         TenantContactTitle = row.GetProperty<string>("TenantContactTitle");
         TenantContactEmail = row.GetProperty<string>("TenantContactEmail");
-
+        Domain = row.GetProperty<string>(Constant.Domain);
         return base.OpenEditModalAsync(row);
     }
     async Task OnFileUploadAsync(FileChangedEventArgs e)
