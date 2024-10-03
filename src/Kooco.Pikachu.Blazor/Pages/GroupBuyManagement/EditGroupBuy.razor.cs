@@ -39,6 +39,7 @@ public partial class EditGroupBuy
     private GroupBuyDto GroupBuy { get; set; }
     private GroupBuyUpdateDto EditGroupBuyDto { get; set; }
     private List<CreateImageDto> CarouselImages { get; set; }
+    private List<CreateImageDto> BannerImages { get; set; }
     private const int MaxAllowedFilesPerUpload = 5;
     private const int TotalMaxAllowedFiles = 5;
     private const int MaxAllowedFileSize = 1024 * 1024 * 10;
@@ -71,12 +72,14 @@ public partial class EditGroupBuy
     private FilePicker BannerPickerCustom { get; set; }
     private FilePicker CarouselPickerCustom { get; set; }
     private List<FilePicker> CarouselFilePickers = [];
+    private List<FilePicker> BannerFilePickers = [];
     private List<ItemWithItemTypeDto> ItemsList { get; set; } = [];
     private readonly ImageContainerManager _imageContainerManager;
     private readonly List<string> ValidFileExtensions = [".jpg", ".png", ".svg", ".jpeg", ".webp"];
     public readonly List<string> ValidPaymentMethods = ["ALL", "Credit", "WebATM", "ATM", "CVS", "BARCODE", "Alipay", "Tenpay", "TopUpUsed", "GooglePay"];
     private string? PaymentMethodError { get; set; } = null;
     private List<ImageDto> ExistingImages { get; set; } = [];
+    private List<ImageDto> ExistingBannerImages { get; set; } = [];
     private LoadingIndicator Loading { get; set; } = new();
     private bool LoadingItems { get; set; } = true;
     private int CurrentIndex { get; set; }
@@ -92,6 +95,7 @@ public partial class EditGroupBuy
     public bool IsSelectedModule = true;
 
     public List<List<CreateImageDto>> CarouselModules = [];
+    public List<List<CreateImageDto>> BannerModules = [];
     #endregion
 
     #region Constructor
@@ -234,14 +238,14 @@ public partial class EditGroupBuy
     {
         return Enum.GetValues(typeof(GroupBuyModuleType))
                    .Cast<GroupBuyModuleType>()
-                   .Where(m => m >= GroupBuyModuleType.ProductDescriptionModule && m <= GroupBuyModuleType.IndexAnchor);
+                   .Where(m => m >= GroupBuyModuleType.ProductDescriptionModule && m <= GroupBuyModuleType.BannerImages);
     }
 
     public IEnumerable<GroupBuyModuleType> GetPikachuTwoList()
     {
         return Enum.GetValues(typeof(GroupBuyModuleType))
                    .Cast<GroupBuyModuleType>()
-                   .Where(m => m >= GroupBuyModuleType.ProductGroupModule && m <= GroupBuyModuleType.IndexAnchor);
+                   .Where(m => m >= GroupBuyModuleType.ProductGroupModule && m <= GroupBuyModuleType.BannerImages);
     }
 
     protected override async Task OnAfterRenderAsync(bool isFirstRender)
@@ -254,9 +258,16 @@ public partial class EditGroupBuy
                 await OnInitializedAsync();
                 //await LoadHtmlContent();
                 ExistingImages = await _imageAppService.GetGroupBuyImagesAsync(Id, ImageType.GroupBuyCarouselImage);
+
+                ExistingBannerImages = await _imageAppService.GetGroupBuyImagesAsync(Id, ImageType.GroupBuyBannerImage);
+
                 CarouselImages = _objectMapper.Map<List<ImageDto>, List<CreateImageDto>>(ExistingImages);
 
                 CarouselModules = CarouselImages.GroupBy(g => g.ModuleNumber).Select(s => s.ToList()).ToList();
+
+                BannerImages = _objectMapper.Map<List<ImageDto>, List<CreateImageDto>>(ExistingBannerImages);
+
+                BannerModules = [.. BannerImages.GroupBy(g => g.ModuleNumber).Select(s => s.ToList())];
 
                 foreach (List<CreateImageDto> carouselImages in CarouselModules)
                 {
@@ -264,6 +275,14 @@ public partial class EditGroupBuy
                         CollapseItem.Add(new() { GroupBuyModuleType = GroupBuyModuleType.CarouselImages });
 
                     CarouselFilePickers.Add(new ());
+                }
+
+                foreach (List<CreateImageDto> carouselImages in BannerModules)
+                {
+                    if (!CollapseItem.Any(a => a.GroupBuyModuleType is GroupBuyModuleType.BannerImages))
+                        CollapseItem.Add(new() { GroupBuyModuleType = GroupBuyModuleType.BannerImages });
+
+                    BannerFilePickers.Add(new());
                 }
 
                 ItemsList = await _itemAppService.GetItemsLookupAsync();
@@ -458,6 +477,23 @@ public partial class EditGroupBuy
             CarouselModules.Add([]);
         }
 
+        else if (groupBuyModuleType is GroupBuyModuleType.BannerImages)
+        {
+            if (BannerModules.Count is 0)
+            {
+                CollapseItem collapseItem = new()
+                {
+                    GroupBuyModuleType = groupBuyModuleType
+                };
+
+                CollapseItem.Add(collapseItem);
+            }
+
+            BannerFilePickers.Add(new());
+
+            BannerModules.Add([]);
+        }
+
         else
         {
             CollapseItem collapseItem = new()
@@ -548,7 +584,13 @@ public partial class EditGroupBuy
         }
     }
 
-    async Task OnCarouselUploadAsync(FileChangedEventArgs e, List<CreateImageDto> carouselImages, int carouselModuleNumber, FilePicker carouselPicker)
+    async Task OnImageModuleUploadAsync(
+        FileChangedEventArgs e, 
+        List<CreateImageDto> carouselImages, 
+        int carouselModuleNumber, 
+        FilePicker carouselPicker,
+        ImageType imageType
+    )
     {
         if (carouselImages.Count >= 5)
         {
@@ -604,7 +646,7 @@ public partial class EditGroupBuy
                         Name = file.Name,
                         BlobImageName = newFileName,
                         ImageUrl = url,
-                        ImageType = ImageType.GroupBuyCarouselImage,
+                        ImageType = imageType,
                         SortNo = sortNo + 1,
                         ModuleNumber = carouselModuleNumber
                     });
@@ -894,7 +936,7 @@ public partial class EditGroupBuy
             await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWentWrongWhileDeletingImage]);
         }
     }
-    async Task DeleteImageAsync(string blobImageName, List<CreateImageDto> carouselImages)
+    async Task DeleteImageAsync(string blobImageName, List<CreateImageDto> carouselImages, ImageType imageType)
     {
         try
         {
@@ -903,13 +945,42 @@ public partial class EditGroupBuy
             {
                 await Loading.Show();
                 await _imageContainerManager.DeleteAsync(blobImageName);
-                if (ExistingImages.Any(x => x.BlobImageName == blobImageName))
+
+                if (imageType is ImageType.GroupBuyCarouselImage)
                 {
-                    var image = ExistingImages.Where(x => x.BlobImageName == blobImageName).FirstOrDefault();
-                    await _imageAppService.DeleteAsync(image.Id);
+                    if (ExistingImages.Any(x => x.BlobImageName == blobImageName))
+                    {
+                        var image = ExistingImages.Where(x => x.BlobImageName == blobImageName).FirstOrDefault();
+                        await _imageAppService.DeleteAsync(image.Id);
+                    }
+
+                    foreach (List<CreateImageDto> carouselModule in CarouselModules)
+                    {
+                        carouselModule.RemoveAll(r => r.BlobImageName == blobImageName);
+                    }
+
+                    carouselImages = carouselImages.Where(x => x.BlobImageName != blobImageName).ToList();
+
+                    ExistingImages = ExistingImages.Where(x => x.BlobImageName != blobImageName).ToList();
                 }
-                carouselImages = carouselImages.Where(x => x.BlobImageName != blobImageName).ToList();
-                ExistingImages = ExistingImages.Where(x => x.BlobImageName != blobImageName).ToList();
+                else if (imageType is ImageType.GroupBuyBannerImage)
+                {
+                    if (ExistingBannerImages.Any(a => a.BlobImageName == blobImageName))
+                    {
+                        ImageDto? image = ExistingBannerImages.Where(w => w.BlobImageName == blobImageName).FirstOrDefault();
+
+                        await _imageAppService.DeleteAsync(image.Id);
+                    }
+
+                    foreach (List<CreateImageDto> bannerModule in BannerModules)
+                    {
+                        bannerModule.RemoveAll(r => r.BlobImageName == blobImageName);
+                    }
+
+                    carouselImages = [.. carouselImages.Where(w => w.BlobImageName != blobImageName)];
+
+                    ExistingBannerImages = [.. ExistingBannerImages.Where(w => w.BlobImageName != blobImageName)];
+                }
                 StateHasChanged();
                 await Loading.Hide();
             }
@@ -1157,6 +1228,19 @@ public partial class EditGroupBuy
                 foreach (CreateImageDto carouselImage in carouselImages)
                 {
                     if (!ExistingImages.Any(a => a.BlobImageName == carouselImage.BlobImageName))
+                    {
+                        carouselImage.TargetId = Id;
+
+                        await _imageAppService.CreateAsync(carouselImage);
+                    }
+                }
+            }
+
+            foreach (List<CreateImageDto> bannerImages in BannerModules)
+            {
+                foreach (CreateImageDto carouselImage in bannerImages)
+                {
+                    if (!ExistingBannerImages.Any(a => a.BlobImageName == carouselImage.BlobImageName))
                     {
                         carouselImage.TargetId = Id;
 

@@ -222,7 +222,7 @@
                 </div>
             }
         </div>
-        <div class="row">
+        @* <div class="row">
             <div class="col-2">
                 <label>@L["GroupBuyBanner"]</label>
             </div>
@@ -285,7 +285,7 @@
                     </div>
                 </div>
             }
-        </div>
+        </div> *@
         
         <Divider></Divider>
 
@@ -837,10 +837,11 @@
                                                         <FilePicker @ref="CarouselFilePickers[CarouselModules.IndexOf(carouselImages)]"
                                                                     Disabled="carouselImages.Count >= 5"
                                                                     Multiple
-                                                                    Changed="@(async (e) => await OnCarouselUploadAsync(e, 
-                                                                                                                        carouselImages, 
-                                                                                                                        CarouselModules.IndexOf(carouselImages) + 1,
-                                                                                                                        CarouselFilePickers[CarouselModules.IndexOf(carouselImages)]))"
+                                                                    Changed="@(async (e) => await OnImageModuleUploadAsync(e, 
+                                                                                                                           carouselImages, 
+                                                                                                                           CarouselModules.IndexOf(carouselImages) + 1,
+                                                                                                                           CarouselFilePickers[CarouselModules.IndexOf(carouselImages)],
+                                                                                                                           ImageType.GroupBuyCarouselImage))"
                                                                     ShowMode="FilePickerShowMode.List"
                                                                     Accept=".jpg, .png, .svg, .jpeg, .webp">
                                                             <FileTemplate>
@@ -891,7 +892,9 @@
                                                                     {
                                                                         <Div Class="image-container">
                                                                             <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image" Fluid />
-                                                                            <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName, carouselImages)">
+                                                                            <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName, 
+                                                                                                                                           carouselImages, 
+                                                                                                                                           ImageType.GroupBuyCarouselImage)">
                                                                                 <i class="fa fa-trash"></i>
                                                                             </button>
                                                                         </Div>
@@ -902,6 +905,105 @@
                                                                 {
                                                                     <button type="button"
                                                                             class="btn btn-primary @(carouselImages.IndexOf(createImageDto) > 0 ? "mx-1" : "")"
+                                                                            @onclick="() => OpenAddLinkModal(createImageDto)">
+                                                                        @L["Add Link"]
+                                                                    </button>
+                                                                }
+                                                            </Div>
+                                                        </Div>
+                                                    </Div>
+                                                }
+                                            </div>
+                                        }
+                                    }
+
+                                    @if (module.GroupBuyModuleType is GroupBuyModuleType.BannerImages)
+                                    {
+                                        foreach (List<CreateImageDto> bannerImages in BannerModules)
+                                        {
+                                            <div class="row">
+                                                <div class="col-2">
+                                                    <label>
+                                                        @L["BannerImages"]<Span>
+                                                            <Tooltip Text="@L["uploadUpto5Images"]">
+                                                                <Icon class="fa-question-circle" />
+                                                            </Tooltip>
+                                                        </Span>
+                                                    </label>
+                                                </div>
+                                                <div class="col-10 ">
+                                                    <Field>
+                                                        <FilePicker @ref="BannerFilePickers[BannerModules.IndexOf(bannerImages)]"
+                                                                    Disabled="bannerImages.Count >= 5"
+                                                                    Multiple
+                                                                    Changed="@(async (e) => await OnImageModuleUploadAsync(e,
+                                                                                                                           bannerImages,
+                                                                                                                           BannerModules.IndexOf(bannerImages) + 1,
+                                                                                                                           BannerFilePickers[BannerModules.IndexOf(bannerImages)],
+                                                                                                                           ImageType.GroupBuyBannerImage))"
+                                                                    ShowMode="FilePickerShowMode.List"
+                                                                    Accept=".jpg, .png, .svg, .jpeg, .webp">
+                                                            <FileTemplate>
+                                                                <Div Flex="Flex.JustifyContent.Between">
+                                                                    <Div>
+                                                                        <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
+                                                                        <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                                                    </Div>
+                                                                        <Div Class="ps-2">
+                                                                            <Div>
+                                                                            @if (context.File.Status is FileEntryStatus.Ready)
+                                                                            {
+                                                                                <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
+                                                                            }
+                                                                            else if (context.File.Status is FileEntryStatus.Uploading)
+                                                                            {
+                                                                                <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
+                                                                            }
+                                                                            else if (context.File.Status is FileEntryStatus.Uploaded)
+                                                                            {
+                                                                                <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
+                                                                            }
+                                                                            else if (context.File.Status is FileEntryStatus.Error)
+                                                                            {
+                                                                                <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
+                                                                            }
+                                                                        </Div>
+                                                                        <Div>
+                                                                            <Icon TextColor="TextColor.Danger" Name="IconName.Delete" class="cursor-pointer" Clicked="context.RemoveFile" />
+                                                                        </Div>
+                                                                    </Div>
+                                                                </Div>
+                                                            </FileTemplate>
+                                                            <ButtonsTemplate>
+                                                                <Progress Value="@BannerFilePickers[BannerModules.IndexOf(bannerImages)].GetProgressPercentage()" />
+                                                            </ButtonsTemplate>
+                                                        </FilePicker>
+                                                    </Field>
+                                                </div>
+                                                @if (bannerImages.Count > 0)
+                                                {
+                                                    <Div Class="row">
+                                                        <Div Class="col-2"></Div>
+                                                        <Div Class="col-10">
+                                                            <Div Class="image-list-container d-block flex-nowrap">
+                                                                <Div Class="d-flex flex-wrap">
+                                                                    @foreach (CreateImageDto image in bannerImages)
+                                                                    {
+                                                                        <Div Class="image-container">
+                                                                            <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image" Fluid />
+                                                                             <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName, 
+                                                                                                                                            bannerImages, 
+                                                                                                                                            ImageType.GroupBuyBannerImage)">
+                                                                                 <i class="fa fa-trash"></i>
+                                                                             </button>
+                                                                         </Div>
+                                                                    }
+                                                                </Div>
+
+                                                                @foreach (CreateImageDto createImageDto in bannerImages)
+                                                                {
+                                                                    <button type="button"
+                                                                            class="btn btn-primary @(bannerImages.IndexOf(createImageDto) > 0 ? "mx-1" : "")"
                                                                             @onclick="() => OpenAddLinkModal(createImageDto)">
                                                                         @L["Add Link"]
                                                                     </button>

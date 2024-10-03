@@ -1,11 +1,11 @@
-﻿namespace Kooco.Pikachu.Images
+﻿namespace Kooco.Pikachu.Images;
+
+public enum ImageType
 {
-    public enum ImageType
-    {
-        Item,
-        ItemDetail,
-        SetItem,
-        GroupBuyItemGroup,
-        GroupBuyCarouselImage
-    }
+    Item,
+    ItemDetail,
+    SetItem,
+    GroupBuyItemGroup,
+    GroupBuyCarouselImage,
+    GroupBuyBannerImage
 }

@@ -6,5 +6,6 @@ public enum GroupBuyModuleType
     ProductImageModule,
     ProductGroupModule,
     CarouselImages,
-    IndexAnchor
+    IndexAnchor,
+    BannerImages
 }
