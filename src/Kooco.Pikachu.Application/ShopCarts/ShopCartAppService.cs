@@ -75,9 +75,29 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
         Check.NotNull(input, nameof(input));
         Check.NotDefaultOrNull(input.ItemId, nameof(input.ItemId));
 
-        var shopCart = await shopCartRepository.FindByUserIdAsync(userId, exception: true);
-        await shopCartRepository.EnsureCollectionLoadedAsync(shopCart, s => s.CartItems);
+        var shopCart = await shopCartRepository.FindByUserIdAsync(userId);
+        if (shopCart is null)
+        {
+            shopCart = await shopCartManager.CreateAsync(userId);
+        }
+        else
+        {
+            await shopCartRepository.EnsureCollectionLoadedAsync(shopCart, s => s.CartItems);
+        }
         shopCartManager.AddCartItem(shopCart, input.ItemId.Value, input.Quantity, input.UnitPrice);
+        await shopCartRepository.UpdateAsync(shopCart);
+        return ObjectMapper.Map<ShopCart, ShopCartDto>(shopCart);
+    }
+
+    public async Task<ShopCartDto> UpdateCartItemAsync(Guid cartItemId, CreateCartItemDto input)
+    {
+        Check.NotDefaultOrNull<Guid>(cartItemId, nameof(cartItemId));
+        Check.NotNull(input, nameof(input));
+        Check.NotDefaultOrNull(input.ItemId, nameof(input.ItemId));
+
+        var shopCart = await shopCartRepository.FindByCartItemIdAsync(cartItemId, exception: true);
+        await shopCartRepository.EnsureCollectionLoadedAsync(shopCart, s => s.CartItems);
+        shopCartManager.UpdateCartItem(shopCart, cartItemId, input.ItemId.Value, input.Quantity, input.UnitPrice);
         await shopCartRepository.UpdateAsync(shopCart);
         return ObjectMapper.Map<ShopCart, ShopCartDto>(shopCart);
     }

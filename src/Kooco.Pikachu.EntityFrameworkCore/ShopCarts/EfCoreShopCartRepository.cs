@@ -76,4 +76,28 @@ public class EfCoreShopCartRepository(IDbContextProvider<PikachuDbContext> dbCon
 
         return await queryable.FirstOrDefaultAsync();
     }
+
+    public async Task<ShopCart> FindByCartItemIdAsync(Guid cartItemId, bool includeDetails = false, bool exception = false)
+    {
+        var queryable = (await GetQueryableAsync())
+                        .Include(x => x.CartItems)
+                        .Where(x => x.CartItems.Any(ci => ci.Id == cartItemId));
+
+        if (includeDetails)
+        {
+            queryable = queryable
+                        .Include(x => x.User)
+                        .Include(x => x.CartItems)
+                            .ThenInclude(x => x.Item);
+        }
+
+        var shopCart = await queryable.FirstOrDefaultAsync();
+
+        if (exception && shopCart is null)
+        {
+            throw new EntityNotFoundException(typeof(CartItem), cartItemId);
+        }
+
+        return shopCart;
+    }
 }
