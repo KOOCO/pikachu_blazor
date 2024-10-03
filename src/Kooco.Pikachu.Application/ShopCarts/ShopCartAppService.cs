@@ -101,4 +101,15 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
         await shopCartRepository.UpdateAsync(shopCart);
         return ObjectMapper.Map<ShopCart, ShopCartDto>(shopCart);
     }
+
+    public async Task<ShopCartDto> DeleteCartItemAsync(Guid cartItemId)
+    {
+        Check.NotDefaultOrNull<Guid>(cartItemId, nameof(cartItemId));
+
+        var shopCart = await shopCartRepository.FindByCartItemIdAsync(cartItemId, exception: true);
+        await shopCartRepository.EnsureCollectionLoadedAsync(shopCart, s => s.CartItems);
+        shopCartManager.RemoveCartItem(shopCart, cartItemId);
+        await shopCartRepository.UpdateAsync(shopCart);
+        return ObjectMapper.Map<ShopCart, ShopCartDto>(shopCart);
+    }
 }

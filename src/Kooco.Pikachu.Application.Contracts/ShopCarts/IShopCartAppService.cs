@@ -15,4 +15,5 @@ public interface IShopCartAppService : IApplicationService
     Task DeleteByUserIdAsync(Guid userId);
     Task<ShopCartDto> AddCartItemAsync(Guid userId, CreateCartItemDto input);
     Task<ShopCartDto> UpdateCartItemAsync(Guid cartItemId, CreateCartItemDto input);
+    Task<ShopCartDto> DeleteCartItemAsync(Guid cartItemId);
 }
