@@ -23,6 +23,7 @@ namespace Kooco.Pikachu.DiscountCodes
 
         public async Task<long> GetCountAsync(
             string? filter,
+            bool? status,
             string? eventName = null,
             DateTime? startDate = null,
             DateTime? endDate = null,
@@ -39,7 +40,7 @@ namespace Kooco.Pikachu.DiscountCodes
             int? discountPercentage = null,
             int? discountAmount = null)
         {
-            var queryable = await GetFilteredQueryableAsync(filter, eventName, startDate, endDate, discountCode, specifiedCode, availableQuantity, maxUsePerPerson, groupbuysScope, productsScope, discountMethod, minimumSpendAmount, shippingDiscountScope, specificShippingMethods, discountPercentage, discountAmount);
+            var queryable = await GetFilteredQueryableAsync(filter,status, eventName, startDate, endDate, discountCode, specifiedCode, availableQuantity, maxUsePerPerson, groupbuysScope, productsScope, discountMethod, minimumSpendAmount, shippingDiscountScope, specificShippingMethods, discountPercentage, discountAmount);
             return await queryable.LongCountAsync();
         }
 
@@ -48,6 +49,7 @@ namespace Kooco.Pikachu.DiscountCodes
             int maxResultCount,
             string sorting,
             string? filter,
+            bool? status,
             string? eventName = null,
             DateTime? startDate = null,
             DateTime? endDate = null,
@@ -64,12 +66,13 @@ namespace Kooco.Pikachu.DiscountCodes
             int? discountPercentage = null,
             int? discountAmount = null)
         {
-            var queryable = await GetFilteredQueryableAsync(filter, eventName, startDate, endDate, discountCode, specifiedCode, availableQuantity, maxUsePerPerson, groupbuysScope, productsScope, discountMethod, minimumSpendAmount, shippingDiscountScope, specificShippingMethods, discountPercentage, discountAmount);
+            var queryable = await GetFilteredQueryableAsync(filter,status, eventName, startDate, endDate, discountCode, specifiedCode, availableQuantity, maxUsePerPerson, groupbuysScope, productsScope, discountMethod, minimumSpendAmount, shippingDiscountScope, specificShippingMethods, discountPercentage, discountAmount);
             return await queryable.OrderBy(sorting).PageBy(skipCount, maxResultCount).ToListAsync();
         }
 
         public async Task<IQueryable<DiscountCode>> GetFilteredQueryableAsync(
             string? filter,
+            bool? status,
             string? eventName = null,
             DateTime? startDate = null,
             DateTime? endDate = null,
@@ -90,6 +93,7 @@ namespace Kooco.Pikachu.DiscountCodes
 
             return queryable
                 .WhereIf(!string.IsNullOrWhiteSpace(eventName), x => x.EventName.Contains(eventName))
+                .WhereIf(status.HasValue, x => x.Status == status)
                 .WhereIf(startDate.HasValue, x => x.StartDate >= startDate)
                 .WhereIf(endDate.HasValue, x => x.EndDate <= endDate)
                 .WhereIf(!string.IsNullOrWhiteSpace(discountCode), x => x.Code.Contains(discountCode))

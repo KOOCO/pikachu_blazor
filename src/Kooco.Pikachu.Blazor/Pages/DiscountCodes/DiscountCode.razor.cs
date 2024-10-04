@@ -92,8 +92,33 @@ namespace Kooco.Pikachu.Blazor.Pages.DiscountCodes
             await GetDiscountCodesAsync();
             await InvokeAsync(StateHasChanged);
         }
-        
-       void NavigateToEditPage(Guid id)
+        async void UpdateStatus(Guid id)
+        { 
+        await DiscountCodeAppService.UpdateStatusAsync(id);
+            await _message.Success("StatusUpdateSucessfully");
+            await GetDiscountCodesAsync();
+            await InvokeAsync(StateHasChanged);
+        }
+        private async Task ApplyFilters()
+        {
+            CurrentPage = 1;
+
+            await GetDiscountCodesAsync();
+
+            await InvokeAsync(StateHasChanged);
+        }
+
+        private async Task ResetFilters()
+        {
+            CurrentPage = 1;
+
+            Filters = new();
+
+            await GetDiscountCodesAsync();
+
+            await InvokeAsync(StateHasChanged);
+        }
+        void NavigateToEditPage(Guid id)
         {
             NavigationManager.NavigateTo("/new-discount-code/" + id);
 

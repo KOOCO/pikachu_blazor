@@ -13,6 +13,7 @@ namespace Kooco.Pikachu.DiscountCodes
     {
         Task<long> GetCountAsync(
             string? filter,
+            bool? status,
             string? eventName = null,
             DateTime? startDate = null,
             DateTime? endDate = null,
@@ -37,6 +38,7 @@ namespace Kooco.Pikachu.DiscountCodes
             int maxResultCount,
             string sorting,
             string? filter,
+            bool? status,
             string? eventName = null,
             DateTime? startDate = null,
             DateTime? endDate = null,

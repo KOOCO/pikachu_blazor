@@ -14,5 +14,6 @@ namespace Kooco.Pikachu.AddOnProducts
         Task<AddOnProductDto> GetAsync(Guid Id);
         Task DeleteAsync(Guid Id);
         Task<AddOnProductDto> UpdateAsync(Guid Id, CreateUpdateAddOnProductDto input);
+        Task UpdateStatusAsync(Guid id);
     }
 }

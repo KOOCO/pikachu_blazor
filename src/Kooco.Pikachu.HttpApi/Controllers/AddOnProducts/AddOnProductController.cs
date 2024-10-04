@@ -43,5 +43,10 @@ namespace Kooco.Pikachu.Controllers.AddOnProducts
         {
             return addOnProductAppService.UpdateAsync(Id, input);
         }
+        [HttpPut("update-status/{id}")]
+        public Task UpdateStatusAsync(Guid id)
+        {
+            return addOnProductAppService.UpdateStatusAsync(id);
+        }
     }
 }

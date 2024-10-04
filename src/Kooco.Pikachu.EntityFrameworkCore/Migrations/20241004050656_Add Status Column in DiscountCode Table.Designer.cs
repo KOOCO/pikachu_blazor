@@ -4,6 +4,7 @@ using Kooco.Pikachu.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    partial class PikachuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241004050656_Add Status Column in DiscountCode Table")]
+    partial class AddStatusColumninDiscountCodeTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1015,45 +1018,6 @@ namespace Kooco.Pikachu.Migrations
                     b.HasIndex("GroupBuyId");
 
                     b.ToTable("AppGroupBuyItemGroups", null, t =>
-                        {
-                            t.HasComment("");
-                        });
-                });
-
-            modelBuilder.Entity("Kooco.Pikachu.GroupPurchaseOverviews.GroupPurchaseOverview", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("BodyText")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ButtonLink")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ButtonText")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("GroupBuyId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Image")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsButtonEnable")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("SubTitle")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AppGroupPurchaseOverviews", null, t =>
                         {
                             t.HasComment("");
                         });
