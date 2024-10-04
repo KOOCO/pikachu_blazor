@@ -39,6 +39,7 @@ using Kooco.Pikachu.UserCumulativeFinancials;
 using Kooco.Pikachu.AddOnProducts;
 using Kooco.Pikachu.DiscountCodes;
 using Kooco.Pikachu.ShopCarts;
+using Kooco.Pikachu.ShoppingCredits;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -114,6 +115,13 @@ public class PikachuDbContext :
     public DbSet<DiscountSpecificGroupbuy> DiscountSpecificGroupbuys { get; set; }
     public DbSet<DiscountSpecificProduct> DiscountSpecificProducts { get; set; }
     public DbSet<DiscountCodeUsage> DiscountCodeUsages { get; set; }
+    public DbSet<ShoppingCreditUsageSetting> ShoppingCreditUsageSettings { get; set; }
+    public DbSet<ShoppingCreditUsageSpecificGroupbuy> ShoppingCreditUsageSpecificGroupbuys { get; set; }
+    public DbSet<ShoppingCreditUsageSpecificProduct> ShoppingCreditUsageSpecificProducts { get; set; }
+    public DbSet<ShoppingCreditEarnSetting> ShoppingCreditEarnSettings { get; set; }
+    public DbSet<ShoppingCreditEarnSpecificGroupbuy> ShoppingCreditEarnSpecificGroupbuys { get; set; }
+    public DbSet<ShoppingCreditEarnSpecificProduct> ShoppingCreditEarnSpecificProducts { get; set; }
+
     public DbSet<ShopCart> ShopCarts { get; set; }
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
@@ -387,6 +395,36 @@ public class PikachuDbContext :
             b.ConfigureByConvention();
 
             b.HasOne(x => x.ShopCart).WithMany(x => x.CartItems).HasForeignKey(x => x.ShopCartId);
+        });
+        builder.Entity<ShoppingCreditUsageSetting>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "ShoppingCreditUsageSettings", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+        });
+        builder.Entity<ShoppingCreditUsageSpecificGroupbuy>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "ShoppingCreditUsageSpecificGroupbuys", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+        });
+        builder.Entity<ShoppingCreditUsageSpecificProduct>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "ShoppingCreditUsageSpecificProducts", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+        });
+        builder.Entity<ShoppingCreditEarnSetting>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "ShoppingCreditEarnSettings", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+        });
+        builder.Entity<ShoppingCreditEarnSpecificGroupbuy>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "ShoppingCreditEarnSpecificGroupbuys", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+        });
+        builder.Entity<ShoppingCreditEarnSpecificProduct>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "ShoppingCreditEarnSpecificProducts", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
         });
     }
 }

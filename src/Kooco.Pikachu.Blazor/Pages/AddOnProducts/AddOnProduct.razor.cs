@@ -2,6 +2,7 @@
 using Blazorise;
 using Blazorise.DataGrid;
 using Kooco.Pikachu.AddOnProducts;
+using Kooco.Pikachu.DiscountCodes;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Members;
 using System;
@@ -43,6 +44,9 @@ namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
                     {
                         MaxResultCount = PageSize,
                         SkipCount = (CurrentPage - 1) * PageSize,
+                        Filter=Filters.Filter,
+                        StartDate=Filters.StartDate,
+                        EndDate=Filters.EndDate,
                         Sorting = CurrentSorting,
                     }
                     );
@@ -75,9 +79,31 @@ namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
         }
         private static bool RowSelectableHandler(RowSelectableEventArgs<AddOnProductDto> rowSelectableEventArgs)
         => rowSelectableEventArgs.SelectReason is not DataGridSelectReason.RowClick;
-        private void OnAddOnProductStatusChanged(Guid id)
+        async void UpdateStatus(Guid id)
         {
-            return;
+            await AddOnProductAppService.UpdateStatusAsync(id);
+            await _message.Success("StatusUpdateSucessfully");
+            await GetAddOnProductsAsync();
+            await InvokeAsync(StateHasChanged);
+        }
+        private async Task ApplyFilters()
+        {
+            CurrentPage = 1;
+
+            await GetAddOnProductsAsync();
+
+            await InvokeAsync(StateHasChanged);
+        }
+
+        private async Task ResetFilters()
+        {
+            CurrentPage = 1;
+
+            Filters = new();
+
+            await GetAddOnProductsAsync();
+
+            await InvokeAsync(StateHasChanged);
         }
         async void DeleteAddOn(Guid id) {
             await AddOnProductAppService.DeleteAsync(id);

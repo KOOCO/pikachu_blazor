@@ -32,6 +32,7 @@ using Kooco.Pikachu.AddOnProducts;
 using Kooco.Pikachu.DiscountCodes;
 using Kooco.Pikachu.ShopCarts;
 using Kooco.Pikachu.TenantManagement;
+using Kooco.Pikachu.ShoppingCredits;
 
 namespace Kooco.Pikachu;
 
@@ -193,6 +194,15 @@ public class PikachuApplicationAutoMapperProfile : Profile
 
         CreateMap<PikachuLoginResponseDto, MemberLoginResponseDto>();
 
+        CreateMap<ShoppingCreditUsageSetting, ShoppingCreditUsageSettingDto>();
+        CreateMap<ShoppingCreditUsageSettingDto, CreateUpdateShoppingCreditUsageSettingDto>();
+        CreateMap<ShoppingCreditUsageSpecificGroupbuy, ShoppingCreditUsageSpecificGroupbuyDto>();
+        CreateMap<ShoppingCreditUsageSpecificProduct, ShoppingCreditUsageSpecificProductDto>();
+
+        CreateMap<ShoppingCreditEarnSetting, ShoppingCreditEarnSettingDto>();
+        CreateMap<ShoppingCreditEarnSettingDto, CreateUpdateShoppingCreditEarnSettingDto>();
+        CreateMap<ShoppingCreditEarnSpecificGroupbuy, ShoppingCreditEarnSpecificGroupbuyDto>();
+        CreateMap<ShoppingCreditEarnSpecificProduct, ShoppingCreditEarnSpecificProductDto>();
         CreateMap<ShopCart, ShopCartDto>().ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.Name));
         CreateMap<CartItem, CartItemDto>().ForMember(dest => dest.ItemName, opt => opt.MapFrom(src => src.Item.ItemName));
 

@@ -6,19 +6,28 @@ using Microsoft.AspNetCore.Components;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
+using Microsoft.AspNetCore.Components.Forms;
+using Kooco.Pikachu.ShoppingCredits;
+using System.Text.Json;
+using System.Linq;
 
 namespace Kooco.Pikachu.Blazor.Pages.ShoppingCredits
 {
     public partial class ShoppingCreditGetSetting
 
     {
+        [Parameter]
+        public Guid Id { get; set; }
+        private CreateUpdateShoppingCreditEarnSettingDto CreateUpdateEarn { get; set; }
         private IReadOnlyList<GroupBuyDto> Groupbuys { get; set; }
         private IReadOnlyList<KeyValueDto> Products { get; set; }
-        IEnumerable<GroupBuyDto> SelectedGroupBuy { get; set; }
-        IEnumerable<KeyValueDto> SelectedProducts { get; set; }
-
+        IEnumerable<Guid> SelectedGroupBuy { get; set; }
+        IEnumerable<Guid> SelectedProducts { get; set; }
+        private List<StagedSetting> stagedSettings = new List<StagedSetting>();
         private Validations ValidationsRef;
-
+        private bool IsUpdating { get; set; }
+        private ValidationMessageStore? messageStore;
+        private EditContext? editContext;
         private readonly ItemAppService _itemAppService;
         public ShoppingCreditGetSetting(ItemAppService itemAppService)
         {
@@ -29,13 +38,29 @@ namespace Kooco.Pikachu.Blazor.Pages.ShoppingCredits
             SelectedProducts = [];
 
             _itemAppService = itemAppService;
+            CreateUpdateEarn = new();
+            editContext = new(CreateUpdateEarn);
+            messageStore = new(editContext);
+            stagedSettings.Add(new StagedSetting());
         }
         protected override async Task OnInitializedAsync()
         {
             try
             {
+                var shoppingCreditEarn = await ShoppingCreditEarnSettingAppService.GetFirstAsync();
+                if (shoppingCreditEarn != null)
+                {
+                    Id = shoppingCreditEarn.Id;
+                    CreateUpdateEarn = ObjectMapper.Map<ShoppingCreditEarnSettingDto, CreateUpdateShoppingCreditEarnSettingDto>(shoppingCreditEarn);
+                    stagedSettings = JsonSerializer.Deserialize<List<StagedSetting>>(shoppingCreditEarn.CashbackStagedSettings);
+                    CreateUpdateEarn.SpecificGroupbuyIds = shoppingCreditEarn.SpecificGroupBuys.Select(x => x.GroupbuyId).ToList();
+                    CreateUpdateEarn.SpecificGroupbuyIds = shoppingCreditEarn.SpecificProducts.Select(x => x.ProductId).ToList();
+                    SelectedGroupBuy = shoppingCreditEarn.SpecificGroupBuys.Select(x => x.GroupbuyId);
+                    SelectedProducts = shoppingCreditEarn.SpecificProducts.Select(x => x.ProductId);
+                }
                 await FetchProducts();
                 await FetchGroupBuys();
+
                 StateHasChanged();
             }
             catch (Exception ex)
@@ -63,6 +88,62 @@ namespace Kooco.Pikachu.Blazor.Pages.ShoppingCredits
                 await HandleErrorAsync(ex);
             }
         }
+        private async Task HandleValidSubmit()
+        {
+            messageStore?.Clear();
+            IsUpdating = true;
+
+            if (CreateUpdateEarn.CashbackApplicableGroupbuys == "AllGroupbuys")
+            {
+                CreateUpdateEarn.SpecificGroupbuyIds = Groupbuys.Select(x => x.Id).ToList();
+            }
+            else
+            {
+                CreateUpdateEarn.SpecificGroupbuyIds = SelectedGroupBuy.ToList();
+            }
+
+            // Custom validation logic
+            if (CreateUpdateEarn.CashbackApplicableProducts == "AllProducts")
+            {
+                CreateUpdateEarn.SpecificProductIds = Products.Select(x => x.Id).ToList();
+            }
+            else
+            {
+                CreateUpdateEarn.SpecificProductIds = SelectedProducts.ToList();
+            }
+            if (CreateUpdateEarn.SpecificGroupbuyIds.Count == 0)
+            {
+                messageStore?.Add(() => CreateUpdateEarn.SpecificGroupbuyIds, "Select at least one.");
+                IsUpdating = false;
+                return;
+            }
+
+            if (CreateUpdateEarn.SpecificProductIds.Count == 0)
+            {
+                messageStore?.Add(() => CreateUpdateEarn.SpecificProductIds, "Select at least one.");
+                IsUpdating = false;
+                return;
+            }
+
+            if (await ValidationsRef.ValidateAll())
+            {
+                CreateUpdateEarn.CashbackStagedSettings = GetJson();
+                if (Id == Guid.Empty)
+                {
+                    await ShoppingCreditEarnSettingAppService.CreateAsync(CreateUpdateEarn);
+                }
+                else
+                {
+
+                    await ShoppingCreditEarnSettingAppService.UpdateAsync(Id, CreateUpdateEarn);
+                }
+                IsUpdating = false;
+                NavigateToShoppingCredits();
+            }
+            IsUpdating = false;
+        }
+
+
         async Task FetchProducts()
         {
             try
@@ -84,7 +165,14 @@ namespace Kooco.Pikachu.Blazor.Pages.ShoppingCredits
             NavigationManager.NavigateTo("/shopping-credit");
 
         }
-
+        private string GetJson()
+        {
+            return JsonSerializer.Serialize(stagedSettings);
+        }
+        private void AddNewRow()
+        {
+            stagedSettings.Add(new StagedSetting());
+        }
 
     }
 }

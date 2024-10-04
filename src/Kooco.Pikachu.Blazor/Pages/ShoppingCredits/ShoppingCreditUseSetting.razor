@@ -6,12 +6,14 @@
 
 @using Kooco.Pikachu.GroupBuys
 @using Kooco.Pikachu.Items
+@using Kooco.Pikachu.ShoppingCredits
 @using Kooco.Pikachu.Permissions
 @using Microsoft.Extensions.Localization
-
+@using Volo.Abp.AspNetCore.Components.Web
+@inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
 @inherits PikachuComponentBase
-@inject GroupBuyAppService GroupBuyAppService
-
+@inject IGroupBuyAppService GroupBuyAppService
+@inject IShoppingCreditUsageSettingAppService ShoppingCreditUsageSettingAppService
 @inject NavigationManager NavigationManager
 <Div>
     <Row>
@@ -21,20 +23,28 @@
 
     </Row>
 </Div>
+<Form >
+    <Validations  @ref="@ValidationsRef" Model="@CreateUpdateUsage" ValidateOnLoad="false">
 <Card>
     <CardBody>
         <Row VerticalGutter="10">
+                    <Validation MessageLocalizer="@LH.Localize">
             <Column ColumnSize="ColumnSize.Is3">
                 <h4 class="text-dark">@L["AllowUsage"]</h4>
             </Column>
             <Column ColumnSize="ColumnSize.Is9">
                
                 <Column ColumnSize="ColumnSize.Is12">
-                    <Switch TValue="bool" Checked="true" />
+                    <Switch TValue="bool" @bind-Checked="CreateUpdateUsage.AllowUsage" >
+                        <Feedback>
+                            <ValidationError/>
+                        </Feedback>
+                    </Switch>
 
                 </Column>
 
             </Column>
+            </Validation>
 
         </Row>
     </CardBody>
@@ -47,38 +57,53 @@
             </Column>
             <Column ColumnSize="ColumnSize.Is9">
                 <Column ColumnSize="ColumnSize.Is12">
+                       <Validation MessageLocalizer="@LH.Localize">
                     <Label>@L["DeductionMethod"]</Label>
-                    <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="DeductionMethod" >
-                        <Radio Value="@("UnifiedCalculation")">@L["UnifiedCalculation:"]<NumericEdit Max="100" TValue="int" />%</Radio>
+                    <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="DeductionMethod" @bind-CheckedValue="CreateUpdateUsage.DeductionMethod">
+                        <ChildContent>
+                        <Radio Value="@("UnifiedCalculation")">@L["UnifiedCalculation:"]<NumericEdit @bind-Value="CreateUpdateUsage.UnifiedMaxDeductiblePoints" Max="100" TValue="int" />%</Radio>
                         <Radio Value="@("StagedCalculation")">@L["StagedCalculation"]</Radio>
+                  </ChildContent>
+                  <Feedback>
+                      <ValidationError/>
+                  </Feedback>
                     </RadioGroup>
-
+                    </Validation>
                 </Column>
                 <Column ColumnSize="ColumnSize.Is12">
                     <Row>
                         <Column ColumnSize="ColumnSize.Is6">
-                    <Label>@L["DeductionMethod"]</Label>
+                    <Label>@L["StagedSettings"]</Label>
                         </Column>
                         <Column Class="text-end" ColumnSize="ColumnSize.Is6">
-                            <Button><Icon Name="IconName.Add"></Icon></Button>
+                            <Button Clicked="AddNewRow"><Icon Name="IconName.Add"></Icon></Button>
                         </Column>
+                        @foreach (var setting in stagedSettings)
+{
                         <Column ColumnSize="ColumnSize.Is6">
                             <Label>@L["Spend"]</Label>
-                            <NumericEdit  TValue="int" />
+                            <NumericEdit @bind-Value="setting.Spend"  TValue="int" />
                         </Column>
                         <Column ColumnSize="ColumnSize.Is6">
                             <Label>@L["ToReceivePoints"]</Label>
-                            <NumericEdit  TValue="int" />
+                                        <NumericEdit @bind-Value="setting.Points" TValue="int" />
                         </Column>
+}
                     </Row>
                     </Column>
                 <Column ColumnSize="ColumnSize.Is12">
+                     <Validation MessageLocalizer="@LH.Localize">
                     <Label>@L["ApplicableItems"]</Label>
-                    <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="ApplicableItems">
-                        <Radio Value="@("AddOnProducts")">@L["Add-OnProducts:"]<NumericEdit  TValue="int" /></Radio>
+                    <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="ApplicableItems" @bind-CheckedValue="CreateUpdateUsage.ApplicableItems">
+                       <ChildContent>
+                        <Radio Value="@("AddOnProducts")">@L["Add-OnProducts"]</Radio>
                         <Radio Value="@("ShippingFees")">@L["ShippingFees"]</Radio>
+                  </ChildContent>
+                  <Feedback>
+                      <ValidationError/>
+                  </Feedback>
                     </RadioGroup>
-
+                    </Validation>
                 </Column>
              
             </Column>
@@ -95,27 +120,36 @@
            
             <Column ColumnSize="ColumnSize.Is9">
                 <Column ColumnSize="ColumnSize.Is12">
+                      <Validation MessageLocalizer="@LH.Localize">
                     <Label>@L["UsableforGroupbuying"]</Label>
-                    <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="Groupbuys">
+                    <RadioGroup Orientation="Orientation.Vertical" TValue="string" @bind-CheckedValue="CreateUpdateUsage.UsableGroupbuysScope" Name="Groupbuys">
+                       <ChildContent>
                         <Radio Value="@("AllGroupbuys")">@L["AllGroupbuys"]</Radio>
                         <Radio Value="@("SpecificGroupbuys")">@L["SpecificGroupbuys"]</Radio>
+                    </ChildContent>
+                    <Feedback>
+                        <ValidationError/>
+                    </Feedback>
                     </RadioGroup>
-
+                    </Validation>
                 </Column>
                 <Column ColumnSize="ColumnSize.Is12">
+                     <EditForm EditContext="editContext">
                     <AntDesign.Select Mode="multiple"
-                                      TItem="GroupBuyDto"
-                                      TItemValue="GroupBuyDto"
+                                      TItem="Guid"
+                                      TItemValue="Guid"
                                       @bind-Values="@SelectedGroupBuy"
                                       Placeholder="@L["SelectaGroupBuys"]"
                                       EnableSearch>
                         <SelectOptions>
                             @foreach (var item in Groupbuys)
                             {
-                                <AntDesign.SelectOption TItemValue="GroupBuyDto" TItem="GroupBuyDto" Value=@item Label=@item.GroupBuyName />
+                                <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@item.GroupBuyName />
                             }
                         </SelectOptions>
                     </AntDesign.Select>
+                                <ValidationMessage For="() => CreateUpdateUsage!.ProductIds" />
+                            </EditForm>
 
                 </Column>
 
@@ -123,38 +157,48 @@
 
                 <Column ColumnSize="ColumnSize.Is12">
                     <Label>@L["UseableforProducts"]</Label>
-                    <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="Products" >
+                      <Validation MessageLocalizer="@LH.Localize">
+                    <RadioGroup Orientation="Orientation.Vertical" TValue="string" @bind-CheckedValue="CreateUpdateUsage.UsableProductsScope" Name="Products" >
+                       <ChildContent>
                         <Radio Value="@("AllProducts")">@L["AllProducts"]</Radio>
                         <Radio Value="@("SpecificProducts")">@L["SpecificProducts"]</Radio>
+                  </ChildContent>
+                  <Feedback>
+                      <ValidationError/>
+                  </Feedback>
                     </RadioGroup>
-
+                    </Validation>
                 </Column>
                 <Column ColumnSize="ColumnSize.Is12">
+                     <EditForm EditContext="editContext">
                     <AntDesign.Select Mode="multiple"
-                                      TItem="KeyValueDto"
-                                      TItemValue="KeyValueDto"
+                                      TItem="Guid"
+                                      TItemValue="Guid"
                                       @bind-Values="@SelectedProducts"
                                       Placeholder="@L["SelectaProducts"]"
                                       EnableSearch>
                         <SelectOptions>
                             @foreach (var item in Products)
                             {
-                                <AntDesign.SelectOption TItemValue="KeyValueDto" TItem="KeyValueDto" Value=@item Label=@item.Name />
+                                <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@item.Name />
                             }
                         </SelectOptions>
                     </AntDesign.Select>
-
+                                <ValidationMessage For="() => CreateUpdateUsage!.ProductIds" />
+                            </EditForm>
                 </Column>
             </Column>
 
         </Row>
     </CardBody>
 </Card>
+</Validations>
+</Form>
 <Div Class="text-end">
-    <PikachuButton Class="pk-btn-light" Clicked="NavigateToShoppingCredits">
+    <PikachuButton Class="pk-btn-light" Disabled="@IsUpdating" Clicked="NavigateToShoppingCredits">
         @L["Cancel"]
     </PikachuButton>
-    <PikachuButton Class="pk-btn-primary">
+    <PikachuButton Class="pk-btn-primary" Loading="IsUpdating" Clicked="HandleValidSubmit">
         @L["Create"]
     </PikachuButton>
 </Div>

@@ -56,5 +56,10 @@ namespace Kooco.Pikachu.Controllers.DiscountCodes
         {
             return discountCodeAppService.UpdateAsync(id, input);
         }
+        [HttpPut("update-status/{id}")]
+        public Task UpdateStatusAsync(Guid id)
+        {
+            return discountCodeAppService.UpdateStatusAsync(id);
+        }
     }
 }
