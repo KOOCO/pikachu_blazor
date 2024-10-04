@@ -3,9 +3,11 @@
 @using Kooco.Pikachu.Localization
 
 @using Kooco.Pikachu.Permissions
+@using Kooco.Pikachu.ShoppingCredits
 @using Microsoft.Extensions.Localization
 @inherits PikachuComponentBase
-
+@inject IShoppingCreditUsageSettingAppService ShoppingCreditUsageSettingAppService
+@inject IShoppingCreditEarnSettingAppService ShoppingCreditEarnSettingAppService
 @inject NavigationManager NavigationManager
 
 <Div>
@@ -44,11 +46,11 @@
                         <h5> @L["RegistrationBounsPoint"]</h5>
                         </Column>
                     <Column TextAlignment="TextAlignment.End" ColumnSize="ColumnSize.Is4">
-                        <h5 class="text-success">13,153</h5>
-                        <Span>@L["NoExpiry"]</Span>
+                        <h5 class="text-success">@Earn.RegistrationEarnedPoints.ToString("N")</h5>
+                        <Span>@Earn.RegistrationUsagePeriodType</Span>
                     </Column>
                     <Column Class="d-flex flex-row-reverse"  ColumnSize="ColumnSize.Is4">
-                       <Switch Color="Color.Primary" TValue="bool" Checked="true"></Switch>
+                       <Switch Color="Color.Primary" TValue="bool" @bind-Checked="Earn.RegistrationBonusEnabled"></Switch>
                     </Column>
                     </Row>
                     <Divider Class="my-2"></Divider>
@@ -57,11 +59,11 @@
                         <h5> @L["BirthdayBounsPoint"]</h5>
                     </Column>
                     <Column TextAlignment="TextAlignment.End" ColumnSize="ColumnSize.Is4">
-                        <h5 class="text-success">13,153</h5>
-                        <Span>@L["NoExpiry"]</Span>
+                            <h5 class="text-success">@Earn.BirthdayEarnedPoints.ToString("N")</h5>
+                        <Span>@Earn.BirthdayUsagePeriodType</Span>
                     </Column>
                     <Column Class="d-flex flex-row-reverse" ColumnSize="ColumnSize.Is4">
-                        <Switch Color="Color.Primary" TValue="bool" Checked="true"></Switch>
+                        <Switch Color="Color.Primary"  TValue="bool" @bind-Checked="Earn.BirthdayBonusEnabled"></Switch>
                     </Column>
                 </Row>
                     <Divider Class="my-2"></Divider>
@@ -70,11 +72,11 @@
                         <h5> @L["ShoppingCashbackPoints"]</h5>
                     </Column>
                     <Column TextAlignment="TextAlignment.End" ColumnSize="ColumnSize.Is4">
-                        <h5 class="text-success">13,153</h5>
-                        <Span>@L["NoExpiry"]</Span>
+                            <h5 class="text-success">@Earn.CashbackUnifiedMaxDeductiblePoints.ToString("N")</h5>
+                        <Span>@Earn.CashbackUsagePeriodType</Span>
                     </Column>
                     <Column Class="d-flex flex-row-reverse" ColumnSize="ColumnSize.Is4">
-                        <Switch Color="Color.Primary" TValue="bool" Checked="true"></Switch>
+                        <Switch Color="Color.Primary" TValue="bool" @bind-Checked="Earn.CashbackEnabled"></Switch>
                     </Column>
                 </Row>
                   
@@ -105,7 +107,7 @@
                     </Column>
                     
                     <Column Class="d-flex flex-row-reverse" ColumnSize="ColumnSize.Is6">
-                        <Switch Color="Color.Primary" TValue="bool" Checked="true"></Switch>
+                        <Switch Color="Color.Primary" TValue="bool" @bind-Checked="Usage.AllowUsage"></Switch>
                     </Column>
                 </Row>
                 <Divider Class="my-2"></Divider>
@@ -117,7 +119,7 @@
                     <Column Class="d-flex flex-row-reverse" ColumnSize="ColumnSize.Is6">
                            
                                
-                               <h6>@L["UnifiedCalculation"]</h6>
+                               <h6>@Usage.DeductionMethod</h6>
                             
                     </Column>
                 </Row>
@@ -130,7 +132,7 @@
                         <Column Class="d-flex flex-row-reverse" ColumnSize="ColumnSize.Is6">
 
 
-                            <h6>@L["SpecificGroupbuy"]</h6>
+                            <h6>@Usage.UsableGroupbuysScope</h6>
 
                         </Column>
                 </Row>
@@ -143,7 +145,7 @@
                         <Column Class="d-flex flex-row-reverse" ColumnSize="ColumnSize.Is6">
 
 
-                            <h6>@L["AllProducts"]</h6>
+                            <h6>@Usage.UsableProductsScope</h6>
 
                         </Column>
                     </Row>

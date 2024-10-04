@@ -4,6 +4,7 @@ using Kooco.Pikachu.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    partial class PikachuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241003032229_Add ShoppingCredit Usage Setting Tables")]
+    partial class AddShoppingCreditUsageSettingTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2420,152 +2423,6 @@ namespace Kooco.Pikachu.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Kooco.Pikachu.ShoppingCredits.ShoppingCreditEarnSetting", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("BirthdayBonusEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("BirthdayEarnedPoints")
-                        .HasColumnType("int");
-
-                    b.Property<string>("BirthdayUsagePeriodType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("BirthdayValidDays")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CashbackApplicableGroupbuys")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CashbackApplicableItems")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CashbackApplicableProducts")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CashbackCalculationMethod")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("CashbackEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("CashbackStagedSettings")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("CashbackUnifiedMaxDeductiblePoints")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("CashbackUsagePeriodType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("CashbackValidDays")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)")
-                        .HasColumnName("ConcurrencyStamp");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<string>("ExtraProperties")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("ExtraProperties");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
-
-                    b.Property<bool>("RegistrationBonusEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("RegistrationEarnedPoints")
-                        .HasColumnType("int");
-
-                    b.Property<string>("RegistrationUsagePeriodType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("RegistrationValidDays")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AppShoppingCreditEarnSettings", null, t =>
-                        {
-                            t.HasComment("");
-                        });
-                });
-
-            modelBuilder.Entity("Kooco.Pikachu.ShoppingCredits.ShoppingCreditEarnSpecificGroupbuy", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("GroupbuyId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ShoppingCreditEarnSettingId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GroupbuyId");
-
-                    b.HasIndex("ShoppingCreditEarnSettingId");
-
-                    b.ToTable("AppShoppingCreditEarnSpecificGroupbuys", null, t =>
-                        {
-                            t.HasComment("");
-                        });
-                });
-
-            modelBuilder.Entity("Kooco.Pikachu.ShoppingCredits.ShoppingCreditEarnSpecificProduct", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ShoppingCreditEranSettingId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("ShoppingCreditEranSettingId");
-
-                    b.ToTable("AppShoppingCreditEarnSpecificProducts", null, t =>
-                        {
-                            t.HasComment("");
-                        });
-                });
-
             modelBuilder.Entity("Kooco.Pikachu.ShoppingCredits.ShoppingCreditUsageSetting", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2674,125 +2531,6 @@ namespace Kooco.Pikachu.Migrations
                     b.HasIndex("ShoppingCreditsUsageSettingId");
 
                     b.ToTable("AppShoppingCreditUsageSpecificProducts", null, t =>
-                        {
-                            t.HasComment("");
-                        });
-                });
-
-            modelBuilder.Entity("Kooco.Pikachu.ShopCarts.CartItem", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
-
-                    b.Property<Guid>("ItemId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("ShopCartId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("UnitPrice")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ItemId");
-
-                    b.HasIndex("ShopCartId");
-
-                    b.ToTable("AppCartItems", null, t =>
-                        {
-                            t.HasComment("");
-                        });
-                });
-
-            modelBuilder.Entity("Kooco.Pikachu.ShopCarts.ShopCart", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)")
-                        .HasColumnName("ConcurrencyStamp");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
-
-                    b.Property<string>("ExtraProperties")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("ExtraProperties");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AppShopCarts", null, t =>
                         {
                             t.HasComment("");
                         });
@@ -4929,10 +4667,6 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("DeletionTime");
 
-                    b.Property<string>("Domain")
-                        .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)");
-
                     b.Property<int>("EntityVersion")
                         .HasColumnType("int");
 
@@ -5283,74 +5017,6 @@ namespace Kooco.Pikachu.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("Kooco.Pikachu.ShopCarts.CartItem", b =>
-                {
-                    b.HasOne("Kooco.Pikachu.Items.Item", "Item")
-                        .WithMany()
-                        .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Kooco.Pikachu.ShopCarts.ShopCart", "ShopCart")
-                        .WithMany("CartItems")
-                        .HasForeignKey("ShopCartId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Item");
-
-                    b.Navigation("ShopCart");
-                });
-
-            modelBuilder.Entity("Kooco.Pikachu.ShopCarts.ShopCart", b =>
-                {
-                    b.HasOne("Volo.Abp.Identity.IdentityUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Kooco.Pikachu.ShoppingCredits.ShoppingCreditEarnSpecificGroupbuy", b =>
-                {
-                    b.HasOne("Kooco.Pikachu.GroupBuys.GroupBuy", "GroupBuy")
-                        .WithMany()
-                        .HasForeignKey("GroupbuyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Kooco.Pikachu.ShoppingCredits.ShoppingCreditEarnSetting", "ShoppingCreditEarnSetting")
-                        .WithMany("SpecificGroupbuys")
-                        .HasForeignKey("ShoppingCreditEarnSettingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("GroupBuy");
-
-                    b.Navigation("ShoppingCreditEarnSetting");
-                });
-
-            modelBuilder.Entity("Kooco.Pikachu.ShoppingCredits.ShoppingCreditEarnSpecificProduct", b =>
-                {
-                    b.HasOne("Kooco.Pikachu.Items.Item", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Kooco.Pikachu.ShoppingCredits.ShoppingCreditEarnSetting", "ShoppingCreditEarnSetting")
-                        .WithMany("SpecificProducts")
-                        .HasForeignKey("ShoppingCreditEranSettingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-
-                    b.Navigation("ShoppingCreditEarnSetting");
-                });
-
             modelBuilder.Entity("Kooco.Pikachu.ShoppingCredits.ShoppingCreditUsageSpecificGroupbuy", b =>
                 {
                     b.HasOne("Kooco.Pikachu.GroupBuys.GroupBuy", "GroupBuy")
@@ -5661,23 +5327,11 @@ namespace Kooco.Pikachu.Migrations
                     b.Navigation("StoreComments");
                 });
 
-            modelBuilder.Entity("Kooco.Pikachu.ShoppingCredits.ShoppingCreditEarnSetting", b =>
-                {
-                    b.Navigation("SpecificGroupbuys");
-
-                    b.Navigation("SpecificProducts");
-                });
-
             modelBuilder.Entity("Kooco.Pikachu.ShoppingCredits.ShoppingCreditUsageSetting", b =>
                 {
                     b.Navigation("SpecificGroupbuys");
 
                     b.Navigation("SpecificProducts");
-                });
-
-            modelBuilder.Entity("Kooco.Pikachu.ShopCarts.ShopCart", b =>
-                {
-                    b.Navigation("CartItems");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>
