@@ -4,6 +4,7 @@ using Kooco.Pikachu.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    partial class PikachuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241004075246_Add_AppGroupPurchaseOverviews")]
+    partial class Add_AppGroupPurchaseOverviews
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1031,6 +1034,26 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<string>("ButtonText")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)")
+                        .HasColumnName("ConcurrencyStamp");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<string>("ExtraProperties")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ExtraProperties");
+
                     b.Property<Guid>("GroupBuyId")
                         .HasColumnType("uniqueidentifier");
 
@@ -1041,6 +1064,20 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<bool>("IsButtonEnable")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastModifierId");
+
                     b.Property<string>("SubTitle")
                         .HasColumnType("nvarchar(max)");
 
@@ -1050,10 +1087,9 @@ namespace Kooco.Pikachu.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AppGroupPurchaseOverviews", null, t =>
-                        {
-                            t.HasComment("");
-                        });
+                    b.HasIndex("GroupBuyId");
+
+                    b.ToTable("AppGroupPurchaseOverviews", (string)null);
                 });
 
             modelBuilder.Entity("Kooco.Pikachu.Groupbuys.GroupBuyItemGroupDetails", b =>
@@ -5155,6 +5191,17 @@ namespace Kooco.Pikachu.Migrations
                         .HasForeignKey("GroupBuyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.GroupPurchaseOverviews.GroupPurchaseOverview", b =>
+                {
+                    b.HasOne("Kooco.Pikachu.GroupBuys.GroupBuy", "GroupBuy")
+                        .WithMany()
+                        .HasForeignKey("GroupBuyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("GroupBuy");
                 });
 
             modelBuilder.Entity("Kooco.Pikachu.Groupbuys.GroupBuyItemGroupDetails", b =>

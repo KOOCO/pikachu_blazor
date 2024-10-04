@@ -24,6 +24,8 @@ using System.Runtime.CompilerServices;
 using Blazorise.LoadingIndicator;
 using Blazorise.Extensions;
 using Kooco.Pikachu.Localization;
+using Kooco.Pikachu.GroupPurchaseOverviews;
+using Kooco.Pikachu.GroupPurchaseOverviews.Interface;
 
 
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
@@ -31,6 +33,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
 public partial class CreateGroupBuy
 {
     #region Inject
+    private bool IsRender = false;
     private Modal AddLinkModal { get; set; }
     private CreateImageDto SelectedImageDto = new ();
     private const int maxtextCount = 60;
@@ -70,6 +73,7 @@ public partial class CreateGroupBuy
     private FilePicker CarouselPickerCustom { get; set; }
     private List<FilePicker> CarouselFilePickers = [];
     private List<FilePicker> BannerFilePickers = [];
+    private List<FilePicker> GroupPurchaseOverviewFilePickers = [];
     private List<string> ShippingMethods { get; set; } = Enum.GetNames(typeof(DeliveryMethod)).ToList();
     private readonly IGroupBuyAppService _groupBuyAppService;
     private readonly IImageAppService _imageAppService;
@@ -96,6 +100,9 @@ public partial class CreateGroupBuy
 
     public List<List<CreateImageDto>> CarouselModules = [];
     public List<List<CreateImageDto>> BannerModules = [];
+    public List<GroupPurchaseOverviewDto> GroupPurchaseOverviewModules = [];
+
+    private readonly IGroupPurchaseOverviewAppService _GroupPurchaseOverviewAppService;
     #endregion
 
     #region Constructor
@@ -105,8 +112,9 @@ public partial class CreateGroupBuy
         IUiMessageService uiMessageService,
         ImageContainerManager imageContainerManager,
         IItemAppService itemAppService,
-        ISetItemAppService setItemAppService
-        )
+        ISetItemAppService setItemAppService,
+        IGroupPurchaseOverviewAppService GroupPurchaseOverviewAppService
+    )
     {
         _groupBuyAppService = groupBuyAppService;
         _imageAppService = imageAppService;
@@ -117,6 +125,7 @@ public partial class CreateGroupBuy
         _itemAppService = itemAppService;
         _setItemAppService = setItemAppService;
 
+        _GroupPurchaseOverviewAppService = GroupPurchaseOverviewAppService;
     }
     #endregion
 
@@ -184,7 +193,7 @@ public partial class CreateGroupBuy
     {
         return Enum.GetValues(typeof(GroupBuyModuleType))
                    .Cast<GroupBuyModuleType>()
-                   .Where(m => m >= GroupBuyModuleType.ProductGroupModule && m <= GroupBuyModuleType.BannerImages);
+                   .Where(m => m >= GroupBuyModuleType.ProductGroupModule && m <= GroupBuyModuleType.GroupPurchaseOverview);
     }
 
     public void OnProductTypeChange(ChangeEventArgs e)
@@ -519,6 +528,23 @@ public partial class CreateGroupBuy
             BannerModules.Add([]);
         }
 
+        else if (groupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview)
+        {
+            if (GroupPurchaseOverviewModules is { Count: 0 })
+            {
+                CollapseItem collapseItem = new()
+                {
+                    GroupBuyModuleType = groupBuyModuleType
+                };
+
+                CollapseItem.Add(collapseItem);
+            }
+
+            GroupPurchaseOverviewFilePickers.Add(new());
+
+            GroupPurchaseOverviewModules.Add(new());
+        }
+
         else
         {
             CollapseItem collapseItem = new()
@@ -771,6 +797,94 @@ public partial class CreateGroupBuy
         PaymentMethodTags.Remove(item);
     }
 
+    #region GroupPurchaseOverview Module Section
+    private void ToggleButtonVisibility(bool e, GroupPurchaseOverviewDto module)
+    {
+        if (!module.IsButtonEnable)
+        {
+            module.ButtonText = null;
+
+            module.ButtonLink = null;
+        }
+    }
+
+    public async Task OnImageUploadAsync(
+        FileChangedEventArgs e, 
+        GroupPurchaseOverviewDto module, 
+        FilePicker filePicker
+    )
+    {
+        try
+        {
+            if (e.Files.Length is 0) return;
+
+            if (e.Files.Length > 1)
+            {
+                await _uiMessageService.Error("Cannot add more 1 image.");
+
+                await filePicker.Clear();
+
+                return;
+            }
+
+            if (!ValidFileExtensions.Contains(Path.GetExtension(e.Files[0].Name)))
+            {
+                await _uiMessageService.Error(L["InvalidFileType"]);
+
+                await filePicker.Clear();
+
+                return;
+            }
+
+            string newFileName = Path.ChangeExtension(
+                Guid.NewGuid().ToString().Replace("-", ""),
+                Path.GetExtension(e.Files[0].Name)
+            );
+
+            Stream stream = e.Files[0].OpenReadStream(long.MaxValue);
+
+            try
+            {
+                MemoryStream memoryStream = new();
+
+                await stream.CopyToAsync(memoryStream);
+
+                memoryStream.Position = 0;
+
+                string url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
+
+                module.Image = url;
+
+                await filePicker.Clear();
+            }
+            finally
+            {
+                stream.Close();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+
+            await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
+        }
+    }
+
+    public async Task DeleteImageAsync(MouseEventArgs e, GroupPurchaseOverviewDto module)
+    {
+        bool confirmed = await _uiMessageService.Confirm(L[PikachuDomainErrorCodes.AreYouSureToDeleteImage]);
+
+        if (confirmed)
+        {
+            await _imageContainerManager.DeleteAsync(module.Image);
+
+            module.Image = string.Empty;
+
+            StateHasChanged();
+        }
+    }
+    #endregion
+
     protected virtual async Task CreateEntityAsync()
     {
         try
@@ -914,6 +1028,52 @@ public partial class CreateGroupBuy
                 await Loading.Hide();
                 return;
             }
+
+            else if (GroupPurchaseOverviewModules is { Count: > 0 })
+            {
+                foreach (GroupPurchaseOverviewDto groupPurchaseOverview in GroupPurchaseOverviewModules)
+                {
+                    if (groupPurchaseOverview.Title is null)
+                    {
+                        await _uiMessageService.Error("Title Cannot be empty in Group Purchase Overview Module");
+
+                        await Loading.Hide();
+
+                        return;
+                    }
+
+                    if (groupPurchaseOverview.Image is null)
+                    {
+                        await _uiMessageService.Error("Please Add Image in Group Purchase Overview Module");
+
+                        await Loading.Hide();
+
+                        return;
+                    }
+
+                    if (groupPurchaseOverview.IsButtonEnable)
+                    {
+                        if (groupPurchaseOverview.ButtonText.IsNullOrEmpty()) 
+                        {
+                            await _uiMessageService.Error("If you have enabled Button, then Button Text is required.");
+
+                            await Loading.Hide();
+
+                            return;
+                        }
+
+                        if (groupPurchaseOverview.ButtonLink.IsNullOrEmpty())
+                        {
+                            await _uiMessageService.Error("If you have enabled Button, then Button Link is required.");
+
+                            await Loading.Hide();
+
+                            return;
+                        }
+                    }
+                }
+            }
+
             CreateGroupBuyDto.NotifyMessage = await NotifyEmailHtml.GetHTML();
             CreateGroupBuyDto.GroupBuyConditionDescription = await GroupBuyHtml.GetHTML();
             CreateGroupBuyDto.ExchangePolicyDescription = await ExchangePolicyHtml.GetHTML();
@@ -961,17 +1121,36 @@ public partial class CreateGroupBuy
 
             List<List<List<CreateImageDto>>> imageModules = [CarouselModules, BannerModules];
 
-            foreach (List<List<CreateImageDto>> imageModule in imageModules)
-            {
-                foreach (List<CreateImageDto> carouselImages in imageModule)
-                {
-                    foreach (CreateImageDto carouselImage in carouselImages)
-                    {
-                        carouselImage.TargetId = result.Id;
+            var allImages = imageModules.SelectMany(module => module.SelectMany(images => images));
 
-                        await _imageAppService.CreateAsync(carouselImage);
-                    }
-                } 
+            foreach (CreateImageDto image in allImages)
+            {
+                image.TargetId = result.Id;
+
+                await _imageAppService.CreateAsync(image);
+            }
+
+            //foreach (List<List<CreateImageDto>> imageModule in imageModules)
+            //{
+            //    foreach (List<CreateImageDto> carouselImages in imageModule)
+            //    {
+            //        foreach (CreateImageDto carouselImage in carouselImages)
+            //        {
+            //            carouselImage.TargetId = result.Id;
+
+            //            await _imageAppService.CreateAsync(carouselImage);
+            //        }
+            //    } 
+            //}
+
+            if (GroupPurchaseOverviewModules is { Count: > 0 })
+            {
+                foreach (GroupPurchaseOverviewDto groupPurchaseOverview in GroupPurchaseOverviewModules)
+                {
+                    groupPurchaseOverview.GroupBuyId = result.Id;
+
+                    await _GroupPurchaseOverviewAppService.CreateGroupPurchaseOverviewAsync(groupPurchaseOverview);
+                }
             }
 
             await Loading.Hide();
