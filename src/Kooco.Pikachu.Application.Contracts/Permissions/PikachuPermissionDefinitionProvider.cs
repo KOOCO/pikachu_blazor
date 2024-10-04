@@ -1,6 +1,7 @@
 using Kooco.Pikachu.Localization;
 using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Localization;
+using Volo.Abp.MultiTenancy;
 
 namespace Kooco.Pikachu.Permissions;
 
@@ -100,6 +101,9 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
         var shoppingCredits = promotion.AddPermission(PikachuPermissions.ShoppingCredits.Default, L("Permission:ShoppingCredits"));
 
         _ = memberManagementGroup.AddPermission(PikachuPermissions.ShopCarts.Default, L("Permission:ShopCart"));
+
+        var tenantSettingsPermissions = myGroup.AddPermission(PikachuPermissions.TenantSettings.Default, L("Permission:TenantSettings"), MultiTenancySides.Tenant);
+        tenantSettingsPermissions.AddChild(PikachuPermissions.TenantSettings.Edit, L("Permission:Edit"), MultiTenancySides.Tenant);
     }
 
     private static LocalizableString L(string name)

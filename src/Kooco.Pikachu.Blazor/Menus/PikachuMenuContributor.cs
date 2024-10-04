@@ -327,6 +327,16 @@ requiredPermissionName: PikachuPermissions.ShoppingCredits.Default)
                     requiredPermissionName: PikachuPermissions.TenentBillReport
                 )
             );
+
+            tenantManagementMenu?.AddItem(
+                new ApplicationMenuItem(
+                    name: PikachuMenus.TenantSettings,
+                    icon: "fas fa-cogs",
+                    displayName: l["Menu:TenantSettings"],
+                    url: "/Tenant-Settings",
+                    requiredPermissionName: PikachuPermissions.TenantSettings.Default
+                )
+            );
         }
         else
         {

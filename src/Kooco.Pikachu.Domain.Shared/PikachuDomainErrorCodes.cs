@@ -48,4 +48,6 @@ public static class PikachuDomainErrorCodes
     public const string ExpirationDateCannotBePast = "Pikachu:ExpirationDateCannotBePast";
     public const string ShopCartForUserAlreadyExists = "Pikachu:ShopCartForUserAlreadyExists";
     public const string CartItemForUserAlreadyExists = "Pikachu:CartItemForUserAlreadyExists";
+    public const string InvalidServiceHoursException = "Pikachu:InvalidServiceHoursException";
+    public const string TenantSettingsAlreadyExist = "Pikachu:TenantSettingsAlreadyExist";
 }

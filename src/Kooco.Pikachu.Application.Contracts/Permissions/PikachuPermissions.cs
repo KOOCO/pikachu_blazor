@@ -133,4 +133,10 @@ public static class PikachuPermissions
         public const string Default = ".ShoppingCredits";
 
     }
+
+    public static class TenantSettings
+    {
+        public const string Default = ".TenantSettings";
+        public const string Edit = Default + ".Edit";
+    }
 }

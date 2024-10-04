@@ -1,0 +1,62 @@
+﻿@page "/Tenant-Settings"
+@using Kooco.Pikachu.Localization
+@using Kooco.Pikachu.Permissions
+@using Kooco.Pikachu.TenantManagement
+@using Volo.Abp.AspNetCore.Components.Web
+@attribute [Authorize(PikachuPermissions.TenantSettings.Default)]
+@inherits PikachuComponentBase
+@inject NavigationManager NavigationManager
+@inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
+@* @inject ITenantSettingsAppService TenantSettingsAppService *@
+
+<Div Class="rounded-cards">
+    <Card>
+        <CardBody>
+            <Div Class="text-dark d-flex align-items-center justify-content-between">
+                <Div>
+                    <h4 class="m-0 mb-1">@CurrentTenant?.Name</h4>
+                    @L["TenantId"]:
+                    <Span Class="bg-lightgrey rounded-3" Style="padding: 1px 10px;">
+                        <Copy Text="@CurrentTenant?.Id" ShouldDisplayIcon="false"></Copy>
+                    </Span>
+                </Div>
+                @if (CanEditTenantSettings)
+                {
+                    <PikachuButton Class="pk-btn-light" Clicked="@(() => EditingMode = true)">
+                        @L["Edit"]
+                        <Icon Name="IconName.Pen" Class="ms-1"></Icon>
+                    </PikachuButton>
+                }
+            </Div>
+        </CardBody>
+    </Card>
+    @if (Entity != null && EditingMode)
+    {
+        <Card>
+            <CardBody>
+                <Form>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                            <h4>@L["TenantSettings"]</h4>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                            <Validations @ref="@ValidationsRef" Model="@Entity" ValidateOnLoad="false">
+
+                            </Validations>
+                        </Column>
+                    </Row>
+                </Form>
+            </CardBody>
+        </Card>
+        <Div Class="text-end">
+            <PikachuButton Class="pk-btn-transparent" Disabled="IsLoading" Clicked="ResetAsync">
+                @L["Cancel"]
+            </PikachuButton>
+            <PikachuButton Class="pk-btn-primary" Loading="IsLoading" Clicked="UpdateAsync">
+                @L["Update"]
+            </PikachuButton>
+        </Div>
+    }
+</Div>
+
+

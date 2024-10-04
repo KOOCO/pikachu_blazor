@@ -666,6 +666,11 @@
     "Pikachu:ShopCartForUserAlreadyExists": "Shop Cart for this User Id already exists.",
     "Pikachu:CartItemForUserAlreadyExists": "Cart Item for this Shop Cart already exists.",
     "Permission:ShopCart": "Shop Carts",
+    "Pikachu:InvalidServiceHoursException": "Service Hours must start before the End Time.",
+    "Pikachu:TenantSettingsAlreadyExist": "Tenant Settings for the current tenant already exist.",
+    "Permission:TenantSettings": "Tenant Settings",
+    "Menu:TenantSettings": "Tenant Settings",
+    "TenantId": "Tenant Id",
 
     //Add On Products
     "AddOnProducts": "Add-on Products",
