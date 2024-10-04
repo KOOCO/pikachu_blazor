@@ -20,7 +20,7 @@ namespace Kooco.Pikachu.DiscountCodes
         [Authorize(PikachuPermissions.DiscountCodes.Create)] // Update this permission name as needed
         public async Task<DiscountCodeDto> CreateAsync(CreateUpdateDiscountCodeDto input)
         {
-            var discountCode = await discountCodeManager.CreateAsync(input.EventName,input.StartDate,input.EndDate,input.Code,input.SpecifiedCode,input.AvailableQuantity,input.MaxUsePerPerson,input.GroupbuysScope,input.ProductsScope,input.DiscountMethod,input.MinimumSpendAmount,input.ShippingDiscountScope,input.SpecificShippingMethods,input.DiscountPercentage,input.DiscountAmount,input.GroupbuyIds,input.ProductIds);
+            var discountCode = await discountCodeManager.CreateAsync(input.EventName,input.Status,input.StartDate,input.EndDate,input.Code,input.SpecifiedCode,input.AvailableQuantity,input.MaxUsePerPerson,input.GroupbuysScope,input.ProductsScope,input.DiscountMethod,input.MinimumSpendAmount,input.ShippingDiscountScope,input.SpecificShippingMethods,input.DiscountPercentage,input.DiscountAmount,input.GroupbuyIds,input.ProductIds);
             return ObjectMapper.Map<DiscountCode, DiscountCodeDto>(discountCode);
         }
 
@@ -52,8 +52,8 @@ namespace Kooco.Pikachu.DiscountCodes
                 input.Sorting = nameof(DiscountCode.CreationTime) + " DESC";
             }
 
-            var count = await discountCodeRepository.GetCountAsync(input.Filter,startDate:input.StartDate,endDate: input.EndDate);
-            var items = await discountCodeRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, startDate: input.StartDate, endDate: input.EndDate);
+            var count = await discountCodeRepository.GetCountAsync(input.Filter,status:input.Status,startDate:input.StartDate,endDate: input.EndDate);
+            var items = await discountCodeRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, status: input.Status, startDate: input.StartDate, endDate: input.EndDate);
 
             return new PagedResultDto<DiscountCodeDto>
             {
@@ -65,8 +65,16 @@ namespace Kooco.Pikachu.DiscountCodes
         [Authorize(PikachuPermissions.DiscountCodes.Edit)] // Update this permission name as needed
         public async Task<DiscountCodeDto> UpdateAsync(Guid id, CreateUpdateDiscountCodeDto input)
         {
-            var discountCode = await discountCodeManager.UpdateAsync(id,input.EventName, input.StartDate, input.EndDate, input.Code, input.SpecifiedCode, input.AvailableQuantity, input.MaxUsePerPerson, input.GroupbuysScope, input.ProductsScope, input.DiscountMethod, input.MinimumSpendAmount, input.ShippingDiscountScope, input.SpecificShippingMethods, input.DiscountPercentage, input.DiscountAmount, input.GroupbuyIds, input.ProductIds);
+            var discountCode = await discountCodeManager.UpdateAsync(id,input.EventName, input.Status,input.StartDate, input.EndDate, input.Code, input.SpecifiedCode, input.AvailableQuantity, input.MaxUsePerPerson, input.GroupbuysScope, input.ProductsScope, input.DiscountMethod, input.MinimumSpendAmount, input.ShippingDiscountScope, input.SpecificShippingMethods, input.DiscountPercentage, input.DiscountAmount, input.GroupbuyIds, input.ProductIds);
             return ObjectMapper.Map<DiscountCode, DiscountCodeDto>(discountCode);
+        }
+        [Authorize(PikachuPermissions.DiscountCodes.Edit)] // Update this permission name as needed
+        public async Task UpdateStatusAsync(Guid id)
+        {
+            var discountCode = await discountCodeRepository.GetAsync(id);
+            discountCode.Status = !discountCode.Status;
+            await discountCodeRepository.UpdateAsync(discountCode);
+            return;
         }
     }
 }

@@ -41,11 +41,11 @@
                 <DateEdit TValue="DateTime?" @bind-Date="Filters.EndDate" Size="Size.Small"></DateEdit>
             </Column>
             <Column ColumnSize="ColumnSize.Is12.IsAuto.OnTablet" Class="d-flex align-items-end justify-content-center justify-content-sm-start">
-                <Button Class="btn-sm btn-outline-primary me-1">
+                <Button Clicked="ResetFilters" Class="btn-sm btn-outline-primary me-1">
                     <Icon Class="fa-undo"></Icon>
                     @L["Reset"]
                 </Button>
-                <Button Class="btn-sm btn-primary">
+                <Button Clicked="ApplyFilters" Class="btn-sm btn-primary">
                     <Icon Class="fa-filter"></Icon>
                     @L["Filter"]
                 </Button>
@@ -107,7 +107,7 @@
                 <DataGridColumn TItem="DiscountCodeDto" Field="@nameof(DiscountCodeDto.Status)"
                                 Caption="@L["Status"]">
                     <DisplayTemplate>
-                        <Switch TValue="bool" Checked="@context.Status" CheckedChanged="@(() => OnDiscountCodeStatusChanged(context.Id))"></Switch>
+                        <Switch TValue="bool" Checked="@context.Status" CheckedChanged="@(() => UpdateStatus(context.Id))"></Switch>
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridEntityActionsColumn TItem="DiscountCodeDto">

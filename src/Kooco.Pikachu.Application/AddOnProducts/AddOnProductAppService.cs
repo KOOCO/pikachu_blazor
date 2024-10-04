@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.Permissions;
+﻿using Kooco.Pikachu.DiscountCodes;
+using Kooco.Pikachu.Permissions;
 using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
@@ -40,8 +41,8 @@ namespace Kooco.Pikachu.AddOnProducts
             {
                 input.Sorting = nameof(AddOnProduct.CreationTime) + " DESC";
             }
-            var count = await addOnProductRepository.GetCountAsync(input.Filter, startDate: input.StartDate, endDate: input.EndDate);
-            var items = await addOnProductRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, startDate: input.StartDate, endDate: input.EndDate);
+            var count = await addOnProductRepository.GetCountAsync(input.Filter, startDate: input.StartDate, endDate: input.EndDate,status:input.Status);
+            var items = await addOnProductRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, startDate: input.StartDate, endDate: input.EndDate,status: input.Status);
             return new PagedResultDto<AddOnProductDto>
             {
                 TotalCount = count,
@@ -55,6 +56,13 @@ namespace Kooco.Pikachu.AddOnProducts
                 var addonProduct = await addOnProductManager.UpdateAsync(Id,input.AddOnAmount, input.AddOnLimitPerOrder, input.QuantitySetting, input.AvailableQuantity, input.DisplayOriginalPrice, input.StartDate, input.EndDate, input.AddOnConditions, input.MinimumSpendAmount, input.GroupbuysScope, input.Status, input.SellingQuantity, input.ProductId, input.GroupBuyIds);
                 return ObjectMapper.Map<AddOnProduct, AddOnProductDto>(addonProduct);
             }
-        
+        [Authorize(PikachuPermissions.DiscountCodes.Edit)] // Update this permission name as needed
+        public async Task UpdateStatusAsync(Guid id)
+        {
+            var addOnProduct = await addOnProductRepository.GetAsync(id);
+            addOnProduct.Status = !addOnProduct.Status;
+            await addOnProductRepository.UpdateAsync(addOnProduct);
+            return;
+        }
     }
 }

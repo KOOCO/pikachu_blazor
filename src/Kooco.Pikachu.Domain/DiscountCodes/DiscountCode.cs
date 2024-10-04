@@ -26,9 +26,9 @@ namespace Kooco.Pikachu.DiscountCodes
         public int[] SpecificShippingMethods { get; set; } // Assuming this is an array
         public int? DiscountPercentage { get; set; }
         public int? DiscountAmount { get; set; }
-
+        public bool Status { get; set; }
         // Navigation properties
-      
+
         public ICollection<DiscountCodeUsage> DiscountCodeUsages { get; set; }
         public ICollection<DiscountSpecificGroupbuy> DiscountSpecificGroupbuys { get; set; }
         public ICollection<DiscountSpecificProduct> DiscountSpecificProducts { get; set; }
@@ -37,6 +37,7 @@ namespace Kooco.Pikachu.DiscountCodes
         public DiscountCode(
                   Guid id,
                   string eventName,
+                  bool status,
                   DateTime startDate,
                   DateTime endDate,
                   string code,
@@ -56,7 +57,7 @@ namespace Kooco.Pikachu.DiscountCodes
             DiscountSpecificProducts = new HashSet<DiscountSpecificProduct>();
            
             DiscountCodeUsages = new HashSet<DiscountCodeUsage>();
-
+            Status = status;
             EventName = eventName;
             StartDate = startDate;
             EndDate = endDate;

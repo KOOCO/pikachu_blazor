@@ -27,6 +27,7 @@ namespace Kooco.Pikachu.DiscountCodes
 
         public async Task<DiscountCode> CreateAsync(
             string eventName,
+            bool status,
             DateTime startDate,
             DateTime endDate,
             string discountCode,
@@ -47,6 +48,7 @@ namespace Kooco.Pikachu.DiscountCodes
             var discount = new DiscountCode(
                 GuidGenerator.Create(),
                 eventName,
+                status,
                 startDate,
                 endDate,
                 discountCode,
@@ -72,6 +74,7 @@ namespace Kooco.Pikachu.DiscountCodes
         public async Task<DiscountCode> UpdateAsync(
             Guid id,
             string eventName,
+            bool status,
             DateTime startDate,
             DateTime endDate,
             string discountCode,
@@ -98,6 +101,7 @@ namespace Kooco.Pikachu.DiscountCodes
 
             // Update properties of the existing DiscountCode
             existingDiscount.EventName = eventName;
+            existingDiscount.Status = status;
             existingDiscount.StartDate = startDate;
             existingDiscount.EndDate = endDate;
             existingDiscount.Code = discountCode;
