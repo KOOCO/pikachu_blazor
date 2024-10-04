@@ -25,4 +25,11 @@ public class EfCoreGroupPurchaseOverviewRepository :
     {
     }
     #endregion
+
+    #region Methods
+    public async Task<List<GroupPurchaseOverview>> GetListByGroupBuyIdAsync(Guid groupBuyId)
+    {
+        return [.. (await GetQueryableAsync()).Where(w => w.GroupBuyId == groupBuyId)];
+    }
+    #endregion
 }

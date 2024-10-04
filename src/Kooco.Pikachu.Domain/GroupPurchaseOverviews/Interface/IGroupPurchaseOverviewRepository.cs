@@ -9,4 +9,5 @@ namespace Kooco.Pikachu.GroupPurchaseOverviews.Interface;
 
 public interface IGroupPurchaseOverviewRepository : IRepository<GroupPurchaseOverview, Guid>
 {
+    Task<List<GroupPurchaseOverview>> GetListByGroupBuyIdAsync(Guid groupBuyId);
 }

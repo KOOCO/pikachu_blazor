@@ -1033,7 +1033,7 @@ public partial class CreateGroupBuy
             {
                 foreach (GroupPurchaseOverviewDto groupPurchaseOverview in GroupPurchaseOverviewModules)
                 {
-                    if (groupPurchaseOverview.Title is null)
+                    if (groupPurchaseOverview.Title.IsNullOrEmpty())
                     {
                         await _uiMessageService.Error("Title Cannot be empty in Group Purchase Overview Module");
 
@@ -1042,7 +1042,7 @@ public partial class CreateGroupBuy
                         return;
                     }
 
-                    if (groupPurchaseOverview.Image is null)
+                    if (groupPurchaseOverview.Image.IsNullOrEmpty())
                     {
                         await _uiMessageService.Error("Please Add Image in Group Purchase Overview Module");
 
@@ -1121,7 +1121,7 @@ public partial class CreateGroupBuy
 
             List<List<List<CreateImageDto>>> imageModules = [CarouselModules, BannerModules];
 
-            var allImages = imageModules.SelectMany(module => module.SelectMany(images => images));
+            IEnumerable<CreateImageDto> allImages = imageModules.SelectMany(module => module.SelectMany(images => images));
 
             foreach (CreateImageDto image in allImages)
             {
@@ -1129,19 +1129,6 @@ public partial class CreateGroupBuy
 
                 await _imageAppService.CreateAsync(image);
             }
-
-            //foreach (List<List<CreateImageDto>> imageModule in imageModules)
-            //{
-            //    foreach (List<CreateImageDto> carouselImages in imageModule)
-            //    {
-            //        foreach (CreateImageDto carouselImage in carouselImages)
-            //        {
-            //            carouselImage.TargetId = result.Id;
-
-            //            await _imageAppService.CreateAsync(carouselImage);
-            //        }
-            //    } 
-            //}
 
             if (GroupPurchaseOverviewModules is { Count: > 0 })
             {
