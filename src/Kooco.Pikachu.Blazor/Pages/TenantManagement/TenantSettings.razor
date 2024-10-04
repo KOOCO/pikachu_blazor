@@ -35,16 +35,132 @@
         <Card>
             <CardBody>
                 <Form>
-                    <Row>
-                        <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
-                            <h4>@L["TenantSettings"]</h4>
-                        </Column>
-                        <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                            <Validations @ref="@ValidationsRef" Model="@Entity" ValidateOnLoad="false">
-
-                            </Validations>
-                        </Column>
-                    </Row>
+                    <Validations @ref="@ValidationsRef" Model="@Entity" ValidateOnLoad="false">
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                                <h4>@L["TenantSettings"]</h4>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is12">
+                                        <Validation>
+                                            <Field>
+                                                <FieldLabel>@L["WebpageTitle"]</FieldLabel>
+                                                <TextEdit @bind-Text="Entity.WebpageTitle">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                                        <Validation>
+                                            <Field>
+                                                <FieldLabel>@L["CompanyName"]</FieldLabel>
+                                                <TextEdit @bind-Text="Entity.CompanyName">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                                        <Validation>
+                                            <Field>
+                                                <FieldLabel>@L["BusinessRegistrationNumber"]</FieldLabel>
+                                                <TextEdit @bind-Text="Entity.BusinessRegistrationNumber">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                                        <Validation>
+                                            <Field>
+                                                <FieldLabel>@L["ContactPhone"]</FieldLabel>
+                                                <TextEdit @bind-Text="Entity.ContactPhone">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                                        <Validation>
+                                            <Field>
+                                                <FieldLabel>@L["CustomerServiceEmail"]</FieldLabel>
+                                                <TextEdit @bind-Text="Entity.CustomerServiceEmail">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                </Row>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is12">
+                                <Divider Class="mt-2 mb-3"></Divider>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                                <h4>@L["ServiceHours"]</h4>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is9">
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                                        <Validation>
+                                            <Field>
+                                                <FieldLabel>@L["From"]</FieldLabel>
+                                                <TimeEdit TValue="DateTime?" @bind-Date="Entity.ServiceHoursFrom">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TimeEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                                        <Validation>
+                                            <Field>
+                                                <FieldLabel>@L["To"]</FieldLabel>
+                                                <TimeEdit TValue="DateTime?" @bind-Date="Entity.ServiceHoursTo">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TimeEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                </Row>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is12">
+                                <Divider Class="mt-2 mb-3"></Divider>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                                <h4>@L["PrivacyPolicy"]</h4>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is9">
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is12">
+                                        <Validation>
+                                            <Field>
+                                                <MemoEdit Rows="5" @bind-Text="Entity.PrivacyPolicy">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </MemoEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                </Row>
+                            </Column>
+                        </Row>
+                    </Validations>
                 </Form>
             </CardBody>
         </Card>

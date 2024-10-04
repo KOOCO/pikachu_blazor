@@ -14,7 +14,7 @@ public partial class TenantSettings
     private bool CanEditTenantSettings { get; set; }
     private Validations ValidationsRef { get; set; }
 
-    private bool EditingMode { get; set; } = false;
+    private bool EditingMode { get; set; } = true;
     private bool IsLoading { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
@@ -30,7 +30,7 @@ public partial class TenantSettings
         try
         {
             //TenantSettingsDto = await TenantSettingsAppService.FirstOrDefaultAsync();
-            Entity = ObjectMapper.Map<TenantSettingsDto, UpdateTenantSettingsDto>(TenantSettingsDto);
+            Entity = ObjectMapper.Map<TenantSettingsDto, UpdateTenantSettingsDto>(TenantSettingsDto) ?? new();
         }
         catch (Exception ex)
         {

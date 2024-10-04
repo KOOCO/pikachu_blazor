@@ -671,6 +671,15 @@
     "Permission:TenantSettings": "Tenant Settings",
     "Menu:TenantSettings": "Tenant Settings",
     "TenantId": "Tenant Id",
+    "TenantSettings": "Tenant Settings",
+    "WebpageTitle": "Webpage Title",
+    "CompanyName": "Company Name",
+    "BusinessRegistrationNumber": "Business Registration Number",
+    "ContactPhone": "Contact Phone",
+    "CustomerServiceEmail": "Customer Service Email",
+    "ServiceHours": "Service Hours",
+    "PrivacyPolicy": "Privacy Policy",
+
 
     //Add On Products
     "AddOnProducts": "Add-on Products",
