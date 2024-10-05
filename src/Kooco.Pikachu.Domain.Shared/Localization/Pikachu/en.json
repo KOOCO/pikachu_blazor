@@ -807,6 +807,8 @@
     "TheBannerFieldIsRequired": "The Banner field is required.",
     "TheFaviconFieldIsRequired": "The Favicoin field is required.",
     "ValidationErrors": "Validation Errors!",
-    "TenantSettingsUpdated": "Tenant Settings Updated!"
+    "TenantSettingsUpdated": "Tenant Settings Updated!",
+    "StartTime": "Start Time",
+    "EndTime": "End Time"
   }
 }

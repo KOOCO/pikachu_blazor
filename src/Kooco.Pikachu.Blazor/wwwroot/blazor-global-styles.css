@@ -466,3 +466,7 @@
     .tenant-settings .image-thumbnail img {
         height: 160px;
     }
+
+.flatpickr-calendar.static {
+    top: unset;
+}
