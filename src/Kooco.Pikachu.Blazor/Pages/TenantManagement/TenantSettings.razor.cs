@@ -69,6 +69,8 @@ public partial class TenantSettings
             await UiNotificationService.Success(L["TenantSettingsUpdated"]);
             await ResetAsync();
 
+            IsLoading = false;
+
             await DeleteOldImageAsync(oldFavicon);
             await DeleteOldImageAsync(oldLogo);
             await DeleteOldImageAsync(oldBanner);

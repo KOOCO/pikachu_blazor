@@ -431,6 +431,12 @@ public class PikachuDbContext :
             b.ToTable(PikachuConsts.DbTablePrefix + "ShoppingCreditEarnSpecificProducts", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
         });
+
+        builder.Entity<TenantSettings>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "TenantSettings", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+        });
     }
 }
 
