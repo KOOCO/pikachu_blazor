@@ -23,6 +23,8 @@ using Volo.Abp.ObjectMapping;
 using System.Text.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using Kooco.Pikachu.Localization;
+using Kooco.Pikachu.GroupPurchaseOverviews;
+using Kooco.Pikachu.GroupPurchaseOverviews.Interface;
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
 
 public partial class EditGroupBuy
@@ -73,6 +75,7 @@ public partial class EditGroupBuy
     private FilePicker CarouselPickerCustom { get; set; }
     private List<FilePicker> CarouselFilePickers = [];
     private List<FilePicker> BannerFilePickers = [];
+    private List<FilePicker> GroupPurchaseOverviewFilePickers = [];
     private List<ItemWithItemTypeDto> ItemsList { get; set; } = [];
     private readonly ImageContainerManager _imageContainerManager;
     private readonly List<string> ValidFileExtensions = [".jpg", ".png", ".svg", ".jpeg", ".webp"];
@@ -96,6 +99,9 @@ public partial class EditGroupBuy
 
     public List<List<CreateImageDto>> CarouselModules = [];
     public List<List<CreateImageDto>> BannerModules = [];
+    public List<GroupPurchaseOverviewDto> GroupPurchaseOverviewModules = [];
+
+    private readonly IGroupPurchaseOverviewAppService _GroupPurchaseOverviewAppService;
     #endregion
 
     #region Constructor
@@ -106,8 +112,9 @@ public partial class EditGroupBuy
         IUiMessageService uiMessageService,
         ImageContainerManager imageContainerManager,
         IItemAppService itemAppService,
-         ISetItemAppService setItemAppService
-        )
+        ISetItemAppService setItemAppService,
+        IGroupPurchaseOverviewAppService GroupPurchaseOverviewAppService
+    )
     {
         _groupBuyAppService = groupBuyAppService;
         _imageAppService = imageAppService;
@@ -116,7 +123,7 @@ public partial class EditGroupBuy
         _imageContainerManager = imageContainerManager;
         _itemAppService = itemAppService;
         _setItemAppService = setItemAppService;
-
+        _GroupPurchaseOverviewAppService = GroupPurchaseOverviewAppService;
         EditGroupBuyDto = new GroupBuyUpdateDto();
         CarouselImages = [];
         GroupBuy = new();
@@ -245,7 +252,7 @@ public partial class EditGroupBuy
     {
         return Enum.GetValues(typeof(GroupBuyModuleType))
                    .Cast<GroupBuyModuleType>()
-                   .Where(m => m >= GroupBuyModuleType.ProductGroupModule && m <= GroupBuyModuleType.BannerImages);
+                   .Where(m => m >= GroupBuyModuleType.ProductGroupModule && m <= GroupBuyModuleType.GroupPurchaseOverview);
     }
 
     protected override async Task OnAfterRenderAsync(bool isFirstRender)
@@ -269,6 +276,8 @@ public partial class EditGroupBuy
 
                 BannerModules = [.. BannerImages.GroupBy(g => g.ModuleNumber).Select(s => s.ToList())];
 
+                GroupPurchaseOverviewModules = await _GroupPurchaseOverviewAppService.GetListByGroupBuyIdAsync(Id);
+
                 foreach (List<CreateImageDto> carouselImages in CarouselModules)
                 {
                     if (!CollapseItem.Any(a => a.GroupBuyModuleType is GroupBuyModuleType.CarouselImages))
@@ -283,6 +292,14 @@ public partial class EditGroupBuy
                         CollapseItem.Add(new() { GroupBuyModuleType = GroupBuyModuleType.BannerImages });
 
                     BannerFilePickers.Add(new());
+                }
+
+                foreach (GroupPurchaseOverviewDto module in GroupPurchaseOverviewModules)
+                {
+                    if (!CollapseItem.Any(a => a.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview))
+                        CollapseItem.Add(new() { GroupBuyModuleType = GroupBuyModuleType.GroupPurchaseOverview });
+
+                    GroupPurchaseOverviewFilePickers.Add(new());
                 }
 
                 ItemsList = await _itemAppService.GetItemsLookupAsync();
@@ -494,6 +511,23 @@ public partial class EditGroupBuy
             BannerModules.Add([]);
         }
 
+        else if (groupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview)
+        {
+            if (GroupPurchaseOverviewModules is { Count: 0 })
+            {
+                CollapseItem collapseItem = new()
+                {
+                    GroupBuyModuleType = groupBuyModuleType
+                };
+
+                CollapseItem.Add(collapseItem);
+            }
+
+            GroupPurchaseOverviewFilePickers.Add(new());
+
+            GroupPurchaseOverviewModules.Add(new());
+        }
+
         else
         {
             CollapseItem collapseItem = new()
@@ -528,6 +562,94 @@ public partial class EditGroupBuy
             }
         }
     }
+
+    #region GroupPurchaseOverview Module Section
+    private void ToggleButtonVisibility(bool e, GroupPurchaseOverviewDto module)
+    {
+        if (!module.IsButtonEnable)
+        {
+            module.ButtonText = null;
+
+            module.ButtonLink = null;
+        }
+    }
+
+    public async Task OnImageUploadAsync(
+        FileChangedEventArgs e,
+        GroupPurchaseOverviewDto module,
+        FilePicker filePicker
+    )
+    {
+        try
+        {
+            if (e.Files.Length is 0) return;
+
+            if (e.Files.Length > 1)
+            {
+                await _uiMessageService.Error("Cannot add more 1 image.");
+
+                await filePicker.Clear();
+
+                return;
+            }
+
+            if (!ValidFileExtensions.Contains(Path.GetExtension(e.Files[0].Name)))
+            {
+                await _uiMessageService.Error(L["InvalidFileType"]);
+
+                await filePicker.Clear();
+
+                return;
+            }
+
+            string newFileName = Path.ChangeExtension(
+                Guid.NewGuid().ToString().Replace("-", ""),
+                Path.GetExtension(e.Files[0].Name)
+            );
+
+            Stream stream = e.Files[0].OpenReadStream(long.MaxValue);
+
+            try
+            {
+                MemoryStream memoryStream = new();
+
+                await stream.CopyToAsync(memoryStream);
+
+                memoryStream.Position = 0;
+
+                string url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
+
+                module.Image = url;
+
+                await filePicker.Clear();
+            }
+            finally
+            {
+                stream.Close();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+
+            await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
+        }
+    }
+
+    public async Task DeleteImageAsync(MouseEventArgs e, GroupPurchaseOverviewDto module)
+    {
+        bool confirmed = await _uiMessageService.Confirm(L[PikachuDomainErrorCodes.AreYouSureToDeleteImage]);
+
+        if (confirmed)
+        {
+            await _imageContainerManager.DeleteAsync(module.Image);
+
+            module.Image = string.Empty;
+
+            StateHasChanged();
+        }
+    }
+    #endregion
 
     async Task OnLogoUploadAsync(FileChangedEventArgs e)
     {
@@ -1177,6 +1299,52 @@ public partial class EditGroupBuy
                     return;
                 }
             }
+
+            if (GroupPurchaseOverviewModules is { Count: > 0 })
+            {
+                foreach (GroupPurchaseOverviewDto groupPurchaseOverview in GroupPurchaseOverviewModules)
+                {
+                    if (groupPurchaseOverview.Title.IsNullOrEmpty())
+                    {
+                        await _uiMessageService.Error("Title Cannot be empty in Group Purchase Overview Module");
+
+                        await Loading.Hide();
+
+                        return;
+                    }
+
+                    if (groupPurchaseOverview.Image.IsNullOrEmpty())
+                    {
+                        await _uiMessageService.Error("Please Add Image in Group Purchase Overview Module");
+
+                        await Loading.Hide();
+
+                        return;
+                    }
+
+                    if (groupPurchaseOverview.IsButtonEnable)
+                    {
+                        if (groupPurchaseOverview.ButtonText.IsNullOrEmpty())
+                        {
+                            await _uiMessageService.Error("If you have enabled Button, then Button Text is required.");
+
+                            await Loading.Hide();
+
+                            return;
+                        }
+
+                        if (groupPurchaseOverview.ButtonLink.IsNullOrEmpty())
+                        {
+                            await _uiMessageService.Error("If you have enabled Button, then Button Link is required.");
+
+                            await Loading.Hide();
+
+                            return;
+                        }
+                    }
+                }
+            }
+
             EditGroupBuyDto.NotifyMessage = await NotifyEmailHtml.GetHTML();
             EditGroupBuyDto.GroupBuyConditionDescription = await GroupBuyHtml.GetHTML();
             EditGroupBuyDto.ExchangePolicyDescription = await ExchangePolicyHtml.GetHTML();
@@ -1246,6 +1414,22 @@ public partial class EditGroupBuy
 
                         await _imageAppService.CreateAsync(carouselImage);
                     }
+                }
+            }
+
+            if (GroupPurchaseOverviewModules is { Count: > 0 })
+            {
+                foreach (GroupPurchaseOverviewDto groupPurchaseOverview in GroupPurchaseOverviewModules)
+                {
+                    if (groupPurchaseOverview.Id == Guid.Empty)
+                    {
+                        groupPurchaseOverview.GroupBuyId = result.Id;
+
+                        await _GroupPurchaseOverviewAppService.CreateGroupPurchaseOverviewAsync(groupPurchaseOverview);
+                    }
+
+                    else if (groupPurchaseOverview.Id != Guid.Empty)
+                        await _GroupPurchaseOverviewAppService.UpdateGroupPurchaseOverviewAsync(groupPurchaseOverview);
                 }
             }
 

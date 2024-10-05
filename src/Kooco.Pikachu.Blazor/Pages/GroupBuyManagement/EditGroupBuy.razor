@@ -2,6 +2,7 @@
 
 @using Kooco.Pikachu.EnumValues;
 @using Kooco.Pikachu.GroupBuys;
+@using Kooco.Pikachu.GroupPurchaseOverviews
 @using Kooco.Pikachu.Images
 @using Kooco.Pikachu.Items.Dtos;
 @using Kooco.Pikachu.Orders
@@ -1013,6 +1014,124 @@
                                                     </Div>
                                                 }
                                             </div>
+                                        }
+                                    }
+
+                                    @if (module.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview)
+                                    {
+                                        foreach (GroupPurchaseOverviewDto module in GroupPurchaseOverviewModules)
+                                        {
+                                            <Div Class="row d-flex">
+                                                <Div Class="col-6 pb-1">
+                                                    <Div Class="col-2 pb-1">
+                                                        <Label>@L["Image"] <Span Class="text-danger">*</Span></Label>
+                                                    </Div>
+                                                    <Field>
+                                                        <FilePicker @ref="GroupPurchaseOverviewFilePickers[GroupPurchaseOverviewModules.IndexOf(module)]"
+                                                                    Changed="@(async (e) => await OnImageUploadAsync(e,
+                                                                                                                     module,
+                                                                                                                     GroupPurchaseOverviewFilePickers[GroupPurchaseOverviewModules.IndexOf(module)]))"
+                                                                    ShowMode="FilePickerShowMode.List"
+                                                                    Accept=".jpg, .png, .svg ,.jpeg,.webp">
+                                                            <FileTemplate>
+                                                                <Div Flex="Flex.JustifyContent.Between">
+                                                                    <Div>
+                                                                        <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
+                                                                            <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                                                        </Div>
+                                                                        <Div Class="ps-2">
+                                                                            <Div>
+                                                                                @if (context.File.Status is FileEntryStatus.Ready)
+                                                                            {
+                                                                                <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
+                                                                            }
+                                                                            else if (context.File.Status is FileEntryStatus.Uploading)
+                                                                            {
+                                                                                <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
+                                                                            }
+                                                                            else if (context.File.Status is FileEntryStatus.Uploaded)
+                                                                            {
+                                                                                <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
+                                                                            }
+                                                                            else if (context.File.Status is FileEntryStatus.Error)
+                                                                            {
+                                                                                <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
+                                                                            }
+                                                                        </Div>
+                                                                        <Div>
+                                                                            <Icon TextColor="TextColor.Danger"
+                                                                                  Name="IconName.Delete"
+                                                                                  Class="cursor-pointer"
+                                                                                  Clicked="context.RemoveFile" />
+                                                                        </Div>
+                                                                    </Div>
+                                                                </Div>
+                                                            </FileTemplate>
+                                                            <ButtonsTemplate>
+                                                                <Progress Value="@GroupPurchaseOverviewFilePickers[GroupPurchaseOverviewModules.IndexOf(module)].GetProgressPercentage()" />
+                                                            </ButtonsTemplate>
+                                                        </FilePicker>
+                                                    </Field>
+                                                    @if (!module.Image.IsNullOrEmpty())
+                                                    {
+                                                        <Div Class="row">
+                                                            <Div Class="col-2"></Div>
+                                                            <Div Class="col-12">
+                                                                <Div Class="image-list-container">
+                                                                    <Div Class="image-container">
+                                                                        <Image Class="blur-image" Source="@module.Image" Text="Logo Image" Fluid />
+                                                                         <Button Class="delete-button"
+                                                                                 Clicked="@(async (e) => await DeleteImageAsync(e, module))">
+                                                                             <i class="fa fa-trash" />
+                                                                         </Button>
+                                                                     </Div>
+                                                                 </Div>
+                                                             </Div>
+                                                         </Div>
+                                                    }
+                                                </Div>
+                                                <Div Class="col-6">
+                                                    <Div Class="col-2 pb-1">
+                                                        <Label>@L["Title"] <Span Class="text-danger">*</Span></Label>
+                                                    </Div>
+                                                    <Div Class="col-12 pb-1">
+                                                        <TextEdit @bind-Text="module.Title" />
+                                                    </Div>
+                                                    <Div Class="col-2 pb-1">
+                                                        <Label>@L["SubTitle"]</Label>
+                                                    </Div>
+                                                    <Div Class="col-12 pb-1">
+                                                        <TextEdit @bind-Text="@module.SubTitle" />
+                                                    </Div>
+                                                    <Div Class="col-2 pb-1">
+                                                        <Label>@L["BodyText"]</Label>
+                                                    </Div>
+                                                    <Div Class="col-12 pb-1">
+                                                        <TextEdit @bind-Text="@module.BodyText" />
+                                                    </Div>
+                                                    <Div Class="col-12 pb-1"></Div>
+                                                    <Div Class="col-12 pb-1">
+                                                        <Switch TValue="bool"
+                                                                @bind-Checked="@module.IsButtonEnable" />
+                                                    </Div>
+
+                                                    @if (module.IsButtonEnable)
+                                                    {
+                                                        <Div Class="col-2 pb-1">
+                                                            <Label>@L["ButtonText"] <Span Class="text-danger">*</Span></Label>
+                                                        </Div>
+                                                        <Div Class="col-12 pb-1">
+                                                            <TextEdit @bind-Text="@module.ButtonText" />
+                                                        </Div>
+                                                        <Div Class="col-2 pb-1">
+                                                            <Label>@L["ButtonLink"] <Span Class="text-danger">*</Span></Label>
+                                                        </Div>
+                                                        <Div Class="col-12 pb-1">
+                                                            <TextEdit @bind-Text="@module.ButtonLink" />
+                                                        </Div>
+                                                    }
+                                                </Div>
+                                            </Div>
                                         }
                                     }
 
