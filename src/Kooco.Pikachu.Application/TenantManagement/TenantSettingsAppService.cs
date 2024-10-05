@@ -1,6 +1,8 @@
-﻿using Kooco.Pikachu.Permissions;
+﻿using Kooco.Pikachu.AzureStorage.Image;
+using Kooco.Pikachu.Permissions;
 using Microsoft.AspNetCore.Authorization;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Domain.Repositories;
@@ -10,11 +12,17 @@ namespace Kooco.Pikachu.TenantManagement;
 [RemoteService(IsEnabled = false)]
 [Authorize(PikachuPermissions.TenantSettings.Default)]
 public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManager,
-    IRepository<TenantSettings, Guid> tenantSettingsRepository) : PikachuAppService, ITenantSettingsAppService
+    IRepository<TenantSettings, Guid> tenantSettingsRepository, ImageContainerManager imageContainerManager) : PikachuAppService, ITenantSettingsAppService
 {
     public async Task<TenantSettingsDto?> FirstOrDefaultAsync()
     {
         var tenantSettings = await tenantSettingsRepository.FirstOrDefaultAsync();
+
+        if (tenantSettings != null)
+        {
+            await tenantSettingsRepository.EnsurePropertyLoadedAsync(tenantSettings, x => x.Tenant);
+        }
+
         return ObjectMapper.Map<TenantSettings, TenantSettingsDto>(tenantSettings);
     }
 
@@ -27,17 +35,35 @@ public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManage
 
         if (tenantSettings is null)
         {
-            tenantSettings = await tenantSettingsManager.CreateAsync(input.FaviconUrl, input.WebpageTitle, input.PrivacyPolicy,
+            tenantSettings = await tenantSettingsManager.CreateAsync(input.WebpageTitle, input.PrivacyPolicy,
                 input.CompanyName, input.BusinessRegistrationNumber, input.ContactPhone, input.CustomerServiceEmail, input.ServiceHoursFrom,
-                input.ServiceHoursTo);
+                input.ServiceHoursTo, input.FaviconUrl, input.LogoUrl, input.BannerUrl);
         }
         else
         {
-            await tenantSettingsManager.UpdateAsync(tenantSettings, input.FaviconUrl, input.WebpageTitle, input.PrivacyPolicy,
+            await tenantSettingsManager.UpdateAsync(tenantSettings, input.WebpageTitle, input.PrivacyPolicy,
                 input.CompanyName, input.BusinessRegistrationNumber, input.ContactPhone, input.CustomerServiceEmail, input.ServiceHoursFrom,
-                input.ServiceHoursTo);
+                input.ServiceHoursTo, input.FaviconUrl, input.LogoUrl, input.BannerUrl);
         }
 
         return ObjectMapper.Map<TenantSettings, TenantSettingsDto>(tenantSettings);
+    }
+
+    public async Task<string> UploadImageAsync(UploadImageDto input)
+    {
+        Check.NotNull(input, nameof(input));
+        Check.NotNullOrWhiteSpace(input.Base64, nameof(input.Base64));
+        Check.NotNullOrWhiteSpace(input.FileName, nameof(input.FileName));
+
+        string blobName = Guid.NewGuid().ToString().Replace("-", "") + Path.GetExtension(input.FileName);
+        byte[] fileBytes = Convert.FromBase64String(input.Base64);
+
+        var url = await imageContainerManager.SaveAsync(blobName, fileBytes, true);
+        return url;
+    }
+
+    public async Task DeleteImageAsync(string blobName)
+    {
+        await imageContainerManager.DeleteAsync(blobName);
     }
 }

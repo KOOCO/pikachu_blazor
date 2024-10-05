@@ -40,6 +40,7 @@ using Kooco.Pikachu.AddOnProducts;
 using Kooco.Pikachu.DiscountCodes;
 using Kooco.Pikachu.ShopCarts;
 using Kooco.Pikachu.ShoppingCredits;
+using Kooco.Pikachu.TenantManagement;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -123,6 +124,8 @@ public class PikachuDbContext :
     public DbSet<ShoppingCreditEarnSpecificProduct> ShoppingCreditEarnSpecificProducts { get; set; }
 
     public DbSet<ShopCart> ShopCarts { get; set; }
+    public DbSet<TenantSettings> TenantSettings { get; set; }
+
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
     {
@@ -424,6 +427,12 @@ public class PikachuDbContext :
         builder.Entity<ShoppingCreditEarnSpecificProduct>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "ShoppingCreditEarnSpecificProducts", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+        });
+
+        builder.Entity<TenantSettings>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "TenantSettings", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
         });
     }

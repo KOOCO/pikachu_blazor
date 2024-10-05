@@ -49,7 +49,8 @@ public class TenantSettings : FullAuditedEntity<Guid>, IMultiTenant
 
     public TenantSettings SetFaviconUrl(string? faviconUrl)
     {
-        FaviconUrl = Check.Length(faviconUrl, nameof(FaviconUrl), TenantSettingsConsts.MaxFaviconUrlLength);
+        //FaviconUrl = Check.NotNullOrWhiteSpace(faviconUrl, nameof(FaviconUrl));
+        FaviconUrl = faviconUrl;
         return this;
     }
 
@@ -91,7 +92,7 @@ public class TenantSettings : FullAuditedEntity<Guid>, IMultiTenant
 
     public TenantSettings SetServiceHours(DateTime? serviceHoursFrom, DateTime? serviceHoursTo)
     {
-        if (serviceHoursFrom >= serviceHoursTo)
+        if (serviceHoursFrom?.TimeOfDay >= serviceHoursTo?.TimeOfDay)
         {
             throw new InvalidServiceHoursException();
         }

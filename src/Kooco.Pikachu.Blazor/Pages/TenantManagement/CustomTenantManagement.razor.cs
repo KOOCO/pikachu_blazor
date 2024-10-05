@@ -348,7 +348,7 @@ public partial class CustomTenantManagement
                     base.NewEntity.SetProperty("LogoUrl", url);
                     LogoUrl = url;
 
-                    //await FilePickerCustom.Clear();
+                    //await LogoPicker.Clear();
                 }
                 finally
                 {
@@ -408,7 +408,7 @@ public partial class CustomTenantManagement
                     base.NewEntity.SetProperty("BannerUrl", url);
                     BannerUrl = url;
 
-                    //await FilePickerCustom.Clear();
+                    //await LogoPicker.Clear();
                 }
                 finally
                 {

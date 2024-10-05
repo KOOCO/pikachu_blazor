@@ -2,7 +2,6 @@
 
 public class TenantSettingsConsts
 {
-    public const int MaxFaviconUrlLength = 256;
     public const int MaxWebpageTitleLength = 20;
     public const int MaxPrivacyPolicyLength = 1024;
     public const int MaxCompanyNameLength = 64;

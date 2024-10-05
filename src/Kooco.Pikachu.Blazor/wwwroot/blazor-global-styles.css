@@ -447,3 +447,22 @@
     background: url('https://cdn-icons-png.flaticon.com/512/54/54481.png') no-repeat 15px center;
     background-size: 20px 20px;
 }
+
+.rounded-cards .b-file-picker .b-text-drop {
+    background-color: #fafafa;
+}
+
+.tenant-settings .b-file-picker-files-container {
+    display: none;
+}
+
+.tenant-settings .image-thumbnail {
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .tenant-settings .image-thumbnail img {
+        height: 160px;
+    }

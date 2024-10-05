@@ -799,8 +799,14 @@
 
     "ApplicableforGroupbuying": "Applicable for Group Buying",
 
-    "ApplicableforProducts": "Applicable for Products"
-
-
+    "ApplicableforProducts": "Applicable for Products",
+    "Pikachu:ImageSizeExceeds": "Image size exceeds the maximum allowed size {0}MB",
+    "Pikachu:InvalidImageExtension": "Selected image is invalid. Allowed extensions are {0}.",
+    "TheFieldIsRequired": "The {0} field is required.",
+    "TheLogoFieldIsRequired": "The Logo field is required.",
+    "TheBannerFieldIsRequired": "The Banner field is required.",
+    "TheFaviconFieldIsRequired": "The Favicoin field is required.",
+    "ValidationErrors": "Validation Errors!",
+    "TenantSettingsUpdated": "Tenant Settings Updated!"
   }
 }

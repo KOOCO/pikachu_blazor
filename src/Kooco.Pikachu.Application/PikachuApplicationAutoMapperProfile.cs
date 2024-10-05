@@ -33,6 +33,7 @@ using Kooco.Pikachu.DiscountCodes;
 using Kooco.Pikachu.ShopCarts;
 using Kooco.Pikachu.TenantManagement;
 using Kooco.Pikachu.ShoppingCredits;
+using Volo.Abp.Data;
 
 namespace Kooco.Pikachu;
 
@@ -206,7 +207,9 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<ShopCart, ShopCartDto>().ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.Name));
         CreateMap<CartItem, CartItemDto>().ForMember(dest => dest.ItemName, opt => opt.MapFrom(src => src.Item.ItemName));
 
-        CreateMap<TenantSettings, TenantSettingsDto>();
+        CreateMap<TenantSettings, TenantSettingsDto>()
+            .ForMember(dest => dest.LogoUrl, opt => opt.MapFrom(src => src.Tenant.ExtraProperties.GetValueOrDefault(Constant.Logo)))
+            .ForMember(dest => dest.BannerUrl, opt => opt.MapFrom(src => src.Tenant.ExtraProperties.GetValueOrDefault(Constant.BannerUrl)));
         CreateMap<TenantSettingsDto, UpdateTenantSettingsDto>();
     }
 }

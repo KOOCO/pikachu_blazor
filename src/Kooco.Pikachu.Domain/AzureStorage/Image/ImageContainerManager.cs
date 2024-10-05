@@ -24,7 +24,14 @@ namespace Kooco.Pikachu.AzureStorage.Image
             _azureStorageAccountOptions = azureStorageAccountOptions.Value;
         }
 
-        public async Task<string> SaveAsync(string fileName, Stream byteArray, bool overrideExisting = false)
+        public async Task<string> SaveAsync(string fileName, Stream stream, bool overrideExisting = false)
+        {
+            await _imageContainer.SaveAsync(fileName, stream, overrideExisting);
+
+            return GetStorageUrl(fileName);
+        }
+
+        public async Task<string> SaveAsync(string fileName, byte[] byteArray, bool overrideExisting = false)
         {
             await _imageContainer.SaveAsync(fileName, byteArray, overrideExisting);
 

@@ -2,14 +2,16 @@
 @using Kooco.Pikachu.Localization
 @using Kooco.Pikachu.Permissions
 @using Kooco.Pikachu.TenantManagement
+@using Volo.Abp.AspNetCore.Components.Notifications
 @using Volo.Abp.AspNetCore.Components.Web
 @attribute [Authorize(PikachuPermissions.TenantSettings.Default)]
 @inherits PikachuComponentBase
 @inject NavigationManager NavigationManager
 @inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
-@* @inject ITenantSettingsAppService TenantSettingsAppService *@
+@inject ITenantSettingsAppService TenantSettingsAppService
+@inject IUiNotificationService UiNotificationService
 
-<Div Class="rounded-cards">
+<Div Class="rounded-cards tenant-settings">
     <Card>
         <CardBody>
             <Div Class="text-dark d-flex align-items-center justify-content-between">
@@ -20,9 +22,9 @@
                         <Copy Text="@CurrentTenant?.Id" ShouldDisplayIcon="false"></Copy>
                     </Span>
                 </Div>
-                @if (CanEditTenantSettings)
+                @if (CanEditTenantSettings && ViewMode)
                 {
-                    <PikachuButton Class="pk-btn-light" Clicked="@(() => EditingMode = true)">
+                    <PikachuButton Class="pk-btn-light" Clicked="@(() => ViewMode = false)">
                         @L["Edit"]
                         <Icon Name="IconName.Pen" Class="ms-1"></Icon>
                     </PikachuButton>
@@ -30,7 +32,7 @@
             </Div>
         </CardBody>
     </Card>
-    @if (Entity != null && EditingMode)
+    @if (Entity != null)
     {
         <Card>
             <CardBody>
@@ -46,7 +48,7 @@
                                         <Validation>
                                             <Field>
                                                 <FieldLabel>@L["WebpageTitle"]</FieldLabel>
-                                                <TextEdit @bind-Text="Entity.WebpageTitle">
+                                                <TextEdit @bind-Text="Entity.WebpageTitle" Disabled="@ViewMode">
                                                     <Feedback>
                                                         <ValidationError />
                                                     </Feedback>
@@ -58,7 +60,7 @@
                                         <Validation>
                                             <Field>
                                                 <FieldLabel>@L["CompanyName"]</FieldLabel>
-                                                <TextEdit @bind-Text="Entity.CompanyName">
+                                                <TextEdit @bind-Text="Entity.CompanyName" Disabled="@ViewMode">
                                                     <Feedback>
                                                         <ValidationError />
                                                     </Feedback>
@@ -70,7 +72,7 @@
                                         <Validation>
                                             <Field>
                                                 <FieldLabel>@L["BusinessRegistrationNumber"]</FieldLabel>
-                                                <TextEdit @bind-Text="Entity.BusinessRegistrationNumber">
+                                                <TextEdit @bind-Text="Entity.BusinessRegistrationNumber" Disabled="@ViewMode">
                                                     <Feedback>
                                                         <ValidationError />
                                                     </Feedback>
@@ -82,7 +84,7 @@
                                         <Validation>
                                             <Field>
                                                 <FieldLabel>@L["ContactPhone"]</FieldLabel>
-                                                <TextEdit @bind-Text="Entity.ContactPhone">
+                                                <TextEdit @bind-Text="Entity.ContactPhone" Disabled="@ViewMode">
                                                     <Feedback>
                                                         <ValidationError />
                                                     </Feedback>
@@ -94,7 +96,7 @@
                                         <Validation>
                                             <Field>
                                                 <FieldLabel>@L["CustomerServiceEmail"]</FieldLabel>
-                                                <TextEdit @bind-Text="Entity.CustomerServiceEmail">
+                                                <TextEdit @bind-Text="Entity.CustomerServiceEmail" Disabled="@ViewMode">
                                                     <Feedback>
                                                         <ValidationError />
                                                     </Feedback>
@@ -104,19 +106,19 @@
                                     </Column>
                                 </Row>
                             </Column>
-                            <Column ColumnSize="ColumnSize.Is12">
-                                <Divider Class="mt-2 mb-3"></Divider>
-                            </Column>
+                        </Row>
+                        <Divider></Divider>
+                        <Row>
                             <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
                                 <h4>@L["ServiceHours"]</h4>
                             </Column>
-                            <Column ColumnSize="ColumnSize.Is9">
+                            <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
                                 <Row>
                                     <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
                                         <Validation>
                                             <Field>
                                                 <FieldLabel>@L["From"]</FieldLabel>
-                                                <TimeEdit TValue="DateTime?" @bind-Date="Entity.ServiceHoursFrom">
+                                                <TimeEdit TValue="DateTime?" @bind-Time="Entity.ServiceHoursFrom" Disabled="@ViewMode">
                                                     <Feedback>
                                                         <ValidationError />
                                                     </Feedback>
@@ -128,7 +130,7 @@
                                         <Validation>
                                             <Field>
                                                 <FieldLabel>@L["To"]</FieldLabel>
-                                                <TimeEdit TValue="DateTime?" @bind-Date="Entity.ServiceHoursTo">
+                                                <TimeEdit TValue="DateTime?" @bind-Time="Entity.ServiceHoursTo" Disabled="@ViewMode">
                                                     <Feedback>
                                                         <ValidationError />
                                                     </Feedback>
@@ -138,40 +140,126 @@
                                     </Column>
                                 </Row>
                             </Column>
-                            <Column ColumnSize="ColumnSize.Is12">
-                                <Divider Class="mt-2 mb-3"></Divider>
-                            </Column>
+                        </Row>
+                        <Divider></Divider>
+                        <Row>
                             <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
                                 <h4>@L["PrivacyPolicy"]</h4>
                             </Column>
-                            <Column ColumnSize="ColumnSize.Is9">
-                                <Row>
-                                    <Column ColumnSize="ColumnSize.Is12">
-                                        <Validation>
-                                            <Field>
-                                                <MemoEdit Rows="5" @bind-Text="Entity.PrivacyPolicy">
-                                                    <Feedback>
-                                                        <ValidationError />
-                                                    </Feedback>
-                                                </MemoEdit>
-                                            </Field>
-                                        </Validation>
-                                    </Column>
-                                </Row>
+                            <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                                <Validation>
+                                    <Field>
+                                        <MemoEdit Rows="5" @bind-Text="Entity.PrivacyPolicy" Disabled="@ViewMode">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </MemoEdit>
+                                    </Field>
+                                </Validation>
+                            </Column>
+                        </Row>
+                        <Divider></Divider>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                                <h4>@L["Logo"]</h4>
+                                @if (Entity.LogoBase64 != null)
+                                {
+                                    <Div Class="image-thumbnail">
+                                        <img src="@("data:image/png;base64," + Entity.LogoBase64)" class="img-fluid" />
+                                    </Div>
+                                }
+                                else if (Entity.LogoUrl != null)
+                                {
+                                    <Div Class="image-thumbnail">
+                                        <img src="@Entity.LogoUrl" class="img-fluid" />
+                                    </Div>
+                                }
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                                <Field>
+                                    <FilePicker Changed="@((e) => OnFileUploadAsync(e, "logo"))"
+                                                ShowMode="FilePickerShowMode.List"
+                                                Accept="@(string.Join(", ", Constant.ValidImageExtensions))"
+                                                Disabled="@ViewMode" For>
+                                        <FileTemplate></FileTemplate>
+                                        <ButtonsTemplate></ButtonsTemplate>
+                                    </FilePicker>
+                                </Field>
+                            </Column>
+                        </Row>
+                        <Divider></Divider>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                                <h4>@L["Banner"]</h4>
+                                @if (Entity.BannerBase64 != null)
+                                {
+                                    <Div Class="image-thumbnail">
+                                        <img src="@("data:image/png;base64," + Entity.BannerBase64)" class="img-fluid" />
+                                    </Div>
+                                }
+                                else if (Entity.BannerUrl != null)
+                                {
+                                    <Div Class="image-thumbnail">
+                                        <img src="@Entity.BannerUrl" class="img-fluid" />
+                                    </Div>
+                                }
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                                <Field>
+                                    <FilePicker Changed="@((e) => OnFileUploadAsync(e, "banner"))"
+                                                ShowMode="FilePickerShowMode.List"
+                                                Accept="@(string.Join(", ", Constant.ValidImageExtensions))"
+                                                Disabled="@ViewMode">
+                                        <FileTemplate></FileTemplate>
+                                        <ButtonsTemplate></ButtonsTemplate>
+                                    </FilePicker>
+                                </Field>
+                            </Column>
+                        </Row>
+                        <Divider></Divider>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                                <h4>@L["Favicon"]</h4>
+                                @if (Entity.FaviconBase64 != null)
+                                {
+                                    <Div Class="image-thumbnail">
+                                        <img src="@("data:image/png;base64," + Entity.FaviconBase64)" class="img-fluid" />
+                                    </Div>
+                                }
+                                else if (Entity.FaviconUrl != null)
+                                {
+                                    <Div Class="image-thumbnail">
+                                        <img src="@Entity.FaviconUrl" class="img-fluid" />
+                                    </Div>
+                                }
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                                <Field>
+                                    <FilePicker Changed="@((e) => OnFileUploadAsync(e, "favicon"))"
+                                                ShowMode="FilePickerShowMode.List"
+                                                Accept="@(string.Join(", ", Constant.ValidFaviconExtensions))"
+                                                Disabled="@ViewMode">
+                                        <FileTemplate></FileTemplate>
+                                        <ButtonsTemplate></ButtonsTemplate>
+                                    </FilePicker>
+                                </Field>
                             </Column>
                         </Row>
                     </Validations>
                 </Form>
             </CardBody>
         </Card>
-        <Div Class="text-end">
-            <PikachuButton Class="pk-btn-transparent" Disabled="IsLoading" Clicked="ResetAsync">
-                @L["Cancel"]
-            </PikachuButton>
-            <PikachuButton Class="pk-btn-primary" Loading="IsLoading" Clicked="UpdateAsync">
-                @L["Update"]
-            </PikachuButton>
-        </Div>
+        @if (CanEditTenantSettings && !ViewMode)
+        {
+            <Div Class="text-end">
+                <PikachuButton Class="pk-btn-transparent" Disabled="IsLoading" Loading="IsCancelling" Clicked="CancelAsync">
+                    @L["Cancel"]
+                </PikachuButton>
+                <PikachuButton Class="pk-btn-primary" Disabled="IsCancelling" Loading="IsLoading" Clicked="UpdateAsync">
+                    @L["Update"]
+                </PikachuButton>
+            </Div>
+        }
     }
 </Div>
 
