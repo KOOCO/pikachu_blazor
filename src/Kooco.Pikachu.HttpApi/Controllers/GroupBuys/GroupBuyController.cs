@@ -3,6 +3,7 @@ using Kooco.Pikachu.DeliveryTemperatureCosts;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies.Dtos;
 using Kooco.Pikachu.GroupBuys;
+using Kooco.Pikachu.GroupPurchaseOverviews;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Mvc;
@@ -100,6 +101,12 @@ public class GroupBuyController: AbpController, IGroupBuyAppService
     public Task<List<List<string>>> GetBannerImagesModuleWiseAsync(Guid id)
     {
         return _groupBuyAppService.GetBannerImagesModuleWiseAsync(id);
+    }
+
+    [HttpGet("get-group-purchase-overviews/{groupBuyId}")]
+    public Task<List<GroupPurchaseOverviewDto>> GetGroupPurchaseOverviewsAsync(Guid groupBuyId) 
+    {
+        return _groupBuyAppService.GetGroupPurchaseOverviewsAsync(groupBuyId);
     }
 
     [HttpGet("for-store/{id}")]

@@ -1,6 +1,7 @@
 ﻿using Kooco.Pikachu.DeliveryTemperatureCosts;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies.Dtos;
+using Kooco.Pikachu.GroupPurchaseOverviews;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items.Dtos;
 using System;
@@ -24,6 +25,7 @@ namespace Kooco.Pikachu.GroupBuys
         Task<List<string>> GetCarouselImagesAsync(Guid id);
         Task<List<List<string>>> GetCarouselImagesModuleWiseAsync(Guid id);
         Task<List<List<string>>> GetBannerImagesModuleWiseAsync(Guid id);
+        Task<List<GroupPurchaseOverviewDto>> GetGroupPurchaseOverviewsAsync(Guid groupBuyId);
         Task<List<ImageDto>> GetBannerImagesAsync(Guid id);
         Task<GroupBuyDto> GetForStoreAsync(Guid id);
         Task<GroupBuyItemGroupWithCountDto> GetPagedItemGroupAsync(Guid id, int skipCount);
