@@ -128,6 +128,7 @@ public class PikachuDbContext :
     public DbSet<ShopCart> ShopCarts { get; set; }
     public DbSet<TenantSettings> TenantSettings { get; set; }
 
+    public DbSet<OrderMessage> OrderMessages { get; set; }
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
     {
@@ -435,6 +436,11 @@ public class PikachuDbContext :
         builder.Entity<TenantSettings>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "TenantSettings", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+        });
+        builder.Entity<OrderMessage>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "OrderMessages", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
         });
     }

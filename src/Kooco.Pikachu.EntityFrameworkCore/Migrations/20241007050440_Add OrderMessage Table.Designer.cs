@@ -4,6 +4,7 @@ using Kooco.Pikachu.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    partial class PikachuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241007050440_Add OrderMessage Table")]
+    partial class AddOrderMessageTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1015,45 +1018,6 @@ namespace Kooco.Pikachu.Migrations
                     b.HasIndex("GroupBuyId");
 
                     b.ToTable("AppGroupBuyItemGroups", null, t =>
-                        {
-                            t.HasComment("");
-                        });
-                });
-
-            modelBuilder.Entity("Kooco.Pikachu.GroupPurchaseOverviews.GroupPurchaseOverview", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("BodyText")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ButtonLink")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ButtonText")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("GroupBuyId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Image")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsButtonEnable")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("SubTitle")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AppGroupPurchaseOverviews", null, t =>
                         {
                             t.HasComment("");
                         });
@@ -2995,82 +2959,6 @@ namespace Kooco.Pikachu.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("AppTenantEmailSettings", null, t =>
-                        {
-                            t.HasComment("");
-                        });
-                });
-
-            modelBuilder.Entity("Kooco.Pikachu.TenantManagement.TenantSettings", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("BusinessRegistrationNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CompanyName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ContactPhone")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<string>("CustomerServiceEmail")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
-
-                    b.Property<string>("FaviconUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
-
-                    b.Property<string>("PrivacyPolicy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("ServiceHoursFrom")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ServiceHoursTo")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("TenantId");
-
-                    b.Property<string>("WebpageTitle")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("AppTenantSettings", null, t =>
                         {
                             t.HasComment("");
                         });
@@ -5563,15 +5451,6 @@ namespace Kooco.Pikachu.Migrations
                         .HasForeignKey("OrderId");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Kooco.Pikachu.TenantManagement.TenantSettings", b =>
-                {
-                    b.HasOne("Volo.Abp.TenantManagement.Tenant", "Tenant")
-                        .WithMany()
-                        .HasForeignKey("TenantId");
-
-                    b.Navigation("Tenant");
                 });
 
             modelBuilder.Entity("Kooco.Pikachu.UserAddresses.UserAddress", b =>
