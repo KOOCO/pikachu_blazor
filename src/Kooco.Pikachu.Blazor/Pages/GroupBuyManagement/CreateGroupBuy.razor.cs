@@ -1121,6 +1121,19 @@ public partial class CreateGroupBuy
 
                     CreateGroupBuyDto.ItemGroups.Add(itemGroup);
                 }
+
+                if (item.GroupBuyModuleType is GroupBuyModuleType.CarouselImages ||
+                    item.GroupBuyModuleType is GroupBuyModuleType.BannerImages ||
+                    item.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview)
+                {
+                    GroupBuyItemGroupCreateUpdateDto itemGroup = new()
+                    {
+                        SortOrder = item.SortOrder,
+                        GroupBuyModuleType = item.GroupBuyModuleType
+                    };
+
+                    CreateGroupBuyDto.ItemGroups.Add(itemGroup);
+                }
             }
 
             GroupBuyDto result = await _groupBuyAppService.CreateAsync(CreateGroupBuyDto);

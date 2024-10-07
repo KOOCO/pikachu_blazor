@@ -355,14 +355,32 @@ public partial class EditGroupBuy
                 var i = 0;
                 foreach (var itemGroup in itemGroups)
                 {
-                    var collapseItem = new CollapseItem
+                    CollapseItem collapseItem = new();
+
+                    if (itemGroup.GroupBuyModuleType is GroupBuyModuleType.CarouselImages ||
+                        itemGroup.GroupBuyModuleType is GroupBuyModuleType.BannerImages ||
+                        itemGroup.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview)
                     {
-                        Id = itemGroup.Id,
-                        Index = i++,
-                        SortOrder = itemGroup.SortOrder,
-                        GroupBuyModuleType = itemGroup.GroupBuyModuleType,
-                        Selected = []
-                    };
+                        collapseItem = new()
+                        {
+                            Id = itemGroup.Id,
+                            Index = i++,
+                            SortOrder = itemGroup.SortOrder,
+                            GroupBuyModuleType = itemGroup.GroupBuyModuleType
+                        };
+                    }
+
+                    else
+                    {
+                        collapseItem = new CollapseItem
+                        {
+                            Id = itemGroup.Id,
+                            Index = i++,
+                            SortOrder = itemGroup.SortOrder,
+                            GroupBuyModuleType = itemGroup.GroupBuyModuleType,
+                            Selected = []
+                        };
+                    }
 
                     CollapseItem.Add(collapseItem);
                 }
@@ -424,8 +442,11 @@ public partial class EditGroupBuy
                         StateHasChanged();
                     }
 
-                    if (itemGroup.GroupBuyModuleType != GroupBuyModuleType.ProductDescriptionModule
-                        && itemGroup.GroupBuyModuleType != GroupBuyModuleType.IndexAnchor
+                    if (itemGroup.GroupBuyModuleType is not GroupBuyModuleType.ProductDescriptionModule
+                        && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.IndexAnchor
+                        && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.CarouselImages
+                        && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.BannerImages
+                        && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.GroupPurchaseOverview
                         && itemGroup.ItemGroupDetails.Count < 3)
                     {
                         for (int x = itemGroup.ItemGroupDetails.Count; x < 3; x++)
@@ -483,6 +504,8 @@ public partial class EditGroupBuy
             {
                 CollapseItem collapseItem = new()
                 {
+                    Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                    SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
                     GroupBuyModuleType = groupBuyModuleType
                 };
 
@@ -500,6 +523,8 @@ public partial class EditGroupBuy
             {
                 CollapseItem collapseItem = new()
                 {
+                    Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                    SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
                     GroupBuyModuleType = groupBuyModuleType
                 };
 
@@ -517,6 +542,8 @@ public partial class EditGroupBuy
             {
                 CollapseItem collapseItem = new()
                 {
+                    Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                    SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
                     GroupBuyModuleType = groupBuyModuleType
                 };
 

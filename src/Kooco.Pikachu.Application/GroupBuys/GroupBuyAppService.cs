@@ -11,6 +11,7 @@ using Kooco.Pikachu.Groupbuys.Interface;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Localization;
+using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.Orders;
 using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Tokens;
@@ -29,6 +30,7 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectMapping;
 using Volo.Abp.Validation.Localization;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Kooco.Pikachu.GroupBuys
 {
@@ -410,6 +412,32 @@ namespace Kooco.Pikachu.GroupBuys
             {
                 var data = await _imageRepository.GetListAsync(x => x.TargetId == id && x.ImageType == ImageType.GroupBuyCarouselImage);
                 return data.Select(i => i.ImageUrl).ToList();
+            }
+        }
+
+        public async Task<List<List<string>>> GetCarouselImagesModuleWiseAsync(Guid id)
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                List<Image> images = await _imageRepository.GetListAsync(x => x.TargetId == id && x.ImageType == ImageType.GroupBuyCarouselImage);
+
+                return [.. images.GroupBy(g => g.ModuleNumber)
+                                 .Select(s => s.ToList()
+                                               .Select(se => se.ImageUrl)
+                                               .ToList())];
+            }
+        }
+
+        public async Task<List<List<string>>> GetBannerImagesModuleWiseAsync(Guid id)
+        {
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                List<Image> images = await _imageRepository.GetListAsync(x => x.TargetId == id && x.ImageType == ImageType.GroupBuyBannerImage);
+
+                return [.. images.GroupBy(g => g.ModuleNumber)
+                                 .Select(s => s.ToList()
+                                               .Select(se => se.ImageUrl)
+                                               .ToList())];
             }
         }
 

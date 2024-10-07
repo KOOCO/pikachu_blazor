@@ -84,10 +84,22 @@ public class GroupBuyController: AbpController, IGroupBuyAppService
         return _groupBuyAppService.GetCarouselImagesAsync(id);
     }
 
+    [HttpGet("get-carousel-images-module-wise/{id}")]
+    public Task<List<List<string>>> GetCarouselImagesModuleWiseAsync(Guid id)
+    {
+        return _groupBuyAppService.GetCarouselImagesModuleWiseAsync(id);
+    }
+
     [HttpGet("get-banner-images/{id}")]
     public Task<List<ImageDto>> GetBannerImagesAsync(Guid id)
     {
         return _groupBuyAppService.GetBannerImagesAsync(id);
+    }
+
+    [HttpGet("get-banner-images-module-wise/{id}")]
+    public Task<List<List<string>>> GetBannerImagesModuleWiseAsync(Guid id)
+    {
+        return _groupBuyAppService.GetBannerImagesModuleWiseAsync(id);
     }
 
     [HttpGet("for-store/{id}")]
