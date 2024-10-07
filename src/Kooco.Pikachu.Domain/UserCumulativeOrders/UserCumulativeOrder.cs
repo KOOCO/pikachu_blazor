@@ -3,15 +3,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.Identity;
+using Volo.Abp.MultiTenancy;
 
 namespace Kooco.Pikachu.UserCumulativeOrders;
 
-public class UserCumulativeOrder : FullAuditedEntity<Guid>
+public class UserCumulativeOrder : FullAuditedEntity<Guid>, IMultiTenant
 {
     public Guid UserId { get; set; }
     public int TotalOrders { get; private set; }
     public int TotalExchanges { get; private set; }
     public int TotalReturns { get; private set; }
+    public Guid? TenantId { get; set; }
 
     [ForeignKey(nameof(UserId))]
     public IdentityUser User { get; set; }

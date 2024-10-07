@@ -3,15 +3,17 @@ using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
+using Volo.Abp.MultiTenancy;
 
 namespace Kooco.Pikachu.ShopCarts;
 
-public class CartItem : FullAuditedEntity<Guid>
+public class CartItem : FullAuditedEntity<Guid>, IMultiTenant
 {
     public Guid ShopCartId { get; private set; }
     public Guid ItemId { get; set; }
     public int Quantity { get; private set; }
     public int UnitPrice { get; private set; }
+    public Guid? TenantId { get; set; }
 
     [ForeignKey(nameof(ShopCartId))]
     public ShopCart? ShopCart { get; set; }

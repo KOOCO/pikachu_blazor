@@ -6,12 +6,14 @@ using Volo.Abp;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.Identity;
+using Volo.Abp.MultiTenancy;
 
 namespace Kooco.Pikachu.ShopCarts;
 
-public class ShopCart(Guid id, Guid userId) : FullAuditedAggregateRoot<Guid>(id)
+public class ShopCart(Guid id, Guid userId) : FullAuditedAggregateRoot<Guid>(id), IMultiTenant
 {
     public Guid UserId { get; set; } = userId;
+    public Guid? TenantId { get; set; }
 
     [ForeignKey(nameof(UserId))]
     public IdentityUser? User { get; set; }

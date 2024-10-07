@@ -3,16 +3,18 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.Identity;
+using Volo.Abp.MultiTenancy;
 
 namespace Kooco.Pikachu.UserCumulativeFinancials;
 
-public class UserCumulativeFinancial : FullAuditedEntity<Guid>
+public class UserCumulativeFinancial : FullAuditedEntity<Guid>, IMultiTenant
 {
     public Guid UserId { get; set; }
     public int TotalSpent { get; private set; }
     public int TotalPaid { get; private set; }
     public int TotalUnpaid { get; private set; }
     public int TotalRefunded { get; private set; }
+    public Guid? TenantId { get; set; }
 
     [ForeignKey(nameof(UserId))]
     public IdentityUser? User { get; set; }
