@@ -38,21 +38,11 @@ jobs:
 
   - script: dotnet build "${{ variables.WORKING_DIRECTORY }}" --configuration ${{ variables.CONFIGURATION }} --no-restore 
     displayName: 'Build'
-  #- task: MSBuild@1
-   # inputs:
-    #  solution: "${{ variables.WORKING_DIRECTORY }}"
-     # msbuildArchitecture: 'x64'
-      #msbuildVersion: 'latest' 
 
 
   - script: dotnet test "${{ variables.WORKING_DIRECTORY }}" --no-build
     displayName: 'Test'
 
-  #- script: |
-   #   dotnet tool install --global dotnet-ef --version 7.0.0
-    #  cd src/Kooco.Pikachu.EntityFrameworkCore
-    #  dotnet ef database update
-    #displayName: 'Run EF Core Migrations'
     
   - script: dotnet publish "${{ variables.WORKING_DIRECTORY }}" --configuration ${{ variables.CONFIGURATION }} --no-build --output "${{ variables.AZURE_WEBAPP_PACKAGE_PATH }}"
     displayName: 'Publish'
@@ -62,59 +52,3 @@ jobs:
       pathtoPublish: '${{ variables.AZURE_WEBAPP_PACKAGE_PATH }}'
       artifactName: 'webapp'
 
-- job: deploy
-  pool:
-    vmImage: 'windows-latest'
-  variables:
-    - group: DEV-VG
-  dependsOn: build
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/azure-pipelines-test-pipeline'))
-  steps:
-  - download: current
-    artifact: 'webapp'
-  
-  # Replace tokens;
-  - task: FileTransform@1
-    inputs:
-      folderPath: '$(Pipeline.Workspace)/webapp'
-      fileType: 'json'
-      targetFiles: 'appsettings.json'
-      
-
-  - task: AzureWebApp@1
-    inputs:
-      azureSubscription: 'Azure 訂用帳戶 1 (3817e394-8d25-45fe-af63-3f5f209dedc8)'
-      appType: 'webApp'
-      appName: ${{ variables.AZURE_WEBAPP_NAME }}
-      package: $(Pipeline.Workspace)/webapp
-    
-
-- job: deployProd
-  pool:
-    vmImage: 'windows-latest'
-  variables:
-    - group: PROD-VG
-  dependsOn: build
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/release'))
-  steps:
-  - download: current
-    artifact: 'webapp'
-  
-  - task: FileTransform@1
-    inputs:
-      folderPath: '$(Pipeline.Workspace)/webapp'
-      fileType: 'json'
-      targetFiles: 'appsettings.json'
-    
-  - script: |
-      dotnet tool install --global dotnet-ef --version 7.0.0
-      cd src/Kooco.Pikachu.EntityFrameworkCore
-      dotnet ef database update
-    displayName: 'Run EF Core Migrations'
-
-  - task: AzureWebApp@1
-    inputs:
-      azureSubscription: 'Azure 訂用帳戶 1 (3817e394-8d25-45fe-af63-3f5f209dedc8)'
-      appType: 'webApp'
-      appName: ${{ variables.AZURE_WEBAPP_NAME_PRODUCTION }}
-      package: $(Pipeline.Workspace)/webapp
