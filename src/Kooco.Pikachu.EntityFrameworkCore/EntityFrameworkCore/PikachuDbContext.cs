@@ -443,6 +443,18 @@ public class PikachuDbContext :
             b.ToTable(PikachuConsts.DbTablePrefix + "OrderMessages", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
         });
+
+        #region GroupPurchaseOverviews
+        builder.Entity<GroupPurchaseOverview>(b =>
+        {
+            b.ToTable(
+                 PikachuConsts.DbTablePrefix + "GroupPurchaseOverviews",
+                 PikachuConsts.DbSchema,
+                 table => table.HasComment("")
+            );
+            b.ConfigureByConvention();
+        });
+        #endregion
     }
 }
 

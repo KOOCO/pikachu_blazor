@@ -500,6 +500,8 @@ public partial class CreateGroupBuy
             {
                 CollapseItem collapseItem = new()
                 {
+                    Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                    SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
                     GroupBuyModuleType = groupBuyModuleType
                 };
 
@@ -517,6 +519,8 @@ public partial class CreateGroupBuy
             {
                 CollapseItem collapseItem = new()
                 {
+                    Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                    SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
                     GroupBuyModuleType = groupBuyModuleType
                 };
 
@@ -534,6 +538,8 @@ public partial class CreateGroupBuy
             {
                 CollapseItem collapseItem = new()
                 {
+                    Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                    SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
                     GroupBuyModuleType = groupBuyModuleType
                 };
 
