@@ -48,11 +48,11 @@ jobs:
   - script: dotnet test "${{ variables.WORKING_DIRECTORY }}" --no-build
     displayName: 'Test'
 
-  - script: |
-      dotnet tool install --global dotnet-ef --version 7.0.0
-      cd src/Kooco.Pikachu.EntityFrameworkCore
-      dotnet ef database update
-    displayName: 'Run EF Core Migrations'
+  #- script: |
+   #   dotnet tool install --global dotnet-ef --version 7.0.0
+    #  cd src/Kooco.Pikachu.EntityFrameworkCore
+    #  dotnet ef database update
+    #displayName: 'Run EF Core Migrations'
     
   - script: dotnet publish "${{ variables.WORKING_DIRECTORY }}" --configuration ${{ variables.CONFIGURATION }} --no-build --output "${{ variables.AZURE_WEBAPP_PACKAGE_PATH }}"
     displayName: 'Publish'
