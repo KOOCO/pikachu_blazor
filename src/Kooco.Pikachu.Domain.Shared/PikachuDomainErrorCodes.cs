@@ -32,7 +32,7 @@ public static class PikachuDomainErrorCodes
     public const string InvalidItemName = "Pikachu:InvalidItemName";
     public const string GroupBuyModuleCannotBeEmpty = "Pikachu:GroupBuyModuleCannotBeEmpty";
     public const string CanNotAddMoreThan20Modules = "Pikachu:CanNotAddMoreThan20Modules";
-    
+
     public const string RefundForSameOrderAlreadyExists = "Pikachu:RefundForSameOrderAlreadyExists";
     public const string RefundIsOnlyAvailableForCreditCardPayments = "Pikachu:RefundIsOnlyAvailableForCreditCardPayments";
     public const string AtLeastOneDeliveryTimeIsRequiredForBlackCat = "Pikachu:AtLeastOneDeliveryTimeIsRequiredForBlackCat";
@@ -50,4 +50,5 @@ public static class PikachuDomainErrorCodes
     public const string CartItemForUserAlreadyExists = "Pikachu:CartItemForUserAlreadyExists";
     public const string InvalidServiceHoursException = "Pikachu:InvalidServiceHoursException";
     public const string TenantSettingsAlreadyExist = "Pikachu:TenantSettingsAlreadyExist";
+    public const string InvalidEnumValue = "Pikachu:InvalidEnumValue";
 }

@@ -809,6 +809,7 @@
     "ValidationErrors": "Validation Errors!",
     "TenantSettingsUpdated": "Tenant Settings Updated!",
     "StartTime": "Start Time",
-    "EndTime": "End Time"
+    "EndTime": "End Time",
+    "Pikachu:InvalidEnumValue": "The value provided for {name} is invalid"
   }
 }

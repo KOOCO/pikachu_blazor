@@ -104,6 +104,11 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
 
         var tenantSettingsPermissions = myGroup.AddPermission(PikachuPermissions.TenantSettings.Default, L("Permission:TenantSettings"), MultiTenancySides.Tenant);
         tenantSettingsPermissions.AddChild(PikachuPermissions.TenantSettings.Edit, L("Permission:Edit"), MultiTenancySides.Tenant);
+
+        var websiteSettingsPermissions = myGroup.AddPermission(PikachuPermissions.WebsiteSettings.Default, L("Permission:WebsiteSettings"));
+        websiteSettingsPermissions.AddChild(PikachuPermissions.WebsiteSettings.Create, L("Permission:Create"));
+        websiteSettingsPermissions.AddChild(PikachuPermissions.WebsiteSettings.Edit, L("Permission:Edit"));
+        websiteSettingsPermissions.AddChild(PikachuPermissions.WebsiteSettings.Delete, L("Permission:Delete"));
     }
 
     private static LocalizableString L(string name)
