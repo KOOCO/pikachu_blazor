@@ -8,5 +8,6 @@ public enum GroupBuyModuleType
     CarouselImages,
     IndexAnchor,
     BannerImages,
-    GroupPurchaseOverview
+    GroupPurchaseOverview,
+    CountdownTimer
 }

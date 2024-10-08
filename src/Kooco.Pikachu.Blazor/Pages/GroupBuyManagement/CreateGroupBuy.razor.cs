@@ -184,16 +184,22 @@ public partial class CreateGroupBuy
 
     public IEnumerable<GroupBuyModuleType> GetPikachuOneList()
     {
-        return Enum.GetValues(typeof(GroupBuyModuleType))
-                   .Cast<GroupBuyModuleType>()
-                   .Where(m => m >= GroupBuyModuleType.ProductDescriptionModule && m <= GroupBuyModuleType.BannerImages);
+        return [
+            GroupBuyModuleType.ProductDescriptionModule,
+            GroupBuyModuleType.ProductImageModule,
+            GroupBuyModuleType.ProductGroupModule,
+            GroupBuyModuleType.CarouselImages,
+            GroupBuyModuleType.IndexAnchor,
+            GroupBuyModuleType.BannerImages,
+            GroupBuyModuleType.CountdownTimer
+        ];
     }
 
     public IEnumerable<GroupBuyModuleType> GetPikachuTwoList()
     {
         return Enum.GetValues(typeof(GroupBuyModuleType))
                    .Cast<GroupBuyModuleType>()
-                   .Where(m => m >= GroupBuyModuleType.ProductGroupModule && m <= GroupBuyModuleType.GroupPurchaseOverview);
+                   .Where(m => m >= GroupBuyModuleType.ProductGroupModule && m <= GroupBuyModuleType.CountdownTimer);
     }
 
     public void OnProductTypeChange(ChangeEventArgs e)
@@ -549,6 +555,21 @@ public partial class CreateGroupBuy
             GroupPurchaseOverviewFilePickers.Add(new());
 
             GroupPurchaseOverviewModules.Add(new());
+        }
+
+        else if (groupBuyModuleType is GroupBuyModuleType.CountdownTimer)
+        {
+            if (!CollapseItem.Any(a => a.GroupBuyModuleType is GroupBuyModuleType.CountdownTimer))
+            {
+                CollapseItem collapseItem = new()
+                {
+                    Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                    SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
+                    GroupBuyModuleType = groupBuyModuleType
+                };
+
+                CollapseItem.Add(collapseItem);
+            }
         }
 
         else
@@ -1124,7 +1145,8 @@ public partial class CreateGroupBuy
 
                 if (item.GroupBuyModuleType is GroupBuyModuleType.CarouselImages ||
                     item.GroupBuyModuleType is GroupBuyModuleType.BannerImages ||
-                    item.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview)
+                    item.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview ||
+                    item.GroupBuyModuleType is GroupBuyModuleType.CountdownTimer)
                 {
                     GroupBuyItemGroupCreateUpdateDto itemGroup = new()
                     {

@@ -243,16 +243,22 @@ public partial class EditGroupBuy
 
     public IEnumerable<GroupBuyModuleType> GetPikachuOneList()
     {
-        return Enum.GetValues(typeof(GroupBuyModuleType))
-                   .Cast<GroupBuyModuleType>()
-                   .Where(m => m >= GroupBuyModuleType.ProductDescriptionModule && m <= GroupBuyModuleType.BannerImages);
+        return [
+            GroupBuyModuleType.ProductDescriptionModule,
+            GroupBuyModuleType.ProductImageModule,
+            GroupBuyModuleType.ProductGroupModule,
+            GroupBuyModuleType.CarouselImages,
+            GroupBuyModuleType.IndexAnchor,
+            GroupBuyModuleType.BannerImages,
+            GroupBuyModuleType.CountdownTimer
+        ];
     }
 
     public IEnumerable<GroupBuyModuleType> GetPikachuTwoList()
     {
         return Enum.GetValues(typeof(GroupBuyModuleType))
                    .Cast<GroupBuyModuleType>()
-                   .Where(m => m >= GroupBuyModuleType.ProductGroupModule && m <= GroupBuyModuleType.GroupPurchaseOverview);
+                   .Where(m => m >= GroupBuyModuleType.ProductGroupModule && m <= GroupBuyModuleType.CountdownTimer);
     }
 
     protected override async Task OnAfterRenderAsync(bool isFirstRender)
@@ -359,7 +365,8 @@ public partial class EditGroupBuy
 
                     if (itemGroup.GroupBuyModuleType is GroupBuyModuleType.CarouselImages ||
                         itemGroup.GroupBuyModuleType is GroupBuyModuleType.BannerImages ||
-                        itemGroup.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview)
+                        itemGroup.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview ||
+                        itemGroup.GroupBuyModuleType is GroupBuyModuleType.CountdownTimer)
                     {
                         collapseItem = new()
                         {
@@ -446,7 +453,8 @@ public partial class EditGroupBuy
                         && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.IndexAnchor
                         && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.CarouselImages
                         && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.BannerImages
-                        && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.GroupPurchaseOverview
+                        && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.GroupPurchaseOverview 
+                        && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.CountdownTimer
                         && itemGroup.ItemGroupDetails.Count < 3)
                     {
                         for (int x = itemGroup.ItemGroupDetails.Count; x < 3; x++)
@@ -553,6 +561,21 @@ public partial class EditGroupBuy
             GroupPurchaseOverviewFilePickers.Add(new());
 
             GroupPurchaseOverviewModules.Add(new());
+        }
+
+        else if (groupBuyModuleType is GroupBuyModuleType.CountdownTimer)
+        {
+            if (!CollapseItem.Any(a => a.GroupBuyModuleType is GroupBuyModuleType.CountdownTimer))
+            {
+                CollapseItem collapseItem = new()
+                {
+                    Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                    SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
+                    GroupBuyModuleType = groupBuyModuleType
+                };
+
+                CollapseItem.Add(collapseItem);
+            }
         }
 
         else

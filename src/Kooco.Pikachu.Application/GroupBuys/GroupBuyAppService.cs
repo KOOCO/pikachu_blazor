@@ -420,6 +420,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
             foreach (GroupBuyItemGroupModuleDetailsDto module in modules)
             {
+                module.GroupBuyModuleTypeName = module.GroupBuyModuleType.ToString();
+
                 if (module.GroupBuyModuleType is GroupBuyModuleType.CarouselImages)
                     module.CarouselModulesImages = await GetCarouselImagesModuleWiseAsync(groupBuyId);
 

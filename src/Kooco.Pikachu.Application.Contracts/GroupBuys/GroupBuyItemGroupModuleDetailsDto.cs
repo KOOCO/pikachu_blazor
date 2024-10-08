@@ -10,12 +10,10 @@ public class GroupBuyItemGroupModuleDetailsDto
 {
     public Guid Id { get; set; }
     public Guid? TenantId { get; set; }
-
     public Guid GroupBuyId { get; set; }
     public int SortOrder { get; set; }
-
     public GroupBuyModuleType GroupBuyModuleType { get; set; }
-
+    public string GroupBuyModuleTypeName { get; set; }
     public ICollection<GroupBuyItemGroupDetailsDto> ItemGroupDetails { get; set; }
     public List<List<string>> CarouselModulesImages { get; set; }
     public List<List<string>> BannerModulesImages { get; set; }
