@@ -65,6 +65,8 @@ namespace Kooco.Pikachu.Blazor.Pages.DiscountCodes
 
                 }
                 await InvokeAsync(StateHasChanged);
+                await ValidationsRef.ClearAll();
+                await InvokeAsync(StateHasChanged);
             }
             catch (Exception ex)
             {

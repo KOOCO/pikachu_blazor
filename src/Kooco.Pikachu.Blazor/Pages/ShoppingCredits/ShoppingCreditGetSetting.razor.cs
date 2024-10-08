@@ -57,6 +57,9 @@ namespace Kooco.Pikachu.Blazor.Pages.ShoppingCredits
                     CreateUpdateEarn.SpecificGroupbuyIds = shoppingCreditEarn.SpecificProducts.Select(x => x.ProductId).ToList();
                     SelectedGroupBuy = shoppingCreditEarn.SpecificGroupBuys.Select(x => x.GroupbuyId);
                     SelectedProducts = shoppingCreditEarn.SpecificProducts.Select(x => x.ProductId);
+                    await InvokeAsync(StateHasChanged);
+                    await ValidationsRef.ClearAll();
+                    await InvokeAsync(StateHasChanged);
                 }
                 await FetchProducts();
                 await FetchGroupBuys();

@@ -62,6 +62,9 @@ namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
                     }
 
                 }
+                
+                await InvokeAsync(StateHasChanged);
+                await ValidationsRef.ClearAll();
                 await InvokeAsync(StateHasChanged);
             }
             catch (Exception ex)

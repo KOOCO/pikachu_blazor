@@ -60,6 +60,9 @@ namespace Kooco.Pikachu.Blazor.Pages.ShoppingCredits
                     CreateUpdateUsage.ProductIds = shoppingCreditUsage.SpecificProducts.Select(x => x.ProductId).ToList();
                     SelectedGroupBuy = shoppingCreditUsage.SpecificGroupbuys.Select(x => x.GroupbuyId);
                     SelectedProducts = shoppingCreditUsage.SpecificProducts.Select(x => x.ProductId);
+                    await InvokeAsync(StateHasChanged);
+                    await ValidationsRef.ClearAll();
+                    await InvokeAsync(StateHasChanged);
                 }
                 
                 await FetchProducts();
