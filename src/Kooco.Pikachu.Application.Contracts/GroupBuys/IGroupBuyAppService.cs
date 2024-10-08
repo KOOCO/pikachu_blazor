@@ -29,6 +29,7 @@ namespace Kooco.Pikachu.GroupBuys
         Task<List<ImageDto>> GetBannerImagesAsync(Guid id);
         Task<GroupBuyDto> GetForStoreAsync(Guid id);
         Task<GroupBuyItemGroupWithCountDto> GetPagedItemGroupAsync(Guid id, int skipCount);
+        Task<List<GroupBuyItemGroupModuleDetailsDto>> GetGroupBuyModulesAsync(Guid groupBuyId);
         Task<List<FreebieDto>> GetFreebieForStoreAsync(Guid groupBuyId);
         Task ChangeGroupBuyAvailability(Guid groupBuyId);
         Task<bool> CheckShortCodeForCreate(string shortCode);

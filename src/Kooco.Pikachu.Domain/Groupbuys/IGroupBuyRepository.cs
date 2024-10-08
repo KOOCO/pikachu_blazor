@@ -97,6 +97,7 @@ public interface IGroupBuyRepository : IRepository<GroupBuy, Guid>
     Task<long> GetGroupBuyTenantReportCountAsync();
     Task<long> GetGroupBuyReportCountAsync();
     Task<GroupBuy> GetWithItemGroupsAsync(Guid id);
+    Task<List<GroupBuyItemGroup>> GetGroupBuyItemGroupBuyGroupBuyIdAsync(Guid groupBuyId);
     Task<GroupBuyItemGroup> GetGroupBuyItemGroupAsync(Guid id);
     Task<GroupBuyReportDetails> GetGroupBuyReportDetailsAsync(Guid id, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null);
 }

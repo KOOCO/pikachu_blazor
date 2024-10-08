@@ -410,6 +410,30 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         }
     }
 
+    public async Task<List<GroupBuyItemGroupModuleDetailsDto>> GetGroupBuyModulesAsync(Guid groupBuyId)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            List<GroupBuyItemGroupModuleDetailsDto> modules = ObjectMapper.Map<List<GroupBuyItemGroup>, List<GroupBuyItemGroupModuleDetailsDto>>(
+                await _groupBuyRepository.GetGroupBuyItemGroupBuyGroupBuyIdAsync(groupBuyId)
+            );
+
+            foreach (GroupBuyItemGroupModuleDetailsDto module in modules)
+            {
+                if (module.GroupBuyModuleType is GroupBuyModuleType.CarouselImages)
+                    module.CarouselModulesImages = await GetCarouselImagesModuleWiseAsync(groupBuyId);
+
+                if (module.GroupBuyModuleType is GroupBuyModuleType.BannerImages)
+                    module.BannerModulesImages = await GetBannerImagesModuleWiseAsync(groupBuyId);
+
+                if (module.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview)
+                    module.GroupPurchaseOverviewModules = await GetGroupPurchaseOverviewsAsync(groupBuyId);
+            }
+
+            return modules;
+        }
+    }
+
     /// <summary>
     /// This Method Returns the Desired Result For the Store Front End.
     /// Do not change unless you want to make changes in the Store Front End Code

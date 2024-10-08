@@ -86,6 +86,31 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
             .FirstOrDefaultAsync();
     }
 
+    public async Task<List<GroupBuyItemGroup>> GetGroupBuyItemGroupBuyGroupBuyIdAsync(Guid groupBuyId)
+    {
+        PikachuDbContext dbContext = await GetDbContextAsync();
+
+        var itemGroups = dbContext.GroupBuyItemGroups
+            .Where(x => x.GroupBuyId == groupBuyId)
+            .OrderBy(x => x.SortOrder)
+            .Include(ig => ig.ItemGroupDetails.OrderBy(i => i.SortOrder))
+                .ThenInclude(igd => igd.SetItem)
+                .ThenInclude(s => s.Images)
+            .Include(ig => ig.ItemGroupDetails.OrderBy(i => i.SortOrder))
+                .ThenInclude(igd => igd.SetItem)
+                .ThenInclude(s => s.SetItemDetails)
+                .ThenInclude(sid => sid.Item)
+            .Include(ig => ig.ItemGroupDetails.OrderBy(i => i.SortOrder))
+                .ThenInclude(igd => igd.Item)
+                .ThenInclude(i => i.Images)
+            .Include(ig => ig.ItemGroupDetails.OrderBy(i => i.SortOrder))
+                .ThenInclude(igd => igd.Item)
+                .ThenInclude(i => i.ItemDetails)
+            .Include(ig => ig.ItemGroupDetails.OrderBy(i => i.SortOrder));
+
+        return [.. itemGroups];
+    }
+
     public async Task<GroupBuyItemGroup> GetGroupBuyItemGroupAsync(Guid id)
     {
         var dbContext = await GetDbContextAsync();

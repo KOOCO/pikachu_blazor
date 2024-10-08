@@ -145,6 +145,11 @@ public class GroupBuyController: AbpController, IGroupBuyAppService
         return _groupBuyAppService.GetPagedItemGroupAsync(id, skipCount);
     }
 
+    [HttpGet("get-groupBuy-modules/{groupBuyId}")]
+    public Task<List<GroupBuyItemGroupModuleDetailsDto>> GetGroupBuyModulesAsync(Guid groupBuyId)
+    {
+        return _groupBuyAppService.GetGroupBuyModulesAsync(groupBuyId);
+    }
 
     [HttpGet("get-groupbuy-for-tenant")]
     public Task<GroupBuyDto> GetGroupBuyofTenant(string ShortCode, Guid TenantId)
