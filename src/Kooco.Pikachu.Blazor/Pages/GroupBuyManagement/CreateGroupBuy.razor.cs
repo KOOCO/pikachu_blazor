@@ -26,6 +26,8 @@ using Blazorise.Extensions;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.GroupPurchaseOverviews;
 using Kooco.Pikachu.GroupPurchaseOverviews.Interface;
+using Kooco.Pikachu.GroupBuyOrderInstructions;
+using Kooco.Pikachu.GroupBuyOrderInstructions.Interface;
 
 
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
@@ -74,6 +76,7 @@ public partial class CreateGroupBuy
     private List<FilePicker> CarouselFilePickers = [];
     private List<FilePicker> BannerFilePickers = [];
     private List<FilePicker> GroupPurchaseOverviewFilePickers = [];
+    private List<FilePicker> GroupBuyOrderInstructionPickers = [];
     private List<string> ShippingMethods { get; set; } = Enum.GetNames(typeof(DeliveryMethod)).ToList();
     private readonly IGroupBuyAppService _groupBuyAppService;
     private readonly IImageAppService _imageAppService;
@@ -101,8 +104,11 @@ public partial class CreateGroupBuy
     public List<List<CreateImageDto>> CarouselModules = [];
     public List<List<CreateImageDto>> BannerModules = [];
     public List<GroupPurchaseOverviewDto> GroupPurchaseOverviewModules = [];
+    public List<GroupBuyOrderInstructionDto> GroupBuyOrderInstructionModules = [];
 
     private readonly IGroupPurchaseOverviewAppService _GroupPurchaseOverviewAppService;
+
+    private readonly IGroupBuyOrderInstructionAppService _GroupBuyOrderInstructionAppService;
     #endregion
 
     #region Constructor
@@ -113,7 +119,8 @@ public partial class CreateGroupBuy
         ImageContainerManager imageContainerManager,
         IItemAppService itemAppService,
         ISetItemAppService setItemAppService,
-        IGroupPurchaseOverviewAppService GroupPurchaseOverviewAppService
+        IGroupPurchaseOverviewAppService GroupPurchaseOverviewAppService,
+        IGroupBuyOrderInstructionAppService GroupBuyOrderInstructionAppService
     )
     {
         _groupBuyAppService = groupBuyAppService;
@@ -126,6 +133,7 @@ public partial class CreateGroupBuy
         _setItemAppService = setItemAppService;
 
         _GroupPurchaseOverviewAppService = GroupPurchaseOverviewAppService;
+        _GroupBuyOrderInstructionAppService = GroupBuyOrderInstructionAppService;
     }
     #endregion
 
@@ -197,9 +205,15 @@ public partial class CreateGroupBuy
 
     public IEnumerable<GroupBuyModuleType> GetPikachuTwoList()
     {
-        return Enum.GetValues(typeof(GroupBuyModuleType))
-                   .Cast<GroupBuyModuleType>()
-                   .Where(m => m >= GroupBuyModuleType.ProductGroupModule && m <= GroupBuyModuleType.CountdownTimer);
+        return [
+            GroupBuyModuleType.ProductGroupModule,
+            GroupBuyModuleType.CarouselImages,
+            GroupBuyModuleType.IndexAnchor,
+            GroupBuyModuleType.BannerImages,
+            GroupBuyModuleType.GroupPurchaseOverview,
+            GroupBuyModuleType.CountdownTimer,
+            GroupBuyModuleType.OrderInstruction
+        ];
     }
 
     public void OnProductTypeChange(ChangeEventArgs e)
@@ -557,6 +571,25 @@ public partial class CreateGroupBuy
             GroupPurchaseOverviewModules.Add(new());
         }
 
+        else if (groupBuyModuleType is GroupBuyModuleType.OrderInstruction)
+        {
+            if (GroupBuyOrderInstructionModules is { Count: 0 })
+            {
+                CollapseItem collapseItem = new()
+                {
+                    Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                    SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
+                    GroupBuyModuleType = groupBuyModuleType
+                };
+
+                CollapseItem.Add(collapseItem);
+            }
+
+            GroupBuyOrderInstructionPickers.Add(new());
+
+            GroupBuyOrderInstructionModules.Add(new());
+        }
+
         else if (groupBuyModuleType is GroupBuyModuleType.CountdownTimer)
         {
             if (!CollapseItem.Any(a => a.GroupBuyModuleType is GroupBuyModuleType.CountdownTimer))
@@ -912,6 +945,84 @@ public partial class CreateGroupBuy
     }
     #endregion
 
+    #region GroupBuyOrderInstruction Module Section
+    public async Task OnImageUploadAsync(
+        FileChangedEventArgs e,
+        GroupBuyOrderInstructionDto module,
+        FilePicker filePicker
+    )
+    {
+        try
+        {
+            if (e.Files.Length is 0) return;
+
+            if (e.Files.Length > 1)
+            {
+                await _uiMessageService.Error("Cannot add more 1 image.");
+
+                await filePicker.Clear();
+
+                return;
+            }
+
+            if (!ValidFileExtensions.Contains(Path.GetExtension(e.Files[0].Name)))
+            {
+                await _uiMessageService.Error(L["InvalidFileType"]);
+
+                await filePicker.Clear();
+
+                return;
+            }
+
+            string newFileName = Path.ChangeExtension(
+                Guid.NewGuid().ToString().Replace("-", ""),
+                Path.GetExtension(e.Files[0].Name)
+            );
+
+            Stream stream = e.Files[0].OpenReadStream(long.MaxValue);
+
+            try
+            {
+                MemoryStream memoryStream = new();
+
+                await stream.CopyToAsync(memoryStream);
+
+                memoryStream.Position = 0;
+
+                string url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
+
+                module.Image = url;
+
+                await filePicker.Clear();
+            }
+            finally
+            {
+                stream.Close();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+
+            await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
+        }
+    }
+
+    public async Task DeleteImageAsync(MouseEventArgs e, GroupBuyOrderInstructionDto module)
+    {
+        bool confirmed = await _uiMessageService.Confirm(L[PikachuDomainErrorCodes.AreYouSureToDeleteImage]);
+
+        if (confirmed)
+        {
+            await _imageContainerManager.DeleteAsync(module.Image);
+
+            module.Image = string.Empty;
+
+            StateHasChanged();
+        }
+    }
+    #endregion
+
     protected virtual async Task CreateEntityAsync()
     {
         try
@@ -1056,7 +1167,7 @@ public partial class CreateGroupBuy
                 return;
             }
 
-            else if (GroupPurchaseOverviewModules is { Count: > 0 })
+            if (GroupPurchaseOverviewModules is { Count: > 0 })
             {
                 foreach (GroupPurchaseOverviewDto groupPurchaseOverview in GroupPurchaseOverviewModules)
                 {
@@ -1097,6 +1208,30 @@ public partial class CreateGroupBuy
 
                             return;
                         }
+                    }
+                }
+            }
+
+            if (GroupBuyOrderInstructionModules is { Count: > 0 })
+            {
+                foreach (GroupBuyOrderInstructionDto groupBuyOrderInstruction in GroupBuyOrderInstructionModules)
+                {
+                    if (groupBuyOrderInstruction.Title.IsNullOrEmpty())
+                    {
+                        await _uiMessageService.Error("Title Cannot be empty in Group Purchase Overview Module");
+
+                        await Loading.Hide();
+
+                        return;
+                    }
+
+                    if (groupBuyOrderInstruction.Image.IsNullOrEmpty())
+                    {
+                        await _uiMessageService.Error("Please Add Image in Group Purchase Overview Module");
+
+                        await Loading.Hide();
+
+                        return;
                     }
                 }
             }
@@ -1146,7 +1281,8 @@ public partial class CreateGroupBuy
                 if (item.GroupBuyModuleType is GroupBuyModuleType.CarouselImages ||
                     item.GroupBuyModuleType is GroupBuyModuleType.BannerImages ||
                     item.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview ||
-                    item.GroupBuyModuleType is GroupBuyModuleType.CountdownTimer)
+                    item.GroupBuyModuleType is GroupBuyModuleType.CountdownTimer ||
+                    item.GroupBuyModuleType is GroupBuyModuleType.OrderInstruction)
                 {
                     GroupBuyItemGroupCreateUpdateDto itemGroup = new()
                     {
@@ -1178,6 +1314,16 @@ public partial class CreateGroupBuy
                     groupPurchaseOverview.GroupBuyId = result.Id;
 
                     await _GroupPurchaseOverviewAppService.CreateGroupPurchaseOverviewAsync(groupPurchaseOverview);
+                }
+            }
+
+            if (GroupBuyOrderInstructionModules is { Count: > 0 })
+            {
+                foreach (GroupBuyOrderInstructionDto groupBuyOrderInstruction in GroupBuyOrderInstructionModules)
+                {
+                    groupBuyOrderInstruction.GroupBuyId = result.Id;
+
+                    await _GroupBuyOrderInstructionAppService.CreateGroupBuyOrderInstructionAsync(groupBuyOrderInstruction);
                 }
             }
 
