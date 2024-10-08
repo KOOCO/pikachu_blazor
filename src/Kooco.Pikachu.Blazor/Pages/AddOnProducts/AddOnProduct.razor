@@ -63,8 +63,7 @@
                   PageSize="PageSize"
                   CurrentPage="CurrentPage"
                   Hoverable
-                  Narrow
-                  Responsive
+                 
                   Striped
                   @bind-SelectedRow="@SelectedAddOnProduct"
                   SelectionMode="DataGridSelectionMode.Multiple"
@@ -98,19 +97,29 @@
                         <Switch TValue="bool" Checked="@context.Status" CheckedChanged="@(() => UpdateStatus(context.Id))"></Switch>
                     </DisplayTemplate>
                 </DataGridColumn>
-                <DataGridEntityActionsColumn TItem="AddOnProductDto" >
+                <DataGridColumn Width="150px"
+                                TItem="AddOnProductDto"
+                                Field="@nameof(AddOnProductDto.Id)"
+                                Sortable="false"
+                                Caption="@L["Actions"]">
                     <DisplayTemplate>
-                        <EntityActions  TItem="AddOnProductDto" >
-                            <EntityAction TItem="AddOnProductDto"
-                                          Text="@L["Edit"]"
-                                          Clicked="()=>NavigateToEditPage(context.Id)"
-                                         />
-                            <EntityAction TItem="AddOnProductDto"
-                                          Text="@L["Delete"]" 
-                                          Clicked="()=>DeleteAddOn(context.Id)"/>
-                        </EntityActions>
+                        <Dropdown>
+                            <DropdownToggle Color="Color.Primary">
+                                @L["Actions"]
+                            </DropdownToggle>
+                            <DropdownMenu>
+                              
+                                <DropdownItem Clicked="() => NavigateToEditPage(context.Id)">
+                                    @L["Edit"]
+                                </DropdownItem>
+                                <DropdownItem Clicked="() => DeleteAddOn(context.Id)">
+                                    @L["Delete"]
+                                </DropdownItem>
+                            </DropdownMenu>
+                        </Dropdown>
                     </DisplayTemplate>
-                </DataGridEntityActionsColumn>
+                </DataGridColumn>
+             
             </DataGridColumns>
         </DataGrid>
     </CardBody>
