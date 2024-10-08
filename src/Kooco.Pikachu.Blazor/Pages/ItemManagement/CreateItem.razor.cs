@@ -99,9 +99,10 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             var count = 0;
             try
             {
-                await Loading.Show();
+                
                 foreach (var file in e.Files)
                 {
+                    await Loading.Show();
                     if (!ValidFileExtensions.Contains(Path.GetExtension(file.Name).ToLower()))
                     {
                         await FilePickerCustom.RemoveFile(file);
@@ -140,12 +141,18 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                             SortNo = sortNo + 1
                         });
 
-                        await FilePickerCustom.Clear();
+
+                    }
+                    catch (Exception ex)
+                    {
+                        await Loading.Hide();
+                        throw ex;
                     }
                     finally
                     {
                         stream.Close();
-                        await Loading.Hide();
+
+                        //await Loading.Hide();
                     }
                 }
                 if (count > 0)
@@ -157,9 +164,12 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             {
                 await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
                 await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+                await Loading.Hide();
             }
             finally
             {
+                await InvokeAsync(StateHasChanged);
+                await FilePickerCustom.Clear();
                 await Loading.Hide();
             }
         }

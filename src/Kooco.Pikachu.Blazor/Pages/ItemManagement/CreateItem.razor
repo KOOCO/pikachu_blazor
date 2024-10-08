@@ -103,6 +103,7 @@
                         <div class="image-list-container" ondragover="event.preventDefault();">
                             @foreach (var image in CreateItemDto.ItemImages.OrderBy(x => x.SortNo))
                             {
+                                
                                 <div class="d-flex flex-column align-items-center justify-content-center mb-2">
                                     <div class="image-container">
                                         <Image class="blur-image" Source="@image.ImageUrl" Text="Item Image" Fluid />
@@ -121,6 +122,7 @@
                                     </div>
                                 </div>
                             }
+                            
                         </div>
                     </div>
                 </div>
