@@ -952,7 +952,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     {
         if (input.Sorting.IsNullOrEmpty())
         {
-            input.Sorting = $"{nameof(Order.CreationTime)} desc";
+            input.Sorting = $"{nameof(Order.LastModificationTime)} desc";
         }
 
         var totalCount = await _orderRepository.CountReconciliationAsync(input.Filter, input.GroupBuyId, input.StartDate, input.EndDate);

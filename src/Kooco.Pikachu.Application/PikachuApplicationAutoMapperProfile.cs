@@ -36,6 +36,7 @@ using Kooco.Pikachu.ShoppingCredits;
 using Volo.Abp.Data;
 using Kooco.Pikachu.GroupPurchaseOverviews;
 using Kooco.Pikachu.WebsiteManagement;
+using Kooco.Pikachu.GroupBuyOrderInstructions;
 
 namespace Kooco.Pikachu;
 
@@ -214,6 +215,12 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<GroupPurchaseOverview, GroupPurchaseOverviewDto>().ReverseMap();
         CreateMap<GroupPurchaseOverview, CreateUpdateGroupPurchaseOverviewDto>().ReverseMap();
         CreateMap<GroupPurchaseOverviewDto, CreateUpdateGroupPurchaseOverviewDto>().ReverseMap();
+        #endregion
+
+        #region GroupBuyOrderInstruction Mappings
+        CreateMap<GroupBuyOrderInstruction, GroupBuyOrderInstructionDto>().ReverseMap();
+        CreateMap<GroupBuyOrderInstruction, CreateUpdateGroupBuyOrderInstructionDto>().ReverseMap();
+        CreateMap<GroupBuyOrderInstructionDto, CreateUpdateGroupBuyOrderInstructionDto>().ReverseMap();
         #endregion
 
         CreateMap<TenantSettings, TenantSettingsDto>()

@@ -388,8 +388,29 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var item = await _groupBuyRepository.GetAsync(id);
-            return ObjectMapper.Map<GroupBuy, GroupBuyDto>(item);
 
+            var result= ObjectMapper.Map<GroupBuy, GroupBuyDto>(item);
+            if (result.IsGroupBuyAvaliable)
+            {
+                if (result.StartTime != null && result.StartTime <= DateTime.Now && result.EndTime != null && result.StartTime >= DateTime.Now)
+                {
+                    result.Status = "Open";
+                }
+                else if (result.StartTime == null && result.EndTime == null)
+                {
+                    result.Status = "Open";
+
+                }
+                else
+                {
+                    result.Status = "Expired";
+                }
+            }
+            else {
+                result.Status = "Closed";
+            
+            }
+            return result;
         }
     }
 

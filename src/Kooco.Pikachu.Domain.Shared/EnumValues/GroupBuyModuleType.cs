@@ -9,5 +9,6 @@ public enum GroupBuyModuleType
     IndexAnchor,
     BannerImages,
     GroupPurchaseOverview,
-    CountdownTimer
+    CountdownTimer,
+    OrderInstruction
 }

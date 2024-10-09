@@ -43,6 +43,7 @@ using Kooco.Pikachu.ShoppingCredits;
 using Kooco.Pikachu.GroupPurchaseOverviews;
 using Kooco.Pikachu.TenantManagement;
 using Kooco.Pikachu.WebsiteManagement;
+using Kooco.Pikachu.GroupBuyOrderInstructions;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -125,7 +126,7 @@ public class PikachuDbContext :
     public DbSet<ShoppingCreditEarnSpecificGroupbuy> ShoppingCreditEarnSpecificGroupbuys { get; set; }
     public DbSet<ShoppingCreditEarnSpecificProduct> ShoppingCreditEarnSpecificProducts { get; set; }
     public DbSet<GroupPurchaseOverview> GroupPurchaseOverviews { get; set; }
-
+    public DbSet<GroupBuyOrderInstruction> GroupBuyOrderInstructions { get; set; }
     public DbSet<ShopCart> ShopCarts { get; set; }
     public DbSet<TenantSettings> TenantSettings { get; set; }
 
@@ -461,6 +462,18 @@ public class PikachuDbContext :
                  PikachuConsts.DbTablePrefix + "GroupPurchaseOverviews",
                  PikachuConsts.DbSchema,
                  table => table.HasComment("")
+            );
+            b.ConfigureByConvention();
+        });
+        #endregion
+
+        #region GroupBuyOrderInstructions
+        builder.Entity<GroupBuyOrderInstruction>(b =>
+        {
+            b.ToTable(
+                PikachuConsts.DbTablePrefix + "GroupBuyOrderInstructions",
+                PikachuConsts.DbSchema,
+                table => table.HasComment("")
             );
             b.ConfigureByConvention();
         });
