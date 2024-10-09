@@ -44,7 +44,7 @@ public class WebsiteSettingsAppService(IWebsiteSettingsRepository websiteSetting
     {
         if (input.Sorting.IsNullOrWhiteSpace())
         {
-            input.Sorting = nameof(WebsiteSettings.CreationTime) + " DESC";
+            input.Sorting = nameof(WebsiteSettings.StoreTitle);
         }
 
         var totalCount = await websiteSettingsRepository.GetCountAsync(input.Filter);

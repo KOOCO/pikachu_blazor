@@ -1,4 +1,5 @@
 using Blazorise;
+using Kooco.Pikachu.Extensions;
 using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.TenantManagement;
 using Microsoft.AspNetCore.Authorization;
@@ -141,9 +142,9 @@ public partial class TenantSettings
         {
             string extension = Path.GetExtension(file.Name);
 
-            if (file.Size > Constant.MaxImageSize)
+            if (file.Size > Constant.MaxImageSizeInBytes)
             {
-                await UiNotificationService.Error(L["Pikachu:ImageSizeExceeds", Constant.MaxImageSize]);
+                await UiNotificationService.Error(L["Pikachu:ImageSizeExceeds", Constant.MaxImageSizeInBytes.FromBytesToMB()]);
                 return;
             }
 

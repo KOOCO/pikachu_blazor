@@ -15,5 +15,8 @@ namespace Kooco.Pikachu.Images
         Task InsertManyImageAsync(List<CreateImageDto> images);
         Task<List<ImageDto>> GetGroupBuyImagesAsync(Guid GroupBuyId, ImageType? imageType = null);
         Task DeleteGroupBuyImagesAsync(Guid GroupBuyId);
+
+        Task<string> UploadImageAsync(string fileName, byte[] bytes, bool overrideExisting = true);
+        Task<bool> DeleteImageAsync(string blobName);
     }
 }

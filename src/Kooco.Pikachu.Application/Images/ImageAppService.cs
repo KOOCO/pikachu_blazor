@@ -1,6 +1,8 @@
-﻿using Kooco.Pikachu.ImageBlob;
+﻿using Kooco.Pikachu.AzureStorage.Image;
+using Kooco.Pikachu.ImageBlob;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
@@ -20,11 +22,15 @@ namespace Kooco.Pikachu.Images
     {
         private readonly IImageBlobService _imageblobService;
         private readonly IRepository<Image, Guid> _repository;
+        private readonly ImageContainerManager _imageContainerManager;
+
         public ImageAppService(IRepository<Image, Guid> repository,
-                               IImageBlobService imageBlobService) : base(repository)
+                               IImageBlobService imageBlobService,
+                               ImageContainerManager imageContainerManager) : base(repository)
         {
             _imageblobService = imageBlobService;
             _repository = repository;
+            _imageContainerManager = imageContainerManager;
         }
 
         public async Task DeleteGroupBuyImagesAsync(Guid GroupBuyId)
@@ -54,6 +60,18 @@ namespace Kooco.Pikachu.Images
             }
             var image = ObjectMapper.Map<List<CreateImageDto>, List<Image>>(images);
             await _repository.InsertManyAsync(image, true);
+        }
+
+        public async Task<string> UploadImageAsync(string fileName, byte[] bytes, bool overrideExisting = true)
+        {
+            var blobName = GuidGenerator.Create().ToString().Replace("-", "") + Path.GetExtension(fileName);
+            return await _imageContainerManager.SaveAsync(blobName, bytes);
+        }
+
+        public async Task<bool> DeleteImageAsync(string blobName)
+        {
+            var isDeleted = await _imageContainerManager.DeleteAsync(blobName);
+            return isDeleted;
         }
     }
 }
