@@ -78,6 +78,13 @@
                                 Caption="@L["StoreTitle"]">
                 </DataGridColumn>
                 <DataGridColumn TItem="WebsiteSettingsDto"
+                                Field="@nameof(WebsiteSettingsDto.StoreTitle)"
+                                Caption="@L["TitleDisplayOptions"]">
+                    <DisplayTemplate>
+                        @L["Enum:WebsiteTitleDisplayOptions." + (int)context.TitleDisplayOption]
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="WebsiteSettingsDto"
                                 Field="@nameof(WebsiteSettingsDto.NotificationBar)"
                                 Caption="@L["NotificationBar"]">
                 </DataGridColumn>
