@@ -114,7 +114,7 @@ public static class PikachuPermissions
 
     public static class AddOnProducts
     {
-        public const string Default =".AddOnProducts";
+        public const string Default = ".AddOnProducts";
         public const string Create = Default + ".Create";
         public const string Edit = Default + ".Edit";
         public const string Delete = Default + ".Delete";
@@ -138,5 +138,13 @@ public static class PikachuPermissions
     {
         public const string Default = ".TenantSettings";
         public const string Edit = Default + ".Edit";
+    }
+
+    public static class WebsiteSettings
+    {
+        public const string Default = ".WebsiteSettings";
+        public const string Create = Default + ".Create";
+        public const string Edit = Default + ".Edit";
+        public const string Delete = Default + ".Delete";
     }
 }

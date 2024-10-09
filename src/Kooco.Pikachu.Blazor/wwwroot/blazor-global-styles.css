@@ -452,7 +452,7 @@
     background-color: #fafafa;
 }
 
-.tenant-settings .b-file-picker-files-container {
+.container-less-filepicker .b-file-picker-files-container {
     display: none;
 }
 
@@ -465,6 +465,17 @@
 
     .tenant-settings .image-thumbnail img {
         height: 160px;
+    }
+
+.website-settings .image-thumbnail {
+    height: 330px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .website-settings .image-thumbnail img {
+        max-height: 330px;
     }
 
 .flatpickr-calendar.static {

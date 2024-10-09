@@ -809,6 +809,20 @@
     "ValidationErrors": "Validation Errors!",
     "TenantSettingsUpdated": "Tenant Settings Updated!",
     "StartTime": "Start Time",
-    "EndTime": "End Time"
+    "EndTime": "End Time",
+    "Pikachu:InvalidEnumValue": "The value provided for {name} is invalid",
+    "Menu:WebsiteManagement": "Website Management",
+    "Menu:WebsiteSettings": "Website Settings",
+    "WebsiteSettings": "Website Settings",
+    "NotificationBar": "Notification Bar",
+    "StoreTitle": "Store Title",
+    "LogoName": "Logo Name",
+    "ReturnExchangePolicy": "Return Exchange Policy",
+    "TitleDisplayOption": "Title Display Option",
+    "Enum:WebsiteTitleDisplayOptions.0": "Store Title",
+    "Enum:WebsiteTitleDisplayOptions.1": "Store Title | Category Name",
+    "Enum:WebsiteTitleDisplayOptions.2": "Category Name | Store Title",
+    "AddWebsiteSettings": "Add Website Settings",
+    "AreYouSureToDeleteThisRecord": "Are you sure you want to delete this record?"
   }
 }

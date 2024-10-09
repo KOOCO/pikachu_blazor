@@ -176,11 +176,11 @@
                                 }
                             </Column>
                             <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                                <Field>
+                                <Field Class="container-less-filepicker">
                                     <FilePicker Changed="@((e) => OnFileUploadAsync(e, "logo"))"
                                                 ShowMode="FilePickerShowMode.List"
                                                 Accept="@(string.Join(", ", Constant.ValidImageExtensions))"
-                                                Disabled="@ViewMode" For>
+                                                Disabled="@ViewMode">
                                         <FileTemplate></FileTemplate>
                                         <ButtonsTemplate></ButtonsTemplate>
                                     </FilePicker>
@@ -205,7 +205,7 @@
                                 }
                             </Column>
                             <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                                <Field>
+                                <Field Class="container-less-filepicker">
                                     <FilePicker Changed="@((e) => OnFileUploadAsync(e, "banner"))"
                                                 ShowMode="FilePickerShowMode.List"
                                                 Accept="@(string.Join(", ", Constant.ValidImageExtensions))"
@@ -234,7 +234,7 @@
                                 }
                             </Column>
                             <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                                <Field>
+                                <Field Class="container-less-filepicker">
                                     <FilePicker Changed="@((e) => OnFileUploadAsync(e, "favicon"))"
                                                 ShowMode="FilePickerShowMode.List"
                                                 Accept="@(string.Join(", ", Constant.ValidFaviconExtensions))"

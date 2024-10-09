@@ -23,4 +23,7 @@ public class PikachuMenus
     public const string MembersList = Prefix + ".MembersList";
 
     public const string TenantSettings = Prefix + ".TenantSettings";
+
+    public const string WebsiteManagement = Prefix + ".WebsiteManagement";
+    public const string WebsiteSettings = Prefix + ".WebsiteSettings";
 }
