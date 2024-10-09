@@ -589,8 +589,16 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
     }
     public async Task<List<LogisticsProviderSettingsDto>> GetAllAsync()
     {
-        var providers = await _logisticsProviderRepository.GetListAsync();
-        return ObjectMapper.Map<List<LogisticsProviderSettings>, List<LogisticsProviderSettingsDto>>(providers);
+        List<LogisticsProviderSettingsDto> providers = ObjectMapper.Map<List<LogisticsProviderSettings>, List<LogisticsProviderSettingsDto>>(
+            await _logisticsProviderRepository.GetListAsync()
+        );
+
+        foreach (LogisticsProviderSettingsDto provider in providers)
+        {
+            provider.LogisticProviderName = provider.LogisticProvider.ToString();   
+        }
+
+        return providers;
     }
     #endregion
 }

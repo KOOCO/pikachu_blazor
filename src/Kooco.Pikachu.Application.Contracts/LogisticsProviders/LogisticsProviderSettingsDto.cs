@@ -40,6 +40,8 @@ namespace Kooco.Pikachu.LogisticsProviders
 
         public LogisticProviders LogisticProvider { get; set; }
 
+        public string LogisticProviderName { get; set; }
+
         public Guid? TenantId { get; set; }
         public string? PlatFormId { get; set; }
         public string? SenderPostalCode { get; set; }
