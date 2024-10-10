@@ -1122,6 +1122,15 @@ public partial class OrderDetails
                 await loading.Hide();
 
             }
+            else if (selectedValue is ShippingStatus.ToBeShipped)
+            {
+                
+                await _orderAppService.OrderToBeShipped(Order.Id);
+                await GetOrderDetailsAsync();
+                await base.OnInitializedAsync();
+                await loading.Hide();
+
+            }
             else if (selectedValue is ShippingStatus.Shipped)
             {
                 await _orderAppService.OrderShipped(Order.Id);

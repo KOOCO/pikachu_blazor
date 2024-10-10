@@ -1150,16 +1150,47 @@ public class OrderAppService : ApplicationService, IOrderAppService
        
         await _orderRepository.UpdateAsync(order);
         await UnitOfWorkManager.Current.SaveChangesAsync();
-        if (order.GroupBuy.IssueInvoice)
+        var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+        if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.Shipped)
         {
-            order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
-            var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
-            var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
-            var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
-            GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
-            var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+            if (order.GroupBuy.IssueInvoice)
+            {
+                order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
+                //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
+                var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
+                GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
+                var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+            }
         }
        // await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+        await SendEmailAsync(order.Id);
+        return ObjectMapper.Map<Order, OrderDto>(order);
+    }
+    public async Task<OrderDto> OrderToBeShipped(Guid id)
+    {
+        var order = await _orderRepository.GetWithDetailsAsync(id);
+
+        order.ShippingStatus = ShippingStatus.ToBeShipped;
+        order.ShippedBy = CurrentUser.Name;
+        order.ShippingDate = DateTime.Now;
+
+        await _orderRepository.UpdateAsync(order);
+        await UnitOfWorkManager.Current.SaveChangesAsync();
+        var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+        if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
+        {
+            if (order.GroupBuy.IssueInvoice)
+            {
+                order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
+                //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
+                var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
+                GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
+                var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+            }
+        }
+        // await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
         await SendEmailAsync(order.Id);
         return ObjectMapper.Map<Order, OrderDto>(order);
     }
@@ -1396,7 +1427,20 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     if (orderDelivery is not null)
                         order.UpdateOrderItem([.. order.OrderItems.Where(w => w.SetItemId is not null && w.SetItemId != Guid.Empty)], orderDelivery.Id);
                 }
-                
+
+                var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.Processing)
+                {
+                    if (order.GroupBuy.IssueInvoice)
+                    {
+                        order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
+                        //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                        var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
+                        var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
+                        GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
+                        var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                    }
+                }
                 await _orderRepository.UpdateAsync(order);
                 await UnitOfWorkManager.Current.SaveChangesAsync();
                 await SendEmailAsync(order.Id);

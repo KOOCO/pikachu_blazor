@@ -303,4 +303,9 @@ public class OrderController(
     {
         throw new NotImplementedException();
     }
+    [HttpPost("order-to-be-shipped")]
+    public Task<OrderDto> OrderToBeShipped(Guid id)
+    {
+        return _ordersAppService.OrderToBeShipped(id);
+    }
 }
