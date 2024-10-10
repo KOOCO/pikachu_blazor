@@ -263,6 +263,23 @@ requiredPermissionName: PikachuPermissions.ShoppingCredits.Default)
             );
 
         context.Menu.AddItem(logisticsManagment);
+
+        var websiteSettings = new ApplicationMenuItem(
+            PikachuMenus.WebsiteManagement,
+            displayName: l["Menu:WebsiteManagement"],
+            icon: "fas fa-computer",
+            order: 6
+            );
+        websiteSettings.AddItem(new ApplicationMenuItem(
+            name: PikachuMenus.WebsiteSettings,
+            displayName: l["Menu:WebsiteSettings"],
+            url: "/Website-Settings",
+            icon: "fas fa-window-maximize",
+            requiredPermissionName: PikachuPermissions.WebsiteSettings.Default
+            ));
+        context.Menu.AddItem(websiteSettings);
+
+
         //context.Menu.Items.Insert(
         //    6,
         //    new ApplicationMenuItem(

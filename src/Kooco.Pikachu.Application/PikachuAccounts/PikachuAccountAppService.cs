@@ -98,7 +98,7 @@ public class PikachuAccountAppService(IConfiguration configuration, IdentityUser
             identityUser.AddRole(role.Id);
         }
 
-        (await identityUserManager.CreateAsync(identityUser)).CheckErrors();
+        (await identityUserManager.CreateAsync(identityUser, input.Password)).CheckErrors();
         return ObjectMapper.Map<IdentityUser, IdentityUserDto>(identityUser);
     }
 

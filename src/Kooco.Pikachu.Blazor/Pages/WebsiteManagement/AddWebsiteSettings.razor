@@ -1,0 +1,165 @@
+﻿@page "/Website-Settings/Create"
+@using Kooco.Pikachu.Images
+@using Kooco.Pikachu.Localization
+@using Kooco.Pikachu.Permissions
+@using Kooco.Pikachu.WebsiteManagement
+@using Volo.Abp.AspNetCore.Components.Notifications
+@using Volo.Abp.AspNetCore.Components.Web
+@attribute [Authorize(PikachuPermissions.WebsiteSettings.Create)]
+@inherits PikachuComponentBase
+@inject IWebsiteSettingsAppService WebsiteSettingsAppService
+@inject NavigationManager NavigationManager
+@inject IUiNotificationService UiNotificationService
+@inject IImageAppService ImageAppService
+@inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
+
+<PikachuButton Clicked="NavigateToWebsiteSettings">
+    <Icon Name="IconName.ArrowLeft" Class="me-1"></Icon>
+    @L["WebsiteSettings"]
+</PikachuButton>
+
+<Div Class="rounded-cards website-settings">
+    <Card>
+        <CardBody>
+            <Validations @ref="@ValidationsRef" Model="@NewEntity" ValidateOnLoad="false">
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                        <h4>@L["AddWebsiteSettings"]</h4>
+                        @if (LogoBase64 != null)
+                        {
+                            <Div Class="image-thumbnail">
+                                <img src="@("data:image/png;base64," + LogoBase64)" class="img-fluid" />
+                            </Div>
+                        }
+                        else if (NewEntity.LogoUrl != null)
+                        {
+                            <Div Class="image-thumbnail">
+                                <img src="@NewEntity.LogoUrl" class="img-fluid" />
+                            </Div>
+                        }
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <FieldLabel>@L["NotificationBar"]</FieldLabel>
+                                <TextEdit @bind-Text="@NewEntity.NotificationBar">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                                <Validation MessageLocalizer="@LH.Localize">
+                                    <Field>
+                                        <FieldLabel>@L["StoreTitle"]</FieldLabel>
+                                        <TextEdit @bind-Text="@NewEntity.StoreTitle">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </TextEdit>
+                                    </Field>
+                                </Validation>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                                <Validation MessageLocalizer="@LH.Localize">
+                                    <Field>
+                                        <FieldLabel>@L["TitleDisplayOption"]</FieldLabel>
+                                        <Select TValue="WebsiteTitleDisplayOptions?" @bind-SelectedValue="@NewEntity.TitleDisplayOption">
+                                            <SelectItem Value="(WebsiteTitleDisplayOptions?)null"></SelectItem>
+                                            @foreach (WebsiteTitleDisplayOptions option in Enum.GetValues(typeof(WebsiteTitleDisplayOptions)))
+                                            {
+                                                <SelectItem Value="option">@L["Enum:WebsiteTitleDisplayOptions." + (int)option]</SelectItem>
+                                            }
+                                        </Select>
+                                    </Field>
+                                </Validation>
+                            </Column>
+                        </Row>
+                        <Div Class="container-less-filepicker">
+                            <Field>
+                                <FilePicker Changed="@((e) => OnFileUploadAsync(e, "logo"))"
+                                            ShowMode="FilePickerShowMode.List"
+                                            Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
+                                    <FileTemplate></FileTemplate>
+                                    <ButtonsTemplate></ButtonsTemplate>
+                                </FilePicker>
+                                <Validation MessageLocalizer="@LH.Localize">
+                                    <TextEdit @bind-Text="@NewEntity.LogoName" Style="margin: 0; padding: 0; height: 0px;" Visibility="Visibility.Invisible">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </TextEdit>
+                                </Validation>
+                            </Field>
+                        </Div>
+                    </Column>
+                </Row>
+                <Divider></Divider>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                        <h4>@L["Socials"]</h4>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <FieldLabel>@L["Facebook"]</FieldLabel>
+                                <TextEdit @bind-Text="@NewEntity.Facebook">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <FieldLabel>@L["Instagram"]</FieldLabel>
+                                <TextEdit @bind-Text="@NewEntity.Instagram">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <FieldLabel>@L["Line"]</FieldLabel>
+                                <TextEdit @bind-Text="@NewEntity.Line">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                    </Column>
+                </Row>
+                <Divider></Divider>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                        <h4>@L["ReturnExchangePolicy"]</h4>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <MemoEdit Rows="5" @bind-Text="@NewEntity.ReturnExchangePolicy">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </MemoEdit>
+                            </Field>
+                        </Validation>
+                    </Column>
+                </Row>
+            </Validations>
+        </CardBody>
+    </Card>
+    <Div Class="text-end">
+        <PikachuButton Class="pk-btn-transparent" Disabled="IsLoading" Clicked="NavigateToWebsiteSettings">
+            @L["Cancel"]
+        </PikachuButton>
+        <PikachuButton Class="pk-btn-primary" Loading="IsLoading" Clicked="CreateAsync">
+            @L["Create"]
+        </PikachuButton>
+    </Div>
+</Div>

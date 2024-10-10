@@ -26,9 +26,7 @@ namespace Kooco.Pikachu
         public const string LineId = "LineId";
         public const string GoogleId = "GoogleId";
 
-        public const string MemberRole = "MEMBER";
-
-        public const int MaxImageSize = 1024 * 1024 * 10;
+        public const int MaxImageSizeInBytes = 512000;
         public static readonly List<string> ValidImageExtensions = [".jpg", ".png", ".svg", ".jpeg", ".webp"];
         public static readonly List<string> ValidFaviconExtensions = [".ico"];
     }
