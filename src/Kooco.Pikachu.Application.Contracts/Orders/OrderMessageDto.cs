@@ -11,7 +11,7 @@ namespace Kooco.Pikachu.Orders
         /// The ID of the order associated with the message.
         /// </summary>
         public Guid OrderId { get; set; }
-
+       
         /// <summary>
         /// The optional ID of the sender (either customer or merchant).
         /// </summary>

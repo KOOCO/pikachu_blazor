@@ -41,6 +41,7 @@ public partial class OrderDetails
     [Parameter]
     public string id { get; set; }
     private Guid OrderId { get; set; }
+    private CreateUpdateOrderMessageDto StoreCustomerService { get; set; } = new();
     private OrderDto Order { get; set; }
     private decimal? OrderDeliveryCost { get; set; } = 0.00m;
     private CreateOrderDto UpdateOrder { get; set; } = new();
@@ -49,6 +50,7 @@ public partial class OrderDetails
     private Shipments shipments = new();
     private RefundOrder refunds = new();
     private List<UpdateOrderItemDto> EditingItems { get; set; } = new();
+    private IReadOnlyList<OrderMessageDto> CustomerServiceHistory { get; set; }=[];
     private Modal CreateShipmentModal { get; set; }
     private Modal RefundModal { get; set; }
     private LoadingIndicator loading { get; set; } = new();
@@ -69,7 +71,7 @@ public partial class OrderDetails
     private readonly IConfiguration _Configuration;
 
     private readonly IPaymentGatewayAppService _PaymentGatewayAppService;
-
+    private readonly IOrderMessageAppService _OrderMessageAppService;
     private string? PaymentStatus;
     #endregion
 
@@ -78,13 +80,15 @@ public partial class OrderDetails
         ITestLableAppService testLableAppService,
         IObjectMapper ObjectMapper,
         IConfiguration Configuration,
-        IPaymentGatewayAppService PaymentGatewayAppService
+        IPaymentGatewayAppService PaymentGatewayAppService,
+        IOrderMessageAppService orderMessageAppService
     )
     {
         _testLableAppService = testLableAppService;
         _ObjectMapper = ObjectMapper;
         _Configuration = Configuration;
         _PaymentGatewayAppService = PaymentGatewayAppService;
+        _OrderMessageAppService = orderMessageAppService;
         Order = new();
     }
     #endregion
@@ -161,7 +165,8 @@ public partial class OrderDetails
         OrderDeliveries = [.. OrderDeliveries.Where(w => w.Items.Count > 0)];
 
         PaymentStatus = await GetPaymentStatus();
-
+       var result= await _OrderMessageAppService.GetListAsync(new GetOrderMessageListDto { MaxResultCount = 1000, OrderId = Order.Id });
+        CustomerServiceHistory = result.Items;
         await InvokeAsync(StateHasChanged);
     }
 
@@ -211,7 +216,49 @@ public partial class OrderDetails
             Comment = comment
         };
     }
+    async Task SubmitCustomerServiceReplyAsync()
+    {
+        try
+        {
+            await loading.Show();
+            string comment = StoreCustomerService.Message;
+            StoreCustomerService.SenderId = CurrentUser.Id;
+            StoreCustomerService.OrderId = Order.Id;
+            StoreCustomerService.Timestamp = DateTime.Now;
+            if (comment.IsNullOrWhiteSpace())
+            {
+                return;
+            }
+            //if (StoreCustomerService.Id != null)
+            //{
+            //    Guid id = StoreComments.Id.Value;
+            //    await _orderAppService.UpdateStoreCommentAsync(OrderId, id, comment);
+            //}
+            //else
+            //{
+                await _OrderMessageAppService.CreateAsync(StoreCustomerService);
+            //}
 
+            StoreCustomerService = new();
+           var result= await _OrderMessageAppService.GetListAsync(new GetOrderMessageListDto { MaxResultCount = int.MaxValue,OrderId = Order?.Id });
+            CustomerServiceHistory = result.Items;
+
+            await loading.Hide();
+            StateHasChanged();
+        }
+        catch (BusinessException ex)
+        {
+            await loading.Hide();
+            await _uiMessageService.Error(L[ex.Code]);
+            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+        }
+        catch (Exception ex)
+        {
+            await loading.Hide();
+            await _uiMessageService.Error(ex.GetType().ToString());
+            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+        }
+    }
     void EditRecipientName()
     {
         ModificationTrack.IsModified = true;

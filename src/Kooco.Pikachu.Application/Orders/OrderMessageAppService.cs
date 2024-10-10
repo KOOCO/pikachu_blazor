@@ -29,6 +29,11 @@ namespace Kooco.Pikachu.Orders
         // Retrieve a paginated list of OrderMessages with filtering and sorting
         public async Task<PagedResultDto<OrderMessageDto>> GetListAsync(GetOrderMessageListDto input)
         {
+            if (input.Sorting.IsNullOrEmpty())
+            {
+                input.Sorting = nameof(OrderMessage.CreationTime) + " DESC";
+            
+            }
             var totalCount = await _orderMessageRepository.GetCountAsync(
                 input.Filter,
                 input.OrderId,
