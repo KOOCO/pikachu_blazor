@@ -1107,8 +1107,16 @@ public partial class EditGroupBuy
                 EditGroupBuyDto.ShippingMethodList.Remove("FamilyMartC2C");
                 JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "FamilyMartC2C");
             }
-
-
+            else if (method is "SevenToElevenFrozen" && EditGroupBuyDto.ShippingMethodList.Contains("SevenToElevenC2C"))
+            {
+                EditGroupBuyDto.ShippingMethodList.Remove("SevenToElevenC2C");
+                JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "SevenToElevenC2C");
+            }
+            else if (method is "SevenToElevenC2C" && EditGroupBuyDto.ShippingMethodList.Contains("SevenToElevenFrozen"))
+            {
+                EditGroupBuyDto.ShippingMethodList.Remove("SevenToElevenFrozen");
+                JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "SevenToElevenFrozen");
+            }
             else if (method == "SevenToElevenC2C" && EditGroupBuyDto.ShippingMethodList.Contains("SevenToEleven1"))
             {
                 EditGroupBuyDto.ShippingMethodList.Remove("SevenToEleven1");

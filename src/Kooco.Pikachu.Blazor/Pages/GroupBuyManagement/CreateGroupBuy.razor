@@ -330,13 +330,14 @@
             <div class="col-8">
                 @if (CreateGroupBuyDto.AllowShipToOuterTaiwan && !CreateGroupBuyDto.AllowShipOversea)
                 {
-                    @foreach (var item in Enum.GetNames(typeof(DeliveryMethod)))
+                    @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
                     {
                         if (item == Enum.GetName(DeliveryMethod.SevenToElevenC2C) ||
-                        item == Enum.GetName(DeliveryMethod.SevenToEleven1) ||
-                        item == Enum.GetName(DeliveryMethod.BlackCat1) ||
-                        item == Enum.GetName(DeliveryMethod.BlackCatFreeze) ||
-                        item == Enum.GetName(DeliveryMethod.BlackCatFrozen))
+                            item == Enum.GetName(DeliveryMethod.SevenToEleven1) ||
+                            item == Enum.GetName(DeliveryMethod.SevenToElevenFrozen) ||
+                            item == Enum.GetName(DeliveryMethod.BlackCat1) ||
+                            item == Enum.GetName(DeliveryMethod.BlackCatFreeze) ||
+                            item == Enum.GetName(DeliveryMethod.BlackCatFrozen))
                         {
                             <label for="@item" class="form-label">
                                 <input type="checkbox"

@@ -17,6 +17,7 @@ public enum DeliveryMethod
     [Description("親送")]
     HomeDelivery=4,
     SevenToEleven1=5,
+    SevenToElevenFrozen=18,
     SevenToElevenC2C=6,
     FamilyMart1=7,
     FamilyMartC2C=8,

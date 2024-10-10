@@ -1,6 +1,7 @@
 {
   "culture": "zh-Hant",
   "texts": {
+    "SevenToElevenFrozen": "7-11 Frozen",
     "Paid": "已付款’",
     "PaymentStatus": "款項狀態",
     "RefundChannel": "退款渠道",
