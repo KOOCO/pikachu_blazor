@@ -88,8 +88,11 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
                     itemDetail.InventoryAccount,
                     itemDetail.Attribute1Value,
                     itemDetail.Attribute2Value,
-                    itemDetail.Attribute3Value
-                    );
+                    itemDetail.Attribute3Value,
+                    itemDetail.Image,
+                    itemDetail.ItemDescription,
+                    itemDetail.Status
+                );
             }
         }
 
@@ -180,7 +183,10 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
                         itemDetail.InventoryAccount,
                         itemDetail.Attribute1Value,
                         itemDetail.Attribute2Value,
-                        itemDetail.Attribute3Value
+                        itemDetail.Attribute3Value,
+                        itemDetail.Image,
+                        itemDetail.ItemDescription,
+                        itemDetail.Status
                         );
                 }
             }
@@ -289,6 +295,9 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
                     existing.Attribute1Value = itemDetail.Attribute1Value;
                     existing.Attribute2Value = itemDetail.Attribute2Value;
                     existing.Attribute3Value = itemDetail.Attribute3Value;
+                    existing.Image = itemDetail.Image;
+                    existing.ItemDescription = itemDetail.ItemDescription;
+                    existing.Status = itemDetail.Status;
                 }
                 else
                 {
@@ -305,8 +314,11 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
                         itemDetail.InventoryAccount,
                         itemDetail.Attribute1Value,
                         itemDetail.Attribute2Value,
-                        itemDetail.Attribute3Value
-                        );
+                        itemDetail.Attribute3Value,
+                        itemDetail.Image,
+                        itemDetail.ItemDescription,
+                        itemDetail.Status
+                    );
                 }
             }
         }

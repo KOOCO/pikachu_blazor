@@ -136,8 +136,11 @@ namespace Kooco.Pikachu.Items
             string? inventoryAccount,
             string? attribute1Value,
             string? attribute2Value,
-            string? attribute3Value
-            )
+            string? attribute3Value,
+            string? image,
+            string? itemDescription,
+            bool status = false
+        )
         {
             Check.NotNull(@item, nameof(Item));
             Check.NotNull(itemName, nameof(itemName));
@@ -161,9 +164,11 @@ namespace Kooco.Pikachu.Items
                 inventoryAccount,
                 attribute1Value,
                 attribute2Value,
-                attribute3Value
-                );
-
+                attribute3Value,
+                image,
+                itemDescription,
+                status
+            );
         }
 
         public void AddItemImage(

@@ -209,11 +209,13 @@ namespace Kooco.Pikachu.Items
             float? saleablePreOrderQuantity,
             float? groupBuyPrice,
             string? inventoryAccount,
-
             string? attribute1Value,
             string? attribute2Value,
-            string? attribute3Value
-            )
+            string? attribute3Value,
+            string? image,
+            string? itemDescription,
+            bool status = false
+        )
         {
             if(ItemDetails.Any(x => x.SKU == sku))
             {
@@ -236,9 +238,12 @@ namespace Kooco.Pikachu.Items
                     inventoryAccount,
                     attribute1Value,
                     attribute2Value,
-                    attribute3Value
-                    )
-                );
+                    attribute3Value,
+                    image,
+                    itemDescription,
+                    status
+                )
+            );
 
             return this;
         }
