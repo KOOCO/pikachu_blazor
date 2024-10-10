@@ -21,9 +21,9 @@ public class ShopCart(Guid id, Guid userId) : FullAuditedAggregateRoot<Guid>(id)
     public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
 
 
-    public ShopCart AddCartItem(Guid id, Guid itemId, int quantity, int unitPrice)
+    public ShopCart AddCartItem(Guid id, Guid itemId, int quantity, int unitPrice, List<string> itemSkus)
     {
-        var cartItem = new CartItem(id, Id, itemId, quantity, unitPrice);
+        var cartItem = new CartItem(id, Id, itemId, quantity, unitPrice, itemSkus);
         CartItems ??= new List<CartItem>();
         ValidateExistingCartItem(cartItem.ItemId);
         CartItems.Add(cartItem);

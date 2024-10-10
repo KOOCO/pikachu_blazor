@@ -22,7 +22,7 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
         foreach (var cartItem in input.CartItems)
         {
             Check.NotNull(cartItem.ItemId, nameof(cartItem.ItemId));
-            shopCartManager.AddCartItem(shopCart, cartItem.ItemId.Value, cartItem.Quantity, cartItem.UnitPrice);
+            shopCartManager.AddCartItem(shopCart, cartItem.ItemId.Value, cartItem.Quantity, cartItem.UnitPrice, cartItem.ItemSkus);
         }
         return ObjectMapper.Map<ShopCart, ShopCartDto>(shopCart);
     }
@@ -84,7 +84,7 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
         {
             await shopCartRepository.EnsureCollectionLoadedAsync(shopCart, s => s.CartItems);
         }
-        shopCartManager.AddCartItem(shopCart, input.ItemId.Value, input.Quantity, input.UnitPrice);
+        shopCartManager.AddCartItem(shopCart, input.ItemId.Value, input.Quantity, input.UnitPrice, input.ItemSkus);
         await shopCartRepository.UpdateAsync(shopCart);
         return ObjectMapper.Map<ShopCart, ShopCartDto>(shopCart);
     }
