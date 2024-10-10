@@ -1,4 +1,6 @@
-﻿@using Volo.Abp.DependencyInjection;
+﻿@using Kooco.Pikachu.Identity
+@using Kooco.Pikachu.Items.Dtos
+@using Volo.Abp.DependencyInjection;
 @using Microsoft.AspNetCore.Authorization
 @using Volo.Abp.FeatureManagement.Blazor.Components
 @using Microsoft.AspNetCore.Components.Forms
@@ -26,6 +28,7 @@
 @inject IConfiguration _configuration
 @inject AbpBlazorMessageLocalizerHelper<AbpTenantManagementResource> LH
 @inherits Volo.Abp.TenantManagement.Blazor.Pages.TenantManagement.TenantManagement
+@inject IMyIdentityUserAppService MyIdentityUserAppService
 <Card>
     <CardHeader>
         @* ************************* PAGE HEADER ************************* *@
@@ -217,7 +220,7 @@
 
                         <Field>
                             <FieldLabel>@_L["TenantAdministrator"]</FieldLabel>
-                            <SelectList TItem="IdentityUserDto"
+                            <SelectList TItem="KeyValueDto"
                                         TValue="Guid?"
                                         Data="@UsersList"
                                         TextField="@((item)=>item.Name)"
@@ -427,7 +430,7 @@
                         <Field>
 
                             <FieldLabel>@_L["TenantAdministrator"]</FieldLabel>
-                            <SelectList TItem="IdentityUserDto"
+                            <SelectList TItem="KeyValueDto"
                                         TValue="Guid?"
                                         Data="@UsersList"
                                         TextField="@((item)=>item.Name)"

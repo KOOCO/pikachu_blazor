@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.Members;
+﻿using Kooco.Pikachu.Items.Dtos;
+using Kooco.Pikachu.Members;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -52,6 +53,12 @@ public class MyIdentityUserAppService : IdentityUserAppService, IMyIdentityUserA
             totalCount,
             ObjectMapper.Map<List<IdentityUser>, List<IdentityUserDto>>(items)
         );
+    }
+
+    public async Task<List<KeyValueDto>> GetCategorizedLookupAsync(UserTypes? userTypes)
+    {
+        var queryable = await GetCategorizedQueryableAsync(userTypes);
+        return [.. queryable.Select(x => new KeyValueDto { Id = x.Id, Name = x.UserName })];
     }
 
     private async Task<IQueryable<IdentityUser>> GetCategorizedQueryableAsync(UserTypes? userTypes)
