@@ -826,6 +826,10 @@
     "AddWebsiteSettings": "Add Website Settings",
     "AreYouSureToDeleteThisRecord": "Are you sure you want to delete this record?",
     "TitleDisplayOptions": "Title Display Options",
-    "EditWebsiteSettings": "Edit Website Settings"
+    "EditWebsiteSettings": "Edit Website Settings",
+    "Enum:UserTypes.0": "All",
+    "Enum:UserTypes.1": "Frontend",
+    "Enum:UserTypes.2": "Backend",
+    "UserTypes": "User Types"
   }
 }
