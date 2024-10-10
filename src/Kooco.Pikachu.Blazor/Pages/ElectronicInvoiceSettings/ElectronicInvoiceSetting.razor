@@ -123,7 +123,7 @@
                     </div>
                     <div class="col-9">
                         <Validation>
-                        <NumericEdit TValue="int" class="form-control"  @bind-Value="@CreateUpdateElectronicInvoiceDto.DaysAfterShipmentGenerateInvoice"  >
+                        <NumericEdit TValue="int" Min="0" Max="90" class="form-control"  @bind-Value="@CreateUpdateElectronicInvoiceDto.DaysAfterShipmentGenerateInvoice"  >
                                         <Feedback>
             <ValidationError></ValidationError>
         </Feedback>

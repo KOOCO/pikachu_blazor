@@ -17,6 +17,7 @@ namespace Kooco.Pikachu.ElectronicInvoiceSettings
         [Required]
         public string DisplayInvoiceName { get; set; }
         [Required]
+        
         public int DaysAfterShipmentGenerateInvoice { get; set; }
     }
 }
