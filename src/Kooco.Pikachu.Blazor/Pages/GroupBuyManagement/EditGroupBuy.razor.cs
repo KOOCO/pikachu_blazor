@@ -398,7 +398,8 @@ public partial class EditGroupBuy
                             Id = itemGroup.Id,
                             Index = i++,
                             SortOrder = itemGroup.SortOrder,
-                            GroupBuyModuleType = itemGroup.GroupBuyModuleType
+                            GroupBuyModuleType = itemGroup.GroupBuyModuleType,
+                            AdditionalInfo = itemGroup.AdditionalInfo
                         };
                     }
 
@@ -1569,7 +1570,8 @@ public partial class EditGroupBuy
                         Id = item.Id,
                         SortOrder = item.SortOrder,
                         GroupBuyModuleType = item.GroupBuyModuleType,
-                        GroupBuyId = GroupBuy.Id
+                        GroupBuyId = GroupBuy.Id,
+                        AdditionalInfo = item.AdditionalInfo
                     };
 
                     foreach (var itemDetail in item.Selected)

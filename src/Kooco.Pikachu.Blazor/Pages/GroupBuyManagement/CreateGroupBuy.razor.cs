@@ -1297,7 +1297,8 @@ public partial class CreateGroupBuy
                     GroupBuyItemGroupCreateUpdateDto itemGroup = new()
                     {
                         SortOrder = item.SortOrder,
-                        GroupBuyModuleType = item.GroupBuyModuleType
+                        GroupBuyModuleType = item.GroupBuyModuleType,
+                        AdditionalInfo = item.AdditionalInfo
                     };
 
                     CreateGroupBuyDto.ItemGroups.Add(itemGroup);
@@ -1440,6 +1441,7 @@ public class CollapseItem
     public List<List<CreateImageDto>> CarouselModule { get; set; }
     public bool IsModified = false;
     public bool IsWarnedForInCompatible = false;
+    public string? AdditionalInfo { get; set; }
     public CollapseItem()
     {
         Selected = [];

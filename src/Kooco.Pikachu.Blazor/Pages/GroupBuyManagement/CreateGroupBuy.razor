@@ -1239,6 +1239,13 @@
                                         }
                                     }
 
+                                    @if (module.GroupBuyModuleType is GroupBuyModuleType.CountdownTimer)
+                                    {
+                                        <Div Class="col-12 mb-2">
+                                            <InputText class="form-control" @bind-Value="module.AdditionalInfo" />
+                                        </Div>
+                                    }
+
                                     <div class="row mt-2">
                                         @foreach (var selectedItem in module.Selected)
                                         {

@@ -129,15 +129,17 @@ namespace Kooco.Pikachu.Groupbuys
         public GroupBuyItemGroup AddItemGroup(
             GroupBuy groupBuy,
             int sortOrder,
-            GroupBuyModuleType groupBuyModuleType
-            )
+            GroupBuyModuleType groupBuyModuleType,
+            string? additionalInfo
+        )
         {
             return groupBuy.AddItemGroup(
                 GuidGenerator.Create(),
                 groupBuy.Id,
                 sortOrder,
-                groupBuyModuleType
-                );
+                groupBuyModuleType,
+                additionalInfo
+            );
         }
     }
 }

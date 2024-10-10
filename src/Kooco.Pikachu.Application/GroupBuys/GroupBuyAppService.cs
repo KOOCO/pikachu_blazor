@@ -110,7 +110,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                 var itemGroup = _groupBuyManager.AddItemGroup(
                     result,
                     group.SortOrder,
-                    group.GroupBuyModuleType
+                    group.GroupBuyModuleType,
+                    group.AdditionalInfo
                 );
 
                 if (group.ItemDetails != null && group.ItemDetails.Any())
@@ -159,10 +160,9 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                         {
                             itemGroup.SortOrder = group.SortOrder;
                             itemGroup.GroupBuyModuleType = group.GroupBuyModuleType;
-                            if (group.ItemDetails.Count == 0)
-                            {
-                                groupBuy.ItemGroups.Remove(itemGroup);
-                            }
+                            itemGroup.AdditionalInfo = group.AdditionalInfo;
+
+                            if (group.ItemDetails.Count is 0) groupBuy.ItemGroups.Remove(itemGroup);
 
                             await _GroupBuyItemGroupsRepository.UpdateAsync(itemGroup);
 
@@ -182,7 +182,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                         GroupBuyItemGroup itemGroup = _groupBuyManager.AddItemGroup(
                                 groupBuy,
                                 group.SortOrder,
-                                group.GroupBuyModuleType
+                                group.GroupBuyModuleType,
+                                group.AdditionalInfo
                         );
 
                         await _GroupBuyItemGroupsRepository.InsertAsync(itemGroup);
@@ -232,8 +233,9 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                 var itemGroup = _groupBuyManager.AddItemGroup(
                     result,
                     group.SortOrder,
-                    group.GroupBuyModuleType
-                    );
+                    group.GroupBuyModuleType,
+                    group.AdditionalInfo
+                );
 
                 if (group.ItemGroupDetails != null && group.ItemGroupDetails.Any())
                 {

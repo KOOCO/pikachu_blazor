@@ -22,6 +22,7 @@ namespace Kooco.Pikachu.GroupBuys
         public int SortOrder { get; set; }
 
         public GroupBuyModuleType GroupBuyModuleType { get; set; }
+        public string? AdditionalInfo { get; set; }
 
         public ICollection<GroupBuyItemGroupDetails> ItemGroupDetails { get; set; }
 
@@ -34,12 +35,14 @@ namespace Kooco.Pikachu.GroupBuys
             Guid id,
             Guid groupBuyId,
             int sortOrder,
-            GroupBuyModuleType groupBuyModuleType
+            GroupBuyModuleType groupBuyModuleType,
+            string? additionalInfo
             ) : base(id)
         {
             GroupBuyId = groupBuyId;
             SortOrder = sortOrder;
             GroupBuyModuleType = groupBuyModuleType;
+            AdditionalInfo = additionalInfo;
             ItemGroupDetails = new List<GroupBuyItemGroupDetails>();
         }
 
