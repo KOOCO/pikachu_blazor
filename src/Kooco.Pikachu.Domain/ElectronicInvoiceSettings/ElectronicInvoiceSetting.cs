@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kooco.Pikachu.EnumValues;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Metrics;
@@ -18,6 +19,7 @@ namespace Kooco.Pikachu.ElectronicInvoiceSettings
         public string HashKey { get; set; }
         public string HashIV { get; set; }
         public string DisplayInvoiceName { get; set; }
+        public DeliveryStatus StatusOnInvoiceIssue { get; set; }
         public int DaysAfterShipmentGenerateInvoice { get; set; }
 
         public ElectronicInvoiceSetting()
@@ -31,6 +33,7 @@ namespace Kooco.Pikachu.ElectronicInvoiceSettings
             string hashKey,
             string hashIV,
             string displayInvoiceName,
+            DeliveryStatus statusOnInvoiceIssue,
             int dayAfterInvoiceGenerate) : base(id)
         {
             IsEnable = isEnable;
@@ -39,6 +42,7 @@ namespace Kooco.Pikachu.ElectronicInvoiceSettings
             HashIV = hashIV;
             DisplayInvoiceName = displayInvoiceName;
             DaysAfterShipmentGenerateInvoice= dayAfterInvoiceGenerate;
+            StatusOnInvoiceIssue= statusOnInvoiceIssue;
         
         
         }

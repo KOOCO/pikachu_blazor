@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,10 +19,10 @@ namespace Kooco.Pikachu.Orders
         public DateTime? Timestamp { get; set; } // Optional: Time the message was sent (server will default to current time if not provided)
 
         public bool IsMerchant { get; set; } // Required: Indicates if the sender is the merchant (true) or customer (false)
+        [NotMapped]
+        public string SenderName { get; set; }
+        public OrderMessage() { }
 
-       
-
-        
         public OrderMessage(Guid id,Guid orderId, Guid? senderId, string message,bool isMerchant):base(id)
             
         {

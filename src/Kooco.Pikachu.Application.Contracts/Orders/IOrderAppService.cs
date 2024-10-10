@@ -54,5 +54,6 @@ namespace Kooco.Pikachu.Orders
         Task UpdateOrdersIfIsEnterpricePurchaseAsync(Guid groupBuyId);
 
         Task<(int normalCount, int freezeCount, int frozenCount)> GetTotalDeliveryTemperatureCountsAsync();
+        Task<OrderDto> OrderToBeShipped(Guid id);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace Kooco.Pikachu.Orders
@@ -16,6 +17,7 @@ namespace Kooco.Pikachu.Orders
         /// <summary>
         /// The content of the message.
         /// </summary>
+        [Required]
         public string Message { get; set; }
 
         /// <summary>

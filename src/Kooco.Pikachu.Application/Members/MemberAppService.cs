@@ -208,7 +208,7 @@ public class MemberAppService(IMemberRepository memberRepository, IdentityUserMa
     {
         Check.NotNull(input, nameof(input));
 
-        input.Role = Constant.MemberRole;
+        input.Role = MemberConsts.Role;
         var identityUser = await pikachuAccountAppService.RegisterAsync(input);
         return ObjectMapper.Map<IdentityUserDto, MemberDto>(identityUser);
     }

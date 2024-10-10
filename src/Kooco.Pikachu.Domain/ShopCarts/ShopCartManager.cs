@@ -34,14 +34,15 @@ public class ShopCartManager(IShopCartRepository shopCartRepository) : DomainSer
         return shopCart;
     }
 
-    public ShopCart AddCartItem(ShopCart shopCart, Guid itemId, int quantity, int unitPrice)
+    public ShopCart AddCartItem(ShopCart shopCart, Guid itemId, int quantity, int unitPrice, List<string> itemSkus)
     {
         Check.NotNull(shopCart, nameof(shopCart));
         Check.NotDefaultOrNull<Guid>(itemId, nameof(itemId));
         Check.Range(quantity, nameof(quantity), 0, int.MaxValue);
         Check.Range(unitPrice, nameof(unitPrice), 0, int.MaxValue);
+        Check.NotNull(itemSkus, nameof(itemSkus));
 
-        shopCart.AddCartItem(GuidGenerator.Create(), itemId, quantity, unitPrice);
+        shopCart.AddCartItem(GuidGenerator.Create(), itemId, quantity, unitPrice, itemSkus);
         return shopCart;
     }
 

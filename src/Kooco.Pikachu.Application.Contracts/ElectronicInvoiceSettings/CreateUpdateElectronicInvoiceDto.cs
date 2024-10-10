@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kooco.Pikachu.EnumValues;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
@@ -17,6 +18,9 @@ namespace Kooco.Pikachu.ElectronicInvoiceSettings
         [Required]
         public string DisplayInvoiceName { get; set; }
         [Required]
+        
         public int DaysAfterShipmentGenerateInvoice { get; set; }
+        [Required]
+        public DeliveryStatus StatusOnInvoiceIssue { get; set; }
     }
 }

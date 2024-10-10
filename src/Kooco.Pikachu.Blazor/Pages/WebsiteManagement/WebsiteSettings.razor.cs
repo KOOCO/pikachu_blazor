@@ -84,7 +84,7 @@ public partial class WebsiteSettings
 
     private void Edit(WebsiteSettingsDto websiteSettings)
     {
-        NavigationManager.NavigateTo("/Website-Settings/Create/" + websiteSettings.Id);
+        NavigationManager.NavigateTo("/Website-Settings/Edit/" + websiteSettings.Id);
     }
 
     private async Task DeleteAsync(WebsiteSettingsDto websiteSettings)

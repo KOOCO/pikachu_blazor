@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kooco.Pikachu.EnumValues;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Volo.Abp.Application.Dtos;
@@ -14,6 +15,7 @@ namespace Kooco.Pikachu.ElectronicInvoiceSettings
         public string HashKey { get; set; }
         public string HashIV { get; set; }
         public string DisplayInvoiceName { get; set; }
+        public DeliveryStatus StatusOnInvoiceIssue { get; set; }
         public int DaysAfterShipmentGenerateInvoice { get; set; }
     }
 }

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
+using Volo.Abp.Users;
 
 namespace Kooco.Pikachu.Orders
 {
@@ -45,8 +46,33 @@ namespace Kooco.Pikachu.Orders
             var query = await ApplyFilterAsync(filter, orderId, senderId, isMerchant, timeStamp);
 
             // Apply sorting and pagination
-            query = query.OrderBy(sorting ?? nameof(OrderMessage.Timestamp));
-            return await query.Skip(skipCount).Take(maxResultCount).ToListAsync();
+           
+            var joinedQuery = from orderMessage in query
+                              join user in (await GetDbContextAsync()).Users on orderMessage.SenderId equals user.Id into userGroup
+                              from user in userGroup.DefaultIfEmpty() // Left join
+                              select new
+                              {
+                                  OrderMessage = orderMessage,
+                                  SenderName = user != null ? user.Email : null
+                              };
+           
+            var resultQuery= joinedQuery.OrderBy("OrderMessage."+sorting).Skip(skipCount).Take(maxResultCount);
+            var resultList = await resultQuery.ToListAsync();
+
+            // Map the result to OrderMessageDto
+            var orderMessageDtos = resultList.Select(x => new OrderMessage
+            {
+               
+                OrderId = x.OrderMessage.OrderId,
+                SenderId = x.OrderMessage.SenderId,
+                Message = x.OrderMessage.Message,
+                Timestamp = x.OrderMessage.Timestamp,
+                IsMerchant = x.OrderMessage.IsMerchant,
+                
+                SenderName = x.SenderName // Set the sender name
+            }).ToList();
+
+            return orderMessageDtos;
         }
 
         private async Task<IQueryable<OrderMessage>> ApplyFilterAsync(
@@ -66,6 +92,9 @@ namespace Kooco.Pikachu.Orders
                 .WhereIf(senderId.HasValue, x => x.SenderId == senderId.Value)
                 .WhereIf(isMerchant.HasValue, x => x.IsMerchant == isMerchant.Value)
                 .WhereIf(timeStamp.HasValue, x => x.Timestamp >= timeStamp.Value);
+          
+
+          
 
             return query;
         }

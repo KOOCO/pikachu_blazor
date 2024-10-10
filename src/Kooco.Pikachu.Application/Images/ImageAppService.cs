@@ -68,9 +68,9 @@ namespace Kooco.Pikachu.Images
             return await _imageContainerManager.SaveAsync(blobName, bytes);
         }
 
-        public async Task<bool> DeleteImageAsync(string blobName)
+        public async Task<bool> DeleteImageAsync(string blobName, bool configureAwait = true)
         {
-            var isDeleted = await _imageContainerManager.DeleteAsync(blobName);
+            var isDeleted = await _imageContainerManager.DeleteAsync(blobName).ConfigureAwait(configureAwait);
             return isDeleted;
         }
     }

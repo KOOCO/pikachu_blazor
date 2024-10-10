@@ -54,6 +54,10 @@
                     </div>
                     <div class="col-9">
                         <Switch TValue="bool" @bind-Checked="@CreateUpdateElectronicInvoiceDto.IsEnable"  ></Switch>
+                        <AntDesign.Alert Type="@AntDesign.AlertType.Info"
+                        Message="Info"
+       Description="If this setting is turned off, please print the invoice for the customer"
+       ShowIcon="true" />
                     </div>
                     
                 </div>
@@ -117,13 +121,34 @@
                     </div>
                     
                 </div>
+                 <div class=" col-12 row mb-3">
+                    <div class="col-3 text-lg-end pt-2">
+                        <label>@L["StatusOnInvoiceIssue"]</label>
+                    </div>
+                    <div class="col-9">
+                        <Validation>
+                        <Select TValue="DeliveryStatus"  class="form-control"  @bind-SelectedValue="@CreateUpdateElectronicInvoiceDto.StatusOnInvoiceIssue"  >
+                                   @foreach (var enumValue in Enum.GetValues(typeof(DeliveryStatus)))
+                                    {
+                                         <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                    }
+          
+                                </Select>
+                                                    
+            <ValidationError></ValidationError>
+       
+    
+</Validation>
+                    </div>
+                    
+                </div>
                 <div class=" col-12 row mb-3">
                     <div class="col-3 text-lg-end pt-2">
                         <label>@L["DaysAfterShipmentToGenerateInvoice"]</label>
                     </div>
                     <div class="col-9">
                         <Validation>
-                        <NumericEdit TValue="int" class="form-control"  @bind-Value="@CreateUpdateElectronicInvoiceDto.DaysAfterShipmentGenerateInvoice"  >
+                        <NumericEdit TValue="int" Min="0" Max="90" class="form-control"  @bind-Value="@CreateUpdateElectronicInvoiceDto.DaysAfterShipmentGenerateInvoice"  >
                                         <Feedback>
             <ValidationError></ValidationError>
         </Feedback>
