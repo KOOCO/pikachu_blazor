@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
@@ -380,18 +381,98 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         var groupbuys = (await _groupBuyRepository.GetListAsync()).Select(x=>new GroupBuyList {Id=x.Id,GroupBuyName=x.GroupBuyName }).ToList();
         return ObjectMapper.Map<List<GroupBuyList>, List<KeyValueDto>>(groupbuys);
     }
-    /// <summary>
-    /// This Method Returns the Desired Result For the Store Front End.
-    /// Do not change unless you want to make changes in the Store Front End Code
-    /// </summary>
-    /// <returns></returns>
-    public async Task<GroupBuyDto> GetForStoreAsync(Guid id)
+   
+    public async Task<ShippingMethodResponse> GetGroupBuyShippingMethodAsync(Guid id)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var item = await _groupBuyRepository.GetAsync(id);
 
-            var result= ObjectMapper.Map<GroupBuy, GroupBuyDto>(item);
+            // Safely deserialize the ExcludeShippingMethod
+            var shippingMethods = !string.IsNullOrEmpty(item?.ExcludeShippingMethod)
+                ? JsonSerializer.Deserialize<List<string>>(item.ExcludeShippingMethod)
+                : new List<string>();
+
+            // Safely deserialize HomeDeliveryDeliveryTime
+            var homeDeliveryTimes = !string.IsNullOrEmpty(item?.HomeDeliveryDeliveryTime)
+                ? JsonSerializer.Deserialize<List<string>>(item.HomeDeliveryDeliveryTime)
+                : new List<string>();
+
+            // Safely deserialize DeliveredByStoreDeliveryTime (for convenience store)
+            var convenienceStoreTimes = !string.IsNullOrEmpty(item?.DeliveredByStoreDeliveryTime)
+                ? JsonSerializer.Deserialize<List<string>>(item.DeliveredByStoreDeliveryTime)
+                : new List<string>();
+
+            // Safely deserialize SelfPickupDeliveryTime
+            var selfPickupTimes = !string.IsNullOrEmpty(item?.SelfPickupDeliveryTime)
+                ? JsonSerializer.Deserialize<List<string>>(item.SelfPickupDeliveryTime)
+                : new List<string>();
+
+            // Create response object
+            var response = new ShippingMethodResponse();
+
+            foreach (var method in shippingMethods ?? new List<string>())
+            {
+                if (method.Contains("PostOffice") || method.Contains("HomeDelivery") || method.Contains("TCatDeliveryNormal")
+                    || method.Contains("TCatDeliveryFreeze") || method.Contains("TCatDeliveryFrozen")
+                    || method.Contains("BlackCat") || method.Contains("BlackCatFreeze") || method.Contains("BlackCatFrozen"))
+                {
+                    // Assign all matching times from homeDeliveryTimes
+                    if (homeDeliveryTimes.Count > 0)
+                    {
+                        var matchingTimes = homeDeliveryTimes.Where(time => !string.IsNullOrEmpty(time)).ToList();
+                        response.HomeDeliveryType[method] = matchingTimes;
+
+                    }
+                }
+            }
+
+            // Map Convenience Store Shipping Methods
+            foreach (var method in shippingMethods ?? new List<string>())
+            {
+                if (method.Contains("SevenToEleven1") || method.Contains("SevenToEleven1Freeze") || method.Contains("SevenToEleven1Frozen")
+                    || method.Contains("FamilyMart1") || method.Contains("FamilyMartC2C")
+                    || method.Contains("TCatDeliverySevenElevenNormal") || method.Contains("TCatDeliverySevenElevenFreeze")
+                    || method.Contains("TCatDeliverySevenElevenFrozen"))
+                {
+                    // Assign all matching times from convenienceStoreTimes
+                    if (convenienceStoreTimes.Count > 0)
+                    {
+                        var matchingTimes = convenienceStoreTimes.Where(time => !string.IsNullOrEmpty(time)).ToList();
+                        response.ConvenienceStoreType[method] = matchingTimes;
+                    }
+                }
+            }
+
+            // Map Self-Pickup Methods
+            foreach (var method in shippingMethods ?? new List<string>())
+            {
+                if (method.Contains("SelfPickup"))
+                {
+                    // Assign all matching times from selfPickupTimes
+                    if (selfPickupTimes.Count > 0)
+                    {
+                        var matchingTimes = selfPickupTimes.Where(time => !string.IsNullOrEmpty(time)).ToList();
+                        response.SelfPickupType[method] = matchingTimes;
+                    }
+                }
+            }
+            return response;
+
+        }
+    }
+    /// <summary>
+    /// This Method Returns the Desired Result For the Store Front End.
+    /// Do not change unless you want to make changes in the Store Front End Code
+    /// </summary>
+    /// <returns></returns>
+    public async Task<GroupBuyDto> GetForStoreAsync (Guid id)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var item = await _groupBuyRepository.GetAsync(id);
+
+            var result = ObjectMapper.Map<GroupBuy, GroupBuyDto>(item);
             if (result.IsGroupBuyAvaliable)
             {
                 if (result.StartTime != null && result.StartTime <= DateTime.Now && result.EndTime != null && result.StartTime >= DateTime.Now)
@@ -408,14 +489,14 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                     result.Status = "Expired";
                 }
             }
-            else {
+            else
+            {
                 result.Status = "Closed";
-            
+
             }
             return result;
         }
     }
-
     /// <summary>
     /// This Method Returns the Desired Result For the Store Front End.
     /// Do not change unless you want to make changes in the Store Front End Code

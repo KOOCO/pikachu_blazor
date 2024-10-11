@@ -246,4 +246,9 @@ public class GroupBuyController: AbpController, IGroupBuyAppService
     {
         return _groupBuyAppService.UpdateSortOrderAsync(id, itemGroups);
     }
+    [HttpGet("get-groupbuy-shipping-method")]
+    public Task<ShippingMethodResponse> GetGroupBuyShippingMethodAsync(Guid id)
+    {
+        return _groupBuyAppService.GetGroupBuyShippingMethodAsync(id);
+    }
 }
