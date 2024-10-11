@@ -47,7 +47,7 @@
                         TItem="KeyValueDto"
                             TItemValue="Guid"
                             DataSource="@Products"
-                            @bind-Value="@CreateAddOnProduct.ProductId"
+                            @bind-Value="@CreateAddOnProduct.ItemId"
                                       LabelName="@nameof(KeyValueDto.Name)"
                                       ValueName="@nameof(KeyValueDto.Id)"
                             Placeholder="Select a Product"
@@ -65,15 +65,85 @@
                                 </Column>
                             </Field>
                         </EditForm>
-                @if (Item.ItemName != null && Item.ItemDescription != null)
+                @if (ItemDetails.Count>0)
                 {
                     <Column ColumnSize="ColumnSize.Is12">
-                        <AntDesign.Descriptions Title="Product Info">
-                        <AntDesign.DescriptionsItem Title="@L["ProductImage"]"><AntDesign.Image Width="100px" Src="@itemimageUrl" /></AntDesign.DescriptionsItem>
-    <AntDesign.DescriptionsItem Title="@L["ProductName"]">@Item?.ItemName</AntDesign.DescriptionsItem>
-                       @*      <AntDesign.DescriptionsItem Title="@L["ProductDescription"]">@((MarkupString)Item?.ItemDescription)</AntDesign.DescriptionsItem> *@
-    
-</AntDesign.Descriptions>
+                      <Table Responsive>
+                            <TableHeader>
+                                <TableRow>
+                                            <TableHeaderCell Class="text-center">@L["Select"]</TableHeaderCell>
+                                    <TableHeaderCell Class="text-center">@L["PropertyName"]</TableHeaderCell>
+                                    <TableHeaderCell Class="text-center">
+                                        @L["SKU"]
+                                       
+                                    </TableHeaderCell>
+                                    <TableHeaderCell Class="text-center">
+                                        @L["SellingPrice"]
+                                      
+                                    </TableHeaderCell>
+                                    <TableHeaderCell Class="text-center">
+                                        @L["GroupBuyPrice"]
+                                       
+                                    </TableHeaderCell>
+                                    <TableHeaderCell Class="text-center">@L["InventoryAccount"]</TableHeaderCell>
+                                    <TableHeaderCell Class="text-center">
+                                        @L["SaleableQuantity"]
+                                       
+                                    </TableHeaderCell>
+                                    <TableHeaderCell Class="text-center">
+                                        @L["PreorderQuantity"]
+                                       
+                                    </TableHeaderCell>
+                                    <TableHeaderCell Class="text-center">
+                                        @L["SaleablePreorderQuantity"]
+                                       
+                                    </TableHeaderCell>
+                                    <TableHeaderCell Class="text-center">
+                                        @L["LimitQuantity"]
+                                       
+                                    </TableHeaderCell>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                @foreach (var item in ItemDetails)
+                                {
+                                    <TableRow Class="text-center align-items-center">
+                                   @*     <EditForm EditContext="editContext"> *@
+                                          <RadioGroup TValue="Guid" Name="Product" @bind-CheckedValue="@CreateAddOnProduct.ProductId"> 
+                                                    <TableRowCell>  <Radio Value="@item.Id"></Radio> </TableRowCell>
+                                                </RadioGroup>
+                                           @*          <ValidationMessage For="() => CreateAddOnProduct!.ProductId" />
+                                               </EditForm> *@
+                                        <TableRowCell>@item.ItemName</TableRowCell>
+                                        <TableRowCell>
+                                            @item.SKU" 
+                                        </TableRowCell>
+                                        <TableRowCell>
+                                          @item.SellingPrice
+                                        </TableRowCell>
+                                        <TableRowCell>
+                                           @item.GroupBuyPrice
+                                        </TableRowCell>
+                                        <TableRowCell>
+                                          @item.InventoryAccount
+                                        </TableRowCell>
+                                        <TableRowCell>
+                                         @item.SaleableQuantity
+                                        </TableRowCell>
+                                        <TableRowCell>
+                                          @item.PreOrderableQuantity
+                                        </TableRowCell>
+                                        <TableRowCell>
+                                            @item.SaleablePreOrderQuantity
+                                        </TableRowCell>
+                                        <TableRowCell>
+                                            @item.LimitQuantity
+                                        </TableRowCell>
+                                        
+                                    </TableRow>
+                                }
+                            </TableBody>
+                        </Table>
                      </Column>
                      }
                 <Row >

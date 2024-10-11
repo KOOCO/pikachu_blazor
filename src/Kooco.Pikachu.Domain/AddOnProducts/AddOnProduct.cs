@@ -31,7 +31,7 @@ namespace Kooco.Pikachu.AddOnProducts
         public Guid ProductId { get; set; }
         public virtual ICollection<AddOnProductSpecificGroupbuy> AddOnProductSpecificGroupbuys { get; set; }
         [ForeignKey(nameof(ProductId))]
-        public Item? Product { get; set; }
+        public ItemDetails? Product { get; set; }
 
         public AddOnProduct(
             Guid id,

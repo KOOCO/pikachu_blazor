@@ -31,6 +31,11 @@ public class ItemDetailsAppService : CrudAppService<ItemDetails, ItemDetailsDto,
         _repository = repository;
         _l = l;
     }
+    public async Task<List<ItemDetailsDto>> GetItemDetailByItemId(Guid itemId)
+    {
+        var query =await _repository.GetWithItemId(itemId);
+        return ObjectMapper.Map<List<ItemDetails>, List<ItemDetailsDto>>(query);
+    }
     public async Task<PagedResultDto<ItemDetailsDto>> GetInventroyReport(GetInventroyInputDto input)
     {
         var count = await _repository.CountAsync(input.FilterText);

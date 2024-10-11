@@ -9,6 +9,8 @@ using System.Linq.Dynamic.Core;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 using System.Security.Cryptography;
+using Volo.Abp.Domain.Repositories;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Kooco.Pikachu.Items;
 
@@ -22,6 +24,12 @@ public class ItemDetailsRepository : EfCoreRepository<PikachuDbContext, ItemDeta
     {
         return (await GetQueryableAsync()).IncludeDetails();
     }
+    public  async Task<List<ItemDetails>> GetWithItemId(Guid itemId)
+    {
+       var query = await GetQueryableAsync();
+        return await query.Where(x => x.ItemId == itemId).ToListAsync();
+    }
+  
     public async Task<long> CountAsync(string? filter)
     {
         return await ApplyFilters((await GetQueryableAsync()), filter).CountAsync();

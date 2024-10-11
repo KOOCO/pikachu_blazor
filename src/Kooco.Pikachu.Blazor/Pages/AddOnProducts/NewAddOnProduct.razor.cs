@@ -30,15 +30,21 @@ namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
         IEnumerable<Guid> SelectedGroupBuy { get; set; }
         private Validations ValidationsRef;
         private ItemDto Item { get; set; }
+        private List<ItemDetailsDto> ItemDetails { get; set; }
+        private ItemDetailsDto ItemDetail { get; set; }
        
         private readonly ItemAppService _itemAppService;
-        public NewAddOnProduct(ItemAppService itemAppService)
+        private readonly ItemDetailsAppService _itemDetailService;
+        public NewAddOnProduct(ItemAppService itemAppService, ItemDetailsAppService itemDetailService)
         {
             CreateAddOnProduct = new();
             Item= new ItemDto();
+            ItemDetail=new ItemDetailsDto();
+            ItemDetails = [];
             Groupbuys = [];
             SelectedGroupBuy = [];
             _itemAppService = itemAppService;
+            _itemDetailService = itemDetailService;
             editContext = new(CreateAddOnProduct);
             messageStore = new(editContext);
         }
@@ -59,6 +65,9 @@ namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
                         CreateAddOnProduct = ObjectMapper.Map<AddOnProductDto, CreateUpdateAddOnProductDto>(addon);
                         CreateAddOnProduct.GroupBuyIds = addon.AddOnProductSpecificGroupbuys.Select(x => x.GroupbuyId).ToList();
                     SelectedGroupBuy= addon.AddOnProductSpecificGroupbuys.Select(x => x.GroupbuyId);
+                        ItemDetail = await _itemDetailService.GetAsync(CreateAddOnProduct.ProductId);
+                        CreateAddOnProduct.ItemId = ItemDetail.ItemId;
+                        ItemDetails = await _itemDetailService.GetItemDetailByItemId(CreateAddOnProduct.ItemId);
                     }
 
                 }
@@ -123,6 +132,12 @@ namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
             // Custom validation logic
             if (CreateAddOnProduct.ProductId==Guid.Empty)
             {
+                messageStore?.Add(() => CreateAddOnProduct.ItemId, "Select at least one.");
+                IsUpdating = false;
+                return;
+            }
+            if (CreateAddOnProduct.ProductId == Guid.Empty)
+            {
                 messageStore?.Add(() => CreateAddOnProduct.ProductId, "Select at least one.");
                 IsUpdating = false;
                 return;
@@ -151,9 +166,10 @@ namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
         }
         private async Task OnSelectedProductChangedHandler()
         {
-            Item = await _itemAppService.GetAsync(CreateAddOnProduct.ProductId);
-            itemimageUrl = await _itemAppService.GetFirstImageUrlAsync(CreateAddOnProduct.ProductId);
-            StateHasChanged();
+            CreateAddOnProduct.ProductId = Guid.Empty;
+          ItemDetails = await _itemDetailService.GetItemDetailByItemId(CreateAddOnProduct.ItemId);
+          
+          await InvokeAsync(StateHasChanged);
         }
         void NavigateToAddOnProducts() {
 

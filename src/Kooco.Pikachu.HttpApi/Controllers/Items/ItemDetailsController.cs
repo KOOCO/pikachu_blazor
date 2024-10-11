@@ -3,6 +3,7 @@ using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
@@ -41,6 +42,11 @@ public class ItemDetailsController(
     public Task<PagedResultDto<ItemDetailsDto>> GetInventroyReport(GetInventroyInputDto input)
     {
         return _itemDetailsAppService.GetInventroyReport(input);
+    }
+    [HttpGet("get-by-itemid")]
+    public Task<List<ItemDetailsDto>> GetItemDetailByItemId(Guid itemId)
+    {
+        return _itemDetailsAppService.GetItemDetailByItemId(itemId);
     }
 
     [HttpGet("get-list-as-excel")]

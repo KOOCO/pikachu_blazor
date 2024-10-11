@@ -9,6 +9,9 @@ namespace Kooco.Pikachu.AddOnProducts
     {
         [Required]
         public Guid ProductId { get; set; }
+
+        [Required]
+        public Guid ItemId { get; set; }
         [Required]
         
         public int AddOnAmount { get; set; }
