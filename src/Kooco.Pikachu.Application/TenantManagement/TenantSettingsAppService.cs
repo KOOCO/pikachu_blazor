@@ -6,13 +6,14 @@ using System.IO;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.TenantManagement;
 
 namespace Kooco.Pikachu.TenantManagement;
 
 [RemoteService(IsEnabled = false)]
 [Authorize(PikachuPermissions.TenantSettings.Default)]
-public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManager,
-    IRepository<TenantSettings, Guid> tenantSettingsRepository, ImageContainerManager imageContainerManager) : PikachuAppService, ITenantSettingsAppService
+public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManager, IRepository<TenantSettings, Guid> tenantSettingsRepository,
+    ImageContainerManager imageContainerManager, IRepository<Tenant, Guid> tenantRepository) : PikachuAppService, ITenantSettingsAppService
 {
     public async Task<TenantSettingsDto?> FirstOrDefaultAsync()
     {
@@ -22,7 +23,12 @@ public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManage
         {
             await tenantSettingsRepository.EnsurePropertyLoadedAsync(tenantSettings, x => x.Tenant);
         }
-
+        else
+        {
+            var tenant = await tenantRepository.FirstOrDefaultAsync(x => x.Id == CurrentTenant.Id);
+            tenantSettings ??= new();
+            tenantSettings.Tenant = tenant;
+        }
         return ObjectMapper.Map<TenantSettings, TenantSettingsDto>(tenantSettings);
     }
 
@@ -37,13 +43,15 @@ public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManage
         {
             tenantSettings = await tenantSettingsManager.CreateAsync(input.WebpageTitle, input.PrivacyPolicy,
                 input.CompanyName, input.BusinessRegistrationNumber, input.ContactPhone, input.CustomerServiceEmail, input.ServiceHoursFrom,
-                input.ServiceHoursTo, input.FaviconUrl, input.LogoUrl, input.BannerUrl);
+                input.ServiceHoursTo, input.FaviconUrl, input.LogoUrl, input.BannerUrl, input.TenantContactTitle, input.TenantContactPerson, 
+                input.TenantContactEmail, input.Domain, input.ShortCode);
         }
         else
         {
             await tenantSettingsManager.UpdateAsync(tenantSettings, input.WebpageTitle, input.PrivacyPolicy,
                 input.CompanyName, input.BusinessRegistrationNumber, input.ContactPhone, input.CustomerServiceEmail, input.ServiceHoursFrom,
-                input.ServiceHoursTo, input.FaviconUrl, input.LogoUrl, input.BannerUrl);
+                input.ServiceHoursTo, input.FaviconUrl, input.LogoUrl, input.BannerUrl, input.TenantContactTitle, input.TenantContactPerson,
+                input.TenantContactEmail, input.Domain, input.ShortCode);
         }
 
         return ObjectMapper.Map<TenantSettings, TenantSettingsDto>(tenantSettings);

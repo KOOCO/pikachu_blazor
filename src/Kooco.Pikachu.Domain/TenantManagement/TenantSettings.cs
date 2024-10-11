@@ -24,6 +24,8 @@ public class TenantSettings : FullAuditedEntity<Guid>, IMultiTenant
     [ForeignKey(nameof(TenantId))]
     public Tenant? Tenant { get; set; }
 
+    public TenantSettings() { }
+
     public TenantSettings(
         Guid id,
         string? faviconUrl,
@@ -49,44 +51,43 @@ public class TenantSettings : FullAuditedEntity<Guid>, IMultiTenant
 
     public TenantSettings SetFaviconUrl(string? faviconUrl)
     {
-        //FaviconUrl = Check.NotNullOrWhiteSpace(faviconUrl, nameof(FaviconUrl));
         FaviconUrl = faviconUrl;
         return this;
     }
 
     public TenantSettings SetWebpageTitle(string? webpageTitle)
     {
-        WebpageTitle = Check.Length(webpageTitle, nameof(WebpageTitle), TenantSettingsConsts.MaxWebpageTitleLength);
+        WebpageTitle = Check.NotNullOrWhiteSpace(webpageTitle, nameof(WebpageTitle), TenantSettingsConsts.MaxWebpageTitleLength);
         return this;
     }
 
     public TenantSettings SetPrivacyPolicy(string? privacyPolicy)
     {
-        PrivacyPolicy = Check.Length(privacyPolicy, nameof(PrivacyPolicy), TenantSettingsConsts.MaxPrivacyPolicyLength);
+        PrivacyPolicy = Check.NotNullOrWhiteSpace(privacyPolicy, nameof(PrivacyPolicy), TenantSettingsConsts.MaxPrivacyPolicyLength);
         return this;
     }
 
     public TenantSettings SetCompanyName(string? companyName)
     {
-        CompanyName = Check.Length(companyName, nameof(CompanyName), TenantSettingsConsts.MaxCompanyNameLength);
+        CompanyName = Check.NotNullOrWhiteSpace(companyName, nameof(CompanyName), TenantSettingsConsts.MaxCompanyNameLength);
         return this;
     }
 
     public TenantSettings SetBusinessRegistrationNumber(string? businessRegistrationNumber)
     {
-        BusinessRegistrationNumber = Check.Length(businessRegistrationNumber, nameof(BusinessRegistrationNumber), TenantSettingsConsts.MaxBusinessRegistrationNumberLength);
+        BusinessRegistrationNumber = Check.NotNullOrWhiteSpace(businessRegistrationNumber, nameof(BusinessRegistrationNumber), TenantSettingsConsts.MaxBusinessRegistrationNumberLength);
         return this;
     }
 
     public TenantSettings SetContactPhone(string? contactPhone)
     {
-        ContactPhone = Check.Length(contactPhone, nameof(ContactPhone), TenantSettingsConsts.MaxContactPhoneLength);
+        ContactPhone = Check.NotNullOrWhiteSpace(contactPhone, nameof(ContactPhone), TenantSettingsConsts.MaxContactPhoneLength);
         return this;
     }
 
     public TenantSettings SetCustomerServiceEmail(string? customerServiceEmail)
     {
-        CustomerServiceEmail = Check.Length(customerServiceEmail, nameof(CustomerServiceEmail), TenantSettingsConsts.MaxCustomerServiceEmailLength);
+        CustomerServiceEmail = Check.NotNullOrWhiteSpace(customerServiceEmail, nameof(CustomerServiceEmail), TenantSettingsConsts.MaxCustomerServiceEmailLength);
         return this;
     }
 

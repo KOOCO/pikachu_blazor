@@ -583,7 +583,7 @@
     "Pikachu:ProductTypeIsRequired": "Product Type Is Required.",
     "TenantAdministrator": "Tenant Administrator",
     "TenantContactPerson": "Tenant Contact Person",
-    "TenantContactTitle": "Tenant Contact's' Title",
+    "TenantContactTitle": "Tenant Contact Title",
     "TenantContactEmail": "Tenant Contact Email",
     "Mr.": "Mr.",
     "Ms.": "Ms.",
@@ -830,6 +830,13 @@
     "Enum:UserTypes.0": "All",
     "Enum:UserTypes.1": "Frontend",
     "Enum:UserTypes.2": "Backend",
-    "UserTypes": "User Types"
+    "UserTypes": "User Types",
+    "ContactInformation": "Contact Information",
+    "AreYouSureToResetTheForm": "Are you sure you want to reset the form?",
+    "ServiceHoursFrom": "Service Hours From",
+    "ServiceHoursTo": "Service Hours To",
+    "ShortCodeValidationMessage": "The Short Code field must be 8 characters long consisting of only numbers and letters.",
+    "ShareProfitPercent": "Share Profit",
+    "SpecifyCompanyPrivacyPolicy": "Please specify company privacy policy"
   }
 }
