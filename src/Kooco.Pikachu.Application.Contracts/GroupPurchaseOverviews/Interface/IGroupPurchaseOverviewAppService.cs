@@ -20,4 +20,6 @@ public interface IGroupPurchaseOverviewAppService :
     Task<GroupPurchaseOverviewDto> UpdateGroupPurchaseOverviewAsync(GroupPurchaseOverviewDto groupPurchaseOverview);
 
     Task<List<GroupPurchaseOverviewDto>> GetListByGroupBuyIdAsync(Guid groupBuyId);
+
+    Task DeleteByGroupIdAsync(Guid groupBuyId);
 }

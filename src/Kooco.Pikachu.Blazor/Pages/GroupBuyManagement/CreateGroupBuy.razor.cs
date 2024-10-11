@@ -267,6 +267,10 @@ public partial class CreateGroupBuy
 
                 await LogoPickerCustom.Clear();
             }
+            catch(Exception ex)
+            {
+
+            }
             finally
             {
                 stream.Close();

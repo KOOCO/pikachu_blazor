@@ -56,5 +56,10 @@ public class GroupPurchaseOverviewAppService :
             await _GroupPurchaseOverviewRepository.GetListByGroupBuyIdAsync(groupBuyId)
         );
     }
+
+    public async Task DeleteByGroupIdAsync(Guid groupBuyId)
+    {
+        await _GroupPurchaseOverviewRepository.DeleteDirectAsync(d => d.GroupBuyId == groupBuyId);
+    }
     #endregion
 }

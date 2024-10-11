@@ -246,4 +246,10 @@ public class GroupBuyController: AbpController, IGroupBuyAppService
     {
         return _groupBuyAppService.UpdateSortOrderAsync(id, itemGroups);
     }
+
+    [HttpGet("get-groupBuy-ItemGroups/{groupBuyId}")]
+    public Task<List<GroupBuyItemGroupDto>> GetGroupBuyItemGroupsAsync(Guid groupBuyId)
+    {
+        return _groupBuyAppService.GetGroupBuyItemGroupsAsync(groupBuyId);
+    }
 }

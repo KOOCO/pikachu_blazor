@@ -148,6 +148,9 @@ public partial class EditGroupBuy
             //await Loading.Show();
             Id = Guid.Parse(id);
             GroupBuy = await _groupBuyAppService.GetWithItemGroupsAsync(Id);
+
+            GroupBuy.ItemGroups = await _groupBuyAppService.GetGroupBuyItemGroupsAsync(Id);
+
             EditGroupBuyDto = _objectMapper.Map<GroupBuyDto, GroupBuyUpdateDto>(GroupBuy);
             //await LoadHtmlContent();
             EditGroupBuyDto.ShortCode=EditGroupBuyDto?.ShortCode==""?null:EditGroupBuyDto?.ShortCode;
@@ -303,7 +306,11 @@ public partial class EditGroupBuy
                 foreach (List<CreateImageDto> carouselImages in CarouselModules)
                 {
                     if (!CollapseItem.Any(a => a.GroupBuyModuleType is GroupBuyModuleType.CarouselImages))
-                        CollapseItem.Add(new() { GroupBuyModuleType = GroupBuyModuleType.CarouselImages });
+                        CollapseItem.Add(new() {
+                            Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                            SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
+                            GroupBuyModuleType = GroupBuyModuleType.CarouselImages 
+                        });
 
                     CarouselFilePickers.Add(new ());
                 }
@@ -311,7 +318,11 @@ public partial class EditGroupBuy
                 foreach (List<CreateImageDto> carouselImages in BannerModules)
                 {
                     if (!CollapseItem.Any(a => a.GroupBuyModuleType is GroupBuyModuleType.BannerImages))
-                        CollapseItem.Add(new() { GroupBuyModuleType = GroupBuyModuleType.BannerImages });
+                        CollapseItem.Add(new() {
+                            Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                            SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
+                            GroupBuyModuleType = GroupBuyModuleType.BannerImages 
+                        });
 
                     BannerFilePickers.Add(new());
                 }
@@ -319,7 +330,11 @@ public partial class EditGroupBuy
                 foreach (GroupPurchaseOverviewDto module in GroupPurchaseOverviewModules)
                 {
                     if (!CollapseItem.Any(a => a.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview))
-                        CollapseItem.Add(new() { GroupBuyModuleType = GroupBuyModuleType.GroupPurchaseOverview });
+                        CollapseItem.Add(new() {
+                            Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                            SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
+                            GroupBuyModuleType = GroupBuyModuleType.GroupPurchaseOverview 
+                        });
 
                     GroupPurchaseOverviewFilePickers.Add(new());
                 }
@@ -327,7 +342,11 @@ public partial class EditGroupBuy
                 foreach (GroupBuyOrderInstructionDto module in GroupBuyOrderInstructionModules)
                 {
                     if (!CollapseItem.Any(a => a.GroupBuyModuleType is GroupBuyModuleType.OrderInstruction))
-                        CollapseItem.Add(new() { GroupBuyModuleType = GroupBuyModuleType.OrderInstruction });
+                        CollapseItem.Add(new() {
+                            Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                            SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
+                            GroupBuyModuleType = GroupBuyModuleType.OrderInstruction 
+                        });
 
                     GroupBuyOrderInstructionPickers.Add(new());
                 }
@@ -1591,6 +1610,18 @@ public partial class EditGroupBuy
 
                     EditGroupBuyDto.ItemGroups.Add(itemGroup);
                 }
+
+                else if (item.Id is null || item.Id == Guid.Empty)
+                {
+                    GroupBuyItemGroupCreateUpdateDto itemGroup = new()
+                    {
+                        SortOrder = item.SortOrder,
+                        GroupBuyModuleType = item.GroupBuyModuleType,
+                        AdditionalInfo = item.AdditionalInfo
+                    };
+
+                    EditGroupBuyDto.ItemGroups.Add(itemGroup);
+                }
             }
             await Loading.Show();
 
@@ -1745,6 +1776,19 @@ public partial class EditGroupBuy
                 await Loading.Show();
                 Guid GroupBuyId = Guid.Parse(id);
                 await _groupBuyAppService.DeleteGroupBuyItemAsync(item.Id.Value, GroupBuyId);
+
+                if (item.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview)
+                    await _GroupPurchaseOverviewAppService.DeleteByGroupIdAsync(GroupBuyId);
+
+                else if (item.GroupBuyModuleType is GroupBuyModuleType.OrderInstruction)
+                    await _GroupBuyOrderInstructionAppService.DeleteByGroupBuyIdAsync(GroupBuyId);
+
+                else if (item.GroupBuyModuleType is GroupBuyModuleType.CarouselImages)
+                    await _imageAppService.DeleteByGroupBuyIdAndImageTypeAsync(GroupBuyId, ImageType.GroupBuyCarouselImage);
+
+                else if (item.GroupBuyModuleType is GroupBuyModuleType.BannerImages)
+                    await _imageAppService.DeleteByGroupBuyIdAndImageTypeAsync(GroupBuyId, ImageType.GroupBuyBannerImage);
+
                 StateHasChanged();
             }
             CollapseItem.Remove(item);
