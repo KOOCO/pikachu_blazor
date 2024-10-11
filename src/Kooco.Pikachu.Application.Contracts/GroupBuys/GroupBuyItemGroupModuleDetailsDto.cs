@@ -14,6 +14,7 @@ public class GroupBuyItemGroupModuleDetailsDto
     public int SortOrder { get; set; }
     public GroupBuyModuleType GroupBuyModuleType { get; set; }
     public string GroupBuyModuleTypeName { get; set; }
+    public string? AdditionalInfo { get; set; }
     public ICollection<GroupBuyItemGroupDetailsDto> ItemGroupDetails { get; set; }
     public List<List<string>> CarouselModulesImages { get; set; }
     public List<List<string>> BannerModulesImages { get; set; }

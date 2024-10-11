@@ -20,4 +20,8 @@ public class CreateItemDetailsDto
     public string? Attribute1Value { get; set; }
     public string? Attribute2Value { get; set; }
     public string? Attribute3Value { get; set; }
+    public string? ItemDescription { get; set; }
+    public string? Image { get; set; }
+    public bool Status { get; set; }
+    public bool IsExpanded { get; set; }
 }

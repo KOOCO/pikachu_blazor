@@ -54,7 +54,9 @@ namespace Kooco.Pikachu
                         "",
                         "",
                         "",
-                        ""
+                        "",
+                        string.Empty,
+                        string.Empty
                         );
 
                     await _appItemRepository.InsertAsync(item);
@@ -80,7 +82,9 @@ namespace Kooco.Pikachu
                         "",
                         "",
                         "",
-                        ""
+                        "",
+                        string.Empty,
+                        string.Empty
                         );
                     await _appItemRepository.InsertAsync(item);
 
@@ -105,7 +109,9 @@ namespace Kooco.Pikachu
                         "",
                         "",
                         "",
-                        ""
+                        "",
+                        string.Empty,
+                        string.Empty
                         );
                     await _appItemRepository.InsertAsync(item);
                 }

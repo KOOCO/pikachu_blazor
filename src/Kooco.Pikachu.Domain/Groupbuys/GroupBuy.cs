@@ -332,15 +332,17 @@ public class GroupBuy : FullAuditedAggregateRoot<Guid>, IMultiTenant
         Guid id,
         Guid groupBuyId,
         int sortOrder,
-        GroupBuyModuleType groupBuyModuleType
-        )
+        GroupBuyModuleType groupBuyModuleType,
+        string? additionalInfo
+    )
     {
         var groupBuyItemGroup = new GroupBuyItemGroup(
             id,
             groupBuyId,
             sortOrder,
-            groupBuyModuleType
-            );
+            groupBuyModuleType,
+            additionalInfo
+        );
         ItemGroups.Add(groupBuyItemGroup);
         return groupBuyItemGroup;
     }

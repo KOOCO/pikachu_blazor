@@ -4,6 +4,7 @@ using Kooco.Pikachu.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    partial class PikachuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241009102150_Add_Status_Image_ItemDesc_AppItemDetails")]
+    partial class Add_Status_Image_ItemDesc_AppItemDetails
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -573,9 +576,6 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("LastModifierId");
 
-                    b.Property<int>("StatusOnInvoiceIssue")
-                        .HasColumnType("int");
-
                     b.Property<string>("StoreCode")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1026,9 +1026,6 @@ namespace Kooco.Pikachu.Migrations
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("AdditionalInfo")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("GroupBuyId")
                         .HasColumnType("uniqueidentifier");
@@ -2578,10 +2575,6 @@ namespace Kooco.Pikachu.Migrations
 
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ItemSkuJson")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnType("datetime2")
@@ -5318,7 +5311,7 @@ namespace Kooco.Pikachu.Migrations
 
             modelBuilder.Entity("Kooco.Pikachu.AddOnProducts.AddOnProduct", b =>
                 {
-                    b.HasOne("Kooco.Pikachu.Items.ItemDetails", "Product")
+                    b.HasOne("Kooco.Pikachu.Items.Item", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)

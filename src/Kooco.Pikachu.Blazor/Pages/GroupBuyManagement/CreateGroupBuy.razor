@@ -330,13 +330,14 @@
             <div class="col-8">
                 @if (CreateGroupBuyDto.AllowShipToOuterTaiwan && !CreateGroupBuyDto.AllowShipOversea)
                 {
-                    @foreach (var item in Enum.GetNames(typeof(DeliveryMethod)))
+                    @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
                     {
                         if (item == Enum.GetName(DeliveryMethod.SevenToElevenC2C) ||
-                        item == Enum.GetName(DeliveryMethod.SevenToEleven1) ||
-                        item == Enum.GetName(DeliveryMethod.BlackCat1) ||
-                        item == Enum.GetName(DeliveryMethod.BlackCatFreeze) ||
-                        item == Enum.GetName(DeliveryMethod.BlackCatFrozen))
+                            item == Enum.GetName(DeliveryMethod.SevenToEleven1) ||
+                            item == Enum.GetName(DeliveryMethod.SevenToElevenFrozen) ||
+                            item == Enum.GetName(DeliveryMethod.BlackCat1) ||
+                            item == Enum.GetName(DeliveryMethod.BlackCatFreeze) ||
+                            item == Enum.GetName(DeliveryMethod.BlackCatFrozen))
                         {
                             <label for="@item" class="form-label">
                                 <input type="checkbox"
@@ -1238,32 +1239,23 @@
                                         }
                                     }
 
+                                    @if (module.GroupBuyModuleType is GroupBuyModuleType.CountdownTimer)
+                                    {
+                                        <Div Class="col-12 mb-2">
+                                            <InputText class="form-control" @bind-Value="module.AdditionalInfo" />
+                                        </Div>
+                                    }
+
                                     <div class="row mt-2">
                                         @foreach (var selectedItem in module.Selected)
                                         {
                                             <div class="col-@(12 / module.Selected.Count)">
-                                                @if (module.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor)
+                                                @if (module.GroupBuyModuleType is GroupBuyModuleType.IndexAnchor)
                                                 {
-                                                    <Autocomplete TItem="ItemWithItemTypeDto"
-                                                                  TValue="Guid?"
-                                                                  Data="@ItemsList"
-                                                                  TextField="@(( item ) => item.Name)"
-                                                                  ValueField="@(( item ) => item.Id)"
-                                                                  Placeholder="Search..."
-                                                                  Filter="AutocompleteFilter.StartsWith"
-                                                                  CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
-                                                                  HighlightSearch
-                                                                  Immediate="true"
-                                                                  SelectedValue="selectedItem.Id"
-                                                                  @bind-SelectedText="@selectedItem.Name"
-                                                                  SelectedValueChanged="(id) => OnSelectedValueChanged(id, module, selectedItem)"
-                                                                  FreeTyping>
-                                                        <NotFoundContent> @L["NotFound"] </NotFoundContent>
-                                                    </Autocomplete>
-                                                    @if (selectedItem.Id == Guid.Empty)
-                                                    {
-                                                        <h4 class="p-2">@selectedItem.Name</h4>
-                                                    }
+                                                    <Div Class="col-12 mb-2">
+                                                        <InputText class="form-control" @bind-Value="selectedItem.Name"
+                                                                   @oninput="(e) => OnSelectedValueChanged(null, module, selectedItem)" />
+                                                    </Div>
                                                 }
                                                 else
                                                 {

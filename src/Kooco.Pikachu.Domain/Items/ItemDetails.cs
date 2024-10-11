@@ -43,6 +43,9 @@ namespace Kooco.Pikachu.Items
         public string? Attribute1Value { get; set; }
         public string? Attribute2Value { get; set; }
         public string? Attribute3Value { get; set; }
+        public string? ItemDescription { get; set; }
+        public string? Image { get; set; }
+        public bool Status { get; set; }
 
         public ItemDetails() { }
 
@@ -60,8 +63,11 @@ namespace Kooco.Pikachu.Items
             string? inventoryAccount,
             string? attribute1Value,
             string? attribute2Value,
-            string? attribute3Value
-            ) : base(id)
+            string? attribute3Value,
+            string? image,
+            string? itemDescription,
+            bool status = false
+        ) : base(id)
         {
             SetSKU(sku);
             SetItemName(itemName);
@@ -78,6 +84,9 @@ namespace Kooco.Pikachu.Items
             Attribute1Value = attribute1Value;
             Attribute2Value = attribute2Value;
             Attribute3Value = attribute3Value;
+            Image = image;
+            ItemDescription = itemDescription;
+            Status = status;
         }
 
         private void SetSKU(

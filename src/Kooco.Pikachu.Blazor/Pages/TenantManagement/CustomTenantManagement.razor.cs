@@ -1,6 +1,8 @@
 ﻿using Blazorise;
 using Kooco.Pikachu.AzureStorage.Image;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Identity;
+using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.Tenants;
 using Microsoft.AspNetCore.Components;
@@ -35,7 +37,7 @@ public partial class CustomTenantManagement
     private FilePicker BannerPickerCustom { get; set; }
     public Guid? TenantOwnerId { get; set; }
     public TenantStatus Status { get; set; }
-    IReadOnlyList<IdentityUserDto> UsersList = Array.Empty<IdentityUserDto>();
+    IReadOnlyList<KeyValueDto> UsersList = [];
     public int ShareProfitPercentage { get; set; }
     public string LogoUrl { get; set; }
     public string BannerUrl { get; set; }
@@ -78,9 +80,7 @@ public partial class CustomTenantManagement
     {
         await base.OnInitializedAsync();
         EntryUrl = _configuration["EntryUrl"]?.TrimEnd('/');
-        var users = await _identityUserAppService.GetListAsync(new GetIdentityUsersInput() { MaxResultCount = 1000, SkipCount = 0 });
-        UsersList = users?.Items.ToList();
-
+        UsersList = await MyIdentityUserAppService.GetCategorizedLookupAsync(UserTypes.Backend) ?? [];
     }
 
     public void OnTenantContactTitleChange(ChangeEventArgs e)
