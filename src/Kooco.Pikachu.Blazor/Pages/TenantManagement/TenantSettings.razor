@@ -1,4 +1,8 @@
 ﻿@page "/Tenant-Settings"
+@using Blazorise.Components
+@using Kooco.Pikachu.EnumValues
+@using Kooco.Pikachu.Identity
+@using Kooco.Pikachu.Items.Dtos
 @using Kooco.Pikachu.Localization
 @using Kooco.Pikachu.Permissions
 @using Kooco.Pikachu.TenantManagement
@@ -45,7 +49,7 @@
                             <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
                                 <Row>
                                     <Column ColumnSize="ColumnSize.Is12">
-                                        <Validation>
+                                        <Validation MessageLocalizer="@LH.Localize">
                                             <Field>
                                                 <FieldLabel>@L["WebpageTitle"]</FieldLabel>
                                                 <TextEdit @bind-Text="Entity.WebpageTitle" Disabled="@ViewMode">
@@ -57,7 +61,7 @@
                                         </Validation>
                                     </Column>
                                     <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                                        <Validation>
+                                        <Validation MessageLocalizer="@LH.Localize">
                                             <Field>
                                                 <FieldLabel>@L["CompanyName"]</FieldLabel>
                                                 <TextEdit @bind-Text="Entity.CompanyName" Disabled="@ViewMode">
@@ -69,7 +73,7 @@
                                         </Validation>
                                     </Column>
                                     <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                                        <Validation>
+                                        <Validation MessageLocalizer="@LH.Localize">
                                             <Field>
                                                 <FieldLabel>@L["BusinessRegistrationNumber"]</FieldLabel>
                                                 <TextEdit @bind-Text="Entity.BusinessRegistrationNumber" Disabled="@ViewMode">
@@ -81,7 +85,84 @@
                                         </Validation>
                                     </Column>
                                     <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                                        <Validation>
+                                        <Validation MessageLocalizer="@LH.Localize">
+                                            <Field>
+                                                <FieldLabel>@L["CustomerServiceEmail"]</FieldLabel>
+                                                <TextEdit @bind-Text="Entity.CustomerServiceEmail" Disabled="@ViewMode">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                                        <Validation MessageLocalizer="@LH.Localize">
+                                            <Field>
+                                                <FieldLabel>@L["Domain"]</FieldLabel>
+                                                <TextEdit @bind-Text="Entity.Domain" Disabled="@ViewMode">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                                        <Validation MessageLocalizer="@LH.Localize">
+                                            <Field>
+                                                <FieldLabel>@L["ShortCode"]</FieldLabel>
+                                                <TextEdit MaxLength="8" @bind-Text="Entity.ShortCode" Disabled="@ViewMode">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                </Row>
+                            </Column>
+                        </Row>
+                        <Divider></Divider>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                                <h4>@L["ContactInformation"]</h4>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                                        <Validation MessageLocalizer="@LH.Localize">
+                                            <Field>
+                                                <FieldLabel>@L["TenantContactTitle"]</FieldLabel>
+                                                <Select TValue="string" @bind-SelectedValue="Entity.TenantContactTitle" Disabled="@ViewMode">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                    <ChildContent>
+                                                        <SelectItem Value="(string?)null"></SelectItem>
+                                                        @foreach (string title in TenantContactTitles)
+                                                        {
+                                                            <SelectItem Value="@title">@L[title]</SelectItem>
+                                                        }
+                                                    </ChildContent>
+                                                </Select>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                                        <Validation MessageLocalizer="@LH.Localize">
+                                            <Field>
+                                                <FieldLabel>@L["TenantContactPerson"]</FieldLabel>
+                                                <TextEdit @bind-Text="Entity.TenantContactPerson" Disabled="@ViewMode">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                                        <Validation MessageLocalizer="@LH.Localize">
                                             <Field>
                                                 <FieldLabel>@L["ContactPhone"]</FieldLabel>
                                                 <TextEdit @bind-Text="Entity.ContactPhone" Disabled="@ViewMode">
@@ -93,10 +174,10 @@
                                         </Validation>
                                     </Column>
                                     <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                                        <Validation>
+                                        <Validation MessageLocalizer="@LH.Localize">
                                             <Field>
-                                                <FieldLabel>@L["CustomerServiceEmail"]</FieldLabel>
-                                                <TextEdit @bind-Text="Entity.CustomerServiceEmail" Disabled="@ViewMode">
+                                                <FieldLabel>@L["TenantContactEmail"]</FieldLabel>
+                                                <TextEdit @bind-Text="Entity.TenantContactEmail" Disabled="@ViewMode">
                                                     <Feedback>
                                                         <ValidationError />
                                                     </Feedback>
@@ -115,7 +196,7 @@
                             <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
                                 <Row>
                                     <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                                        <Validation>
+                                        <Validation MessageLocalizer="@LH.Localize">
                                             <Field>
                                                 <FieldLabel>@L["From"]</FieldLabel>
                                                 <TimeEdit TValue="DateTime?" @bind-Time="Entity.ServiceHoursFrom" Disabled="@ViewMode">
@@ -127,7 +208,7 @@
                                         </Validation>
                                     </Column>
                                     <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                                        <Validation>
+                                        <Validation MessageLocalizer="@LH.Localize">
                                             <Field>
                                                 <FieldLabel>@L["To"]</FieldLabel>
                                                 <TimeEdit TValue="DateTime?" @bind-Time="Entity.ServiceHoursTo" Disabled="@ViewMode">
@@ -147,7 +228,7 @@
                                 <h4>@L["PrivacyPolicy"]</h4>
                             </Column>
                             <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                                <Validation>
+                                <Validation MessageLocalizer="@LH.Localize">
                                     <Field>
                                         <MemoEdit Rows="5" @bind-Text="Entity.PrivacyPolicy" Disabled="@ViewMode">
                                             <Feedback>

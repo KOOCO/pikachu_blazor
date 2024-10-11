@@ -1,10 +1,13 @@
 using Blazorise;
 using Kooco.Pikachu.Extensions;
+using Kooco.Pikachu.Identity;
+using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.TenantManagement;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,6 +23,8 @@ public partial class TenantSettings
     private bool IsLoading { get; set; } = false;
     private bool IsCancelling { get; set; } = false;
     private bool ViewMode { get; set; } = true;
+
+    private readonly List<string> TenantContactTitles = ["Mr.", "Ms."];
 
     protected override async Task OnInitializedAsync()
     {
@@ -100,6 +105,7 @@ public partial class TenantSettings
     {
         try
         {
+            if (name.IsNullOrWhiteSpace()) return;
             await TenantSettingsAppService.DeleteImageAsync(name);
         }
         catch (Exception ex)

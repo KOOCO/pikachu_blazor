@@ -224,8 +224,17 @@ public class PikachuApplicationAutoMapperProfile : Profile
         #endregion
 
         CreateMap<TenantSettings, TenantSettingsDto>()
-            .ForMember(dest => dest.LogoUrl, opt => opt.MapFrom(src => src.Tenant.ExtraProperties.GetValueOrDefault(Constant.Logo)))
-            .ForMember(dest => dest.BannerUrl, opt => opt.MapFrom(src => src.Tenant.ExtraProperties.GetValueOrDefault(Constant.BannerUrl)));
+            .ForMember(dest => dest.LogoUrl, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.Logo)))
+            .ForMember(dest => dest.BannerUrl, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.BannerUrl)))
+            .ForMember(dest => dest.TenantOwner, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.TenantOwner)))
+            .ForMember(dest => dest.TenantContactTitle, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.TenantContactTitle)))
+            .ForMember(dest => dest.TenantContactPerson, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.TenantContactPerson)))
+            .ForMember(dest => dest.TenantContactEmail, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.TenantContactEmail)))
+            .ForMember(dest => dest.Domain, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.Domain)))
+            .ForMember(dest => dest.ShortCode, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.ShortCode)))
+            .ForMember(dest => dest.ShareProfitPercent, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.ShareProfitPercent)))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.Status)));
+
         CreateMap<TenantSettingsDto, UpdateTenantSettingsDto>();
 
         CreateMap<OrderMessage, OrderMessageDto>();

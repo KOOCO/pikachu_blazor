@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kooco.Pikachu.EnumValues;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Kooco.Pikachu.TenantManagement;
@@ -36,6 +37,24 @@ public class UpdateTenantSettingsDto
     [Required]
     public DateTime? ServiceHoursTo { get; set; }
 
+    [Required]
+    public string? TenantContactTitle { get; set; }
+
+    [Required]
+    public string? TenantContactPerson { get; set; }
+
+    [Required]
+    [EmailAddress]
+    public string? TenantContactEmail { get; set; }
+
+    [Required]
+    [Url]
+    public string? Domain { get; set; }
+
+    [Required]
+    [RegularExpression("^[A-Za-z0-9]{8}$", ErrorMessage = "ShortCodeValidationMessage")]
+    public string? ShortCode { get; set; }
+
     public string? FaviconBase64 { get; set; }
     public string? FaviconUrl { get; set; }
     public string? FaviconName { get; set; }
@@ -46,5 +65,4 @@ public class UpdateTenantSettingsDto
 
     public string? BannerBase64 { get; set; }
     public string? BannerUrl { get; set; }
-    public string? BannerName { get; set; }
-}
+    public string? BannerName { get; set; }}
