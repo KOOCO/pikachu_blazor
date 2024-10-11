@@ -836,6 +836,7 @@
     "ServiceHoursFrom": "Service Hours From",
     "ServiceHoursTo": "Service Hours To",
     "ShortCodeValidationMessage": "The Short Code field must be 8 characters long consisting of only numbers and letters.",
-    "ShareProfitPercent": "Share Profit"
+    "ShareProfitPercent": "Share Profit",
+    "SpecifyCompanyPrivacyPolicy": "Please specify company privacy policy"
   }
 }
