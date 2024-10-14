@@ -837,6 +837,12 @@
     "ServiceHoursTo": "Service Hours To",
     "ShortCodeValidationMessage": "The Short Code field must be 8 characters long consisting of only numbers and letters.",
     "ShareProfitPercent": "Share Profit",
-    "SpecifyCompanyPrivacyPolicy": "Please specify company privacy policy"
+    "SpecifyCompanyPrivacyPolicy": "Please specify company privacy policy",
+    "Menu:LoginConfigurations": "Login Configurations",
+    "LoginConfigurations": "Login Configurations",
+    "AppId": "App ID",
+    "AppSecret": "App Secret",
+    "ChannelSecret": "Channel Secret",
+    "AreYouSureToUpdate": "Are you sure you want to update?"
   }
 }

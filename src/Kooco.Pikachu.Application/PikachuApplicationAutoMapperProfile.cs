@@ -37,6 +37,7 @@ using Volo.Abp.Data;
 using Kooco.Pikachu.GroupPurchaseOverviews;
 using Kooco.Pikachu.WebsiteManagement;
 using Kooco.Pikachu.GroupBuyOrderInstructions;
+using Kooco.Pikachu.LoginConfigurations;
 
 namespace Kooco.Pikachu;
 
@@ -241,5 +242,8 @@ public class PikachuApplicationAutoMapperProfile : Profile
 
         CreateMap<WebsiteSettings, WebsiteSettingsDto>();
         CreateMap<WebsiteSettingsDto, UpdateWebsiteSettingsDto>();
+
+        CreateMap<LoginConfiguration, LoginConfigurationDto>();
+        CreateMap<LoginConfigurationDto, UpdateLoginConfigurationDto>();
     }
 }
