@@ -61,9 +61,12 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
         if (order.InvoiceNumber is not null) return;
 
         GroupBuy groupBuy = await _groupBuyRepository.GetAsync(order.GroupBuyId);
-
-        string print = order.UniformNumber.IsNullOrWhiteSpace() ? "0" : "1";
-
+        
+        string print = setting.IsEnable ? "0" : "1";
+        string? CarrierType = setting.IsEnable ? "1" : null;
+        CarrierType = order.InvoiceType == InvoiceType.CellphoneInvoice ? "3" : null;
+        string? CarrierNumber = CarrierType == "3" ? order.UniformNumber : null;
+        string CustomerAddress=order.AddressDetails.IsNullOrEmpty()?order.CustomerEmail:order.AddressDetails;
         RestClientOptions options = new () { MaxTimeout = -1 };
 
         RestClient client = new (options);
@@ -81,6 +84,9 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
             ClearanceMark = "1",
             InvoiceRemark = setting?.DisplayInvoiceName ?? string.Empty,
             //CustomerIdentifier=order.UniformNumber,
+            CarrierNum=CarrierNumber,
+            CarrierType=CarrierType,
+
             Print = print,
             Donation = "0",
             TaxType ="1", //groupBuy.TaxType==TaxType.Taxable?"1":groupBuy.TaxType==TaxType.NonTaxable?"3":"9",
@@ -347,6 +353,8 @@ public string ClearanceMark { get; set; }
 public string InvoiceRemark { get; set; }
 public string CustomerIdentifier { get; set; }
 public string Print { get; set; }
+public string? CarrierNum { get; set; }
+public string? CarrierType { get; set; }
 public string Donation { get; set; }
 public string TaxType { get; set; }
 public decimal SalesAmount { get; set; }
