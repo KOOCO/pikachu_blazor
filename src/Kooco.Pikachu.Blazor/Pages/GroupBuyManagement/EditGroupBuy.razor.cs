@@ -108,6 +108,8 @@ public partial class EditGroupBuy
     private readonly IGroupPurchaseOverviewAppService _GroupPurchaseOverviewAppService;
 
     private readonly IGroupBuyOrderInstructionAppService _GroupBuyOrderInstructionAppService;
+
+    private List<GroupBuyTemplateType> TemplateTypes = [GroupBuyTemplateType.PikachuOne, GroupBuyTemplateType.PikachuTwo];
     #endregion
 
     #region Constructor
@@ -208,9 +210,11 @@ public partial class EditGroupBuy
         }
     }
 
-    private void SelectTemplate(GroupBuyTemplateType template)
+    private void SelectTemplate(ChangeEventArgs e)
     {
-        SelectedTemplate = template;
+        SelectedTemplate = Enum.Parse<GroupBuyTemplateType>(e.Value.ToString());
+
+        EditGroupBuyDto.TemplateType = SelectedTemplate;
 
         IsSelectedModule = false;
 

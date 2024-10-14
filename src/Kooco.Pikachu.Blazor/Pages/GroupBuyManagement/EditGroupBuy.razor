@@ -729,23 +729,26 @@
         <Divider></Divider>
         <div class="row">
             <div class="col-2"><label>@L["AddModule"]</label></div>
-            <div class="col-2 d-flex gap-2">
+            <div class="col-3 d-flex gap-2">
                 @if (CollapseItem.Count < 20)
                 {
-                    <Dropdown>
-                        <DropdownToggle Color="Color.Primary">
-                            @L["SelectTemplate"]
-                        </DropdownToggle>
-                        <DropdownMenu>
-                            <DropdownItem Clicked='@(() => SelectTemplate(GroupBuyTemplateType.PikachuOne))'>
-                                @L["PikachuOne"]
-                            </DropdownItem>
-                            <DropdownItem Clicked='@(() => SelectTemplate(GroupBuyTemplateType.PikachuTwo))'>
-                                @L["PikachuTwo"]
-                            </DropdownItem>
-                        </DropdownMenu>
-                    </Dropdown>
-                    <Dropdown Disabled=IsSelectedModule>
+                    <Select TValue="GroupBuyTemplateType"
+                            @onchange="@((e) => SelectTemplate(e))">
+                        <option value="">@L["SelectTemplate"]</option>
+                        @foreach (GroupBuyTemplateType type in TemplateTypes) 
+                        {
+                            if (EditGroupBuyDto.TemplateType == type) 
+                            {
+                                <option value="@type" selected>@L[type.ToString()]</option>
+                            }
+
+                            else 
+                            {
+                                <option value="@type">@L[type.ToString()]</option>
+                            }
+                        }
+                    </Select>
+                    <Dropdown Disabled=@(EditGroupBuyDto.TemplateType is null)>
                         <DropdownToggle Color="Color.Primary">
                             @L["SelectModule"]
                         </DropdownToggle>

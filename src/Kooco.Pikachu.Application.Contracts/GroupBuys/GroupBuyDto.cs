@@ -215,4 +215,6 @@ public class GroupBuyDto: EntityDto<Guid>,IHasConcurrencyStamp
     public string? FacebookLink { get; set; }
     public string? InstagramLink { get; set; }
     public string? LINELink { get; set; }
+    public GroupBuyTemplateType? TemplateType { get; set; }
+    public string? TemplateTypeName { get; set; }
 }

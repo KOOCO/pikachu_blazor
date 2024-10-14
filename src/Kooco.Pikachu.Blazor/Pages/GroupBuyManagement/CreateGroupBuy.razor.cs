@@ -146,9 +146,11 @@ public partial class CreateGroupBuy
         ItemsList.AddRange(SetItemList);
     }
 
-    private void SelectTemplate(GroupBuyTemplateType template)
+    private void SelectTemplate(ChangeEventArgs e)
     {
-        SelectedTemplate = template;
+        SelectedTemplate = Enum.Parse<GroupBuyTemplateType>(e.Value.ToString());
+
+        CreateGroupBuyDto.TemplateType = SelectedTemplate;
 
         IsSelectedModule = false;
 

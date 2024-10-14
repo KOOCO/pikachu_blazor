@@ -1,4 +1,5 @@
 ﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.GroupBuyOrderInstructions;
 using Kooco.Pikachu.GroupPurchaseOverviews;
 using System;
 using System.Collections.Generic;
@@ -19,5 +20,6 @@ public class GroupBuyItemGroupModuleDetailsDto
     public List<List<string>> CarouselModulesImages { get; set; }
     public List<List<string>> BannerModulesImages { get; set; }
     public List<GroupPurchaseOverviewDto> GroupPurchaseOverviewModules { get; set; }
+    public List<GroupBuyOrderInstructionDto> GetGroupBuyOrderInstructionModules { get; set; }
     public string? ConcurrencyStamp { get; set; }
 }

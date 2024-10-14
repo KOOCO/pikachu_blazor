@@ -6,6 +6,8 @@ using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Freebies.Dtos;
 using Kooco.Pikachu.GroupBuyItemGroups;
 using Kooco.Pikachu.GroupBuyItemGroupsDetails;
+using Kooco.Pikachu.GroupBuyOrderInstructions;
+using Kooco.Pikachu.GroupBuyOrderInstructions.Interface;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.Groupbuys.Interface;
 using Kooco.Pikachu.GroupPurchaseOverviews;
@@ -53,6 +55,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     private readonly IStringLocalizer<PikachuResource> _l;
     private readonly IGroupBuyItemGroupDetailsRepository _GroupBuyItemGroupDetailsRepository;
     private readonly IGroupPurchaseOverviewAppService _GroupPurchaseOverviewAppService;
+    private readonly IGroupBuyOrderInstructionAppService _GroupBuyOrderInstructionAppService;
     #endregion
 
     #region Constructor
@@ -68,7 +71,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         IStringLocalizer<PikachuResource> l,
         IGroupBuyItemGroupsRepository GroupBuyItemGroupsRepository,
         IGroupBuyItemGroupDetailsRepository GroupBuyItemGroupDetailsRepository,
-        IGroupPurchaseOverviewAppService GroupPurchaseOverviewAppService
+        IGroupPurchaseOverviewAppService GroupPurchaseOverviewAppService,
+        IGroupBuyOrderInstructionAppService GroupBuyOrderInstructionAppService
     )
     {
         _groupBuyManager = groupBuyManager;
@@ -83,6 +87,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         _GroupBuyItemGroupsRepository = GroupBuyItemGroupsRepository;
         _GroupBuyItemGroupDetailsRepository = GroupBuyItemGroupDetailsRepository;
         _GroupPurchaseOverviewAppService = GroupPurchaseOverviewAppService;
+        _GroupBuyOrderInstructionAppService = GroupBuyOrderInstructionAppService;
     }
     #endregion
 
@@ -103,6 +108,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         if (!input.InstagramLink.IsNullOrEmpty()) result.InstagramLink = input.InstagramLink;
         
         if (!input.LINELink.IsNullOrEmpty()) result.LINELink = input.LINELink;
+
+        result.TemplateType = input.TemplateType;
 
         if (input.ItemGroups is not null && input.ItemGroups.Any())
         {
@@ -464,9 +471,12 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var item = await _groupBuyRepository.GetAsync(id);
+            GroupBuy item = await _groupBuyRepository.GetAsync(id);
 
-            var result = ObjectMapper.Map<GroupBuy, GroupBuyDto>(item);
+            GroupBuyDto result = ObjectMapper.Map<GroupBuy, GroupBuyDto>(item);
+
+            if (result.TemplateType is not null) result.TemplateTypeName = result.TemplateType.ToString();
+
             if (result.IsGroupBuyAvaliable)
             {
                 if (result.StartTime != null && result.StartTime <= DateTime.Now && result.EndTime != null && result.StartTime >= DateTime.Now)
@@ -528,10 +538,18 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
                 if (module.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview)
                     module.GroupPurchaseOverviewModules = await GetGroupPurchaseOverviewsAsync(groupBuyId);
+
+                if (module.GroupBuyModuleType is GroupBuyModuleType.OrderInstruction)
+                    module.GetGroupBuyOrderInstructionModules = await GetGroupBuyOrderInstructionsAsync(groupBuyId);
             }
 
             return modules;
         }
+    }
+
+    public async Task<List<GroupBuyOrderInstructionDto>> GetGroupBuyOrderInstructionsAsync(Guid groupBuyId)
+    {
+        return await _GroupBuyOrderInstructionAppService.GetListByGroupBuyIdAsync(groupBuyId);
     }
 
     public async Task<List<GroupBuyItemGroupDto>> GetGroupBuyItemGroupsAsync(Guid groupBuyId)

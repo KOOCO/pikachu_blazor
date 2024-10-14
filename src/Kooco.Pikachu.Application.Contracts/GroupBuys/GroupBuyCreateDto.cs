@@ -208,6 +208,7 @@ namespace Kooco.Pikachu.GroupBuys
         public string? FacebookLink { get; set; }
         public string? InstagramLink { get; set; }
         public string? LINELink { get; set; }
+        public GroupBuyTemplateType? TemplateType { get; set; }
 
         public GroupBuyCreateDto()
         {

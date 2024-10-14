@@ -210,6 +210,7 @@ public class GroupBuyUpdateDto :  IHasConcurrencyStamp
     public string? FacebookLink { get; set; }
     public string? InstagramLink { get; set; }
     public string? LINELink { get; set; }
+    public GroupBuyTemplateType? TemplateType { get; set; }
 
     public GroupBuyUpdateDto()
     {

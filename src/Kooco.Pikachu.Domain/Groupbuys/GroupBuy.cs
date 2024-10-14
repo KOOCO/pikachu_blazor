@@ -215,6 +215,7 @@ public class GroupBuy : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public string? FacebookLink { get; set; }
     public string? InstagramLink { get; set; }
     public string? LINELink { get; set; }
+    public GroupBuyTemplateType? TemplateType { get; set; }
     public ICollection<GroupBuyItemGroup> ItemGroups { get; set; }
 
     public GroupBuy()
