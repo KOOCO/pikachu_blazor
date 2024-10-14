@@ -57,5 +57,10 @@ public class GroupBuyOrderInstructionAppService :
             await _GroupBuyOrderInstructionRepository.GetListByGroupBuyIdAsync(groupBuyId)
         );
     }
+
+    public async Task DeleteByGroupBuyIdAsync(Guid groupBuyId)
+    {
+        await _GroupBuyOrderInstructionRepository.DeleteDirectAsync(d => d.GroupBuyId == groupBuyId);
+    }
     #endregion
 }

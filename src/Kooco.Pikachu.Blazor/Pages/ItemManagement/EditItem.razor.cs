@@ -451,7 +451,8 @@ public partial class EditItem
         {
             ItemDetailsList.Add(new CreateItemDetailsDto
             {
-                ItemName = string.Join("/", permutation).TrimEnd('/')
+                ItemName = string.Join("/", permutation).TrimEnd('/'),
+                Status = true
             });
 
             ItemDetailsQuillHtml.Add(new());

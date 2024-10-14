@@ -13,11 +13,12 @@ public class TenantSettingsManager(IRepository<TenantSettings, Guid> tenantSetti
 {
     public async Task<TenantSettings> CreateAsync(string? webpageTitle, string? privacyPolicy, string? companyName,
         string? businessRegistrationNumber, string? contactPhone, string? customerServiceEmail, DateTime? serviceHoursFrom, DateTime? serviceHoursTo,
-        string? faviconUrl, string? logoUrl, string? bannerUrl)
+        string? faviconUrl, string? logoUrl, string? bannerUrl, string? tenantContactTitle, string? tenantContactPerson, string? tenantContactEmail,
+        string? domain, string? shortCode)
     {
         ValidateInputs(webpageTitle, privacyPolicy, companyName, businessRegistrationNumber,
-            contactPhone, customerServiceEmail, serviceHoursFrom, serviceHoursTo,
-            faviconUrl, logoUrl, bannerUrl);
+            contactPhone, customerServiceEmail, serviceHoursFrom, serviceHoursTo, faviconUrl, logoUrl, bannerUrl,
+            tenantContactTitle, tenantContactPerson, tenantContactEmail, domain, shortCode);
 
         if (await tenantSettingsRepository.AnyAsync())
         {
@@ -32,29 +33,20 @@ public class TenantSettingsManager(IRepository<TenantSettings, Guid> tenantSetti
         var tenant = await tenantRepository.FirstOrDefaultAsync(x => CurrentTenant != null && x.Id == CurrentTenant.Id)
             ?? throw new EntityNotFoundException(typeof(Tenant));
 
-        if (logoUrl != null)
-        {
-            tenant.RemoveProperty(Constant.Logo);
-            tenant.SetProperty(Constant.Logo, logoUrl);
-        }
-
-        if (bannerUrl != null)
-        {
-            tenant.RemoveProperty(Constant.BannerUrl);
-            tenant.SetProperty(Constant.BannerUrl, bannerUrl);
-        }
+        UpdateTenantProperties(tenant, logoUrl, bannerUrl, tenantContactTitle, tenantContactPerson, tenantContactEmail, domain, shortCode);
 
         return tenantSettings;
     }
 
     public async Task<TenantSettings> UpdateAsync(TenantSettings tenantSettings, string? webpageTitle, string? privacyPolicy, string? companyName,
         string? businessRegistrationNumber, string? contactPhone, string? customerServiceEmail, DateTime? serviceHoursFrom, DateTime? serviceHoursTo,
-        string? faviconUrl, string? logoUrl, string? bannerUrl)
+        string? faviconUrl, string? logoUrl, string? bannerUrl, string? tenantContactTitle, string? tenantContactPerson, string? tenantContactEmail,
+        string? domain, string? shortCode)
     {
         Check.NotNull(tenantSettings, nameof(tenantSettings));
         ValidateInputs(webpageTitle, privacyPolicy, companyName, businessRegistrationNumber,
-            contactPhone, customerServiceEmail, serviceHoursFrom, serviceHoursTo,
-            faviconUrl, logoUrl, bannerUrl);
+            contactPhone, customerServiceEmail, serviceHoursFrom, serviceHoursTo, faviconUrl, logoUrl, bannerUrl,
+            tenantContactTitle, tenantContactPerson, tenantContactEmail, domain, shortCode);
 
         tenantSettings.SetFaviconUrl(faviconUrl);
         tenantSettings.SetWebpageTitle(webpageTitle);
@@ -70,25 +62,52 @@ public class TenantSettingsManager(IRepository<TenantSettings, Guid> tenantSetti
         var tenant = await tenantRepository.FirstOrDefaultAsync(x => CurrentTenant != null && x.Id == CurrentTenant.Id)
             ?? throw new EntityNotFoundException(typeof(Tenant));
 
+        UpdateTenantProperties(tenant, logoUrl, bannerUrl, tenantContactTitle, tenantContactPerson, tenantContactEmail, domain, shortCode);
+
+        return tenantSettings;
+    }
+
+    private static void UpdateTenantProperties(Tenant tenant, string? logoUrl, string? bannerUrl, string? tenantContactTitle,
+        string? tenantContactPerson, string? tenantContactEmail, string? domain, string? shortCode)
+    {
         tenant.RemoveProperty(Constant.Logo);
         tenant.SetProperty(Constant.Logo, logoUrl);
 
         tenant.RemoveProperty(Constant.BannerUrl);
         tenant.SetProperty(Constant.BannerUrl, bannerUrl);
 
-        return tenantSettings;
+        tenant.RemoveProperty(Constant.TenantContactTitle);
+        tenant.SetProperty(Constant.TenantContactTitle, tenantContactTitle);
+
+        tenant.RemoveProperty(Constant.TenantContactPerson);
+        tenant.SetProperty(Constant.TenantContactPerson, tenantContactPerson);
+
+        tenant.RemoveProperty(Constant.TenantContactEmail);
+        tenant.SetProperty(Constant.TenantContactEmail, tenantContactEmail);
+
+        tenant.RemoveProperty(Constant.Domain);
+        tenant.SetProperty(Constant.Domain, domain);
+
+        tenant.RemoveProperty(Constant.ShortCode);
+        tenant.SetProperty(Constant.ShortCode, shortCode);
     }
 
     private static void ValidateInputs(string? webpageTitle, string? privacyPolicy, string? companyName, string? businessRegistrationNumber,
         string? contactPhone, string? customerServiceEmail, DateTime? serviceHoursFrom, DateTime? serviceHoursTo,
-        string? faviconUrl, string? logoUrl, string? bannerUrl)
+        string? faviconUrl, string? logoUrl, string? bannerUrl, string? tenantContactTitle, string? tenantContactPerson, string? tenantContactEmail,
+        string? domain, string? shortCode)
     {
-        Check.Length(webpageTitle, nameof(webpageTitle), maxLength: TenantSettingsConsts.MaxWebpageTitleLength);
-        Check.Length(privacyPolicy, nameof(privacyPolicy), maxLength: TenantSettingsConsts.MaxPrivacyPolicyLength);
-        Check.Length(companyName, nameof(companyName), maxLength: TenantSettingsConsts.MaxCompanyNameLength);
-        Check.Length(businessRegistrationNumber, nameof(businessRegistrationNumber), maxLength: TenantSettingsConsts.MaxBusinessRegistrationNumberLength);
-        Check.Length(contactPhone, nameof(contactPhone), maxLength: TenantSettingsConsts.MaxContactPhoneLength);
-        Check.Length(customerServiceEmail, nameof(customerServiceEmail), maxLength: TenantSettingsConsts.MaxCustomerServiceEmailLength);
+        Check.NotNullOrWhiteSpace(webpageTitle, nameof(webpageTitle), maxLength: TenantSettingsConsts.MaxWebpageTitleLength);
+        Check.NotNullOrWhiteSpace(privacyPolicy, nameof(privacyPolicy), maxLength: TenantSettingsConsts.MaxPrivacyPolicyLength);
+        Check.NotNullOrWhiteSpace(companyName, nameof(companyName), maxLength: TenantSettingsConsts.MaxCompanyNameLength);
+        Check.NotNullOrWhiteSpace(businessRegistrationNumber, nameof(businessRegistrationNumber), maxLength: TenantSettingsConsts.MaxBusinessRegistrationNumberLength);
+        Check.NotNullOrWhiteSpace(contactPhone, nameof(contactPhone), maxLength: TenantSettingsConsts.MaxContactPhoneLength);
+        Check.NotNullOrWhiteSpace(customerServiceEmail, nameof(customerServiceEmail), maxLength: TenantSettingsConsts.MaxCustomerServiceEmailLength);
+        Check.NotNullOrWhiteSpace(tenantContactTitle, nameof(tenantContactTitle), maxLength: TenantSettingsConsts.MaxTenantContactTitleLength);
+        Check.NotNullOrWhiteSpace(tenantContactPerson, nameof(tenantContactPerson), maxLength: TenantSettingsConsts.MaxTenantContactPersonLength);
+        Check.NotNullOrWhiteSpace(tenantContactEmail, nameof(tenantContactEmail), maxLength: TenantSettingsConsts.MaxTenantContactEmailLength);
+        Check.NotNullOrWhiteSpace(domain, nameof(domain), maxLength: TenantSettingsConsts.MaxDomainLength);
+        Check.NotNullOrWhiteSpace(shortCode, nameof(shortCode), maxLength: TenantSettingsConsts.MaxShortCodeLength, minLength: TenantSettingsConsts.MinShortCodeLength);
 
         //Check.NotNullOrWhiteSpace(faviconUrl, nameof(faviconUrl));
         //Check.NotNullOrWhiteSpace(logoUrl, nameof(logoUrl));

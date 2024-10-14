@@ -73,5 +73,10 @@ namespace Kooco.Pikachu.Images
             var isDeleted = await _imageContainerManager.DeleteAsync(blobName).ConfigureAwait(configureAwait);
             return isDeleted;
         }
+
+        public async Task DeleteByGroupBuyIdAndImageTypeAsync(Guid groupBuyId, ImageType imageType)
+        {
+            await _repository.DeleteDirectAsync(d => d.TargetId == groupBuyId && d.ImageType == imageType);
+        }
     }
 }

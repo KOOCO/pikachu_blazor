@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Kooco.Pikachu.EnumValues;
+using System;
+using System.ComponentModel.DataAnnotations;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.TenantManagement;
 
@@ -15,6 +17,14 @@ public class TenantSettingsDto : FullAuditedEntityDto<Guid>
     public DateTime? ServiceHoursFrom { get; set; }
     public DateTime? ServiceHoursTo { get; set; }
     public Guid? TenantId { get; set; }
+    public Guid? TenantOwner { get; set; }
+    public string? TenantContactTitle { get; set; }
+    public string? TenantContactPerson { get; set; }
+    public string? TenantContactEmail { get; set; }
+    public string? Domain { get; set; }
+    public string? ShortCode { get; set; }
+    public int? ShareProfitPercent { get; set; }
+    public TenantStatus? Status { get; set; }
     public string? FaviconUrl { get; set; }
     public string? LogoUrl { get; set; }
     public string? BannerUrl { get; set; }

@@ -163,6 +163,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                             itemGroup.GroupBuyModuleType = group.GroupBuyModuleType;
                             itemGroup.AdditionalInfo = group.AdditionalInfo;
 
+                            itemGroup.TenantId = CurrentTenant.Id;
+
                             if (group.ItemDetails.Count is 0) groupBuy.ItemGroups.Remove(itemGroup);
 
                             await _GroupBuyItemGroupsRepository.UpdateAsync(itemGroup);
@@ -530,6 +532,13 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
             return modules;
         }
+    }
+
+    public async Task<List<GroupBuyItemGroupDto>> GetGroupBuyItemGroupsAsync(Guid groupBuyId)
+    {
+        return ObjectMapper.Map<List<GroupBuyItemGroup>, List<GroupBuyItemGroupDto>>(
+            await _groupBuyRepository.GetGroupBuyItemGroupBuyGroupBuyIdAsync(groupBuyId)
+        );
     }
 
     /// <summary>
