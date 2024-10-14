@@ -21,15 +21,15 @@ namespace Kooco.Pikachu.Controllers.GroupBuys;
 [ControllerName("GroupBuy")]
 [Area("app")]
 [Route("api/app/group-buy")]
-public class GroupBuyController: AbpController, IGroupBuyAppService
+public class GroupBuyController : AbpController, IGroupBuyAppService
 {
     private readonly IGroupBuyAppService _groupBuyAppService;
     public GroupBuyController(
    IGroupBuyAppService groupBuyAppService
        )
     {
-    _groupBuyAppService = groupBuyAppService;
-    
+        _groupBuyAppService = groupBuyAppService;
+
     }
     [HttpPost]
     public Task<GroupBuyDto> CreateAsync(GroupBuyCreateDto input)
@@ -104,7 +104,7 @@ public class GroupBuyController: AbpController, IGroupBuyAppService
     }
 
     [HttpGet("get-group-purchase-overviews/{groupBuyId}")]
-    public Task<List<GroupPurchaseOverviewDto>> GetGroupPurchaseOverviewsAsync(Guid groupBuyId) 
+    public Task<List<GroupPurchaseOverviewDto>> GetGroupPurchaseOverviewsAsync(Guid groupBuyId)
     {
         return _groupBuyAppService.GetGroupPurchaseOverviewsAsync(groupBuyId);
     }
@@ -256,5 +256,11 @@ public class GroupBuyController: AbpController, IGroupBuyAppService
     public Task<List<GroupBuyItemGroupDto>> GetGroupBuyItemGroupsAsync(Guid groupBuyId)
     {
         return _groupBuyAppService.GetGroupBuyItemGroupsAsync(groupBuyId);
+    }
+
+    [HttpGet("groupbuy-id-by-shortcode/{shortCode}")]
+    public Task<Guid?> GetGroupBuyIdAsync(string shortCode)
+    {
+        return _groupBuyAppService.GetGroupBuyIdAsync(shortCode);
     }
 }

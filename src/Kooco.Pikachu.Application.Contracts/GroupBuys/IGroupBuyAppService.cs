@@ -53,5 +53,6 @@ namespace Kooco.Pikachu.GroupBuys
         Task<List<KeyValueDto>> GetAllGroupBuyLookupAsync();
         Task UpdateSortOrderAsync(Guid id, List<GroupBuyItemGroupCreateUpdateDto> itemGroups);
         Task<DeliveryTemperatureCostDto> GetTemperatureCostAsync(ItemStorageTemperature itemStorageTemperature);
+        Task<Guid?> GetGroupBuyIdAsync(string shortCode);
     }
 }
