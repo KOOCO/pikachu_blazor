@@ -147,7 +147,13 @@ public class PikachuMenuContributor : IMenuContributor
         url: "/Refund",
         requiredPermissionName: PikachuPermissions.Orders.Default)
         );
-
+        orderMangment.AddItem(new ApplicationMenuItem(
+        name: "EnterpricePurchase",
+        icon: "fas fa-stamp",
+        displayName: l["EnterpricePurchase"],
+        url: "/enterprice-purchase",
+        requiredPermissionName: PikachuPermissions.Orders.Default)
+        );
         var membersMenu = new ApplicationMenuItem(
             PikachuMenus.Members,
             displayName: l["Menu:Members"],
