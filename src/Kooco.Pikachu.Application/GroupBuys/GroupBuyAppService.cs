@@ -411,19 +411,16 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
             // Create response object
             var response = new ShippingMethodResponse();
 
+            // Map Home Delivery Methods
             foreach (var method in shippingMethods ?? new List<string>())
             {
                 if (method.Contains("PostOffice") || method.Contains("HomeDelivery") || method.Contains("TCatDeliveryNormal")
                     || method.Contains("TCatDeliveryFreeze") || method.Contains("TCatDeliveryFrozen")
                     || method.Contains("BlackCat") || method.Contains("BlackCatFreeze") || method.Contains("BlackCatFrozen"))
                 {
-                    // Assign all matching times from homeDeliveryTimes
-                    if (homeDeliveryTimes.Count > 0)
-                    {
-                        var matchingTimes = homeDeliveryTimes.Where(time => !string.IsNullOrEmpty(time)).ToList();
-                        response.HomeDeliveryType[method] = matchingTimes;
-
-                    }
+                    // Always add the method to the response, even if there are no times
+                    var matchingTimes = homeDeliveryTimes.Where(time => !string.IsNullOrEmpty(time)).ToList();
+                    response.HomeDeliveryType[method] = matchingTimes.Count > 0 ? matchingTimes : new List<string> { "No time preference" };
                 }
             }
 
@@ -431,16 +428,14 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
             foreach (var method in shippingMethods ?? new List<string>())
             {
                 if (method.Contains("SevenToEleven1") || method.Contains("SevenToEleven1Freeze") || method.Contains("SevenToEleven1Frozen")
+                    || method.Contains("SevenToElevenC2C")
                     || method.Contains("FamilyMart1") || method.Contains("FamilyMartC2C")
                     || method.Contains("TCatDeliverySevenElevenNormal") || method.Contains("TCatDeliverySevenElevenFreeze")
                     || method.Contains("TCatDeliverySevenElevenFrozen"))
                 {
-                    // Assign all matching times from convenienceStoreTimes
-                    if (convenienceStoreTimes.Count > 0)
-                    {
-                        var matchingTimes = convenienceStoreTimes.Where(time => !string.IsNullOrEmpty(time)).ToList();
-                        response.ConvenienceStoreType[method] = matchingTimes;
-                    }
+                    // Always add the method to the response, even if there are no times
+                    var matchingTimes = convenienceStoreTimes.Where(time => !string.IsNullOrEmpty(time)).ToList();
+                    response.ConvenienceStoreType[method] = matchingTimes.Count > 0 ? matchingTimes : new List<string> { "No time preference" };
                 }
             }
 
@@ -449,16 +444,13 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
             {
                 if (method.Contains("SelfPickup"))
                 {
-                    // Assign all matching times from selfPickupTimes
-                    if (selfPickupTimes.Count > 0)
-                    {
-                        var matchingTimes = selfPickupTimes.Where(time => !string.IsNullOrEmpty(time)).ToList();
-                        response.SelfPickupType[method] = matchingTimes;
-                    }
+                    // Always add the method to the response, even if there are no times
+                    var matchingTimes = selfPickupTimes.Where(time => !string.IsNullOrEmpty(time)).ToList();
+                    response.SelfPickupType[method] = matchingTimes.Count > 0 ? matchingTimes : new List<string> { "No time preference" };
                 }
             }
-            return response;
 
+            return response;
         }
     }
     /// <summary>
