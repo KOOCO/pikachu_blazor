@@ -324,24 +324,24 @@
                 @L["ShippingMethod"] <span class="text-danger"> *</span>
             </div>
             <div class="col-8">
-                @if(EditGroupBuyDto.AllowShipToOuterTaiwan && !EditGroupBuyDto.AllowShipOversea)
+                <label class="form-label">Home Delivery Type</label><br />
+                @if (EditGroupBuyDto.AllowShipToOuterTaiwan && !EditGroupBuyDto.AllowShipOversea)
                 {
-                    @foreach(string item in Enum.GetNames(typeof(DeliveryMethod)))
+                    @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
                     {
-                        if (
-                            item == Enum.GetName(DeliveryMethod.SevenToElevenC2C) || 
-                            item == Enum.GetName(DeliveryMethod.SevenToEleven1) || 
-                            item == Enum.GetName(DeliveryMethod.SevenToElevenFrozen) ||
-                            item == Enum.GetName(DeliveryMethod.BlackCat1) || 
-                            item == Enum.GetName(DeliveryMethod.BlackCatFreeze) || 
-                            item == Enum.GetName(DeliveryMethod.BlackCatFrozen))
+                        if (item == Enum.GetName(DeliveryMethod.BlackCat1) ||
+                            item == Enum.GetName(DeliveryMethod.BlackCatFreeze) ||
+                            item == Enum.GetName(DeliveryMethod.BlackCatFrozen) ||
+                            item == Enum.GetName(DeliveryMethod.TCatDeliveryNormal) ||
+                            item == Enum.GetName(DeliveryMethod.TCatDeliveryFreeze) ||
+                            item == Enum.GetName(DeliveryMethod.TCatDeliveryFrozen))
                         {
                             <label for="@item" class="form-label ">
-                                <input type="checkbox" 
-                                       class="form-check-input me-1" 
-                                       id="@item" 
-                                       checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) && 
-                                                  (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))" 
+                                <input type="checkbox"
+                                       class="form-check-input me-1"
+                                       id="@item"
+                                       checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                                  (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                        @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                 @L[item]
                             </label>
@@ -350,21 +350,93 @@
                 }
                 else
                 {
-                   @foreach(string item in Enum.GetNames(typeof(DeliveryMethod)))
-                   {
-                       <label for="@item" class="form-label">
-                           <input type="checkbox" 
-                                  class="form-check-input me-1" 
-                                  id="@item" 
-                                  disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) && 
-                                              (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && 
-                                              item is not "DeliveredByStore")" 
-                                  checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) && 
-                                             (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))" 
-                                  @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
-                           @L[item]
-                       </label>
-                   }
+                    @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
+                    {
+                        if (item == Enum.GetName(DeliveryMethod.PostOffice) ||
+                            item == Enum.GetName(DeliveryMethod.HomeDelivery) ||
+                            item == Enum.GetName(DeliveryMethod.DeliveredByStore))
+                        {
+                            <label for="@item" class="form-label">
+                                <input type="checkbox"
+                                       class="form-check-input me-1"
+                                       id="@item"
+                                       disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                                   (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) &&
+                                                   item is not "DeliveredByStore")"
+                                       checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                                  (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
+                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                @L[item]
+                            </label>
+                        }
+                    }
+                }
+                <br />
+                <label class="form-label">Convenience Store Type</label><br />
+                @if (EditGroupBuyDto.AllowShipToOuterTaiwan && !EditGroupBuyDto.AllowShipOversea)
+                {
+                    @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
+                    {
+                        if (item == Enum.GetName(DeliveryMethod.SevenToElevenC2C) ||
+                            item == Enum.GetName(DeliveryMethod.SevenToEleven1) ||
+                            item == Enum.GetName(DeliveryMethod.SevenToElevenFrozen))
+                        {
+                            <label for="@item" class="form-label ">
+                                <input type="checkbox"
+                                       class="form-check-input me-1"
+                                       id="@item"
+                                       checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                                  (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
+                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                @L[item]
+                            </label>
+                        }
+                    }
+                }
+                else
+                {
+                    @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
+                    {
+                        if (item == Enum.GetName(DeliveryMethod.FamilyMart1) ||
+                            item == Enum.GetName(DeliveryMethod.FamilyMartC2C) ||
+                            item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenNormal) ||
+                            item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenFreeze) ||
+                            item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenFrozen))
+                        {
+                            <label for="@item" class="form-label">
+                                <input type="checkbox"
+                                       class="form-check-input me-1"
+                                       id="@item"
+                                       disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                                   (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) &&
+                                                   item is not "DeliveredByStore")"
+                                       checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                                  (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
+                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                @L[item]
+                            </label>
+                        }
+                    }
+                }
+                <br />
+                <label class="form-label">Self-Pickup Type</label><br />
+                @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
+                {
+                    if (item == Enum.GetName(DeliveryMethod.SelfPickup))
+                    {
+                        <label for="@item" class="form-label">
+                            <input type="checkbox"
+                                   class="form-check-input me-1"
+                                   id="@item"
+                                   disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                               (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) &&
+                                               item is not "DeliveredByStore")"
+                                   checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                              (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
+                                   @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                            @L[item]
+                        </label>
+                    }
                 }
             </div>
         </div>
