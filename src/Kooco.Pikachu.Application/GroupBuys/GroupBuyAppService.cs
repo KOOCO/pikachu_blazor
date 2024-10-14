@@ -119,7 +119,9 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                     result,
                     group.SortOrder,
                     group.GroupBuyModuleType,
-                    group.AdditionalInfo
+                    group.AdditionalInfo,
+                    group.ProductGroupModuleTitle,
+                    group.ProductGroupModuleImageSize
                 );
 
                 if (group.ItemDetails != null && group.ItemDetails.Any())
@@ -169,7 +171,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                             itemGroup.SortOrder = group.SortOrder;
                             itemGroup.GroupBuyModuleType = group.GroupBuyModuleType;
                             itemGroup.AdditionalInfo = group.AdditionalInfo;
-
+                            itemGroup.ProductGroupModuleTitle = group.ProductGroupModuleTitle;
+                            itemGroup.ProductGroupModuleImageSize = group.ProductGroupModuleImageSize;
                             itemGroup.TenantId = CurrentTenant.Id;
 
                             if (group.ItemDetails.Count is 0) groupBuy.ItemGroups.Remove(itemGroup);
@@ -193,7 +196,9 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                                 groupBuy,
                                 group.SortOrder,
                                 group.GroupBuyModuleType,
-                                group.AdditionalInfo
+                                group.AdditionalInfo,
+                                group.ProductGroupModuleTitle,
+                                group.ProductGroupModuleImageSize
                         );
 
                         await _GroupBuyItemGroupsRepository.InsertAsync(itemGroup);
@@ -244,7 +249,9 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                     result,
                     group.SortOrder,
                     group.GroupBuyModuleType,
-                    group.AdditionalInfo
+                    group.AdditionalInfo,
+                    group.ProductGroupModuleTitle,
+                    group.ProductGroupModuleImageSize
                 );
 
                 if (group.ItemGroupDetails != null && group.ItemGroupDetails.Any())

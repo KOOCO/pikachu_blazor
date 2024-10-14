@@ -1295,6 +1295,19 @@
                                     }
 
                                     <div class="row mt-2">
+                                        @if (module.GroupBuyModuleType is GroupBuyModuleType.ProductGroupModule)
+                                        {
+                                            <Div Class="col-md-6 text-left mb-3">
+                                                <InputText class="form-control" @bind-Value="module.ProductGroupModuleTitle" />
+                                            </Div>
+                                            <Div Class="col-md-6 text-right mb-3">
+                                                <Select TValue="string" @onchange=@((e) => module.ProductGroupModuleImageSize = e.Value.ToString())>
+                                                    <option value="">-- Select Style --</option>
+                                                    <option value="SmallImage">Small Image</option>
+                                                    <option value="LargeImage">Large Image</option>
+                                                </Select>
+                                            </Div>
+                                        }
                                         @foreach (var selectedItem in module.Selected)
                                         {
                                             <div class="col-@(12 / module.Selected.Count)">

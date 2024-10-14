@@ -130,7 +130,9 @@ namespace Kooco.Pikachu.Groupbuys
             GroupBuy groupBuy,
             int sortOrder,
             GroupBuyModuleType groupBuyModuleType,
-            string? additionalInfo
+            string? additionalInfo,
+            string? productGroupModuleTitle,
+            string? productGroupModuleImageSize
         )
         {
             return groupBuy.AddItemGroup(
@@ -138,7 +140,9 @@ namespace Kooco.Pikachu.Groupbuys
                 groupBuy.Id,
                 sortOrder,
                 groupBuyModuleType,
-                additionalInfo
+                additionalInfo,
+                productGroupModuleTitle,
+                productGroupModuleImageSize
             );
         }
     }

@@ -334,7 +334,9 @@ public class GroupBuy : FullAuditedAggregateRoot<Guid>, IMultiTenant
         Guid groupBuyId,
         int sortOrder,
         GroupBuyModuleType groupBuyModuleType,
-        string? additionalInfo
+        string? additionalInfo,
+        string? productGroupModuleTitle,
+        string? productGroupModuleImageSize
     )
     {
         var groupBuyItemGroup = new GroupBuyItemGroup(
@@ -342,7 +344,9 @@ public class GroupBuy : FullAuditedAggregateRoot<Guid>, IMultiTenant
             groupBuyId,
             sortOrder,
             groupBuyModuleType,
-            additionalInfo
+            additionalInfo,
+            productGroupModuleTitle,
+            productGroupModuleImageSize
         );
         ItemGroups.Add(groupBuyItemGroup);
         return groupBuyItemGroup;

@@ -876,21 +876,21 @@
                                     </AccordionToggle>
                                 </CollapseHeader>
                                 <CollapseBody>
-                                    @if(module.GroupBuyModuleType is GroupBuyModuleType.ProductGroupModule)
+                                    @if (module.GroupBuyModuleType is GroupBuyModuleType.ProductGroupModule)
                                     {
                                         <div class="d-flex justify-content-end">
                                             <div style="width: 60px;">
                                                 <select class="form-control form-control-sm" @onchange="(e) => OnProductGroupValueChange(e, module)">
                                                     @if (module.Selected.Count == 3)
-                                                        {
-                                                            <option selected="selected" value="3">3</option>
-                                                            <option value="4">4</option>
-                                                        } 
+                                                    {
+                                                        <option selected="selected" value="3">3</option>
+                                                        <option value="4">4</option>
+                                                    } 
                                                     else if (module.Selected.Count == 4)
-                                                        {
-                                                            <option value="3">3</option>
-                                                            <option selected="selected" value="4">4</option>
-                                                        }
+                                                    {
+                                                        <option value="3">3</option>
+                                                        <option selected="selected" value="4">4</option>
+                                                    }
                                                 </select>
                                             </div>
                                         </div>
@@ -1311,6 +1311,29 @@
                                     }
 
                                     <div class="row mt-2">
+                                        @if (module.GroupBuyModuleType is GroupBuyModuleType.ProductGroupModule)
+                                        {
+                                            <Div Class="col-md-6 text-left mb-3">
+                                                <InputText class="form-control" @bind-Value="module.ProductGroupModuleTitle" />
+                                            </Div>
+                                            <Div Class="col-md-6 text-right mb-3">
+                                                <select class="form-select form-select" @onchange=@((e) => module.ProductGroupModuleImageSize = e.Value.ToString())>
+                                                    <option value="">-- Select Style --</option>
+                                                    @foreach (string size in ImageSizes)
+                                                    {
+                                                        @if (module.ProductGroupModuleImageSize == size)
+                                                        {
+                                                            <option value="@size" selected>@L[size]</option>
+                                                        }
+
+                                                        else 
+                                                        {
+                                                            <option value="@size">@L[size]</option>
+                                                        }
+                                                    }
+                                                </select>
+                                            </Div>
+                                        }
                                         @foreach(var selectedItem in module.Selected)
                                         {
                                             <div class="col-@(12 / module.Selected.Count)">
