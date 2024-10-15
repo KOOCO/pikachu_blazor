@@ -246,7 +246,7 @@
           Justified="true">
         <Items>
             <Tab Name="All" TextSize="TextSize.Small">All</Tab>
-            @foreach (string value in Enum.GetNames(typeof(ShippingStatus)).Where(w => w is not PikachuResource.Exchange))
+            @foreach (string value in Enum.GetNames(typeof(ShippingStatus)).Where(w => w is not PikachuResource.Exchange && w is not PikachuResource.EnterpricePurchase))
             {
                 <Tab Name="@value" TextSize="TextSize.Small">@L[value]</Tab>
             }
@@ -1667,7 +1667,7 @@
                     </CardBody>
                 </Card>
             </TabPanel>
-            <TabPanel Name="EnterpricePurchase">
+          @*   <TabPanel Name="EnterpricePurchase">
                 <Card>
                     <CardBody>
                         <DataGrid TItem="OrderDto"
@@ -1832,7 +1832,7 @@
                         </DataGrid>
                     </CardBody>
                 </Card>
-            </TabPanel>
+            </TabPanel> *@
             <TabPanel Name="Return">
                 <Card>
                     <CardBody>
