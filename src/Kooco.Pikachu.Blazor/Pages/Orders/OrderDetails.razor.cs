@@ -933,6 +933,11 @@ public partial class OrderDetails
             refunds.IsRefundAmount = false;
 
             refunds.IsRefundOrder = true;
+
+            foreach (OrderItemDto orderItem in Order.OrderItems) 
+            {
+                orderItem.IsSelected = false;
+            }
         }
 
         StateHasChanged();

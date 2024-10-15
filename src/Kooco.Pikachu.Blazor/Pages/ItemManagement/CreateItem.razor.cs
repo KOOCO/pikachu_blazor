@@ -431,26 +431,7 @@ public partial class CreateItem
             
             CreateItemDto.ItemDescription = await QuillHtml.GetHTML();
 
-            foreach (CreateItemDetailsDto item in CreateItemDto.ItemDetails)
-            {
-                try
-                {
-                    item.ItemDescription = await ItemDetailsQuillHtml[CreateItemDto.ItemDetails.IndexOf(item)].GetHTML();
-                }
-                catch (Exception ex)
-                {
-                    if (ex.Message.Contains("Cannot read properties of null") ||
-                        ex.Message.Contains("Value cannot be null"))
-                        await _uiMessageService.Warn("Please Keep Item detail expanded in order to store item description and ensure its value is not empty");
-
-                    return;
-                }
-            }
-
-            if (ItemTags.Any())
-            {
-                CreateItemDto.ItemTags = string.Join(",", ItemTags);
-            }
+            if (ItemTags.Any()) CreateItemDto.ItemTags = string.Join(",", ItemTags);
 
             await _itemAppService.CreateAsync(CreateItemDto);
             
