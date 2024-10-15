@@ -1,5 +1,8 @@
 ﻿using Kooco.Pikachu.EntityFrameworkCore;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Freebies;
+using Kooco.Pikachu.Items;
+using Kooco.Pikachu.OrderItems;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -111,17 +114,39 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
     }
     public async Task<List<Order>> GetReconciliationListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId, List<Guid> orderId, DateTime? startDate = null, DateTime? endDate = null)
     {
-        return await ApplyReconciliationFilters(await GetQueryableAsync(), filter, groupBuyId, orderId, startDate, endDate)
-            .OrderBy(sorting)
+        var query =  ApplyReconciliationFilters(await GetQueryableAsync(), filter, groupBuyId, orderId, startDate, endDate);
+         query= query.OrderBy(sorting)
             .PageBy(skipCount, maxResultCount)
-            //.Include(o => o.GroupBuy)
+
             .Include(o => o.OrderItems)
-            //.ThenInclude(oi => oi.Item)
-            //.Include(o => o.OrderItems)
-            //.ThenInclude(oi => oi.SetItem)
-            //.Include(o => o.OrderItems)
-            .ThenInclude(oi => oi.Freebie)
-            .ToListAsync();
+
+            .ThenInclude(oi => oi.Freebie);
+        return await query.Select(o => new Order
+        {
+            OrderId=o.Id,
+            OrderNo = o.OrderNo,                      // Order No
+            LastModificationTime = o.LastModificationTime, // Last Updated Date
+            IssueStatus = o.IssueStatus,       // Invoice Issue Status
+            InvoiceNumber = o.InvoiceNumber,                // Invoice Number
+            TotalAmount = o.TotalAmount, // Checkout Amount
+                                         // Editor (depends on your model)
+            CustomerName = o.CustomerName + "/" + o.CustomerPhone,
+            DeliveryMethod = o.DeliveryMethod,               // Shipping Method
+            AddressDetails = o.AddressDetails, // Address
+            Remarks = o.Remarks,                      // Remarks
+               VoidUser=o.VoidUser,                                       // Merchant Remarks
+            OrderItems = o.OrderItems.Select(oi => new OrderItem
+            {
+                OrderId= oi.OrderId,
+                Spec = oi.Spec,
+                Quantity = oi.Quantity,
+                ItemType = oi.ItemType,
+                Item = oi.Item != null ? new Item { ItemName = oi.Item.ItemName } : new Item(),
+                SetItem = oi.SetItem != null ? new SetItem { SetItemName = oi.SetItem.SetItemName } : new SetItem(),
+                Freebie = oi.Freebie != null ? new Freebie { ItemName = oi.Freebie.ItemName } : new Freebie(),
+            }).ToList()
+        })
+    .ToListAsync();
     }
     public async Task<long> CountVoidAsync(string? filter, Guid? groupBuyId, DateTime? startDate, DateTime? endDate)
     {

@@ -10,6 +10,7 @@ namespace Kooco.Pikachu.Orders;
 
 public class OrderDto : FullAuditedEntityDto<Guid>
 {
+    public Guid OrderId { get; set; }
     public string OrderNo { get; set; }
     public bool IsIndividual { get; set; }
     public string? CustomerName { get; set; }

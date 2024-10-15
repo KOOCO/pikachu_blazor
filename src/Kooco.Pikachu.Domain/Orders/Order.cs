@@ -17,6 +17,8 @@ namespace Kooco.Pikachu.Orders;
 
 public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
 {
+    [NotMapped]
+    public Guid OrderId { get; set; }
     public Guid? TenantId { get; set; }
     public string OrderNo { get; set; }
     public bool IsIndividual { get; set; }
@@ -44,7 +46,8 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public ReceivingTime? ReceivingTime { get; set; }
     public Guid GroupBuyId { get; set; }
     public Guid? SplitFromId { get; set; }
-
+    [NotMapped]
+    public string ItemDetail { get; set; }
     [ForeignKey(nameof(GroupBuyId))]
     public GroupBuy GroupBuy { get; set; }
     public int TotalQuantity { get; set; }

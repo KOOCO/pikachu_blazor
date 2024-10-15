@@ -108,7 +108,7 @@ public partial class CashFlowReconciliationStatement
     {
         await loading.Show();
 
-        var id = e.Item.Id;
+        var id = e.Item.OrderId;
         NavigationManager.NavigateTo($"Orders/OrderDetails/{id}");
 
         await loading.Hide();
@@ -134,7 +134,7 @@ public partial class CashFlowReconciliationStatement
     public void NavigateToOrderPrint()
     {
         var selectedOrder = Orders.SingleOrDefault(x => x.IsSelected);
-        NavigationManager.NavigateTo($"Orders/OrderShippingDetails/{selectedOrder.Id}");
+        NavigationManager.NavigateTo($"Orders/OrderShippingDetails/{selectedOrder.OrderId}");
     }
     async Task DownloadExcel()
     {

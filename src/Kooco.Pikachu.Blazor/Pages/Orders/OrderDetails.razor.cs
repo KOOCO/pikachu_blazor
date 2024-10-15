@@ -1118,7 +1118,8 @@ public partial class OrderDetails
                 paymentResult.OrderId = Order.Id;
                 await _orderAppService.HandlePaymentAsync(paymentResult);
                 await GetOrderDetailsAsync();
-                await base.OnInitializedAsync();
+                await OnInitializedAsync();
+                StateHasChanged();
                 await loading.Hide();
 
             }
