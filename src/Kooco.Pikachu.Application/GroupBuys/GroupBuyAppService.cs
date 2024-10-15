@@ -100,13 +100,13 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                                                     input.IssueInvoice, input.AutoIssueTriplicateInvoice, input.InvoiceNote, input.ProtectPrivacyData, input.InviteCode, input.ProfitShare,
                                                     input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy,
                                                     input.NotifyMessage, input.ExcludeShippingMethod, input.IsDefaultPaymentGateWay, input.PaymentMethod, input.GroupBuyCondition, input.CustomerInformation,
-                                                    input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription, input.ShortCode, input.IsEnterprise,input.FreeShippingThreshold,input.SelfPickupDeliveryTime,
-                                                    input.BlackCatDeliveryTime,input.HomeDeliveryDeliveryTime,input.DeliveredByStoreDeliveryTime,input.TaxType, input.ProductType);
+                                                    input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription, input.ShortCode, input.IsEnterprise, input.FreeShippingThreshold, input.SelfPickupDeliveryTime,
+                                                    input.BlackCatDeliveryTime, input.HomeDeliveryDeliveryTime, input.DeliveredByStoreDeliveryTime, input.TaxType, input.ProductType);
 
         if (!input.FacebookLink.IsNullOrEmpty()) result.FacebookLink = input.FacebookLink;
 
         if (!input.InstagramLink.IsNullOrEmpty()) result.InstagramLink = input.InstagramLink;
-        
+
         if (!input.LINELink.IsNullOrEmpty()) result.LINELink = input.LINELink;
 
         result.TemplateType = input.TemplateType;
@@ -238,8 +238,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                                                     input.IssueInvoice, input.AutoIssueTriplicateInvoice, input.InvoiceNote, input.ProtectPrivacyData, input.InviteCode, input.ProfitShare,
                                                     input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy,
                                                     input.NotifyMessage, input.ExcludeShippingMethod, input.IsDefaultPaymentGateWay, input.PaymentMethod, input.GroupBuyCondition, input.CustomerInformation,
-                                                    input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription, ShortCode, input.IsEnterprise,input.FreeShippingThreshold,
-                                                    input.SelfPickupDeliveryTime,input.BlackCatDeliveryTime,input.HomeDeliveryDeliveryTime,input.DeliveredByStoreDeliveryTime,input.TaxType, input.ProductType);
+                                                    input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription, ShortCode, input.IsEnterprise, input.FreeShippingThreshold,
+                                                    input.SelfPickupDeliveryTime, input.BlackCatDeliveryTime, input.HomeDeliveryDeliveryTime, input.DeliveredByStoreDeliveryTime, input.TaxType, input.ProductType);
 
         if (input.ItemGroups != null && input.ItemGroups.Any())
         {
@@ -278,10 +278,10 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     public async Task DeleteAsync(Guid id)
     {
         var check = (await _orderRepository.GetQueryableAsync()).Any(x => x.GroupBuyId == id);
-            if(check)
-            {
+        if (check)
+        {
             throw new UserFriendlyException(_l["Groupbuyhaveorderitsnotdeleteable"]);
-        
+
         }
         await _groupBuyRepository.DeleteAsync(id);
     }
@@ -394,10 +394,10 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     }
     public async Task<List<KeyValueDto>> GetAllGroupBuyLookupAsync()
     {
-        var groupbuys = (await _groupBuyRepository.GetListAsync()).Select(x=>new GroupBuyList {Id=x.Id,GroupBuyName=x.GroupBuyName }).ToList();
+        var groupbuys = (await _groupBuyRepository.GetListAsync()).Select(x => new GroupBuyList { Id = x.Id, GroupBuyName = x.GroupBuyName }).ToList();
         return ObjectMapper.Map<List<GroupBuyList>, List<KeyValueDto>>(groupbuys);
     }
-   
+
     public async Task<ShippingMethodResponse> GetGroupBuyShippingMethodAsync(Guid id)
     {
         using (_dataFilter.Disable<IMultiTenant>())
@@ -474,7 +474,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     /// Do not change unless you want to make changes in the Store Front End Code
     /// </summary>
     /// <returns></returns>
-    public async Task<GroupBuyDto> GetForStoreAsync (Guid id)
+    public async Task<GroupBuyDto> GetForStoreAsync(Guid id)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -863,6 +863,15 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         var query = await _temperatureRepository.GetQueryableAsync();
         var cost = query.Where(x => x.Temperature == itemStorageTemperature).FirstOrDefault();
         return ObjectMapper.Map<DeliveryTemperatureCost, DeliveryTemperatureCostDto>(cost);
+    }
+
+    public async Task<Guid?> GetGroupBuyIdAsync(string shortCode)
+    {
+        var queryable = await _groupBuyRepository.GetQueryableAsync();
+        return queryable
+            .Where(x => x.ShortCode == shortCode)
+            .Select(x => x.Id)
+            .FirstOrDefault();
     }
     #endregion
 }

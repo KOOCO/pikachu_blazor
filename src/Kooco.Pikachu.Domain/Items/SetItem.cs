@@ -98,7 +98,7 @@ namespace Kooco.Pikachu.Items
         public string? ItemCategory { get; set; }
 
 
-        protected SetItem()
+        public SetItem()
         {
         }
 

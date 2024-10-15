@@ -1,0 +1,96 @@
+﻿@page "/Login-Configurations"
+@using Kooco.Pikachu.Localization
+@using Kooco.Pikachu.LoginConfigurations
+@using Volo.Abp.AspNetCore.Components.Notifications
+@using Volo.Abp.AspNetCore.Components.Web
+@attribute [Authorize]
+@inherits PikachuComponentBase
+@inject ILoginConfigurationAppService LoginConfigurationAppService
+@inject NavigationManager NavigationManager
+@inject IUiNotificationService UiNotificationService
+@inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
+
+<h5 class="text-dark">@L["LoginConfigurations"]</h5>
+<Div Class="rounded-cards website-settings">
+    <Card>
+        <CardBody>
+            @if (Entity != null)
+            {
+                <Validations @ref="@ValidationsRef" Model="@Entity" ValidateOnLoad="false">
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                            <h4>@L["Facebook"]</h4>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                            <Validation MessageLocalizer="@LH.Localize">
+                                <Field>
+                                    <FieldLabel>@L["AppId"]</FieldLabel>
+                                    <TextEdit @bind-Text="@Entity.FacebookAppId" Role="TextRole.Password">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </TextEdit>
+                                </Field>
+                            </Validation>
+                            <Validation MessageLocalizer="@LH.Localize">
+                                <Field>
+                                    <FieldLabel>@L["AppSecret"]</FieldLabel>
+                                    <TextEdit @bind-Text="@Entity.FacebookAppSecret" Role="TextRole.Password">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </TextEdit>
+                                </Field>
+                            </Validation>
+                        </Column>
+                    </Row>
+                    <Divider></Divider>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                            <h4>@L["Line"]</h4>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                            <Validation MessageLocalizer="@LH.Localize">
+                                <Field>
+                                    <FieldLabel>@L["ChannelId"]</FieldLabel>
+                                    <TextEdit @bind-Text="@Entity.LineChannelId" Role="TextRole.Password">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </TextEdit>
+                                </Field>
+                            </Validation>
+                            <Validation MessageLocalizer="@LH.Localize">
+                                <Field>
+                                    <FieldLabel>@L["ChannelSecret"]</FieldLabel>
+                                    <TextEdit @bind-Text="@Entity.LineChannelSecret" Role="TextRole.Password">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </TextEdit>
+                                </Field>
+                            </Validation>
+                        </Column>
+                    </Row>
+                </Validations>
+            }
+            else
+            {
+                <Div Class="text-center">
+                    <Span Class="spinner-border text-primary"></Span>
+                </Div>
+            }
+        </CardBody>
+    </Card>
+    @if (Entity != null)
+    {
+        <Div Class="text-end">
+            <PikachuButton Class="pk-btn-transparent" Disabled="IsLoading" Loading="IsCancelling" Clicked="ResetAsync">
+                @L["Cancel"]
+            </PikachuButton>
+            <PikachuButton Class="pk-btn-primary" Disabled="IsCancelling" Loading="IsLoading" Clicked="UpdateAsync">
+                @L["Update"]
+            </PikachuButton>
+        </Div>
+    }
+</Div>

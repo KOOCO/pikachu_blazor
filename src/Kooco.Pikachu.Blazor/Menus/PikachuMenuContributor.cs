@@ -2,6 +2,7 @@
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.MultiTenancy;
 using Kooco.Pikachu.Permissions;
+using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Identity.Blazor;
 using Volo.Abp.SettingManagement.Blazor.Menus;
 using Volo.Abp.TenantManagement.Blazor.Navigation;
@@ -166,6 +167,11 @@ public class PikachuMenuContributor : IMenuContributor
             url: "/Members",
             requiredPermissionName: PikachuPermissions.Members.Default
             ));
+        membersMenu.AddItem(new ApplicationMenuItem(
+            name: PikachuMenus.LoginConfigurations,
+            displayName: l["Menu:LoginConfigurations"],
+            url: "/Login-Configurations"
+            ).RequireAuthenticated());
         context.Menu.AddItem(membersMenu);
 
         var promotions =

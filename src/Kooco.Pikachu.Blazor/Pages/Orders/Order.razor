@@ -246,8 +246,8 @@
           Justified="true">
         <Items>
             <Tab Name="All" TextSize="TextSize.Small">All</Tab>
-            @foreach (string value in Enum.GetNames(typeof(ShippingStatus)).Where(w => w is not PikachuResource.Exchange))
-            {
+            @foreach (string value in Enum.GetNames(typeof(ShippingStatus)).Where(w => w is not PikachuResource.Exchange && w is not PikachuResource.EnterpricePurchase))
+            { 
                 <Tab Name="@value" TextSize="TextSize.Small">@L[value]</Tab>
             }
         </Items>
@@ -260,7 +260,7 @@
                                   @bind-SelectedRow="@SelectedOrder"
                                   ReadData="OnDataGridReadAsync"
                                   TotalItems="TotalCount"
-                                  DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.Id == SelectedOrder?.Id)"
+                                  DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.OrderId == SelectedOrder?.OrderId)"
                                   Responsive
                                   ShowPager="true"
                                   PageSize="PageSize"
@@ -1667,7 +1667,7 @@
                     </CardBody>
                 </Card>
             </TabPanel>
-            <TabPanel Name="EnterpricePurchase">
+          @*   <TabPanel Name="EnterpricePurchase">
                 <Card>
                     <CardBody>
                         <DataGrid TItem="OrderDto"
@@ -1832,7 +1832,7 @@
                         </DataGrid>
                     </CardBody>
                 </Card>
-            </TabPanel>
+            </TabPanel> *@
             <TabPanel Name="Return">
                 <Card>
                     <CardBody>
