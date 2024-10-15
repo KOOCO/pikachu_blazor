@@ -1,6 +1,7 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.OrderDeliveries;
+using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.Permissions;
@@ -134,7 +135,37 @@ public class RefundAppService : ApplicationService, IRefundAppService
     {
         Refund refund = await _refundRepository.GetAsync(id);
 
-        Order order = await _orderRepository.GetAsync(refund.OrderId);
+        Order order = await _orderRepository.GetWithDetailsAsync(refund.OrderId);
+
+        if (
+            order.ShippingStatus is ShippingStatus.WaitingForPayment ||
+            order.ShippingStatus is ShippingStatus.PrepareShipment ||
+            order.ShippingStatus is ShippingStatus.ToBeShipped ||
+            order.ShippingStatus is ShippingStatus.EnterpricePurchase
+        )
+            order.TotalAmount -= order.TotalAmount;
+
+        else if (
+            order.ShippingStatus is ShippingStatus.Shipped ||
+            order.ShippingStatus is ShippingStatus.Delivered ||
+            order.ShippingStatus is ShippingStatus.Completed ||
+            order.ShippingStatus is ShippingStatus.Return ||
+            order.ShippingStatus is ShippingStatus.Closed
+        )
+            order.TotalAmount -= order.TotalAmount - (order.DeliveryCost ?? 0);
+
+        order.TotalQuantity -= order.TotalQuantity;
+
+        foreach (OrderItem orderItem in order.OrderItems)
+        {
+            orderItem.TotalAmount -= orderItem.TotalAmount;
+
+            orderItem.ItemPrice -= orderItem.ItemPrice;
+
+            orderItem.Quantity -= orderItem.Quantity;
+        }
+
+        await _orderRepository.UpdateAsync(order);
 
         PaymentGatewayDto? ecpay = (await _PaymentGatewayAppService.GetAllAsync()).FirstOrDefault(f => f.PaymentIntegrationType is PaymentIntegrationType.EcPay) ??
                                     throw new UserFriendlyException("Please Set Ecpay Setting First"); ;

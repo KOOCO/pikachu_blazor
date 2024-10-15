@@ -922,6 +922,22 @@ public partial class OrderDetails
         });
     }
 
+    public void CheckboxChanged(bool e, OrderItemDto item)
+    {
+        item.IsSelected = e;
+
+        if (Order.OrderItems.Count == Order?.OrderItems.Count(c => c.IsSelected))
+        {
+            refunds.IsRefundItems = false;
+
+            refunds.IsRefundAmount = false;
+
+            refunds.IsRefundOrder = true;
+        }
+
+        StateHasChanged();
+    }
+
     async void ToggleEditMode()
     {
         EditingItems = new();
