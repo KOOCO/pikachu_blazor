@@ -260,7 +260,7 @@
                                   @bind-SelectedRow="@SelectedOrder"
                                   ReadData="OnDataGridReadAsync"
                                   TotalItems="TotalCount"
-                                  DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.Id == SelectedOrder?.Id)"
+                                  DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.OrderId == SelectedOrder?.OrderId)"
                                   Responsive
                                   ShowPager="true"
                                   PageSize="PageSize"

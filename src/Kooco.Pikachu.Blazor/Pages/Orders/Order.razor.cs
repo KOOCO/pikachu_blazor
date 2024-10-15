@@ -251,7 +251,7 @@ public partial class Order
     {
         await loading.Show();
 
-        var id = e.Item.Id;
+        var id = e.Item.OrderId;
         NavigationManager.NavigateTo($"Orders/OrderDetails/{id}");
 
         await loading.Hide();
@@ -337,7 +337,7 @@ public partial class Order
 
     private async void MergeOrders() 
     {
-        var orderIds = Orders.Where(x => x.IsSelected).Select(x => x.Id).ToList();
+        var orderIds = Orders.Where(x => x.IsSelected).Select(x => x.OrderId).ToList();
         await _orderAppService.MergeOrdersAsync(orderIds);
         await UpdateItemList();
     }
@@ -346,7 +346,7 @@ public partial class Order
     {
         List<OrderDto> selectedOrders = [.. Orders.Where(w => w.IsSelected)];
 
-        List<Guid> selectedIds = [.. selectedOrders.Select(s => s.Id)];
+        List<Guid> selectedIds = [.. selectedOrders.Select(s => s.OrderId)];
 
         string selectedIdsStr = JsonConvert.SerializeObject(selectedIds);
 
@@ -359,7 +359,7 @@ public partial class Order
         {
             await loading.Show();
             var selectedOrder = Orders.SingleOrDefault(x => x.IsSelected);
-            await _electronicInvoiceAppService.CreateInvoiceAsync(selectedOrder.Id);
+            await _electronicInvoiceAppService.CreateInvoiceAsync(selectedOrder.OrderId);
             await loading.Hide();
             await _uiMessageService.Success(L["InvoiceIssueSuccessfully"]);
             await UpdateItemList();
