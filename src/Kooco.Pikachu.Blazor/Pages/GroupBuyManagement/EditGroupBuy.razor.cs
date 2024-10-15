@@ -110,6 +110,7 @@ public partial class EditGroupBuy
     private readonly IGroupBuyOrderInstructionAppService _GroupBuyOrderInstructionAppService;
 
     private List<GroupBuyTemplateType> TemplateTypes = [GroupBuyTemplateType.PikachuOne, GroupBuyTemplateType.PikachuTwo];
+    private List<string> ImageSizes = ["SmallImage", "LargeImage"];
     #endregion
 
     #region Constructor
@@ -434,6 +435,8 @@ public partial class EditGroupBuy
                             Index = i++,
                             SortOrder = itemGroup.SortOrder,
                             GroupBuyModuleType = itemGroup.GroupBuyModuleType,
+                            ProductGroupModuleTitle = itemGroup.ProductGroupModuleTitle,
+                            ProductGroupModuleImageSize = itemGroup.ProductGroupModuleImageSize,
                             Selected = []
                         };
                     }
@@ -1594,7 +1597,9 @@ public partial class EditGroupBuy
                         SortOrder = item.SortOrder,
                         GroupBuyModuleType = item.GroupBuyModuleType,
                         GroupBuyId = GroupBuy.Id,
-                        AdditionalInfo = item.AdditionalInfo
+                        AdditionalInfo = item.AdditionalInfo,
+                        ProductGroupModuleTitle = item.ProductGroupModuleTitle,
+                        ProductGroupModuleImageSize = item.ProductGroupModuleImageSize
                     };
 
                     foreach (var itemDetail in item.Selected)

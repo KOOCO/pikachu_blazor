@@ -1270,11 +1270,27 @@ public partial class CreateGroupBuy
                 int j = 1;
                 if (item.Selected.Any())
                 {
-                    var itemGroup = new GroupBuyItemGroupCreateUpdateDto
+                    GroupBuyItemGroupCreateUpdateDto itemGroup = new();
+
+                    if (item.GroupBuyModuleType is GroupBuyModuleType.ProductGroupModule)
                     {
-                        SortOrder = item.SortOrder,
-                        GroupBuyModuleType = item.GroupBuyModuleType
-                    };
+                        itemGroup = new()
+                        {
+                            SortOrder = item.SortOrder,
+                            GroupBuyModuleType = item.GroupBuyModuleType,
+                            ProductGroupModuleTitle = item.ProductGroupModuleTitle,
+                            ProductGroupModuleImageSize = item.ProductGroupModuleImageSize
+                        };
+                    }
+
+                    else
+                    {
+                        itemGroup = new()
+                        {
+                            SortOrder = item.SortOrder,
+                            GroupBuyModuleType = item.GroupBuyModuleType
+                        };
+                    }
 
                     foreach (var itemDetail in item.Selected)
                     {
@@ -1448,6 +1464,8 @@ public class CollapseItem
     public bool IsModified = false;
     public bool IsWarnedForInCompatible = false;
     public string? AdditionalInfo { get; set; }
+    public string? ProductGroupModuleTitle { get; set; }
+    public string? ProductGroupModuleImageSize { get; set; }
     public CollapseItem()
     {
         Selected = [];

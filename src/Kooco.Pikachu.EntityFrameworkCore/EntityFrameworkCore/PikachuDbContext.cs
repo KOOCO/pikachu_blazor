@@ -44,6 +44,7 @@ using Kooco.Pikachu.GroupPurchaseOverviews;
 using Kooco.Pikachu.TenantManagement;
 using Kooco.Pikachu.WebsiteManagement;
 using Kooco.Pikachu.GroupBuyOrderInstructions;
+using Kooco.Pikachu.LoginConfigurations;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -133,6 +134,7 @@ public class PikachuDbContext :
     public DbSet<OrderMessage> OrderMessages { get; set; }
 
     public DbSet<WebsiteSettings> WebsiteSettings { get; set; }
+    public DbSet<LoginConfiguration> LoginConfigurations { get; set; }
 
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
@@ -449,9 +451,15 @@ public class PikachuDbContext :
             b.ConfigureByConvention();
         });
 
-        builder.Entity<WebsiteSettings>(b => 
+        builder.Entity<WebsiteSettings>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "WebsiteSettings", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+        });
+
+        builder.Entity<LoginConfiguration>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "LoginConfigurations", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
         });
 
