@@ -9,4 +9,6 @@ public interface IPikachuAccountAppService : IApplicationService
 {
     Task<PikachuLoginResponseDto> LoginAsync(PikachuLoginInputDto input);
     Task<IdentityUserDto> RegisterAsync(PikachuRegisterInputDto input);
+    Task SendEmailVerificationCodeAsync(string email);
+    Task<VerifyCodeResponseDto> VerifyEmailCodeAsync(string email, string code);
 }
