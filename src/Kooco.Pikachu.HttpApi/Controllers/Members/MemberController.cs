@@ -2,6 +2,7 @@
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Members;
 using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.PikachuAccounts;
 using Kooco.Pikachu.UserAddresses;
 using Kooco.Pikachu.UserCumulativeCredits;
 using Kooco.Pikachu.UserCumulativeFinancials;
@@ -19,7 +20,7 @@ namespace Kooco.Pikachu.Controllers.Members;
 [RemoteService(IsEnabled = true)]
 [Area("app")]
 [Route("api/app/members")]
-public class MemberController(IMemberAppService memberAppService) : PikachuController, IMemberAppService
+public class MemberController(IMemberAppService memberAppService, IPikachuAccountAppService pikachuAccountAppService) : PikachuController, IMemberAppService
 {
     [HttpDelete("{id}")]
     public Task DeleteAsync(Guid id)
@@ -115,5 +116,17 @@ public class MemberController(IMemberAppService memberAppService) : PikachuContr
     public Task<MemberDto> RegisterAsync(CreateMemberDto input)
     {
         return memberAppService.RegisterAsync(input);
+    }
+
+    [HttpPost("send-email-verification-code/{email}")]
+    public Task SendEmailVerificationCodeAsync(string email)
+    {
+        return pikachuAccountAppService.SendEmailVerificationCodeAsync(email);
+    }
+
+    [HttpPost("verify-email-code/{email}/{code}")]
+    public Task<VerifyCodeResponseDto> VerifyEmailCodeAsync(string email, string code)
+    {
+        return pikachuAccountAppService.VerifyEmailCodeAsync(email, code);
     }
 }

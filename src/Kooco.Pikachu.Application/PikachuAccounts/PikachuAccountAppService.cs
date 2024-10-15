@@ -1,15 +1,16 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Data;
+using Volo.Abp.Emailing;
 using Volo.Abp.Identity;
 using Volo.Abp.Validation;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
@@ -17,8 +18,15 @@ using IdentityUser = Volo.Abp.Identity.IdentityUser;
 namespace Kooco.Pikachu.PikachuAccounts;
 
 [RemoteService(IsEnabled = false)]
-public class PikachuAccountAppService(IConfiguration configuration, IdentityUserManager identityUserManager, IIdentityRoleRepository identityRoleRepository) : PikachuAppService, IPikachuAccountAppService
+public class PikachuAccountAppService(IConfiguration configuration, IdentityUserManager identityUserManager,
+    IIdentityRoleRepository identityRoleRepository, IMemoryCache memoryCache, IEmailSender emailSender) : PikachuAppService, IPikachuAccountAppService
 {
+    public const string VerificationCode = "__VerificationCode:";
+    public MemoryCacheEntryOptions CacheEntryOptions = new()
+    {
+        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(3)
+    };
+
     public async Task<PikachuLoginResponseDto> LoginAsync(PikachuLoginInputDto input)
     {
         var selfUrl = configuration["App:SelfUrl"] ?? "";
@@ -99,6 +107,7 @@ public class PikachuAccountAppService(IConfiguration configuration, IdentityUser
         }
 
         (await identityUserManager.CreateAsync(identityUser, input.Password)).CheckErrors();
+
         return ObjectMapper.Map<IdentityUser, IdentityUserDto>(identityUser);
     }
 
@@ -153,5 +162,40 @@ public class PikachuAccountAppService(IConfiguration configuration, IdentityUser
             result.Add(new ValidationResult(errorMessage: "FieldsRequired", memberNames: requiredMembers));
             throw new AbpValidationException(result);
         }
+    }
+
+    public async Task SendEmailVerificationCodeAsync(string email)
+    {
+        var normalizedEmail = email.ToUpperInvariant();
+        var random = new Random();
+        var code = random.Next(000000, 999999).ToString();
+
+        memoryCache.Set(VerificationCode + normalizedEmail, code, CacheEntryOptions);
+
+        string body = $"<p style=\"text-align: center;\">{L["VerificationCodeEmailBody"].Value}</p><h4 style=\"text-align:center\">{code}</h4>";
+
+        await emailSender.SendAsync(email, L["VerificationToken"].Value, body);
+    }
+
+    public async Task<VerifyCodeResponseDto> VerifyEmailCodeAsync(string email, string code)
+    {
+        return await Task.Run(() =>
+        {
+            var normalizedEmail = email.ToUpperInvariant();
+
+            var verificationCode = memoryCache.Get<string?>(VerificationCode + normalizedEmail);
+
+            if (verificationCode is null)
+            {
+                return new VerifyCodeResponseDto(false, email, L["VerificationCodeIsExpired"].Value);
+            }
+            if (!verificationCode.Equals(code))
+            {
+                return new VerifyCodeResponseDto(false, email, L["VerificationCodeDoesnotMatch"].Value);
+            }
+
+            memoryCache.Remove(VerificationCode + email);
+            return new VerifyCodeResponseDto(true, email);
+        });
     }
 }

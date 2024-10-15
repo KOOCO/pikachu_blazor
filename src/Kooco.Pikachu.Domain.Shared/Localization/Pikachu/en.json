@@ -843,6 +843,10 @@
     "AppId": "App ID",
     "AppSecret": "App Secret",
     "ChannelSecret": "Channel Secret",
-    "AreYouSureToUpdate": "Are you sure you want to update?"
+    "AreYouSureToUpdate": "Are you sure you want to update?",
+    "VerificationToken": "Verification Token",
+    "VerificationCodeEmailBody": "This is the verification code. Please do not share it with anyone.",
+    "VerificationCodeIsExpired": "The verification code has expired. Please try again.",
+    "VerificationCodeDoesnotMatch": "The provided verification code is invalid."
   }
 }
