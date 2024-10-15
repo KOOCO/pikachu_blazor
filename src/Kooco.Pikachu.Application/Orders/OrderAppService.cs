@@ -675,9 +675,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         orderItem.DeliveryTemperatureCost
                     );
 
-                    item.TotalAmount = item.TotalAmount-(item.TotalAmount+ item.TotalAmount);
-                    item.ItemPrice = item.ItemPrice - (item.ItemPrice + item.ItemPrice);
-                    item.Quantity = item.Quantity - (item.Quantity+item.Quantity);
+                    item.TotalAmount = item.TotalAmount - item.TotalAmount;
+                    item.ItemPrice = item.ItemPrice - item.ItemPrice;
+                    item.Quantity = item.Quantity - item.Quantity;
                     await _orderRepository.InsertAsync(order1);
                     await _orderRepository.UpdateAsync(ord);
                     await UnitOfWorkManager.Current.SaveChangesAsync();

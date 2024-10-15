@@ -760,10 +760,21 @@ public partial class OrderDetails
                     return;
                 }
                 
+                if (Order.OrderItems.Count == Order?.OrderItems.Count(c => c.IsSelected))
+                {
+                    await loading.Hide();
+
+                    await ApplyRefund();
+
+                    await RefundModal.Hide();
+
+                    return;
+                }
+
                 refunds.OrderItemIds = orderItemIds;
-                
+
                 await _orderAppService.RefundOrderItems(orderItemIds, OrderId);
-                
+
                 await loading.Hide();
 
                 await RefundModal.Hide();
@@ -985,7 +996,6 @@ public partial class OrderDetails
 
     private void OpenRefundModal()
     {
-      
         refunds = new RefundOrder
         {
             IsRefundOrder = true,
