@@ -98,7 +98,7 @@ public class TenantSettingsManager(IRepository<TenantSettings, Guid> tenantSetti
         string? domain, string? shortCode)
     {
         Check.NotNullOrWhiteSpace(webpageTitle, nameof(webpageTitle), maxLength: TenantSettingsConsts.MaxWebpageTitleLength);
-        Check.NotNullOrWhiteSpace(privacyPolicy, nameof(privacyPolicy), maxLength: TenantSettingsConsts.MaxPrivacyPolicyLength);
+        Check.NotNullOrWhiteSpace(privacyPolicy, nameof(privacyPolicy));
         Check.NotNullOrWhiteSpace(companyName, nameof(companyName), maxLength: TenantSettingsConsts.MaxCompanyNameLength);
         Check.NotNullOrWhiteSpace(businessRegistrationNumber, nameof(businessRegistrationNumber), maxLength: TenantSettingsConsts.MaxBusinessRegistrationNumberLength);
         Check.NotNullOrWhiteSpace(contactPhone, nameof(contactPhone), maxLength: TenantSettingsConsts.MaxContactPhoneLength);

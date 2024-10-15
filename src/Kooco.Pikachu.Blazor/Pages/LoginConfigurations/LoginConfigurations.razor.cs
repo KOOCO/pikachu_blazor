@@ -32,6 +32,7 @@ public partial class LoginConfigurations
             IsLoading = true;
             await LoginConfigurationAppService.UpdateAsync(Entity);
             IsLoading = false;
+            await UiNotificationService.Success(L["LoginConfigurationsUpdated"]);
         }
         catch (Exception ex)
         {

@@ -1,5 +1,4 @@
-﻿using Kooco.Pikachu.EnumValues;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Kooco.Pikachu.TenantManagement;
@@ -11,7 +10,6 @@ public class UpdateTenantSettingsDto
     public string? WebpageTitle { get; set; }
 
     [Required]
-    [MaxLength(TenantSettingsConsts.MaxPrivacyPolicyLength)]
     public string? PrivacyPolicy { get; set; }
 
     [Required]
@@ -48,7 +46,6 @@ public class UpdateTenantSettingsDto
     public string? TenantContactEmail { get; set; }
 
     [Required]
-    [Url]
     public string? Domain { get; set; }
 
     [Required]

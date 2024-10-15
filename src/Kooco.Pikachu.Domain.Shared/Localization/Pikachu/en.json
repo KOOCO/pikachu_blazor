@@ -851,6 +851,8 @@
     "EmailAddressNotFound": "There is no member against this email address.",
     "UserIsNotActive": "This member does not exist or is not active.",
     "CodeIsExpired": "The code has expired. Please try again.",
-    "CodeDoesnotMatch": "The provided code is invalid."
+    "CodeDoesnotMatch": "The provided code is invalid.",
+    "DefaultPrivacyPolicy": "Default Privacy Policy",
+    "LoginConfigurationsUpdated": "Login Configurations Updated!"
   }
 }

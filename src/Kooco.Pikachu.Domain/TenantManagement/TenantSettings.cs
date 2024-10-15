@@ -63,7 +63,7 @@ public class TenantSettings : FullAuditedEntity<Guid>, IMultiTenant
 
     public TenantSettings SetPrivacyPolicy(string? privacyPolicy)
     {
-        PrivacyPolicy = Check.NotNullOrWhiteSpace(privacyPolicy, nameof(PrivacyPolicy), TenantSettingsConsts.MaxPrivacyPolicyLength);
+        PrivacyPolicy = Check.NotNullOrWhiteSpace(privacyPolicy, nameof(PrivacyPolicy));
         return this;
     }
 
