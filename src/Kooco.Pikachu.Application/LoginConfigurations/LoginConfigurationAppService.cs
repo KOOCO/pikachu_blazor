@@ -7,7 +7,6 @@ using Volo.Abp.Security.Encryption;
 
 namespace Kooco.Pikachu.LoginConfigurations;
 
-[Authorize]
 [RemoteService(IsEnabled = false)]
 public class LoginConfigurationAppService(IRepository<LoginConfiguration, Guid> loginConfigurationRepository,
     IStringEncryptionService stringEncryptionService) : PikachuAppService, ILoginConfigurationAppService
@@ -18,17 +17,20 @@ public class LoginConfigurationAppService(IRepository<LoginConfiguration, Guid> 
         await loginConfigurationRepository.DeleteAsync(loginConfigurations);
     }
 
-    public async Task<LoginConfigurationDto?> FirstOrDefaultAsync()
+    public async Task<LoginConfigurationDto?> FirstOrDefaultAsync(Guid? tenantId)
     {
-        var loginConfigurations = await loginConfigurationRepository.FirstOrDefaultAsync();
-        if (loginConfigurations == null) return default;
+        using (CurrentTenant.Change(tenantId))
+        {
+            var loginConfigurations = await loginConfigurationRepository.FirstOrDefaultAsync();
+            if (loginConfigurations == null) return default;
 
-        var dto = ObjectMapper.Map<LoginConfiguration, LoginConfigurationDto>(loginConfigurations);
-        dto.FacebookAppId = stringEncryptionService.Decrypt(dto.FacebookAppId);
-        dto.FacebookAppSecret = stringEncryptionService.Decrypt(dto.FacebookAppSecret);
-        dto.LineChannelId = stringEncryptionService.Decrypt(dto.LineChannelId);
-        dto.LineChannelSecret = stringEncryptionService.Decrypt(dto.LineChannelSecret);
-        return dto;
+            var dto = ObjectMapper.Map<LoginConfiguration, LoginConfigurationDto>(loginConfigurations);
+            dto.FacebookAppId = stringEncryptionService.Decrypt(dto.FacebookAppId);
+            dto.FacebookAppSecret = stringEncryptionService.Decrypt(dto.FacebookAppSecret);
+            dto.LineChannelId = stringEncryptionService.Decrypt(dto.LineChannelId);
+            dto.LineChannelSecret = stringEncryptionService.Decrypt(dto.LineChannelSecret);
+            return dto;
+        }
     }
 
     public async Task UpdateAsync(UpdateLoginConfigurationDto input)

@@ -45,7 +45,7 @@ public partial class LoginConfigurations
         try
         {
             IsCancelling = true;
-            var loginConfigurations = await LoginConfigurationAppService.FirstOrDefaultAsync();
+            var loginConfigurations = await LoginConfigurationAppService.FirstOrDefaultAsync(CurrentTenant.Id);
             Entity = ObjectMapper.Map<LoginConfigurationDto, UpdateLoginConfigurationDto>(loginConfigurations);
             Entity ??= new();
         }
