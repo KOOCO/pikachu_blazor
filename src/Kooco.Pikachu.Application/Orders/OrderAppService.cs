@@ -1381,7 +1381,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         if (paymentResult.SimulatePaid is 0)
         {
             Order order = new ();
-
+            var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
             using (_dataFilter.Disable<IMultiTenant>())
             {
                 if (paymentResult.OrderId is null)
@@ -1467,8 +1467,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     if (orderDelivery is not null)
                         order.UpdateOrderItem([.. order.OrderItems.Where(w => w.SetItemId is not null && w.SetItemId != Guid.Empty)], orderDelivery.Id);
                 }
-
-                var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+               
+                
                 if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.Processing)
                 {
                     if (order.GroupBuy.IssueInvoice)

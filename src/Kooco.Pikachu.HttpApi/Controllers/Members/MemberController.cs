@@ -129,4 +129,22 @@ public class MemberController(IMemberAppService memberAppService, IPikachuAccoun
     {
         return pikachuAccountAppService.VerifyEmailCodeAsync(email, code);
     }
+
+    [HttpPost("send-password-reset-code/{email}")]
+    public Task<GenericResponseDto> SendPasswordResetCodeAsync(string email)
+    {
+        return pikachuAccountAppService.SendPasswordResetCodeAsync(email);
+    }
+
+    [HttpPost("verify-password-reset-code/{email}/{code}")]
+    public Task<VerifyCodeResponseDto> VerifyPasswordResetCodeAsync(string email, string code)
+    {
+        return pikachuAccountAppService.VerifyPasswordResetCodeAsync(email, code);
+    }
+
+    [HttpPost("reset-password")]
+    public Task<GenericResponseDto> ResetPasswordAsync(PikachuResetPasswordDto input)
+    {
+        return pikachuAccountAppService.ResetPasswordAsync(input);
+    }
 }

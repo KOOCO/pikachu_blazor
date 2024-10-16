@@ -9,6 +9,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Account;
 using Volo.Abp.Data;
 using Volo.Abp.Emailing;
 using Volo.Abp.Identity;
@@ -19,9 +20,11 @@ namespace Kooco.Pikachu.PikachuAccounts;
 
 [RemoteService(IsEnabled = false)]
 public class PikachuAccountAppService(IConfiguration configuration, IdentityUserManager identityUserManager,
-    IIdentityRoleRepository identityRoleRepository, IMemoryCache memoryCache, IEmailSender emailSender) : PikachuAppService, IPikachuAccountAppService
+    IIdentityRoleRepository identityRoleRepository, IMemoryCache memoryCache, IEmailSender emailSender,
+    IIdentityUserRepository identityUserRepository) : PikachuAppService, IPikachuAccountAppService
 {
-    public const string VerificationCode = "__VerificationCode:";
+    public const string VerificationCodePrefix = "__VerificationCode:";
+    public const string PasswordResetCodePrefix = "__ResetPasswordCode:";
     public MemoryCacheEntryOptions CacheEntryOptions = new()
     {
         AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(3)
@@ -170,7 +173,7 @@ public class PikachuAccountAppService(IConfiguration configuration, IdentityUser
         var random = new Random();
         var code = random.Next(000000, 999999).ToString();
 
-        memoryCache.Set(VerificationCode + normalizedEmail, code, CacheEntryOptions);
+        memoryCache.Set(VerificationCodePrefix + normalizedEmail, code, CacheEntryOptions);
 
         string body = $"<p style=\"text-align: center;\">{L["VerificationCodeEmailBody"].Value}</p><h4 style=\"text-align:center\">{code}</h4>";
 
@@ -183,19 +186,89 @@ public class PikachuAccountAppService(IConfiguration configuration, IdentityUser
         {
             var normalizedEmail = email.ToUpperInvariant();
 
-            var verificationCode = memoryCache.Get<string?>(VerificationCode + normalizedEmail);
+            var verificationCode = memoryCache.Get<string?>(VerificationCodePrefix + normalizedEmail);
 
             if (verificationCode is null)
             {
-                return new VerifyCodeResponseDto(false, email, L["VerificationCodeIsExpired"].Value);
+                return new VerifyCodeResponseDto(false, email, L["CodeIsExpired"].Value);
             }
             if (!verificationCode.Equals(code))
             {
-                return new VerifyCodeResponseDto(false, email, L["VerificationCodeDoesnotMatch"].Value);
+                return new VerifyCodeResponseDto(false, email, L["CodeDoesnotMatch"].Value);
             }
 
-            memoryCache.Remove(VerificationCode + email);
+            memoryCache.Remove(VerificationCodePrefix + email);
             return new VerifyCodeResponseDto(true, email);
         });
+    }
+
+    public async Task<GenericResponseDto> SendPasswordResetCodeAsync(string email)
+    {
+        var normalizedEmail = email.ToUpperInvariant();
+        var user = await identityUserRepository.FindByNormalizedEmailAsync(email);
+
+        if (user is null)
+        {
+            return new GenericResponseDto(false, L["EmailAddressNotFound"].Value);
+        }
+
+        if (!user.IsActive)
+        {
+            return new GenericResponseDto(false, L["UserIsNotActive"].Value);
+        }
+
+        var random = new Random();
+        var code = random.Next(000000, 999999).ToString();
+
+        memoryCache.Set(PasswordResetCodePrefix + normalizedEmail, code, CacheEntryOptions);
+
+        string body = $"<p style=\"text-align: center;\">{L["ResetPasswordCodeEmailBody"].Value}</p><h4 style=\"text-align:center\">{code}</h4>";
+
+        await emailSender.SendAsync(email, L["ResetPasswordCode"].Value, body);
+        return new GenericResponseDto(true);
+    }
+
+    public async Task<VerifyCodeResponseDto> VerifyPasswordResetCodeAsync(string email, string code)
+    {
+        var normalizedEmail = email.ToUpperInvariant();
+
+        var passwordResetCode = memoryCache.Get<string?>(PasswordResetCodePrefix + normalizedEmail);
+
+        if (passwordResetCode is null)
+        {
+            return new VerifyCodeResponseDto(false, email, L["CodeIsExpired"].Value);
+        }
+        if (!passwordResetCode.Equals(code))
+        {
+            return new VerifyCodeResponseDto(false, email, L["CodeDoesnotMatch"].Value);
+        }
+
+        var user = await identityUserRepository.FindByNormalizedEmailAsync(normalizedEmail);
+        if (user is null)
+        {
+            return new VerifyCodeResponseDto(false, email, L["EmailAddressNotFound"].Value);
+        }
+
+        memoryCache.Remove(PasswordResetCodePrefix + email);
+
+        var resetToken = await identityUserManager.GeneratePasswordResetTokenAsync(user);
+
+        return new VerifyCodeResponseDto(true, email)
+        {
+            ResetToken = resetToken,
+        };
+    }
+
+    public async Task<GenericResponseDto> ResetPasswordAsync(PikachuResetPasswordDto input)
+    {
+        var user = await identityUserRepository.FindByNormalizedEmailAsync(input.Email);
+
+        if (user is null)
+        {
+            return new GenericResponseDto(false, L["EmailAddressNotFound"].Value);
+        }
+
+        (await identityUserManager.ResetPasswordAsync(user, input.ResetToken, input.Password)).CheckErrors();
+        return new GenericResponseDto(true);
     }
 }

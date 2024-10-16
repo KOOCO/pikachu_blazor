@@ -1,7 +1,6 @@
+using Blazored.TextEditor;
 using Blazorise;
 using Kooco.Pikachu.Extensions;
-using Kooco.Pikachu.Identity;
-using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.TenantManagement;
 using Microsoft.AspNetCore.Authorization;
@@ -25,6 +24,12 @@ public partial class TenantSettings
     private bool ViewMode { get; set; } = true;
 
     private readonly List<string> TenantContactTitles = ["Mr.", "Ms."];
+    private BlazoredTextEditor PrivacyPolicyHtml { get; set; }
+
+    public TenantSettings()
+    {
+        Entity = new();
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -41,6 +46,8 @@ public partial class TenantSettings
             string oldBanner = "";
 
             if (!CanEditTenantSettings) return;
+
+            Entity.PrivacyPolicy = await PrivacyPolicyHtml.GetHTML();
 
             var validate = await ValidationsRef.ValidateAll();
 
@@ -125,6 +132,18 @@ public partial class TenantSettings
         }
     }
 
+    async Task SetDefaultPrivacyPolicy()
+    {
+        await PrivacyPolicyHtml.LoadHTMLContent(TenantSettingsConsts.DefaultPrivacyPolicy);
+    }
+
+    async Task EditAsync()
+    {
+        ViewMode = false;
+        await PrivacyPolicyHtml.LoadHTMLContent(Entity.PrivacyPolicy);
+        await InvokeAsync(StateHasChanged);
+    }
+
     private async Task ResetAsync()
     {
         try
@@ -133,6 +152,7 @@ public partial class TenantSettings
             TenantSettingsDto = await TenantSettingsAppService.FirstOrDefaultAsync();
             Entity = ObjectMapper.Map<TenantSettingsDto, UpdateTenantSettingsDto>(TenantSettingsDto) ?? new();
             ValidationsRef?.ClearAll();
+            await PrivacyPolicyHtml.LoadHTMLContent(Entity.PrivacyPolicy);
         }
         catch (Exception ex)
         {

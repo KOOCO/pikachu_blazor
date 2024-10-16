@@ -93,7 +93,7 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
             IssueStatus = o.IssueStatus,       // Invoice Issue Status
             InvoiceNumber = o.InvoiceNumber,                // Invoice Number
             TotalAmount = o.TotalAmount, // Checkout Amount
-                                         // Editor (depends on your model)
+                 CreationTime=o.CreationTime,                        // Editor (depends on your model)
             CustomerName = o.CustomerName,
             CustomerEmail = o.CustomerEmail,
             CustomerPhone= o.CustomerPhone,
