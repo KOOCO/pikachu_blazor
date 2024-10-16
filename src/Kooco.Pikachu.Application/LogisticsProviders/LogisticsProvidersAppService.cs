@@ -114,15 +114,16 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
     }
     public async Task UpdateHomeDeliveryAsync(HomeDeliveryCreateUpdateDto input)
     {
-        var homeDelivery = await _logisticsProviderRepository.FirstOrDefaultAsync(x => x.LogisticProvider == LogisticProviders.HomeDelivery);
-        if (homeDelivery != null)
+        LogisticsProviderSettings? homeDelivery = await _logisticsProviderRepository.FirstOrDefaultAsync(x => x.LogisticProvider == LogisticProviders.HomeDelivery);
+
+        if (homeDelivery is not null)
         {
             homeDelivery.IsEnabled = input.IsEnabled;
             homeDelivery.CustomTitle = input.CustomTitle;
-           
             homeDelivery.Freight = input.Freight;
             homeDelivery.MainIslands = input.MainIslands;
             homeDelivery.OuterIslands = input.OuterIslands;
+            homeDelivery.IsOuterIslands = input.IsOuterIslands;
 
             await _logisticsProviderRepository.UpdateAsync(homeDelivery);
         }
@@ -132,10 +133,10 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
             {
                 IsEnabled = input.IsEnabled,
                 CustomTitle = input.CustomTitle,
-               
                 Freight = input.Freight,
                 MainIslands = input.MainIslands,
                 OuterIslands = input.OuterIslands,
+                IsOuterIslands = input.IsOuterIslands,
                 LogisticProvider = LogisticProviders.HomeDelivery
             };
 
