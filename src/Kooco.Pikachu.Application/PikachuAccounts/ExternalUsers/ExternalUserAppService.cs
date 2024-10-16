@@ -1,5 +1,4 @@
 ﻿using RestSharp;
-using System;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -35,6 +34,22 @@ public class ExternalUserAppService : PikachuAppService, IExternalUserAppService
         if (response.IsSuccessful && response.Content != null)
         {
             return JsonSerializer.Deserialize<GoogleUserDto>(response.Content);
+        }
+
+        return default;
+    }
+
+    public async Task<LineUserDto?> GetLineUserDetailsAsync(string accessToken)
+    {
+        var client = new RestClient("https://api.line.me/v2");
+        var request = new RestRequest("profile", Method.Get);
+        request.AddHeader("Authorization", $"Bearer {accessToken}");
+
+        var response = await client.ExecuteAsync(request);
+
+        if (response.IsSuccessful && response.Content != null)
+        {
+            return JsonSerializer.Deserialize<LineUserDto>(response.Content);
         }
 
         return default;

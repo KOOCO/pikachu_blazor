@@ -853,6 +853,7 @@
     "CodeIsExpired": "The code has expired. Please try again.",
     "CodeDoesnotMatch": "The provided code is invalid.",
     "DefaultPrivacyPolicy": "Default Privacy Policy",
-    "LoginConfigurationsUpdated": "Login Configurations Updated!"
+    "LoginConfigurationsUpdated": "Login Configurations Updated!",
+    "UnableToRetrieveUserDetails": "Unable to retrieve user's details from {0}."
   }
 }
