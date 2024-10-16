@@ -37,20 +37,24 @@
                 <div class="col-2">
                     <label>@L["ItemName"]</label>
                 </div>
-                <div class="col-9">
-                    <TextEdit @bind-Text="@CreateItemDto.ItemName" MaxLength="@MaxTextCount" />
-                </div>
-                <div class="col-1">
-                    <span>
-                        @(string.IsNullOrWhiteSpace(CreateItemDto.ItemName) ? 60 : (MaxTextCount - CreateItemDto.ItemName.Count()))/@MaxTextCount
-                    </span>
+                <div class="col-10">
+                    <Addons>
+                        <Addon AddonType="AddonType.Body">
+                            <TextEdit @bind-Text="@CreateItemDto.ItemName" MaxLength="@MaxTextCount" />
+                        </Addon>
+                        <Addon AddonType="AddonType.End">
+                            <AddonLabel Style="background-color: #f5f5f7">
+                                @(string.IsNullOrWhiteSpace(CreateItemDto.ItemName) ? 60 : (MaxTextCount - CreateItemDto.ItemName.Count()))/@MaxTextCount
+                            </AddonLabel>
+                        </Addon>
+                    </Addons>
                 </div>
             </div>
             <div class="row">
                 <div class="col-2">
                     <label>@L["ItemImage"]</label>
                 </div>
-                <div class="col-10 row">
+                <div class="col-10">
                     <Field>
                         <FilePicker @ref="FilePickerCustom"
                                     Multiple
@@ -131,12 +135,20 @@
                 <div class="col-2">
                     <fieldLabel>@L["ItemDescription"]</fieldLabel>
                 </div>
-                <div class="col-9">
+                <div class="col-10">
                     <div class="col-12">
-                        <fieldLabel></fieldLabel>
-                        <TextEdit Placeholder="@L["ItemDescriptionTitle"]" @bind-Text="@CreateItemDto.ItemDescriptionTitle" />
+                        <Addons>
+                            <Addon AddonType="AddonType.Body">
+                                <TextEdit Placeholder="@L["ItemDescriptionTitle"]" @bind-Text="@CreateItemDto.ItemDescriptionTitle" />
+                            </Addon>
+                            <Addon AddonType="AddonType.End">
+                                <AddonLabel Style="background-color: #f5f5f7">
+                                    @(string.IsNullOrWhiteSpace(CreateItemDto.ItemDescriptionTitle) ? 60 : (MaxTextCount - CreateItemDto.ItemDescriptionTitle.Count()))/@MaxTextCount
+                                </AddonLabel>
+                            </Addon>
+                        </Addons>
                     </div>
-                    <div class=" col-12">
+                    <div class="col-12">
                         <Blazored.TextEditor.BlazoredTextEditor @ref="@QuillHtml">
                             <ToolbarContent>
                                 <select class="ql-header">
@@ -173,11 +185,6 @@
                             </ToolbarContent>
                         </Blazored.TextEditor.BlazoredTextEditor>
                     </div>
-                </div>
-                <div class="col-1">
-                    <span>
-                        @(string.IsNullOrWhiteSpace(CreateItemDto.ItemDescriptionTitle) ? 60 : (MaxTextCount - CreateItemDto.ItemDescriptionTitle.Count()))/@MaxTextCount
-                    </span>
                 </div>
             </div>
             <br />
