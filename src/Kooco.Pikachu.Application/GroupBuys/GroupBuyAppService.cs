@@ -535,6 +535,48 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
             foreach (GroupBuyItemGroupModuleDetailsDto module in modules)
             {
+                if (module.GroupBuyModuleType is GroupBuyModuleType.ProductGroupModule)
+                {
+                    foreach (GroupBuyItemGroupDetailsDto itemDetail in module.ItemGroupDetails)
+                    {
+                        if (!itemDetail.Item.Attribute1Name.IsNullOrEmpty())
+                        {
+                            itemDetail.Item.AttributeNameOptions ??= [];
+
+                            itemDetail.Item.AttributeNameOptions.Add(new()
+                            {
+                                AttributeName = itemDetail.Item.Attribute1Name,
+                                AttributeOptions = [.. itemDetail.Item.ItemDetails.Where(w => !w.Attribute1Value.IsNullOrEmpty())
+                                                                                  .Select(s => s.Attribute1Value)]
+                            });
+                        }
+
+                        if (!itemDetail.Item.Attribute2Name.IsNullOrEmpty())
+                        {
+                            itemDetail.Item.AttributeNameOptions ??= [];
+
+                            itemDetail.Item.AttributeNameOptions.Add(new()
+                            {
+                                AttributeName = itemDetail.Item.Attribute2Name,
+                                AttributeOptions = [.. itemDetail.Item.ItemDetails.Where(w => !w.Attribute2Value.IsNullOrEmpty())
+                                                                                  .Select(w => w.Attribute2Value)]
+                            });
+                        }
+
+                        if (!itemDetail.Item.Attribute3Name.IsNullOrEmpty())
+                        {
+                            itemDetail.Item.AttributeNameOptions ??= [];
+
+                            itemDetail.Item.AttributeNameOptions.Add(new()
+                            {
+                                AttributeName = itemDetail.Item.Attribute3Name,
+                                AttributeOptions = [.. itemDetail.Item.ItemDetails.Where(w => !w.Attribute3Value.IsNullOrEmpty())
+                                                                                  .Select(w => w.Attribute3Value)]
+                            });
+                        }
+                    }
+                }
+
                 module.GroupBuyModuleTypeName = module.GroupBuyModuleType.ToString();
 
                 if (module.GroupBuyModuleType is GroupBuyModuleType.CarouselImages)

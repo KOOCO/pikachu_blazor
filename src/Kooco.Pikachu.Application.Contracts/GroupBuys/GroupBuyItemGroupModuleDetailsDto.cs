@@ -1,6 +1,7 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.GroupBuyOrderInstructions;
 using Kooco.Pikachu.GroupPurchaseOverviews;
+using Kooco.Pikachu.Response;
 using System;
 using System.Collections.Generic;
 using System.Text;

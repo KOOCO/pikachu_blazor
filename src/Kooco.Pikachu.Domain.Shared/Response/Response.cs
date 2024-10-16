@@ -9,6 +9,12 @@ public class Response
 {
 }
 
+public class AttributeNameOption
+{
+    public string AttributeName { get; set; }
+    public List<string> AttributeOptions { get; set; }
+}
+
 public class OrderPaymentMethodRequest
 {
     public Guid OrderId { get; set; }
