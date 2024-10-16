@@ -55,6 +55,8 @@ namespace Kooco.Pikachu.LogisticsProviders
 
         public string? OuterIslands { get; set; }
 
+        public bool IsOuterIslands { get; set; }
+
         [NotMapped]
         public List<string>? OuterIslandsList
         {
