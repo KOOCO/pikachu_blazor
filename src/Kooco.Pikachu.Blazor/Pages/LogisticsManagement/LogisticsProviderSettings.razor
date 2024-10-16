@@ -25,6 +25,10 @@
     .form-label{
         padding-top: 0.675rem;
     }
+
+    .outerIslandSwitchDiv {
+        width: 2.666667% !important;
+    }
 </style>
 
 <LoadingIndicator @ref="Loading" FullScreen></LoadingIndicator>
@@ -74,7 +78,11 @@
                                             @foreach (var island in LogisticsConsts.MainIslands)
                                             {
                                                 <label for="@island" class="form-label me-2">
-                                                    <input type="checkbox" class="form-check-input me-1" id="@island" checked="@(HomeDelivery.MainIslands != null && HomeDelivery.MainIslands.Contains(island))" @onchange="(value) => OnMainIslandCheckedChange(island, value)" />
+                                                    <input type="checkbox" 
+                                                           class="form-check-input me-1" 
+                                                           id="@island" 
+                                                           checked="@(HomeDelivery.MainIslands != null && HomeDelivery.MainIslands.Contains(island))" 
+                                                           @onchange="(value) => OnMainIslandCheckedChange(island, value)" />
                                                     @L[island]
                                                 </label>
                                             }
@@ -85,13 +93,22 @@
                                     <div class="col-3">
                                         <label class="form-label">@L["OuterIslands"]<span class="text-danger"> *</span></label>
                                     </div>
-                                    <div class="col-8">
-                                        @if (LogisticsConsts.OuterIslands != null)
+                                    <Div Class="col-2 my-2 outerIslandSwitchDiv">
+                                        <Switch TValue="bool"
+                                                Checked="HomeDelivery.IsOuterIslands"
+                                                CheckedChanged="OuterIslandsChecked" />
+                                    </Div>
+                                    <div class="col-6">
+                                        @if (LogisticsConsts.OuterIslands != null && HomeDelivery.IsOuterIslands)
                                         {
-                                            @foreach (var island in LogisticsConsts.OuterIslands)
+                                            @foreach (string island in LogisticsConsts.OuterIslands)
                                             {
                                                 <label for="@island" class="form-label me-2">
-                                                    <input type="checkbox" class="form-check-input me-1" id="@island" checked="@(HomeDelivery?.OuterIslands != null && HomeDelivery.OuterIslands.Contains(island))" @onchange="(value) => OnOuterIslandCheckedChange(island, value)" />
+                                                    <input type="checkbox" 
+                                                           class="form-check-input me-1" 
+                                                           id="@island" 
+                                                           checked="@(HomeDelivery?.OuterIslands != null && HomeDelivery.OuterIslands.Contains(island))" 
+                                                           @onchange="(value) => OnOuterIslandCheckedChange(island, value)" />
                                                     @L[island]
                                                 </label>
                                             }

@@ -27,6 +27,7 @@ using Kooco.Pikachu.GroupPurchaseOverviews;
 using Kooco.Pikachu.GroupPurchaseOverviews.Interface;
 using Kooco.Pikachu.GroupBuyOrderInstructions.Interface;
 using Kooco.Pikachu.GroupBuyOrderInstructions;
+using Kooco.Pikachu.LogisticsProviders;
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
 
 public partial class EditGroupBuy
@@ -111,6 +112,10 @@ public partial class EditGroupBuy
 
     private List<GroupBuyTemplateType> TemplateTypes = [GroupBuyTemplateType.PikachuOne, GroupBuyTemplateType.PikachuTwo];
     private List<string> ImageSizes = ["SmallImage", "LargeImage"];
+
+    public List<LogisticsProviderSettingsDto> LogisticsProviders = [];
+
+    private readonly ILogisticsProvidersAppService _LogisticsProvidersAppService;
     #endregion
 
     #region Constructor
@@ -123,7 +128,8 @@ public partial class EditGroupBuy
         IItemAppService itemAppService,
         ISetItemAppService setItemAppService,
         IGroupPurchaseOverviewAppService GroupPurchaseOverviewAppService,
-        IGroupBuyOrderInstructionAppService GroupBuyOrderInstructionAppService
+        IGroupBuyOrderInstructionAppService GroupBuyOrderInstructionAppService,
+        ILogisticsProvidersAppService LogisticsProvidersAppService
     )
     {
         _groupBuyAppService = groupBuyAppService;
@@ -135,6 +141,7 @@ public partial class EditGroupBuy
         _setItemAppService = setItemAppService;
         _GroupPurchaseOverviewAppService = GroupPurchaseOverviewAppService;
         _GroupBuyOrderInstructionAppService = GroupBuyOrderInstructionAppService;
+        _LogisticsProvidersAppService = LogisticsProvidersAppService;
         EditGroupBuyDto = new GroupBuyUpdateDto();
         CarouselImages = [];
         GroupBuy = new();
@@ -149,6 +156,8 @@ public partial class EditGroupBuy
         try
         {
             //await Loading.Show();
+            LogisticsProviders = await _LogisticsProvidersAppService.GetAllAsync();
+
             Id = Guid.Parse(id);
             GroupBuy = await _groupBuyAppService.GetWithItemGroupsAsync(Id);
 
@@ -209,6 +218,39 @@ public partial class EditGroupBuy
         {
             //await Loading.Hide();
         }
+    }
+
+    public bool IsShippingMethodEnabled(string method)
+    {
+        if (LogisticsProviders is { Count: 0 }) return false;
+
+        DeliveryMethod deliveryMethod = Enum.Parse<DeliveryMethod>(method);
+
+        if (deliveryMethod is DeliveryMethod.HomeDelivery)
+            return LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.HomeDelivery).FirstOrDefault().IsEnabled;
+
+        else if (deliveryMethod is DeliveryMethod.PostOffice ||
+                 deliveryMethod is DeliveryMethod.FamilyMart1 ||
+                 deliveryMethod is DeliveryMethod.SevenToEleven1 ||
+                 deliveryMethod is DeliveryMethod.SevenToElevenFrozen ||
+                 deliveryMethod is DeliveryMethod.BlackCat1 ||
+                 deliveryMethod is DeliveryMethod.BlackCatFreeze ||
+                 deliveryMethod is DeliveryMethod.BlackCatFrozen)
+            return LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.GreenWorldLogistics).FirstOrDefault().IsEnabled;
+
+        else if (deliveryMethod is DeliveryMethod.FamilyMartC2C ||
+                 deliveryMethod is DeliveryMethod.SevenToElevenC2C)
+            return LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.GreenWorldLogisticsC2C).FirstOrDefault().IsEnabled;
+
+        else if (deliveryMethod is DeliveryMethod.TCatDeliveryNormal ||
+                 deliveryMethod is DeliveryMethod.TCatDeliveryFreeze ||
+                 deliveryMethod is DeliveryMethod.TCatDeliveryFrozen ||
+                 deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenNormal ||
+                 deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFreeze ||
+                 deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFrozen)
+            return LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.TCat).FirstOrDefault().IsEnabled;
+
+        else return false;
     }
 
     private void SelectTemplate(ChangeEventArgs e)

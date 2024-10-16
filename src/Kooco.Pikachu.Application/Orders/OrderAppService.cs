@@ -1144,9 +1144,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
                 if (invoiceDely == 0)
                 {
-                    var delay = DateTime.Now - DateTime.Now;
-                    GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
-                    var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                    await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
                 }
                 else
                 {
@@ -1182,9 +1180,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
                 if (invoiceDely == 0)
                 {
-                    var delay = DateTime.Now - DateTime.Now;
-                    GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
-                    var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                    await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
                 }
                 else
                 {
@@ -1218,9 +1214,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
                 if (invoiceDely == 0)
                 {
-                    var delay = DateTime.Now - DateTime.Now;
-                    GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
-                    var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                    await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
                 }
                 else
                 {
@@ -1478,9 +1472,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
                         if (invoiceDely == 0)
                         {
-                            var delay = DateTime.Now - DateTime.Now;
-                            GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
-                            var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                            await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
                         }
                         else
                         {
