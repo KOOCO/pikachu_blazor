@@ -214,7 +214,8 @@ public partial class CreateGroupBuy
             GroupBuyModuleType.BannerImages,
             GroupBuyModuleType.GroupPurchaseOverview,
             GroupBuyModuleType.CountdownTimer,
-            GroupBuyModuleType.OrderInstruction
+            GroupBuyModuleType.OrderInstruction,
+            GroupBuyModuleType.ProductRankingCarouselModule
         ];
     }
 
@@ -609,6 +610,22 @@ public partial class CreateGroupBuy
 
                 CollapseItem.Add(collapseItem);
             }
+        }
+
+        else if (groupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
+        {
+            CollapseItem collapseItem = new()
+            {
+                Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
+                GroupBuyModuleType = groupBuyModuleType,
+                Selected =
+                [
+                    new ItemWithItemTypeDto(),
+                    new ItemWithItemTypeDto(),
+                    new ItemWithItemTypeDto()
+                ]
+            };
         }
 
         else
@@ -1470,4 +1487,12 @@ public class CollapseItem
     {
         Selected = [];
     }
+}
+
+public class ProductRankingCarouselModule
+{
+    public string? Title { get; set; }
+    public string? SubTitle { get; set; }
+    public string? Content { get; set; }
+    public List<ItemWithItemTypeDto> Selected { get; set; }
 }

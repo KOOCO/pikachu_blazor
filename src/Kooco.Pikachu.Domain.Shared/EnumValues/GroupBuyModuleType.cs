@@ -10,5 +10,6 @@ public enum GroupBuyModuleType
     BannerImages,
     GroupPurchaseOverview,
     CountdownTimer,
-    OrderInstruction
+    OrderInstruction,
+    ProductRankingCarouselModule
 }
