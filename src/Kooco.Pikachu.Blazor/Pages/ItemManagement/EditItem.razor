@@ -450,19 +450,46 @@
                     </div>
                 </div> *@
                 <div class="row">
-                    <div class="col-3">
-                        <label>@L["ShareProfit"]</label>
+                    <div class="col-2 text-end">
+                        <label>@L["FreeShipping"]</label>
                     </div>
-                    <div class="col-3">
+                    <div class="col-4">
+                        <Switch TValue="bool" @bind-Checked="@UpdateItemDto.IsFreeShipping"></Switch>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-2 text-end">
+                        <label class="pt-2">@L["ShareProfit"]</label>
+                    </div>
+                    <div class="col-4">
                         <InputNumber class="form-control" TValue="float" @bind-Value="@UpdateItemDto.ShareProfit" />
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-3">
-                        <label>@L["FreeShipping"]</label>
+                    <div class="col-2 text-end">
+                        <label class="pt-2">@L["TaxType"]</label>
                     </div>
-                    <div class="col-3">
-                        <Switch TValue="bool" @bind-Checked="@UpdateItemDto.IsFreeShipping"></Switch>
+                    <div class="col-4">
+                        <SelectList TItem="EnumValueDto"
+                                    TValue="int"
+                                    Data="@TaxTypes"
+                                    TextField="@((item)=>L[item.Text])"
+                                    ValueField="@((item)=>item.Id)"
+                                    @bind-SelectedValue="@UpdateItemDto.TaxTypeId" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-2 text-end">
+                        <label class="pt-2">@L["ItemTemperature"]</label>
+                    </div>
+                    <div class="col-4">
+                        <Select TValue="ItemStorageTemperature?" Class="form-select"
+                                @bind-SelectedValue="@UpdateItemDto.ItemStorageTemperature">
+                            @foreach (var enumValue in Enum.GetValues(typeof(ItemStorageTemperature)))
+                            {
+                                <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                            }
+                        </Select>
                     </div>
                 </div>
                @*  <div class="row">
@@ -486,33 +513,6 @@
                         @bind-SelectedValue="@UpdateItemDto.ShippingMethodId" />
                     </div>
                 </div> *@
-                <div class="row">
-                    <div class="col-3">
-                        <label>@L["TaxType"]</label>
-                    </div>
-                    <div class="col-3">
-                        <SelectList TItem="EnumValueDto"
-                                    TValue="int"
-                                    Data="@TaxTypes"
-                                    TextField="@((item)=>L[item.Text])"
-                                    ValueField="@((item)=>item.Id)"
-                        @bind-SelectedValue="@UpdateItemDto.TaxTypeId" />
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-3">
-                        <label>@L["ItemTemperature"]</label>
-                    </div>
-                    <div class="col-3">
-                        <Select TValue="ItemStorageTemperature?" Class="form-select"
-                        @bind-SelectedValue="@UpdateItemDto.ItemStorageTemperature">
-                            @foreach (var enumValue in Enum.GetValues(typeof(ItemStorageTemperature)))
-                            {
-                                <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
-                            }
-                        </Select>
-                    </div>
-                </div>
             </div>
         </div>
     </CardBody>
