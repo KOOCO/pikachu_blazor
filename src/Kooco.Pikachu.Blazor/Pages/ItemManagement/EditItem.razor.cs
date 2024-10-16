@@ -83,29 +83,8 @@ public partial class EditItem
     #region Methods
     protected override async Task OnAfterRenderAsync(bool isFirstRender)
     {
-        if (isFirstRender || _isRenderComplete)
+        if (isFirstRender)
         {
-            if (_isRenderComplete)
-            {
-                if (ItemDetailsQuillHtml.Any(a => a.ToolbarContent != null))
-                {
-                    foreach (CreateItemDetailsDto item in ItemDetailsList)
-                    {
-                        await Task.Delay(1);
-
-                        BlazoredTextEditor editor = ItemDetailsQuillHtml[ItemDetailsList.IndexOf(item)];
-
-                        if (editor.ToolbarContent is not null) await editor.LoadHTMLContent(item.ItemDescription);
-                    }
-
-                    await InvokeAsync(StateHasChanged);
-                }
-
-                _isRenderComplete = false;
-
-                return;
-            }
-
             try
             {
                 await Loading.Show();
@@ -213,19 +192,6 @@ public partial class EditItem
 
             UpdateItemDto.ItemDetails = ItemDetailsList;
             UpdateItemDto.ItemDescription = await QuillHtml.GetHTML();
-
-            foreach (CreateItemDetailsDto item in UpdateItemDto.ItemDetails)
-            {
-                try
-                {
-                    if (ItemDetailsQuillHtml[UpdateItemDto.ItemDetails.IndexOf(item)].ToolbarContent is not null)
-                        item.ItemDescription = await ItemDetailsQuillHtml[UpdateItemDto.ItemDetails.IndexOf(item)].GetHTML();
-                }
-                catch (Exception ex)
-                {
-                    if (ex.Message.Contains("Cannot read properties of null")) { }
-                }
-            }
 
             UpdateItemDto.ItemTags = ItemTags.Any() ? string.Join(",", ItemTags) : null;
 

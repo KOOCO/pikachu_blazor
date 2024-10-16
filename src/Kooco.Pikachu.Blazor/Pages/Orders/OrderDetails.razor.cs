@@ -760,10 +760,21 @@ public partial class OrderDetails
                     return;
                 }
                 
+                if (Order.OrderItems.Count == Order?.OrderItems.Count(c => c.IsSelected))
+                {
+                    await loading.Hide();
+
+                    await ApplyRefund();
+
+                    await RefundModal.Hide();
+
+                    return;
+                }
+
                 refunds.OrderItemIds = orderItemIds;
-                
+
                 await _orderAppService.RefundOrderItems(orderItemIds, OrderId);
-                
+
                 await loading.Hide();
 
                 await RefundModal.Hide();
@@ -911,6 +922,27 @@ public partial class OrderDetails
         });
     }
 
+    public void CheckboxChanged(bool e, OrderItemDto item)
+    {
+        item.IsSelected = e;
+
+        if (Order.OrderItems.Count == Order?.OrderItems.Count(c => c.IsSelected))
+        {
+            refunds.IsRefundItems = false;
+
+            refunds.IsRefundAmount = false;
+
+            refunds.IsRefundOrder = true;
+
+            foreach (OrderItemDto orderItem in Order.OrderItems) 
+            {
+                orderItem.IsSelected = false;
+            }
+        }
+
+        StateHasChanged();
+    }
+
     async void ToggleEditMode()
     {
         EditingItems = new();
@@ -985,7 +1017,6 @@ public partial class OrderDetails
 
     private void OpenRefundModal()
     {
-      
         refunds = new RefundOrder
         {
             IsRefundOrder = true,

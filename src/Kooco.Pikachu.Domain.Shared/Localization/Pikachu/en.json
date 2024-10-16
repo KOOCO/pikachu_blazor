@@ -843,6 +843,16 @@
     "AppId": "App ID",
     "AppSecret": "App Secret",
     "ChannelSecret": "Channel Secret",
-    "AreYouSureToUpdate": "Are you sure you want to update?"
+    "AreYouSureToUpdate": "Are you sure you want to update?",
+    "VerificationToken": "Verification Token",
+    "VerificationCodeEmailBody": "This is the verification code. Please do not share it with anyone.",
+    "ResetPasswordCodeEmailBody": "This is the password reset code. Please do not share it with anyone.",
+    "ResetPasswordCode": "Reset Password Code",
+    "EmailAddressNotFound": "There is no member against this email address.",
+    "UserIsNotActive": "This member does not exist or is not active.",
+    "CodeIsExpired": "The code has expired. Please try again.",
+    "CodeDoesnotMatch": "The provided code is invalid.",
+    "DefaultPrivacyPolicy": "Default Privacy Policy",
+    "LoginConfigurationsUpdated": "Login Configurations Updated!"
   }
 }

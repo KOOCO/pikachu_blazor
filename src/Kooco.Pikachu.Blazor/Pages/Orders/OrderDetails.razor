@@ -1388,7 +1388,10 @@
                                         <td>
                                             @if (item.ItemType is not ItemType.SetItem) 
                                             {
-                                                <InputCheckbox class="form-check-input" @bind-Value="item.IsSelected" />
+                                                <InputCheckbox class="form-check-input" 
+                                                               ValueChanged="@((e) => CheckboxChanged(e, item))" 
+                                                               ValueExpression="@(() => item.IsSelected)"
+                                                               Value="item.IsSelected" />
                                             }
                                         </td>
                                         <td class="text-start" style="width: 50%;">

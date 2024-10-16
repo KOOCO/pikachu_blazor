@@ -1,6 +1,7 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.OrderDeliveries;
+using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.Permissions;
@@ -134,7 +135,37 @@ public class RefundAppService : ApplicationService, IRefundAppService
     {
         Refund refund = await _refundRepository.GetAsync(id);
 
-        Order order = await _orderRepository.GetAsync(refund.OrderId);
+        Order order = await _orderRepository.GetWithDetailsAsync(refund.OrderId);
+
+        if (
+            order.ShippingStatus is ShippingStatus.WaitingForPayment ||
+            order.ShippingStatus is ShippingStatus.PrepareShipment ||
+            order.ShippingStatus is ShippingStatus.ToBeShipped ||
+            order.ShippingStatus is ShippingStatus.EnterpricePurchase
+        )
+            order.TotalAmount -= order.TotalAmount;
+
+        else if (
+            order.ShippingStatus is ShippingStatus.Shipped ||
+            order.ShippingStatus is ShippingStatus.Delivered ||
+            order.ShippingStatus is ShippingStatus.Completed ||
+            order.ShippingStatus is ShippingStatus.Return ||
+            order.ShippingStatus is ShippingStatus.Closed
+        )
+            order.TotalAmount -= order.TotalAmount - (order.DeliveryCost ?? 0);
+
+        order.TotalQuantity -= order.TotalQuantity;
+
+        foreach (OrderItem orderItem in order.OrderItems)
+        {
+            orderItem.TotalAmount -= orderItem.TotalAmount;
+
+            orderItem.ItemPrice -= orderItem.ItemPrice;
+
+            orderItem.Quantity -= orderItem.Quantity;
+        }
+
+        await _orderRepository.UpdateAsync(order);
 
         PaymentGatewayDto? ecpay = (await _PaymentGatewayAppService.GetAllAsync()).FirstOrDefault(f => f.PaymentIntegrationType is PaymentIntegrationType.EcPay) ??
                                     throw new UserFriendlyException("Please Set Ecpay Setting First"); ;
@@ -249,7 +280,24 @@ public class RefundAppService : ApplicationService, IRefundAppService
 
     public async Task SendRefundRequestAsync(Refund refund, Order order, PaymentGatewayDto? ecpay, string action, bool sendEmail = false)
     {
-        string logisticSubType = string.Empty;
+        string logisticSubType = string.Empty; int refundAmount = 0;
+
+        if (
+            order.ShippingStatus is ShippingStatus.WaitingForPayment ||
+            order.ShippingStatus is ShippingStatus.PrepareShipment ||
+            order.ShippingStatus is ShippingStatus.ToBeShipped ||
+            order.ShippingStatus is ShippingStatus.EnterpricePurchase
+        )
+            refundAmount = (int)order.TotalAmount;
+
+        else if (
+            order.ShippingStatus is ShippingStatus.Shipped ||
+            order.ShippingStatus is ShippingStatus.Delivered ||
+            order.ShippingStatus is ShippingStatus.Completed ||
+            order.ShippingStatus is ShippingStatus.Return ||
+            order.ShippingStatus is ShippingStatus.Closed
+        )
+            refundAmount = (int)order.TotalAmount - ((int?)order.DeliveryCost ?? 0);
 
         RestClientOptions options = new() { MaxTimeout = -1 };
 
@@ -265,7 +313,7 @@ public class RefundAppService : ApplicationService, IRefundAppService
         request.AddParameter("MerchantID", MerchantId);
         request.AddParameter("MerchantTradeNo", (refund.Order?.MerchantTradeNo) ?? (refund.Order?.OrderNo));
         request.AddParameter("TradeNo", refund.Order?.TradeNo);
-        request.AddParameter("TotalAmount", (int)(refund.Order?.TotalAmount));
+        request.AddParameter("TotalAmount", refundAmount);
         request.AddParameter("Action", action);
         request.AddParameter("CheckMacValue", GenerateCheckMac(HashKey,
                                                                HashIV,
@@ -273,7 +321,7 @@ public class RefundAppService : ApplicationService, IRefundAppService
                                                                refund.Order?.MerchantTradeNo ?? refund.Order?.OrderNo,
                                                                refund.Order?.TradeNo,
                                                                action,
-                                                               ((int)refund.Order?.TotalAmount).ToString()));
+                                                               refundAmount.ToString()));
 
         RestResponse response = await client.ExecuteAsync(request);
 

@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning;
 using Kooco.Pikachu.LoginConfigurations;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 using Volo.Abp;
 
@@ -18,10 +19,10 @@ public class LoginConfigurationController(ILoginConfigurationAppService loginCon
         return loginConfigurationAppService.DeleteAsync();
     }
 
-    [HttpGet]
-    public Task<LoginConfigurationDto?> FirstOrDefaultAsync()
+    [HttpGet("{tenantId}")]
+    public Task<LoginConfigurationDto?> FirstOrDefaultAsync(Guid? tenantId)
     {
-        return loginConfigurationAppService.FirstOrDefaultAsync();
+        return loginConfigurationAppService.FirstOrDefaultAsync(tenantId);
     }
 
     [HttpPost]
