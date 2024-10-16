@@ -21,7 +21,9 @@ using System.Threading.Tasks;
 using System.Web;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.MultiTenancy;
 using Volo.Abp.SettingManagement;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
@@ -35,19 +37,22 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
     private readonly IRepository<EnumValue, int> _enumvalueRepository;
     private readonly IGroupBuyRepository _groupBuyRepository;
     private readonly IElectronicInvoiceSettingRepository _repository;
+    private readonly IDataFilter _dataFilter;
     #endregion
 
     #region Constructor
     public ElectronicInvoiceAppService(IConfiguration configuration, IOrderRepository orderRepository,
                                         IElectronicInvoiceSettingRepository repository,
                                         IRepository<EnumValue, int> enumvalueRepository,
-                                        IGroupBuyRepository groupBuyRepository)
+                                        IGroupBuyRepository groupBuyRepository,
+                                        IDataFilter dataFilter)
     {
         _configuration = configuration;
         _orderRepository = orderRepository;
         _repository = repository;
         _enumvalueRepository= enumvalueRepository;
         _groupBuyRepository= groupBuyRepository;
+        _dataFilter = dataFilter;
     }
     #endregion
 
@@ -55,9 +60,11 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
     public async Task CreateInvoiceAsync(Guid orderId)
     {
         ElectronicInvoiceSetting? setting = await _repository.FirstOrDefaultAsync();
-
-        Order order = await _orderRepository.GetWithDetailsAsync(orderId);
-        
+        Order order = new Order();
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+             order = await _orderRepository.GetWithDetailsAsync(orderId);
+        }
         if (order.InvoiceNumber is not null) return;
 
         GroupBuy groupBuy = await _groupBuyRepository.GetAsync(order.GroupBuyId);
