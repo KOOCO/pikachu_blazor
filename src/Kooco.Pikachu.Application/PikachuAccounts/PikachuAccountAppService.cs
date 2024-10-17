@@ -85,21 +85,15 @@ public class PikachuAccountAppService(IConfiguration configuration, IdentityUser
 
         ValidateRegister(input);
 
-        if (input.Method == LoginMethod.UserNameOrPassword)
+        if (input.Method != LoginMethod.UserNameOrPassword)
         {
-            return await RegisterLocalUserAsync(input);
+            input = await SetupExternalUserAsync(input);
         }
-        else
-        {
-            return await RegisterExternalUserAsync(input);
-        }
-    }
 
-    private async Task<IdentityUserDto> RegisterLocalUserAsync(PikachuRegisterInputDto input)
-    {
-        var identityUser = new IdentityUser(GuidGenerator.Create(), input.UserName, input.Email, CurrentTenant.Id)
+        var identityUser = new IdentityUser(GuidGenerator.Create(), input.UserName ?? input.Email, input.Email, CurrentTenant.Id)
         {
-            Name = input.Name
+            Name = input.Name,
+            IsExternal = input.Method != LoginMethod.UserNameOrPassword
         };
 
         if (!input.PhoneNumber.IsNullOrWhiteSpace())
@@ -117,20 +111,40 @@ public class PikachuAccountAppService(IConfiguration configuration, IdentityUser
             identityUser.AddRole(role.Id);
         }
 
-        (await identityUserManager.CreateAsync(identityUser, input.Password)).CheckErrors();
+        string? property = input.Method switch
+        {
+            LoginMethod.Facebook => Constant.FacebookId,
+            LoginMethod.Google => Constant.GoogleId,
+            LoginMethod.Line => Constant.LineId,
+            _ => null,
+        };
+
+        if (property.IsNullOrWhiteSpace())
+        {
+            identityUser.RemoveProperty(property);
+            identityUser.SetProperty(property, input.ExternalId);
+        }
+
+        var identityResult = await (input.Method == LoginMethod.UserNameOrPassword
+            ? identityUserManager.CreateAsync(identityUser, input.Password)
+            : identityUserManager.CreateAsync(identityUser));
+
+        identityResult.CheckErrors();
 
         return ObjectMapper.Map<IdentityUser, IdentityUserDto>(identityUser);
     }
 
-    private async Task<IdentityUserDto> RegisterExternalUserAsync(PikachuRegisterInputDto input)
+    private async Task<PikachuRegisterInputDto> SetupExternalUserAsync(PikachuRegisterInputDto input)
     {
-        string email = "";
         if (input.Method == LoginMethod.Facebook)
         {
             var userInfo = await externalUserAppService.GetFacebookUserDetailsAsync(input.ThirdPartyToken)
                 ?? throw new UserFriendlyException(L["UnableToRetrieveUserDetails", "Facebook"].Value);
 
-            email = userInfo.Email;
+            input.Name = userInfo.Name;
+            input.UserName = userInfo.Id;
+            input.Email = userInfo.Email ?? userInfo.Id + "@ibosshops.com";
+            input.ExternalId = userInfo.Id;
         }
 
         if (input.Method == LoginMethod.Google)
@@ -138,7 +152,14 @@ public class PikachuAccountAppService(IConfiguration configuration, IdentityUser
             var userInfo = await externalUserAppService.GetGoogleUserDetailsAsync(input.ThirdPartyToken)
                 ?? throw new UserFriendlyException(L["UnableToRetrieveUserDetails", "Google"].Value);
 
-            email = userInfo.Email;
+            input.Name = userInfo.GivenName;
+            if (!userInfo.FamilyName.IsNullOrWhiteSpace())
+            {
+                input.Name += " " + userInfo.FamilyName;
+            }
+            input.UserName = userInfo.Sub;
+            input.Email = userInfo.Email ?? userInfo.Sub + "@ibosshops.com";
+            input.ExternalId = userInfo.Sub;
         }
 
         if (input.Method == LoginMethod.Line)
@@ -146,23 +167,13 @@ public class PikachuAccountAppService(IConfiguration configuration, IdentityUser
             var userInfo = await externalUserAppService.GetLineUserDetailsAsync(input.ThirdPartyToken)
                 ?? throw new UserFriendlyException(L["UnableToRetrieveUserDetails", "Line"].Value);
 
-            email = userInfo.DisplayName;
+            input.Name = userInfo.DisplayName;
+            input.UserName = userInfo.UserId;
+            input.Email = userInfo.UserId + "@ibosshops.com";
+            input.ExternalId = userInfo.UserId;
         }
 
-        var identityUser = new IdentityUser(GuidGenerator.Create(), email, email, CurrentTenant.Id)
-        {
-            Name = input.Name
-        };
-
-        if (!input.Role.IsNullOrWhiteSpace())
-        {
-            var role = (await identityRoleRepository.FindByNormalizedNameAsync(input.Role)) ?? throw new UserFriendlyException("RoleNotFound");
-            identityUser.AddRole(role.Id);
-        }
-
-        (await identityUserManager.CreateAsync(identityUser)).CheckErrors();
-
-        return ObjectMapper.Map<IdentityUser, IdentityUserDto>(identityUser);
+        return input;
     }
 
     private static void ValidateRegister(PikachuRegisterInputDto input)
