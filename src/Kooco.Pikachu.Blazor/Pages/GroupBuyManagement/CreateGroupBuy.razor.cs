@@ -28,6 +28,7 @@ using Kooco.Pikachu.GroupPurchaseOverviews;
 using Kooco.Pikachu.GroupPurchaseOverviews.Interface;
 using Kooco.Pikachu.GroupBuyOrderInstructions;
 using Kooco.Pikachu.GroupBuyOrderInstructions.Interface;
+using Blazorise.Localization;
 
 
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
@@ -39,6 +40,7 @@ public partial class CreateGroupBuy
     private Modal AddLinkModal { get; set; }
     private CreateImageDto SelectedImageDto = new ();
     private const int maxtextCount = 60;
+
     private const int MaxAllowedFilesPerUpload = 5;
     private const int TotalMaxAllowedFiles = 5;
     private const int MaxAllowedFileSize = 1024 * 1024 * 10;
@@ -140,6 +142,7 @@ public partial class CreateGroupBuy
     #region Methods
     protected override async Task OnInitializedAsync()
     {
+       
         CreateGroupBuyDto.EntryURL = _configuration["EntryUrl"]?.TrimEnd('/');
         SetItemList = await _setItemAppService.GetItemsLookupAsync();
         ItemsList = await _itemAppService.GetItemsLookupAsync();
@@ -191,7 +194,10 @@ public partial class CreateGroupBuy
     {
         return Task.CompletedTask;
     }
-
+    private string LocalizeFilePicker(string key, object[]  args)
+    {
+        return L[key];
+    }
     public IEnumerable<GroupBuyModuleType> GetPikachuOneList()
     {
         return [
@@ -225,7 +231,7 @@ public partial class CreateGroupBuy
             out ProductType selectedValue
         ) ? selectedValue : null;
     }
-
+  
     async Task OnLogoUploadAsync(FileChangedEventArgs e)
     {
         if (e.Files.Length > 1)

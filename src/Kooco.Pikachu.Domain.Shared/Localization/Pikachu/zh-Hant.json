@@ -637,6 +637,10 @@
     "SalesAmount": "銷售金額",
     "AmountReceived": "已收款金額",
     "MerchantTradeNo": "商戶貿易號",
-    "TradeNo": "貿易號"
+    "TradeNo": "貿易號",
+
+    "Choose file": "選擇檔案",
+    "No file chosen": "No file chosen",
+    "Or drop files here": "Or drop files here"
   }
 }

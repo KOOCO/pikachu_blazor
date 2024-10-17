@@ -58,8 +58,11 @@ namespace Kooco.Pikachu.Orders
              Guid? splitFromId = null,
              Guid? userId = null,
              int creditDeductionAmount = 0,
-             Guid? creditDeductionRecordId = null
-             )
+             Guid? creditDeductionRecordId = null,
+             int creditRefundAmount = 0,
+             Guid? creditRefundRecordId = null,
+             int? discountCodeAmount=null,
+             Guid? discountAmountId=null)
         {
             //string orderNo = await GenerateOrderNoAsync(groupBuyId);
             var newGuid = Guid.NewGuid();
@@ -99,7 +102,12 @@ namespace Kooco.Pikachu.Orders
                 splitFromId,
                 userId,
                 creditDeductionAmount,
-                creditDeductionRecordId
+                creditDeductionRecordId,
+                creditRefundAmount,
+                creditRefundRecordId,
+                discountAmountId,
+                discountCodeAmount
+
                 );
         }
 

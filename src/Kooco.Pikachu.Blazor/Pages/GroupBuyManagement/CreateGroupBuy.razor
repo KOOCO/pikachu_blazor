@@ -165,7 +165,10 @@
             </div>
             <div class="col-10">
                 <Field>
-                    <FilePicker @ref="LogoPickerCustom"
+                    <FilePicker
+                       FilePickerLocalizer="(key,args)=>LocalizeFilePicker(key,args)"
+                        
+                        @ref="LogoPickerCustom"
                                 Changed="OnLogoUploadAsync"
                                 ShowMode="FilePickerShowMode.List"
                                 Accept=".jpg, .png, .svg ,.jpeg,.webp">

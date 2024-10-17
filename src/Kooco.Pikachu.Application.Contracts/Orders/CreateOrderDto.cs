@@ -73,6 +73,15 @@ public class CreateOrderDto
     public decimal? DeliveryCostForFreeze { get; set; }
     public decimal? DeliveryCostForFrozen { get; set; }
     public decimal? DeliveryCost { get; set; }
-
+    public int? DiscountCodeAmount { get; set; }
+    public Guid? DiscountCodeId { get; set; }
+    [RequiredIfRefundOrDeduction]
     public Guid? UserId { get; set; }
+   
+    public int RefundAmount { get; set; }
+
+    public Guid? RefundRecordId { get; set; }
+    public int CreditDeductionAmount { get; set; }
+
+    public Guid? CreditDeductionRecordId { get; set; }
 }
