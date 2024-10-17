@@ -10,6 +10,7 @@ using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Microsoft.Extensions.Hosting;
+using Volo.Abp.Data;
 
 namespace Kooco.Pikachu.TenantManagement
 {
@@ -23,20 +24,32 @@ namespace Kooco.Pikachu.TenantManagement
         {
             var context = await GetDbContextAsync();
             var tenant = context.Tenants.Any(u => EF.Property<string>(u, "ShortCode") == shortCode);
-            return  tenant;
+            return tenant;
         }
-        public async Task<bool> CheckShortCodeForUpdate(string shortCode,Guid Id, CancellationToken cancellationToken = default)
+        public async Task<bool> CheckShortCodeForUpdate(string shortCode, Guid Id, CancellationToken cancellationToken = default)
         {
             var context = await GetDbContextAsync();
-            var tenant = context.Tenants.Any(u => EF.Property<string>(u, "ShortCode") == shortCode && u.Id!=Id);
+            var tenant = context.Tenants.Any(u => EF.Property<string>(u, "ShortCode") == shortCode && u.Id != Id);
             return tenant;
         }
 
         public async Task<Tenant> FindByShortCodeAsync(string shortCode, CancellationToken cancellationToken = default)
         {
             var context = await GetDbContextAsync();
-            var tenant = context.Tenants.Where(u => EF.Property<string>(u, "ShortCode") == shortCode );
+            var tenant = context.Tenants.Where(u => EF.Property<string>(u, "ShortCode") == shortCode);
             return await tenant.FirstOrDefaultAsync(cancellationToken: cancellationToken);
+        }
+
+        public async Task<string?> FindTenantDomainAsync(Guid? id)
+        {
+            var context = await GetDbContextAsync();
+            var tenant = await context.Tenants.Where(t => t.Id == id)
+                            .FirstOrDefaultAsync();
+            if (tenant is null)
+            {
+                return default;
+            }
+            return tenant.GetProperty<string?>(Constant.Domain);
         }
     }
 }

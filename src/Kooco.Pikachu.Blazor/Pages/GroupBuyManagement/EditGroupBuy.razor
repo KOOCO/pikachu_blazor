@@ -7,6 +7,7 @@
 @using Kooco.Pikachu.Images
 @using Kooco.Pikachu.Items.Dtos;
 @using Kooco.Pikachu.Orders
+@using Kooco.Pikachu.Tenants
 @using Microsoft.Extensions.Configuration;
 @using Pikachu.Items;
 @using Pikachu.Localization;
@@ -15,7 +16,8 @@
 @using System.ComponentModel
 @using Blazorise.Components
 @using Blazorise.LoadingIndicator;
-
+@inherits PikachuComponentBase
+@inject IMyTenantAppService MyTenantAppService
 @inject IGroupBuyAppService AppService
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<PikachuResource> L

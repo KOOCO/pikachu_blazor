@@ -7,8 +7,8 @@
     "RefundChannel": "退款渠道",
     "AutomaticRefund": "自動退款",
     "ManualProcessing": "人工處理",
-    "FrontPage": "頭版",
-    "CopyPageLink": "複製連結頁面",
+    "FrontPage": "前台頁面",
+    "CopyPageLink": "複製連結",
     "7-11": "7-11",
     "7-11 frozen": "7-11冷凍",
     "7-11C2C": "7-11 C2C",
@@ -896,6 +896,7 @@
     "TenantShortCodeRequired": "請填寫統一編號。",
     "TenantShortCode": "統一編號",
     "DomainIsRequired": "請填寫域名。",
-    "Domain": "域名"
+    "Domain": "域名",
+    "InvalidUrl": "請提供一個以 http 或 https 開頭的完整 URL。"
   }
 }
