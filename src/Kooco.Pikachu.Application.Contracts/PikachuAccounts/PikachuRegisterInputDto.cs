@@ -32,4 +32,7 @@ public class PikachuRegisterInputDto
 
     [JsonIgnore]
     public virtual string? Role { get; set; }
+
+    [JsonIgnore]
+    public virtual string? ExternalId { get; set; }
 }

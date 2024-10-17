@@ -112,7 +112,7 @@ public partial class CustomTenantManagement
 
         if (ShortCode == null)
         {
-            await _uiMessageService.Warn(L["Short Code Can't Null"]);
+            await _uiMessageService.Warn(_L["TenantShortCodeRequired"]);
             return;
         }
         var check = await _myTenantAppService.CheckShortCodeForCreateAsync(ShortCode);

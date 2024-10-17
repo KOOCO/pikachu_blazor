@@ -20,7 +20,7 @@
         margin-top: 10px;
     }
 
-    .drag-drop-span i{
+    .drag-drop-span i {
         cursor: pointer;
     }
 </style>
@@ -37,20 +37,24 @@
                 <div class="col-2">
                     <label>@L["ItemName"]</label>
                 </div>
-                <div class="col-9">
-                    <TextEdit @bind-Text="@CreateItemDto.ItemName" MaxLength="@MaxTextCount" />
-                </div>
-                <div class="col-1">
-                    <span>
-                        @(string.IsNullOrWhiteSpace(CreateItemDto.ItemName) ? 60 : (MaxTextCount - CreateItemDto.ItemName.Count()))/@MaxTextCount
-                    </span>
+                <div class="col-10">
+                    <Addons>
+                        <Addon AddonType="AddonType.Body">
+                            <TextEdit @bind-Text="@CreateItemDto.ItemName" MaxLength="@MaxTextCount" />
+                        </Addon>
+                        <Addon AddonType="AddonType.End">
+                            <AddonLabel Style="background-color: #f5f5f7">
+                                @(string.IsNullOrWhiteSpace(CreateItemDto.ItemName) ? 0 : (CreateItemDto.ItemName.Count()))/@MaxTextCount
+                            </AddonLabel>
+                        </Addon>
+                    </Addons>
                 </div>
             </div>
             <div class="row">
                 <div class="col-2">
                     <label>@L["ItemImage"]</label>
                 </div>
-                <div class="col-10 row">
+                <div class="col-10">
                     <Field>
                         <FilePicker @ref="FilePickerCustom"
                                     Multiple
@@ -65,7 +69,7 @@
                                     </Div>
                                     <Div Class="ps-2">
                                         <Div>
-                                                @if (context.File.Status == FileEntryStatus.Ready)
+                                            @if (context.File.Status == FileEntryStatus.Ready)
                                             {
                                                 <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
                                             }
@@ -95,7 +99,7 @@
                     </Field>
                 </div>
             </div>
-            @if(CreateItemDto.ItemImages.Count > 0)
+            @if (CreateItemDto.ItemImages.Count > 0)
             {
                 <div Class="row">
                     <div class="col-2"></div>
@@ -103,7 +107,7 @@
                         <div class="image-list-container" ondragover="event.preventDefault();">
                             @foreach (var image in CreateItemDto.ItemImages.OrderBy(x => x.SortNo))
                             {
-                                
+
                                 <div class="d-flex flex-column align-items-center justify-content-center mb-2">
                                     <div class="image-container">
                                         <Image class="blur-image" Source="@image.ImageUrl" Text="Item Image" Fluid />
@@ -112,17 +116,16 @@
                                         </button>
                                     </div>
                                     <div class="w-100 text-center"
-                                            draggable="true"                 
-                                            @ondrop="@(()=> Drop(image))" 
-                                            @ondrag="@(()=> StartDrag(image))"
-                                            >
+                                         draggable="true"
+                                         @ondrop="@(()=> Drop(image))"
+                                         @ondrag="@(()=> StartDrag(image))">
                                         <span class="drag-drop-span pb-2">
                                             <i class="fa-solid fa-bars fa-xl"></i>
                                         </span>
                                     </div>
                                 </div>
                             }
-                            
+
                         </div>
                     </div>
                 </div>
@@ -132,12 +135,20 @@
                 <div class="col-2">
                     <fieldLabel>@L["ItemDescription"]</fieldLabel>
                 </div>
-                <div class="col-9">
+                <div class="col-10">
                     <div class="col-12">
-                        <fieldLabel></fieldLabel>
-                        <TextEdit Placeholder="@L["ItemDescriptionTitle"]" @bind-Text="@CreateItemDto.ItemDescriptionTitle" />
+                        <Addons>
+                            <Addon AddonType="AddonType.Body">
+                                <TextEdit Placeholder="@L["ItemDescriptionTitle"]" @bind-Text="@CreateItemDto.ItemDescriptionTitle" />
+                            </Addon>
+                            <Addon AddonType="AddonType.End">
+                                <AddonLabel Style="background-color: #f5f5f7">
+                                    @(string.IsNullOrWhiteSpace(CreateItemDto.ItemDescriptionTitle) ? 0 : (CreateItemDto.ItemDescriptionTitle.Count()))/@MaxTextCount
+                                </AddonLabel>
+                            </Addon>
+                        </Addons>
                     </div>
-                    <div class=" col-12">
+                    <div class="col-12">
                         <Blazored.TextEditor.BlazoredTextEditor @ref="@QuillHtml">
                             <ToolbarContent>
                                 <select class="ql-header">
@@ -175,32 +186,27 @@
                         </Blazored.TextEditor.BlazoredTextEditor>
                     </div>
                 </div>
-                <div class="col-1">
-                    <span>
-                        @(string.IsNullOrWhiteSpace(CreateItemDto.ItemDescriptionTitle) ? 60 : (MaxTextCount - CreateItemDto.ItemDescriptionTitle.Count()))/@MaxTextCount
-                    </span>
-                </div>
             </div>
             <br />
-           @*  <div class="row">
-                <div class="col-2">
-                    <fieldLabel>@L["ItemTags"]</fieldLabel>
-                </div>
-                <div class="col-10">
-                    <div class="form-control">
-                        @foreach (var item in ItemTags)
-                        {
-                            <Badge class="item-tags" CloseClicked="@(() => HandleItemTagDelete(item))">@item</Badge>
-                        }
+            @*  <div class="row">
+            <div class="col-2">
+            <fieldLabel>@L["ItemTags"]</fieldLabel>
+            </div>
+            <div class="col-10">
+            <div class="form-control">
+            @foreach (var item in ItemTags)
+            {
+            <Badge class="item-tags" CloseClicked="@(() => HandleItemTagDelete(item))">@item</Badge>
+            }
 
-                        <div class="input-container">
-                            <input type="text" id="tag-input" class="tag-input" placeholder="New Tag"
-                            @bind-value="TagInputValue"
-                            @onkeyup="HandleItemTagInputKeyUp" />
-                            <i class="tag-input-placeholder-icon fa fa-plus"></i>
-                        </div>
-                    </div>
-                </div>
+            <div class="input-container">
+            <input type="text" id="tag-input" class="tag-input" placeholder="New Tag"
+            @bind-value="TagInputValue"
+            @onkeyup="HandleItemTagInputKeyUp" />
+            <i class="tag-input-placeholder-icon fa fa-plus"></i>
+            </div>
+            </div>
+            </div>
             </div> *@
             <div class="row my-3">
                 <div class="col-2">
@@ -211,7 +217,7 @@
                     @foreach (var item in Attributes)
                     {
                         <div class="input-group">
-                            <TextEdit Placeholder="@L["ItemStyleKey"]"  @bind-Text="@item.Name" />
+                            <TextEdit Placeholder="@L["ItemStyleKey"]" @bind-Text="@item.Name" />
                             @if (Attributes?.Count > 1)
                             {
                                 <Button Class="btn btn-danger" @onclick="@(async () => await DeleteAttribute(item))"><i class="fa fa-trash"></i></Button>
@@ -225,8 +231,8 @@
 
                             <div class="input-container">
                                 <input type="text" class="tag-input" placeholder="New Tag"
-                                @bind-value="item.InputTagValue"
-                                @onkeyup="@(async (e) => await HandleAttributeTagInputConfirm(item.Id, item.InputTagValue, e))" />
+                                       @bind-value="item.InputTagValue"
+                                       @onkeyup="@(async (e) => await HandleAttributeTagInputConfirm(item.Id, item.InputTagValue, e))" />
                                 <i class="tag-input-placeholder-icon fa fa-plus"></i>
                             </div>
                         </div>
@@ -259,7 +265,7 @@
                                         @if (ItemDetailsList != null && ItemDetailsList.Count > 0)
                                         {
                                             <Span Class="d-block pt-1 text-primary cursor-pointer"
-                                            @onclick="OpenGenerateSKUModal">
+                                                  @onclick="OpenGenerateSKUModal">
                                                 @L["GenerateSKU"]
                                             </Span>
                                         }
@@ -267,14 +273,14 @@
                                     <TableHeaderCell Class="text-center">
                                         @L["SellingPrice"]
                                         <Span Class="d-block pt-1 text-primary cursor-pointer"
-                                        @onclick="() => CopyToAll(nameof(CreateItemDetailsDto.SellingPrice))">
+                                              @onclick="() => CopyToAll(nameof(CreateItemDetailsDto.SellingPrice))">
                                             @L["CopyToAll"]
                                         </Span>
                                     </TableHeaderCell>
                                     <TableHeaderCell Class="text-center">
                                         @L["GroupBuyPrice"]
                                         <Span Class="d-block pt-1 text-primary cursor-pointer"
-                                        @onclick="() => CopyToAll(nameof(CreateItemDetailsDto.GroupBuyPrice))">
+                                              @onclick="() => CopyToAll(nameof(CreateItemDetailsDto.GroupBuyPrice))">
                                             @L["CopyToAll"]
                                         </Span>
                                     </TableHeaderCell>
@@ -282,28 +288,28 @@
                                     <TableHeaderCell Class="text-center">
                                         @L["SaleableQuantity"]
                                         <Span Class="d-block pt-1 text-primary cursor-pointer"
-                                        @onclick="() => CopyToAll(nameof(CreateItemDetailsDto.SaleableQuantity))">
+                                              @onclick="() => CopyToAll(nameof(CreateItemDetailsDto.SaleableQuantity))">
                                             @L["CopyToAll"]
                                         </Span>
                                     </TableHeaderCell>
                                     <TableHeaderCell Class="text-center">
                                         @L["PreorderQuantity"]
                                         <Span Class="d-block pt-1 text-primary cursor-pointer"
-                                        @onclick="() => CopyToAll(nameof(CreateItemDetailsDto.PreOrderableQuantity))">
+                                              @onclick="() => CopyToAll(nameof(CreateItemDetailsDto.PreOrderableQuantity))">
                                             @L["CopyToAll"]
                                         </Span>
                                     </TableHeaderCell>
                                     <TableHeaderCell Class="text-center">
                                         @L["SaleablePreorderQuantity"]
                                         <Span Class="d-block pt-1 text-primary cursor-pointer"
-                                        @onclick="() => CopyToAll(nameof(CreateItemDetailsDto.SaleablePreOrderQuantity))">
+                                              @onclick="() => CopyToAll(nameof(CreateItemDetailsDto.SaleablePreOrderQuantity))">
                                             @L["CopyToAll"]
                                         </Span>
                                     </TableHeaderCell>
                                     <TableHeaderCell Class="text-center">
                                         @L["LimitQuantity"]
                                         <Span Class="d-block pt-1 text-primary cursor-pointer"
-                                        @onclick="() => CopyToAll(nameof(CreateItemDetailsDto.LimitQuantity))">
+                                              @onclick="() => CopyToAll(nameof(CreateItemDetailsDto.LimitQuantity))">
                                             @L["CopyToAll"]
                                         </Span>
                                     </TableHeaderCell>
@@ -372,10 +378,10 @@
                                                                     <Div Flex="Flex.JustifyContent.Between">
                                                                         <Div>
                                                                             <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
-                                                                                <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
-                                                                            </Div>
-                                                                            <Div Class="ps-2">
-                                                                                <Div>
+                                                                            <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                                                        </Div>
+                                                                        <Div Class="ps-2">
+                                                                            <Div>
                                                                                 @if (context.File.Status is FileEntryStatus.Ready)
                                                                                 {
                                                                                     <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
@@ -415,10 +421,10 @@
                                                                     <Div Class="image-list-container">
                                                                         <Div Class="image-container">
                                                                             <Image Class="blur-image" Source="@item.Image" Text="Logo Image" Fluid />
-                                                                             <Button Class="delete-button"
-                                                                                     Clicked="@(async (e) => await DeleteImageAsync(e, item))">
-                                                                                 <i class="fa fa-trash" />
-                                                                             </Button>
+                                                                            <Button Class="delete-button"
+                                                                                    Clicked="@(async (e) => await DeleteImageAsync(e, item))">
+                                                                                <i class="fa fa-trash" />
+                                                                            </Button>
                                                                         </Div>
                                                                     </Div>
                                                                 </Div>
@@ -443,74 +449,54 @@
                     <label>@L["CommodityAttributes"]</label>
                 </div>
                 <div class="col-10">
-                  @*   <div class="row">
-                        <div class="col-3">
-                            <label>@L["TimeLimitPeriod"]</label>
-                        </div>
-                        <div class="col-3">
-                            <DateEdit @bind-Date="CreateItemDto.LimitAvaliableTimeStart" Style="width:100%" Placeholder="@L["StartDate"].ToString()" TValue="DateTime" />
-                        </div>
-                        <div class="col-3">
-                            <DateEdit @bind-Date="CreateItemDto.LimitAvaliableTimeEnd" Style="width:100%" Placeholder="@L["EndDate"].ToString()" TValue="DateTime" />
-                        </div>
+                    @*   <div class="row">
+                    <div class="col-3">
+                    <label>@L["TimeLimitPeriod"]</label>
+                    </div>
+                    <div class="col-3">
+                    <DateEdit @bind-Date="CreateItemDto.LimitAvaliableTimeStart" Style="width:100%" Placeholder="@L["StartDate"].ToString()" TValue="DateTime" />
+                    </div>
+                    <div class="col-3">
+                    <DateEdit @bind-Date="CreateItemDto.LimitAvaliableTimeEnd" Style="width:100%" Placeholder="@L["EndDate"].ToString()" TValue="DateTime" />
+                    </div>
                     </div> *@
+
                     <div class="row">
-                        <div class="col-3">
-                            <label>@L["ShareProfit"]</label>
+                        <div class="col-2 text-end">
+                            <label>@L["FreeShipping"]</label>
                         </div>
-                        <div class="col-3">
+                        <div class="col-2">
+                            <Switch TValue="bool" @bind-Checked="@CreateItemDto.IsFreeShipping"></Switch>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-2 text-end">
+                            <label class="pt-2">@L["ShareProfit"]</label>
+                        </div>
+                        <div class="col-4">
                             <InputNumber class="form-control" TValue="float" @bind-Value="@CreateItemDto.ShareProfit" />
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-3">
-                            <label>@L["FreeShipping"]</label>
+                        <div class="col-2 text-end">
+                            <label class="pt-2">@L["TaxType"]</label>
                         </div>
-                        <div class="col-3">
-                            <Switch TValue="bool" @bind-Checked="@CreateItemDto.IsFreeShipping"></Switch>
-                        </div>
-                    </div>
-                   @*  <div class="row">
-                        <div class="col-3">
-                            <label>@L["Returnable"]</label>
-                        </div>
-                        <div class="col-3">
-                            <Switch TValue="bool" @bind-Checked="CreateItemDto.IsReturnable"></Switch>
-                        </div>
-                    </div> *@
-                    @* <div class="row">
-                        <div class="col-3">
-                            <label>@L["ShippingMethod"]</label>
-                        </div>
-                        <div class="col-3">
-                            <SelectList TItem="EnumValueDto"
-                                        TValue="int"
-                                        Data="@ShippingMethods"
-                                        TextField="@((item)=>item.Text)"
-                                        ValueField="@((item)=>item.Id)"
-                            @bind-SelectedValue="@CreateItemDto.ShippingMethodId" />
-                        </div>
-                    </div> *@
-                    <div class="row">
-                        <div class="col-3">
-                            <label>@L["TaxType"]</label>
-                        </div>
-                        <div class="col-3">
+                        <div class="col-4">
                             <SelectList TItem="EnumValueDto"
                                         TValue="int"
                                         Data="@TaxTypes"
                                         TextField="@((item)=>L[item.Text])"
                                         ValueField="@((item)=>item.Id)"
-                            @bind-SelectedValue="@CreateItemDto.TaxTypeId" />
+                                        @bind-SelectedValue="@CreateItemDto.TaxTypeId" />
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-3">
-                            <label>@L["ItemTemperature"]</label>
+                        <div class="col-2 text-end">
+                            <label class="pt-2">@L["ItemTemperature"]</label>
                         </div>
-                        <div class="col-3">
+                        <div class="col-4">
                             <Select TValue="ItemStorageTemperature?" Class="form-select"
-                            @bind-SelectedValue="@CreateItemDto.ItemStorageTemperature">
+                                    @bind-SelectedValue="@CreateItemDto.ItemStorageTemperature">
                                 @foreach (var enumValue in Enum.GetValues(typeof(ItemStorageTemperature)))
                                 {
                                     <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
@@ -518,6 +504,27 @@
                             </Select>
                         </div>
                     </div>
+                    @*  <div class="row">
+                    <div class="col-3">
+                    <label>@L["Returnable"]</label>
+                    </div>
+                    <div class="col-3">
+                    <Switch TValue="bool" @bind-Checked="CreateItemDto.IsReturnable"></Switch>
+                    </div>
+                    </div> *@
+                    @* <div class="row">
+                    <div class="col-3">
+                    <label>@L["ShippingMethod"]</label>
+                    </div>
+                    <div class="col-3">
+                    <SelectList TItem="EnumValueDto"
+                    TValue="int"
+                    Data="@ShippingMethods"
+                    TextField="@((item)=>item.Text)"
+                    ValueField="@((item)=>item.Id)"
+                    @bind-SelectedValue="@CreateItemDto.ShippingMethodId" />
+                    </div>
+                    </div> *@
                 </div>
             </div>
         </div>
@@ -611,9 +618,9 @@
                                         <label class="form-label">@L["CustomValue"]</label>
                                     </div>
                                     <div class="col-lg-10 col-md-10">
-                                    <input type="text" class="form-control form-control-sm"
-                                           value="@item.CustomValue"
-                                    @oninput="((ChangeEventArgs e) => CustomValueChanged(item, e))" />
+                                        <input type="text" class="form-control form-control-sm"
+                                               value="@item.CustomValue"
+                                               @oninput="((ChangeEventArgs e) => CustomValueChanged(item, e))" />
                                     </div>
                                 }
                                 else
@@ -634,7 +641,7 @@
                                             </Dropdown>
                                             <input type="number" min="0" max="6" class="form-control form-control-sm"
                                                    value="@item.CharactersLength"
-                                            @oninput="((ChangeEventArgs e) => CharactersLengthInputChange(item, e))" />
+                                                   @oninput="((ChangeEventArgs e) => CharactersLengthInputChange(item, e))" />
                                         </div>
 
                                     </div>
@@ -664,5 +671,5 @@
 </Modal>
 
 @code {
-   
+
 }
