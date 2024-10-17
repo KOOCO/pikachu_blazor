@@ -9,6 +9,12 @@ public class ExternalUserAppService : PikachuAppService, IExternalUserAppService
     public async Task<FacebookUserDto?> GetFacebookUserDetailsAsync(string accessToken)
     {
         var client = new RestClient("https://graph.facebook.com/v10.0");
+
+        //TODO: Remove this code after testing
+        //var request1 = new RestRequest("me/permissions", Method.Get);
+        //request1.AddParameter("access_token", accessToken);
+        //var response1 = await client.ExecuteAsync(request1);
+
         var request = new RestRequest("me", Method.Get);
         request.AddParameter("fields", "id,name,email");
         request.AddParameter("access_token", accessToken);
