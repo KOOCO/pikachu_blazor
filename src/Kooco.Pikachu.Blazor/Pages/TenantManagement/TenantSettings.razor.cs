@@ -141,6 +141,7 @@ public partial class TenantSettings
     {
         ViewMode = false;
         await PrivacyPolicyHtml.LoadHTMLContent(Entity.PrivacyPolicy);
+        await PrivacyPolicyHtml.EnableEditor(true);
         await InvokeAsync(StateHasChanged);
     }
 
@@ -153,6 +154,7 @@ public partial class TenantSettings
             Entity = ObjectMapper.Map<TenantSettingsDto, UpdateTenantSettingsDto>(TenantSettingsDto) ?? new();
             ValidationsRef?.ClearAll();
             await PrivacyPolicyHtml.LoadHTMLContent(Entity.PrivacyPolicy);
+            await PrivacyPolicyHtml.EnableEditor(false);
         }
         catch (Exception ex)
         {
