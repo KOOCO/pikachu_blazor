@@ -255,7 +255,7 @@
                             <NumericEdit @bind-Value="@ShareProfitPercentage" />
                         </Field>
                         <Field>
-                            <FieldLabel>@_L["ShortCode"]</FieldLabel>
+                            <FieldLabel>@_L["TenantShortCode"]<Span>*</Span></FieldLabel>
                             <Validation UsePattern>
                                 <TextEdit Pattern="^[A-Za-z0-9]{8}$" MaxLength="8" @bind-Text="@ShortCode">
                                     <Feedback>
@@ -473,7 +473,7 @@
                             <NumericEdit @bind-Value="@ShareProfitPercentage" />
                         </Field>
                         <Field>
-                            <FieldLabel>@_L["ShortCode"]</FieldLabel>
+                            <FieldLabel>@_L["TenantShortCode"]<Span>*</Span></FieldLabel>
                             <Validation UsePattern>
                                 <TextEdit Pattern="^[A-Za-z0-9]{8}$" MaxLength="8" @bind-Text="@ShortCode">
                                     <Feedback>

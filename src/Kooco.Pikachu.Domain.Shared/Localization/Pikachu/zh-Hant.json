@@ -649,12 +649,12 @@
     "TCatDeliverySevenElevenNormal": "黑貓7-11常溫",
     "TCatDeliverySevenElevenFreeze": "黑貓7-11冷藏",
     "TCatDeliverySevenElevenFrozen": "黑貓7-11冷凍",
-    
+
     "OuterIsland": "外島",
-  
+
     "TCatDelivery": "黑貓宅急便",
     "TCatSevenToEleven": "黑貓7-11",
-   
+
     "MembersManagement": "會員管理",
     "Permission:Members": "會員管理",
     "Permission:Create": "新增",
@@ -892,6 +892,8 @@
     "CodeIsExpired": "該編碼已過期,請再試一次.",
     "CodeDoesnotMatch": "提供之編碼為無效.",
     "DefaultPrivacyPolicy": "預設隱私政策",
-    "LoginConfigurationsUpdated": "登入設定已更新!"
+    "LoginConfigurationsUpdated": "登入設定已更新!",
+    "TenantShortCodeRequired": "請填寫統一編號。",
+    "TenantShortCode": "統一編號"
   }
 }
