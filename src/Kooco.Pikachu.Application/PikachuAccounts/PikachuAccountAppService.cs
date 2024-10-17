@@ -119,7 +119,7 @@ public class PikachuAccountAppService(IConfiguration configuration, IdentityUser
             _ => null,
         };
 
-        if (property.IsNullOrWhiteSpace())
+        if (!property.IsNullOrWhiteSpace())
         {
             identityUser.RemoveProperty(property);
             identityUser.SetProperty(property, input.ExternalId);
