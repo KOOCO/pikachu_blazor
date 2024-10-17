@@ -301,6 +301,7 @@
     "Open": "開啟",
     //Orders
     "Order": "訂單",
+    "Orders": "訂單",
     "OrderCreated": "訂單成立",
     "OrderDate": "訂購日期",
     "OrderDelivery": "物流單",
@@ -662,6 +663,7 @@
     "Menu:Members": "會員管理",
     "Menu:MembersList": "會員列表",
     "BasicDetails": "基本資料",
+    "Details": "詳細資料",
     "UserId": "會員編號",
     "LoginMethod": "登入方式",
     "DataManagement": "資料管理",
