@@ -1322,148 +1322,355 @@
                                         </Div>
                                     }
 
-                                    <div class="row mt-2">
-                                        @if (module.GroupBuyModuleType is GroupBuyModuleType.ProductGroupModule)
+                                    @if (module.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
+                                    {
+                                        foreach (ProductRankingCarouselModule productModule in ProductRankingCarouselModules)
                                         {
-                                            <Div Class="col-md-6 text-left mb-3">
-                                                <InputText class="form-control" @bind-Value="module.ProductGroupModuleTitle" />
-                                            </Div>
-                                            <Div Class="col-md-6 text-right mb-3">
-                                                <select class="form-select form-select" @onchange=@((e) => module.ProductGroupModuleImageSize = e.Value.ToString())>
-                                                    <option value="">-- Select Style --</option>
-                                                    @foreach (string size in ImageSizes)
-                                                    {
-                                                        @if (module.ProductGroupModuleImageSize == size)
+                                            <Div Class="col-12 d-flex">
+                                                <Div Class="col-5">
+                                                    <Div Class="row mt-2">
+                                                        @foreach (ItemWithItemTypeDto selectedItem in productModule.Selected)
                                                         {
-                                                            <option value="@size" selected>@L[size]</option>
-                                                        }
+                                                            <div class="row-cols-12 mt-@(productModule.Selected.IndexOf(selectedItem) > 0 ? "5" : "2")"
+                                                                 style="@(productModule.Selected.IndexOf(selectedItem) > 0 ? "margin-top: 75px !important" : "")">
+                                                                <label>Products</label>
+                                                                <Autocomplete TItem="ItemWithItemTypeDto"
+                                                                              TValue="Guid?"
+                                                                              Data="@ItemsList"
+                                                                              TextField="@(( item ) => item.Name)"
+                                                                              ValueField="@(( item ) => item.Id)"
+                                                                              Placeholder="Search..."
+                                                                              Filter="AutocompleteFilter.StartsWith"
+                                                                              CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                                                                              HighlightSearch
+                                                                              Immediate="true"
+                                                                              SelectedValue="selectedItem.Id"
+                                                                              SelectedValueChanged="(id) => OnSelectedValueChanged(id, productModule, selectedItem)">
+                                                                     <NotFoundContent> @L["NotFound"] </NotFoundContent>
+                                                                </Autocomplete>
+                                                            </div>
 
-                                                        else 
-                                                        {
-                                                            <option value="@size">@L[size]</option>
+                                                            @if (selectedItem.Id != Guid.Empty)
+                                                            {
+                                                                string? firstImage;
+                                                                if (selectedItem.ItemType == ItemType.Item)
+                                                                {
+                                                                    firstImage = selectedItem.Item?.Images?.FirstOrDefault()?.ImageUrl;
+                                                                }
+                                                                else
+                                                                {
+                                                                    firstImage = selectedItem.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
+                                                                }
+                                                                <div class="d-flex mt-3">
+                                                                    @if (firstImage != null)
+                                                                    {
+                                                                        <div class="w-100 text-center">
+                                                                            <img src="@firstImage" class="img-fluid" />
+                                                                            @if (module.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
+                                                                            {
+                                                                                <div class="row mt-2">
+                                                                                    <h4 class="text-center mt-2">
+                                                                                        <strong>@selectedItem.Name</strong>
+                                                                                    </h4>
+                                                                                    @if (selectedItem.Item != null)
+                                                                                    {
+                                                                                        var itemDetails = selectedItem.Item?.ItemDetails;
+                                                                                        @if (itemDetails != null && itemDetails.Where(x => x.Attribute1Value != null).Count() > 0)
+                                                                                        {
+                                                                                            <div class="mt-2">
+                                                                                                <select class="form-control dropdown">
+                                                                                                    @foreach (var item in itemDetails.DistinctBy(i => i.Attribute1Value))
+                                                                                                    {
+                                                                                                        <option>
+                                                                                                            @item.Attribute1Value
+                                                                                                        </option>
+                                                                                                    }
+                                                                                                </select>
+                                                                                            </div>
+                                                                                        }
+                                                                                        @if (itemDetails != null && itemDetails.Where(x => x.Attribute2Value != null).Count() > 0)
+                                                                                        {
+                                                                                            <div class="mt-2">
+                                                                                                <select class="form-control dropdown">
+                                                                                                    @foreach (var item in itemDetails.DistinctBy(i => i.Attribute2Value))
+                                                                                                    {
+                                                                                                        <option>
+                                                                                                            @item.Attribute2Value
+                                                                                                        </option>
+                                                                                                    }
+                                                                                                </select>
+                                                                                            </div>
+                                                                                        }
+                                                                                        @if (itemDetails != null && itemDetails.Where(x => x.Attribute3Value != null).Count() > 0)
+                                                                                        {
+                                                                                            <div class="mt-2">
+                                                                                                <select class="form-control dropdown">
+                                                                                                    @foreach (var item in itemDetails.DistinctBy(i => i.Attribute3Value))
+                                                                                                    {
+                                                                                                        <option>
+                                                                                                            @item.Attribute3Value
+                                                                                                        </option>
+                                                                                                    }
+                                                                                                </select>
+                                                                                            </div>
+                                                                                        }
+                                                                                    }
+                                                                                </div>
+                                                                            }
+                                                                        </div>
+                                                                    }
+                                                                </div>
+                                                            }
                                                         }
-                                                    }
-                                                </select>
+                                                    </Div>
+                                                </Div>
+                                                <Div Class="col-1" />
+                                                <Div Class="col-6">
+                                                    <Div Class="row">
+                                                        <Div Class="col-12">
+                                                            <Div Class="col-2 pb-1">
+                                                                <Label>@L["Carousel"] <Span Class="text-danger">*</Span></Label>
+                                                            </Div>
+                                                            <Field>
+                                                                <FilePicker @ref="ProductRankingCarouselPickers[ProductRankingCarouselModules.IndexOf(productModule)]"
+                                                                            Disabled="productModule.Images.Count >= 5"
+                                                                            Multiple
+                                                                            Changed="@(async (e) => await OnImageModuleUploadAsync(e,
+                                                                                                                                   productModule.Images,
+                                                                                                                                   ProductRankingCarouselModules.IndexOf(productModule) + 1,
+                                                                                                                                   ProductRankingCarouselPickers[ProductRankingCarouselModules.IndexOf(productModule)],
+                                                                                                                                   ImageType.GroupBuyProductRankingCarousel))"
+                                                                            ShowMode="FilePickerShowMode.List"
+                                                                            Accept=".jpg, .png, .svg, .jpeg, .webp">
+                                                                    <FileTemplate>
+                                                                        <Div Flex="Flex.JustifyContent.Between">
+                                                                            <Div>
+                                                                                <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
+                                                                                <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                                                            </Div>
+                                                                            <Div Class="ps-2">
+                                                                                <Div>
+                                                                                    @if (context.File.Status is FileEntryStatus.Ready)
+                                                                                    {
+                                                                                        <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
+                                                                                    }
+                                                                                    else if (context.File.Status is FileEntryStatus.Uploading)
+                                                                                    {
+                                                                                        <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
+                                                                                    }
+                                                                                    else if (context.File.Status is FileEntryStatus.Uploaded)
+                                                                                    {
+                                                                                        <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
+                                                                                    }
+                                                                                    else if (context.File.Status is FileEntryStatus.Error)
+                                                                                    {
+                                                                                        <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
+                                                                                    }
+                                                                                </Div>
+                                                                                <Div>
+                                                                                    <Icon TextColor="TextColor.Danger" Name="IconName.Delete" class="cursor-pointer" Clicked="context.RemoveFile" />
+                                                                                </Div>
+                                                                            </Div>
+                                                                        </Div>
+                                                                    </FileTemplate>
+                                                                    <ButtonsTemplate>
+                                                                        <Progress Value="@ProductRankingCarouselPickers[ProductRankingCarouselModules.IndexOf(productModule)].GetProgressPercentage()" />
+                                                                    </ButtonsTemplate>
+                                                                </FilePicker>
+                                                            </Field>
+                                                            @if (productModule.Images.Count > 0)
+                                                            {
+                                                                <Div Class="row">
+                                                                    <Div Class="col-12">
+                                                                        <Div Class="image-list-container d-block flex-nowrap">
+                                                                            <Div Class="d-flex flex-wrap">
+                                                                                @foreach (CreateImageDto image in productModule.Images)
+                                                                                {
+                                                                                    <Div Class="image-container">
+                                                                                        <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image" Fluid />
+                                                                                        <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName,
+                                                                                                                                                  productModule.Images,
+                                                                                                                                                  ImageType.GroupBuyProductRankingCarousel)">
+                                                                                            <i class="fa fa-trash"></i>
+                                                                                        </button>
+                                                                                    </Div>
+                                                                                }
+                                                                            </Div>
+                                                                        </Div>
+                                                                    </Div>
+                                                                </Div>
+                                                            }
+                                                        </Div>
+                                                        <Div Class="col-12">
+                                                            <Div Class="col-2 pb-1">
+                                                                <Label>@L["Title"] <Span Class="text-danger">*</Span></Label>
+                                                            </Div>
+                                                            <Div Class="col-12 pb-1">
+                                                                <TextEdit @bind-Text="productModule.Title" />
+                                                            </Div>
+                                                            <Div Class="col-2 pb-1">
+                                                                <Label>@L["SubTitle"]</Label>
+                                                                </Div>
+                                                            <Div Class="col-12 pb-1">
+                                                                <TextEdit @bind-Text="@productModule.SubTitle" />
+                                                            </Div>
+                                                            <Div Class="col-2 pb-1">
+                                                                <Label>@L["BodyText"]</Label>
+                                                            </Div>
+                                                            <Div Class="col-12 pb-1">
+                                                                <TextEdit @bind-Text="@productModule.Content" />
+                                                            </Div>
+                                                        </Div>
+                                                    </Div>
+                                                </Div>
                                             </Div>
                                         }
-                                        @foreach(var selectedItem in module.Selected)
-                                        {
-                                            <div class="col-@(12 / module.Selected.Count)">
-                                                @if(module.GroupBuyModuleType is GroupBuyModuleType.IndexAnchor)
-                                                {
-                                                    <Div Class="col-12 mb-2">
-                                                        <InputText class="form-control" @bind-Value="selectedItem.Name"
-                                                                   @oninput="(e) => OnSelectedValueChanged(null, module, selectedItem)" />
-                                                    </Div>
-                                                }
-                                                else
-                                                {
-                                                    <Autocomplete 
-                                                                TItem="ItemWithItemTypeDto"
-                                                                TValue="Guid?"
-                                                                Data="@ItemsList"
-                                                                TextField="@(( item ) => item.Name)"
-                                                                ValueField="@(( item ) => item.Id)"
-                                                                Placeholder="Search..."
-                                                                Filter="AutocompleteFilter.StartsWith"
-                                                                CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
-                                                                HighlightSearch
-                                                                Immediate="true"
-                                                                SelectedValue="selectedItem.Id"
-                                                                SelectedValueChanged="(id) => OnSelectedValueChanged(id, module, selectedItem)">
-                                                            <NotFoundContent> @L["NotFound"] </NotFoundContent>
-                                                    </Autocomplete>
-                                                }
-                                                @if (selectedItem.Id != Guid.Empty)
-                                                {
-                                                    string? firstImage;
-                                                    if (selectedItem.ItemType==ItemType.Item)
+                                    }
+
+                                    @if (module.GroupBuyModuleType is not GroupBuyModuleType.ProductRankingCarouselModule)
+                                    {
+                                        <div class="row mt-2">
+                                            @if (module.GroupBuyModuleType is GroupBuyModuleType.ProductGroupModule)
+                                            {
+                                                <Div Class="col-md-6 text-left mb-3">
+                                                    <InputText class="form-control" @bind-Value="module.ProductGroupModuleTitle" />
+                                                </Div>
+                                                <Div Class="col-md-6 text-right mb-3">
+                                                    <select class="form-select form-select" @onchange=@((e) => module.ProductGroupModuleImageSize = e.Value.ToString())>
+                                                        <option value="">-- Select Style --</option>
+                                                        @foreach (string size in ImageSizes)
+                                                        {
+                                                            @if (module.ProductGroupModuleImageSize == size)
+                                                            {
+                                                                <option value="@size" selected>@L[size]</option>
+                                                            }
+
+                                                            else
+                                                            {
+                                                                <option value="@size">@L[size]</option>
+                                                            }
+                                                        }
+                                                    </select>
+                                                </Div>
+                                            }
+                                            @foreach (var selectedItem in module.Selected)
+                                            {
+                                                <div class="col-@(12 / module.Selected.Count)">
+                                                    @if (module.GroupBuyModuleType is GroupBuyModuleType.IndexAnchor)
                                                     {
-                                                        firstImage = selectedItem.Item?.Images?.FirstOrDefault()?.ImageUrl;
+                                                        <Div Class="col-12 mb-2">
+                                                            <InputText class="form-control" @bind-Value="selectedItem.Name"
+                                                                       @oninput="(e) => OnSelectedValueChanged(null, module, selectedItem)" />
+                                                        </Div>
                                                     }
                                                     else
                                                     {
-                                                        firstImage = selectedItem.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
+                                                        <Autocomplete TItem="ItemWithItemTypeDto"
+                                                                      TValue="Guid?"
+                                                                      Data="@ItemsList"
+                                                                      TextField="@(( item ) => item.Name)"
+                                                                      ValueField="@(( item ) => item.Id)"
+                                                                      Placeholder="Search..."
+                                                                      Filter="AutocompleteFilter.StartsWith"
+                                                                      CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                                                                                            HighlightSearch
+                                                                       Immediate="true"
+                                                                       SelectedValue="selectedItem.Id"
+                                                                       SelectedValueChanged="(id) => OnSelectedValueChanged(id, module, selectedItem)">
+                                                             <NotFoundContent> @L["NotFound"] </NotFoundContent>
+                                                        </Autocomplete>
                                                     }
-                                                     <div class="d-flex mt-3">
+                                                    @if (selectedItem.Id != Guid.Empty)
+                                                    {
+                                                        string? firstImage;
+                                                        if (selectedItem.ItemType == ItemType.Item)
+                                                        {
+                                                            firstImage = selectedItem.Item?.Images?.FirstOrDefault()?.ImageUrl;
+                                                        }
+                                                        else
+                                                        {
+                                                            firstImage = selectedItem.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
+                                                        }
+                                                        <div class="d-flex mt-3">
 
-                                                        @if(firstImage != null)
-                                                        {
-                                                            <div class="w-100 text-center">
-                                                                <img src="@firstImage" class="img-fluid" />
-                                                                @if(module.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule)
+                                                            @if (firstImage != null)
+                                                            {
+                                                                <div class="w-100 text-center">
+                                                                    <img src="@firstImage" class="img-fluid" />
+                                                                    @if (module.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule)
+                                                                    {
+                                                                        <div class="row mt-2">
+                                                                            <h4 class="text-center mt-2">
+                                                                                <strong>@selectedItem.Name</strong>
+                                                                            </h4>
+                                                                            @if (selectedItem.Item != null)
+                                                                            {
+                                                                                var itemDetails = selectedItem.Item?.ItemDetails;
+                                                                                @if (itemDetails != null && itemDetails.Where(x => x.Attribute1Value != null).Count() > 0)
+                                                                                {
+                                                                                    <div class="mt-2">
+                                                                                        <select class="form-control dropdown">
+                                                                                            @foreach (var item in itemDetails.DistinctBy(i => i.Attribute1Value))
+                                                                                            {
+                                                                                                <option>
+                                                                                                    @item.Attribute1Value
+                                                                                                </option>
+                                                                                            }
+                                                                                        </select>
+                                                                                    </div>
+                                                                                }
+                                                                                @if (itemDetails != null && itemDetails.Where(x => x.Attribute2Value != null).Count() > 0)
+                                                                                {
+                                                                                    <div class="mt-2">
+                                                                                        <select class="form-control dropdown">
+                                                                                            @foreach (var item in itemDetails.DistinctBy(i => i.Attribute2Value))
+                                                                                            {
+                                                                                                <option>
+                                                                                                    @item.Attribute2Value
+                                                                                                </option>
+                                                                                            }
+                                                                                        </select>
+                                                                                    </div>
+                                                                                }
+                                                                                @if (itemDetails != null && itemDetails.Where(x => x.Attribute3Value != null).Count() > 0)
+                                                                                {
+                                                                                    <div class="mt-2">
+                                                                                        <select class="form-control dropdown">
+                                                                                            @foreach (var item in itemDetails.DistinctBy(i => i.Attribute3Value))
+                                                                                            {
+                                                                                                <option>
+                                                                                                    @item.Attribute3Value
+                                                                                                </option>
+                                                                                            }
+                                                                                        </select>
+                                                                                    </div>
+                                                                                }
+                                                                            }
+                                                                        </div>
+                                                                    }
+                                                                </div>
+                                                            }
+                                                            @if (module.GroupBuyModuleType == GroupBuyModuleType.ProductDescriptionModule)
+                                                            {
+                                                                string? ItemDescription;
+                                                                if (selectedItem.ItemType == ItemType.Item)
                                                                 {
-                                                                    <div class="row mt-2">
-                                                                        <h4 class="text-center mt-2">
-                                                                            <strong>@selectedItem.Name</strong>
-                                                                        </h4>
-                                                                        @if (selectedItem.Item != null)
-                                                                        {
-                                                                            var itemDetails = selectedItem.Item?.ItemDetails;
-                                                                            @if (itemDetails != null && itemDetails.Where(x => x.Attribute1Value != null).Count() > 0)
-                                                                            {
-                                                                                <div class="mt-2">
-                                                                                    <select class="form-control dropdown">
-                                                                                        @foreach (var item in itemDetails.DistinctBy(i => i.Attribute1Value))
-                                                                                        {
-                                                                                            <option>
-                                                                                                @item.Attribute1Value
-                                                                                            </option>
-                                                                                        }
-                                                                                    </select>
-                                                                                </div>
-                                                                            }
-                                                                            @if (itemDetails != null && itemDetails.Where(x => x.Attribute2Value != null).Count() > 0)
-                                                                            {
-                                                                                <div class="mt-2">
-                                                                                    <select class="form-control dropdown">
-                                                                                        @foreach (var item in itemDetails.DistinctBy(i => i.Attribute2Value))
-                                                                                        {
-                                                                                            <option>
-                                                                                                @item.Attribute2Value
-                                                                                            </option>
-                                                                                        }
-                                                                                    </select>
-                                                                                </div>
-                                                                            }
-                                                                            @if (itemDetails != null && itemDetails.Where(x => x.Attribute3Value != null).Count() > 0)
-                                                                            {
-                                                                                <div class="mt-2">
-                                                                                    <select class="form-control dropdown">
-                                                                                        @foreach (var item in itemDetails.DistinctBy(i => i.Attribute3Value))
-                                                                                        {
-                                                                                            <option>
-                                                                                                @item.Attribute3Value
-                                                                                            </option>
-                                                                                        }
-                                                                                    </select>
-                                                                                </div>
-                                                                            }
-                                                                        } 
-                                                                    </div>
+                                                                    ItemDescription = selectedItem.Item?.ItemDescription;
                                                                 }
-                                                            </div>
-                                                        }
-                                                        @if (module.GroupBuyModuleType == GroupBuyModuleType.ProductDescriptionModule)
-                                                        {
-                                                            string? ItemDescription;
-                                                            if (selectedItem.ItemType == ItemType.Item)
-                                                            {
-                                                                 ItemDescription = selectedItem.Item?.ItemDescription;
+                                                                else
+                                                                {
+                                                                    ItemDescription = selectedItem.SetItem?.Description;
+                                                                }
+                                                                <div class="ps-3">
+                                                                    <p> @((MarkupString)ItemDescription) </p>
+                                                                </div>
                                                             }
-                                                            else
-                                                            {
-                                                                 ItemDescription = selectedItem.SetItem?.Description;
-                                                            }
-                                                            <div class="ps-3">
-                                                                <p> @((MarkupString)ItemDescription) </p>
-                                                            </div>
-                                                        }
-                                                    </div> 
-                                                }
-                                            </div>
-                                        }
-                                    </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                    }
                                 </CollapseBody>
                             </Collapse>
                         </Accordion>

@@ -134,7 +134,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                             item.ItemId,
                             item.SetItemId,
                             item.ItemType,
-                            item.DisplayText
+                            item.DisplayText,
+                            item.ModuleNumber
                         );
                     }
                 }
@@ -264,8 +265,9 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                             item.ItemId,
                             item.SetItemId,
                             item.ItemType,
-                            item.DisplayText
-                            );
+                            item.DisplayText,
+                            item.ModuleNumber
+                        );
                     }
                 }
             }
@@ -346,7 +348,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                 item.ItemId,
                 item.SetItemId,
                 item.ItemType,
-                item.DisplayText
+                item.DisplayText,
+                item.ModuleNumber
             );
         }
     }

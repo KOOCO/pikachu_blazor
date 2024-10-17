@@ -7,5 +7,6 @@ public enum ImageType
     SetItem,
     GroupBuyItemGroup,
     GroupBuyCarouselImage,
-    GroupBuyBannerImage
+    GroupBuyBannerImage,
+    GroupBuyProductRankingCarousel
 }

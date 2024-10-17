@@ -113,7 +113,8 @@ namespace Kooco.Pikachu.Groupbuys
             Guid? itemId,
             Guid? setItemId,
             ItemType itemType,
-            string displayText
+            string displayText,
+            int? moduleNumber
             ) 
         {
             itemGroup.GroupBuyItemGroupDetails(
@@ -123,7 +124,8 @@ namespace Kooco.Pikachu.Groupbuys
                 itemId,
                 setItemId,
                 itemType,
-                displayText
+                displayText,
+                moduleNumber
                 );
         }
         public GroupBuyItemGroup AddItemGroup(

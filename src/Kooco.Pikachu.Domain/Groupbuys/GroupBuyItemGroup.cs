@@ -59,7 +59,8 @@ namespace Kooco.Pikachu.GroupBuys
             Guid? itemId,
             Guid? setItemId,
             ItemType itemType,
-            string? displayText
+            string? displayText,
+            int? moduleNumber
             )
         {
             ItemGroupDetails.Add(new GroupBuyItemGroupDetails(
@@ -69,8 +70,9 @@ namespace Kooco.Pikachu.GroupBuys
                 itemId,
                 setItemId,
                 itemType,
-                displayText
-                ));
+                displayText,
+                moduleNumber
+            ));
         }
     }
 }

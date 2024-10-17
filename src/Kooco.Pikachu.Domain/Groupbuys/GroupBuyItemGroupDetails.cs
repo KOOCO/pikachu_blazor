@@ -21,6 +21,7 @@ namespace Kooco.Pikachu.Groupbuys
         [ForeignKey(nameof(SetItemId))]
         public SetItem? SetItem { get; set; }
         public ItemType ItemType { get; set; }
+        public int? ModuleNumber { get; set; }
         public GroupBuyItemGroupDetails()
         {
             
@@ -33,8 +34,8 @@ namespace Kooco.Pikachu.Groupbuys
             Guid? itemId,
             Guid? setItemId,
             ItemType itemType,
-            string? displayText
-
+            string? displayText,
+            int? moduleNumber
             ) : base(id)
         {
             GroupBuyItemGroupId = groupBuyItemGroupId;
@@ -43,6 +44,7 @@ namespace Kooco.Pikachu.Groupbuys
             SetItemId = setItemId;
             ItemType = itemType;
             DisplayText = displayText;
+            ModuleNumber = moduleNumber;
         }
     }
 }

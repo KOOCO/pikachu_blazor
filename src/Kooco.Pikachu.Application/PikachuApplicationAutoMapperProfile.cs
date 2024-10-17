@@ -38,6 +38,7 @@ using Kooco.Pikachu.GroupPurchaseOverviews;
 using Kooco.Pikachu.WebsiteManagement;
 using Kooco.Pikachu.GroupBuyOrderInstructions;
 using Kooco.Pikachu.LoginConfigurations;
+using Kooco.Pikachu.GroupBuyProductRankings;
 
 namespace Kooco.Pikachu;
 
@@ -222,6 +223,12 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<GroupBuyOrderInstruction, GroupBuyOrderInstructionDto>().ReverseMap();
         CreateMap<GroupBuyOrderInstruction, CreateUpdateGroupBuyOrderInstructionDto>().ReverseMap();
         CreateMap<GroupBuyOrderInstructionDto, CreateUpdateGroupBuyOrderInstructionDto>().ReverseMap();
+        #endregion
+
+        #region GroupBuyProductRanking Mappings
+        CreateMap<GroupBuyProductRanking, GroupBuyProductRankingDto>().ReverseMap();
+        CreateMap<GroupBuyProductRanking, CreateUpdateGroupBuyProductRankingDto>().ReverseMap();
+        CreateMap<GroupBuyProductRankingDto, CreateUpdateGroupBuyProductRankingDto>().ReverseMap();
         #endregion
 
         CreateMap<TenantSettings, TenantSettingsDto>()
