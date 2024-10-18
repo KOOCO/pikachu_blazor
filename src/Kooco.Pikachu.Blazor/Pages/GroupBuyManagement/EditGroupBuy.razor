@@ -332,7 +332,10 @@
                 {
                     @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
                     {
-                        if (item == Enum.GetName(DeliveryMethod.BlackCat1) ||
+                        if (item == Enum.GetName(DeliveryMethod.PostOffice) ||
+                            item == Enum.GetName(DeliveryMethod.HomeDelivery) ||
+                            item == Enum.GetName(DeliveryMethod.DeliveredByStore) ||
+                            item == Enum.GetName(DeliveryMethod.BlackCat1) ||
                             item == Enum.GetName(DeliveryMethod.BlackCatFreeze) ||
                             item == Enum.GetName(DeliveryMethod.BlackCatFrozen) ||
                             item == Enum.GetName(DeliveryMethod.TCatDeliveryNormal) ||
@@ -388,7 +391,11 @@
                     {
                         if (item == Enum.GetName(DeliveryMethod.SevenToElevenC2C) ||
                             item == Enum.GetName(DeliveryMethod.SevenToEleven1) ||
-                            item == Enum.GetName(DeliveryMethod.SevenToElevenFrozen))
+                            item == Enum.GetName(DeliveryMethod.FamilyMart1) ||
+                            item == Enum.GetName(DeliveryMethod.FamilyMartC2C) ||
+                            item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenNormal) ||
+                            item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenFreeze) ||
+                            item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenFrozen))
                         {
                             if (IsShippingMethodEnabled(item)) 
                             {
@@ -411,6 +418,7 @@
                     {
                         if (item == Enum.GetName(DeliveryMethod.FamilyMart1) ||
                             item == Enum.GetName(DeliveryMethod.FamilyMartC2C) ||
+                            item == Enum.GetName(DeliveryMethod.SevenToElevenFrozen) ||
                             item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenNormal) ||
                             item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenFreeze) ||
                             item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenFrozen))

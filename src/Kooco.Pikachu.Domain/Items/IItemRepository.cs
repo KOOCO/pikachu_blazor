@@ -35,4 +35,6 @@ public interface IItemRepository : IRepository<Item, Guid>
                                 bool? isFreeShipping = null,
                                 bool? isAvailable = null
                                 );
+
+    Task<Item> GetSKUAndItemAsync(Guid itemId, Guid itemDetailId);
 }

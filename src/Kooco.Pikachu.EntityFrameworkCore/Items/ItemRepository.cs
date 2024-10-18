@@ -133,4 +133,12 @@ public class ItemRepository : EfCoreRepository<PikachuDbContext, Item, Guid>, II
             
             .FirstOrDefault();
     }
+
+    public async Task<Item> GetSKUAndItemAsync(Guid itemId, Guid itemDetailId)
+    {
+        return (await GetQueryableAsync()).Where(w => w.Id == itemId)
+                                          .Include(i => i.Images)
+                                          .Include(i => i.ItemDetails.Where(w => w.Id == itemDetailId))
+                                          .FirstOrDefault();
+    }
 }

@@ -11,21 +11,34 @@ using Volo.Abp;
 namespace Kooco.Pikachu.Items;
 
 [RemoteService(IsEnabled = false)]
-public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSortedResultRequestDto, CreateItemDto, UpdateItemDto>,
-    IItemAppService
+public class ItemAppService : 
+    CrudAppService<
+        Item, 
+        ItemDto, 
+        Guid, 
+        PagedAndSortedResultRequestDto, 
+        CreateItemDto, 
+        UpdateItemDto
+    >, IItemAppService
 {
+    #region Inject
     private readonly IItemRepository _itemRepository;
     private readonly ItemManager _itemManager;
+    #endregion
 
+    #region Constructor
     public ItemAppService(
         IItemRepository repository,
         ItemManager itemManager
-        ) : base(repository)
+    ) 
+        : base(repository)
     {
         _itemRepository = repository;
         _itemManager = itemManager;
     }
+    #endregion
 
+    #region Methods
     /// <summary>
     /// Create New Item
     /// </summary>
@@ -453,4 +466,12 @@ public class ItemAppService : CrudAppService<Item, ItemDto, Guid, PagedAndSorted
        var list= items.Select(x => new KeyValueDto { Id = x.Id, Name = x.Name }).ToList();
         return list;
     }
+
+    public async Task<ItemDto> GetSKUAndItemAsync(Guid itemId, Guid itemDetailId)
+    {
+        return MapToGetOutputDto(
+            await _itemRepository.GetSKUAndItemAsync(itemId, itemDetailId)
+        );
+    }
+    #endregion
 }
