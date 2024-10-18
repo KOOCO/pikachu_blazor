@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using Kooco.Pikachu.DeliveryTemperatureCosts;
 using Kooco.Pikachu.EnumValues;
 using Microsoft.AspNetCore.Components;
+using Kooco.Pikachu.LogisticsProviders;
+using System.Linq;
 
 namespace Kooco.Pikachu.Blazor.Pages.DeliveryTemperatureCosts;
 
@@ -33,18 +35,24 @@ public partial class DeliveryTemperatureCost
     private LogisticProviders? LogisticProviderFreeze;
     
     private LogisticProviders? LogisticProviderFrozen;
+
+    private readonly ILogisticsProvidersAppService _LogisticsProvidersAppService;
+
+    private List<LogisticsProviderSettingsDto> AllLogisticsProviderSetting = [];
     #endregion
 
     #region Constructor
     public DeliveryTemperatureCost(
         IDeliveryTemperatureCostAppService appService, 
         IObjectMapper objectMapper, 
-        IUiMessageService uiMessageService
+        IUiMessageService uiMessageService,
+        ILogisticsProvidersAppService LogisticsProvidersAppService
     )
     {
         _appService = appService;
         _objectMapper = objectMapper;
         _uiMessageService = uiMessageService;
+        _LogisticsProvidersAppService = LogisticsProvidersAppService;
     }
     #endregion
 
@@ -54,6 +62,8 @@ public partial class DeliveryTemperatureCost
         try
         {
             await GetCostsAysnc();
+
+            AllLogisticsProviderSetting = await _LogisticsProvidersAppService.GetAllAsync();
             
             StateHasChanged();
         }
@@ -82,13 +92,30 @@ public partial class DeliveryTemperatureCost
 
     public List<LogisticProviders> GetLogisticsProviders(ItemStorageTemperature temperature)
     {
-        return temperature switch
+        List<LogisticProviders> logisticProviders = [];
+
+        if (temperature is ItemStorageTemperature.Normal)
         {
-            ItemStorageTemperature.Normal => [LogisticProviders.GreenWorldLogistics, LogisticProviders.GreenWorldLogisticsC2C],
-            ItemStorageTemperature.Freeze => [LogisticProviders.GreenWorldLogistics],
-            ItemStorageTemperature.Frozen => [LogisticProviders.GreenWorldLogistics],
-            _ => [],
-        };
+            if (AllLogisticsProviderSetting.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.GreenWorldLogistics)?.IsEnabled ?? false)
+                logisticProviders.Add(LogisticProviders.GreenWorldLogistics);
+
+            if (AllLogisticsProviderSetting.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.GreenWorldLogisticsC2C)?.IsEnabled ?? false)
+                logisticProviders.Add(LogisticProviders.GreenWorldLogisticsC2C);
+
+            if (AllLogisticsProviderSetting.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCat)?.IsEnabled ?? false)
+                logisticProviders.Add(LogisticProviders.TCat);
+        }
+
+        else if (temperature is ItemStorageTemperature.Freeze || temperature is ItemStorageTemperature.Frozen)
+        {
+            if (AllLogisticsProviderSetting.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.GreenWorldLogistics)?.IsEnabled ?? false)
+                logisticProviders.Add(LogisticProviders.GreenWorldLogistics);
+
+            if (AllLogisticsProviderSetting.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCat)?.IsEnabled ?? false)
+                logisticProviders.Add(LogisticProviders.TCat);
+        }
+
+        return logisticProviders;
     }
 
     public void OnDeliveryMethodChange(ChangeEventArgs e, DeliveryTemperatureCostDto entity)
@@ -153,11 +180,20 @@ public partial class DeliveryTemperatureCost
             if (temperature is ItemStorageTemperature.Normal && logistic is LogisticProviders.GreenWorldLogisticsC2C)
                 return [DeliveryMethod.FamilyMartC2C, DeliveryMethod.SevenToElevenC2C];
 
+            if (temperature is ItemStorageTemperature.Normal && logistic is LogisticProviders.TCat)
+                return [DeliveryMethod.TCatDeliveryNormal, DeliveryMethod.TCatDeliverySevenElevenNormal];
+
             if (temperature is ItemStorageTemperature.Freeze && logistic is LogisticProviders.GreenWorldLogistics)
                 return [DeliveryMethod.BlackCatFreeze];
 
+            if (temperature is ItemStorageTemperature.Freeze && logistic is LogisticProviders.TCat)
+                return [DeliveryMethod.TCatDeliveryFreeze, DeliveryMethod.TCatDeliverySevenElevenFreeze];
+
             if (temperature is ItemStorageTemperature.Frozen && logistic is LogisticProviders.GreenWorldLogistics)
                 return [DeliveryMethod.BlackCatFrozen];
+
+            if (temperature is ItemStorageTemperature.Frozen && logistic is LogisticProviders.TCat)
+                return [DeliveryMethod.TCatDeliveryFrozen, DeliveryMethod.TCatDeliverySevenElevenFrozen];
         }
 
         return [];
