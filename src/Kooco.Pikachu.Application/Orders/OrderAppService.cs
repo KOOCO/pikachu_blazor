@@ -153,7 +153,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     input.TotalAmount,
                     input.ReturnStatus,
                     input.OrderType,
-                    userId: input.UserId
+                    userId: input.UserId,
+                    creditDeductionAmount:input.CreditDeductionAmount,
+                    creditDeductionRecordId:input.CreditDeductionRecordId,
+                    creditRefundAmount:input.RefundAmount,
+                    creditRefundRecordId:input.RefundRecordId,
+                    discountAmountId:input.DiscountCodeId,
+                    discountCodeAmount:input.DiscountCodeAmount
                     );
             order.StoreId = input.StoreId;
             order.CVSStoreOutSide = input.CVSStoreOutSide;

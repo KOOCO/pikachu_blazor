@@ -11,6 +11,7 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
+using System.Text.Json.Nodes;
 
 namespace Kooco.Pikachu.LogisticsProviders;
 
@@ -600,6 +601,263 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
         }
 
         return providers;
+    }
+
+    public async Task<JsonObject> GetAsync(string shippingMethod)
+    {
+        List<LogisticsProviderSettingsDto> providers = ObjectMapper.Map<List<LogisticsProviderSettings>, List<LogisticsProviderSettingsDto>>(
+            await _logisticsProviderRepository.GetListAsync()
+        );
+
+        foreach (LogisticsProviderSettingsDto provider in providers)
+        {
+            provider.LogisticProviderName = provider.LogisticProvider.ToString();
+        }
+        var grrenB2C = providers.Where(x => x.LogisticProviderName.ToUpper() == "GREENWORLDLOGISTICS").FirstOrDefault();
+        var grrenC2C = providers.Where(x => x.LogisticProviderName.ToUpper() == "GREENWORLDLOGISTICSC2C").FirstOrDefault();
+        var tcat = providers.Where(x => x.LogisticProviderName.ToUpper() == "TCAT").FirstOrDefault();
+        var result = providers.Where(x => x.LogisticProviderName.ToUpper() == shippingMethod.ToUpper()).FirstOrDefault();
+
+        if (result == null)
+        {
+            return null; // or throw an exception, depending on how you want to handle this case
+        }
+
+        if (shippingMethod.ToUpper() == "HOMEDELIVERY")
+        {
+            JsonObject keyValuePairs = new JsonObject
+        {
+            { "Provider", result.LogisticProviderName },
+            { "IsEnable", result.IsEnabled },
+            { "Cost", result.Freight },
+            { "MainIslands", result.MainIslands },
+            { "IsOuterIslands", result.IsOuterIslands },
+            { "OuterIslands", result.OuterIslands }
+        };
+
+            return keyValuePairs;
+        }
+        if (shippingMethod.ToUpper() == "POSTOFFICE")
+        {
+            JsonObject keyValuePairs = new JsonObject
+        {
+
+            { "Provider", result.LogisticProviderName },
+            { "Freight", result.Freight },
+            { "Weight", result.Weight },
+             {"MerchantID",grrenB2C.StoreCode }
+        };
+
+            return keyValuePairs;
+        }
+        if (shippingMethod.ToUpper() == "FAMILYMART")
+        {
+            JsonObject keyValuePairs = new JsonObject
+        {
+
+            { "Provider", result.LogisticProviderName },
+            { "COST", result.Freight },
+            { "Payment", result.Payment },
+             {"MerchantID",grrenB2C.StoreCode }
+        };
+
+            return keyValuePairs;
+        }
+        if (shippingMethod.ToUpper() == "SEVENTOELEVEN")
+        {
+            JsonObject keyValuePairs = new JsonObject
+        {
+
+            { "Provider", result.LogisticProviderName },
+            { "COST", result.Freight },
+            { "Payment", result.Payment },
+             {"MerchantID",grrenB2C.StoreCode }
+        };
+
+            return keyValuePairs;
+        }
+        if (shippingMethod.ToUpper() == "SEVENTOELEVENFREEZE")
+        {
+            JsonObject keyValuePairs = new JsonObject
+        {
+
+            { "Provider", result.LogisticProviderName },
+            { "COST", result.Freight },
+            { "Payment", result.Payment },
+             {"MerchantID",grrenB2C.StoreCode }
+        };
+
+            return keyValuePairs;
+        }
+        if (shippingMethod.ToUpper() == "SEVENTOELEVENFROZEN")
+        {
+            JsonObject keyValuePairs = new JsonObject
+        {
+
+            { "Provider", result.LogisticProviderName },
+            { "COST", result.Freight },
+            { "Payment", result.Payment },
+             {"MerchantID",grrenB2C.StoreCode }
+        };
+
+            return keyValuePairs;
+        }
+        if (shippingMethod.ToUpper() == "BNORMAL")
+        {
+            JsonObject keyValuePairs = new JsonObject
+        {
+
+            { "Provider", result.LogisticProviderName },
+            { "Freight", result.Freight },
+            { "OuterIslandFreight", result.OuterIslandFreight },
+            { "Size", result.Size.ToString() },
+             {"MerchantID",grrenB2C.StoreCode }
+        };
+
+            return keyValuePairs;
+        }
+        if (shippingMethod.ToUpper() == "BFREEZE")
+        {
+            JsonObject keyValuePairs = new JsonObject
+        {
+
+            { "Provider", result.LogisticProviderName },
+            { "Freight", result.Freight },
+            { "OuterIslandFreight", result.OuterIslandFreight },
+            { "Size", result.Size.ToString() },
+             {"MerchantID",grrenB2C.StoreCode }
+        };
+
+            return keyValuePairs;
+        }
+        if (shippingMethod.ToUpper() == "BFROZEN")
+        {
+            JsonObject keyValuePairs = new JsonObject
+        {
+
+            { "Provider", result.LogisticProviderName },
+            { "Freight", result.Freight },
+            { "OuterIslandFreight", result.OuterIslandFreight },
+            { "Size", result.Size.ToString() },
+             {"MerchantID",grrenB2C.StoreCode }
+        };
+
+            return keyValuePairs;
+        }
+        if (shippingMethod.ToUpper() == "FAMILYMARTC2C")
+        {
+            JsonObject keyValuePairs = new JsonObject
+        {
+
+            { "Provider", result.LogisticProviderName },
+            { "COST", result.Freight },
+            { "Payment", result.Payment },
+             {"MerchantID",grrenC2C.StoreCode }
+        };
+
+            return keyValuePairs;
+        }
+        if (shippingMethod.ToUpper() == "SEVENTOELEVENC2C")
+        {
+            JsonObject keyValuePairs = new JsonObject
+        {
+
+            { "Provider", result.LogisticProviderName },
+            { "COST", result.Freight },
+            { "Payment", result.Payment },
+             {"MerchantID",grrenC2C.StoreCode }
+        };
+
+            return keyValuePairs;
+        }
+        if (shippingMethod.ToUpper() == "TCATNORMAL")
+        {
+            JsonObject keyValuePairs = new JsonObject
+        {
+
+            { "Provider", result.LogisticProviderName },
+            { "Freight", result.Freight },
+            { "OuterIslandFreight", result.OuterIslandFreight },
+            { "Size", result.Size.ToString() },
+            { "Payment", result.Payment },
+            { "PaymentMethod", result.TCatPaymentMethod.ToString() },
+             {"CustomerID",tcat.CustomerId }
+        };
+
+            return keyValuePairs;
+        }
+        if (shippingMethod.ToUpper() == "TCATFREEZE")
+        {
+            JsonObject keyValuePairs = new JsonObject
+        {
+
+            { "Provider", result.LogisticProviderName },
+            { "Freight", result.Freight },
+            { "OuterIslandFreight", result.OuterIslandFreight },
+            { "Size", result.Size.ToString() },
+            { "Payment", result.Payment },
+            { "PaymentMethod", result.TCatPaymentMethod.ToString() },
+             {"CustomerID",tcat.CustomerId }
+        };
+
+            return keyValuePairs;
+        }
+        if (shippingMethod.ToUpper() == "TCATFREOZEN")
+        {
+            JsonObject keyValuePairs = new JsonObject
+        {
+
+            { "Provider", result.LogisticProviderName },
+            { "Freight", result.Freight },
+            { "OuterIslandFreight", result.OuterIslandFreight },
+            { "Size", result.Size.ToString() },
+            { "Payment", result.Payment },
+            { "PaymentMethod", result.TCatPaymentMethod.ToString() },
+             {"CustomerID",tcat.CustomerId }
+        };
+
+            return keyValuePairs;
+        }
+        if (shippingMethod.ToUpper() == "TCAT711NORMAL")
+        {
+            JsonObject keyValuePairs = new JsonObject
+        {
+
+            { "Provider", result.LogisticProviderName },
+            { "COST", result.Freight },
+            { "Payment", result.Payment },
+             {"CustomerID",tcat.CustomerId }
+        };
+
+            return keyValuePairs;
+        }
+        if (shippingMethod.ToUpper() == "TCAT711FREEZE")
+        {
+            JsonObject keyValuePairs = new JsonObject
+        {
+
+            { "Provider", result.LogisticProviderName },
+            { "COST", result.Freight },
+            { "Payment", result.Payment },
+             {"CustomerID",tcat.CustomerId }
+        };
+
+            return keyValuePairs;
+        }
+        if (shippingMethod.ToUpper() == "TCAT711FROZEN")
+        {
+            JsonObject keyValuePairs = new JsonObject
+        {
+
+            { "Provider", result.LogisticProviderName },
+            { "COST", result.Freight },
+            { "Payment", result.Payment },
+            {"CustomerID",tcat.CustomerId }
+        };
+
+            return keyValuePairs;
+        }
+        return null; // Return null or a default value if `shippingMethod` is not "HOMEDELIVERY"
     }
     #endregion
 }

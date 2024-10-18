@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.EnumValues;
+﻿using Kooco.Pikachu.DiscountCodes;
+using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.OrderItems;
@@ -106,10 +107,13 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public UserShoppingCredit? RefundRecord { get; set; }
 
     public Guid? UserId { get; set; }
-
+    public Guid? DiscountCodeId { get; set; }
+    public int? DiscountAmount { get; set; }
+    
     [ForeignKey(nameof(UserId))]
     public IdentityUser? User { get; set; }
-
+    [ForeignKey(nameof(DiscountCodeId))]
+    public DiscountCode? DiscountCode { get; set; }
     public Order() { }
 
     public Order(
@@ -145,7 +149,11 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
         Guid? splitFromId = null,
         Guid? userId = null,
         int creditDeductionAmount = 0,
-        Guid? creditDeductionRecordId = null
+        Guid? creditDeductionRecordId = null,
+        int creditRefundAmount=0,
+         Guid? creditRefundRecordId = null,
+        Guid? discountCodeId=null,
+        int? discountCodeAmount=null
      )
     {
         Id = id;
@@ -190,6 +198,10 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
         UserId = userId;
         CreditDeductionAmount = creditDeductionAmount;
         CreditDeductionRecordId = creditDeductionRecordId;
+        RefundAmount = creditRefundAmount;
+        RefundRecordId = creditRefundRecordId;
+        DiscountAmount = discountCodeAmount;
+        DiscountCodeId = discountCodeId;
     }
 
     public void AddOrderItem(

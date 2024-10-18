@@ -17,7 +17,7 @@
     "AutomaticRefund": "Automatic Refund",
     "ManualProcessing": "Manual Processing",
     "FrontPage": "Front Page",
-    "CopyPageLink": "Copy Link Page",
+    "CopyPageLink": "Copy Link",
     "GoodPoint": "Good Point",
     "Menu:Home": "Home",
     "Menu:GroupBuyManagement": "Group Buy Management",
@@ -857,6 +857,9 @@
     "UnableToRetrieveUserDetails": "Unable to retrieve user's details from {0}.",
     "PropertyName": "Property Name",
     "TenantShortCodeRequired": "Short Code can not be empty",
-    "TenantShortCode": "Short Code"
+    "TenantShortCode": "Short Code",
+    "DomainIsRequired": "The Domain field is required.",
+    "Domain": "Domain",
+    "InvalidUrl": "Please provide a fully qualified URL starting with http or https."
   }
 }

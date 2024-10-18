@@ -28,6 +28,8 @@ using Kooco.Pikachu.GroupPurchaseOverviews.Interface;
 using Kooco.Pikachu.GroupBuyOrderInstructions.Interface;
 using Kooco.Pikachu.GroupBuyOrderInstructions;
 using Kooco.Pikachu.LogisticsProviders;
+using Kooco.Pikachu.Tenants;
+using Volo.Abp.MultiTenancy;
 using Kooco.Pikachu.GroupBuyProductRankings;
 using Kooco.Pikachu.GroupBuyProductRankings.Interface;
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
@@ -207,7 +209,7 @@ public partial class EditGroupBuy
                 else if (GroupBuy.PaymentMethod is "Cash On Delivery") IsCashOnDelivery = true;
             }
             
-            EditGroupBuyDto.EntryURL = $"{_configuration["EntryUrl"]?.TrimEnd('/')}/{Id}";
+            EditGroupBuyDto.EntryURL = $"{(await MyTenantAppService.FindTenantDomainAsync(CurrentTenant.Id))?.TrimEnd('/')}/{Id}";
             
             LoadItemGroups();
 
@@ -994,6 +996,10 @@ public partial class EditGroupBuy
         }
     }
     #endregion
+    private string LocalizeFilePicker(string key, object[] args)
+    {
+        return L[key];
+    }
 
     async Task OnLogoUploadAsync(FileChangedEventArgs e)
     {

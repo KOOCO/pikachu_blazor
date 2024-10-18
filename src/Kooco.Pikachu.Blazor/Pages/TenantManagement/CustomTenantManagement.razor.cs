@@ -115,6 +115,11 @@ public partial class CustomTenantManagement
             await _uiMessageService.Warn(_L["TenantShortCodeRequired"]);
             return;
         }
+        if (!ValidateDomain().IsNullOrEmpty())
+        {
+            await _uiMessageService.Warn(_L[ValidateDomain()]);
+            return;
+        }
         var check = await _myTenantAppService.CheckShortCodeForCreateAsync(ShortCode);
         if (check)
         {
@@ -258,6 +263,11 @@ public partial class CustomTenantManagement
         if (check)
         {
             await _uiMessageService.Warn(L["Short Code Already Exsist"]);
+            return;
+        }
+        if (!ValidateDomain().IsNullOrEmpty())
+        {
+            await _uiMessageService.Warn(_L[ValidateDomain()]);
             return;
         }
         base.EditingEntity.ExtraProperties.Remove("LogoUrl");
@@ -427,5 +437,24 @@ public partial class CustomTenantManagement
         }
     }
 
+    private string ValidateDomain()
+    {
+        // Check if the domain is not empty
+        if (string.IsNullOrWhiteSpace(Domain))
+        {
+            return _L["DomainIsRequired"];
+        }
+
+        // Check if the domain is a valid URL with http or https
+        if (Uri.TryCreate(Domain, UriKind.Absolute, out var uriResult) &&
+            (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps))
+        {
+            return null;
+        }
+        else
+        {
+            return _L["InvalidUrl"];
+        }
+    }
 }
 

@@ -4,6 +4,7 @@ using Kooco.Pikachu.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    partial class PikachuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241017043400_Add New Column In Order Table")]
+    partial class AddNewColumnInOrderTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -792,36 +795,6 @@ namespace Kooco.Pikachu.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Kooco.Pikachu.GroupBuyProductRankings.GroupBuyProductRanking", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Content")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("GroupBuyId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int?>("ModuleNumber")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SubTitle")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AppGroupBuyProductRankings", null, t =>
-                        {
-                            t.HasComment("");
-                        });
-                });
-
             modelBuilder.Entity("Kooco.Pikachu.GroupBuys.GroupBuy", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1146,9 +1119,6 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("ItemType")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ModuleNumber")
                         .HasColumnType("int");
 
                     b.Property<Guid?>("SetItemId")
@@ -1942,9 +1912,6 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnName("IsDeleted");
 
                     b.Property<bool>("IsEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsOuterIslands")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModificationTime")

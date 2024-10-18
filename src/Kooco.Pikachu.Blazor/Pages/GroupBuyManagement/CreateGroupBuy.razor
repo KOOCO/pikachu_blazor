@@ -5,6 +5,7 @@
 @using Kooco.Pikachu.GroupPurchaseOverviews
 @using Kooco.Pikachu.Images
 @using Kooco.Pikachu.Items.Dtos;
+@using Kooco.Pikachu.Tenants
 @using Microsoft.Extensions.Configuration;
 @using Pikachu.Items;
 @using Pikachu.Localization;
@@ -12,7 +13,8 @@
 @using System.ComponentModel;
 @using Blazorise.Components;
 @using Blazorise.LoadingIndicator;
-
+@inherits PikachuComponentBase
+@inject IMyTenantAppService MyTenantAppService
 @inject IGroupBuyAppService AppService
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<PikachuResource> L
@@ -165,7 +167,10 @@
             </div>
             <div class="col-10">
                 <Field>
-                    <FilePicker @ref="LogoPickerCustom"
+                    <FilePicker
+                       FilePickerLocalizer="(key,args)=>LocalizeFilePicker(key,args)"
+                        
+                        @ref="LogoPickerCustom"
                                 Changed="OnLogoUploadAsync"
                                 ShowMode="FilePickerShowMode.List"
                                 Accept=".jpg, .png, .svg ,.jpeg,.webp">

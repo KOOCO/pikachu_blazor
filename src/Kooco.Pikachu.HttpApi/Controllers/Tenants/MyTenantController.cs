@@ -35,6 +35,12 @@ public class MyTenantController(
         return _myTenantAppService.FindByNameAsync(name);
     }
 
+    [HttpGet("find-domain/{id}")]
+    public Task<string?> FindTenantDomainAsync(Guid? id)
+    {
+        return _myTenantAppService.FindTenantDomainAsync(id);
+    }
+
     [HttpGet("get-by-shortcode/{shortcode}")]
     public Task<TenantDto> GetTenantAsync(string shortcode)
     {
