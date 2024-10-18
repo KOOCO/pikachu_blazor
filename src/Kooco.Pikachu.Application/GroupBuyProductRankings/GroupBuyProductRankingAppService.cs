@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.ObjectMapping;
 
 namespace Kooco.Pikachu.GroupBuyProductRankings;
 
@@ -38,6 +39,14 @@ public class GroupBuyProductRankingAppService :
     public async Task<GroupBuyProductRankingDto> CreateGroupBuyProductRankingAsync(GroupBuyProductRankingDto groupBuyProductRanking)
     {
         return await CreateAsync(
+            ObjectMapper.Map<GroupBuyProductRankingDto, CreateUpdateGroupBuyProductRankingDto>(groupBuyProductRanking)
+        );
+    }
+
+    public async Task<GroupBuyProductRankingDto> UpdateGroupBuyProductRankingAsync(GroupBuyProductRankingDto groupBuyProductRanking)
+    {
+        return await UpdateAsync(
+            groupBuyProductRanking.Id,
             ObjectMapper.Map<GroupBuyProductRankingDto, CreateUpdateGroupBuyProductRankingDto>(groupBuyProductRanking)
         );
     }

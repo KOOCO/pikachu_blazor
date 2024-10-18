@@ -1345,7 +1345,11 @@
                                                                               HighlightSearch
                                                                               Immediate="true"
                                                                               SelectedValue="selectedItem.Id"
-                                                                              SelectedValueChanged="(id) => OnSelectedValueChanged(id, productModule, selectedItem)">
+                                                                              SelectedValueChanged="(id) => OnSelectedValueChanged(selectedItem.Item is not null && selectedItem.Item.Id != Guid.Empty ? 
+                                                                                                                                   selectedItem.Item.Id : 
+                                                                                                                                   id, 
+                                                                                                                                   productModule, 
+                                                                                                                                   selectedItem)">
                                                                      <NotFoundContent> @L["NotFound"] </NotFoundContent>
                                                                 </Autocomplete>
                                                             </div>

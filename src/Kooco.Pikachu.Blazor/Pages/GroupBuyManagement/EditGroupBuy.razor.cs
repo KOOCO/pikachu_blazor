@@ -336,6 +336,8 @@ public partial class EditGroupBuy
 
     public async Task GetProductRankingCarouselsAsync()
     {
+        await Task.Delay(100);
+
         List<ImageDto> productRankingImages = await _imageAppService.GetGroupBuyImagesAsync(Id, ImageType.GroupBuyProductRankingCarousel);
 
         List<CreateImageDto> createImageDtos = _objectMapper.Map<List<ImageDto>, List<CreateImageDto>>(productRankingImages);
@@ -348,6 +350,7 @@ public partial class EditGroupBuy
         {
             ProductRankingCarouselModules.Add(new()
             {
+                Id = ranking.Id,
                 Title = ranking.Title,
                 Content = ranking.Content,
                 SubTitle = ranking.SubTitle,
@@ -1732,7 +1735,7 @@ public partial class EditGroupBuy
 
             EditGroupBuyDto.ItemGroups = new List<GroupBuyItemGroupCreateUpdateDto>();
 
-            foreach (var item in CollapseItem)
+            foreach (CollapseItem item in CollapseItem)
             {
                 int j = 1;
                 check = (item.IsModified && item.Id.HasValue)
@@ -1750,18 +1753,43 @@ public partial class EditGroupBuy
                         ProductGroupModuleImageSize = item.ProductGroupModuleImageSize
                     };
 
-                    foreach (var itemDetail in item.Selected)
+                    if (item.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule &&
+                        ProductRankingCarouselModules is { Count: > 0 })
                     {
-                        if (itemDetail.Id != Guid.Empty || (item.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor && !itemDetail.Name.IsNullOrEmpty()))
+                        foreach (ProductRankingCarouselModule module in ProductRankingCarouselModules)
                         {
-                            itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
+                            foreach (ItemWithItemTypeDto itemDetail in module.Selected)
                             {
-                                SortOrder = j++,
-                                ItemId = itemDetail.ItemType == ItemType.Item && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
-                                SetItemId = itemDetail.ItemType == ItemType.SetItem && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
-                                ItemType = itemDetail.ItemType,
-                                DisplayText = itemGroup.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor ? itemDetail.Name : null
-                            });
+                                if (itemDetail.Id == Guid.Empty) continue;
+
+                                itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
+                                {
+                                    SortOrder = j++,
+                                    ItemId = itemDetail.ItemType is ItemType.Item && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
+                                    SetItemId = itemDetail.ItemType == ItemType.SetItem && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
+                                    ItemType = itemDetail.ItemType,
+                                    DisplayText = itemGroup.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor ? itemDetail.Name : null,
+                                    ModuleNumber = ProductRankingCarouselModules.IndexOf(module) + 1
+                                });
+                            }
+                        }
+                    }
+
+                    else
+                    {
+                        foreach (var itemDetail in item.Selected)
+                        {
+                            if (itemDetail.Id != Guid.Empty || (item.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor && !itemDetail.Name.IsNullOrEmpty()))
+                            {
+                                itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
+                                {
+                                    SortOrder = j++,
+                                    ItemId = itemDetail.ItemType == ItemType.Item && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
+                                    SetItemId = itemDetail.ItemType == ItemType.SetItem && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
+                                    ItemType = itemDetail.ItemType,
+                                    DisplayText = itemGroup.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor ? itemDetail.Name : null
+                                });
+                            }
                         }
                     }
 
@@ -1841,6 +1869,47 @@ public partial class EditGroupBuy
 
                     else if (groupBuyOrderInstruction.Id != Guid.Empty)
                         await _GroupBuyOrderInstructionAppService.UpdateGroupPurchaseOverviewAsync(groupBuyOrderInstruction);
+                }
+            }
+
+            if (ProductRankingCarouselModules is { Count: > 0 })
+            {
+                foreach (ProductRankingCarouselModule productRankingCarouselModule in ProductRankingCarouselModules)
+                {
+                    foreach (CreateImageDto image in productRankingCarouselModule.Images)
+                    {
+                        if (!productRankingCarouselModule.Images.Any(a => a.BlobImageName == image.BlobImageName))
+                        {
+                            image.TargetId = result.Id;
+
+                            await _imageAppService.CreateAsync(image);
+                        }
+                    }
+
+                    if (productRankingCarouselModule.Id == Guid.Empty)
+                    {
+                        await _GroupBuyProductRankingAppService.CreateGroupBuyProductRankingAsync(new()
+                        {
+                            GroupBuyId = result.Id,
+                            Title = productRankingCarouselModule.Title,
+                            SubTitle = productRankingCarouselModule.SubTitle,
+                            Content = productRankingCarouselModule.Content,
+                            ModuleNumber = ProductRankingCarouselModules.IndexOf(productRankingCarouselModule) + 1
+                        });
+                    }
+
+                    else
+                    {
+                        await _GroupBuyProductRankingAppService.UpdateGroupBuyProductRankingAsync(new()
+                        {
+                            Id = productRankingCarouselModule.Id,
+                            GroupBuyId = result.Id,
+                            Title = productRankingCarouselModule.Title,
+                            SubTitle = productRankingCarouselModule.SubTitle,
+                            Content = productRankingCarouselModule.Content,
+                            ModuleNumber = ProductRankingCarouselModules.IndexOf(productRankingCarouselModule) + 1
+                        });
+                    }
                 }
             }
 

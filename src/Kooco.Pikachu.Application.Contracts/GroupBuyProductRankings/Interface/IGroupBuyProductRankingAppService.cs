@@ -17,5 +17,7 @@ public interface IGroupBuyProductRankingAppService :
 {
     Task<GroupBuyProductRankingDto> CreateGroupBuyProductRankingAsync(GroupBuyProductRankingDto groupBuyProductRanking);
 
+    Task<GroupBuyProductRankingDto> UpdateGroupBuyProductRankingAsync(GroupBuyProductRankingDto groupBuyProductRanking);
+
     Task<List<GroupBuyProductRankingDto>> GetListByGroupBuyIdAsync(Guid groupBuyId);
 }
