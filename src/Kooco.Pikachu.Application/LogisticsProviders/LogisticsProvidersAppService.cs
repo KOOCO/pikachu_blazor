@@ -676,7 +676,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
 
             return keyValuePairs;
         }
-        if (shippingMethod.ToUpper() == "SEVENTOELEVENFROZEN")
+        if (shippingMethod.ToUpper() == "SEVENTOELEVENFREEZE")
         {
             JsonObject keyValuePairs = new JsonObject
         {
