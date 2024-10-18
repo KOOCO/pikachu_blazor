@@ -213,7 +213,10 @@ public partial class EditItem
             await Loading.Hide();
         }
     }
-
+    private string LocalizeFilePicker(string key, object[] args)
+    {
+        return L[key];
+    }
     async Task OnFileUploadAsync(FileChangedEventArgs e)
     {
         if (e.Files.Length > MaxAllowedFilesPerUpload)

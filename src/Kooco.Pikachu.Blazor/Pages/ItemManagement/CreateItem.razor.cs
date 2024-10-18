@@ -89,7 +89,10 @@ public partial class CreateItem
             ItemTags = []
         });
     }
-
+    private string LocalizeFilePicker(string key, object[] args)
+    {
+        return L[key];
+    }
     async Task OnFileUploadAsync(FileChangedEventArgs e)
     {
         if (e.Files.Length > MaxAllowedFilesPerUpload)

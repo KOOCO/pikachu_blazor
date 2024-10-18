@@ -894,6 +894,10 @@ public partial class EditGroupBuy
         }
     }
     #endregion
+    private string LocalizeFilePicker(string key, object[] args)
+    {
+        return L[key];
+    }
 
     async Task OnLogoUploadAsync(FileChangedEventArgs e)
     {
