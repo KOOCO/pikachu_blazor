@@ -156,7 +156,7 @@ public partial class CreateGroupBuy
     #region Methods
     protected override async Task OnInitializedAsync()
     {
-       
+
         CreateGroupBuyDto.EntryURL = _configuration["EntryUrl"]?.TrimEnd('/');
         CreateGroupBuyDto.EntryURL = await MyTenantAppService.FindTenantDomainAsync(CurrentTenant.Id);
         SetItemList = await _setItemAppService.GetItemsLookupAsync();
@@ -198,7 +198,7 @@ public partial class CreateGroupBuy
         DeliveryMethod deliveryMethod = Enum.Parse<DeliveryMethod>(method);
 
         if (deliveryMethod is DeliveryMethod.HomeDelivery)
-            return LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.HomeDelivery).FirstOrDefault().IsEnabled;
+            return LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.HomeDelivery).FirstOrDefault()?.IsEnabled ?? false;
 
         else if (deliveryMethod is DeliveryMethod.PostOffice ||
                  deliveryMethod is DeliveryMethod.FamilyMart1 ||
@@ -207,11 +207,11 @@ public partial class CreateGroupBuy
                  deliveryMethod is DeliveryMethod.BlackCat1 ||
                  deliveryMethod is DeliveryMethod.BlackCatFreeze ||
                  deliveryMethod is DeliveryMethod.BlackCatFrozen)
-            return LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.GreenWorldLogistics).FirstOrDefault().IsEnabled;
+            return LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.GreenWorldLogistics).FirstOrDefault()?.IsEnabled ?? false;
 
         else if (deliveryMethod is DeliveryMethod.FamilyMartC2C ||
                  deliveryMethod is DeliveryMethod.SevenToElevenC2C)
-            return LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.GreenWorldLogisticsC2C).FirstOrDefault().IsEnabled;
+            return LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.GreenWorldLogisticsC2C).FirstOrDefault()?.IsEnabled ?? false;
 
         else if (deliveryMethod is DeliveryMethod.TCatDeliveryNormal ||
                  deliveryMethod is DeliveryMethod.TCatDeliveryFreeze ||
@@ -219,7 +219,7 @@ public partial class CreateGroupBuy
                  deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenNormal ||
                  deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFreeze ||
                  deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFrozen)
-            return LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.TCat).FirstOrDefault().IsEnabled;
+            return LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.TCat).FirstOrDefault()?.IsEnabled ?? false;
 
         else return false;
     }
@@ -244,7 +244,7 @@ public partial class CreateGroupBuy
     {
         return Task.CompletedTask;
     }
-    private string LocalizeFilePicker(string key, object[]  args)
+    private string LocalizeFilePicker(string key, object[] args)
     {
         return L[key];
     }
@@ -282,7 +282,7 @@ public partial class CreateGroupBuy
             out ProductType selectedValue
         ) ? selectedValue : null;
     }
-  
+
     async Task OnLogoUploadAsync(FileChangedEventArgs e)
     {
         if (e.Files.Length > 1)
@@ -677,8 +677,8 @@ public partial class CreateGroupBuy
 
             ProductRankingCarouselPickers.Add(new());
 
-            ProductRankingCarouselModules.Add(new() 
-            { 
+            ProductRankingCarouselModules.Add(new()
+            {
                 Selected = [
                     new ItemWithItemTypeDto(),
                     new ItemWithItemTypeDto(),
@@ -1433,7 +1433,7 @@ public partial class CreateGroupBuy
                         AdditionalInfo = item.AdditionalInfo
                     };
 
-                    if (item.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule && 
+                    if (item.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule &&
                         ProductRankingCarouselModules is { Count: > 0 })
                     {
                         foreach (ProductRankingCarouselModule module in ProductRankingCarouselModules)

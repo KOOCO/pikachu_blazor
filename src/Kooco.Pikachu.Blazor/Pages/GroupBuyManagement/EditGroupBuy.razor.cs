@@ -155,7 +155,7 @@ public partial class EditGroupBuy
         EditGroupBuyDto = new GroupBuyUpdateDto();
         CarouselImages = [];
         GroupBuy = new();
-        Loading=new LoadingIndicator();
+        Loading = new LoadingIndicator();
         id ??= "";
     }
     #endregion
@@ -175,10 +175,10 @@ public partial class EditGroupBuy
 
             EditGroupBuyDto = _objectMapper.Map<GroupBuyDto, GroupBuyUpdateDto>(GroupBuy);
             //await LoadHtmlContent();
-            EditGroupBuyDto.ShortCode=EditGroupBuyDto?.ShortCode==""?null:EditGroupBuyDto?.ShortCode;
-            if (!string.IsNullOrEmpty(GroupBuy.ExcludeShippingMethod)) 
+            EditGroupBuyDto.ShortCode = EditGroupBuyDto?.ShortCode == "" ? null : EditGroupBuyDto?.ShortCode;
+            if (!string.IsNullOrEmpty(GroupBuy.ExcludeShippingMethod))
                 EditGroupBuyDto.ShippingMethodList = JsonSerializer.Deserialize<List<string>>(GroupBuy.ExcludeShippingMethod);
-            
+
             if (!string.IsNullOrEmpty(GroupBuy.SelfPickupDeliveryTime))
                 SelfPickupTimeList = JsonSerializer.Deserialize<List<string>>(GroupBuy.SelfPickupDeliveryTime);
 
@@ -201,16 +201,16 @@ public partial class EditGroupBuy
                     BankTransfer = payments.Contains("Bank Transfer");
                     IsCashOnDelivery = payments.Contains("Cash On Delivery");
                 }
-                
+
                 else if (GroupBuy.PaymentMethod is "Credit Card") CreditCard = true;
 
                 else if (GroupBuy.PaymentMethod is "Bank Transfer") BankTransfer = true;
 
                 else if (GroupBuy.PaymentMethod is "Cash On Delivery") IsCashOnDelivery = true;
             }
-            
+
             EditGroupBuyDto.EntryURL = $"{(await MyTenantAppService.FindTenantDomainAsync(CurrentTenant.Id))?.TrimEnd('/')}/{Id}";
-            
+
             LoadItemGroups();
 
             if (EditValidationsRef is not null) await EditValidationsRef.ClearAll();
@@ -237,7 +237,7 @@ public partial class EditGroupBuy
         DeliveryMethod deliveryMethod = Enum.Parse<DeliveryMethod>(method);
 
         if (deliveryMethod is DeliveryMethod.HomeDelivery)
-            return LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.HomeDelivery).FirstOrDefault().IsEnabled;
+            return LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.HomeDelivery).FirstOrDefault()?.IsEnabled ?? false;
 
         else if (deliveryMethod is DeliveryMethod.PostOffice ||
                  deliveryMethod is DeliveryMethod.FamilyMart1 ||
@@ -246,11 +246,11 @@ public partial class EditGroupBuy
                  deliveryMethod is DeliveryMethod.BlackCat1 ||
                  deliveryMethod is DeliveryMethod.BlackCatFreeze ||
                  deliveryMethod is DeliveryMethod.BlackCatFrozen)
-            return LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.GreenWorldLogistics).FirstOrDefault().IsEnabled;
+            return LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.GreenWorldLogistics).FirstOrDefault()?.IsEnabled ?? false;
 
         else if (deliveryMethod is DeliveryMethod.FamilyMartC2C ||
                  deliveryMethod is DeliveryMethod.SevenToElevenC2C)
-            return LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.GreenWorldLogisticsC2C).FirstOrDefault().IsEnabled;
+            return LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.GreenWorldLogisticsC2C).FirstOrDefault()?.IsEnabled ?? false;
 
         else if (deliveryMethod is DeliveryMethod.TCatDeliveryNormal ||
                  deliveryMethod is DeliveryMethod.TCatDeliveryFreeze ||
@@ -258,7 +258,7 @@ public partial class EditGroupBuy
                  deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenNormal ||
                  deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFreeze ||
                  deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFrozen)
-            return LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.TCat).FirstOrDefault().IsEnabled;
+            return LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.TCat).FirstOrDefault()?.IsEnabled ?? false;
 
         else return false;
     }
@@ -417,22 +417,24 @@ public partial class EditGroupBuy
                 foreach (List<CreateImageDto> carouselImages in CarouselModules)
                 {
                     if (!CollapseItem.Any(a => a.GroupBuyModuleType is GroupBuyModuleType.CarouselImages))
-                        CollapseItem.Add(new() {
+                        CollapseItem.Add(new()
+                        {
                             Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
                             SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
-                            GroupBuyModuleType = GroupBuyModuleType.CarouselImages 
+                            GroupBuyModuleType = GroupBuyModuleType.CarouselImages
                         });
 
-                    CarouselFilePickers.Add(new ());
+                    CarouselFilePickers.Add(new());
                 }
 
                 foreach (List<CreateImageDto> carouselImages in BannerModules)
                 {
                     if (!CollapseItem.Any(a => a.GroupBuyModuleType is GroupBuyModuleType.BannerImages))
-                        CollapseItem.Add(new() {
+                        CollapseItem.Add(new()
+                        {
                             Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
                             SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
-                            GroupBuyModuleType = GroupBuyModuleType.BannerImages 
+                            GroupBuyModuleType = GroupBuyModuleType.BannerImages
                         });
 
                     BannerFilePickers.Add(new());
@@ -441,10 +443,11 @@ public partial class EditGroupBuy
                 foreach (GroupPurchaseOverviewDto module in GroupPurchaseOverviewModules)
                 {
                     if (!CollapseItem.Any(a => a.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview))
-                        CollapseItem.Add(new() {
+                        CollapseItem.Add(new()
+                        {
                             Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
                             SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
-                            GroupBuyModuleType = GroupBuyModuleType.GroupPurchaseOverview 
+                            GroupBuyModuleType = GroupBuyModuleType.GroupPurchaseOverview
                         });
 
                     GroupPurchaseOverviewFilePickers.Add(new());
@@ -453,10 +456,11 @@ public partial class EditGroupBuy
                 foreach (GroupBuyOrderInstructionDto module in GroupBuyOrderInstructionModules)
                 {
                     if (!CollapseItem.Any(a => a.GroupBuyModuleType is GroupBuyModuleType.OrderInstruction))
-                        CollapseItem.Add(new() {
+                        CollapseItem.Add(new()
+                        {
                             Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
                             SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
-                            GroupBuyModuleType = GroupBuyModuleType.OrderInstruction 
+                            GroupBuyModuleType = GroupBuyModuleType.OrderInstruction
                         });
 
                     GroupBuyOrderInstructionPickers.Add(new());
@@ -625,8 +629,8 @@ public partial class EditGroupBuy
                         && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.IndexAnchor
                         && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.CarouselImages
                         && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.BannerImages
-                        && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.GroupPurchaseOverview 
-                        && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.CountdownTimer 
+                        && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.GroupPurchaseOverview
+                        && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.CountdownTimer
                         && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.OrderInstruction
                         && itemGroup.ItemGroupDetails.Count < 3)
                     {
@@ -1057,9 +1061,9 @@ public partial class EditGroupBuy
     }
 
     async Task OnImageModuleUploadAsync(
-        FileChangedEventArgs e, 
-        List<CreateImageDto> carouselImages, 
-        int carouselModuleNumber, 
+        FileChangedEventArgs e,
+        List<CreateImageDto> carouselImages,
+        int carouselModuleNumber,
         FilePicker carouselPicker,
         ImageType imageType
     )
@@ -1353,7 +1357,7 @@ public partial class EditGroupBuy
                 EditGroupBuyDto.ShippingMethodList.Remove("DeliveredByStore");
 
             }
-            
+
             EditGroupBuyDto.ShippingMethodList.Add(method);
         }
         else
@@ -1562,7 +1566,7 @@ public partial class EditGroupBuy
                     await Loading.Hide();
                     return;
                 }
-                 check = await _groupBuyAppService.CheckShortCodeForEdit(EditGroupBuyDto.ShortCode, Id);
+                check = await _groupBuyAppService.CheckShortCodeForEdit(EditGroupBuyDto.ShortCode, Id);
 
                 if (check)
                 {
@@ -1604,7 +1608,7 @@ public partial class EditGroupBuy
                 await Loading.Hide();
                 return;
             }
-            if (EditGroupBuyDto.ExcludeShippingMethod.IsNullOrEmpty()|| EditGroupBuyDto.ExcludeShippingMethod=="[]")
+            if (EditGroupBuyDto.ExcludeShippingMethod.IsNullOrEmpty() || EditGroupBuyDto.ExcludeShippingMethod == "[]")
             {
                 await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneShippingMethodIsRequired]);
                 await Loading.Hide();
@@ -1623,11 +1627,11 @@ public partial class EditGroupBuy
                 return;
             }
             if ((!EditGroupBuyDto.ExcludeShippingMethod.IsNullOrEmpty()) && (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1")
-                ||EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFreeze")|| EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFrozen")
+                || EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFreeze") || EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFrozen")
                 || EditGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup") || EditGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery")
                 || EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
             {
-                if (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1") && (EditGroupBuyDto.BlackCatDeliveryTime.IsNullOrEmpty()|| EditGroupBuyDto.BlackCatDeliveryTime=="[]"))
+                if (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1") && (EditGroupBuyDto.BlackCatDeliveryTime.IsNullOrEmpty() || EditGroupBuyDto.BlackCatDeliveryTime == "[]"))
                 {
                     await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForBlackCat]);
                     await Loading.Hide();
@@ -1645,13 +1649,13 @@ public partial class EditGroupBuy
                     await Loading.Hide();
                     return;
                 }
-                else if (EditGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup") && (EditGroupBuyDto.SelfPickupDeliveryTime.IsNullOrEmpty()|| EditGroupBuyDto.SelfPickupDeliveryTime=="[]"))
+                else if (EditGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup") && (EditGroupBuyDto.SelfPickupDeliveryTime.IsNullOrEmpty() || EditGroupBuyDto.SelfPickupDeliveryTime == "[]"))
                 {
                     await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForSelfPickup]);
                     await Loading.Hide();
                     return;
                 }
-                else if (EditGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery") && (EditGroupBuyDto.HomeDeliveryDeliveryTime.IsNullOrEmpty()|| EditGroupBuyDto.HomeDeliveryDeliveryTime=="[]"))
+                else if (EditGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery") && (EditGroupBuyDto.HomeDeliveryDeliveryTime.IsNullOrEmpty() || EditGroupBuyDto.HomeDeliveryDeliveryTime == "[]"))
                 {
                     await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForHomeDelivery]);
                     await Loading.Hide();
