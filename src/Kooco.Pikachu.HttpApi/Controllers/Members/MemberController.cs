@@ -119,7 +119,7 @@ public class MemberController(IMemberAppService memberAppService, IPikachuAccoun
     }
 
     [HttpPost("send-email-verification-code/{email}")]
-    public Task SendEmailVerificationCodeAsync(string email)
+    public Task<GenericResponseDto> SendEmailVerificationCodeAsync(string email)
     {
         return pikachuAccountAppService.SendEmailVerificationCodeAsync(email);
     }

@@ -1,5 +1,4 @@
-﻿using Kooco.Pikachu.Members;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Identity;
 
@@ -9,7 +8,7 @@ public interface IPikachuAccountAppService : IApplicationService
 {
     Task<PikachuLoginResponseDto> LoginAsync(PikachuLoginInputDto input);
     Task<IdentityUserDto> RegisterAsync(PikachuRegisterInputDto input);
-    Task SendEmailVerificationCodeAsync(string email);
+    Task<GenericResponseDto> SendEmailVerificationCodeAsync(string email);
     Task<VerifyCodeResponseDto> VerifyEmailCodeAsync(string email, string code);
     Task<GenericResponseDto> SendPasswordResetCodeAsync(string email);
     Task<VerifyCodeResponseDto> VerifyPasswordResetCodeAsync(string email, string code);

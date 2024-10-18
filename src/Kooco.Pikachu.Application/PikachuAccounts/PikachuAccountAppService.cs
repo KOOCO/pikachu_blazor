@@ -3,6 +3,7 @@ using Kooco.Pikachu.PikachuAccounts.ExternalUsers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using RestSharp;
 using System;
 using System.Collections.Generic;
@@ -229,7 +230,7 @@ public class PikachuAccountAppService(IConfiguration configuration, IdentityUser
         }
     }
 
-    public async Task SendEmailVerificationCodeAsync(string email)
+    public async Task<GenericResponseDto> SendEmailVerificationCodeAsync(string email)
     {
         var normalizedEmail = email.ToUpperInvariant();
         var random = new Random();
@@ -239,7 +240,16 @@ public class PikachuAccountAppService(IConfiguration configuration, IdentityUser
 
         string body = $"<p style=\"text-align: center;\">{L["VerificationCodeEmailBody"].Value}</p><h4 style=\"text-align:center\">{code}</h4>";
 
-        await emailSender.SendAsync(email, L["VerificationToken"].Value, body);
+        try
+        {
+            await emailSender.SendAsync(email, L["VerificationToken"].Value, body);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogException(ex);
+            return new GenericResponseDto(false, ex.Message);
+        }
+        return new GenericResponseDto(true, null);
     }
 
     public async Task<VerifyCodeResponseDto> VerifyEmailCodeAsync(string email, string code)
