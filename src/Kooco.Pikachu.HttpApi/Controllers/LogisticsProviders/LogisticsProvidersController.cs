@@ -2,6 +2,7 @@
 using Kooco.Pikachu.LogisticsProviders;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Mvc;
@@ -126,5 +127,10 @@ public class LogisticsProvidersController(
     public Task UpdateTCat711FrozenAsync(TCat711FrozenCreateUpdateDto input)
     {
         return _logisticsProvidersAppService.UpdateTCat711FrozenAsync(input);
+    }
+    [HttpGet("specific-shipping")]
+    public Task<JsonObject> GetAsync(string shippingMethod)
+    {
+        return _logisticsProvidersAppService.GetAsync(shippingMethod);
     }
 }

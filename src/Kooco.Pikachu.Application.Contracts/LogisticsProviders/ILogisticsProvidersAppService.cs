@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 
@@ -26,5 +27,6 @@ namespace Kooco.Pikachu.LogisticsProviders
         Task UpdateGreenWorldC2CAsync(GreenWorldLogisticsCreateUpdateDto input);
         Task UpdateFamilyMartC2CAsync(SevenToElevenCreateUpdateDto input);
         Task UpdateSevenToElevenC2CAsync(SevenToElevenCreateUpdateDto input);
+        Task<JsonObject> GetAsync(string shippingMethod);
     }
 }
