@@ -32,6 +32,36 @@ public class EfCoreProductCategoryRepository : EfCoreRepository<PikachuDbContext
     {
         var queryable = await GetQueryableAsync();
         return queryable
-            .WhereIf(!filter.IsNullOrEmpty(), x => x.Name.Contains(filter) || x.Description.Contains(filter));
+            .WhereIf(!filter.IsNullOrEmpty(), x => x.Name.Contains(filter) || (x.Description != null && x.Description.Contains(filter)));
+    }
+
+    public async Task<ProductCategory?> FindByNameAsync(string name)
+    {
+        var queryable = await GetQueryableAsync();
+        return await queryable
+            .Where(category => name.Equals(category.Name, StringComparison.OrdinalIgnoreCase))
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<ProductCategory> GetWithDetailsAsync(Guid id, bool includeItem = false)
+    {
+        var queryable = await GetQueryableAsync();
+        queryable = queryable
+            .Where(category => category.Id == id)
+            .Include(category => category.ProductCategoryImages);
+
+        if (includeItem)
+        {
+            queryable = queryable
+                .Include(category => category.CategoryProducts)
+                .ThenInclude(product => product.Item);
+        }
+        else
+        {
+            queryable = queryable
+                .Include(category => category.CategoryProducts);
+        }
+
+        return await queryable.FirstOrDefaultAsync();
     }
 }

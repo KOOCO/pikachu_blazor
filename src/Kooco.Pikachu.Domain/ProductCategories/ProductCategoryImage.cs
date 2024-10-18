@@ -7,31 +7,26 @@ namespace Kooco.Pikachu.ProductCategories;
 
 public class ProductCategoryImage : Entity<Guid>
 {
-    public string Name { get; set; }
-    public string BlobName { get; set; }
     public string Url { get; set; }
+    public string BlobName { get; set; }
+    public string? Name { get; set; }
     public Guid ProductCategoryId { get; set; }
-    
+
     [ForeignKey(nameof(ProductCategoryId))]
     public ProductCategory? ProductCategory { get; set; }
 
     public ProductCategoryImage(
         Guid id,
-        string name,
-        string blobName,
+        Guid productCategoryId,
         string url,
-        Guid productCategoryId
+        string blobName,
+        string? name
         ) : base(id)
     {
         ProductCategoryId = productCategoryId;
-        SetName(name);
-        SetBlobName(blobName);
         SetUrl(url);
-    }
-
-    public void SetName(string name)
-    {
-        Name = Check.NotNullOrWhiteSpace(name, nameof(Name));
+        SetBlobName(blobName);
+        Name = name;
     }
 
     public void SetBlobName(string blobName)
@@ -41,6 +36,6 @@ public class ProductCategoryImage : Entity<Guid>
 
     public void SetUrl(string url)
     {
-        Url = Check.NotNullOrWhiteSpace(url, nameof(url));
+        Url = Check.NotNullOrWhiteSpace(url, nameof(Url));
     }
 }

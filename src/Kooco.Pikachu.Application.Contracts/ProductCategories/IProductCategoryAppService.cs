@@ -10,6 +10,6 @@ public interface IProductCategoryAppService : IApplicationService
     Task<ProductCategoryDto> CreateAsync(CreateProductCategoryDto input);
     Task<ProductCategoryDto> UpdateAsync(Guid id, UpdateProductCategoryDto input);
     Task DeleteAsync(Guid id);
-    Task<ProductCategoryDto> GetAsync(Guid id);
+    Task<ProductCategoryDto> GetAsync(Guid id, bool includeDetails = false);
     Task<PagedResultDto<ProductCategoryDto>> GetListAsync(GetProductCategoryListDto input);
 }

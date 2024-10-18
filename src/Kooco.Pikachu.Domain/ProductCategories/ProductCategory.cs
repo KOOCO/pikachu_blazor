@@ -9,7 +9,7 @@ namespace Kooco.Pikachu.ProductCategories;
 public class ProductCategory : FullAuditedAggregateRoot<Guid>, IMultiTenant
 {
     public string Name { get; private set; }
-    public string Description { get; set; }
+    public string? Description { get; set; }
     public Guid? TenantId { get; set; }
 
     public List<ProductCategoryImage> ProductCategoryImages { get; set; }
@@ -18,7 +18,7 @@ public class ProductCategory : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public ProductCategory(
         Guid id,
         string name,
-        string description
+        string? description
         ) : base(id)
     {
         SetName(name);
@@ -39,13 +39,13 @@ public class ProductCategory : FullAuditedAggregateRoot<Guid>, IMultiTenant
         Name = Check.NotNullOrWhiteSpace(name, nameof(Name), maxLength: ProductCategoryConsts.MaxNameLength);
     }
 
-    public ProductCategoryImage AddProductCategoryImage(Guid id, string name, string blobName, string url)
+    public ProductCategoryImage AddProductCategoryImage(Guid id, string url, string blobName, string? name)
     {
-        if (ProductCategoryImages.Count >= 5)
+        if (ProductCategoryImages.Count >= ProductCategoryConsts.MaxImageLimit)
         {
-            throw new UserFriendlyException("Product category can not have more than 5 images");
+            throw new ProductCategoryImagesMaxLimitException();
         }
-        var productCategoryImage = new ProductCategoryImage(id, name, blobName, url, Id);
+        var productCategoryImage = new ProductCategoryImage(id, Id, url, blobName, name);
         ProductCategoryImages.Add(productCategoryImage);
         return productCategoryImage;
     }

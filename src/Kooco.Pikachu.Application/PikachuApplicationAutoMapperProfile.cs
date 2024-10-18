@@ -39,6 +39,7 @@ using Kooco.Pikachu.WebsiteManagement;
 using Kooco.Pikachu.GroupBuyOrderInstructions;
 using Kooco.Pikachu.LoginConfigurations;
 using Kooco.Pikachu.GroupBuyProductRankings;
+using Kooco.Pikachu.ProductCategories;
 
 namespace Kooco.Pikachu;
 
@@ -252,5 +253,15 @@ public class PikachuApplicationAutoMapperProfile : Profile
 
         CreateMap<LoginConfiguration, LoginConfigurationDto>();
         CreateMap<LoginConfigurationDto, UpdateLoginConfigurationDto>();
+
+        CreateMap<ProductCategory, ProductCategoryDto>();
+        CreateMap<ProductCategoryDto, UpdateProductCategoryDto>();
+        CreateMap<ProductCategoryImage, ProductCategoryImageDto>()
+            .ForMember(dest => dest.ProductCategoryName, opt => opt.MapFrom(src => src.ProductCategory!.Name));
+        CreateMap<ProductCategoryImageDto, CreateUpdateProductCategoryImageDto>();
+        CreateMap<CategoryProduct, CategoryProductDto>()
+            .ForMember(dest => dest.ProductCategoryName, opt => opt.MapFrom(src => src.ProductCategory!.Name))
+            .ForMember(dest => dest.ItemName, opt => opt.MapFrom(src => src.Item!.ItemName));
+        CreateMap<CategoryProductDto, CreateUpdateCategoryProductDto>();
     }
 }

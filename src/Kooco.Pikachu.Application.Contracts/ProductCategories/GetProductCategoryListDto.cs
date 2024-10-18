@@ -1,6 +1,8 @@
-﻿namespace Kooco.Pikachu.ProductCategories
+﻿using Volo.Abp.Application.Dtos;
+
+namespace Kooco.Pikachu.ProductCategories;
+
+public class GetProductCategoryListDto : PagedAndSortedResultRequestDto
 {
-    public class GetProductCategoryListDto
-    {
-    }
+    public string? Filter { get; set; }
 }
