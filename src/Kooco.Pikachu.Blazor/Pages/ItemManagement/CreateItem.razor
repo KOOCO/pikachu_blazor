@@ -44,7 +44,7 @@
                         </Addon>
                         <Addon AddonType="AddonType.End">
                             <AddonLabel Style="background-color: #f5f5f7">
-                                @(string.IsNullOrWhiteSpace(CreateItemDto.ItemName) ? 60 : (MaxTextCount - CreateItemDto.ItemName.Count()))/@MaxTextCount
+                                @(string.IsNullOrWhiteSpace(CreateItemDto.ItemName) ? 0 : (CreateItemDto.ItemName.Count()))/@MaxTextCount
                             </AddonLabel>
                         </Addon>
                     </Addons>
@@ -143,7 +143,7 @@
                             </Addon>
                             <Addon AddonType="AddonType.End">
                                 <AddonLabel Style="background-color: #f5f5f7">
-                                    @(string.IsNullOrWhiteSpace(CreateItemDto.ItemDescriptionTitle) ? 60 : (MaxTextCount - CreateItemDto.ItemDescriptionTitle.Count()))/@MaxTextCount
+                                    @(string.IsNullOrWhiteSpace(CreateItemDto.ItemDescriptionTitle) ? 0 : (CreateItemDto.ItemDescriptionTitle.Count()))/@MaxTextCount
                                 </AddonLabel>
                             </Addon>
                         </Addons>

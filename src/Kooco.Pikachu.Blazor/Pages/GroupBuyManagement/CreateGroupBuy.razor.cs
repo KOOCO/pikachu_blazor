@@ -39,18 +39,18 @@ public partial class CreateGroupBuy
     #region Inject
     private bool IsRender = false;
     private Modal AddLinkModal { get; set; }
-    private CreateImageDto SelectedImageDto = new ();
+    private CreateImageDto SelectedImageDto = new();
     private const int maxtextCount = 60;
 
     private const int MaxAllowedFilesPerUpload = 5;
     private const int TotalMaxAllowedFiles = 5;
     private const int MaxAllowedFileSize = 1024 * 1024 * 10;
-    public List<string>SelfPickupTimeList = new List<string>();
-    public List<string>BlackCateDeliveryTimeList = new List<string>();
-    public List<string>BlackCatFreezeDeliveryTimeList = new List<string>();
-    public List<string>BlackCatFrozenDeliveryTimeList = new List<string>();
-    public List<string>HomeDeliveryTimeList = new List<string>();
-    public List<string>DeliverdByStoreTimeList = new List<string>();
+    public List<string> SelfPickupTimeList = new List<string>();
+    public List<string> BlackCateDeliveryTimeList = new List<string>();
+    public List<string> BlackCatFreezeDeliveryTimeList = new List<string>();
+    public List<string> BlackCatFrozenDeliveryTimeList = new List<string>();
+    public List<string> HomeDeliveryTimeList = new List<string>();
+    public List<string> DeliverdByStoreTimeList = new List<string>();
     private GroupBuyCreateDto CreateGroupBuyDto = new();
     public List<CreateImageDto> CarouselImages { get; set; }
     private string TagInputValue { get; set; }
@@ -151,6 +151,7 @@ public partial class CreateGroupBuy
     {
        
         CreateGroupBuyDto.EntryURL = _configuration["EntryUrl"]?.TrimEnd('/');
+        CreateGroupBuyDto.EntryURL = await MyTenantAppService.FindTenantDomainAsync(CurrentTenant.Id);
         SetItemList = await _setItemAppService.GetItemsLookupAsync();
         ItemsList = await _itemAppService.GetItemsLookupAsync();
         ItemsList.AddRange(SetItemList);
@@ -317,7 +318,7 @@ public partial class CreateGroupBuy
 
                 await LogoPickerCustom.Clear();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }
@@ -334,9 +335,9 @@ public partial class CreateGroupBuy
     }
 
     async Task OnImageModuleUploadAsync(
-        FileChangedEventArgs e, 
-        List<CreateImageDto> carouselImages, 
-        int carouselModuleNumber, 
+        FileChangedEventArgs e,
+        List<CreateImageDto> carouselImages,
+        int carouselModuleNumber,
         FilePicker carouselPicker,
         ImageType imageType
     )
@@ -683,9 +684,9 @@ public partial class CreateGroupBuy
 
         else if (SelectedTemplate is GroupBuyTemplateType.PikachuTwo) templateModules = [.. GetPikachuTwoList()];
 
-        if (templateModules is { Count: > 0 }) 
+        if (templateModules is { Count: > 0 })
         {
-            foreach(CollapseItem module in CollapseItem)
+            foreach (CollapseItem module in CollapseItem)
             {
                 if (templateModules.Contains(module.GroupBuyModuleType)) module.IsWarnedForInCompatible = false;
 
@@ -706,11 +707,11 @@ public partial class CreateGroupBuy
         bool value = (bool)(e?.Value ?? false);
 
         if (value) SelfPickupTimeList.Add(method);
-        
+
         else SelfPickupTimeList.Remove(method);
 
         CreateGroupBuyDto.SelfPickupDeliveryTime = JsonConvert.SerializeObject(SelfPickupTimeList);
-   
+
     }
     void BlackCatDeliveryTimeCheckedChange(string method, ChangeEventArgs e)
     {
@@ -802,7 +803,7 @@ public partial class CreateGroupBuy
                 JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "FamilyMart1");
             }
             else if (method == "BlackCat1" && CreateGroupBuyDto.ShippingMethodList.Contains("BlackCatFreeze"))
-                {
+            {
                 CreateGroupBuyDto.ShippingMethodList.Remove("BlackCatFreeze");
                 JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", "BlackCatFreeze");
             }
@@ -845,7 +846,8 @@ public partial class CreateGroupBuy
                 }
                 CreateGroupBuyDto.ShippingMethodList = new List<string>();
             }
-            else {
+            else
+            {
                 CreateGroupBuyDto.ShippingMethodList.Remove("DeliveredByStore");
 
             }
@@ -883,12 +885,12 @@ public partial class CreateGroupBuy
     //        {
 
     //            ItemTags.Add(item);
-                
+
     //        }
-        
+
     //    }
-      
-       
+
+
     //}
 
     //private void HandleItemTagDelete(string item)
@@ -933,8 +935,8 @@ public partial class CreateGroupBuy
     }
 
     public async Task OnImageUploadAsync(
-        FileChangedEventArgs e, 
-        GroupPurchaseOverviewDto module, 
+        FileChangedEventArgs e,
+        GroupPurchaseOverviewDto module,
         FilePicker filePicker
     )
     {
@@ -1134,7 +1136,8 @@ public partial class CreateGroupBuy
                     return;
                 }
             }
-            else {
+            else
+            {
 
                 CreateGroupBuyDto.ShortCode = "";
             }
@@ -1193,7 +1196,7 @@ public partial class CreateGroupBuy
                 || CreateGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup") || CreateGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery")
                 || CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
             {
-                if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1") && (CreateGroupBuyDto.BlackCatDeliveryTime.IsNullOrEmpty()|| CreateGroupBuyDto.BlackCatDeliveryTime == "[]"))
+                if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1") && (CreateGroupBuyDto.BlackCatDeliveryTime.IsNullOrEmpty() || CreateGroupBuyDto.BlackCatDeliveryTime == "[]"))
                 {
                     await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForBlackCat]);
                     await Loading.Hide();
@@ -1217,7 +1220,7 @@ public partial class CreateGroupBuy
                     await Loading.Hide();
                     return;
                 }
-                else if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery") && (CreateGroupBuyDto.HomeDeliveryDeliveryTime.IsNullOrEmpty()|| CreateGroupBuyDto.HomeDeliveryDeliveryTime=="[]"))
+                else if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery") && (CreateGroupBuyDto.HomeDeliveryDeliveryTime.IsNullOrEmpty() || CreateGroupBuyDto.HomeDeliveryDeliveryTime == "[]"))
                 {
                     await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOneDeliveryTimeIsRequiredForHomeDelivery]);
                     await Loading.Hide();
@@ -1255,7 +1258,7 @@ public partial class CreateGroupBuy
 
                     if (groupPurchaseOverview.IsButtonEnable)
                     {
-                        if (groupPurchaseOverview.ButtonText.IsNullOrEmpty()) 
+                        if (groupPurchaseOverview.ButtonText.IsNullOrEmpty())
                         {
                             await _uiMessageService.Error("If you have enabled Button, then Button Text is required.");
 

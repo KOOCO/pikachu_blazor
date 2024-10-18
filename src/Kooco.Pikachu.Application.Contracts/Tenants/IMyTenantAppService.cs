@@ -11,5 +11,6 @@ namespace Kooco.Pikachu.Tenants
         Task<TenantDto> GetTenantAsync(string name);
         Task<bool> CheckShortCodeForCreateAsync(string shortCode);
         Task<bool> CheckShortCodeForUpdate(string shortCode, Guid Id);
+        Task<string?> FindTenantDomainAsync(Guid? id);
     }
 }

@@ -4,6 +4,7 @@ using Blazorise.DataGrid;
 using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Items.Dtos;
+using Kooco.Pikachu.Tenants;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System;
@@ -13,6 +14,7 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.AspNetCore.Components.Messages;
+using Volo.Abp.MultiTenancy;
 
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
 
@@ -78,7 +80,7 @@ public partial class GroupBuyList
 
             foreach (GroupBuyDto groupBuyItem in GroupBuyListItem)
             {
-                groupBuyItem.EntryURL = $"{_Configuration["EntryUrl"]?.TrimEnd('/')}/{groupBuyItem.Id}";
+                groupBuyItem.EntryURL = $"{(await MyTenantAppService.FindTenantDomainAsync(CurrentTenant.Id))?.TrimEnd('/')}/{groupBuyItem.Id}";
             }
 
             Total = (int)result.TotalCount;

@@ -7,8 +7,8 @@
     "RefundChannel": "退款渠道",
     "AutomaticRefund": "自動退款",
     "ManualProcessing": "人工處理",
-    "FrontPage": "頭版",
-    "CopyPageLink": "複製連結頁面",
+    "FrontPage": "前台頁面",
+    "CopyPageLink": "複製連結",
     "7-11": "7-11",
     "7-11 frozen": "7-11冷凍",
     "7-11C2C": "7-11 C2C",
@@ -301,6 +301,7 @@
     "Open": "開啟",
     //Orders
     "Order": "訂單",
+    "Orders": "訂單",
     "OrderCreated": "訂單成立",
     "OrderDate": "訂購日期",
     "OrderDelivery": "物流單",
@@ -648,12 +649,12 @@
     "TCatDeliverySevenElevenNormal": "黑貓7-11常溫",
     "TCatDeliverySevenElevenFreeze": "黑貓7-11冷藏",
     "TCatDeliverySevenElevenFrozen": "黑貓7-11冷凍",
-    
+
     "OuterIsland": "外島",
-  
+
     "TCatDelivery": "黑貓宅急便",
     "TCatSevenToEleven": "黑貓7-11",
-   
+
     "MembersManagement": "會員管理",
     "Permission:Members": "會員管理",
     "Permission:Create": "新增",
@@ -662,6 +663,7 @@
     "Menu:Members": "會員管理",
     "Menu:MembersList": "會員列表",
     "BasicDetails": "基本資料",
+    "Details": "詳細資料",
     "UserId": "會員編號",
     "LoginMethod": "登入方式",
     "DataManagement": "資料管理",
@@ -896,5 +898,11 @@
     "Choose file": "選擇檔案",
     "No file chosen": "No file chosen",
     "Or drop files here": "Or drop files here"
+    "LoginConfigurationsUpdated": "登入設定已更新!",
+    "TenantShortCodeRequired": "請填寫統一編號。",
+    "TenantShortCode": "統一編號",
+    "DomainIsRequired": "請填寫域名。",
+    "Domain": "域名",
+    "InvalidUrl": "請提供一個以 http 或 https 開頭的完整 URL。"
   }
 }

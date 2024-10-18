@@ -1,5 +1,6 @@
 ﻿@page "/GroupBuyManagement/GroupBuyList"
 
+@using Kooco.Pikachu.Tenants
 @using Microsoft.Extensions.Configuration
 @using Volo.Abp.MultiTenancy
 @using Volo.Abp.Application.Dtos
@@ -12,7 +13,8 @@
 @using Blazorise.Components;
 @using Blazorise.LoadingIndicator;
 @using Kooco.Pikachu.Items.Dtos;
-
+@inherits PikachuComponentBase
+@inject IMyTenantAppService MyTenantAppService
 @inject IStringLocalizer<PikachuResource> L
 @inject NavigationManager NavigationManager
 @inject IConfiguration _Configuration

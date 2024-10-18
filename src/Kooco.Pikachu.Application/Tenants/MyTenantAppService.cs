@@ -1,5 +1,6 @@
 ﻿using Kooco.Pikachu.TenantManagement;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -13,10 +14,13 @@ namespace Kooco.Pikachu.Tenants
     {
         private readonly ITenantRepository _tenantRepository;
         private readonly ICustomTenantRepository _customTenantRepository;
-        public MyTenantAppService(ITenantRepository tenantRepository, ICustomTenantRepository customTenantRepository)
+        private readonly IConfiguration _configuration;
+
+        public MyTenantAppService(ITenantRepository tenantRepository, ICustomTenantRepository customTenantRepository, IConfiguration configuration)
         {
             _tenantRepository = tenantRepository;
             _customTenantRepository = customTenantRepository;
+            _configuration = configuration;
         }
 
         public async Task<bool> CheckShortCodeForCreateAsync(string shortCode)
@@ -41,6 +45,14 @@ namespace Kooco.Pikachu.Tenants
         {
             var tenant = await _customTenantRepository.FindByShortCodeAsync(shortCode);
             return ObjectMapper.Map<Tenant, TenantDto>(tenant);
+        }
+
+        [AllowAnonymous]
+        public async Task<string?> FindTenantDomainAsync(Guid? id)
+        {
+            var domain = await _customTenantRepository.FindTenantDomainAsync(id);
+            domain ??= _configuration["EntryUrl"];
+            return domain;
         }
     }
 }
