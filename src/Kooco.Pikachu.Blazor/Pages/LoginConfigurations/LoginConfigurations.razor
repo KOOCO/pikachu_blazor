@@ -26,21 +26,39 @@
                             <Validation MessageLocalizer="@LH.Localize">
                                 <Field>
                                     <FieldLabel>@L["AppId"]</FieldLabel>
-                                    <TextEdit @bind-Text="@Entity.FacebookAppId" Role="TextRole.Password">
-                                        <Feedback>
-                                            <ValidationError />
-                                        </Feedback>
-                                    </TextEdit>
+                                    <Addons>
+                                        <Addon AddonType="AddonType.Body">
+                                            <TextEdit @bind-Text="@Entity.FacebookAppId" Role="ShowAppId ? TextRole.Text : TextRole.Password">
+                                                <Feedback>
+                                                    <ValidationError />
+                                                </Feedback>
+                                            </TextEdit>
+                                        </Addon>
+                                        <Addon AddonType="AddonType.End">
+                                            <Button Color="Color.Secondary" Clicked="() => ShowAppId = !ShowAppId">
+                                                <Icon Name="ShowAppId ? IconName.Eye : IconName.EyeSlash"></Icon>
+                                            </Button>
+                                        </Addon>
+                                    </Addons>
                                 </Field>
                             </Validation>
                             <Validation MessageLocalizer="@LH.Localize">
                                 <Field>
                                     <FieldLabel>@L["AppSecret"]</FieldLabel>
-                                    <TextEdit @bind-Text="@Entity.FacebookAppSecret" Role="TextRole.Password">
-                                        <Feedback>
-                                            <ValidationError />
-                                        </Feedback>
-                                    </TextEdit>
+                                    <Addons>
+                                        <Addon AddonType="AddonType.Body">
+                                            <TextEdit @bind-Text="@Entity.FacebookAppSecret" Role="ShowAppSecret ? TextRole.Text : TextRole.Password">
+                                                <Feedback>
+                                                    <ValidationError />
+                                                </Feedback>
+                                            </TextEdit>
+                                        </Addon>
+                                        <Addon AddonType="AddonType.End">
+                                            <Button Color="Color.Secondary" Clicked="() => ShowAppSecret = !ShowAppSecret">
+                                                <Icon Name="ShowAppSecret ? IconName.Eye : IconName.EyeSlash"></Icon>
+                                            </Button>
+                                        </Addon>
+                                    </Addons>
                                 </Field>
                             </Validation>
                         </Column>
@@ -54,21 +72,39 @@
                             <Validation MessageLocalizer="@LH.Localize">
                                 <Field>
                                     <FieldLabel>@L["ChannelId"]</FieldLabel>
-                                    <TextEdit @bind-Text="@Entity.LineChannelId" Role="TextRole.Password">
-                                        <Feedback>
-                                            <ValidationError />
-                                        </Feedback>
-                                    </TextEdit>
+                                    <Addons>
+                                        <Addon AddonType="AddonType.Body">
+                                            <TextEdit @bind-Text="@Entity.LineChannelId" Role="ShowChannelId ? TextRole.Text : TextRole.Password">
+                                                <Feedback>
+                                                    <ValidationError />
+                                                </Feedback>
+                                            </TextEdit>
+                                        </Addon>
+                                        <Addon AddonType="AddonType.End">
+                                            <Button Color="Color.Secondary" Clicked="() => ShowChannelId = !ShowChannelId">
+                                                <Icon Name="ShowChannelId ? IconName.Eye : IconName.EyeSlash"></Icon>
+                                            </Button>
+                                        </Addon>
+                                    </Addons>
                                 </Field>
                             </Validation>
                             <Validation MessageLocalizer="@LH.Localize">
                                 <Field>
                                     <FieldLabel>@L["ChannelSecret"]</FieldLabel>
-                                    <TextEdit @bind-Text="@Entity.LineChannelSecret" Role="TextRole.Password">
-                                        <Feedback>
-                                            <ValidationError />
-                                        </Feedback>
-                                    </TextEdit>
+                                    <Addons>
+                                        <Addon AddonType="AddonType.Body">
+                                            <TextEdit @bind-Text="@Entity.LineChannelSecret" Role="ShowChannelSecret ? TextRole.Text : TextRole.Password">
+                                                <Feedback>
+                                                    <ValidationError />
+                                                </Feedback>
+                                            </TextEdit>
+                                        </Addon>
+                                        <Addon AddonType="AddonType.End">
+                                            <Button Color="Color.Secondary" Clicked="() => ShowChannelSecret = !ShowChannelSecret">
+                                                <Icon Name="ShowChannelSecret ? IconName.Eye : IconName.EyeSlash"></Icon>
+                                            </Button>
+                                        </Addon>
+                                    </Addons>
                                 </Field>
                             </Validation>
                         </Column>

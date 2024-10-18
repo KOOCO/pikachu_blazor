@@ -14,6 +14,12 @@ public partial class LoginConfigurations
     private bool IsLoading { get; set; }
     private bool IsCancelling { get; set; }
 
+    private bool ShowAppId { get; set; }
+    private bool ShowAppSecret { get; set; }
+
+    private bool ShowChannelId { get; set; }
+    private bool ShowChannelSecret { get; set; }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -32,7 +38,8 @@ public partial class LoginConfigurations
             IsLoading = true;
             await LoginConfigurationAppService.UpdateAsync(Entity);
             IsLoading = false;
-            await UiNotificationService.Success(L["LoginConfigurationsUpdated"]);
+            await Message.Success(L["LoginConfigurationsUpdated"]);
+            ToggleInvisible();
         }
         catch (Exception ex)
         {
@@ -49,6 +56,8 @@ public partial class LoginConfigurations
             var loginConfigurations = await LoginConfigurationAppService.FirstOrDefaultAsync(CurrentTenant.Id);
             Entity = ObjectMapper.Map<LoginConfigurationDto, UpdateLoginConfigurationDto>(loginConfigurations);
             Entity ??= new();
+
+            ToggleInvisible();
         }
         catch (Exception ex)
         {
@@ -59,5 +68,13 @@ public partial class LoginConfigurations
             IsCancelling = false;
             await InvokeAsync(StateHasChanged);
         }
+    }
+
+    void ToggleInvisible()
+    {
+        ShowAppId = false;
+        ShowAppSecret = false;
+        ShowChannelId = false;
+        ShowChannelSecret = false;
     }
 }
