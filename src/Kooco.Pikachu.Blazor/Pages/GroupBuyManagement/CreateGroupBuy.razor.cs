@@ -29,6 +29,7 @@ using Kooco.Pikachu.GroupPurchaseOverviews.Interface;
 using Kooco.Pikachu.GroupBuyOrderInstructions;
 using Kooco.Pikachu.GroupBuyOrderInstructions.Interface;
 using Blazorise.Localization;
+using Kooco.Pikachu.LogisticsProviders;
 
 
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
@@ -111,6 +112,10 @@ public partial class CreateGroupBuy
     private readonly IGroupPurchaseOverviewAppService _GroupPurchaseOverviewAppService;
 
     private readonly IGroupBuyOrderInstructionAppService _GroupBuyOrderInstructionAppService;
+
+    public List<LogisticsProviderSettingsDto> LogisticsProviders = [];
+
+    private readonly ILogisticsProvidersAppService _LogisticsProvidersAppService;
     #endregion
 
     #region Constructor
@@ -122,7 +127,8 @@ public partial class CreateGroupBuy
         IItemAppService itemAppService,
         ISetItemAppService setItemAppService,
         IGroupPurchaseOverviewAppService GroupPurchaseOverviewAppService,
-        IGroupBuyOrderInstructionAppService GroupBuyOrderInstructionAppService
+        IGroupBuyOrderInstructionAppService GroupBuyOrderInstructionAppService,
+        ILogisticsProvidersAppService LogisticsProvidersAppService
     )
     {
         _groupBuyAppService = groupBuyAppService;
@@ -136,6 +142,7 @@ public partial class CreateGroupBuy
 
         _GroupPurchaseOverviewAppService = GroupPurchaseOverviewAppService;
         _GroupBuyOrderInstructionAppService = GroupBuyOrderInstructionAppService;
+        _LogisticsProvidersAppService = LogisticsProvidersAppService;
     }
     #endregion
 
@@ -147,6 +154,8 @@ public partial class CreateGroupBuy
         SetItemList = await _setItemAppService.GetItemsLookupAsync();
         ItemsList = await _itemAppService.GetItemsLookupAsync();
         ItemsList.AddRange(SetItemList);
+
+        LogisticsProviders = await _LogisticsProvidersAppService.GetAllAsync();
     }
 
     private void SelectTemplate(ChangeEventArgs e)
@@ -172,6 +181,39 @@ public partial class CreateGroupBuy
                 else module.IsWarnedForInCompatible = true;
             }
         }
+    }
+
+    public bool IsShippingMethodEnabled(string method)
+    {
+        if (LogisticsProviders is { Count: 0 }) return false;
+
+        DeliveryMethod deliveryMethod = Enum.Parse<DeliveryMethod>(method);
+
+        if (deliveryMethod is DeliveryMethod.HomeDelivery)
+            return LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.HomeDelivery).FirstOrDefault().IsEnabled;
+
+        else if (deliveryMethod is DeliveryMethod.PostOffice ||
+                 deliveryMethod is DeliveryMethod.FamilyMart1 ||
+                 deliveryMethod is DeliveryMethod.SevenToEleven1 ||
+                 deliveryMethod is DeliveryMethod.SevenToElevenFrozen ||
+                 deliveryMethod is DeliveryMethod.BlackCat1 ||
+                 deliveryMethod is DeliveryMethod.BlackCatFreeze ||
+                 deliveryMethod is DeliveryMethod.BlackCatFrozen)
+            return LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.GreenWorldLogistics).FirstOrDefault().IsEnabled;
+
+        else if (deliveryMethod is DeliveryMethod.FamilyMartC2C ||
+                 deliveryMethod is DeliveryMethod.SevenToElevenC2C)
+            return LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.GreenWorldLogisticsC2C).FirstOrDefault().IsEnabled;
+
+        else if (deliveryMethod is DeliveryMethod.TCatDeliveryNormal ||
+                 deliveryMethod is DeliveryMethod.TCatDeliveryFreeze ||
+                 deliveryMethod is DeliveryMethod.TCatDeliveryFrozen ||
+                 deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenNormal ||
+                 deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFreeze ||
+                 deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFrozen)
+            return LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.TCat).FirstOrDefault().IsEnabled;
+
+        else return false;
     }
 
     private void OpenAddLinkModal(CreateImageDto createImageDto)

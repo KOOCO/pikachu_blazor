@@ -4,6 +4,7 @@ using Kooco.Pikachu.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    partial class PikachuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241016103525_Add_IsOuterIslands_AppLogisticProviderSettings")]
+    partial class Add_IsOuterIslands_AppLogisticProviderSettings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2236,12 +2239,6 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<int?>("DeliveryMethod")
                         .HasColumnType("int");
 
-                    b.Property<int?>("DiscountAmount")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("DiscountCodeId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("District")
                         .HasColumnType("nvarchar(max)");
 
@@ -2412,8 +2409,6 @@ namespace Kooco.Pikachu.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreditDeductionRecordId");
-
-                    b.HasIndex("DiscountCodeId");
 
                     b.HasIndex("GroupBuyId");
 
@@ -5651,10 +5646,6 @@ namespace Kooco.Pikachu.Migrations
                         .WithMany()
                         .HasForeignKey("CreditDeductionRecordId");
 
-                    b.HasOne("Kooco.Pikachu.DiscountCodes.DiscountCode", "DiscountCode")
-                        .WithMany()
-                        .HasForeignKey("DiscountCodeId");
-
                     b.HasOne("Kooco.Pikachu.GroupBuys.GroupBuy", "GroupBuy")
                         .WithMany()
                         .HasForeignKey("GroupBuyId")
@@ -5670,8 +5661,6 @@ namespace Kooco.Pikachu.Migrations
                         .HasForeignKey("UserId");
 
                     b.Navigation("CreditDeductionRecord");
-
-                    b.Navigation("DiscountCode");
 
                     b.Navigation("GroupBuy");
 

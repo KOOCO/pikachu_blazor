@@ -36,6 +36,8 @@ namespace Kooco.Pikachu.LogisticsProviders
 
         public string? OuterIslands { get; set; }
 
+        public bool IsOuterIslands { get; set; }
+
         public List<string>? OuterIslandsList { get; set; }
 
         public LogisticProviders LogisticProvider { get; set; }

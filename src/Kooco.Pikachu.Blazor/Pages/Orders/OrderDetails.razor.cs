@@ -926,17 +926,22 @@ public partial class OrderDetails
     {
         item.IsSelected = e;
 
-        if (Order.OrderItems.Count == Order?.OrderItems.Count(c => c.IsSelected))
+        if (Order.ShippingStatus is ShippingStatus.WaitingForPayment ||
+            Order.ShippingStatus is ShippingStatus.PrepareShipment ||
+            Order.ShippingStatus is ShippingStatus.ToBeShipped)
         {
-            refunds.IsRefundItems = false;
-
-            refunds.IsRefundAmount = false;
-
-            refunds.IsRefundOrder = true;
-
-            foreach (OrderItemDto orderItem in Order.OrderItems) 
+            if (Order.OrderItems.Count == Order?.OrderItems.Count(c => c.IsSelected))
             {
-                orderItem.IsSelected = false;
+                refunds.IsRefundItems = false;
+
+                refunds.IsRefundAmount = false;
+
+                refunds.IsRefundOrder = true;
+
+                foreach (OrderItemDto orderItem in Order.OrderItems)
+                {
+                    orderItem.IsSelected = false;
+                }
             }
         }
 

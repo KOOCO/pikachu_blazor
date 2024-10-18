@@ -151,6 +151,15 @@ public partial class LogisticsProviderSettings
         if (tCat711Frozen is not null) TCat711Frozen = ObjectMapper.Map<LogisticsProviderSettingsDto, TCat711FrozenCreateUpdateDto>(tCat711Frozen);
     }
 
+    public void OuterIslandsChecked(bool e)
+    {
+        HomeDelivery.IsOuterIslands = e;
+
+        if (!e) HomeDelivery.OuterIslands = string.Empty;
+
+        StateHasChanged();
+    }
+
     async Task UpdateGreenWorldLogisticsAsync()
     {
         try
