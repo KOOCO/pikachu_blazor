@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Images;
+using Kooco.Pikachu.ProductCategories;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -88,6 +89,7 @@ namespace Kooco.Pikachu.Items
         public string? Attribute3Name { get; set; }
 
         public ItemStorageTemperature? ItemStorageTemperature { get; set; }
+        public List<CategoryProduct> CategoryProducts { get; set; }
 
         public Item() { }
         public Item(
@@ -174,6 +176,7 @@ namespace Kooco.Pikachu.Items
 
             ItemDetails = new Collection<ItemDetails>();
             Images = new Collection<Image>();
+            CategoryProducts = [];
         }
 
         private void SetItemName(
@@ -188,12 +191,12 @@ namespace Kooco.Pikachu.Items
         }
 
         private void SetItemDescriptionTitle(
-            [CanBeNull] string? itemDescriptionTitle 
+            [CanBeNull] string? itemDescriptionTitle
             )
         {
             ItemDescriptionTitle = Check.Length(
-                itemDescriptionTitle, 
-                nameof(ItemDescriptionTitle), 
+                itemDescriptionTitle,
+                nameof(ItemDescriptionTitle),
                 ItemConsts.MaxDescriptionTitleLength
                 );
         }
@@ -217,7 +220,7 @@ namespace Kooco.Pikachu.Items
             bool status = false
         )
         {
-            if(ItemDetails.Any(x => x.SKU == sku))
+            if (ItemDetails.Any(x => x.SKU == sku))
             {
                 throw new BusinessException(PikachuDomainErrorCodes.ItemWithSKUAlreadyExists)
                     .WithData("SKU", sku);
@@ -270,6 +273,14 @@ namespace Kooco.Pikachu.Items
                     )
                 );
             return this;
+        }
+
+        public CategoryProduct AddCategoryProduct(Guid categoryId)
+        {
+            var categoryProduct = new CategoryProduct(Id, categoryId);
+            CategoryProducts ??= [];
+            CategoryProducts.AddIfNotContains(categoryProduct);
+            return categoryProduct;
         }
     }
 }
