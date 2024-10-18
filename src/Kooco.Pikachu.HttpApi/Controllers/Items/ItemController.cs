@@ -18,7 +18,7 @@ namespace Kooco.Pikachu.Controllers.Items;
 [Route("api/app/item")]
 public class ItemController(
     IItemAppService _itemAppService
-        ) : AbpController, IItemAppService
+) : AbpController, IItemAppService
 {
     [HttpPost("change-availability")]
     public Task ChangeItemAvailability(Guid itemId)
@@ -112,5 +112,11 @@ public class ItemController(
     public Task<List<KeyValueDto>> GetAllItemsLookupAsync()
     {
         return _itemAppService.GetAllItemsLookupAsync();
+    }
+
+    [HttpGet("get-sku-and-item")]
+    public Task<ItemDto> GetSKUAndItemAsync(Guid itemId, Guid itemDetailId)
+    {
+        return _itemAppService.GetSKUAndItemAsync(itemId, itemDetailId);
     }
 }
