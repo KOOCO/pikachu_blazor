@@ -25,7 +25,11 @@ public class EfCoreProductCategoryRepository : EfCoreRepository<PikachuDbContext
     public async Task<List<ProductCategory>> GetListAsync(int skipCount, int maxResultCount, string sorting, string? filter)
     {
         var queryable = await GetFilteredQueryableAsync(filter);
-        return await queryable.OrderBy(sorting).PageBy(skipCount, maxResultCount).ToListAsync();
+        return await queryable
+            .OrderBy(sorting.IsNullOrWhiteSpace() ? ProductCategoryConsts.DefaultSorting : sorting)
+            .PageBy(skipCount, maxResultCount)
+            .Include(x => x.ProductCategoryImages)
+            .ToListAsync();
     }
 
     public async Task<IQueryable<ProductCategory>> GetFilteredQueryableAsync(string? filter = null)

@@ -1,0 +1,101 @@
+﻿@page "/Product-Categories"
+@attribute [Authorize(PikachuPermissions.ProductCategories.Default)]
+@using Kooco.Pikachu.Permissions
+@using Kooco.Pikachu.ProductCategories
+@inherits PikachuComponentBase
+@inject IProductCategoryAppService ProductCategoryAppService
+@inject NavigationManager NavigationManager
+
+<Div>
+    <Row>
+        <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+            <h3 class="text-dark">@L["ProductCategories"]</h3>
+        </Column>
+        @if (CanCreateProductCategory)
+        {
+            <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop" TextAlignment="TextAlignment.End">
+                <PikachuButton Class="pk-btn-sm pk-btn-primary" Clicked="Create">
+                    <Icon Name="IconName.Add"></Icon>
+                    @L["AddNew"]
+                </PikachuButton>
+            </Column>
+        }
+    </Row>
+</Div>
+<Card>
+    <CardBody>
+        <Div Class="input-group">
+            <TextEdit @bind-Text="Filters.Filter" />
+            <Button Color="Color.Primary" Clicked="ApplyFilters">
+                <Icon Class="fas fa-search"></Icon>
+            </Button>
+        </Div>
+    </CardBody>
+</Card>
+<Card>
+    <CardBody>
+        <DataGrid TItem="ProductCategoryDto"
+                  Data="ProductCategoryList"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  PageSize="PageSize"
+                  CurrentPage="CurrentPage"
+                  Hoverable
+                  Narrow
+                  Responsive
+                  Striped>
+            <DataGridColumns>
+                <DataGridColumn Width="150px"
+                                TItem="ProductCategoryDto"
+                                Field="@nameof(ProductCategoryDto.Id)"
+                                Sortable="false"
+                                Caption="@L["Actions"]">
+                    <DisplayTemplate>
+                        <Dropdown>
+                            <DropdownToggle Color="Color.Primary">
+                                @L["Actions"]
+                            </DropdownToggle>
+                            <DropdownMenu>
+                                @if (CanEditProductCategory)
+                                {
+                                    <DropdownItem Clicked="() => Edit(context)">
+                                        @L["Edit"]
+                                    </DropdownItem>
+                                }
+                                @if (CanDeleteProductCategory)
+                                {
+                                    <DropdownItem Clicked="() => DeleteAsync(context)">
+                                        @L["Delete"]
+                                    </DropdownItem>
+                                }
+                            </DropdownMenu>
+                        </Dropdown>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="ProductCategoryDto"
+                                Field="@nameof(ProductCategoryDto.Name)"
+                                Caption="@L["Name"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="ProductCategoryDto"
+                                Field="@nameof(ProductCategoryDto.Description)"
+                                Caption="@L["Description"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="ProductCategoryDto"
+                                Field="@nameof(ProductCategoryDto.ProductCategoryImages)"
+                                Sortable="false"
+                                Caption="@L["CarousalImages"]">
+                    <DisplayTemplate>
+                        @foreach (var image in context.ProductCategoryImages)
+                        {
+                            if (!image.Url.IsNullOrWhiteSpace())
+                            {
+                                <img src="@image.Url" style="height: 50px; width: 50px;" />
+                            }
+                        }
+                    </DisplayTemplate>
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>

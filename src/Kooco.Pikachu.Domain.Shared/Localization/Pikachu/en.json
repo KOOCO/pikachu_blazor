@@ -863,6 +863,9 @@
     "InvalidUrl": "Please provide a fully qualified URL starting with http or https.",
     "Pikachu:ProductCategoryAlreadyExists": "Product Category with same name {name} already exists.",
     "Pikachu:ProductCategoryImageMaxLimit": "Product category can not have more than 5 images",
-    "Permission:ProductCategories": "Product Categories"
+    "Permission:ProductCategories": "Product Categories",
+    "Menu:ProductCategories": "Product Categories",
+    "ProductCategories": "Product Categories",
+    "CarousalImages": "Carousal Images"
   }
 }
