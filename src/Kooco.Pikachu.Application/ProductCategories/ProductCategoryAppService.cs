@@ -1,7 +1,11 @@
-﻿using Kooco.Pikachu.Permissions;
+﻿using Kooco.Pikachu.AzureStorage.Image;
+using Kooco.Pikachu.Permissions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
@@ -10,7 +14,8 @@ namespace Kooco.Pikachu.ProductCategories;
 
 [RemoteService(IsEnabled = false)]
 [Authorize(PikachuPermissions.ProductCategories.Default)]
-public class ProductCategoryAppService(ProductCategoryManager productCategoryManager, IProductCategoryRepository productCategoryRepository) : PikachuAppService, IProductCategoryAppService
+public class ProductCategoryAppService(ProductCategoryManager productCategoryManager, IProductCategoryRepository productCategoryRepository,
+    ImageContainerManager imageContainerManager) : PikachuAppService, IProductCategoryAppService
 {
     [Authorize(PikachuPermissions.ProductCategories.Create)]
     public async Task<ProductCategoryDto> CreateAsync(CreateProductCategoryDto input)
@@ -80,13 +85,47 @@ public class ProductCategoryAppService(ProductCategoryManager productCategoryMan
 
         foreach (var image in productCategoryImages)
         {
-            productCategoryManager.AddProductCategoryImage(productCategory, image.Url, image.BlobName, image.Name);
+            productCategoryManager.AddProductCategoryImage(productCategory, image.Url, image.BlobName, image.Name, image.SortNo);
         }
 
         foreach (var categoryProduct in categoryProducts)
         {
             Check.NotDefaultOrNull(categoryProduct.ItemId, nameof(categoryProduct.ItemId));
             productCategoryManager.AddCategoryProduct(productCategory, categoryProduct.ItemId.Value);
+        }
+    }
+
+    public async Task<List<CreateUpdateProductCategoryImageDto>> UploadImagesAsync(List<CreateUpdateProductCategoryImageDto> input, bool deleteExisting = false)
+    {
+        Check.NotNull(input, nameof(input));
+        List<string> oldBlobNames = [];
+        foreach (var image in input)
+        {
+            oldBlobNames.Add(image.BlobName);
+            var bytes = Convert.FromBase64String(image.Base64);
+            image.BlobName = GuidGenerator.Create().ToString().Replace("-", "") + Path.GetExtension(image.Name);
+            image.Url = await imageContainerManager.SaveAsync(image.BlobName, bytes);
+        }
+
+        if (deleteExisting && oldBlobNames.Count > 0)
+        {
+            await DeleteOldImagesAsync(oldBlobNames).ConfigureAwait(false);
+        }
+        return input;
+    }
+
+    private async Task DeleteOldImagesAsync(List<string> oldBlobNames)
+    {
+        foreach (var oldBlobName in oldBlobNames)
+        {
+            try
+            {
+                await imageContainerManager.DeleteAsync(oldBlobName);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(ex);
+            }
         }
     }
 }

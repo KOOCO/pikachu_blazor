@@ -41,9 +41,10 @@ public class EfCoreProductCategoryRepository : EfCoreRepository<PikachuDbContext
 
     public async Task<ProductCategory?> FindByNameAsync(string name)
     {
+        name = name.ToLowerInvariant();
         var queryable = await GetQueryableAsync();
         return await queryable
-            .Where(category => name.Equals(category.Name, StringComparison.OrdinalIgnoreCase))
+            .Where(category => name == category.Name.ToLower())
             .FirstOrDefaultAsync();
     }
 

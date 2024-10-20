@@ -14,4 +14,8 @@ public class CreateUpdateProductCategoryImageDto
     public string BlobName { get; set; }
 
     public string? Name { get; set; }
+
+    public string Base64 { get; set; }
+
+    public int SortNo { get; set; }
 }

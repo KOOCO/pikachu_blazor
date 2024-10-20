@@ -27,7 +27,7 @@ public partial class AddWebsiteSettings
         NavigationManager.NavigateTo("/Website-Settings");
     }
 
-    async Task OnFileUploadAsync(FileChangedEventArgs e, string type)
+    async Task OnFileUploadAsync(FileChangedEventArgs e)
     {
         var file = e.Files.FirstOrDefault();
 
@@ -41,11 +41,9 @@ public partial class AddWebsiteSettings
                 return;
             }
 
-            var validExtensions = type == "favicon" ? Constant.ValidFaviconExtensions : Constant.ValidImageExtensions;
-
-            if (!validExtensions.Contains(extension))
+            if (!Constant.ValidImageExtensions.Contains(extension))
             {
-                await UiNotificationService.Error(L["Pikachu:InvalidImageExtension", string.Join(", ", validExtensions)]);
+                await UiNotificationService.Error(L["Pikachu:InvalidImageExtension", string.Join(", ", Constant.ValidImageExtensions)]);
                 return;
             }
 

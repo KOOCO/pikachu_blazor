@@ -1,0 +1,219 @@
+﻿@page "/Product-Categories/Create"
+@using Blazored.TextEditor
+@using Blazorise.Components
+@using Kooco.Pikachu.AzureStorage.Image
+@using Kooco.Pikachu.Items
+@using Kooco.Pikachu.Items.Dtos
+@using Kooco.Pikachu.Permissions
+@using Kooco.Pikachu.Images
+@using Kooco.Pikachu.Localization
+@using Kooco.Pikachu.ProductCategories
+@using Volo.Abp.AspNetCore.Components.Notifications
+@using Volo.Abp.AspNetCore.Components.Web
+@attribute [Authorize(PikachuPermissions.ProductCategories.Create)]
+@inherits PikachuComponentBase
+@inject NavigationManager NavigationManager
+@inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
+@inject IImageAppService ImageAppService
+@inject IProductCategoryAppService ProductCategoryAppService
+@inject ImageContainerManager ImageContainerManager
+@inject IItemAppService ItemAppService
+
+<Div Class="rounded-cards">
+    <PikachuButton Clicked="NavigateToProductCategory">
+        <Icon Name="IconName.ArrowLeft" Class="me-1"></Icon>
+        @L["ProductCategories"]
+    </PikachuButton>
+</Div>
+
+<Div Class="rounded-cards website-settings">
+    <Card>
+        <CardBody>
+            <Validations @ref="@ValidationsRef" Model="@NewEntity" ValidateOnLoad="false">
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                        <h4>@L["AddProductCategory"]</h4>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <FieldLabel>@L["Name"] *</FieldLabel>
+                                <TextEdit @bind-Text="@NewEntity.Name">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                        <Field>
+                            <FieldLabel>@L["Description"]</FieldLabel>
+                            <BlazoredTextEditor @ref="@DescriptionHtml">
+                                <ToolbarContent>
+                                    <select class="ql-header">
+                                        <option selected=""></option>
+                                        <option value="1"></option>
+                                        <option value="2"></option>
+                                        <option value="3"></option>
+                                        <option value="4"></option>
+                                        <option value="5"></option>
+                                    </select>
+                                    <span class="ql-formats">
+                                        <button class="ql-bold"></button>
+                                        <button class="ql-italic"></button>
+                                        <button class="ql-underline"></button>
+                                        <button class="ql-strike"></button>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <select class="ql-color"></select>
+                                        <select class="ql-background"></select>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <button class="ql-list" value="ordered"></button>
+                                        <button class="ql-list" value="bullet"></button>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <button class="ql-link"></button>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <button class="ql-image"></button>
+                                    </span>
+                                    <span class="ql-formats">
+                                        <button class="ql-video"></button>
+                                    </span>
+                                </ToolbarContent>
+                            </BlazoredTextEditor>
+                        </Field>
+                    </Column>
+                </Row>
+                <Divider></Divider>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                        <h4>@L["CarousalImages"]</h4>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                        <Div Class="container-less-filepicker">
+                            <Field>
+                                <FilePicker Changed="@OnFileUploadAsync"
+                                            ShowMode="FilePickerShowMode.List"
+                                            Multiple
+                                            @ref="FilePicker"
+                                            Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
+                                    <FileTemplate></FileTemplate>
+                                    <ButtonsTemplate></ButtonsTemplate>
+                                </FilePicker>
+                            </Field>
+                        </Div>
+                        @if (NewEntity.ProductCategoryImages.Count > 0)
+                        {
+                            <div class="image-list-container" ondragover="event.preventDefault();">
+                                @foreach (var image in NewEntity.ProductCategoryImages.OrderBy(x => x.SortNo))
+                                {
+                                    <div class="d-flex flex-column align-items-center justify-content-center mb-2">
+                                        <div class="image-container">
+                                            <Image class="blur-image" Source="@("data:image/png;base64," + image.Base64)" Text="Item Image" Fluid />
+                                            <button class="delete-button" @onclick="() => DeleteImage(image)">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </div>
+                                        <div class="w-100 text-center"
+                                             draggable="true"
+                                             @ondrop="@(()=> Drop(image))"
+                                             @ondrag="@(()=> StartDrag(image))">
+                                            <span class="drag-drop-span pb-2">
+                                                <i class="fa-solid fa-bars fa-xl"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                }
+
+                            </div>
+                        }
+                    </Column>
+                </Row>
+                <Divider></Divider>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                        <h4>@L["Products"]</h4>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                        <Autocomplete TItem="ItemWithItemTypeDto"
+                                      TValue="Guid?"
+                                      Data="@ItemsLookup"
+                                      TextField="@(( item ) => item.Name)"
+                                      ValueField="@(( item ) => item.Id)"
+                                      @bind-SelectedText="SelectedAutoCompleteText"
+                                      Placeholder="Search..."
+                                      Filter="AutocompleteFilter.StartsWith"
+                                      CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                                      HighlightSearch
+                                      Immediate="true"
+                                      SelectedValueChanged="OnSelectedValueChanged"
+                                      @ref="AutocompleteField">
+                            <NotFoundContent> @L["NotFound"] </NotFoundContent>
+                        </Autocomplete>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12">
+                        @if (NewEntity.CategoryProducts.Count > 0 || RowLoading)
+                        {
+                            <Div Class="mt-2">
+                                <Table Striped>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHeaderCell>@L["Item"]</TableHeaderCell>
+                                            <TableHeaderCell TextAlignment="TextAlignment.Center">@L["Image"]</TableHeaderCell>
+                                            <TableHeaderCell TextAlignment="TextAlignment.Center"></TableHeaderCell>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        @foreach (var categoryProduct in NewEntity.CategoryProducts)
+                                        {
+                                            <TableRow>
+                                                <TableRowCell>
+                                                    <h5 class="m-0">@categoryProduct.Item?.ItemName</h5>
+                                                    <Span Class="bg-lightgrey rounded-3" Style="padding: 1px 10px;">
+                                                        <Copy Text="@categoryProduct.ItemId" ShouldDisplayIcon="false"></Copy>
+                                                    </Span>
+                                                </TableRowCell>
+                                                <TableRowCell TextAlignment="TextAlignment.Center">
+                                                    @if (!categoryProduct.ItemImageUrl.IsNullOrWhiteSpace())
+                                                    {
+                                                        <Image Fluid Source="@categoryProduct.ItemImageUrl" Style="height: 150px;"></Image>
+                                                    }
+                                                </TableRowCell>
+                                                <TableRowCell TextAlignment="TextAlignment.Center" Style="width: 150px"
+                                                              Clicked="@(() => RemoveCategoryProduct(categoryProduct))">
+                                                    <PikachuButton Class="pk-btn-sm pk-btn-outline-danger">
+                                                        <i class="fas fa-trash"></i>
+                                                        @L["Remove"]
+                                                    </PikachuButton>
+                                                </TableRowCell>
+                                            </TableRow>
+                                        }
+                                        @if (RowLoading)
+                                        {
+                                            <TableRow>
+                                                <TableRowCell ColumnSpan="3">
+                                                    <Div TextAlignment="TextAlignment.Center" Class="py-2">
+                                                        <Span Class="spinner-border"></Span>
+                                                    </Div>
+                                                </TableRowCell>
+                                            </TableRow>
+                                        }
+                                    </TableBody>
+                                </Table>
+                            </Div>
+                        }
+                    </Column>
+                </Row>
+            </Validations>
+        </CardBody>
+    </Card>
+    <Div Class="text-end">
+        <PikachuButton Class="pk-btn-transparent" Disabled="IsLoading" Clicked="NavigateToProductCategory">
+            @L["Cancel"]
+        </PikachuButton>
+        <PikachuButton Class="pk-btn-primary" Loading="IsLoading" Clicked="CreateAsync">
+            @L["Create"]
+        </PikachuButton>
+    </Div>
+</Div>

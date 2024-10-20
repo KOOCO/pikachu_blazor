@@ -39,13 +39,13 @@ public class ProductCategory : FullAuditedAggregateRoot<Guid>, IMultiTenant
         Name = Check.NotNullOrWhiteSpace(name, nameof(Name), maxLength: ProductCategoryConsts.MaxNameLength);
     }
 
-    public ProductCategoryImage AddProductCategoryImage(Guid id, string url, string blobName, string? name)
+    public ProductCategoryImage AddProductCategoryImage(Guid id, string url, string blobName, string? name, int sortNo)
     {
         if (ProductCategoryImages.Count >= ProductCategoryConsts.MaxImageLimit)
         {
             throw new ProductCategoryImagesMaxLimitException();
         }
-        var productCategoryImage = new ProductCategoryImage(id, Id, url, blobName, name);
+        var productCategoryImage = new ProductCategoryImage(id, Id, url, blobName, name, sortNo);
         ProductCategoryImages.Add(productCategoryImage);
         return productCategoryImage;
     }

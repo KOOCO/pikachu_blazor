@@ -40,7 +40,7 @@ public class ProductCategoryManager(IProductCategoryRepository productCategoryRe
         return productCategory;
     }
 
-    public ProductCategory AddProductCategoryImage(ProductCategory productCategory, string url, string blobName, string? name)
+    public ProductCategory AddProductCategoryImage(ProductCategory productCategory, string url, string blobName, string? name, int sortNo)
     {
         Check.NotNull(productCategory, nameof(ProductCategory));
         Check.NotNullOrWhiteSpace(url, nameof(url));
@@ -51,7 +51,7 @@ public class ProductCategoryManager(IProductCategoryRepository productCategoryRe
             throw new ProductCategoryImagesMaxLimitException();
         }
 
-        productCategory.AddProductCategoryImage(GuidGenerator.Create(), url, blobName, name);
+        productCategory.AddProductCategoryImage(GuidGenerator.Create(), url, blobName, name, sortNo);
         return productCategory;
     }
 

@@ -2,6 +2,7 @@
 using Kooco.Pikachu.ProductCategories;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
@@ -42,5 +43,11 @@ public class ProductCategoryController(IProductCategoryAppService productCategor
     public Task<ProductCategoryDto> UpdateAsync(Guid id, UpdateProductCategoryDto input)
     {
         return productCategoryAppService.UpdateAsync(id, input);
+    }
+
+    [HttpPost("upload-images")]
+    public Task<List<CreateUpdateProductCategoryImageDto>> UploadImagesAsync(List<CreateUpdateProductCategoryImageDto> input, bool deleteExisting = false)
+    {
+        return productCategoryAppService.UploadImagesAsync(input, deleteExisting);
     }
 }

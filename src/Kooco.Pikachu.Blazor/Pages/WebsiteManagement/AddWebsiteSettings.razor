@@ -79,7 +79,7 @@
                         </Row>
                         <Div Class="container-less-filepicker">
                             <Field>
-                                <FilePicker Changed="@((e) => OnFileUploadAsync(e, "logo"))"
+                                <FilePicker Changed="@OnFileUploadAsync"
                                             ShowMode="FilePickerShowMode.List"
                                             Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
                                     <FileTemplate></FileTemplate>
