@@ -1,10 +1,10 @@
 using Blazored.TextEditor;
 using Blazorise;
 using Blazorise.Components;
-using Kooco.Pikachu.AzureStorage.Image;
 using Kooco.Pikachu.Extensions;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.ProductCategories;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -14,9 +14,12 @@ using System.Threading.Tasks;
 
 namespace Kooco.Pikachu.Blazor.Pages.ProductCategories;
 
-public partial class CreateProductCategory
+public partial class EditProductCategory
 {
-    private CreateProductCategoryDto NewEntity { get; set; }
+    [Parameter]
+    public Guid Id { get; set; }
+    private ProductCategoryDto Selected { get; set; }
+    private UpdateProductCategoryDto EditingEntity { get; set; }
     private Validations ValidationsRef;
     private BlazoredTextEditor DescriptionHtml { get; set; }
     private bool IsLoading { get; set; }
@@ -28,10 +31,28 @@ public partial class CreateProductCategory
     private List<ItemWithItemTypeDto> ItemsLookup { get; set; }
     private bool RowLoading { get; set; } = false;
 
-    public CreateProductCategory()
+    public EditProductCategory()
     {
-        NewEntity = new();
+        EditingEntity = new();
         ItemsLookup = [];
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Selected = await ProductCategoryAppService.GetAsync(Id, true);
+            EditingEntity = ObjectMapper.Map<ProductCategoryDto, UpdateProductCategoryDto>(Selected);
+            if (!EditingEntity.Description.IsNullOrWhiteSpace())
+            {
+                await DescriptionHtml.LoadHTMLContent(EditingEntity.Description);
+            }
+            await PopulateItems().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -50,6 +71,23 @@ public partial class CreateProductCategory
         }
     }
 
+    private async Task PopulateItems()
+    {
+        var itemIds = EditingEntity.CategoryProducts.Where(x => x.ItemId.HasValue).Select(x => x.ItemId!.Value).ToList();
+
+        var items = await ItemAppService.GetManyAsync(itemIds);
+
+        EditingEntity.CategoryProducts.ForEach(product =>
+        {
+            var item = items.Where(i => i.Id == product.ItemId).FirstOrDefault();
+            product.Item = item;
+            product.ItemImageUrl = item?.Images?.FirstOrDefault()?.ImageUrl;
+        });
+
+        ItemsLookup.RemoveAll(item => itemIds.Contains(item.Id));
+        await InvokeAsync(StateHasChanged);
+    }
+
     private void NavigateToProductCategory()
     {
         NavigationManager.NavigateTo("Product-Categories");
@@ -63,7 +101,7 @@ public partial class CreateProductCategory
             return;
         }
 
-        if ((NewEntity.ProductCategoryImages.Count + e.Files.Length) > ProductCategoryConsts.MaxImageLimit)
+        if ((EditingEntity.ProductCategoryImages.Count + e.Files.Length) > ProductCategoryConsts.MaxImageLimit)
         {
             await Message.Error(L[PikachuDomainErrorCodes.ProductCategoryImageMaxLimit]);
             return;
@@ -89,10 +127,10 @@ public partial class CreateProductCategory
                 await file.OpenReadStream().CopyToAsync(memoryStream);
                 var fileBytes = memoryStream.ToArray();
 
-                var sortNo = NewEntity.ProductCategoryImages.Count > 0 ? NewEntity.ProductCategoryImages.Max(i => i.SortNo) : 1;
+                var sortNo = EditingEntity.ProductCategoryImages.Count > 0 ? EditingEntity.ProductCategoryImages.Max(i => i.SortNo) : 1;
 
                 var base64 = Convert.ToBase64String(fileBytes);
-                NewEntity.ProductCategoryImages.Add(new CreateUpdateProductCategoryImageDto
+                EditingEntity.ProductCategoryImages.Add(new CreateUpdateProductCategoryImageDto
                 {
                     Base64 = base64,
                     Name = file.Name,
@@ -104,7 +142,7 @@ public partial class CreateProductCategory
         await InvokeAsync(StateHasChanged);
     }
 
-    async Task CreateAsync()
+    async Task UpdateAsync()
     {
         await ValidationsRef.ValidateAll();
 
@@ -114,10 +152,10 @@ public partial class CreateProductCategory
         try
         {
             IsLoading = true;
-            NewEntity.Description = await DescriptionHtml.GetHTML();
+            EditingEntity.Description = await DescriptionHtml.GetHTML();
 
             List<string> oldBlobNames = [];
-            foreach (var image in NewEntity.ProductCategoryImages)
+            foreach (var image in EditingEntity.ProductCategoryImages.Where(i => !i.Base64.IsNullOrWhiteSpace()))
             {
                 oldBlobNames.Add(image.BlobName);
                 var bytes = Convert.FromBase64String(image.Base64);
@@ -125,7 +163,7 @@ public partial class CreateProductCategory
                 image.Url = await ImageContainerManager.SaveAsync(image.BlobName, bytes);
             }
 
-            await ProductCategoryAppService.CreateAsync(NewEntity);
+            await ProductCategoryAppService.UpdateAsync(Id, EditingEntity);
             if (oldBlobNames.Count > 0)
             {
                 await DeleteOldImagesAsync(oldBlobNames).ConfigureAwait(false);
@@ -141,25 +179,25 @@ public partial class CreateProductCategory
 
     void StartDrag(CreateUpdateProductCategoryImageDto image)
     {
-        CurrentIndex = NewEntity.ProductCategoryImages.IndexOf(image);
+        CurrentIndex = EditingEntity.ProductCategoryImages.IndexOf(image);
     }
 
     void Drop(CreateUpdateProductCategoryImageDto image)
     {
         if (image != null)
         {
-            var index = NewEntity.ProductCategoryImages.IndexOf(image);
+            var index = EditingEntity.ProductCategoryImages.IndexOf(image);
 
-            var current = NewEntity.ProductCategoryImages[CurrentIndex];
+            var current = EditingEntity.ProductCategoryImages[CurrentIndex];
 
-            NewEntity.ProductCategoryImages.RemoveAt(CurrentIndex);
-            NewEntity.ProductCategoryImages.Insert(index, current);
+            EditingEntity.ProductCategoryImages.RemoveAt(CurrentIndex);
+            EditingEntity.ProductCategoryImages.Insert(index, current);
 
             CurrentIndex = index;
 
-            for (int i = 0; i < NewEntity.ProductCategoryImages.Count; i++)
+            for (int i = 0; i < EditingEntity.ProductCategoryImages.Count; i++)
             {
-                NewEntity.ProductCategoryImages[i].SortNo = i + 1;
+                EditingEntity.ProductCategoryImages[i].SortNo = i + 1;
             }
             StateHasChanged();
         }
@@ -167,7 +205,7 @@ public partial class CreateProductCategory
 
     void DeleteImage(CreateUpdateProductCategoryImageDto image)
     {
-        NewEntity.ProductCategoryImages.Remove(image);
+        EditingEntity.ProductCategoryImages.Remove(image);
         StateHasChanged();
     }
 
@@ -203,7 +241,7 @@ public partial class CreateProductCategory
                     ItemImageUrl = await ItemAppService.GetFirstImageUrlAsync(id.Value)
                 };
 
-                NewEntity.CategoryProducts.Add(categoryProduct);
+                EditingEntity.CategoryProducts.Add(categoryProduct);
                 RowLoading = false;
 
                 ItemsLookup = ItemsLookup.Where(x => x.Id != id).ToList();
@@ -221,7 +259,7 @@ public partial class CreateProductCategory
     {
         if (categoryProduct != null)
         {
-            NewEntity.CategoryProducts.Remove(categoryProduct);
+            EditingEntity.CategoryProducts.Remove(categoryProduct);
             ItemsLookup.Add(new ItemWithItemTypeDto
             {
                 Id = categoryProduct.ItemId!.Value,

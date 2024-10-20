@@ -37,4 +37,5 @@ public interface IItemRepository : IRepository<Item, Guid>
                                 );
 
     Task<Item> GetSKUAndItemAsync(Guid itemId, Guid itemDetailId);
+    Task<List<Item>> GetManyAsync(List<Guid> itemIds);
 }

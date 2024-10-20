@@ -9,4 +9,5 @@ public class ProductCategoryImageDto
     public string? Name { get; set; }
     public Guid ProductCategoryId { get; set; }
     public string? ProductCategoryName { get; set; }
+    public int SortNo { get; set; }
 }

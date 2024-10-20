@@ -119,4 +119,10 @@ public class ItemController(
     {
         return _itemAppService.GetSKUAndItemAsync(itemId, itemDetailId);
     }
+
+    [HttpGet("get-many")]
+    public Task<List<ItemDto>> GetManyAsync(List<Guid> itemIds)
+    {
+        return _itemAppService.GetManyAsync(itemIds);
+    }
 }

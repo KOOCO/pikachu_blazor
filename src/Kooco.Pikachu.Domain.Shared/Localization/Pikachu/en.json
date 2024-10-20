@@ -867,6 +867,7 @@
     "Menu:ProductCategories": "Product Categories",
     "ProductCategories": "Product Categories",
     "CarousalImages": "Carousal Images",
-    "AddProductCategory": "Add Product Category"
+    "AddProductCategory": "Add Product Category",
+    "EditProductCategory": "Edit Product Category"
   }
 }

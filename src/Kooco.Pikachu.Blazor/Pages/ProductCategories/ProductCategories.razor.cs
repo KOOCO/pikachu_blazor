@@ -2,7 +2,6 @@ using Blazorise;
 using Blazorise.DataGrid;
 using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.ProductCategories;
-using Kooco.Pikachu.WebsiteManagement;
 using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
@@ -26,10 +25,17 @@ public partial class ProductCategories
 
     private GetProductCategoryListDto Filters { get; set; }
 
+    private Modal DescriptionModal;
+    private Modal CarousalModal;
+    private ProductCategoryDto Selected { get; set; }
+
+    private int SelectedSlide { get; set; }
+
     public ProductCategories()
     {
         ProductCategoryList = [];
         Filters = new();
+        Selected = new();
     }
 
     protected override async Task OnInitializedAsync()
@@ -125,5 +131,18 @@ public partial class ProductCategories
         await GetProductCategoriesAsync();
 
         await InvokeAsync(StateHasChanged);
+    }
+
+    private void ViewDescription(ProductCategoryDto productCategory)
+    {
+        Selected = productCategory;
+        DescriptionModal.Show();
+    }
+
+    private void ViewCarousal(ProductCategoryDto productCategory)
+    {
+        Selected = productCategory;
+        SelectedSlide = 0;
+        CarousalModal.Show();
     }
 }

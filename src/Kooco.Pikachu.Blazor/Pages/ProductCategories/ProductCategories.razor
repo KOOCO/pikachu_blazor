@@ -79,19 +79,23 @@
                 </DataGridColumn>
                 <DataGridColumn TItem="ProductCategoryDto"
                                 Field="@nameof(ProductCategoryDto.Description)"
-                                Caption="@L["Description"]">
+                                Caption="@L["Description"]"
+                                TextAlignment="TextAlignment.Center"
+                                HeaderTextAlignment="TextAlignment.Center">
+                    <DisplayTemplate>
+                        <Icon Name="IconName.Eye" Clicked="() => ViewDescription(context)" Class="cursor-pointer"></Icon>
+                    </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="ProductCategoryDto"
                                 Field="@nameof(ProductCategoryDto.ProductCategoryImages)"
                                 Sortable="false"
-                                Caption="@L["CarousalImages"]">
+                                Caption="@L["CarousalImages"]"
+                                TextAlignment="TextAlignment.Center"
+                                HeaderTextAlignment="TextAlignment.Center">
                     <DisplayTemplate>
-                        @foreach (var image in context.ProductCategoryImages)
+                        @if (context.ProductCategoryImages.Count > 0)
                         {
-                            if (!image.Url.IsNullOrWhiteSpace())
-                            {
-                                <img src="@image.Url" style="height: 50px; width: 50px;" />
-                            }
+                            <Icon Name="IconName.Eye" Clicked="() => ViewCarousal(context)" Class="cursor-pointer"></Icon>
                         }
                     </DisplayTemplate>
                 </DataGridColumn>
@@ -99,3 +103,50 @@
         </DataGrid>
     </CardBody>
 </Card>
+<Modal @ref="DescriptionModal">
+    <ModalContent Centered Size="ModalSize.ExtraLarge" Overflow="Overflow.Auto">
+        <ModalHeader>
+            <h4>@Selected?.Name</h4>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            @((MarkupString)Selected.Description)
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+<Modal @ref="CarousalModal">
+    <ModalContent Centered Size="ModalSize.ExtraLarge" Style="min-height: 500px;">
+        <ModalHeader>
+            <h4>@Selected?.Name</h4>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Div Class="d-flex justify-content-between mb-2">
+                <PikachuButton Class="pk-btn-sm pk-btn-primary"
+                               Disabled="@(SelectedSlide == 0)"
+                               Clicked="@(() => SelectedSlide = SelectedSlide > 0 ? SelectedSlide - 1 : 0)">
+                    <Icon Name="IconName.ArrowLeft"></Icon>
+                    @L["Previous"]
+                </PikachuButton>
+                <h5 class="text-center m-0">@L["Image"] @(SelectedSlide + 1)</h5>
+                <PikachuButton Class="pk-btn-sm pk-btn-primary"
+                               Disabled="@(SelectedSlide == (Selected.ProductCategoryImages.Count - 1))"
+                               Clicked="@(() => SelectedSlide = SelectedSlide < (Selected.ProductCategoryImages.Count - 1) ? SelectedSlide + 1 : (Selected.ProductCategoryImages.Count - 1))">
+                    @L["Next"]
+                    <Icon Name="IconName.ArrowRight"></Icon>
+                </PikachuButton>
+            </Div>
+            <Div Class="text-center mb-3" Overflow="Overflow.Auto">
+                @if (Selected.ProductCategoryImages.Count > SelectedSlide)
+                {
+                    var image = Selected.ProductCategoryImages[SelectedSlide];
+                    @if (!image.Url.IsNullOrWhiteSpace())
+                    {
+                        <Image Source="@image.Url" Style="height: 500px;" />
+                    }
+                }
+            </Div>
+        </ModalBody>
+    </ModalContent>
+</Modal>
