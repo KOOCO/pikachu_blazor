@@ -486,3 +486,8 @@
 .flatpickr-calendar.static {
     top: unset;
 }
+
+.table-responsive {
+    min-height: 580px;
+    margin-bottom: 1rem;
+}
