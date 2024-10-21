@@ -15,6 +15,7 @@ namespace Kooco.Pikachu.TenantManagement;
 public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManager, IRepository<TenantSettings, Guid> tenantSettingsRepository,
     ImageContainerManager imageContainerManager, IRepository<Tenant, Guid> tenantRepository) : PikachuAppService, ITenantSettingsAppService
 {
+    [AllowAnonymous]
     public async Task<TenantSettingsDto?> FirstOrDefaultAsync()
     {
         var tenantSettings = await tenantSettingsRepository.FirstOrDefaultAsync();
@@ -43,7 +44,7 @@ public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManage
         {
             tenantSettings = await tenantSettingsManager.CreateAsync(input.WebpageTitle, input.PrivacyPolicy,
                 input.CompanyName, input.BusinessRegistrationNumber, input.ContactPhone, input.CustomerServiceEmail, input.ServiceHoursFrom,
-                input.ServiceHoursTo, input.FaviconUrl, input.LogoUrl, input.BannerUrl, input.TenantContactTitle, input.TenantContactPerson, 
+                input.ServiceHoursTo, input.FaviconUrl, input.LogoUrl, input.BannerUrl, input.TenantContactTitle, input.TenantContactPerson,
                 input.TenantContactEmail, input.Domain, input.ShortCode);
         }
         else
