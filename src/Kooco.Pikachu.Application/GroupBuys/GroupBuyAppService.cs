@@ -489,27 +489,21 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
             if (result.TemplateType is not null) result.TemplateTypeName = result.TemplateType.ToString();
 
+            if (result.ColorSchemeType is not null) result.ColorSchemeTypeName = result.ColorSchemeType.ToString();
+
             if (result.IsGroupBuyAvaliable)
             {
                 if (result.StartTime != null && result.StartTime <= DateTime.Now && result.EndTime != null && result.StartTime >= DateTime.Now)
-                {
                     result.Status = "Open";
-                }
+
                 else if (result.StartTime == null && result.EndTime == null)
-                {
                     result.Status = "Open";
 
-                }
-                else
-                {
-                    result.Status = "Expired";
-                }
+                else result.Status = "Expired";
             }
-            else
-            {
-                result.Status = "Closed";
 
-            }
+            else result.Status = "Closed";
+            
             return result;
         }
     }
