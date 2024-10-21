@@ -129,6 +129,7 @@ public class PikachuBlazorModule : AbpModule
                 context.Services.GetConfiguration()));
             builder.AddSigningCertificate(
                 GetSigningCertificate(hostingEnvironment, context.Services.GetConfiguration()));
+            builder.SetAccessTokenLifetime(TimeSpan.FromDays(7));
         });
     }
 
