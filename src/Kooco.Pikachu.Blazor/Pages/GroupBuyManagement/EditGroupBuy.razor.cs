@@ -102,7 +102,7 @@ public partial class EditGroupBuy
 
     public bool IsUnableToSpecifyDuringPeakPeriodsForDeliveredByStore = false;
 
-    public GroupBuyTemplateType SelectedTemplate;
+    public GroupBuyTemplateType? SelectedTemplate;
 
     public bool IsSelectedModule = true;
 
@@ -210,6 +210,8 @@ public partial class EditGroupBuy
             }
 
             EditGroupBuyDto.EntryURL = $"{(await MyTenantAppService.FindTenantDomainAsync(CurrentTenant.Id))?.TrimEnd('/')}/{Id}";
+
+            SelectedTemplate = GroupBuy.TemplateType;
 
             LoadItemGroups();
 
