@@ -124,6 +124,8 @@ public partial class EditGroupBuy
     public List<LogisticsProviderSettingsDto> LogisticsProviders = [];
 
     private readonly ILogisticsProvidersAppService _LogisticsProvidersAppService;
+
+    private bool IsColorPickerOpen = false;
     #endregion
 
     #region Constructor
@@ -213,6 +215,8 @@ public partial class EditGroupBuy
 
             SelectedTemplate = GroupBuy.TemplateType;
 
+            IsColorPickerOpen = EditGroupBuyDto.ColorSchemeType is not null;
+
             LoadItemGroups();
 
             if (EditValidationsRef is not null) await EditValidationsRef.ClearAll();
@@ -229,6 +233,60 @@ public partial class EditGroupBuy
         finally
         {
             //await Loading.Hide();
+        }
+    }
+
+    private void OnColorSchemeChange(ChangeEventArgs e)
+    {
+        string? selectedTheme = e.Value.ToString();
+
+        EditGroupBuyDto.ColorSchemeType = !selectedTheme.IsNullOrEmpty() ? Enum.Parse<ColorScheme>(selectedTheme) : null;
+
+        IsColorPickerOpen = true;
+
+        switch (EditGroupBuyDto.ColorSchemeType)
+        {
+            case ColorScheme.ForestDawn:
+                EditGroupBuyDto.PrimaryColor = "#23856D";
+                EditGroupBuyDto.SecondaryColor = "#FFD057";
+                EditGroupBuyDto.BackgroundColor = "#FFFFFF";
+                EditGroupBuyDto.SecondaryBackgroundColor = "#C9D6BD";
+                EditGroupBuyDto.AlertColor = "#FF902A";
+                break;
+
+            case ColorScheme.TropicalSunset:
+                EditGroupBuyDto.PrimaryColor = "#FF902A";
+                EditGroupBuyDto.SecondaryColor = "#BDDA8D";
+                EditGroupBuyDto.BackgroundColor = "#FFFFFF";
+                EditGroupBuyDto.SecondaryBackgroundColor = "#E5D19A";
+                EditGroupBuyDto.AlertColor = "#FF902A";
+                break;
+
+            case ColorScheme.DeepSeaNight:
+                EditGroupBuyDto.PrimaryColor = "#133854";
+                EditGroupBuyDto.SecondaryColor = "#CAE28D";
+                EditGroupBuyDto.BackgroundColor = "#FFFFFF";
+                EditGroupBuyDto.SecondaryBackgroundColor = "#DCD6D0";
+                EditGroupBuyDto.AlertColor = "#A1E82D";
+                break;
+
+            case ColorScheme.SweetApricotCream:
+                EditGroupBuyDto.PrimaryColor = "#FFA085";
+                EditGroupBuyDto.SecondaryColor = "#BDDA8D";
+                EditGroupBuyDto.BackgroundColor = "#FFFFFF";
+                EditGroupBuyDto.SecondaryBackgroundColor = "#DCBFC3";
+                EditGroupBuyDto.AlertColor = "#FFC123";
+                break;
+
+            case ColorScheme.DesertDawn:
+                EditGroupBuyDto.PrimaryColor = "#C08C5D";
+                EditGroupBuyDto.SecondaryColor = "#E7AD99";
+                EditGroupBuyDto.BackgroundColor = "#FFFFFF";
+                EditGroupBuyDto.SecondaryBackgroundColor = "#EBC7AD";
+                EditGroupBuyDto.AlertColor = "#FF902A";
+                break;
+
+            default: break;
         }
     }
 

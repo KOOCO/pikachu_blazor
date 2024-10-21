@@ -211,6 +211,12 @@ public class GroupBuyUpdateDto :  IHasConcurrencyStamp
     public string? InstagramLink { get; set; }
     public string? LINELink { get; set; }
     public GroupBuyTemplateType? TemplateType { get; set; }
+    public ColorScheme? ColorSchemeType { get; set; }
+    public string? PrimaryColor { get; set; }
+    public string? SecondaryColor { get; set; }
+    public string? BackgroundColor { get; set; }
+    public string? SecondaryBackgroundColor { get; set; }
+    public string? AlertColor { get; set; }
 
     public GroupBuyUpdateDto()
     {

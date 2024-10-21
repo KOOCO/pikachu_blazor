@@ -74,7 +74,13 @@ namespace Kooco.Pikachu.Groupbuys
             string? homeDeliveryDeliveryTime,
             string? deliveredByStoreDeliveryTime,
             TaxType taxType,
-            ProductType? productType
+            ProductType? productType,
+            ColorScheme? colorScheme,
+            string? primaryColor,
+            string? secondaryColor,
+            string? backgroundColor,
+            string? secondaryBackgroundColor,
+            string? alertColor
             )
         {
             GroupBuy? sameName = await _groupBuyRepository.FirstOrDefaultAsync(x => x.GroupBuyName == groupBuyName);
@@ -86,7 +92,7 @@ namespace Kooco.Pikachu.Groupbuys
                 issueInvoice, autoIssueTriplicateInvoice, invoiceNote, protectPrivacyData, inviteCode, profitShare, metaPixelNo, fBID, iGID, lineID, gAID, gTM,
                 warningMessage, orderContactInfo, exchangePolicy, notifyMessage, excludeShippingMethod, isDefaultPaymentGateway, paymentMethod, groupbuyCondition, 
                 customerInformation,customerInformationDescription,groupBuyConditionDescription,exchangePolicyDescription,shortCode, isEnterprise,freeShippingThreshold,selfPickupDeliveryTime,
-                blackCatDeliveryTime,homeDeliveryDeliveryTime,deliveredByStoreDeliveryTime,taxType, productType);
+                blackCatDeliveryTime,homeDeliveryDeliveryTime,deliveredByStoreDeliveryTime,taxType, productType, colorScheme, primaryColor, secondaryColor, backgroundColor, secondaryBackgroundColor, alertColor);
         }
 
 

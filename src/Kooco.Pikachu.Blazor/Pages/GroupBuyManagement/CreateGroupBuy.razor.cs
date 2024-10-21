@@ -121,6 +121,8 @@ public partial class CreateGroupBuy
     public List<LogisticsProviderSettingsDto> LogisticsProviders = [];
 
     private readonly ILogisticsProvidersAppService _LogisticsProvidersAppService;
+
+    private bool IsColorPickerOpen = false;
     #endregion
 
     #region Constructor
@@ -281,6 +283,60 @@ public partial class CreateGroupBuy
             Convert.ToString(e.Value),
             out ProductType selectedValue
         ) ? selectedValue : null;
+    }
+
+    private void OnColorSchemeChange(ChangeEventArgs e)
+    {
+        string? selectedTheme = e.Value.ToString();
+
+        CreateGroupBuyDto.ColorSchemeType = !selectedTheme.IsNullOrEmpty() ? Enum.Parse<ColorScheme>(selectedTheme) : null;
+
+        IsColorPickerOpen = true;
+        
+        switch (CreateGroupBuyDto.ColorSchemeType)
+        {
+            case ColorScheme.ForestDawn:
+                CreateGroupBuyDto.PrimaryColor = "#23856D";
+                CreateGroupBuyDto.SecondaryColor = "#FFD057";
+                CreateGroupBuyDto.BackgroundColor = "#FFFFFF";
+                CreateGroupBuyDto.SecondaryBackgroundColor = "#C9D6BD";
+                CreateGroupBuyDto.AlertColor = "#FF902A";
+                break;
+
+            case ColorScheme.TropicalSunset:
+                CreateGroupBuyDto.PrimaryColor = "#FF902A";
+                CreateGroupBuyDto.SecondaryColor = "#BDDA8D";
+                CreateGroupBuyDto.BackgroundColor = "#FFFFFF";
+                CreateGroupBuyDto.SecondaryBackgroundColor = "#E5D19A";
+                CreateGroupBuyDto.AlertColor = "#FF902A";
+                break;
+
+            case ColorScheme.DeepSeaNight:
+                CreateGroupBuyDto.PrimaryColor = "#133854";
+                CreateGroupBuyDto.SecondaryColor = "#CAE28D";
+                CreateGroupBuyDto.BackgroundColor = "#FFFFFF";
+                CreateGroupBuyDto.SecondaryBackgroundColor = "#DCD6D0";
+                CreateGroupBuyDto.AlertColor = "#A1E82D";
+                break;
+
+            case ColorScheme.SweetApricotCream:
+                CreateGroupBuyDto.PrimaryColor = "#FFA085";
+                CreateGroupBuyDto.SecondaryColor = "#BDDA8D";
+                CreateGroupBuyDto.BackgroundColor = "#FFFFFF";
+                CreateGroupBuyDto.SecondaryBackgroundColor = "#DCBFC3";
+                CreateGroupBuyDto.AlertColor = "#FFC123";
+                break;
+
+            case ColorScheme.DesertDawn:
+                CreateGroupBuyDto.PrimaryColor = "#C08C5D";
+                CreateGroupBuyDto.SecondaryColor = "#E7AD99";
+                CreateGroupBuyDto.BackgroundColor = "#FFFFFF";
+                CreateGroupBuyDto.SecondaryBackgroundColor = "#EBC7AD";
+                CreateGroupBuyDto.AlertColor = "#FF902A";
+                break;
+
+            default: break;
+        }
     }
 
     async Task OnLogoUploadAsync(FileChangedEventArgs e)

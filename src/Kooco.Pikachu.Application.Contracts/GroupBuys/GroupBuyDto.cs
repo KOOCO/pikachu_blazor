@@ -217,4 +217,11 @@ public class GroupBuyDto: EntityDto<Guid>,IHasConcurrencyStamp
     public string? LINELink { get; set; }
     public GroupBuyTemplateType? TemplateType { get; set; }
     public string? TemplateTypeName { get; set; }
+    public ColorScheme? ColorSchemeType { get; set; }
+    public string? ColorSchemeTypeName { get; set; }
+    public string? PrimaryColor { get; set; }
+    public string? SecondaryColor { get; set; }
+    public string? BackgroundColor { get; set; }
+    public string? SecondaryBackgroundColor { get; set; }
+    public string? AlertColor { get; set; }
 }

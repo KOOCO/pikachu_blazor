@@ -216,6 +216,12 @@ public class GroupBuy : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public string? InstagramLink { get; set; }
     public string? LINELink { get; set; }
     public GroupBuyTemplateType? TemplateType { get; set; }
+    public ColorScheme? ColorSchemeType { get; set; }
+    public string? PrimaryColor { get; set; }
+    public string? SecondaryColor { get; set; }
+    public string? BackgroundColor { get; set; }
+    public string? SecondaryBackgroundColor { get; set; }
+    public string? AlertColor { get; set; }
     public ICollection<GroupBuyItemGroup> ItemGroups { get; set; }
 
     public GroupBuy()
@@ -272,7 +278,13 @@ public class GroupBuy : FullAuditedAggregateRoot<Guid>, IMultiTenant
         string? homeDeliveryDeliveryTime,
         string? deliveredByStoreDeliveryTime,
         TaxType taxType,
-        ProductType? productType
+        ProductType? productType,
+        ColorScheme? colorScheme,
+        string? primaryColor,
+        string? secondaryColor,
+        string? backgroundColor,
+        string? secondaryBackgroundColor,
+        string? alertColor
         )
     {
         Id = id;
@@ -327,6 +339,12 @@ public class GroupBuy : FullAuditedAggregateRoot<Guid>, IMultiTenant
         DeliveredByStoreDeliveryTime = deliveredByStoreDeliveryTime;
         TaxType = taxType;
         ProductType = productType;
+        ColorSchemeType = colorScheme;
+        PrimaryColor = primaryColor;
+        SecondaryColor = secondaryColor;
+        BackgroundColor = backgroundColor;
+        SecondaryBackgroundColor = secondaryBackgroundColor;
+        AlertColor = alertColor;
     }
 
     public GroupBuyItemGroup AddItemGroup(

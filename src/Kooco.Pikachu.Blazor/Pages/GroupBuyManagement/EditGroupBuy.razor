@@ -41,6 +41,10 @@
     .drag-drop-span i{
         cursor: pointer;
     }
+
+    .color-scheme > .b-input-color-picker-preview {
+        height: 9.55rem;
+    }
 </style>
   <h3>@L["EditGroupBuy"]</h3>
 <LoadingIndicator @ref="Loading" FullScreen FadeIn></LoadingIndicator>
@@ -703,6 +707,67 @@
                 </select>
             </Div>
         </Div>
+
+        <Div Class="row">
+            <Div Class="col-2">@L["Color Schemes"]</Div>
+            <Div Class="col-2">@L["Select Color Theme"]</Div>
+            <Div Class="col-8">
+                <select class="form-select"
+                        @onchange=OnColorSchemeChange>
+                    <option>@L["Choose Color Theme"]</option>
+                    @foreach (ColorScheme value in Enum.GetValues<ColorScheme>())
+                    {
+                        if (value == EditGroupBuyDto.ColorSchemeType) 
+                        {
+                            <option value="@value" selected>@L[value.ToString() ?? string.Empty]</option>
+                        }
+
+                        else 
+                        {
+                            <option value="@value">@L[value.ToString() ?? string.Empty]</option>
+                        }
+                    }
+                </select>
+            </Div>
+        </Div>
+
+        @if (IsColorPickerOpen)
+        {
+            <br />
+            <Div Class="col-12 d-flex">
+                <Div Class="col-2" Style="margin-left: 25px;">
+                    <label class="form-label">@L["Primary Color"]</label>
+                    <ColorPicker Class="color-scheme" @bind-Color="@EditGroupBuyDto.PrimaryColor" />
+                    <TextEdit hidden @bind-text="EditGroupBuyDto.PrimaryColor" class="form-control mt-2" />
+                </Div>
+
+                <Div Class="col-2" Style="margin-left: 49px;">
+                    <label class="form-label">@L["Secondary Color"]</label>
+                    <ColorPicker Class="color-scheme" @bind-Color="@EditGroupBuyDto.SecondaryColor" />
+                    <TextEdit hidden @bind-text="EditGroupBuyDto.SecondaryColor" class="form-control mt-2" />
+                </Div>
+
+                <Div Class="col-2" Style="margin-left: 49px;">
+                    <label class="form-label">@L["Background Color"]</label>
+                    <ColorPicker Class="color-scheme" @bind-Color="@EditGroupBuyDto.BackgroundColor" />
+                    <TextEdit hidden @bind-text="EditGroupBuyDto.BackgroundColor" class="form-control mt-2" />
+                </Div>
+
+                <Div Class="col-2" Style="margin-left: 49px;">
+                    <label class="form-label">@L["Secondary Background Color"]</label>
+                    <ColorPicker Class="color-scheme" @bind-Color="@EditGroupBuyDto.SecondaryBackgroundColor" />
+                    <TextEdit hidden @bind-text="EditGroupBuyDto.SecondaryBackgroundColor" class="form-control mt-2" />
+                </Div>
+
+                <Div Class="col-2" Style="margin-left: 49px;">
+                    <label class="form-label">@L["Alert Color"]</label>
+                    <ColorPicker Class="color-scheme" @bind-Color="@EditGroupBuyDto.AlertColor" />
+                    <TextEdit hidden @bind-text="EditGroupBuyDto.AlertColor" class="form-control mt-2" />
+                </Div>
+            </Div>
+            <br />
+        }
+
         <div class="row">
             <div class="col-2">@L["Gateway"]</div>
             <div class="col-2">@L["PaymentMethod"] <span class="text-danger"> *</span></div>
