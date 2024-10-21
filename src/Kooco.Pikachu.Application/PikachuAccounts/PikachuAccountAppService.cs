@@ -233,6 +233,13 @@ public class PikachuAccountAppService(IConfiguration configuration, IdentityUser
     public async Task<GenericResponseDto> SendEmailVerificationCodeAsync(string email)
     {
         var normalizedEmail = email.ToUpperInvariant();
+
+        var user = await identityUserRepository.FindByNormalizedEmailAsync(normalizedEmail);
+        if (user != null)
+        {
+            return new GenericResponseDto(false, L["Pikachu:DuplicateEmail", email].Value);
+        }
+
         var random = new Random();
         var code = random.Next(000000, 999999).ToString();
 

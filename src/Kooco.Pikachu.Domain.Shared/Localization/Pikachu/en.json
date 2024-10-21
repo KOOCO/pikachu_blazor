@@ -870,6 +870,7 @@
     "ProductCategories": "Product Categories",
     "CarousalImages": "Carousal Images",
     "AddProductCategory": "Add Product Category",
-    "EditProductCategory": "Edit Product Category"
+    "EditProductCategory": "Edit Product Category",
+    "Pikachu:DuplicateEmail": "A user with same email '{0}' already exists."
   }
 }
