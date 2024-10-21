@@ -37,6 +37,21 @@
 
 <Card>
     <CardBody>
+        <Div Class="d-flex mb-3">
+            <Switch TValue="bool"
+                    Checked="@IsAllowOffshoreIslands"
+                    CheckedChanged="OnAllowOffShoreChanged"
+                    CheckedExpression="@(() => IsAllowOffshoreIslands)">
+                @L["AllowOffshoreIslands"]
+            </Switch>
+            <Switch TValue="bool"
+                    Checked="@IsLogisticProviderActivated"
+                    CheckedChanged="OnLogisticProviderActivationChanged"
+                    CheckedExpression="@(() => IsLogisticProviderActivated)">
+                @L["ActivateLogisticProvider"]
+            </Switch>
+        </Div>
+
         @foreach(DeliveryTemperatureCostDto item in temperatureCosts)
         {
             <Div Class="row mb-3 ">
@@ -59,6 +74,7 @@
                 <Div Class="col-4">
                     <Select TValue="LogisticProviders?"
                             Class="form-select form-select-sm"
+                            Disabled=!IsLogisticProviderActivated
                             @onchange=@((e) => OnLogisticProviderChange(e, item))>
                         <SelectItem Value="100">Select Logistics</SelectItem>
                         @foreach (object enumValue in GetLogisticsProviders(item.Temperature))
@@ -78,9 +94,10 @@
                 </Div>
                 @if (temperatureCosts[0].Id == item.Id)
                 {
-                    <Div Class="col-4">
+                    <Div Class="col-6">
                         <Select TValue="DeliveryMethod"
                                 Class="form-select form-select-sm"
+                                Disabled=!IsLogisticProviderActivated
                                 @onchange=@((e) => OnDeliveryMethodChange(e, item))>
                             <SelectItem Value="100">Select Delivery Method</SelectItem>
                             @foreach (object enumValue in GetDeliveryMethods(ItemStorageTemperature.Normal, item.LogisticProvider))
@@ -101,9 +118,10 @@
                 }
                 @if (temperatureCosts[1].Id == item.Id)
                 {
-                    <Div Class="col-4">
+                    <Div Class="col-6">
                         <Select TValue="DeliveryMethod"
                                 Class="form-select form-select-sm"
+                                Disabled=!IsLogisticProviderActivated
                                 @onchange=@((e) => OnDeliveryMethodChange(e, item))>
                             <SelectItem Value="100">Select Delivery Method</SelectItem>
                             @foreach (object enumValue in GetDeliveryMethods(ItemStorageTemperature.Freeze, item.LogisticProvider))
@@ -124,9 +142,10 @@
                 }
                 @if (temperatureCosts[2].Id == item.Id)
                 {
-                    <Div Class="col-4">
+                    <Div Class="col-6">
                         <Select TValue="DeliveryMethod"
                                 Class="form-select form-select-sm"
+                                Disabled=!IsLogisticProviderActivated
                                 @onchange=@((e) => OnDeliveryMethodChange(e, item))>
                             <SelectItem Value="100">Select Delivery Method</SelectItem>
                             @foreach (object enumValue in GetDeliveryMethods(ItemStorageTemperature.Frozen, item.LogisticProvider))
@@ -145,14 +164,6 @@
                         </Select>
                     </Div>
                 }
-                @* <Div Class="col-1 text-lg-end costLabel">
-                    <Label>@L["Cost"]</Label>
-                </Div>
-                <Div Class="col-2 costNumeric">
-                    <NumericEdit TValue="decimal" 
-                                 @bind-Value="item.Cost" 
-                                 Class="form-control-sm" />
-                </Div> *@
             </Div>
 
             Index++;

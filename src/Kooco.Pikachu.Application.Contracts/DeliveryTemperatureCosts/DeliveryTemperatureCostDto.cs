@@ -12,4 +12,6 @@ public class DeliveryTemperatureCostDto
     public decimal Cost { get; set; }
     public LogisticProviders? LogisticProvider { get; set; }
     public DeliveryMethod? DeliveryMethod { get; set; }
+    public bool IsAllowOffShoreIslands { get; set; }
+    public bool IsLogisticProviderActivated { get; set; }
 }

@@ -44,6 +44,10 @@ public class DeliveryTemperatureCostAppService : ApplicationService, IDeliveryTe
 
             deliveryTemperature.Cost = item.Cost;
 
+            deliveryTemperature.IsAllowOffShoreIslands = item.IsAllowOffShoreIslands;
+
+            deliveryTemperature.IsLogisticProviderActivated = item.IsLogisticProviderActivated;
+
             await _repository.UpdateAsync(deliveryTemperature);
         }
     }

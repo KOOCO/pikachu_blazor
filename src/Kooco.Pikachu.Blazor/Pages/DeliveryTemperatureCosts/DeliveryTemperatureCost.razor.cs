@@ -39,6 +39,10 @@ public partial class DeliveryTemperatureCost
     private readonly ILogisticsProvidersAppService _LogisticsProvidersAppService;
 
     private List<LogisticsProviderSettingsDto> AllLogisticsProviderSetting = [];
+
+    private bool IsAllowOffshoreIslands = false;
+
+    private bool IsLogisticProviderActivated = false;
     #endregion
 
     #region Constructor
@@ -73,9 +77,37 @@ public partial class DeliveryTemperatureCost
         }
     }
 
+    public void OnAllowOffShoreChanged(bool e)
+    {
+        IsAllowOffshoreIslands = e;
+
+        foreach (DeliveryTemperatureCostDto temperatureCost in temperatureCosts)
+        {
+            temperatureCost.IsAllowOffShoreIslands = IsAllowOffshoreIslands;
+
+            temperatureCost.DeliveryMethod = null;
+        }
+
+        StateHasChanged();
+    }
+
+    public void OnLogisticProviderActivationChanged(bool e)
+    {
+        IsLogisticProviderActivated = e;
+
+        foreach (DeliveryTemperatureCostDto temperatureCost in temperatureCosts)
+        {
+            temperatureCost.IsLogisticProviderActivated = IsLogisticProviderActivated;
+        }
+    }
+
     private async Task GetCostsAysnc() 
     { 
         temperatureCosts = await _appService.GetListAsync();
+
+        IsAllowOffshoreIslands = temperatureCosts.GroupBy(g => g.IsAllowOffShoreIslands).Select(s => s.Key).FirstOrDefault();
+
+        IsLogisticProviderActivated = temperatureCosts.GroupBy(g => g.IsLogisticProviderActivated).Select(s => s.Key).FirstOrDefault();
     }
 
     protected virtual async Task UpdateCostAsync()
@@ -175,25 +207,35 @@ public partial class DeliveryTemperatureCost
         if (temperature is not null && logistic is not null)
         {
             if (temperature is ItemStorageTemperature.Normal && logistic is LogisticProviders.GreenWorldLogistics)
-                return [DeliveryMethod.PostOffice, DeliveryMethod.FamilyMart1, DeliveryMethod.SevenToEleven1, DeliveryMethod.BlackCat1];
+                return IsAllowOffshoreIslands ?
+                    [DeliveryMethod.SevenToEleven1, DeliveryMethod.BlackCat1] :
+                    [DeliveryMethod.PostOffice, DeliveryMethod.FamilyMart1, DeliveryMethod.SevenToEleven1, DeliveryMethod.BlackCat1];
 
             if (temperature is ItemStorageTemperature.Normal && logistic is LogisticProviders.GreenWorldLogisticsC2C)
-                return [DeliveryMethod.FamilyMartC2C, DeliveryMethod.SevenToElevenC2C];
+                return IsAllowOffshoreIslands ?
+                    [DeliveryMethod.SevenToElevenC2C] :
+                    [DeliveryMethod.FamilyMartC2C, DeliveryMethod.SevenToElevenC2C];
 
             if (temperature is ItemStorageTemperature.Normal && logistic is LogisticProviders.TCat)
-                return [DeliveryMethod.TCatDeliveryNormal, DeliveryMethod.TCatDeliverySevenElevenNormal];
+                return IsAllowOffshoreIslands ?
+                    [DeliveryMethod.TCatDeliveryNormal] :
+                    [DeliveryMethod.TCatDeliveryNormal, DeliveryMethod.TCatDeliverySevenElevenNormal];
 
             if (temperature is ItemStorageTemperature.Freeze && logistic is LogisticProviders.GreenWorldLogistics)
                 return [DeliveryMethod.BlackCatFreeze];
 
             if (temperature is ItemStorageTemperature.Freeze && logistic is LogisticProviders.TCat)
-                return [DeliveryMethod.TCatDeliveryFreeze, DeliveryMethod.TCatDeliverySevenElevenFreeze];
+                return IsAllowOffshoreIslands ?
+                    [DeliveryMethod.TCatDeliveryFreeze] :
+                    [DeliveryMethod.TCatDeliveryFreeze, DeliveryMethod.TCatDeliverySevenElevenFreeze];
 
             if (temperature is ItemStorageTemperature.Frozen && logistic is LogisticProviders.GreenWorldLogistics)
                 return [DeliveryMethod.BlackCatFrozen];
 
             if (temperature is ItemStorageTemperature.Frozen && logistic is LogisticProviders.TCat)
-                return [DeliveryMethod.TCatDeliveryFrozen, DeliveryMethod.TCatDeliverySevenElevenFrozen];
+                return IsAllowOffshoreIslands ?
+                    [DeliveryMethod.TCatDeliveryFrozen] :
+                    [DeliveryMethod.TCatDeliveryFrozen, DeliveryMethod.TCatDeliverySevenElevenFrozen];
         }
 
         return [];

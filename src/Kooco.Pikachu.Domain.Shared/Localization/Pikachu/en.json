@@ -1,6 +1,8 @@
 {
   "culture": "en",
   "texts": {
+    "AllowOffshoreIslands": "Allow Offshore Islands",
+    "ActivateLogisticProvider": "Activate Logistic Provider",
     "SevenToElevenFrozen": "7-11 Frozen",
     "Pikachu:InCompatibleModule": "Cannot save due to incompatible modules.",
     "PikachuOne": "Pikachu 1.0",

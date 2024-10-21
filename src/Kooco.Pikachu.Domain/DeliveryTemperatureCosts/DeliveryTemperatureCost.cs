@@ -12,4 +12,6 @@ public class DeliveryTemperatureCost : FullAuditedAggregateRoot<Guid>, IMultiTen
     public LogisticProviders? LogisticProvider { get; set; }
     public DeliveryMethod? DeliveryMethod { get; set; }
     public Guid? TenantId { get; set; }
+    public bool IsAllowOffShoreIslands { get; set; }
+    public bool IsLogisticProviderActivated { get; set; }
 }

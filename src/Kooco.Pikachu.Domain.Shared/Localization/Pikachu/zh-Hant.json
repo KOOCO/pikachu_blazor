@@ -1,6 +1,8 @@
 {
   "culture": "zh-Hant",
   "texts": {
+    "ActivateLogisticProvider": "啟動物流提供商",
+    "AllowOffshoreIslands": "允許離岸島嶼",
     "SevenToElevenFrozen": "7-11 Frozen",
     "Paid": "已付款’",
     "PaymentStatus": "款項狀態",
@@ -893,12 +895,12 @@
     "CodeDoesnotMatch": "提供之編碼為無效.",
     "DefaultPrivacyPolicy": "預設隱私政策",
     "LoginConfigurationsUpdated": "登入設定已更新!",
-    
+
 
     "Choose file": "選擇檔案",
     "No file chosen": "No file chosen",
     "Or drop files here": "Or drop files here",
-   
+
     "TenantShortCodeRequired": "請填寫統一編號。",
     "TenantShortCode": "統一編號",
     "DomainIsRequired": "請填寫域名。",
