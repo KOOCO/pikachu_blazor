@@ -613,17 +613,21 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
         {
             provider.LogisticProviderName = provider.LogisticProvider.ToString();
         }
+
         var grrenB2C = providers.Where(x => x.LogisticProviderName.ToUpper() == "GREENWORLDLOGISTICS").FirstOrDefault();
         var grrenC2C = providers.Where(x => x.LogisticProviderName.ToUpper() == "GREENWORLDLOGISTICSC2C").FirstOrDefault();
         var tcat = providers.Where(x => x.LogisticProviderName.ToUpper() == "TCAT").FirstOrDefault();
-        var result = providers.Where(x => x.LogisticProviderName.ToUpper() == shippingMethod.ToUpper()).FirstOrDefault();
 
-        if (result == null)
+        string deliveryNameToLogisticName = ConvertDeliveryNameToLogisticName(shippingMethod);
+
+        var result = providers.Where(x => x.LogisticProviderName.ToUpper() == deliveryNameToLogisticName).FirstOrDefault();
+
+        if (result is null)
         {
             return null; // or throw an exception, depending on how you want to handle this case
         }
 
-        if (shippingMethod.ToUpper() == "HOMEDELIVERY")
+        if (deliveryNameToLogisticName is "HOMEDELIVERY")
         {
             JsonObject keyValuePairs = new JsonObject
         {
@@ -637,7 +641,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
 
             return keyValuePairs;
         }
-        if (shippingMethod.ToUpper() == "POSTOFFICE")
+        if (deliveryNameToLogisticName is "POSTOFFICE")
         {
             JsonObject keyValuePairs = new JsonObject
         {
@@ -650,7 +654,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
 
             return keyValuePairs;
         }
-        if (shippingMethod.ToUpper() == "FAMILYMART")
+        if (deliveryNameToLogisticName is "FAMILYMART")
         {
             JsonObject keyValuePairs = new JsonObject
         {
@@ -663,7 +667,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
 
             return keyValuePairs;
         }
-        if (shippingMethod.ToUpper() == "SEVENTOELEVEN")
+        if (deliveryNameToLogisticName is "SEVENTOELEVEN")
         {
             JsonObject keyValuePairs = new JsonObject
         {
@@ -676,7 +680,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
 
             return keyValuePairs;
         }
-        if (shippingMethod.ToUpper() == "SEVENTOELEVENFREEZE")
+        if (deliveryNameToLogisticName is "SEVENTOELEVENFREEZE")
         {
             JsonObject keyValuePairs = new JsonObject
         {
@@ -689,7 +693,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
 
             return keyValuePairs;
         }
-        if (shippingMethod.ToUpper() == "SEVENTOELEVENFROZEN")
+        if (deliveryNameToLogisticName is "SEVENTOELEVENFROZEN")
         {
             JsonObject keyValuePairs = new JsonObject
         {
@@ -702,7 +706,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
 
             return keyValuePairs;
         }
-        if (shippingMethod.ToUpper() == "BNORMAL")
+        if (deliveryNameToLogisticName is "BNORMAL")
         {
             JsonObject keyValuePairs = new JsonObject
         {
@@ -716,7 +720,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
 
             return keyValuePairs;
         }
-        if (shippingMethod.ToUpper() == "BFREEZE")
+        if (deliveryNameToLogisticName is "BFREEZE")
         {
             JsonObject keyValuePairs = new JsonObject
         {
@@ -730,7 +734,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
 
             return keyValuePairs;
         }
-        if (shippingMethod.ToUpper() == "BFROZEN")
+        if (deliveryNameToLogisticName is "BFROZEN")
         {
             JsonObject keyValuePairs = new JsonObject
         {
@@ -744,7 +748,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
 
             return keyValuePairs;
         }
-        if (shippingMethod.ToUpper() == "FAMILYMARTC2C")
+        if (deliveryNameToLogisticName is "FAMILYMARTC2C")
         {
             JsonObject keyValuePairs = new JsonObject
         {
@@ -757,7 +761,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
 
             return keyValuePairs;
         }
-        if (shippingMethod.ToUpper() == "SEVENTOELEVENC2C")
+        if (deliveryNameToLogisticName is "SEVENTOELEVENC2C")
         {
             JsonObject keyValuePairs = new JsonObject
         {
@@ -770,7 +774,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
 
             return keyValuePairs;
         }
-        if (shippingMethod.ToUpper() == "TCATNORMAL")
+        if (deliveryNameToLogisticName is "TCATNORMAL")
         {
             JsonObject keyValuePairs = new JsonObject
         {
@@ -786,7 +790,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
 
             return keyValuePairs;
         }
-        if (shippingMethod.ToUpper() == "TCATFREEZE")
+        if (deliveryNameToLogisticName is "TCATFREEZE")
         {
             JsonObject keyValuePairs = new JsonObject
         {
@@ -802,7 +806,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
 
             return keyValuePairs;
         }
-        if (shippingMethod.ToUpper() == "TCATFREOZEN")
+        if (deliveryNameToLogisticName is "TCATFREOZEN")
         {
             JsonObject keyValuePairs = new JsonObject
         {
@@ -818,7 +822,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
 
             return keyValuePairs;
         }
-        if (shippingMethod.ToUpper() == "TCAT711NORMAL")
+        if (deliveryNameToLogisticName is "TCAT711NORMAL")
         {
             JsonObject keyValuePairs = new JsonObject
         {
@@ -831,7 +835,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
 
             return keyValuePairs;
         }
-        if (shippingMethod.ToUpper() == "TCAT711FREEZE")
+        if (deliveryNameToLogisticName is "TCAT711FREEZE")
         {
             JsonObject keyValuePairs = new JsonObject
         {
@@ -844,7 +848,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
 
             return keyValuePairs;
         }
-        if (shippingMethod.ToUpper() == "TCAT711FROZEN")
+        if (deliveryNameToLogisticName is "TCAT711FROZEN")
         {
             JsonObject keyValuePairs = new JsonObject
         {
@@ -860,6 +864,57 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
         return null; // Return null or a default value if `shippingMethod` is not "HOMEDELIVERY"
     }
     #endregion
+
+    private string ConvertDeliveryNameToLogisticName(string deliveryName)
+    {
+        List<string> deliveryMethods = [
+            DeliveryMethod.FamilyMart1.ToString().ToUpper(),
+            DeliveryMethod.HomeDelivery.ToString().ToUpper(),
+            DeliveryMethod.PostOffice.ToString().ToUpper(),
+            DeliveryMethod.SevenToEleven1.ToString().ToUpper(),
+            DeliveryMethod.SevenToElevenFrozen.ToString().ToUpper(),
+            DeliveryMethod.BlackCat1.ToString().ToUpper(),
+            DeliveryMethod.BlackCatFreeze.ToString().ToUpper(),
+            DeliveryMethod.BlackCatFrozen.ToString().ToUpper(),
+            DeliveryMethod.FamilyMartC2C.ToString().ToUpper(),
+            DeliveryMethod.SevenToElevenC2C.ToString().ToUpper(),
+            DeliveryMethod.TCatDeliveryNormal.ToString().ToUpper(),
+            DeliveryMethod.TCatDeliveryFreeze.ToString().ToUpper(),
+            DeliveryMethod.TCatDeliveryFrozen.ToString().ToUpper(),
+            DeliveryMethod.TCatDeliverySevenElevenNormal.ToString().ToUpper(),
+            DeliveryMethod.TCatDeliverySevenElevenFreeze.ToString().ToUpper(),
+            DeliveryMethod.TCatDeliverySevenElevenFrozen.ToString().ToUpper()
+        ];
+
+        List<string> logisticProviders = [
+            LogisticProviders.FamilyMart.ToString().ToUpper(),
+            LogisticProviders.HomeDelivery.ToString().ToUpper(),
+            LogisticProviders.PostOffice.ToString().ToUpper(),
+            LogisticProviders.SevenToEleven.ToString().ToUpper(),
+            LogisticProviders.SevenToElevenFrozen.ToString().ToUpper(),
+            LogisticProviders.BNormal.ToString().ToUpper(),
+            LogisticProviders.BFreeze.ToString().ToUpper(),
+            LogisticProviders.BFrozen.ToString().ToUpper(),
+            LogisticProviders.FamilyMartC2C.ToString().ToUpper(),
+            LogisticProviders.SevenToElevenC2C.ToString().ToUpper(),
+            LogisticProviders.TCatNormal.ToString().ToUpper(),
+            LogisticProviders.TCatFreeze.ToString().ToUpper(),
+            LogisticProviders.TCatFrozen.ToString().ToUpper(),
+            LogisticProviders.TCat711Normal.ToString().ToUpper(),
+            LogisticProviders.TCat711Freeze.ToString().ToUpper(),
+            LogisticProviders.TCat711Frozen.ToString().ToUpper()
+        ];
+
+        foreach (string deliveryMethod in deliveryMethods)
+        {
+            if (deliveryName.ToUpper() == deliveryMethod)
+            {
+                return logisticProviders[deliveryMethods.IndexOf(deliveryMethod)];
+            }
+        }
+
+        return string.Empty;
+    }
 }
 
 public class RootObject
