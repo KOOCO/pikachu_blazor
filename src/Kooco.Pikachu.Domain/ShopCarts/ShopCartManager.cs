@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Kooco.Pikachu.Items;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -8,7 +8,7 @@ using Volo.Abp.Domain.Services;
 
 namespace Kooco.Pikachu.ShopCarts;
 
-public class ShopCartManager(IShopCartRepository shopCartRepository) : DomainService
+public class ShopCartManager(IShopCartRepository shopCartRepository, IItemRepository itemRepository) : DomainService
 {
     public async Task<ShopCart> CreateAsync(Guid userId)
     {
@@ -25,46 +25,30 @@ public class ShopCartManager(IShopCartRepository shopCartRepository) : DomainSer
         return shopCart;
     }
 
-    public ShopCart AddCartItem(ShopCart shopCart, CartItem cartItem)
+    public async Task<ShopCart> AddCartItem(ShopCart shopCart, CartItem cartItem)
     {
         Check.NotNull(shopCart, nameof(shopCart));
         Check.NotNull(cartItem, nameof(cartItem));
 
+        await ValidateItemDetailsAsync(cartItem.ItemId, cartItem.ItemDetailId);
         shopCart.AddCartItem(cartItem);
         return shopCart;
     }
 
-    public ShopCart AddCartItem(ShopCart shopCart, Guid itemId, int quantity, int unitPrice, List<string> itemSkus)
+    public async Task<ShopCart> AddCartItem(ShopCart shopCart, Guid itemId, int quantity, int unitPrice, Guid itemDetailId)
     {
         Check.NotNull(shopCart, nameof(shopCart));
         Check.NotDefaultOrNull<Guid>(itemId, nameof(itemId));
         Check.Range(quantity, nameof(quantity), 0, int.MaxValue);
         Check.Range(unitPrice, nameof(unitPrice), 0, int.MaxValue);
-        Check.NotNull(itemSkus, nameof(itemSkus));
+        Check.NotDefaultOrNull<Guid>(itemDetailId, nameof(itemDetailId));
 
-        shopCart.AddCartItem(GuidGenerator.Create(), itemId, quantity, unitPrice, itemSkus);
+        await ValidateItemDetailsAsync(itemId, itemDetailId);
+        shopCart.AddCartItem(GuidGenerator.Create(), itemId, quantity, unitPrice, itemDetailId);
         return shopCart;
     }
 
-    public ShopCart AddCartItems(ShopCart shopCart, List<CartItem> cartItems)
-    {
-        Check.NotNull(shopCart, nameof(shopCart));
-        Check.NotNull(cartItems, nameof(cartItems));
-
-        shopCart.AddCartItems(cartItems);
-        return shopCart;
-    }
-
-    public ShopCart SetCartItems(ShopCart shopCart, List<CartItem> cartItems)
-    {
-        Check.NotNull(shopCart, nameof(shopCart));
-        Check.NotNull(cartItems, nameof(cartItems));
-
-        shopCart.SetCartItems(cartItems);
-        return shopCart;
-    }
-
-    public CartItem UpdateCartItem(ShopCart shopCart, Guid cartItemId, Guid itemId, int quantity, int unitPrice)
+    public async Task<CartItem> UpdateCartItemAsync(ShopCart shopCart, Guid cartItemId, Guid itemId, int quantity, int unitPrice, Guid itemDetailId)
     {
         Check.NotNull(shopCart, nameof(shopCart));
         Check.NotDefaultOrNull<Guid>(cartItemId, nameof(cartItemId));
@@ -78,6 +62,12 @@ public class ShopCartManager(IShopCartRepository shopCartRepository) : DomainSer
         if (itemId != cartItem.ItemId)
         {
             cartItem.ItemId = itemId;
+        }
+
+        if (itemDetailId != cartItem.ItemDetailId)
+        {
+            await ValidateItemDetailsAsync(itemId, itemDetailId);
+            cartItem.ItemDetailId = itemDetailId;
         }
 
         if (quantity != cartItem.Quantity)
@@ -109,5 +99,14 @@ public class ShopCartManager(IShopCartRepository shopCartRepository) : DomainSer
 
         shopCart.RemoveCartItem(cartItemId);
         return shopCart;
+    }
+
+    public async Task ValidateItemDetailsAsync(Guid itemId, Guid itemDetailId)
+    {
+        var itemDetail = await itemRepository.FindItemDetailAsync(itemDetailId);
+        if (itemDetail == null || itemDetail.ItemId != itemId)
+        {
+            throw new EntityNotFoundException(typeof(ItemDetails), itemDetailId);
+        }
     }
 }

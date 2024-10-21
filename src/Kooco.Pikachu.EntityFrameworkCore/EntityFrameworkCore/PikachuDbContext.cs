@@ -413,6 +413,7 @@ public class PikachuDbContext :
             b.ConfigureByConvention();
 
             b.HasOne(x => x.ShopCart).WithMany(x => x.CartItems).HasForeignKey(x => x.ShopCartId);
+            b.HasIndex(x => x.ItemDetailId);
         });
         builder.Entity<ShoppingCreditUsageSetting>(b =>
         {

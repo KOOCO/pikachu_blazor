@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
@@ -16,7 +15,7 @@ public class CartItem : FullAuditedEntity<Guid>, IMultiTenant
     public int Quantity { get; private set; }
     public int UnitPrice { get; private set; }
     public Guid? TenantId { get; set; }
-    public string ItemSkuJson { get; private set; }
+    public Guid ItemDetailId { get; set; }
 
     [ForeignKey(nameof(ShopCartId))]
     public ShopCart? ShopCart { get; set; }
@@ -24,25 +23,15 @@ public class CartItem : FullAuditedEntity<Guid>, IMultiTenant
     [ForeignKey(nameof(ItemId))]
     public Item? Item { get; set; }
 
-    [NotMapped]
-    public List<string> ItemSkus
-    {
-        get
-        {
-            try { return JsonSerializer.Deserialize<List<string>>(ItemSkuJson) ?? []; }
-            catch { return []; }
-        }
-    }
-
     private CartItem() { }
 
-    public CartItem(Guid id, Guid shopCartId, Guid itemId, int quantity, int unitPrice, List<string> itemSkus) : base(id)
+    public CartItem(Guid id, Guid shopCartId, Guid itemId, int quantity, int unitPrice, Guid itemDetailId) : base(id)
     {
         ShopCartId = shopCartId;
         ItemId = itemId;
         SetQuantity(quantity);
         SetUnitPrice(unitPrice);
-        SetItemSkus(itemSkus);
+        ItemDetailId = itemDetailId;
     }
 
     internal CartItem ChangeQuantity(int quantity)
@@ -65,11 +54,5 @@ public class CartItem : FullAuditedEntity<Guid>, IMultiTenant
     private void SetUnitPrice(int unitPrice)
     {
         UnitPrice = Check.Range(unitPrice, nameof(unitPrice), 0, int.MaxValue);
-    }
-
-    internal CartItem SetItemSkus(List<string> skus)
-    {
-        ItemSkuJson = JsonSerializer.Serialize(skus);
-        return this;
     }
 }

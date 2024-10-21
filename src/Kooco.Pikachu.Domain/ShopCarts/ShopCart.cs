@@ -21,11 +21,11 @@ public class ShopCart(Guid id, Guid userId) : FullAuditedAggregateRoot<Guid>(id)
     public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
 
 
-    public ShopCart AddCartItem(Guid id, Guid itemId, int quantity, int unitPrice, List<string> itemSkus)
+    public ShopCart AddCartItem(Guid id, Guid itemId, int quantity, int unitPrice, Guid itemDetailId)
     {
-        var cartItem = new CartItem(id, Id, itemId, quantity, unitPrice, itemSkus);
+        var cartItem = new CartItem(id, Id, itemId, quantity, unitPrice, itemDetailId);
         CartItems ??= new List<CartItem>();
-        ValidateExistingCartItem(cartItem.ItemId);
+        ValidateExistingCartItem(cartItem.ItemId, cartItem.ItemDetailId);
         CartItems.Add(cartItem);
         return this;
     }
@@ -34,27 +34,8 @@ public class ShopCart(Guid id, Guid userId) : FullAuditedAggregateRoot<Guid>(id)
     {
         Check.NotNull(cartItem, nameof(cartItem));
         CartItems ??= new List<CartItem>();
-        ValidateExistingCartItem(cartItem.ItemId);
+        ValidateExistingCartItem(cartItem.ItemId, cartItem.ItemDetailId);
         CartItems.Add(cartItem);
-        return this;
-    }
-
-    public ShopCart AddCartItems(List<CartItem> cartItems)
-    {
-        Check.NotNull(cartItems, nameof(cartItems));
-        CartItems ??= new List<CartItem>();
-        foreach (var cartItem in cartItems)
-        {
-            ValidateExistingCartItem(cartItem.ItemId);
-            CartItems.Add(cartItem);
-        }
-        return this;
-    }
-
-    public ShopCart SetCartItems(List<CartItem> cartItems)
-    {
-        Check.NotNull(cartItems, nameof(cartItems));
-        CartItems = Check.NotNull(cartItems, nameof(cartItems));
         return this;
     }
 
@@ -74,9 +55,9 @@ public class ShopCart(Guid id, Guid userId) : FullAuditedAggregateRoot<Guid>(id)
         return this;
     }
 
-    public void ValidateExistingCartItem(Guid itemId)
+    public void ValidateExistingCartItem(Guid itemId, Guid itemDetailId)
     {
-        var existing = CartItems.FirstOrDefault(x => x.ItemId == itemId);
+        var existing = CartItems.FirstOrDefault(x => x.ItemId == itemId && x.ItemDetailId == itemDetailId);
         if (existing != null)
         {
             throw new CartItemForUserAlreadyExistsException();

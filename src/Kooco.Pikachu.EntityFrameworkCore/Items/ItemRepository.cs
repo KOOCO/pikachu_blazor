@@ -46,12 +46,12 @@ public class ItemRepository : EfCoreRepository<PikachuDbContext, Item, Guid>, II
     public async Task<List<ItemWithItemType>> GetItemsAllLookupAsync()
     {
         return await (await GetQueryableAsync())
-            
+
             .Select(x => new ItemWithItemType
             {
                 Id = x.Id,
                 Name = x.ItemName,
-                
+
             }).ToListAsync();
     }
 
@@ -129,8 +129,8 @@ public class ItemRepository : EfCoreRepository<PikachuDbContext, Item, Guid>, II
     {
         return (await GetQueryableAsync())
             .Include(x => x.Images)
-            .Where(x=>x.Id==id)
-            
+            .Where(x => x.Id == id)
+
             .FirstOrDefault();
     }
 
@@ -150,5 +150,12 @@ public class ItemRepository : EfCoreRepository<PikachuDbContext, Item, Guid>, II
                                           .Include(i => i.Images)
                                           .Include(i => i.ItemDetails.Where(w => w.Id == itemDetailId))
                                           .FirstOrDefault();
+    }
+
+    public async Task<ItemDetails?> FindItemDetailAsync(Guid itemDetailId)
+    {
+        var dbContext = await GetDbContextAsync();
+        return await dbContext.ItemDetails
+            .Where(x => x.Id == itemDetailId).FirstOrDefaultAsync();
     }
 }
