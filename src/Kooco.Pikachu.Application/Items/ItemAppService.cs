@@ -11,13 +11,13 @@ using Volo.Abp;
 namespace Kooco.Pikachu.Items;
 
 [RemoteService(IsEnabled = false)]
-public class ItemAppService : 
+public class ItemAppService :
     CrudAppService<
-        Item, 
-        ItemDto, 
-        Guid, 
-        PagedAndSortedResultRequestDto, 
-        CreateItemDto, 
+        Item,
+        ItemDto,
+        Guid,
+        PagedAndSortedResultRequestDto,
+        CreateItemDto,
         UpdateItemDto
     >, IItemAppService
 {
@@ -30,7 +30,7 @@ public class ItemAppService :
     public ItemAppService(
         IItemRepository repository,
         ItemManager itemManager
-    ) 
+    )
         : base(repository)
     {
         _itemRepository = repository;
@@ -132,7 +132,7 @@ public class ItemAppService :
         return ObjectMapper.Map<Item, ItemDto>(item);
     }
 
-    public  async Task<ItemDto> CopyAysnc(Guid Id)
+    public async Task<ItemDto> CopyAysnc(Guid Id)
     {
         try
         {
@@ -405,7 +405,7 @@ public class ItemAppService :
     public async Task<string?> GetFirstImageUrlAsync(Guid id)
     {
         var item = await _itemRepository.GetFirstImage(id);
-      
+
         return item.Images.OrderBy(x => x.SortNo).FirstOrDefault()?.ImageUrl;
     }
 
@@ -415,7 +415,7 @@ public class ItemAppService :
         return ObjectMapper.Map<List<ItemWithItemType>, List<ItemWithItemTypeDto>>(items);
     }
 
-  
+
 
     /// <summary>
     /// This Method Returns the Desired Result For the Store Front End.
@@ -463,7 +463,7 @@ public class ItemAppService :
     public async Task<List<KeyValueDto>> GetAllItemsLookupAsync()
     {
         var items = await _itemRepository.GetItemsAllLookupAsync();
-       var list= items.Select(x => new KeyValueDto { Id = x.Id, Name = x.Name }).ToList();
+        var list = items.Select(x => new KeyValueDto { Id = x.Id, Name = x.Name }).ToList();
         return list;
     }
 
@@ -472,6 +472,12 @@ public class ItemAppService :
         return MapToGetOutputDto(
             await _itemRepository.GetSKUAndItemAsync(itemId, itemDetailId)
         );
+    }
+
+    public async Task<List<ItemDto>> GetManyAsync(List<Guid> itemIds)
+    {
+        var items = await _itemRepository.GetManyAsync(itemIds);
+        return ObjectMapper.Map<List<Item>, List<ItemDto>>(items);
     }
     #endregion
 }

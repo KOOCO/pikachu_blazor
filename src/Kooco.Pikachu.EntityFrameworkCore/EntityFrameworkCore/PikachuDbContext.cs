@@ -46,6 +46,7 @@ using Kooco.Pikachu.WebsiteManagement;
 using Kooco.Pikachu.GroupBuyOrderInstructions;
 using Kooco.Pikachu.LoginConfigurations;
 using Kooco.Pikachu.GroupBuyProductRankings;
+using Kooco.Pikachu.ProductCategories;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -137,6 +138,8 @@ public class PikachuDbContext :
 
     public DbSet<WebsiteSettings> WebsiteSettings { get; set; }
     public DbSet<LoginConfiguration> LoginConfigurations { get; set; }
+
+    public DbSet<ProductCategory> ProductCategories { get; set; }
 
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
@@ -463,6 +466,34 @@ public class PikachuDbContext :
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "LoginConfigurations", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
+        });
+
+        builder.Entity<ProductCategory>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "ProductCategories", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+
+            b.HasMany(x => x.ProductCategoryImages).WithOne(x => x.ProductCategory).HasForeignKey(x => x.ProductCategoryId);
+            b.HasMany(x => x.CategoryProducts).WithOne(x => x.ProductCategory).HasForeignKey(x => x.ProductCategoryId);
+        });
+
+        builder.Entity<ProductCategoryImage>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "ProductCategoryImages", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+
+            b.HasOne(x => x.ProductCategory).WithMany(x => x.ProductCategoryImages).HasForeignKey(x => x.ProductCategoryId);
+        });
+
+        builder.Entity<CategoryProduct>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "CategoryProducts", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+
+            b.HasKey(x => new { x.ProductCategoryId, x.ItemId });
+
+            b.HasOne(x => x.ProductCategory).WithMany(x => x.CategoryProducts).HasForeignKey(x => x.ProductCategoryId);
+            b.HasOne(x => x.Item).WithMany(x => x.CategoryProducts).HasForeignKey(x => x.ItemId);
         });
 
         #region GroupPurchaseOverviews

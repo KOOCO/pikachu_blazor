@@ -84,7 +84,7 @@ public partial class GroupBuyList
             }
 
             Total = (int)result.TotalCount;
-            //ItemsList = await _groupBuyAppService.GetAllGroupBuyLookupAsync();
+            //ItemsLookup = await _groupBuyAppService.GetAllGroupBuyLookupAsync();
         }
         catch (Exception ex)
         {

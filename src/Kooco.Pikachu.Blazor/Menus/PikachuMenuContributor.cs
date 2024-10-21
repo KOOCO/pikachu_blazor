@@ -115,6 +115,13 @@ public class PikachuMenuContributor : IMenuContributor
             );
         }
 
+        productmangment.AddItem(new ApplicationMenuItem(
+            name: "ProductCategories",
+            icon: "fas fa-layer-group",
+            displayName: l["Menu:ProductCategories"],
+            url: "Product-Categories",
+            requiredPermissionName: PikachuPermissions.ProductCategories.Default
+            ));
 
 
         var orderMangment = new ApplicationMenuItem(

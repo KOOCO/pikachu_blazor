@@ -310,6 +310,10 @@
     --pk-lightgrey: #E9E9E9;
 }
 
+.table > :not(caption) > * > * {
+    color: unset;
+}
+
 .pk-btn {
     font-family: var(--pk-font-family);
     border-width: 1px;
@@ -398,7 +402,8 @@
         color: var(--pk-semi-dark);
     }
 
-.pk-btn-outline-danger {
+.pk-btn-outline-danger,
+.table .pk-btn-outline-danger {
     border-color: var(--pk-danger-light);
     color: var(--pk-danger);
     background: transparent;

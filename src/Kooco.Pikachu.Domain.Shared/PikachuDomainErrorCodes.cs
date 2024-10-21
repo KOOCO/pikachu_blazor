@@ -51,4 +51,6 @@ public static class PikachuDomainErrorCodes
     public const string InvalidServiceHoursException = "Pikachu:InvalidServiceHoursException";
     public const string TenantSettingsAlreadyExist = "Pikachu:TenantSettingsAlreadyExist";
     public const string InvalidEnumValue = "Pikachu:InvalidEnumValue";
+    public const string ProductCategoryAlreadyExists = "Pikachu:ProductCategoryAlreadyExists";
+    public const string ProductCategoryImageMaxLimit = "Pikachu:ProductCategoryImageMaxLimit";
 }

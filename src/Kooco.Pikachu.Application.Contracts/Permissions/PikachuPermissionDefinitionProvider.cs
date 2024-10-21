@@ -24,6 +24,12 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
         myGroup1.AddPermission(PikachuPermissions.GoodsGroupingSetting, L("Permission:ProductGroupingSetting"));
         //myGroup.AddPermission(PikachuPermissions.StockReport, L("Permission:StockReport"));
         myGroup1.AddPermission(PikachuPermissions.FreebieSetting, L("Permission:FreebieSetting"));
+        
+        var productCategoryPermissions = myGroup1.AddPermission(PikachuPermissions.ProductCategories.Default, L("Permission:ProductCategories"));
+        productCategoryPermissions.AddChild(PikachuPermissions.ProductCategories.Create, L("Permission:Create"));
+        productCategoryPermissions.AddChild(PikachuPermissions.ProductCategories.Edit, L("Permission:Edit"));
+        productCategoryPermissions.AddChild(PikachuPermissions.ProductCategories.Delete, L("Permission:Delete"));
+
         myGroup.AddPermission(PikachuPermissions.POList, L("Permission:OrderList"));
         //myGroup.AddPermission(PikachuPermissions.POReturningList, L("Permission:ProductReturningList"));
         var myGroup2 = context.AddGroup(PikachuPermissions.OrderManagement);

@@ -134,6 +134,16 @@ public class ItemRepository : EfCoreRepository<PikachuDbContext, Item, Guid>, II
             .FirstOrDefault();
     }
 
+    public async Task<List<Item>> GetManyAsync(List<Guid> itemIds)
+    {
+        var queryable = await GetQueryableAsync();
+
+        return await queryable
+            .Where(i => itemIds.Contains(i.Id))
+            .Include(i => i.Images)
+            .ToListAsync();
+    }
+
     public async Task<Item> GetSKUAndItemAsync(Guid itemId, Guid itemDetailId)
     {
         return (await GetQueryableAsync()).Where(w => w.Id == itemId)

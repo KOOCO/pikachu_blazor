@@ -860,6 +860,14 @@
     "TenantShortCode": "Short Code",
     "DomainIsRequired": "The Domain field is required.",
     "Domain": "Domain",
-    "InvalidUrl": "Please provide a fully qualified URL starting with http or https."
+    "InvalidUrl": "Please provide a fully qualified URL starting with http or https.",
+    "Pikachu:ProductCategoryAlreadyExists": "Product Category with same name {name} already exists.",
+    "Pikachu:ProductCategoryImageMaxLimit": "Product category can not have more than 5 images",
+    "Permission:ProductCategories": "Product Categories",
+    "Menu:ProductCategories": "Product Categories",
+    "ProductCategories": "Product Categories",
+    "CarousalImages": "Carousal Images",
+    "AddProductCategory": "Add Product Category",
+    "EditProductCategory": "Edit Product Category"
   }
 }

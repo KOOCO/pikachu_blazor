@@ -25,4 +25,5 @@ public interface IItemAppService :
     Task<List<KeyValueDto>> GetAllItemsLookupAsync();
     Task<ItemDto> CopyAysnc(Guid Id);
     Task<ItemDto> GetSKUAndItemAsync(Guid itemId, Guid itemDetailId);
+    Task<List<ItemDto>> GetManyAsync(List<Guid> itemIds);
 }
