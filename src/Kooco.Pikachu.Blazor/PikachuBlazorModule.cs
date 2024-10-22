@@ -4,6 +4,7 @@ using Blazorise.RichTextEdit;
 using Hangfire;
 using Kooco.Pikachu.Blazor.Helpers;
 using Kooco.Pikachu.Blazor.Menus;
+using Kooco.Pikachu.Blazor.OpenIddict;
 using Kooco.Pikachu.Blazor.Pages.TenantManagement;
 using Kooco.Pikachu.EntityFrameworkCore;
 using Kooco.Pikachu.Localization;
@@ -44,6 +45,7 @@ using Volo.Abp.Identity.Blazor.Server;
 using Volo.Abp.Modularity;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.OpenIddict;
+using Volo.Abp.OpenIddict.ExtensionGrantTypes;
 using Volo.Abp.SettingManagement.Blazor.Server;
 using Volo.Abp.Swashbuckle;
 using Volo.Abp.TenantManagement.Blazor.Server;
@@ -114,6 +116,15 @@ public class PikachuBlazorModule : AbpModule
             });
         });
 
+        PreConfigure<OpenIddictServerBuilder>(builder =>
+        {
+            builder.Configure(openIddictServerOptions =>
+            {
+                openIddictServerOptions.GrantTypes.Add(UserIdTokenExtensionGrant.ExtensionGrantName);
+            });
+            builder.SetAccessTokenLifetime(TimeSpan.FromDays(7));
+        });
+
         var hostingEnvironment = context.Services.GetHostingEnvironment();
 
         if (hostingEnvironment.IsDevelopment()) return;
@@ -129,7 +140,6 @@ public class PikachuBlazorModule : AbpModule
                 context.Services.GetConfiguration()));
             builder.AddSigningCertificate(
                 GetSigningCertificate(hostingEnvironment, context.Services.GetConfiguration()));
-            builder.SetAccessTokenLifetime(TimeSpan.FromDays(7));
         });
     }
 
@@ -223,6 +233,10 @@ public class PikachuBlazorModule : AbpModule
                 options.TenantResolvers.Insert(0, new MyDomainTenantResolveContributor());
             });
         }
+        Configure<AbpOpenIddictExtensionGrantsOptions>(options =>
+        {
+            options.Grants.Add(UserIdTokenExtensionGrant.ExtensionGrantName, new UserIdTokenExtensionGrant());
+        });
         context.Services.AddScoped<CustomTenantManagement>();
         context.Services.AddScoped<ExcelDownloadHelper>();
         context.Services.AddCors(options =>
