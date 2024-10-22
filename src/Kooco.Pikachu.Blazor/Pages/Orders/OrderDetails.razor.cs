@@ -1,6 +1,7 @@
 ﻿using Blazorise;
 using Blazorise.DataGrid;
 using Blazorise.LoadingIndicator;
+using Kooco.Pikachu.DeliveryTemperatureCosts;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.OrderItems;
@@ -72,6 +73,9 @@ public partial class OrderDetails
 
     private readonly IPaymentGatewayAppService _PaymentGatewayAppService;
     private readonly IOrderMessageAppService _OrderMessageAppService;
+
+    private readonly IDeliveryTemperatureCostAppService _DeliveryTemperatureCostAppService;
+
     private string? PaymentStatus;
     #endregion
 
@@ -81,7 +85,8 @@ public partial class OrderDetails
         IObjectMapper ObjectMapper,
         IConfiguration Configuration,
         IPaymentGatewayAppService PaymentGatewayAppService,
-        IOrderMessageAppService orderMessageAppService
+        IOrderMessageAppService orderMessageAppService,
+        IDeliveryTemperatureCostAppService DeliveryTemperatureCostAppService
     )
     {
         _testLableAppService = testLableAppService;
@@ -89,6 +94,7 @@ public partial class OrderDetails
         _Configuration = Configuration;
         _PaymentGatewayAppService = PaymentGatewayAppService;
         _OrderMessageAppService = orderMessageAppService;
+        _DeliveryTemperatureCostAppService = DeliveryTemperatureCostAppService;
         Order = new();
     }
     #endregion
@@ -594,6 +600,110 @@ public partial class OrderDetails
 
             if (response is null || response.Data is null) await _uiMessageService.Error(response.Message);
         }
+
+        else if (deliveryOrder.DeliveryMethod is DeliveryMethod.DeliveredByStore)
+        {
+            LogisticProviders? logisticProvider = null; DeliveryMethod? deliveryMethod = null; ItemStorageTemperature? temperature = null;
+
+            List<DeliveryTemperatureCostDto> deliveryTemperatureCosts = await _DeliveryTemperatureCostAppService.GetListAsync();
+
+            foreach (DeliveryTemperatureCostDto entity in deliveryTemperatureCosts)
+            {
+                if (deliveryOrder.Items.Any(a => a.DeliveryTemperature == entity.Temperature))
+                {
+                    logisticProvider = entity.LogisticProvider;
+
+                    deliveryMethod = entity.DeliveryMethod;
+
+                    temperature = entity.Temperature;
+                }
+            }
+
+            if (temperature is ItemStorageTemperature.Normal)
+            {
+                if (logisticProvider is LogisticProviders.GreenWorldLogistics && deliveryMethod is DeliveryMethod.FamilyMart1 ||
+                    logisticProvider is LogisticProviders.GreenWorldLogistics && deliveryMethod is DeliveryMethod.SevenToEleven1 ||
+                    logisticProvider is LogisticProviders.GreenWorldLogisticsC2C && deliveryMethod is DeliveryMethod.FamilyMartC2C ||
+                    logisticProvider is LogisticProviders.GreenWorldLogisticsC2C && deliveryMethod is DeliveryMethod.SevenToElevenC2C)
+                {
+                    ResponseResultDto result = await _storeLogisticsOrderAppService.CreateStoreLogisticsOrderAsync(Order.Id, deliveryOrder.Id, deliveryMethod);
+
+                    if (result.ResponseCode is not "1") await _uiMessageService.Error(result.ResponseMessage);
+                }
+
+                else if (logisticProvider is LogisticProviders.GreenWorldLogistics && deliveryMethod is DeliveryMethod.PostOffice ||
+                         logisticProvider is LogisticProviders.GreenWorldLogistics && deliveryMethod is DeliveryMethod.BlackCat1)
+                {
+                    ResponseResultDto result = await _storeLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(Order.Id, OrderDeliveryId, deliveryMethod);
+
+                    if (result.ResponseCode is not "1")
+                    {
+                        await _uiMessageService.Error(result.ResponseMessage);
+                        await loading.Hide();
+                    }
+                }
+
+                else if (logisticProvider is LogisticProviders.TCat && deliveryMethod is DeliveryMethod.TCatDeliveryNormal)
+                {
+                    PrintObtResponse? response = await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCatDeliveryAsync(Order.Id, deliveryOrder.Id);
+
+                    if (response is null || response.Data is null) await _uiMessageService.Error(response.Message);
+                }
+
+                else if (logisticProvider is LogisticProviders.TCat && deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenNormal)
+                {
+                    PrintOBTB2SResponse? response = await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCat711DeliveryAsync(Order.Id, deliveryOrder.Id);
+
+                    if (response is null || response.Data is null) await _uiMessageService.Error(response.Message);
+                }
+            }
+
+            else if (temperature is ItemStorageTemperature.Freeze)
+            {
+                if (logisticProvider is LogisticProviders.GreenWorldLogistics && deliveryMethod is DeliveryMethod.BlackCatFreeze)
+                {
+                    ResponseResultDto result = await _storeLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(Order.Id, OrderDeliveryId, deliveryMethod);
+
+                    if (result.ResponseCode is not "1")
+                    {
+                        await _uiMessageService.Error(result.ResponseMessage);
+                        await loading.Hide();
+                    }
+                }
+
+                else if (logisticProvider is LogisticProviders.TCat && deliveryMethod is DeliveryMethod.TCatDeliveryFreeze)
+                {
+                    PrintObtResponse? response = await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCatDeliveryAsync(Order.Id, deliveryOrder.Id);
+
+                    if (response is null || response.Data is null) await _uiMessageService.Error(response.Message);
+                }
+
+                else if (logisticProvider is LogisticProviders.TCat && deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFreeze)
+                {
+                    PrintOBTB2SResponse? response = await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCat711DeliveryAsync(Order.Id, deliveryOrder.Id);
+
+                    if (response is null || response.Data is null) await _uiMessageService.Error(response.Message);
+                }
+            }
+
+            else if (temperature is ItemStorageTemperature.Frozen)
+            {
+                if (logisticProvider is LogisticProviders.TCat && deliveryMethod is DeliveryMethod.TCatDeliveryFrozen)
+                {
+                    PrintObtResponse? response = await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCatDeliveryAsync(Order.Id, deliveryOrder.Id);
+
+                    if (response is null || response.Data is null) await _uiMessageService.Error(response.Message);
+                }
+
+                else if (logisticProvider is LogisticProviders.TCat && deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFrozen)
+                {
+                    PrintOBTB2SResponse? response = await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCat711DeliveryAsync(Order.Id, deliveryOrder.Id);
+
+                    if (response is null || response.Data is null) await _uiMessageService.Error(response.Message);
+                }
+            }
+        }
+
         else
         {
             ResponseResultDto result = await _storeLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(Order.Id, OrderDeliveryId);
@@ -625,7 +735,8 @@ public partial class OrderDetails
                deliveryMethod is DeliveryMethod.TCatDeliveryFrozen ||
                deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenNormal ||
                deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFreeze || 
-               deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFrozen;
+               deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFrozen ||
+               deliveryMethod is DeliveryMethod.DeliveredByStore;
     }
 
     private async Task<string> GetPaymentStatus()

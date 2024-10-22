@@ -14,44 +14,42 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Mvc;
 
-namespace Kooco.Pikachu.Controllers.StoreLogisticOrders
-{
-    [RemoteService(IsEnabled = true)]
-    [ControllerName("StoreLogisticOrders")]
-    [Area("app")]
-    [Route("api/app/store-logistic-order")]
-    public class StoreLogisticOrderController(
+namespace Kooco.Pikachu.Controllers.StoreLogisticOrders;
+
+[RemoteService(IsEnabled = true)]
+[ControllerName("StoreLogisticOrders")]
+[Area("app")]
+[Route("api/app/store-logistic-order")]
+public class StoreLogisticOrderController(
     IStoreLogisticsOrderAppService _storeLogisticsOrderAppService
-    ) : AbpController, IStoreLogisticsOrderAppService
+) : AbpController, IStoreLogisticsOrderAppService
+{
+    [HttpPost("create-homedelivery-shipment")]
+    public Task<ResponseResultDto> CreateHomeDeliveryShipmentOrderAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null)
     {
-        [HttpPost("create-homedelivery-shipment")]
-        public Task<ResponseResultDto> CreateHomeDeliveryShipmentOrderAsync(Guid orderId, Guid orderDeliveryId)
-        {
-            return _storeLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(orderId, orderDeliveryId);
-        }
-        [HttpPost("create-logistic")]
-        public Task<ResponseResultDto> CreateStoreLogisticsOrderAsync(Guid orderId, Guid orderDeliveryId)
-        {
+        return _storeLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(orderId, orderDeliveryId, deliveryMethod);
+    }
+    [HttpPost("create-logistic")]
+    public Task<ResponseResultDto> CreateStoreLogisticsOrderAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null)
+    {
+        return _storeLogisticsOrderAppService.CreateStoreLogisticsOrderAsync(orderId,  orderDeliveryId, deliveryMethod);
+    }
 
-            return _storeLogisticsOrderAppService.CreateStoreLogisticsOrderAsync( orderId,  orderDeliveryId);
-        }
+    [HttpGet("generate-deliveryNumber-for-tCatDelivery")]
+    public Task<PrintObtResponse?> GenerateDeliveryNumberForTCatDeliveryAsync(Guid orderId, Guid orderDeliveryId)
+    {
+        throw new NotImplementedException();
+    }
 
-        [HttpGet("generate-deliveryNumber-for-tCatDelivery")]
-        public Task<PrintObtResponse?> GenerateDeliveryNumberForTCatDeliveryAsync(Guid orderId, Guid orderDeliveryId)
-        {
-            throw new NotImplementedException();
-        }
+    [HttpGet("generate-deliveryNumber-fortCatDelivery711")]
+    public Task<PrintOBTB2SResponse?> GenerateDeliveryNumberForTCat711DeliveryAsync(Guid orderId, Guid orderDeliveryId)
+    {
+        throw new NotImplementedException();
+    }
 
-        [HttpGet("generate-deliveryNumber-fortCatDelivery711")]
-        public Task<PrintOBTB2SResponse?> GenerateDeliveryNumberForTCat711DeliveryAsync(Guid orderId, Guid orderDeliveryId)
-        {
-            throw new NotImplementedException();
-        }
-
-        [HttpGet("get-store/{deliveryMethod}")]
-        public Task<EmapApiResponse> GetStoreAsync(string deliveryMethod)
-        {
-            return _storeLogisticsOrderAppService.GetStoreAsync(deliveryMethod);
-        }
+    [HttpGet("get-store/{deliveryMethod}")]
+    public Task<EmapApiResponse> GetStoreAsync(string deliveryMethod)
+    {
+        return _storeLogisticsOrderAppService.GetStoreAsync(deliveryMethod);
     }
 }
