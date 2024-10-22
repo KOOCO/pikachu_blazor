@@ -334,8 +334,16 @@ public partial class CreateGroupBuy
                 CreateGroupBuyDto.SecondaryBackgroundColor = "#EBC7AD";
                 CreateGroupBuyDto.AlertColor = "#FF902A";
                 break;
+           
 
-            default: break;
+            default:
+                CreateGroupBuyDto.PrimaryColor = string.Empty;
+                CreateGroupBuyDto.SecondaryColor = string.Empty;
+                CreateGroupBuyDto.BackgroundColor = string.Empty;
+                CreateGroupBuyDto.SecondaryBackgroundColor = string.Empty;
+                CreateGroupBuyDto.AlertColor = string.Empty;
+                IsColorPickerOpen = false; 
+                break;
         }
     }
 

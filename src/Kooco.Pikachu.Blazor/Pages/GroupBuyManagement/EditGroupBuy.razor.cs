@@ -286,7 +286,14 @@ public partial class EditGroupBuy
                 EditGroupBuyDto.AlertColor = "#FF902A";
                 break;
 
-            default: break;
+            default:
+                EditGroupBuyDto.PrimaryColor = string.Empty;
+                EditGroupBuyDto.SecondaryColor = string.Empty;
+                EditGroupBuyDto.BackgroundColor = string.Empty;
+                EditGroupBuyDto.SecondaryBackgroundColor = string.Empty;
+                EditGroupBuyDto.AlertColor = string.Empty;
+                IsColorPickerOpen = false;
+                break;
         }
     }
 

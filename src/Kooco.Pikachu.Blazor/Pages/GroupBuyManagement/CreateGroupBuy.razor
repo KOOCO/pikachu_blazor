@@ -37,9 +37,9 @@
         max-height: 55px !important;
     }
 
-    .drag-drop-span i {
-        cursor: pointer;
-    }
+        .drag-drop-span i {
+            cursor: pointer;
+        }
 
     .color-scheme > .b-input-color-picker-preview {
         height: 9.55rem;
@@ -47,11 +47,11 @@
 </style>
 <h3>@L["NewGroupBuy"]</h3>
 <LoadingIndicator @ref="Loading" FullScreen FadeIn></LoadingIndicator>
-<Card>
-    <CardBody>
-        <div class="row">
-            <div class="col-12">
-                <h4>@L["SalesURL"]</h4>
+ <Card>
+     <CardBody>
+         <div class="row">
+             <div class="col-12">
+                 <h4>@L["SalesURL"]</h4>
             </div>
             <div class="row">
                 <div class="col-1"></div>
@@ -60,12 +60,12 @@
                 </div>
                 <div class="col-7">
                     <TextEdit @bind-Text="@CreateGroupBuyDto.EntryURL" ReadOnly />
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-1"></div>
-                <div class="col-2">
-                    <label>@L["SalesURL2"]</label>
+                 </div>
+             </div>
+             <div class="row">
+                 <div class="col-1"></div>
+                 <div class="col-2">
+                     <label>@L["SalesURL2"]</label>
                 </div>
                 <div class="col-7">
                     <TextEdit @bind-Text="@CreateGroupBuyDto.EntryURL2" />
@@ -86,22 +86,22 @@
                             <TextEdit Pattern="^[A-Za-z0-9]{4,12}$" MaxLength="12" @bind-Text="@CreateGroupBuyDto.ShortCode">
                                 <Feedback>
                                     <ValidationError>@L["ShortCodePatternDoesnotMatch"]</ValidationError>
-                                </Feedback>
-                            </TextEdit>
-                        </Validation>
-                    </Validations>
-                </div>
-                <div class="col-1">
-                    <span>
-                        @((string.IsNullOrWhiteSpace(CreateGroupBuyDto.ShortCode) ? 0 : (0 + CreateGroupBuyDto.ShortCode.Count())))/@(12)
-                    </span>
+                                    </Feedback>
+                                </TextEdit>
+                            </Validation>
+                        </Validations>
+                    </div>
+                    <div class="col-1">
+                        <span>
+                            @((string.IsNullOrWhiteSpace(CreateGroupBuyDto.ShortCode) ? 0 : (0 + CreateGroupBuyDto.ShortCode.Count())))/@(12)
+                        </span>
+                    </div>
                 </div>
             </div>
-        </div>
-        <Divider></Divider>
-        <div class="row">
-            <div class="col-2">
-                <label>@L["GroupBuyName"] <span class="text-danger"> *</span></label>
+            <Divider></Divider>
+            <div class="row">
+                <div class="col-2">
+                    <label>@L["GroupBuyName"] <span class="text-danger"> *</span></label>
             </div>
             <div class="col-9">
                 <TextEdit MaxLength="@maxtextCount" @bind-Text="@CreateGroupBuyDto.GroupBuyName" />
@@ -171,10 +171,8 @@
             </div>
             <div class="col-10">
                 <Field>
-                    <FilePicker
-                       FilePickerLocalizer="(key,args)=>LocalizeFilePicker(key,args)"
-                        
-                        @ref="LogoPickerCustom"
+                    <FilePicker FilePickerLocalizer="(key,args)=>LocalizeFilePicker(key,args)"
+                                @ref="LogoPickerCustom"
                                 Changed="OnLogoUploadAsync"
                                 ShowMode="FilePickerShowMode.List"
                                 Accept=".jpg, .png, .svg ,.jpeg,.webp">
@@ -182,11 +180,11 @@
                             <Div Flex="Flex.JustifyContent.Between">
                                 <Div>
                                     <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
-                                    <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
-                                </Div>
-                                <Div Class="ps-2">
-                                    <Div>
-                                        @if (context.File.Status == FileEntryStatus.Ready)
+                                        <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                    </Div>
+                                    <Div Class="ps-2">
+                                        <Div>
+                                            @if (context.File.Status == FileEntryStatus.Ready)
                                         {
                                             <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
                                         }
@@ -225,14 +223,14 @@
 
                             <div class="image-container">
                                 <Image class="blur-image" Source="@CreateGroupBuyDto.LogoURL" Text="Logo Image" Fluid />
-                                <button class="delete-button" @onclick="() => DeleteLogoAsync(logoBlobName)">
-                                    <i class="fa fa-trash"></i>
-                                </button>
-                            </div>
+                                 <button class="delete-button" @onclick="() => DeleteLogoAsync(logoBlobName)">
+                                     <i class="fa fa-trash"></i>
+                                 </button>
+                             </div>
 
-                        </div>
-                    </div>
-                </div>
+                         </div>
+                     </div>
+                 </div>
             }
         </div>
         @* <div class="row">
@@ -343,13 +341,13 @@
                     @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
                     {
                         if (item == Enum.GetName(DeliveryMethod.BlackCat1) ||
-                            item == Enum.GetName(DeliveryMethod.BlackCatFreeze) ||
-                            item == Enum.GetName(DeliveryMethod.BlackCatFrozen) ||
-                            item == Enum.GetName(DeliveryMethod.TCatDeliveryNormal) ||
-                            item == Enum.GetName(DeliveryMethod.TCatDeliveryFreeze) ||
-                            item == Enum.GetName(DeliveryMethod.TCatDeliveryFrozen))
+                        item == Enum.GetName(DeliveryMethod.BlackCatFreeze) ||
+                        item == Enum.GetName(DeliveryMethod.BlackCatFrozen) ||
+                        item == Enum.GetName(DeliveryMethod.TCatDeliveryNormal) ||
+                        item == Enum.GetName(DeliveryMethod.TCatDeliveryFreeze) ||
+                        item == Enum.GetName(DeliveryMethod.TCatDeliveryFrozen))
                         {
-                            if (IsShippingMethodEnabled(item)) 
+                            if (IsShippingMethodEnabled(item))
                             {
                                 <label for="@item" class="form-label">
                                     <input type="checkbox"
@@ -369,22 +367,22 @@
                     @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
                     {
                         if (item == Enum.GetName(DeliveryMethod.PostOffice) ||
-                            item == Enum.GetName(DeliveryMethod.HomeDelivery) ||
-                            item == Enum.GetName(DeliveryMethod.BlackCat1) ||
-                            item == Enum.GetName(DeliveryMethod.BlackCatFreeze) ||
-                            item == Enum.GetName(DeliveryMethod.BlackCatFrozen) ||
-                            item == Enum.GetName(DeliveryMethod.TCatDeliveryNormal) ||
-                            item == Enum.GetName(DeliveryMethod.TCatDeliveryFreeze) ||
-                            item == Enum.GetName(DeliveryMethod.TCatDeliveryFrozen))
+                        item == Enum.GetName(DeliveryMethod.HomeDelivery) ||
+                        item == Enum.GetName(DeliveryMethod.BlackCat1) ||
+                        item == Enum.GetName(DeliveryMethod.BlackCatFreeze) ||
+                        item == Enum.GetName(DeliveryMethod.BlackCatFrozen) ||
+                        item == Enum.GetName(DeliveryMethod.TCatDeliveryNormal) ||
+                        item == Enum.GetName(DeliveryMethod.TCatDeliveryFreeze) ||
+                        item == Enum.GetName(DeliveryMethod.TCatDeliveryFrozen))
                         {
                             if (IsShippingMethodEnabled(item))
                             {
                                 <label for="@item" class="form-label ">
-                                    <input type="checkbox" 
-                                           class="form-check-input me-1" 
-                                           id="@item" 
-                                           disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")" 
-                                           checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))" 
+                                    <input type="checkbox"
+                                           class="form-check-input me-1"
+                                           id="@item"
+                                           disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")"
+                                           checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                     @L[item]
                                 </label>
@@ -399,9 +397,9 @@
                     @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
                     {
                         if (item == Enum.GetName(DeliveryMethod.SevenToElevenC2C) ||
-                            item == Enum.GetName(DeliveryMethod.SevenToEleven1))
+                        item == Enum.GetName(DeliveryMethod.SevenToEleven1))
                         {
-                            if (IsShippingMethodEnabled(item)) 
+                            if (IsShippingMethodEnabled(item))
                             {
                                 <label for="@item" class="form-label">
                                     <input type="checkbox"
@@ -421,22 +419,22 @@
                     @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
                     {
                         if (item == Enum.GetName(DeliveryMethod.FamilyMart1) ||
-                            item == Enum.GetName(DeliveryMethod.FamilyMartC2C) ||
-                            item == Enum.GetName(DeliveryMethod.SevenToElevenC2C) ||
-                            item == Enum.GetName(DeliveryMethod.SevenToEleven1) ||
-                            item == Enum.GetName(DeliveryMethod.SevenToElevenFrozen) ||
-                            item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenNormal) ||
-                            item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenFreeze) ||
-                            item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenFrozen))
+                        item == Enum.GetName(DeliveryMethod.FamilyMartC2C) ||
+                        item == Enum.GetName(DeliveryMethod.SevenToElevenC2C) ||
+                        item == Enum.GetName(DeliveryMethod.SevenToEleven1) ||
+                        item == Enum.GetName(DeliveryMethod.SevenToElevenFrozen) ||
+                        item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenNormal) ||
+                        item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenFreeze) ||
+                        item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenFrozen))
                         {
-                            if (IsShippingMethodEnabled(item)) 
+                            if (IsShippingMethodEnabled(item))
                             {
                                 <label for="@item" class="form-label ">
-                                    <input type="checkbox" 
-                                           class="form-check-input me-1" 
-                                           id="@item" 
-                                           disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")" 
-                                           checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))" 
+                                    <input type="checkbox"
+                                           class="form-check-input me-1"
+                                           id="@item"
+                                           disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")"
+                                           checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                     @L[item]
                                 </label>
@@ -451,11 +449,11 @@
                     if (item == Enum.GetName(DeliveryMethod.SelfPickup))
                     {
                         <label for="@item" class="form-label ">
-                            <input type="checkbox" 
-                                   class="form-check-input me-1" 
-                                   id="@item" 
-                                   disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")" 
-                                   checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))" 
+                            <input type="checkbox"
+                                   class="form-check-input me-1"
+                                   id="@item"
+                                   disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")"
+                                   checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                    @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                             @L[item]
                         </label>
@@ -468,11 +466,11 @@
                     if (item == Enum.GetName(DeliveryMethod.DeliveredByStore))
                     {
                         <label for="@item" class="form-label ">
-                            <input type="checkbox" 
-                                   class="form-check-input me-1" 
-                                   id="@item" 
-                                   disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")" 
-                                   checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))" 
+                            <input type="checkbox"
+                                   class="form-check-input me-1"
+                                   id="@item"
+                                   disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")"
+                                   checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                    @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                             @L[item]
                         </label>
@@ -695,58 +693,6 @@
                 </select>
             </Div>
         </Div>
-        
-        <Div Class="row">
-            <Div Class="col-2">@L["Color Schemes"]</Div>
-            <Div Class="col-2">@L["Select Color Theme"]</Div>
-            <Div Class="col-8">
-                <select class="form-select"
-                        @onchange=OnColorSchemeChange>
-                        <option>@L["Choose Color Theme"]</option>
-                    @foreach (ColorScheme value in Enum.GetValues<ColorScheme>())
-                    {
-                        <option value="@value">@L[value.ToString() ?? string.Empty]</option>
-                    }
-                </select>
-            </Div>
-        </Div>
-
-        @if (IsColorPickerOpen)
-        {
-            <br />
-            <Div Class="col-12 d-flex">
-                <Div Class="col-2" Style="margin-left: 25px;">
-                    <label class="form-label">@L["Primary Color"]</label>
-                    <ColorPicker Class="color-scheme" @bind-Color="@CreateGroupBuyDto.PrimaryColor" />
-                    <TextEdit hidden @bind-text="CreateGroupBuyDto.PrimaryColor" class="form-control mt-2" />
-                </Div>
-
-                <Div Class="col-2" Style="margin-left: 49px;">
-                    <label class="form-label">@L["Secondary Color"]</label>
-                    <ColorPicker Class="color-scheme" @bind-Color="@CreateGroupBuyDto.SecondaryColor" />
-                    <TextEdit hidden @bind-text="CreateGroupBuyDto.SecondaryColor" class="form-control mt-2" />
-                </Div>
-
-                <Div Class="col-2" Style="margin-left: 49px;">
-                    <label class="form-label">@L["Background Color"]</label>
-                    <ColorPicker Class="color-scheme" @bind-Color="@CreateGroupBuyDto.BackgroundColor" />
-                    <TextEdit hidden @bind-text="CreateGroupBuyDto.BackgroundColor" class="form-control mt-2" />
-                </Div>
-
-                <Div Class="col-2" Style="margin-left: 49px;">
-                    <label class="form-label">@L["Secondary Background Color"]</label>
-                    <ColorPicker Class="color-scheme" @bind-Color="@CreateGroupBuyDto.SecondaryBackgroundColor" />
-                    <TextEdit hidden @bind-text="CreateGroupBuyDto.SecondaryBackgroundColor" class="form-control mt-2" />
-                </Div>
-
-                <Div Class="col-2" Style="margin-left: 49px;">
-                    <label class="form-label">@L["Alert Color"]</label>
-                    <ColorPicker Class="color-scheme" @bind-Color="@CreateGroupBuyDto.AlertColor" />
-                    <TextEdit hidden @bind-text="CreateGroupBuyDto.AlertColor" class="form-control mt-2" />
-                </Div>
-            </Div>
-            <br />
-        }
 
         <div class="row">
             <div class="col-2">@L["Gateway"]</div>
@@ -758,10 +704,10 @@
                 @L["DefaultPaymentGateWay"]
                 </label> *@
                 <Check TValue="bool" @bind-Checked="@CreditCard">@L["CreditCard"]</Check>
-                <Check TValue="bool" @bind-Checked="@BankTransfer">@L["BankTransfer"]</Check>
-                <Check TValue="bool"
-                       @bind-Checked="@IsCashOnDelivery">
-                    @L[PikachuResource.CashOnDelivery]
+                    <Check TValue="bool" @bind-Checked="@BankTransfer">@L["BankTransfer"]</Check>
+                    <Check TValue="bool"
+                           @bind-Checked="@IsCashOnDelivery">
+                        @L[PikachuResource.CashOnDelivery]
                 </Check>
                 @*              <Radio Inline TValue="string" CheckedChanged="@OnCreditCardChecked"   Value="@("CreditCard")">@L["CreditCard"]</Radio>
                 <Radio Inline TValue="string"  CheckedChanged="@OnTransferChecked"  Value="@("Transfer")">@L["Transfer"]</Radio> *@
@@ -911,13 +857,69 @@
         <TextEdit @bind-Text="@CreateGroupBuyDto.GTM" />
         </div>
         </div> *@
+
+        <Div Class="row">
+            <Div Class="col-2">@L["Color Schemes"]</Div>
+                <Div Class="col-2">@L["Select Color Theme"]</Div>
+                <Div Class="col-8">
+                    <select class="form-select"
+                            @onchange=OnColorSchemeChange>
+                        <option value="" selected>@L["Choose Color Theme"]</option>
+                    @foreach (ColorScheme value in Enum.GetValues<ColorScheme>())
+                    {
+                        <option value="@value">@L[value.ToString() ?? string.Empty]</option>
+                    }
+                </select>
+            </Div>
+        </Div>
+
+        @if (IsColorPickerOpen)
+        {
+            <br />
+            <Div Class="row">
+                <Div Class="col-4" />
+                <Div Class="col-8 d-flex">
+                    <Div Class="col-2">
+                        <label class="form-label">@L["Primary"]</label>
+                        <ColorPicker Class="color-scheme" @bind-Color="@CreateGroupBuyDto.PrimaryColor" />
+                        <TextEdit Disabled @bind-text="CreateGroupBuyDto.PrimaryColor" class="form-control mt-2" />
+                    </Div>
+
+                    <Div Class="col-2" Style="margin-left: 39px;">
+                        <label class="form-label">@L["Secondary"]</label>
+                        <ColorPicker Class="color-scheme" @bind-Color="@CreateGroupBuyDto.SecondaryColor" />
+                        <TextEdit Disabled @bind-text="CreateGroupBuyDto.SecondaryColor" class="form-control mt-2" />
+                    </Div>
+
+                    <Div Class="col-2" Style="margin-left: 39px;">
+                        <label class="form-label">@L["Background"]</label>
+                        <ColorPicker Class="color-scheme" @bind-Color="@CreateGroupBuyDto.BackgroundColor" />
+                        <TextEdit Disabled @bind-text="CreateGroupBuyDto.BackgroundColor" class="form-control mt-2" />
+                    </Div>
+
+                    <Div Class="col-2" Style="margin-left: 39px;">
+                        <label class="form-label">@L["Secondary Background"]</label>
+                        <ColorPicker Class="color-scheme" @bind-Color="@CreateGroupBuyDto.SecondaryBackgroundColor" />
+                        <TextEdit Disabled @bind-text="CreateGroupBuyDto.SecondaryBackgroundColor" class="form-control mt-2" />
+                    </Div>
+
+                    <Div Class="col-2" Style="margin-left: 39px;">
+                        <label class="form-label">@L["Alert"]</label>
+                        <ColorPicker Class="color-scheme" @bind-Color="@CreateGroupBuyDto.AlertColor" />
+                        <TextEdit Disabled @bind-text="CreateGroupBuyDto.AlertColor" class="form-control mt-2" />
+                    </Div>
+                </Div>
+            </Div>
+            <br />
+        }
+
         <Divider></Divider>
         <div class="row">
             <div class="col-2"><label>@L["AddModule"]</label></div>
             <div class="col-3 d-flex gap-2">
                 @if (CollapseItem.Count < 20)
                 {
-                    <Select TValue="GroupBuyTemplateType" 
+                    <Select TValue="GroupBuyTemplateType"
                             @onchange="@((e) => SelectTemplate(e))">
                         <option value="">@L["SelectTemplate"]</option>
                         <option value="@GroupBuyTemplateType.PikachuOne">@L["PikachuOne"]</option>
@@ -968,12 +970,12 @@
                                         {
                                             <Tooltip Text="@($"Incompatible Module for {L[SelectedTemplate.ToString()]}")"
                                                      TriggerTargetId="tooltip-custom-target"
-                                                     Inline
-                                                     Style="margin-left: 5px;">
-                                                <Badge Color="Color.Warning">
-                                                    <i class="fas fa-circle-info" />
-                                                </Badge>
-                                            </Tooltip>
+                                                              Inline
+                                                      Style="margin-left: 5px;">
+                                                 <Badge Color="Color.Warning">
+                                                     <i class="fas fa-circle-info" />
+                                                 </Badge>
+                                             </Tooltip>
                                         }
 
                                     </AccordionToggle>
@@ -1009,23 +1011,23 @@
                                                     <Field>
                                                         <FilePicker @ref="CarouselFilePickers[CarouselModules.IndexOf(carouselImages)]"
                                                                     Disabled="carouselImages.Count >= 5"
-                                                                    Multiple
-                                                                    Changed="@(async (e) => await OnImageModuleUploadAsync(e,
+                                                                                        Multiple
+                                                                     Changed="@(async (e) => await OnImageModuleUploadAsync(e,
                                                                                                                            carouselImages,
                                                                                                                            CarouselModules.IndexOf(carouselImages) + 1,
                                                                                                                            CarouselFilePickers[CarouselModules.IndexOf(carouselImages)],
                                                                                                                            ImageType.GroupBuyCarouselImage))"
-                                                                    ShowMode="FilePickerShowMode.List"
-                                                                    Accept=".jpg, .png, .svg, .jpeg, .webp">
-                                                            <FileTemplate>
-                                                                <Div Flex="Flex.JustifyContent.Between">
-                                                                    <Div>
-                                                                        <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
-                                                                        <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
-                                                                    </Div>
-                                                                    <Div Class="ps-2">
-                                                                        <Div>
-                                                                            @if (context.File.Status is FileEntryStatus.Ready)
+                                                                     ShowMode="FilePickerShowMode.List"
+                                                                     Accept=".jpg, .png, .svg, .jpeg, .webp">
+                                                             <FileTemplate>
+                                                                 <Div Flex="Flex.JustifyContent.Between">
+                                                                     <Div>
+                                                                         <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
+                                                                            <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                                                        </Div>
+                                                                        <Div Class="ps-2">
+                                                                            <Div>
+                                                                                @if (context.File.Status is FileEntryStatus.Ready)
                                                                             {
                                                                                 <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
                                                                             }
@@ -1065,12 +1067,12 @@
                                                                     {
                                                                         <Div Class="image-container">
                                                                             <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image" Fluid />
-                                                                            <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName,
+                                                                             <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName,
                                                                                                                                            carouselImages,
                                                                                                                                            ImageType.GroupBuyCarouselImage)">
-                                                                                <i class="fa fa-trash"></i>
-                                                                            </button>
-                                                                        </Div>
+                                                                                 <i class="fa fa-trash"></i>
+                                                                             </button>
+                                                                         </Div>
                                                                     }
                                                                 </Div>
                                                                 <Div Class="d-flex">
@@ -1109,23 +1111,23 @@
                                                     <Field>
                                                         <FilePicker @ref="BannerFilePickers[BannerModules.IndexOf(bannerImages)]"
                                                                     Disabled="bannerImages.Count >= 5"
-                                                                    Multiple
-                                                                    Changed="@(async (e) => await OnImageModuleUploadAsync(e,
+                                                                                        Multiple
+                                                                     Changed="@(async (e) => await OnImageModuleUploadAsync(e,
                                                                                                                            bannerImages,
                                                                                                                            BannerModules.IndexOf(bannerImages) + 1,
                                                                                                                            BannerFilePickers[BannerModules.IndexOf(bannerImages)],
                                                                                                                            ImageType.GroupBuyBannerImage))"
-                                                                    ShowMode="FilePickerShowMode.List"
-                                                                    Accept=".jpg, .png, .svg, .jpeg, .webp">
-                                                            <FileTemplate>
-                                                                <Div Flex="Flex.JustifyContent.Between">
-                                                                    <Div>
-                                                                        <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
-                                                                        <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
-                                                                    </Div>
-                                                                    <Div Class="ps-2">
-                                                                        <Div>
-                                                                            @if (context.File.Status is FileEntryStatus.Ready)
+                                                                     ShowMode="FilePickerShowMode.List"
+                                                                     Accept=".jpg, .png, .svg, .jpeg, .webp">
+                                                             <FileTemplate>
+                                                                 <Div Flex="Flex.JustifyContent.Between">
+                                                                     <Div>
+                                                                         <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
+                                                                            <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                                                        </Div>
+                                                                        <Div Class="ps-2">
+                                                                            <Div>
+                                                                                @if (context.File.Status is FileEntryStatus.Ready)
                                                                             {
                                                                                 <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
                                                                             }
@@ -1165,12 +1167,12 @@
                                                                     {
                                                                         <Div Class="image-container">
                                                                             <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image" Fluid />
-                                                                            <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName,
+                                                                             <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName,
                                                                                                                                             bannerImages,
                                                                                                                                             ImageType.GroupBuyBannerImage)">
-                                                                                <i class="fa fa-trash"></i>
-                                                                            </button>
-                                                                        </Div>
+                                                                                 <i class="fa fa-trash"></i>
+                                                                             </button>
+                                                                         </Div>
                                                                     }
                                                                 </Div>
                                                                 <Div Class="d-flex">
@@ -1211,11 +1213,11 @@
                                                                 <Div Flex="Flex.JustifyContent.Between">
                                                                     <Div>
                                                                         <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
-                                                                        <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
-                                                                    </Div>
-                                                                    <Div Class="ps-2">
-                                                                        <Div>
-                                                                            @if (context.File.Status is FileEntryStatus.Ready)
+                                                                            <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                                                        </Div>
+                                                                        <Div Class="ps-2">
+                                                                            <Div>
+                                                                                @if (context.File.Status is FileEntryStatus.Ready)
                                                                             {
                                                                                 <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
                                                                             }
@@ -1254,14 +1256,14 @@
                                                                 <Div Class="image-list-container">
                                                                     <Div Class="image-container">
                                                                         <Image Class="blur-image" Source="@module.Image" Text="Logo Image" Fluid />
-                                                                        <Button Class="delete-button"
-                                                                                Clicked="@(async (e) => await DeleteImageAsync(e, module))">
-                                                                            <i class="fa fa-trash" />
-                                                                        </Button>
-                                                                    </Div>
-                                                                </Div>
-                                                            </Div>
-                                                        </Div>
+                                                                         <Button Class="delete-button"
+                                                                                 Clicked="@(async (e) => await DeleteImageAsync(e, module))">
+                                                                             <i class="fa fa-trash" />
+                                                                         </Button>
+                                                                     </Div>
+                                                                 </Div>
+                                                             </Div>
+                                                         </Div>
                                                     }
                                                 </Div>
                                                 <Div Class="col-6">
@@ -1273,23 +1275,23 @@
                                                     </Div>
                                                     <Div Class="col-2 pb-1">
                                                         <Label>@L["SubTitle"]</Label>
-                                                    </Div>
-                                                    <Div Class="col-12 pb-1">
-                                                        <TextEdit @bind-Text="@module.SubTitle" />
-                                                    </Div>
-                                                    <Div Class="col-2 pb-1">
-                                                        <Label>@L["BodyText"]</Label>
-                                                    </Div>
-                                                    <Div Class="col-12 pb-1">
-                                                        <TextEdit @bind-Text="@module.BodyText" />
-                                                    </Div>
-                                                    <Div Class="col-12 pb-1"></Div>
-                                                    <Div Class="col-12 pb-1">
-                                                        <Switch TValue="bool"
-                                                                @bind-Checked="@module.IsButtonEnable" />
-                                                    </Div>
+                                                        </Div>
+                                                        <Div Class="col-12 pb-1">
+                                                            <TextEdit @bind-Text="@module.SubTitle" />
+                                                        </Div>
+                                                        <Div Class="col-2 pb-1">
+                                                            <Label>@L["BodyText"]</Label>
+                                                        </Div>
+                                                        <Div Class="col-12 pb-1">
+                                                            <TextEdit @bind-Text="@module.BodyText" />
+                                                        </Div>
+                                                        <Div Class="col-12 pb-1"></Div>
+                                                        <Div Class="col-12 pb-1">
+                                                            <Switch TValue="bool"
+                                                                    @bind-Checked="@module.IsButtonEnable" />
+                                                        </Div>
 
-                                                    @if (module.IsButtonEnable)
+                                                        @if (module.IsButtonEnable)
                                                     {
                                                         <Div Class="col-2 pb-1">
                                                             <Label>@L["ButtonText"] <Span Class="text-danger">*</Span></Label>
@@ -1311,7 +1313,7 @@
 
                                     @if (module.GroupBuyModuleType is GroupBuyModuleType.OrderInstruction)
                                     {
-                                        foreach (GroupBuyOrderInstructionDto module in GroupBuyOrderInstructionModules) 
+                                        foreach (GroupBuyOrderInstructionDto module in GroupBuyOrderInstructionModules)
                                         {
                                             <Div Class="row d-flex">
                                                 <Div Class="col-6 pb-1">
@@ -1329,11 +1331,11 @@
                                                                 <Div Flex="Flex.JustifyContent.Between">
                                                                     <Div>
                                                                         <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
-                                                                        <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
-                                                                    </Div>
-                                                                    <Div Class="ps-2">
-                                                                        <Div>
-                                                                            @if (context.File.Status is FileEntryStatus.Ready)
+                                                                            <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                                                        </Div>
+                                                                        <Div Class="ps-2">
+                                                                            <Div>
+                                                                                @if (context.File.Status is FileEntryStatus.Ready)
                                                                             {
                                                                                 <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
                                                                             }
@@ -1372,14 +1374,14 @@
                                                                 <Div Class="image-list-container">
                                                                     <Div Class="image-container">
                                                                         <Image Class="blur-image" Source="@module.Image" Text="Logo Image" Fluid />
-                                                                        <Button Class="delete-button"
-                                                                                Clicked="@(async (e) => await DeleteImageAsync(e, module))">
-                                                                            <i class="fa fa-trash" />
-                                                                        </Button>
-                                                                    </Div>
-                                                                </Div>
-                                                            </Div>
-                                                        </Div>
+                                                                         <Button Class="delete-button"
+                                                                                 Clicked="@(async (e) => await DeleteImageAsync(e, module))">
+                                                                             <i class="fa fa-trash" />
+                                                                         </Button>
+                                                                     </Div>
+                                                                 </Div>
+                                                             </Div>
+                                                         </Div>
                                                     }
                                                 </Div>
                                                 <Div Class="col-6">
@@ -1391,12 +1393,12 @@
                                                     </Div>
                                                     <Div Class="col-2 pb-1">
                                                         <Label>@L["BodyText"]</Label>
-                                                    </Div>
-                                                    <Div Class="col-12 pb-1">
-                                                        <TextEdit @bind-Text="@module.BodyText" />
+                                                        </Div>
+                                                        <Div Class="col-12 pb-1">
+                                                            <TextEdit @bind-Text="@module.BodyText" />
+                                                        </Div>
                                                     </Div>
                                                 </Div>
-                                            </Div>
                                         }
                                     }
 
@@ -1427,10 +1429,10 @@
                                                                               Placeholder="Search..."
                                                                               Filter="AutocompleteFilter.StartsWith"
                                                                               CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
-                                                                              HighlightSearch
-                                                                              Immediate="true"
-                                                                              SelectedValue="selectedItem.Id"
-                                                                              SelectedValueChanged="(id) => OnSelectedValueChanged(id, productModule, selectedItem)">
+                                                                                                HighlightSearch
+                                                                               Immediate="true"
+                                                                               SelectedValue="selectedItem.Id"
+                                                                               SelectedValueChanged="(id) => OnSelectedValueChanged(id, productModule, selectedItem)">
                                                                      <NotFoundContent> @L["NotFound"] </NotFoundContent>
                                                                 </Autocomplete>
                                                             </div>
@@ -1513,102 +1515,102 @@
                                                 <Div Class="col-6">
                                                     <Div Class="row">
                                                         <Div Class="col-12">
-                                                        <Div Class="col-2 pb-1">
-                                                        <Label>@L["Carousel"] <Span Class="text-danger">*</Span></Label>
-                                                    </Div>
-                                                        <Field>
-                                                        <FilePicker @ref="ProductRankingCarouselPickers[ProductRankingCarouselModules.IndexOf(productModule)]"
-                                                                    Disabled="productModule.Images.Count >= 5"
-                                                                    Multiple
-                                                                    Changed="@(async (e) => await OnImageModuleUploadAsync(e,
+                                                            <Div Class="col-2 pb-1">
+                                                                <Label>@L["Carousel"] <Span Class="text-danger">*</Span></Label>
+                                                            </Div>
+                                                            <Field>
+                                                                <FilePicker @ref="ProductRankingCarouselPickers[ProductRankingCarouselModules.IndexOf(productModule)]"
+                                                                            Disabled="productModule.Images.Count >= 5"
+                                                                                        Multiple
+                                                                             Changed="@(async (e) => await OnImageModuleUploadAsync(e,
                                                                                                                            productModule.Images,
                                                                                                                            ProductRankingCarouselModules.IndexOf(productModule) + 1,
                                                                                                                            ProductRankingCarouselPickers[ProductRankingCarouselModules.IndexOf(productModule)],
                                                                                                                            ImageType.GroupBuyProductRankingCarousel))"
-                                                                     ShowMode="FilePickerShowMode.List"
-                                                                     Accept=".jpg, .png, .svg, .jpeg, .webp">
-                                                            <FileTemplate>
-                                                                <Div Flex="Flex.JustifyContent.Between">
-                                                                    <Div>
-                                                                        <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
-                                                                        <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
-                                                                    </Div>
-                                                                        <Div Class="ps-2">
-                                                                            <Div>
-                                                                            @if (context.File.Status is FileEntryStatus.Ready)
-                                                                            {
-                                                                                <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
-                                                                            }
-                                                                            else if (context.File.Status is FileEntryStatus.Uploading)
-                                                                            {
-                                                                                <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
-                                                                            }
-                                                                            else if (context.File.Status is FileEntryStatus.Uploaded)
-                                                                            {
-                                                                                <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
-                                                                            }
-                                                                            else if (context.File.Status is FileEntryStatus.Error)
-                                                                            {
-                                                                                <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
-                                                                            }
+                                                                             ShowMode="FilePickerShowMode.List"
+                                                                             Accept=".jpg, .png, .svg, .jpeg, .webp">
+                                                                     <FileTemplate>
+                                                                         <Div Flex="Flex.JustifyContent.Between">
+                                                                             <Div>
+                                                                                 <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
+                                                                                    <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                                                                </Div>
+                                                                                <Div Class="ps-2">
+                                                                                    <Div>
+                                                                                        @if (context.File.Status is FileEntryStatus.Ready)
+                                                                                    {
+                                                                                        <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
+                                                                                    }
+                                                                                    else if (context.File.Status is FileEntryStatus.Uploading)
+                                                                                    {
+                                                                                        <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
+                                                                                    }
+                                                                                    else if (context.File.Status is FileEntryStatus.Uploaded)
+                                                                                    {
+                                                                                        <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
+                                                                                    }
+                                                                                    else if (context.File.Status is FileEntryStatus.Error)
+                                                                                    {
+                                                                                        <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
+                                                                                    }
+                                                                                </Div>
+                                                                                <Div>
+                                                                                    <Icon TextColor="TextColor.Danger" Name="IconName.Delete" class="cursor-pointer" Clicked="context.RemoveFile" />
+                                                                                </Div>
+                                                                            </Div>
                                                                         </Div>
-                                                                        <Div>
-                                                                            <Icon TextColor="TextColor.Danger" Name="IconName.Delete" class="cursor-pointer" Clicked="context.RemoveFile" />
-                                                                        </Div>
-                                                                    </Div>
-                                                                </Div>
-                                                            </FileTemplate>
-                                                            <ButtonsTemplate>
-                                                                <Progress Value="@ProductRankingCarouselPickers[ProductRankingCarouselModules.IndexOf(productModule)].GetProgressPercentage()" />
-                                                            </ButtonsTemplate>
-                                                        </FilePicker>
-                                                    </Field>
-                                                        @if (productModule.Images.Count > 0)
-                                                        {
-                                                            <Div Class="row">
-                                                                <Div Class="col-12">
-                                                                    <Div Class="image-list-container d-block flex-nowrap">
-                                                                        <Div Class="d-flex flex-wrap">
-                                                                            @foreach (CreateImageDto image in productModule.Images)
-                                                                            {
-                                                                                <Div Class="image-container">
-                                                                                    <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image" Fluid />
-                                                                                    <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName,
+                                                                    </FileTemplate>
+                                                                    <ButtonsTemplate>
+                                                                        <Progress Value="@ProductRankingCarouselPickers[ProductRankingCarouselModules.IndexOf(productModule)].GetProgressPercentage()" />
+                                                                    </ButtonsTemplate>
+                                                                </FilePicker>
+                                                            </Field>
+                                                            @if (productModule.Images.Count > 0)
+                                                            {
+                                                                <Div Class="row">
+                                                                    <Div Class="col-12">
+                                                                        <Div Class="image-list-container d-block flex-nowrap">
+                                                                            <Div Class="d-flex flex-wrap">
+                                                                                @foreach (CreateImageDto image in productModule.Images)
+                                                                                {
+                                                                                    <Div Class="image-container">
+                                                                                        <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image" Fluid />
+                                                                                         <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName,
                                                                                                                                                    productModule.Images,
                                                                                                                                                    ImageType.GroupBuyProductRankingCarousel)">
-                                                                                        <i class="fa fa-trash"></i>
-                                                                                    </button>
-                                                                                </Div>
-                                                                            }
+                                                                                             <i class="fa fa-trash"></i>
+                                                                                         </button>
+                                                                                     </Div>
+                                                                                }
+                                                                            </Div>
                                                                         </Div>
                                                                     </Div>
                                                                 </Div>
-                                                            </Div>
-                                                        }
-                                                    </Div>
+                                                            }
+                                                        </Div>
                                                         <Div Class="col-12">
-                                                        <Div Class="col-2 pb-1">
-                                                            <Label>@L["Title"] <Span Class="text-danger">*</Span></Label>
+                                                            <Div Class="col-2 pb-1">
+                                                                <Label>@L["Title"] <Span Class="text-danger">*</Span></Label>
+                                                            </Div>
+                                                            <Div Class="col-12 pb-1">
+                                                                <TextEdit @bind-Text="productModule.Title" />
+                                                            </Div>
+                                                            <Div Class="col-2 pb-1">
+                                                                <Label>@L["SubTitle"]</Label>
+                                                                </Div>
+                                                                <Div Class="col-12 pb-1">
+                                                                    <TextEdit @bind-Text="@productModule.SubTitle" />
+                                                                </Div>
+                                                                <Div Class="col-2 pb-1">
+                                                                    <Label>@L["BodyText"]</Label>
+                                                                </Div>
+                                                                <Div Class="col-12 pb-1">
+                                                                    <TextEdit @bind-Text="@productModule.Content" />
+                                                                </Div>
+                                                            </Div>
                                                         </Div>
-                                                        <Div Class="col-12 pb-1">
-                                                            <TextEdit @bind-Text="productModule.Title" />
-                                                        </Div>
-                                                        <Div Class="col-2 pb-1">
-                                                            <Label>@L["SubTitle"]</Label>
-                                                        </Div>
-                                                        <Div Class="col-12 pb-1">
-                                                            <TextEdit @bind-Text="@productModule.SubTitle" />
-                                                        </Div>
-                                                        <Div Class="col-2 pb-1">
-                                                            <Label>@L["BodyText"]</Label>
-                                                        </Div>
-                                                        <Div Class="col-12 pb-1">
-                                                            <TextEdit @bind-Text="@productModule.Content" />
-                                                        </Div>
-                                                    </Div>
                                                     </Div>
                                                 </Div>
-                                            </Div>
                                         }
                                     }
 
@@ -1765,141 +1767,141 @@
             <div class="col-10">
                 <div class="col-12">
                     <TextEdit Placeholder="@L["GroupBuyCondition"]" Disabled @bind-Text="CreateGroupBuyDto.GroupBuyCondition" MaxLength="60" />
-                </div>
-                <div class="col-12">
-                    <Blazored.TextEditor.BlazoredTextEditor @ref="@GroupBuyHtml">
-                        <ToolbarContent>
-                            <select class="ql-header">
-                                <option selected=""></option>
-                                <option value="1"></option>
-                                <option value="2"></option>
-                                <option value="3"></option>
-                                <option value="4"></option>
-                                <option value="5"></option>
-                            </select>
-                            <span class="ql-formats">
-                                <button class="ql-bold"></button>
-                                <button class="ql-italic"></button>
-                                <button class="ql-underline"></button>
-                                <button class="ql-strike"></button>
-                            </span>
-                            <span class="ql-formats">
-                                <select class="ql-color"></select>
-                                <select class="ql-background"></select>
-                            </span>
-                            <span class="ql-formats">
-                                <button class="ql-list" value="ordered"></button>
-                                <button class="ql-list" value="bullet"></button>
-                            </span>
-                            <span class="ql-formats">
-                                <button class="ql-link"></button>
-                            </span>
-                            <span class="ql-formats">
-                                <button class="ql-image"></button>
-                            </span>
-                            <span class="ql-formats">
-                                <button class="ql-video"></button>
-                            </span>
-                        </ToolbarContent>
-                    </Blazored.TextEditor.BlazoredTextEditor>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-2">
-            </div>
-            <div class="col-10">
-                <div class="col-12">
-                    <TextEdit Placeholder="@L["CustomerInformation"]" Disabled @bind-Text="@CreateGroupBuyDto.CustomerInformation" MaxLength="60" />
-                </div>
-                <div class="col-12">
-                    <Blazored.TextEditor.BlazoredTextEditor @ref="@CustomerInformationHtml">
-                        <ToolbarContent>
-                            <select class="ql-header">
-                                <option selected=""></option>
-                                <option value="1"></option>
-                                <option value="2"></option>
-                                <option value="3"></option>
-                                <option value="4"></option>
-                                <option value="5"></option>
-                            </select>
-                            <span class="ql-formats">
-                                <button class="ql-bold"></button>
-                                <button class="ql-italic"></button>
-                                <button class="ql-underline"></button>
-                                <button class="ql-strike"></button>
-                            </span>
-                            <span class="ql-formats">
-                                <select class="ql-color"></select>
-                                <select class="ql-background"></select>
-                            </span>
-                            <span class="ql-formats">
-                                <button class="ql-list" value="ordered"></button>
-                                <button class="ql-list" value="bullet"></button>
-                            </span>
-                            <span class="ql-formats">
-                                <button class="ql-link"></button>
-                            </span>
-                            <span class="ql-formats">
-                                <button class="ql-image"></button>
-                            </span>
-                            <span class="ql-formats">
-                                <button class="ql-video"></button>
-                            </span>
-                        </ToolbarContent>
-                    </Blazored.TextEditor.BlazoredTextEditor>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-2">
-            </div>
-            <div class="col-10">
-                <div class="col-12">
-                    <TextEdit Placeholder="@L["ExchangePolicy"]" Disabled @bind-Text="@CreateGroupBuyDto.ExchangePolicy" MaxLength="60" ShowCount />
-                </div>
-                <div class="col-12">
-                    <Blazored.TextEditor.BlazoredTextEditor @ref="@ExchangePolicyHtml">
-                        <ToolbarContent>
-                            <select class="ql-header">
-                                <option selected=""></option>
-                                <option value="1"></option>
-                                <option value="2"></option>
-                                <option value="3"></option>
-                                <option value="4"></option>
-                                <option value="5"></option>
-                            </select>
-                            <span class="ql-formats">
-                                <button class="ql-bold"></button>
-                                <button class="ql-italic"></button>
-                                <button class="ql-underline"></button>
-                                <button class="ql-strike"></button>
-                            </span>
-                            <span class="ql-formats">
-                                <select class="ql-color"></select>
-                                <select class="ql-background"></select>
-                            </span>
-                            <span class="ql-formats">
-                                <button class="ql-list" value="ordered"></button>
-                                <button class="ql-list" value="bullet"></button>
-                            </span>
-                            <span class="ql-formats">
-                                <button class="ql-link"></button>
-                            </span>
-                            <span class="ql-formats">
-                                <button class="ql-image"></button>
-                            </span>
-                            <span class="ql-formats">
-                                <button class="ql-video"></button>
-                            </span>
-                        </ToolbarContent>
-                    </Blazored.TextEditor.BlazoredTextEditor>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-2">
-                <fieldLabel>@L["NotifyEmail"]</fieldLabel>
+                 </div>
+                 <div class="col-12">
+                     <Blazored.TextEditor.BlazoredTextEditor @ref="@GroupBuyHtml">
+                         <ToolbarContent>
+                             <select class="ql-header">
+                                 <option selected=""></option>
+                                 <option value="1"></option>
+                                 <option value="2"></option>
+                                 <option value="3"></option>
+                                 <option value="4"></option>
+                                 <option value="5"></option>
+                             </select>
+                             <span class="ql-formats">
+                                 <button class="ql-bold"></button>
+                                 <button class="ql-italic"></button>
+                                 <button class="ql-underline"></button>
+                                 <button class="ql-strike"></button>
+                             </span>
+                             <span class="ql-formats">
+                                 <select class="ql-color"></select>
+                                 <select class="ql-background"></select>
+                             </span>
+                             <span class="ql-formats">
+                                 <button class="ql-list" value="ordered"></button>
+                                 <button class="ql-list" value="bullet"></button>
+                             </span>
+                             <span class="ql-formats">
+                                 <button class="ql-link"></button>
+                             </span>
+                             <span class="ql-formats">
+                                 <button class="ql-image"></button>
+                             </span>
+                             <span class="ql-formats">
+                                 <button class="ql-video"></button>
+                             </span>
+                         </ToolbarContent>
+                     </Blazored.TextEditor.BlazoredTextEditor>
+                 </div>
+             </div>
+         </div>
+         <div class="row">
+             <div class="col-2">
+             </div>
+             <div class="col-10">
+                 <div class="col-12">
+                     <TextEdit Placeholder="@L["CustomerInformation"]" Disabled @bind-Text="@CreateGroupBuyDto.CustomerInformation" MaxLength="60" />
+                 </div>
+                 <div class="col-12">
+                     <Blazored.TextEditor.BlazoredTextEditor @ref="@CustomerInformationHtml">
+                         <ToolbarContent>
+                             <select class="ql-header">
+                                 <option selected=""></option>
+                                 <option value="1"></option>
+                                 <option value="2"></option>
+                                 <option value="3"></option>
+                                 <option value="4"></option>
+                                 <option value="5"></option>
+                             </select>
+                             <span class="ql-formats">
+                                 <button class="ql-bold"></button>
+                                 <button class="ql-italic"></button>
+                                 <button class="ql-underline"></button>
+                                 <button class="ql-strike"></button>
+                             </span>
+                             <span class="ql-formats">
+                                 <select class="ql-color"></select>
+                                 <select class="ql-background"></select>
+                             </span>
+                             <span class="ql-formats">
+                                 <button class="ql-list" value="ordered"></button>
+                                 <button class="ql-list" value="bullet"></button>
+                             </span>
+                             <span class="ql-formats">
+                                 <button class="ql-link"></button>
+                             </span>
+                             <span class="ql-formats">
+                                 <button class="ql-image"></button>
+                             </span>
+                             <span class="ql-formats">
+                                 <button class="ql-video"></button>
+                             </span>
+                         </ToolbarContent>
+                     </Blazored.TextEditor.BlazoredTextEditor>
+                 </div>
+             </div>
+         </div>
+         <div class="row">
+             <div class="col-2">
+             </div>
+             <div class="col-10">
+                 <div class="col-12">
+                     <TextEdit Placeholder="@L["ExchangePolicy"]" Disabled @bind-Text="@CreateGroupBuyDto.ExchangePolicy" MaxLength="60" ShowCount />
+                 </div>
+                 <div class="col-12">
+                     <Blazored.TextEditor.BlazoredTextEditor @ref="@ExchangePolicyHtml">
+                         <ToolbarContent>
+                             <select class="ql-header">
+                                 <option selected=""></option>
+                                 <option value="1"></option>
+                                 <option value="2"></option>
+                                 <option value="3"></option>
+                                 <option value="4"></option>
+                                 <option value="5"></option>
+                             </select>
+                             <span class="ql-formats">
+                                 <button class="ql-bold"></button>
+                                 <button class="ql-italic"></button>
+                                 <button class="ql-underline"></button>
+                                 <button class="ql-strike"></button>
+                             </span>
+                             <span class="ql-formats">
+                                 <select class="ql-color"></select>
+                                 <select class="ql-background"></select>
+                             </span>
+                             <span class="ql-formats">
+                                 <button class="ql-list" value="ordered"></button>
+                                 <button class="ql-list" value="bullet"></button>
+                             </span>
+                             <span class="ql-formats">
+                                 <button class="ql-link"></button>
+                             </span>
+                             <span class="ql-formats">
+                                 <button class="ql-image"></button>
+                             </span>
+                             <span class="ql-formats">
+                                 <button class="ql-video"></button>
+                             </span>
+                         </ToolbarContent>
+                     </Blazored.TextEditor.BlazoredTextEditor>
+                 </div>
+             </div>
+         </div>
+         <div class="row">
+             <div class="col-2">
+                 <fieldLabel>@L["NotifyEmail"]</fieldLabel>
             </div>
             <div class="col-10">
                 <div class="col-12">
@@ -1946,21 +1948,21 @@
 <div class="row">
     <div class="col-12 text-lg-end">
         <Button Type="@ButtonType.Button" class="btn btn-danger" Clicked="BackToGroupBuyList">@L["Cancel"]</Button>
-        <Button Type="@ButtonType.Button" class="btn btn-primary" Clicked="CreateEntityAsync"> <i class="fa fa-check"></i> @L["Save"]</Button>
+            <Button Type="@ButtonType.Button" class="btn btn-primary" Clicked="CreateEntityAsync"> <i class="fa fa-check"></i> @L["Save"]</Button>
+        </div>
     </div>
-</div>
 
-<Modal @ref="AddLinkModal" Closing="@OnModalClosing">
-    <ModalContent IsCentered="true">
-        <EditForm Model="@SelectedImageDto" OnValidSubmit="ApplyAddLinkAsync">
-            <ModalHeader>
-                <ModalTitle>@L["AddLink"]</ModalTitle>
-                <CloseButton Clicked="CloseAddLinkModal" />
-            </ModalHeader>
-            <ModalBody>
-                <DataAnnotationsValidator />
-                <div class="row my-2">
-                    <label class="form-label">@L["AddLink"]</label>
+    <Modal @ref="AddLinkModal" Closing="@OnModalClosing">
+        <ModalContent IsCentered="true">
+            <EditForm Model="@SelectedImageDto" OnValidSubmit="ApplyAddLinkAsync">
+                <ModalHeader>
+                    <ModalTitle>@L["AddLink"]</ModalTitle>
+                    <CloseButton Clicked="CloseAddLinkModal" />
+                </ModalHeader>
+                <ModalBody>
+                    <DataAnnotationsValidator />
+                    <div class="row my-2">
+                        <label class="form-label">@L["AddLink"]</label>
                     <div class="col-12 mb-2">
                         <InputText class="form-control" @bind-Value="@SelectedImageDto.Link" />
                     </div>
