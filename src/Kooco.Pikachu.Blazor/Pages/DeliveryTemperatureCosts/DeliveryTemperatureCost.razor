@@ -39,16 +39,16 @@
     <CardBody>
         <Div Class="d-flex mb-3">
             <Switch TValue="bool"
-                    Checked="@IsAllowOffshoreIslands"
-                    CheckedChanged="OnAllowOffShoreChanged"
-                    CheckedExpression="@(() => IsAllowOffshoreIslands)">
-                @L["AllowOffshoreIslands"]
-            </Switch>
-            <Switch TValue="bool"
                     Checked="@IsLogisticProviderActivated"
                     CheckedChanged="OnLogisticProviderActivationChanged"
                     CheckedExpression="@(() => IsLogisticProviderActivated)">
                 @L["ActivateLogisticProvider"]
+            </Switch>
+            <Switch TValue="bool"
+                    Checked="@IsAllowOffshoreIslands"
+                    CheckedChanged="OnAllowOffShoreChanged"
+                    CheckedExpression="@(() => IsAllowOffshoreIslands)">
+                @L["AllowOffshoreIslands"]
             </Switch>
         </Div>
 

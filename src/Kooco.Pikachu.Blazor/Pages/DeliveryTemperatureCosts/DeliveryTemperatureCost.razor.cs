@@ -230,7 +230,9 @@ public partial class DeliveryTemperatureCost
                     [DeliveryMethod.TCatDeliveryFreeze, DeliveryMethod.TCatDeliverySevenElevenFreeze];
 
             if (temperature is ItemStorageTemperature.Frozen && logistic is LogisticProviders.GreenWorldLogistics)
-                return [DeliveryMethod.BlackCatFrozen];
+                return IsAllowOffshoreIslands ?
+                    [DeliveryMethod.BlackCatFrozen] :
+                    [DeliveryMethod.BlackCatFrozen, DeliveryMethod.SevenToElevenFrozen];
 
             if (temperature is ItemStorageTemperature.Frozen && logistic is LogisticProviders.TCat)
                 return IsAllowOffshoreIslands ?
