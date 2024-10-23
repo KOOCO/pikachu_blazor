@@ -10,6 +10,7 @@ namespace Kooco.Pikachu.OrderDeliveries
     public class OrderDeliveryDto : FullAuditedAggregateRoot<Guid>
     {
         public DeliveryMethod DeliveryMethod { get; set; }
+        public DeliveryMethod? ActualDeliveryMethod { get; set; }
         public DeliveryStatus DeliveryStatus { get; set; }
         public string AllPayLogisticsID { get; set; }
         public string Editor { get; set; }

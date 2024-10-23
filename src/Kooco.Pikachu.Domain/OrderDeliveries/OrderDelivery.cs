@@ -26,6 +26,7 @@ namespace Kooco.Pikachu.OrderDeliveries
         public Guid? TenantId { get; set; }
         public string AllPayLogisticsID { get; set; }
         public string Editor { get; set; }
+        public DeliveryMethod? ActualDeliveryMethod { get; set; }
 
         public OrderDelivery(Guid id, DeliveryMethod deliveryMethod,DeliveryStatus deliveryStatus,string? deliveryNo,string allPayLogisticsID, Guid orderId )
 

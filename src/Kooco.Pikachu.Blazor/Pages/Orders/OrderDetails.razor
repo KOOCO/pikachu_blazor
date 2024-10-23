@@ -860,7 +860,13 @@
                    
                     <DataGridColumn Field="@nameof(OrderDeliveryDto.DeliveryMethod)" Caption="@L["DeliveryMethod"]" >
                                 <DisplayTemplate>
-                                    @L[context.DeliveryMethod.ToString()]
+                                    @if (context.DeliveryMethod is DeliveryMethod.DeliveredByStore && context.ActualDeliveryMethod is not null)
+                                    {
+                                        @(L[context.DeliveryMethod.ToString()] + " (" + L[context.ActualDeliveryMethod.ToString()] + ")")
+                                    }
+                                    else {
+                                        @L[context.DeliveryMethod.ToString()]
+                                    }
                                 </DisplayTemplate>
                         </DataGridColumn>
                         <DataGridColumn Field="@nameof(OrderDeliveryDto.LastModificationTime)" Caption="@L["LastUpdatedDate"]" >

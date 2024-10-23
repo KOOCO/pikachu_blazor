@@ -36,13 +36,13 @@ public class StoreLogisticOrderController(
     }
 
     [HttpGet("generate-deliveryNumber-for-tCatDelivery")]
-    public Task<PrintObtResponse?> GenerateDeliveryNumberForTCatDeliveryAsync(Guid orderId, Guid orderDeliveryId)
+    public Task<PrintObtResponse?> GenerateDeliveryNumberForTCatDeliveryAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null)
     {
         throw new NotImplementedException();
     }
 
     [HttpGet("generate-deliveryNumber-fortCatDelivery711")]
-    public Task<PrintOBTB2SResponse?> GenerateDeliveryNumberForTCat711DeliveryAsync(Guid orderId, Guid orderDeliveryId)
+    public Task<PrintOBTB2SResponse?> GenerateDeliveryNumberForTCat711DeliveryAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null)
     {
         throw new NotImplementedException();
     }

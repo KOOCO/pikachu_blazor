@@ -195,6 +195,10 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             orderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
 
+            if (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore && 
+                deliveryMethod is not null)
+                orderDelivery.ActualDeliveryMethod = deliveryMethod;
+
             await _deliveryRepository.UpdateAsync(orderDelivery);
 
             order.ShippingStatus = ShippingStatus.ToBeShipped;
@@ -204,7 +208,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         return result;
     }
 
-    public async Task<PrintObtResponse?> GenerateDeliveryNumberForTCatDeliveryAsync(Guid orderId, Guid orderDeliveryId)
+    public async Task<PrintObtResponse?> GenerateDeliveryNumberForTCatDeliveryAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null)
     {
         Order order = await _orderRepository.GetAsync(orderId);
 
@@ -359,6 +363,10 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         orderDelivery.DeliveryNo = printObtResponse.Data.Orders.First().OBTNumber;
         orderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
 
+        if (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore &&
+                deliveryMethod is not null)
+            orderDelivery.ActualDeliveryMethod = deliveryMethod;
+
         await _deliveryRepository.UpdateAsync(orderDelivery);
 
         order.ShippingStatus = ShippingStatus.ToBeShipped;
@@ -368,7 +376,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         return printObtResponse;
     }
 
-    public async Task<PrintOBTB2SResponse?> GenerateDeliveryNumberForTCat711DeliveryAsync(Guid orderId, Guid orderDeliveryId)
+    public async Task<PrintOBTB2SResponse?> GenerateDeliveryNumberForTCat711DeliveryAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null)
     {
         Order order = await _orderRepository.GetAsync(orderId);
 
@@ -463,6 +471,10 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                                                                  System.Globalization.CultureInfo.InvariantCulture);
         orderDelivery.DeliveryNo = printObtB2SResponse.Data.Orders.First().DeliveryId;
         orderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
+
+        if (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore &&
+                deliveryMethod is not null)
+            orderDelivery.ActualDeliveryMethod = deliveryMethod;
 
         await _deliveryRepository.UpdateAsync(orderDelivery);
 
@@ -723,6 +735,10 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             orderDelivery.AllPayLogisticsID = result.ShippingInfo.AllPayLogisticsID;
 
             orderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
+
+            if (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore &&
+                deliveryMethod is not null)
+                orderDelivery.ActualDeliveryMethod = deliveryMethod;
 
             await _deliveryRepository.UpdateAsync(orderDelivery);
 
