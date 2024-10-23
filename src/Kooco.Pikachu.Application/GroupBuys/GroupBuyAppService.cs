@@ -56,6 +56,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     private readonly IGroupBuyItemGroupDetailsRepository _GroupBuyItemGroupDetailsRepository;
     private readonly IGroupPurchaseOverviewAppService _GroupPurchaseOverviewAppService;
     private readonly IGroupBuyOrderInstructionAppService _GroupBuyOrderInstructionAppService;
+    private readonly IDeliveryTemperatureCostAppService _DeliveryTemperatureCostAppService;
     #endregion
 
     #region Constructor
@@ -72,7 +73,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         IGroupBuyItemGroupsRepository GroupBuyItemGroupsRepository,
         IGroupBuyItemGroupDetailsRepository GroupBuyItemGroupDetailsRepository,
         IGroupPurchaseOverviewAppService GroupPurchaseOverviewAppService,
-        IGroupBuyOrderInstructionAppService GroupBuyOrderInstructionAppService
+        IGroupBuyOrderInstructionAppService GroupBuyOrderInstructionAppService,
+        IDeliveryTemperatureCostAppService DeliveryTemperatureCostAppService
     )
     {
         _groupBuyManager = groupBuyManager;
@@ -88,6 +90,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         _GroupBuyItemGroupDetailsRepository = GroupBuyItemGroupDetailsRepository;
         _GroupPurchaseOverviewAppService = GroupPurchaseOverviewAppService;
         _GroupBuyOrderInstructionAppService = GroupBuyOrderInstructionAppService;
+        _DeliveryTemperatureCostAppService = DeliveryTemperatureCostAppService;
     }
     #endregion
 
@@ -407,33 +410,36 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            var item = await _groupBuyRepository.GetAsync(id);
+            GroupBuy item = await _groupBuyRepository.GetAsync(id);
 
             // Safely deserialize the ExcludeShippingMethod
-            var shippingMethods = !string.IsNullOrEmpty(item?.ExcludeShippingMethod)
+            List<string>? shippingMethods = !string.IsNullOrEmpty(item?.ExcludeShippingMethod)
                 ? JsonSerializer.Deserialize<List<string>>(item.ExcludeShippingMethod)
-                : new List<string>();
+                : [];
 
             // Safely deserialize HomeDeliveryDeliveryTime
-            var homeDeliveryTimes = !string.IsNullOrEmpty(item?.HomeDeliveryDeliveryTime)
+            List<string>? homeDeliveryTimes = !string.IsNullOrEmpty(item?.HomeDeliveryDeliveryTime)
                 ? JsonSerializer.Deserialize<List<string>>(item.HomeDeliveryDeliveryTime)
-                : new List<string>();
+                : [];
 
             // Safely deserialize DeliveredByStoreDeliveryTime (for convenience store)
-            var convenienceStoreTimes = !string.IsNullOrEmpty(item?.DeliveredByStoreDeliveryTime)
+            List<string>? convenienceStoreTimes = !string.IsNullOrEmpty(item?.DeliveredByStoreDeliveryTime)
                 ? JsonSerializer.Deserialize<List<string>>(item.DeliveredByStoreDeliveryTime)
-                : new List<string>();
+                : [];
 
             // Safely deserialize SelfPickupDeliveryTime
-            var selfPickupTimes = !string.IsNullOrEmpty(item?.SelfPickupDeliveryTime)
+            List<string>? selfPickupTimes = !string.IsNullOrEmpty(item?.SelfPickupDeliveryTime)
                 ? JsonSerializer.Deserialize<List<string>>(item.SelfPickupDeliveryTime)
-                : new List<string>();
+                : [];
+
+            List<string>? blackCatTCatPickupTimes = !string.IsNullOrEmpty(item?.BlackCatDeliveryTime) ?
+                JsonSerializer.Deserialize<List<string>>(item.BlackCatDeliveryTime) : [];
 
             // Create response object
-            var response = new ShippingMethodResponse();
+            ShippingMethodResponse response = new();
 
             // Map Home Delivery Methods
-            foreach (var method in shippingMethods ?? new List<string>())
+            foreach (string method in shippingMethods ?? [])
             {
                 if (method.Contains("PostOffice") || method.Contains("HomeDelivery") || method.Contains("TCatDeliveryNormal")
                     || method.Contains("TCatDeliveryFreeze") || method.Contains("TCatDeliveryFrozen")
@@ -446,7 +452,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
             }
 
             // Map Convenience Store Shipping Methods
-            foreach (var method in shippingMethods ?? new List<string>())
+            foreach (string method in shippingMethods ?? [])
             {
                 if (method.Contains("SevenToEleven1") || method.Contains("SevenToEleven1Freeze") || method.Contains("SevenToEleven1Frozen")
                     || method.Contains("SevenToElevenC2C")
@@ -461,13 +467,45 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
             }
 
             // Map Self-Pickup Methods
-            foreach (var method in shippingMethods ?? new List<string>())
+            foreach (string method in shippingMethods ?? [])
             {
                 if (method.Contains("SelfPickup"))
                 {
                     // Always add the method to the response, even if there are no times
                     var matchingTimes = selfPickupTimes.Where(time => !string.IsNullOrEmpty(time)).ToList();
                     response.SelfPickupType[method] = matchingTimes.Count > 0 ? matchingTimes : new List<string> { "No time preference" };
+                }
+            }
+
+            foreach(string method in shippingMethods ?? [])
+            {
+                if (method.Contains("DeliveredByStore"))
+                {
+                    using (_dataFilter.Enable<IMultiTenant>())
+                    {
+                        List<DeliveryTemperatureCostDto> deliveryTemperatureCosts = await _DeliveryTemperatureCostAppService.GetListAsync();
+
+                        foreach (DeliveryTemperatureCostDto deliveryTemperatureCost in deliveryTemperatureCosts)
+                        {
+                            if (response.DeliveredByStoreType.ContainsKey(deliveryTemperatureCost.Temperature.ToString()))
+                                response.DeliveredByStoreType[deliveryTemperatureCost.Temperature.ToString()].DeliveryMethod = deliveryTemperatureCost.DeliveryMethod.ToString();
+
+                            else response.DeliveredByStoreType.Add(deliveryTemperatureCost.Temperature.ToString(), new() { DeliveryMethod = deliveryTemperatureCost.DeliveryMethod.ToString() });
+
+                            if (deliveryTemperatureCost.DeliveryMethod is not null &&
+                                (deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.BlackCat1 ||
+                                 deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.BlackCatFreeze ||
+                                 deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.BlackCatFrozen ||
+                                 deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.TCatDeliveryNormal ||
+                                 deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.TCatDeliveryFreeze ||
+                                 deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.TCatDeliveryFrozen))
+                            {
+                                List<string> matchingTimes = blackCatTCatPickupTimes.Where(time => !string.IsNullOrEmpty(time)).ToList();
+
+                                response.DeliveredByStoreType[deliveryTemperatureCost.Temperature.ToString()].DeliveryTime = matchingTimes.Count > 0 ? matchingTimes : ["No time preference"];
+                            }
+                        }
+                    }
                 }
             }
 
