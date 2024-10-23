@@ -638,6 +638,13 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             logisticSubType = "UNIMART";
         }
+        else if (orderDelivery.DeliveryMethod is DeliveryMethod.SevenToElevenFrozen ||
+                 (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore && deliveryMethod is DeliveryMethod.SevenToElevenFrozen))
+        {
+            request.AddParameter("LogisticsSubType", "UNIMARTFREEZE");
+            
+            logisticSubType = "UNIMARTFREEZE";
+        }
         else if (orderDelivery.DeliveryMethod is DeliveryMethod.FamilyMart1 || 
                 (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore && deliveryMethod is DeliveryMethod.FamilyMart1))
         {
@@ -693,8 +700,10 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             if (order.DeliveryMethod is DeliveryMethod.SevenToEleven1 || 
                 order.DeliveryMethod is DeliveryMethod.FamilyMart1 || 
+                order.DeliveryMethod is DeliveryMethod.SevenToElevenFrozen ||
                 deliveryMethod is DeliveryMethod.FamilyMart1 ||
-                deliveryMethod is DeliveryMethod.SevenToEleven1)
+                deliveryMethod is DeliveryMethod.SevenToEleven1 ||
+                deliveryMethod is DeliveryMethod.SevenToElevenFrozen)
             {
                 string strResponse = await GenerateShipmentForB2C(result);
 

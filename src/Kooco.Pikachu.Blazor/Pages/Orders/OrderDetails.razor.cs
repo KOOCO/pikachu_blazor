@@ -701,6 +701,24 @@ public partial class OrderDetails
 
                     if (response is null || response.Data is null) await _uiMessageService.Error(response.Message);
                 }
+
+                else if (logisticProvider is LogisticProviders.GreenWorldLogistics && deliveryMethod is DeliveryMethod.BlackCatFrozen)
+                {
+                    ResponseResultDto result = await _storeLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(Order.Id, OrderDeliveryId, deliveryMethod);
+
+                    if (result.ResponseCode is not "1")
+                    {
+                        await _uiMessageService.Error(result.ResponseMessage);
+                        await loading.Hide();
+                    }
+                }
+
+                else if (logisticProvider is LogisticProviders.GreenWorldLogistics && deliveryMethod is DeliveryMethod.SevenToElevenFrozen)
+                {
+                    ResponseResultDto result = await _storeLogisticsOrderAppService.CreateStoreLogisticsOrderAsync(Order.Id, deliveryOrder.Id, deliveryMethod);
+
+                    if (result.ResponseCode is not "1") await _uiMessageService.Error(result.ResponseMessage);
+                }
             }
         }
 
