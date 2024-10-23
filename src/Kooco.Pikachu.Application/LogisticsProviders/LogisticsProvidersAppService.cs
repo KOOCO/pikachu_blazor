@@ -12,6 +12,7 @@ using Volo.Abp.Domain.Repositories;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 using System.Text.Json.Nodes;
+using Kooco.Pikachu.DeliveryTemperatureCosts;
 
 namespace Kooco.Pikachu.LogisticsProviders;
 
@@ -21,16 +22,21 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
     #region Inject
     private readonly IRepository<LogisticsProviderSettings, Guid> _logisticsProviderRepository;
 
+    private readonly IDeliveryTemperatureCostAppService _DeliveryTemperatureAppService;
+
     private readonly IConfiguration _Configuration;
     #endregion
 
     #region Constructor
     public LogisticsProvidersAppService(
         IRepository<LogisticsProviderSettings, Guid> logisticsProviderRepository,
+        IDeliveryTemperatureCostAppService DeliveryTemperatureAppService,
         IConfiguration Configuration
     )
     {
         _logisticsProviderRepository = logisticsProviderRepository;
+
+        _DeliveryTemperatureAppService = DeliveryTemperatureAppService;
 
         _Configuration = Configuration;
     }
@@ -622,6 +628,274 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
 
         var result = providers.Where(x => x.LogisticProviderName.ToUpper() == deliveryNameToLogisticName).FirstOrDefault();
 
+        if (shippingMethod.ToUpper() is "DELIVEREDBYSTORE")
+        {
+            List<JsonObject> DBSkeyValuePairs = [];
+
+            List<DeliveryTemperatureCostDto> deliveryTemps = await _DeliveryTemperatureAppService.GetListAsync();
+            
+            foreach (DeliveryTemperatureCostDto deliveryTemp in deliveryTemps)
+            {
+                deliveryNameToLogisticName = ConvertDeliveryNameToLogisticName(deliveryTemp.DeliveryMethod.ToString());
+
+                result = providers.Where(x => x.LogisticProviderName.ToUpper() == deliveryNameToLogisticName).FirstOrDefault();
+
+                if (deliveryNameToLogisticName is "HOMEDELIVERY")
+                {
+                    JsonObject keyValuePairs = new JsonObject
+                    {
+                        { "Provider", result.LogisticProviderName },
+                        { "IsEnable", result.IsEnabled },
+                        { "Cost", result.Freight },
+                        { "MainIslands", result.MainIslands },
+                        { "IsOuterIslands", result.IsOuterIslands },
+                        { "OuterIslands", result.OuterIslands }
+                    };
+                    DBSkeyValuePairs.Add(keyValuePairs);
+
+                    continue;
+                }
+                if (deliveryNameToLogisticName is "POSTOFFICE")
+                {
+                    JsonObject keyValuePairs = new JsonObject
+                    {
+
+                        { "Provider", result.LogisticProviderName },
+                        { "Freight", result.Freight },
+                        { "Weight", result.Weight },
+                         {"MerchantID",grrenB2C.StoreCode }
+                    };
+                    DBSkeyValuePairs.Add(keyValuePairs);
+
+                    continue;
+                }
+                if (deliveryNameToLogisticName is "FAMILYMART")
+                {
+                    JsonObject keyValuePairs = new JsonObject
+                    {
+
+                        { "Provider", result.LogisticProviderName },
+                        { "COST", result.Freight },
+                        { "Payment", result.Payment },
+                         {"MerchantID",grrenB2C.StoreCode }
+                    };
+                    DBSkeyValuePairs.Add(keyValuePairs);
+
+                    continue;
+                }
+                if (deliveryNameToLogisticName is "SEVENTOELEVEN")
+                {
+                    JsonObject keyValuePairs = new JsonObject
+                    {
+
+                        { "Provider", result.LogisticProviderName },
+                        { "COST", result.Freight },
+                        { "Payment", result.Payment },
+                         {"MerchantID",grrenB2C.StoreCode }
+                    };
+                    DBSkeyValuePairs.Add(keyValuePairs);
+
+                    continue;
+                }
+                if (deliveryNameToLogisticName is "SEVENTOELEVENFREEZE")
+                {
+                    JsonObject keyValuePairs = new JsonObject
+                    {
+
+                        { "Provider", result.LogisticProviderName },
+                        { "COST", result.Freight },
+                        { "Payment", result.Payment },
+                         {"MerchantID",grrenB2C.StoreCode }
+                    };
+                    DBSkeyValuePairs.Add(keyValuePairs);
+
+                    continue;
+                }
+                if (deliveryNameToLogisticName is "SEVENTOELEVENFROZEN")
+                {
+                    JsonObject keyValuePairs = new JsonObject
+                    {
+
+                        { "Provider", result.LogisticProviderName },
+                        { "COST", result.Freight },
+                        { "Payment", result.Payment },
+                         {"MerchantID",grrenB2C.StoreCode }
+                    };
+                    DBSkeyValuePairs.Add(keyValuePairs);
+
+                    continue;
+                }
+                if (deliveryNameToLogisticName is "BNORMAL")
+                {
+                    JsonObject keyValuePairs = new JsonObject
+                    {
+
+                        { "Provider", result.LogisticProviderName },
+                        { "Freight", result.Freight },
+                        { "OuterIslandFreight", result.OuterIslandFreight },
+                        { "Size", result.Size.ToString() },
+                         {"MerchantID",grrenB2C.StoreCode }
+                    };
+                    DBSkeyValuePairs.Add(keyValuePairs);
+
+                    continue;
+                }
+                if (deliveryNameToLogisticName is "BFREEZE")
+                {
+                    JsonObject keyValuePairs = new JsonObject
+                    {
+
+                        { "Provider", result.LogisticProviderName },
+                        { "Freight", result.Freight },
+                        { "OuterIslandFreight", result.OuterIslandFreight },
+                        { "Size", result.Size.ToString() },
+                         {"MerchantID",grrenB2C.StoreCode }
+                    };
+                    DBSkeyValuePairs.Add(keyValuePairs);
+
+                    continue;
+                }
+                if (deliveryNameToLogisticName is "BFROZEN")
+                {
+                    JsonObject keyValuePairs = new JsonObject
+                    {
+
+                        { "Provider", result.LogisticProviderName },
+                        { "Freight", result.Freight },
+                        { "OuterIslandFreight", result.OuterIslandFreight },
+                        { "Size", result.Size.ToString() },
+                         {"MerchantID",grrenB2C.StoreCode }
+                    };
+                    DBSkeyValuePairs.Add(keyValuePairs);
+
+                    continue;
+                }
+                if (deliveryNameToLogisticName is "FAMILYMARTC2C")
+                {
+                    JsonObject keyValuePairs = new JsonObject
+                    {
+
+                        { "Provider", result.LogisticProviderName },
+                        { "COST", result.Freight },
+                        { "Payment", result.Payment },
+                         {"MerchantID",grrenC2C.StoreCode }
+                    };
+                    DBSkeyValuePairs.Add(keyValuePairs);
+
+                    continue;
+                }
+                if (deliveryNameToLogisticName is "SEVENTOELEVENC2C")
+                {
+                    JsonObject keyValuePairs = new JsonObject
+                    {
+
+                        { "Provider", result.LogisticProviderName },
+                        { "COST", result.Freight },
+                        { "Payment", result.Payment },
+                         {"MerchantID",grrenC2C.StoreCode }
+                    };
+                    DBSkeyValuePairs.Add(keyValuePairs);
+
+                    continue;
+                }
+                if (deliveryNameToLogisticName is "TCATNORMAL")
+                {
+                    JsonObject keyValuePairs = new JsonObject
+                    {
+
+                        { "Provider", result.LogisticProviderName },
+                        { "Freight", result.Freight },
+                        { "OuterIslandFreight", result.OuterIslandFreight },
+                        { "Size", result.Size.ToString() },
+                        { "Payment", result.Payment },
+                        { "PaymentMethod", result.TCatPaymentMethod.ToString() },
+                         {"CustomerID",tcat.CustomerId }
+                    };
+                    DBSkeyValuePairs.Add(keyValuePairs);
+
+                    continue;
+                }
+                if (deliveryNameToLogisticName is "TCATFREEZE")
+                {
+                    JsonObject keyValuePairs = new JsonObject
+                    {
+
+                        { "Provider", result.LogisticProviderName },
+                        { "Freight", result.Freight },
+                        { "OuterIslandFreight", result.OuterIslandFreight },
+                        { "Size", result.Size.ToString() },
+                        { "Payment", result.Payment },
+                        { "PaymentMethod", result.TCatPaymentMethod.ToString() },
+                         {"CustomerID",tcat.CustomerId }
+                    };
+                    DBSkeyValuePairs.Add(keyValuePairs);
+
+                    continue;
+                }
+                if (deliveryNameToLogisticName is "TCATFREOZEN")
+                {
+                    JsonObject keyValuePairs = new JsonObject
+                    {
+
+                        { "Provider", result.LogisticProviderName },
+                        { "Freight", result.Freight },
+                        { "OuterIslandFreight", result.OuterIslandFreight },
+                        { "Size", result.Size.ToString() },
+                        { "Payment", result.Payment },
+                        { "PaymentMethod", result.TCatPaymentMethod.ToString() },
+                         {"CustomerID",tcat.CustomerId }
+                    };
+                    DBSkeyValuePairs.Add(keyValuePairs);
+
+                    continue;
+                }
+                if (deliveryNameToLogisticName is "TCAT711NORMAL")
+                {
+                    JsonObject keyValuePairs = new JsonObject
+                    {
+
+                        { "Provider", result.LogisticProviderName },
+                        { "COST", result.Freight },
+                        { "Payment", result.Payment },
+                         {"CustomerID",tcat.CustomerId }
+                    };
+                    DBSkeyValuePairs.Add(keyValuePairs);
+
+                    continue;
+                }
+                if (deliveryNameToLogisticName is "TCAT711FREEZE")
+                {
+                    JsonObject keyValuePairs = new JsonObject
+                    {
+
+                        { "Provider", result.LogisticProviderName },
+                        { "COST", result.Freight },
+                        { "Payment", result.Payment },
+                         {"CustomerID",tcat.CustomerId }
+                    };
+                    DBSkeyValuePairs.Add(keyValuePairs);
+
+                    continue;
+                }
+                if (deliveryNameToLogisticName is "TCAT711FROZEN")
+                {
+                    JsonObject keyValuePairs = new JsonObject
+                    {
+
+                        { "Provider", result.LogisticProviderName },
+                        { "COST", result.Freight },
+                        { "Payment", result.Payment },
+                        {"CustomerID",tcat.CustomerId }
+                    };
+                    DBSkeyValuePairs.Add(keyValuePairs);
+
+                    continue;
+                }
+            }
+
+            return CombineJsonObjects(DBSkeyValuePairs, deliveryTemps);
+        }
+
         if (result is null)
         {
             return null; // or throw an exception, depending on how you want to handle this case
@@ -864,6 +1138,19 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
         return null; // Return null or a default value if `shippingMethod` is not "HOMEDELIVERY"
     }
     #endregion
+
+    private JsonObject CombineJsonObjects(List<JsonObject> jsonObjects, List<DeliveryTemperatureCostDto> deliveryTemps)
+    {
+        JsonObject combinedObject = new();
+
+        foreach (DeliveryTemperatureCostDto deliveryTemp in deliveryTemps)
+        {
+            JsonObject jsonObject = jsonObjects[deliveryTemps.IndexOf(deliveryTemp)];
+
+            combinedObject.Add(deliveryTemp.Temperature.ToString(), jsonObject);
+        }
+        return combinedObject;
+    }
 
     private string ConvertDeliveryNameToLogisticName(string deliveryName)
     {
