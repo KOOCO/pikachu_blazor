@@ -134,6 +134,13 @@
                             <div class="col-12">
                                 <table class="w-100">
                                     <tbody>
+                                        <Div Width="Width.Max100">
+                                            <select class="form-select form-select" @onchange=ChangeStore>
+                                                <option value="homeDelivery">Home Delivery</option>
+                                                <option value="convenienceStore">Convenience Store</option>
+                                            </select>
+                                        </Div>
+                                        <br />
                                         <tr>
                                             <td>@L["Recipient"]</td>
                                             @if (ModificationTrack.IsNameInputVisible)
@@ -377,6 +384,17 @@
                                             <td>@L["RecipientComments"]</td>
                                             <td>@Order.Remarks</td>
                                         </tr>
+                                        @if (IsShowConvenienceStoreDetails)
+                                        {
+                                            <tr>
+                                                <td>@L["CVS Store Id"]</td>
+                                                <td>@Order.StoreId</td>
+                                            </tr>
+                                            <tr>
+                                                <td>@L["CVS Store OutSide"]</td>
+                                                <td>@Order.CVSStoreOutSide</td>
+                                            </tr>
+                                        }
                                     </tbody>
                                 </table>
                             </div>

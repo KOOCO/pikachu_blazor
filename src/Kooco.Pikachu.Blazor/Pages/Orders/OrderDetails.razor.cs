@@ -77,6 +77,8 @@ public partial class OrderDetails
     private readonly IDeliveryTemperatureCostAppService _DeliveryTemperatureCostAppService;
 
     private string? PaymentStatus;
+
+    private bool IsShowConvenienceStoreDetails = false;
     #endregion
 
     #region Constructor
@@ -120,6 +122,12 @@ public partial class OrderDetails
             }
         }
     }
+
+    public void ChangeStore(ChangeEventArgs e)
+    {
+        IsShowConvenienceStoreDetails = e.Value is not null && e.Value.ToString() is "convenienceStore" ? true : false;
+    }
+
     void ToggleRow(DataGridRowMouseEventArgs<OrderDeliveryDto> e)
     {
         if (ExpandedRows.Contains(e.Item.Id))
