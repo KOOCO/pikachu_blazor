@@ -295,6 +295,9 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             _ => "04"
         };
 
+        if(order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment)
+            isCollection = "Y";
+
         string isDeclare = TCatLogistics.DeclaredValue &&
                            IsOrderAmountValid(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost) ? "Y" : "N";
 
@@ -448,6 +451,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 }
             ]
         };
+      
 
         string jsonContent = JsonConvert.SerializeObject(request);
 
@@ -577,6 +581,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         List<LogisticsProviderSettingsDto> providers = await _logisticsProvidersAppService.GetAllAsync();
 
         string logisticSubType = string.Empty;
+
+        string isCollection = string.Empty;
         
         if (orderDelivery is not null && 
             (orderDelivery.DeliveryMethod is DeliveryMethod.SevenToElevenC2C || 
@@ -686,20 +692,25 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         request.AddParameter("ServerReplyURL", "https://www.ecpay.com.tw/ServerReplyURL");
         request.AddParameter("ReceiverStoreID", order.StoreId);
 
+        if (order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment)
+        {
+            request.AddParameter("IsCollection", "Y");
+            isCollection = "Y";
+        }
+           
         if (orderDelivery.DeliveryMethod is DeliveryMethod.SevenToElevenC2C || 
             orderDelivery.DeliveryMethod is DeliveryMethod.FamilyMartC2C ||
             deliveryMethod is DeliveryMethod.FamilyMartC2C ||
             deliveryMethod is DeliveryMethod.SevenToElevenC2C)
         {
             request.AddParameter("CheckMacValue", GenerateRequestString(GreenWorld.HashKey, GreenWorld.HashIV, GreenWorld.StoreCode, order.OrderNo, marchentDate, "CVS", logisticSubType, Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)), GreenWorld.SenderName, order.RecipientName, order.RecipientPhone,
-                "https://www.ecpay.com.tw/ServerReplyURL", order.StoreId,order.GroupBuy.GroupBuyName,GreenWorld.SenderPhoneNumber));
+                "https://www.ecpay.com.tw/ServerReplyURL", order.StoreId,order.GroupBuy.GroupBuyName,GreenWorld.SenderPhoneNumber, isCollection: isCollection));
         }
         else {
             request.AddParameter("CheckMacValue", GenerateRequestString(GreenWorld.HashKey, GreenWorld.HashIV, GreenWorld.StoreCode, order.OrderNo, marchentDate, "CVS", logisticSubType, Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)), GreenWorld.SenderName, order.RecipientName, order.RecipientPhone,
-                    "https://www.ecpay.com.tw/ServerReplyURL", order.StoreId));
+                    "https://www.ecpay.com.tw/ServerReplyURL", order.StoreId, isCollection: isCollection));
         }
 
-        //request.AddParameter("IsCollection", "N");
         request.AddParameter("MerchantTradeNo", order.OrderNo);
 
         RestResponse response = await client.ExecuteAsync(request);
@@ -775,42 +786,39 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         return str ?? string.Empty;
     }
 
-    public string GenerateRequestString(string HashKey, string HashIV, string merchantID, string merchantTradeNo, string merchantTradeDate, string logisticsType, string logisticsSubType, int goodsAmount, string senderName, string receiverName, string receiverCellPhone, string serverReplyURL, string receiverStoreID,string? goodName=null,string? senderCellNumber =null)
+    public string GenerateRequestString(string HashKey, string HashIV, string merchantID, string merchantTradeNo, string merchantTradeDate, string logisticsType, string logisticsSubType, int goodsAmount, string senderName, string receiverName, string receiverCellPhone, string serverReplyURL, string receiverStoreID,string? goodName=null,string? senderCellNumber =null, string? isCollection = null)
     {
         //string HashKey = "5294y06JbISpM5x9";
         //string HashIV = "v77hoKGq4kWxNNIS";
         // Create a dictionary to hold parameters
+       
         var parameters = new Dictionary<string, string>
-    {
-        { "MerchantID", merchantID },
-        { "MerchantTradeNo", merchantTradeNo },
-        { "MerchantTradeDate", merchantTradeDate },
-        { "LogisticsType", logisticsType },
-        { "LogisticsSubType", logisticsSubType },
-        { "GoodsAmount", goodsAmount.ToString() },
-
-        //{ "IsCollection", "Y" },
-
-        { "SenderName", senderName },
-
-        { "ReceiverName", receiverName },
-
-        { "ReceiverCellPhone", receiverCellPhone },
-
-        { "ServerReplyURL", serverReplyURL },
-
-
-        { "ReceiverStoreID", receiverStoreID },
-
-    };
-        if (goodName != null)
         {
-            parameters.Add("GoodsName", goodName);
-        }
-        if (senderCellNumber != null)
-        {
-            parameters.Add("SenderCellPhone", senderCellNumber);
-        }
+            { "MerchantID", merchantID },
+            { "MerchantTradeNo", merchantTradeNo },
+            { "MerchantTradeDate", merchantTradeDate },
+            { "LogisticsType", logisticsType },
+            { "LogisticsSubType", logisticsSubType },
+            { "GoodsAmount", goodsAmount.ToString() },
+
+            { "SenderName", senderName },
+
+            { "ReceiverName", receiverName },
+
+            { "ReceiverCellPhone", receiverCellPhone },
+
+            { "ServerReplyURL", serverReplyURL },
+
+
+            { "ReceiverStoreID", receiverStoreID },
+
+        };
+        if (!isCollection.IsNullOrEmpty()) parameters.Add("IsCollection", "Y");
+
+        if (goodName is not null) parameters.Add("GoodsName", goodName);
+
+        if (senderCellNumber is not null) parameters.Add("SenderCellPhone", senderCellNumber);
+
         // Sort parameters alphabetically
         var sortedParameters = parameters.OrderBy(p => p.Key);
 
@@ -838,8 +846,6 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             }
          return sb.ToString(); // Step 7: Convert to uppercase implicitly
         }
-
-
     }
     
     public async Task<EmapApiResponse> GetStoreAsync(string deliveryMethod)
