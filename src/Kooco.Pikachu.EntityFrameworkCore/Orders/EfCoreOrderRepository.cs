@@ -80,33 +80,32 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
                                        deliveryMethod);
         result = result.OrderBy(sorting)
          .PageBy(skipCount, maxResultCount)
-
          .Include(o => o.OrderItems)
-
          .ThenInclude(oi => oi.Freebie);
+
         return await result.Select(o => new Order
         {
-           
             OrderId = o.Id,
             OrderNo = o.OrderNo,                      // Order No
             LastModificationTime = o.LastModificationTime, // Last Updated Date
             IssueStatus = o.IssueStatus,       // Invoice Issue Status
             InvoiceNumber = o.InvoiceNumber,                // Invoice Number
             TotalAmount = o.TotalAmount, // Checkout Amount
-                 CreationTime=o.CreationTime,                        // Editor (depends on your model)
+            CreationTime =o.CreationTime,                        // Editor (depends on your model)
             CustomerName = o.CustomerName,
             CustomerEmail = o.CustomerEmail,
-            CustomerPhone= o.CustomerPhone,
+            CustomerPhone = o.CustomerPhone,
             DeliveryMethod = o.DeliveryMethod,               // Shipping Method
-            OrderStatus= o.OrderStatus,
-            ShippingStatus= o.ShippingStatus,
-            PaymentMethod= o.PaymentMethod,
-            City= o.City,
-            PostalCode  = o.PostalCode,
+            OrderStatus = o.OrderStatus,
+            ShippingStatus = o.ShippingStatus,
+            PaymentMethod = o.PaymentMethod,
+            City = o.City,
+            PostalCode = o.PostalCode,
             AddressDetails = o.AddressDetails, // Address
             Remarks = o.Remarks,                      // Remarks
             VoidUser = o.VoidUser,                                       // Merchant Remarks
-            StoreComments=o.StoreComments.ToList(),
+            StoreComments = o.StoreComments.ToList(),
+            OrderType = o.OrderType,
             OrderItems = o.OrderItems.Select(oi => new OrderItem
             {
                 OrderId = oi.OrderId,
@@ -117,8 +116,7 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
                 SetItem = oi.SetItem != null ? new SetItem { SetItemName = oi.SetItem.SetItemName } : new SetItem(),
                 Freebie = oi.Freebie != null ? new Freebie { ItemName = oi.Freebie.ItemName } : new Freebie(),
             }).ToList()
-        })
-    .ToListAsync();
+        }).ToListAsync();
 
      
     }
