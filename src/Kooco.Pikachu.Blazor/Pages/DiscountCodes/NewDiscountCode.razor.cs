@@ -30,7 +30,7 @@ namespace Kooco.Pikachu.Blazor.Pages.DiscountCodes
         IEnumerable<Guid> SelectedProducts { get; set; }
         IEnumerable<DeliveryMethod> SelectedShippings { get; set; }
         private Validations ValidationsRef;
-       
+        private string SelectedDiscountType { get; set; } = "Amount";
         private readonly ItemAppService _itemAppService;
         public NewDiscountCode(ItemAppService itemAppService)
         {
@@ -61,6 +61,14 @@ namespace Kooco.Pikachu.Blazor.Pages.DiscountCodes
                         CreateDiscountCode.ProductIds = discountCode.DiscountSpecificProducts.Select(x => x.DiscountCodeId).ToList();
                         SelectedGroupBuy = discountCode.DiscountSpecificGroupbuys.Select(x => x.GroupbuyId);
                         SelectedProducts = discountCode.DiscountSpecificProducts.Select(x => x.ProductId);
+                        if (CreateDiscountCode.DiscountAmount > 0)
+                        {
+                            SelectedDiscountType = "Amount";
+                        }
+                        else {
+
+                            SelectedDiscountType = "Percentage";
+                        }
                     }
 
                 }
@@ -80,47 +88,51 @@ namespace Kooco.Pikachu.Blazor.Pages.DiscountCodes
             IsUpdating = true;
             if (CreateDiscountCode.GroupbuysScope == "AllGroupbuys")
             {
-                CreateDiscountCode.GroupbuyIds = Groupbuys.Select(x => x.Id).ToList();
+              
             }
             else
             {
                 CreateDiscountCode.GroupbuyIds = SelectedGroupBuy.ToList();
+                if (CreateDiscountCode.GroupbuyIds.Count == 0)
+                {
+                    messageStore?.Add(() => CreateDiscountCode.GroupbuyIds, "Select at least one.");
+                    IsUpdating = false;
+                    return;
+                }
             }
             if (CreateDiscountCode.ShippingDiscountScope == "AllMethods")
             {
-                CreateDiscountCode.SpecificShippingMethods = Enum.GetValues(typeof(DeliveryMethod)).Cast<int>().ToList();
+            
             }
             else
             {
                 CreateDiscountCode.SpecificShippingMethods = SelectedShippings.Cast<int>().ToList();
+                if (CreateDiscountCode.SpecificShippingMethods.Count == 0)
+                {
+                    messageStore?.Add(() => CreateDiscountCode.SpecificShippingMethods, "Select at least one.");
+                    IsUpdating = false;
+                    return;
+                }
+
             }
             // Custom validation logic
             if (CreateDiscountCode.ProductsScope == "AllProducts")
             {
-                CreateDiscountCode.ProductIds = Products.Select(x => x.Id).ToList();
+                
             }
             else
             {
                 CreateDiscountCode.ProductIds = SelectedProducts.ToList();
+                if (CreateDiscountCode.ProductIds.Count == 0)
+                {
+                    messageStore?.Add(() => CreateDiscountCode.ProductIds, "Select at least one.");
+                    IsUpdating = false;
+                    return;
+                }
             }
-            if (CreateDiscountCode.ProductIds.Count == 0)
-            {
-                messageStore?.Add(() => CreateDiscountCode.ProductIds, "Select at least one.");
-                IsUpdating = false;
-                return;
-            }
-            if (CreateDiscountCode.ProductIds.Count == 0)
-            {
-                messageStore?.Add(() => CreateDiscountCode.ProductIds, "Select at least one.");
-                IsUpdating = false;
-                return;
-            }
-            if (CreateDiscountCode.GroupbuyIds.Count == 0)
-            {
-                messageStore?.Add(() => CreateDiscountCode.GroupbuyIds, "Select at least one.");
-                IsUpdating = false;
-                return;
-            }
+            
+        
+          
 
             if (await ValidationsRef.ValidateAll())
             {
@@ -180,6 +192,42 @@ namespace Kooco.Pikachu.Blazor.Pages.DiscountCodes
             NavigationManager.NavigateTo("/discount-code");
         
         }
+        private void SetAmountDiscount(bool check)
+        {
+            if ( check)
+            {
+                CreateDiscountCode.DiscountPercentage = 0;
+            }
+        }
+
+        private void SetPercentageDiscount(bool check)
+        {
+            if (check)
+            {
+                CreateDiscountCode.DiscountAmount = 0;
+            }
+        }
+
+        private async void OnAmountChanged(ChangeEventArgs e)
+        {
+            if (CreateDiscountCode.DiscountAmount > 0)
+            {
+                CreateDiscountCode.DiscountPercentage = 0;
+                SelectedDiscountType = "Amount";
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+
+        private async void OnPercentageChanged(ChangeEventArgs e)
+        {
+            if (CreateDiscountCode.DiscountPercentage > 0)
+            {
+                CreateDiscountCode.DiscountAmount = 0;
+                SelectedDiscountType = "Percentage";
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+
 
 
     }

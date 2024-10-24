@@ -20,7 +20,7 @@ namespace Kooco.Pikachu.DiscountCodes
         [Authorize(PikachuPermissions.DiscountCodes.Create)] // Update this permission name as needed
         public async Task<DiscountCodeDto> CreateAsync(CreateUpdateDiscountCodeDto input)
         {
-            var discountCode = await discountCodeManager.CreateAsync(input.EventName,input.Status,input.StartDate,input.EndDate,input.Code,input.SpecifiedCode,input.AvailableQuantity,input.MaxUsePerPerson,input.GroupbuysScope,input.ProductsScope,input.DiscountMethod,input.MinimumSpendAmount,input.ShippingDiscountScope,input.SpecificShippingMethods,input.DiscountPercentage,input.DiscountAmount,input.GroupbuyIds,input.ProductIds);
+            var discountCode = await discountCodeManager.CreateAsync(input.EventName,input.Status,input.StartDate.Value,input.EndDate.Value,input.Code,input.SpecifiedCode,input.AvailableQuantity,input.MaxUsePerPerson,input.GroupbuysScope,input.ProductsScope,input.DiscountMethod,input.MinimumSpendAmount,input.ShippingDiscountScope,input.SpecificShippingMethods,input.DiscountPercentage,input.DiscountAmount,input.GroupbuyIds,input.ProductIds);
             return ObjectMapper.Map<DiscountCode, DiscountCodeDto>(discountCode);
         }
 
@@ -65,7 +65,7 @@ namespace Kooco.Pikachu.DiscountCodes
         [Authorize(PikachuPermissions.DiscountCodes.Edit)] // Update this permission name as needed
         public async Task<DiscountCodeDto> UpdateAsync(Guid id, CreateUpdateDiscountCodeDto input)
         {
-            var discountCode = await discountCodeManager.UpdateAsync(id,input.EventName, input.Status,input.StartDate, input.EndDate, input.Code, input.SpecifiedCode, input.AvailableQuantity, input.MaxUsePerPerson, input.GroupbuysScope, input.ProductsScope, input.DiscountMethod, input.MinimumSpendAmount, input.ShippingDiscountScope, input.SpecificShippingMethods, input.DiscountPercentage, input.DiscountAmount, input.GroupbuyIds, input.ProductIds);
+            var discountCode = await discountCodeManager.UpdateAsync(id,input.EventName, input.Status,input.StartDate.Value, input.EndDate.Value, input.Code, input.SpecifiedCode, input.AvailableQuantity, input.MaxUsePerPerson, input.GroupbuysScope, input.ProductsScope, input.DiscountMethod, input.MinimumSpendAmount, input.ShippingDiscountScope, input.SpecificShippingMethods, input.DiscountPercentage, input.DiscountAmount, input.GroupbuyIds, input.ProductIds);
             return ObjectMapper.Map<DiscountCode, DiscountCodeDto>(discountCode);
         }
         [Authorize(PikachuPermissions.DiscountCodes.Edit)] // Update this permission name as needed
