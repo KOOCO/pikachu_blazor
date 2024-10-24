@@ -43,14 +43,14 @@ public class MyDomainTenantResolveContributor : TenantResolveContributorBase
         if (tenant != null)
         {
             context.TenantIdOrName = tenant.Name;
+            context.Handled = true;
             logger.LogInformation("Domain Tenant Resolver: Tenant resolved successfully as {0}.", tenant.Name);
         }
         else
         {
             logger.LogInformation("Domain Tenant Resolver: No matching tenant found.");
         }
-
-        context.Handled = true;
+        
         logger.LogInformation("Domain Tenant Resolver: Request finished.");
     }
 
