@@ -53,4 +53,5 @@ public static class PikachuDomainErrorCodes
     public const string InvalidEnumValue = "Pikachu:InvalidEnumValue";
     public const string ProductCategoryAlreadyExists = "Pikachu:ProductCategoryAlreadyExists";
     public const string ProductCategoryImageMaxLimit = "Pikachu:ProductCategoryImageMaxLimit";
+    public const string InvalidUrl = "Pikachu:InvalidUrlWithProperty";
 }

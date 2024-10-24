@@ -25,6 +25,12 @@ public class TenantSettingsDto : FullAuditedEntityDto<Guid>
     public string? ShortCode { get; set; }
     public int? ShareProfitPercent { get; set; }
     public TenantStatus? Status { get; set; }
+    public string? Facebook { get; set; }
+    public string? Instagram { get; set; }
+    public string? Line { get; set; }
+    // Google Tag Manager
+    public bool GtmEnabled { get; set; }
+    public string? GtmContainerId { get; set; }
     public string? FaviconUrl { get; set; }
     public string? LogoUrl { get; set; }
     public string? BannerUrl { get; set; }

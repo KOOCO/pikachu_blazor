@@ -4,6 +4,7 @@ using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.TenantManagement;
+using Kooco.Pikachu.Extensions;
 
 namespace Kooco.Pikachu.TenantManagement;
 
@@ -18,6 +19,13 @@ public class TenantSettings : FullAuditedEntity<Guid>, IMultiTenant
     public string? CustomerServiceEmail { get; private set; }
     public DateTime? ServiceHoursFrom { get; private set; }
     public DateTime? ServiceHoursTo { get; private set; }
+
+    public string? Facebook { get; set; }
+    public string? Instagram { get; set; }
+    public string? Line { get; set; }
+
+    public bool GtmEnabled { get; set; }
+    public string? GtmContainerId { get; set; }
 
     public Guid? TenantId { get; set; }
 
@@ -36,7 +44,12 @@ public class TenantSettings : FullAuditedEntity<Guid>, IMultiTenant
         string? contactPhone,
         string? customerServiceEmail,
         DateTime? serviceHoursFrom,
-        DateTime? serviceHoursTo
+        DateTime? serviceHoursTo,
+        string? facebook,
+        string? instagram,
+        string? line,
+        bool gtmEnabled,
+        string? gtmContainerId
         ) : base(id)
     {
         SetFaviconUrl(faviconUrl);
@@ -47,6 +60,8 @@ public class TenantSettings : FullAuditedEntity<Guid>, IMultiTenant
         SetContactPhone(contactPhone);
         SetCustomerServiceEmail(customerServiceEmail);
         SetServiceHours(serviceHoursFrom, serviceHoursTo);
+        SetSocials(facebook, instagram, line);
+        SetGtm(gtmEnabled, gtmContainerId);
     }
 
     public TenantSettings SetFaviconUrl(string? faviconUrl)
@@ -100,6 +115,28 @@ public class TenantSettings : FullAuditedEntity<Guid>, IMultiTenant
 
         ServiceHoursFrom = serviceHoursFrom;
         ServiceHoursTo = serviceHoursTo;
+        return this;
+    }
+
+    public TenantSettings SetSocials(string? facebook, string? instagram, string? line)
+    {
+        Facebook = facebook.IsValidUrl() ? facebook : throw new InvalidUrlException(nameof(facebook));
+        Instagram = instagram.IsValidUrl() ? instagram : throw new InvalidUrlException(nameof(instagram));
+        Line = line;
+        return this;
+    }
+
+    public TenantSettings SetGtm(bool gtmEnabled, string? gtmContainerId)
+    {
+        GtmEnabled = gtmEnabled;
+        if (GtmEnabled)
+        {
+            GtmContainerId = Check.NotNullOrWhiteSpace(gtmContainerId, nameof(GtmContainerId), maxLength: TenantSettingsConsts.MaxGtmContainerIdLength);
+        }
+        else
+        {
+            GtmContainerId = gtmContainerId;
+        }
         return this;
     }
 }

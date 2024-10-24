@@ -45,14 +45,14 @@ public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManage
             tenantSettings = await tenantSettingsManager.CreateAsync(input.WebpageTitle, input.PrivacyPolicy,
                 input.CompanyName, input.BusinessRegistrationNumber, input.ContactPhone, input.CustomerServiceEmail, input.ServiceHoursFrom,
                 input.ServiceHoursTo, input.FaviconUrl, input.LogoUrl, input.BannerUrl, input.TenantContactTitle, input.TenantContactPerson,
-                input.TenantContactEmail, input.Domain, input.ShortCode);
+                input.TenantContactEmail, input.Domain, input.ShortCode, input.Facebook, input.Instagram, input.Line, input.GtmEnabled, input.GtmContainerId);
         }
         else
         {
             await tenantSettingsManager.UpdateAsync(tenantSettings, input.WebpageTitle, input.PrivacyPolicy,
                 input.CompanyName, input.BusinessRegistrationNumber, input.ContactPhone, input.CustomerServiceEmail, input.ServiceHoursFrom,
                 input.ServiceHoursTo, input.FaviconUrl, input.LogoUrl, input.BannerUrl, input.TenantContactTitle, input.TenantContactPerson,
-                input.TenantContactEmail, input.Domain, input.ShortCode);
+                input.TenantContactEmail, input.Domain, input.ShortCode, input.Facebook, input.Instagram, input.Line, input.GtmEnabled, input.GtmContainerId);
         }
 
         return ObjectMapper.Map<TenantSettings, TenantSettingsDto>(tenantSettings);

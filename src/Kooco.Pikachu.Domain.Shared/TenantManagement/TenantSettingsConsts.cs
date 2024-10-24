@@ -14,6 +14,7 @@ public class TenantSettingsConsts
     public const int MaxDomainLength = 256;
     public const int MinShortCodeLength = 8;
     public const int MaxShortCodeLength = 8;
+    public const int MaxGtmContainerIdLength = 10;
 
 
     public const string DefaultPrivacyPolicy =

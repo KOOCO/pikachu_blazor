@@ -199,13 +199,13 @@
     }
 
 .invalid {
-    border: 1px solid red !important;
+    border: 1px solid #c00d49 !important;
 }
 
 .validation-message {
     font-size: smaller;
     margin-top: 2px;
-    color: red;
+    color: #c00d49;
 }
 
 .search-bar {

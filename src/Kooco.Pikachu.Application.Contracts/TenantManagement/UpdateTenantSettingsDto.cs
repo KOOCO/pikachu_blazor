@@ -52,6 +52,20 @@ public class UpdateTenantSettingsDto
     [RegularExpression("^[A-Za-z0-9]{8}$", ErrorMessage = "ShortCodeValidationMessage")]
     public string? ShortCode { get; set; }
 
+    [Url]
+    public string? Facebook { get; set; }
+
+    [Url]
+    public string? Instagram { get; set; }
+
+    public string? Line { get; set; }
+
+    // Google Tag Manager
+    public bool GtmEnabled { get; set; }
+
+    [MaxLength(TenantSettingsConsts.MaxGtmContainerIdLength)]
+    public string? GtmContainerId { get; set; }
+
     public string? FaviconBase64 { get; set; }
     public string? FaviconUrl { get; set; }
     public string? FaviconName { get; set; }

@@ -26,6 +26,8 @@ public partial class TenantSettings
     private readonly List<string> TenantContactTitles = ["Mr.", "Ms."];
     private BlazoredTextEditor PrivacyPolicyHtml { get; set; }
 
+    private string SelectedTab { get; set; } = "TenantInformation";
+
     public TenantSettings()
     {
         Entity = new();
@@ -35,6 +37,13 @@ public partial class TenantSettings
     {
         CanEditTenantSettings = await AuthorizationService.IsGrantedAsync(PikachuPermissions.TenantSettings.Edit);
         await ResetAsync();
+    }
+
+    private Task OnSelectedTabChanged(string name)
+    {
+        SelectedTab = name;
+
+        return Task.CompletedTask;
     }
 
     private async Task UpdateAsync()
@@ -55,7 +64,8 @@ public partial class TenantSettings
             {
                 throw new InvalidServiceHoursException();
             }
-            if (!validate)
+
+            if (!validate || (Entity.GtmEnabled && Entity.GtmContainerId.IsNullOrWhiteSpace()))
             {
                 await UiNotificationService.Error(L["ValidationErrors"]);
                 return;
@@ -79,7 +89,7 @@ public partial class TenantSettings
 
             await TenantSettingsAppService.UpdateAsync(Entity);
 
-            await UiNotificationService.Success(L["TenantSettingsUpdated"]);
+            await Message.Success(L["TenantSettingsUpdated"]);
             await ResetAsync();
 
             IsLoading = false;

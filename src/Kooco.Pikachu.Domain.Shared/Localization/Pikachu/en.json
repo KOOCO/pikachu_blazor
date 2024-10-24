@@ -863,6 +863,7 @@
     "DomainIsRequired": "The Domain field is required.",
     "Domain": "Domain",
     "InvalidUrl": "Please provide a fully qualified URL starting with http or https.",
+    "InvalidUrlWithProperty": "Please provide a fully qualified URL starting with http or https for {property}.",
     "Pikachu:ProductCategoryAlreadyExists": "Product Category with same name {name} already exists.",
     "Pikachu:ProductCategoryImageMaxLimit": "Product category can not have more than 5 images",
     "Permission:ProductCategories": "Product Categories",
@@ -871,6 +872,14 @@
     "CarousalImages": "Carousal Images",
     "AddProductCategory": "Add Product Category",
     "EditProductCategory": "Edit Product Category",
-    "Pikachu:DuplicateEmail": "A user with same email '{0}' already exists."
+    "Pikachu:DuplicateEmail": "A user with same email '{0}' already exists.",
+    "TenantInformation": "Tenant Information",
+    "CustomerServiceInformation": "Customer Service",
+    "FrontendInformation": "Frontend Information",
+    "SocialMedia": "Social Media",
+    "GoogleTagManager": "Google Tag Manager",
+    "GtmEnabled": "GTM Enabled",
+    "ContainerId": "Container ID",
+    "GtmContainerIdIsRequired": "The Container ID field is required."
   }
 }

@@ -14,11 +14,11 @@ public class TenantSettingsManager(IRepository<TenantSettings, Guid> tenantSetti
     public async Task<TenantSettings> CreateAsync(string? webpageTitle, string? privacyPolicy, string? companyName,
         string? businessRegistrationNumber, string? contactPhone, string? customerServiceEmail, DateTime? serviceHoursFrom, DateTime? serviceHoursTo,
         string? faviconUrl, string? logoUrl, string? bannerUrl, string? tenantContactTitle, string? tenantContactPerson, string? tenantContactEmail,
-        string? domain, string? shortCode)
+        string? domain, string? shortCode, string? facebook, string? instagram, string? line, bool gtmEnabled, string? gtmContainerId)
     {
         ValidateInputs(webpageTitle, privacyPolicy, companyName, businessRegistrationNumber,
             contactPhone, customerServiceEmail, serviceHoursFrom, serviceHoursTo, faviconUrl, logoUrl, bannerUrl,
-            tenantContactTitle, tenantContactPerson, tenantContactEmail, domain, shortCode);
+            tenantContactTitle, tenantContactPerson, tenantContactEmail, domain, shortCode, gtmEnabled, gtmContainerId);
 
         if (await tenantSettingsRepository.AnyAsync())
         {
@@ -26,7 +26,8 @@ public class TenantSettingsManager(IRepository<TenantSettings, Guid> tenantSetti
         }
 
         var tenantSettings = new TenantSettings(GuidGenerator.Create(), faviconUrl, webpageTitle, privacyPolicy, companyName,
-            businessRegistrationNumber, contactPhone, customerServiceEmail, serviceHoursFrom, serviceHoursTo);
+            businessRegistrationNumber, contactPhone, customerServiceEmail, serviceHoursFrom, serviceHoursTo,
+            facebook, instagram, line, gtmEnabled, gtmContainerId);
 
         await tenantSettingsRepository.InsertAsync(tenantSettings);
 
@@ -41,12 +42,12 @@ public class TenantSettingsManager(IRepository<TenantSettings, Guid> tenantSetti
     public async Task<TenantSettings> UpdateAsync(TenantSettings tenantSettings, string? webpageTitle, string? privacyPolicy, string? companyName,
         string? businessRegistrationNumber, string? contactPhone, string? customerServiceEmail, DateTime? serviceHoursFrom, DateTime? serviceHoursTo,
         string? faviconUrl, string? logoUrl, string? bannerUrl, string? tenantContactTitle, string? tenantContactPerson, string? tenantContactEmail,
-        string? domain, string? shortCode)
+        string? domain, string? shortCode, string? facebook, string? instagram, string? line, bool gtmEnabled, string? gtmContainerId)
     {
         Check.NotNull(tenantSettings, nameof(tenantSettings));
         ValidateInputs(webpageTitle, privacyPolicy, companyName, businessRegistrationNumber,
             contactPhone, customerServiceEmail, serviceHoursFrom, serviceHoursTo, faviconUrl, logoUrl, bannerUrl,
-            tenantContactTitle, tenantContactPerson, tenantContactEmail, domain, shortCode);
+            tenantContactTitle, tenantContactPerson, tenantContactEmail, domain, shortCode, gtmEnabled, gtmContainerId);
 
         tenantSettings.SetFaviconUrl(faviconUrl);
         tenantSettings.SetWebpageTitle(webpageTitle);
@@ -56,6 +57,8 @@ public class TenantSettingsManager(IRepository<TenantSettings, Guid> tenantSetti
         tenantSettings.SetContactPhone(contactPhone);
         tenantSettings.SetCustomerServiceEmail(customerServiceEmail);
         tenantSettings.SetServiceHours(serviceHoursFrom, serviceHoursTo);
+        tenantSettings.SetSocials(facebook, instagram, line);
+        tenantSettings.SetGtm(gtmEnabled, gtmContainerId);
 
         await tenantSettingsRepository.UpdateAsync(tenantSettings);
 
@@ -95,7 +98,7 @@ public class TenantSettingsManager(IRepository<TenantSettings, Guid> tenantSetti
     private static void ValidateInputs(string? webpageTitle, string? privacyPolicy, string? companyName, string? businessRegistrationNumber,
         string? contactPhone, string? customerServiceEmail, DateTime? serviceHoursFrom, DateTime? serviceHoursTo,
         string? faviconUrl, string? logoUrl, string? bannerUrl, string? tenantContactTitle, string? tenantContactPerson, string? tenantContactEmail,
-        string? domain, string? shortCode)
+        string? domain, string? shortCode, bool gtmEnabled, string? gtmContainerId)
     {
         Check.NotNullOrWhiteSpace(webpageTitle, nameof(webpageTitle), maxLength: TenantSettingsConsts.MaxWebpageTitleLength);
         Check.NotNullOrWhiteSpace(privacyPolicy, nameof(privacyPolicy));
@@ -108,7 +111,10 @@ public class TenantSettingsManager(IRepository<TenantSettings, Guid> tenantSetti
         Check.NotNullOrWhiteSpace(tenantContactEmail, nameof(tenantContactEmail), maxLength: TenantSettingsConsts.MaxTenantContactEmailLength);
         Check.NotNullOrWhiteSpace(domain, nameof(domain), maxLength: TenantSettingsConsts.MaxDomainLength);
         Check.NotNullOrWhiteSpace(shortCode, nameof(shortCode), maxLength: TenantSettingsConsts.MaxShortCodeLength, minLength: TenantSettingsConsts.MinShortCodeLength);
-
+        if(gtmEnabled)
+        {
+            Check.NotNullOrWhiteSpace(gtmContainerId, nameof(gtmContainerId), maxLength: TenantSettingsConsts.MaxGtmContainerIdLength);
+        }
         //Check.NotNullOrWhiteSpace(faviconUrl, nameof(faviconUrl));
         //Check.NotNullOrWhiteSpace(logoUrl, nameof(logoUrl));
         //Check.NotNullOrWhiteSpace(bannerUrl, nameof(bannerUrl));

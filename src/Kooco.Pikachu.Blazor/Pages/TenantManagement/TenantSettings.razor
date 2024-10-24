@@ -37,339 +37,426 @@
             </Div>
         </CardBody>
     </Card>
-    <Card>
-        <CardBody>
-            <Form>
-                <Validations @ref="@ValidationsRef" Model="@Entity" ValidateOnLoad="false">
-                    <Row>
-                        <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
-                            <h4>@L["TenantSettings"]</h4>
-                        </Column>
-                        <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                            <Row>
-                                <Column ColumnSize="ColumnSize.Is12">
-                                    <Validation MessageLocalizer="@LH.Localize">
-                                        <Field>
-                                            <FieldLabel>@L["WebpageTitle"]<Span> *</Span></FieldLabel>
-                                            <TextEdit @bind-Text="Entity.WebpageTitle" Disabled="@ViewMode">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </TextEdit>
+    <Form>
+        <Validations @ref="@ValidationsRef" Model="@Entity" ValidateOnLoad="false">
+            <Tabs SelectedTab="@SelectedTab" SelectedTabChanged="@OnSelectedTabChanged">
+                <Items>
+                    <Tab Name="TenantInformation">@L["TenantInformation"]</Tab>
+                    <Tab Name="CustomerServiceInformation">@L["CustomerServiceInformation"]</Tab>
+                    <Tab Name="PrivacyPolicy">@L["PrivacyPolicy"]</Tab>
+                    <Tab Name="FrontendInformation">@L["FrontendInformation"]</Tab>
+                    <Tab Name="SocialMedia">@L["SocialMedia"]</Tab>
+                    <Tab Name="GoogleTagManager">@L["GoogleTagManager"]</Tab>
+                </Items>
+                <Content>
+                    <TabPanel Name="TenantInformation">
+                        <Card>
+                            <CardBody>
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                                        <h4>@L["TenantInformation"]</h4>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                                        <Validation MessageLocalizer="@LH.Localize">
+                                            <Field>
+                                                <FieldLabel>@L["Domain"]<Span> *</Span></FieldLabel>
+                                                <TextEdit @bind-Text="Entity.Domain" Disabled="@ViewMode">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                        <Validation MessageLocalizer="@LH.Localize">
+                                            <Field>
+                                                <FieldLabel>@L["ShortCode"]<Span> *</Span></FieldLabel>
+                                                <TextEdit MaxLength="8" @bind-Text="Entity.ShortCode" Disabled="@ViewMode">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                        <Validation MessageLocalizer="@LH.Localize">
+                                            <Field>
+                                                <FieldLabel>@L["TenantContactTitle"]<Span> *</Span></FieldLabel>
+                                                <Select TValue="string" @bind-SelectedValue="Entity.TenantContactTitle" Disabled="@ViewMode">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                    <ChildContent>
+                                                        <SelectItem Value="(string?)null"></SelectItem>
+                                                        @foreach (string title in TenantContactTitles)
+                                                        {
+                                                            <SelectItem Value="@title">@L[title]</SelectItem>
+                                                        }
+                                                    </ChildContent>
+                                                </Select>
+                                            </Field>
+                                        </Validation>
+                                        <Validation MessageLocalizer="@LH.Localize">
+                                            <Field>
+                                                <FieldLabel>@L["TenantContactPerson"]<Span> *</Span></FieldLabel>
+                                                <TextEdit @bind-Text="Entity.TenantContactPerson" Disabled="@ViewMode">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                        <Validation MessageLocalizer="@LH.Localize">
+                                            <Field>
+                                                <FieldLabel>@L["ContactPhone"]<Span> *</Span></FieldLabel>
+                                                <TextEdit @bind-Text="Entity.ContactPhone" Disabled="@ViewMode">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                        <Validation MessageLocalizer="@LH.Localize">
+                                            <Field>
+                                                <FieldLabel>@L["TenantContactEmail"]<Span> *</Span></FieldLabel>
+                                                <TextEdit @bind-Text="Entity.TenantContactEmail" Disabled="@ViewMode">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                </Row>
+                            </CardBody>
+                        </Card>
+                    </TabPanel>
+                    <TabPanel Name="CustomerServiceInformation">
+                        <Card>
+                            <CardBody>
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                                        <h4>@L["CustomerServiceInformation"]</h4>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                                        <Validation MessageLocalizer="@LH.Localize">
+                                            <Field>
+                                                <FieldLabel>@L["CompanyName"]<Span> *</Span></FieldLabel>
+                                                <TextEdit @bind-Text="Entity.CompanyName" Disabled="@ViewMode">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                        <Validation MessageLocalizer="@LH.Localize">
+                                            <Field>
+                                                <FieldLabel>@L["BusinessRegistrationNumber"]<Span> *</Span></FieldLabel>
+                                                <TextEdit @bind-Text="Entity.BusinessRegistrationNumber" Disabled="@ViewMode">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                        <Validation MessageLocalizer="@LH.Localize">
+                                            <Field>
+                                                <FieldLabel>@L["CustomerServiceEmail"]<Span> *</Span></FieldLabel>
+                                                <TextEdit @bind-Text="Entity.CustomerServiceEmail" Disabled="@ViewMode">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                </Row>
+                                <Divider></Divider>
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                                        <h4>@L["ServiceHours"]</h4>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                                        <Row>
+                                            <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                                                <Validation MessageLocalizer="@LH.Localize">
+                                                    <Field>
+                                                        <FieldLabel>@L["From"]<Span> *</Span></FieldLabel>
+                                                        <TimeEdit TValue="DateTime?" @bind-Time="Entity.ServiceHoursFrom" Disabled="@ViewMode">
+                                                            <Feedback>
+                                                                <ValidationError />
+                                                            </Feedback>
+                                                        </TimeEdit>
+                                                    </Field>
+                                                </Validation>
+                                            </Column>
+                                            <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                                                <Validation MessageLocalizer="@LH.Localize">
+                                                    <Field>
+                                                        <FieldLabel>@L["To"]<Span> *</Span></FieldLabel>
+                                                        <TimeEdit TValue="DateTime?" @bind-Time="Entity.ServiceHoursTo" Disabled="@ViewMode">
+                                                            <Feedback>
+                                                                <ValidationError />
+                                                            </Feedback>
+                                                        </TimeEdit>
+                                                    </Field>
+                                                </Validation>
+                                            </Column>
+                                        </Row>
+                                    </Column>
+                                </Row>
+                            </CardBody>
+                        </Card>
+                    </TabPanel>
+                    <TabPanel Name="PrivacyPolicy">
+                        <Card>
+                            <CardBody>
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                                        <h4>@L["PrivacyPolicy"]</h4>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                                        <Validation MessageLocalizer="@LH.Localize">
+                                            <Field>
+                                                <Div Class="d-flex align-items-center justify-content-between mb-1">
+                                                    <FieldLabel Class="m-0">@L["SpecifyCompanyPrivacyPolicy"]<Span> *</Span></FieldLabel>
+                                                    <PikachuButton Class="pk-btn-sm pk-btn-outline-primary"
+                                                                   Clicked="SetDefaultPrivacyPolicy"
+                                                                   Disabled="ViewMode">@L["DefaultPrivacyPolicy"]</PikachuButton>
+                                                </Div>
+                                                <BlazoredTextEditor ReadOnly="true" @ref="@PrivacyPolicyHtml">
+                                                    <ToolbarContent>
+                                                        <select class="ql-header">
+                                                            <option selected=""></option>
+                                                            <option value="1"></option>
+                                                            <option value="2"></option>
+                                                            <option value="3"></option>
+                                                            <option value="4"></option>
+                                                            <option value="5"></option>
+                                                        </select>
+                                                        <span class="ql-formats">
+                                                            <button class="ql-bold"></button>
+                                                            <button class="ql-italic"></button>
+                                                            <button class="ql-underline"></button>
+                                                            <button class="ql-strike"></button>
+                                                        </span>
+                                                        <span class="ql-formats">
+                                                            <select class="ql-color"></select>
+                                                            <select class="ql-background"></select>
+                                                        </span>
+                                                        <span class="ql-formats">
+                                                            <button class="ql-list" value="ordered"></button>
+                                                            <button class="ql-list" value="bullet"></button>
+                                                        </span>
+                                                        <span class="ql-formats">
+                                                            <button class="ql-link"></button>
+                                                        </span>
+                                                        <span class="ql-formats">
+                                                            <button class="ql-image"></button>
+                                                        </span>
+                                                        <span class="ql-formats">
+                                                            <button class="ql-video"></button>
+                                                        </span>
+                                                    </ToolbarContent>
+                                                </BlazoredTextEditor>
+                                                <MemoEdit Rows="5" @bind-Text="Entity.PrivacyPolicy" Disabled="@ViewMode" Visibility="Visibility.Invisible" Style="height: 0; margin: 0; padding: 0;">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </MemoEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                </Row>
+                            </CardBody>
+                        </Card>
+                    </TabPanel>
+                    <TabPanel Name="FrontendInformation">
+                        <Card>
+                            <CardBody>
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                                        <h4>@L["FrontendInformation"]</h4>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                                        <Validation MessageLocalizer="@LH.Localize">
+                                            <Field>
+                                                <FieldLabel>@L["WebpageTitle"]<Span> *</Span></FieldLabel>
+                                                <TextEdit @bind-Text="Entity.WebpageTitle" Disabled="@ViewMode">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                </Row>
+                                <Divider></Divider>
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                                        <h4>@L["Logo"]</h4>
+                                        @if (Entity.LogoBase64 != null)
+                                        {
+                                            <Div Class="image-thumbnail">
+                                                <img src="@("data:image/png;base64," + Entity.LogoBase64)" class="img-fluid" />
+                                            </Div>
+                                        }
+                                        else if (Entity.LogoUrl != null)
+                                        {
+                                            <Div Class="image-thumbnail">
+                                                <img src="@Entity.LogoUrl" class="img-fluid" />
+                                            </Div>
+                                        }
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                                        <Field Class="container-less-filepicker">
+                                            <FilePicker Changed="@((e) => OnFileUploadAsync(e, "logo"))"
+                                                        ShowMode="FilePickerShowMode.List"
+                                                        Accept="@(string.Join(", ", Constant.ValidImageExtensions))"
+                                                        Disabled="@ViewMode">
+                                                <FileTemplate></FileTemplate>
+                                                <ButtonsTemplate></ButtonsTemplate>
+                                            </FilePicker>
                                         </Field>
-                                    </Validation>
-                                </Column>
-                                <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                                    <Validation MessageLocalizer="@LH.Localize">
-                                        <Field>
-                                            <FieldLabel>@L["CompanyName"]<Span> *</Span></FieldLabel>
-                                            <TextEdit @bind-Text="Entity.CompanyName" Disabled="@ViewMode">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </TextEdit>
+                                    </Column>
+                                </Row>
+                                <Divider></Divider>
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                                        <h4>@L["Banner"]</h4>
+                                        @if (Entity.BannerBase64 != null)
+                                        {
+                                            <Div Class="image-thumbnail">
+                                                <img src="@("data:image/png;base64," + Entity.BannerBase64)" class="img-fluid" />
+                                            </Div>
+                                        }
+                                        else if (Entity.BannerUrl != null)
+                                        {
+                                            <Div Class="image-thumbnail">
+                                                <img src="@Entity.BannerUrl" class="img-fluid" />
+                                            </Div>
+                                        }
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                                        <Field Class="container-less-filepicker">
+                                            <FilePicker Changed="@((e) => OnFileUploadAsync(e, "banner"))"
+                                                        ShowMode="FilePickerShowMode.List"
+                                                        Accept="@(string.Join(", ", Constant.ValidImageExtensions))"
+                                                        Disabled="@ViewMode">
+                                                <FileTemplate></FileTemplate>
+                                                <ButtonsTemplate></ButtonsTemplate>
+                                            </FilePicker>
                                         </Field>
-                                    </Validation>
-                                </Column>
-                                <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                                    <Validation MessageLocalizer="@LH.Localize">
-                                        <Field>
-                                            <FieldLabel>@L["BusinessRegistrationNumber"]<Span> *</Span></FieldLabel>
-                                            <TextEdit @bind-Text="Entity.BusinessRegistrationNumber" Disabled="@ViewMode">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </TextEdit>
+                                    </Column>
+                                </Row>
+                                <Divider></Divider>
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                                        <h4>@L["Favicon"]</h4>
+                                        @if (Entity.FaviconBase64 != null)
+                                        {
+                                            <Div Class="image-thumbnail">
+                                                <img src="@("data:image/png;base64," + Entity.FaviconBase64)" class="img-fluid" />
+                                            </Div>
+                                        }
+                                        else if (Entity.FaviconUrl != null)
+                                        {
+                                            <Div Class="image-thumbnail">
+                                                <img src="@Entity.FaviconUrl" class="img-fluid" />
+                                            </Div>
+                                        }
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                                        <Field Class="container-less-filepicker">
+                                            <FilePicker Changed="@((e) => OnFileUploadAsync(e, "favicon"))"
+                                                        ShowMode="FilePickerShowMode.List"
+                                                        Accept="@(string.Join(", ", Constant.ValidFaviconExtensions))"
+                                                        Disabled="@ViewMode">
+                                                <FileTemplate></FileTemplate>
+                                                <ButtonsTemplate></ButtonsTemplate>
+                                            </FilePicker>
                                         </Field>
-                                    </Validation>
-                                </Column>
-                                <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                                    <Validation MessageLocalizer="@LH.Localize">
+                                    </Column>
+                                </Row>
+                            </CardBody>
+                        </Card>
+                    </TabPanel>
+                    <TabPanel Name="SocialMedia">
+                        <Card>
+                            <CardBody>
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                                        <h4>@L["SocialMedia"]</h4>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                                        <Validation MessageLocalizer="@LH.Localize">
+                                            <Field>
+                                                <FieldLabel>@L["Facebook"]</FieldLabel>
+                                                <TextEdit @bind-Text="Entity.Facebook" Disabled="@ViewMode">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                        <Validation MessageLocalizer="@LH.Localize">
+                                            <Field>
+                                                <FieldLabel>@L["Instagram"]</FieldLabel>
+                                                <TextEdit @bind-Text="Entity.Instagram" Disabled="@ViewMode">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                        <Validation MessageLocalizer="@LH.Localize">
+                                            <Field>
+                                                <FieldLabel>@L["Line"]</FieldLabel>
+                                                <TextEdit @bind-Text="Entity.Line" Disabled="@ViewMode">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                </Row>
+                            </CardBody>
+                        </Card>
+                    </TabPanel>
+                    <TabPanel Name="GoogleTagManager">
+                        <Card>
+                            <CardBody>
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                                        <h4>@L["GoogleTagManager"]</h4>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
                                         <Field>
-                                            <FieldLabel>@L["CustomerServiceEmail"]<Span> *</Span></FieldLabel>
-                                            <TextEdit @bind-Text="Entity.CustomerServiceEmail" Disabled="@ViewMode">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </TextEdit>
+                                            <FieldLabel>@L["GtmEnabled"]</FieldLabel>
+                                            <Switch TValue="bool" @bind-Checked="@Entity.GtmEnabled" Disabled="@ViewMode"></Switch>
                                         </Field>
-                                    </Validation>
-                                </Column>
-                                <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                                    <Validation MessageLocalizer="@LH.Localize">
                                         <Field>
-                                            <FieldLabel>@L["Domain"]<Span> *</Span></FieldLabel>
-                                            <TextEdit @bind-Text="Entity.Domain" Disabled="@ViewMode">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </TextEdit>
+                                            <FieldLabel>
+                                                @L["ContainerId"]
+                                                @if (Entity.GtmEnabled)
+                                                {
+                                                    <Span> *</Span>
+                                                }
+                                            </FieldLabel>
+                                            <TextEdit Class="@(Entity.GtmEnabled && Entity.GtmContainerId.IsNullOrWhiteSpace() ? "invalid" : "")" @bind-Text="Entity.GtmContainerId" Disabled="@ViewMode" Placeholder="GTM-XXXXXX"></TextEdit>
+                                            @if (Entity.GtmEnabled && Entity.GtmContainerId.IsNullOrWhiteSpace())
+                                            {
+                                                <Div Class="validation-message">@L["GtmContainerIdIsRequired"]</Div>
+                                            }
                                         </Field>
-                                    </Validation>
-                                </Column>
-                                <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                                    <Validation MessageLocalizer="@LH.Localize">
-                                        <Field>
-                                            <FieldLabel>@L["ShortCode"]<Span> *</Span></FieldLabel>
-                                            <TextEdit MaxLength="8" @bind-Text="Entity.ShortCode" Disabled="@ViewMode">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </TextEdit>
-                                        </Field>
-                                    </Validation>
-                                </Column>
-                            </Row>
-                        </Column>
-                    </Row>
-                    <Divider></Divider>
-                    <Row>
-                        <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
-                            <h4>@L["ContactInformation"]</h4>
-                        </Column>
-                        <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                            <Row>
-                                <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                                    <Validation MessageLocalizer="@LH.Localize">
-                                        <Field>
-                                            <FieldLabel>@L["TenantContactTitle"]<Span> *</Span></FieldLabel>
-                                            <Select TValue="string" @bind-SelectedValue="Entity.TenantContactTitle" Disabled="@ViewMode">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                                <ChildContent>
-                                                    <SelectItem Value="(string?)null"></SelectItem>
-                                                    @foreach (string title in TenantContactTitles)
-                                                    {
-                                                        <SelectItem Value="@title">@L[title]</SelectItem>
-                                                    }
-                                                </ChildContent>
-                                            </Select>
-                                        </Field>
-                                    </Validation>
-                                </Column>
-                                <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                                    <Validation MessageLocalizer="@LH.Localize">
-                                        <Field>
-                                            <FieldLabel>@L["TenantContactPerson"]<Span> *</Span></FieldLabel>
-                                            <TextEdit @bind-Text="Entity.TenantContactPerson" Disabled="@ViewMode">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </TextEdit>
-                                        </Field>
-                                    </Validation>
-                                </Column>
-                                <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                                    <Validation MessageLocalizer="@LH.Localize">
-                                        <Field>
-                                            <FieldLabel>@L["ContactPhone"]<Span> *</Span></FieldLabel>
-                                            <TextEdit @bind-Text="Entity.ContactPhone" Disabled="@ViewMode">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </TextEdit>
-                                        </Field>
-                                    </Validation>
-                                </Column>
-                                <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                                    <Validation MessageLocalizer="@LH.Localize">
-                                        <Field>
-                                            <FieldLabel>@L["TenantContactEmail"]<Span> *</Span></FieldLabel>
-                                            <TextEdit @bind-Text="Entity.TenantContactEmail" Disabled="@ViewMode">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </TextEdit>
-                                        </Field>
-                                    </Validation>
-                                </Column>
-                            </Row>
-                        </Column>
-                    </Row>
-                    <Divider></Divider>
-                    <Row>
-                        <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
-                            <h4>@L["ServiceHours"]</h4>
-                        </Column>
-                        <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                            <Row>
-                                <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                                    <Validation MessageLocalizer="@LH.Localize">
-                                        <Field>
-                                            <FieldLabel>@L["From"]<Span> *</Span></FieldLabel>
-                                            <TimeEdit TValue="DateTime?" @bind-Time="Entity.ServiceHoursFrom" Disabled="@ViewMode">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </TimeEdit>
-                                        </Field>
-                                    </Validation>
-                                </Column>
-                                <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                                    <Validation MessageLocalizer="@LH.Localize">
-                                        <Field>
-                                            <FieldLabel>@L["To"]<Span> *</Span></FieldLabel>
-                                            <TimeEdit TValue="DateTime?" @bind-Time="Entity.ServiceHoursTo" Disabled="@ViewMode">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </TimeEdit>
-                                        </Field>
-                                    </Validation>
-                                </Column>
-                            </Row>
-                        </Column>
-                    </Row>
-                    <Divider></Divider>
-                    <Row>
-                        <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
-                            <h4>@L["PrivacyPolicy"]</h4>
-                        </Column>
-                        <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                            <Validation MessageLocalizer="@LH.Localize">
-                                <Field>
-                                    <Div Class="d-flex align-items-center justify-content-between mb-1">
-                                        <FieldLabel Class="m-0">@L["SpecifyCompanyPrivacyPolicy"]<Span> *</Span></FieldLabel>
-                                        <PikachuButton Class="pk-btn-sm pk-btn-outline-primary"
-                                                       Clicked="SetDefaultPrivacyPolicy"
-                                                       Disabled="ViewMode">@L["DefaultPrivacyPolicy"]</PikachuButton>
-                                    </Div>
-                                    <BlazoredTextEditor ReadOnly="true" @ref="@PrivacyPolicyHtml">
-                                        <ToolbarContent>
-                                            <select class="ql-header">
-                                                <option selected=""></option>
-                                                <option value="1"></option>
-                                                <option value="2"></option>
-                                                <option value="3"></option>
-                                                <option value="4"></option>
-                                                <option value="5"></option>
-                                            </select>
-                                            <span class="ql-formats">
-                                                <button class="ql-bold"></button>
-                                                <button class="ql-italic"></button>
-                                                <button class="ql-underline"></button>
-                                                <button class="ql-strike"></button>
-                                            </span>
-                                            <span class="ql-formats">
-                                                <select class="ql-color"></select>
-                                                <select class="ql-background"></select>
-                                            </span>
-                                            <span class="ql-formats">
-                                                <button class="ql-list" value="ordered"></button>
-                                                <button class="ql-list" value="bullet"></button>
-                                            </span>
-                                            <span class="ql-formats">
-                                                <button class="ql-link"></button>
-                                            </span>
-                                            <span class="ql-formats">
-                                                <button class="ql-image"></button>
-                                            </span>
-                                            <span class="ql-formats">
-                                                <button class="ql-video"></button>
-                                            </span>
-                                        </ToolbarContent>
-                                    </BlazoredTextEditor>
-                                    <MemoEdit Rows="5" @bind-Text="Entity.PrivacyPolicy" Disabled="@ViewMode" Visibility="Visibility.Invisible" Style="height: 0; margin: 0; padding: 0;">
-                                        <Feedback>
-                                            <ValidationError />
-                                        </Feedback>
-                                    </MemoEdit>
-                                </Field>
-                            </Validation>
-                        </Column>
-                    </Row>
-                    <Divider></Divider>
-                    <Row>
-                        <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
-                            <h4>@L["Logo"]</h4>
-                            @if (Entity.LogoBase64 != null)
-                            {
-                                <Div Class="image-thumbnail">
-                                    <img src="@("data:image/png;base64," + Entity.LogoBase64)" class="img-fluid" />
-                                </Div>
-                            }
-                            else if (Entity.LogoUrl != null)
-                            {
-                                <Div Class="image-thumbnail">
-                                    <img src="@Entity.LogoUrl" class="img-fluid" />
-                                </Div>
-                            }
-                        </Column>
-                        <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                            <Field Class="container-less-filepicker">
-                                <FilePicker Changed="@((e) => OnFileUploadAsync(e, "logo"))"
-                                            ShowMode="FilePickerShowMode.List"
-                                            Accept="@(string.Join(", ", Constant.ValidImageExtensions))"
-                                            Disabled="@ViewMode">
-                                    <FileTemplate></FileTemplate>
-                                    <ButtonsTemplate></ButtonsTemplate>
-                                </FilePicker>
-                            </Field>
-                        </Column>
-                    </Row>
-                    <Divider></Divider>
-                    <Row>
-                        <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
-                            <h4>@L["Banner"]</h4>
-                            @if (Entity.BannerBase64 != null)
-                            {
-                                <Div Class="image-thumbnail">
-                                    <img src="@("data:image/png;base64," + Entity.BannerBase64)" class="img-fluid" />
-                                </Div>
-                            }
-                            else if (Entity.BannerUrl != null)
-                            {
-                                <Div Class="image-thumbnail">
-                                    <img src="@Entity.BannerUrl" class="img-fluid" />
-                                </Div>
-                            }
-                        </Column>
-                        <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                            <Field Class="container-less-filepicker">
-                                <FilePicker Changed="@((e) => OnFileUploadAsync(e, "banner"))"
-                                            ShowMode="FilePickerShowMode.List"
-                                            Accept="@(string.Join(", ", Constant.ValidImageExtensions))"
-                                            Disabled="@ViewMode">
-                                    <FileTemplate></FileTemplate>
-                                    <ButtonsTemplate></ButtonsTemplate>
-                                </FilePicker>
-                            </Field>
-                        </Column>
-                    </Row>
-                    <Divider></Divider>
-                    <Row>
-                        <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
-                            <h4>@L["Favicon"]</h4>
-                            @if (Entity.FaviconBase64 != null)
-                            {
-                                <Div Class="image-thumbnail">
-                                    <img src="@("data:image/png;base64," + Entity.FaviconBase64)" class="img-fluid" />
-                                </Div>
-                            }
-                            else if (Entity.FaviconUrl != null)
-                            {
-                                <Div Class="image-thumbnail">
-                                    <img src="@Entity.FaviconUrl" class="img-fluid" />
-                                </Div>
-                            }
-                        </Column>
-                        <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                            <Field Class="container-less-filepicker">
-                                <FilePicker Changed="@((e) => OnFileUploadAsync(e, "favicon"))"
-                                            ShowMode="FilePickerShowMode.List"
-                                            Accept="@(string.Join(", ", Constant.ValidFaviconExtensions))"
-                                            Disabled="@ViewMode">
-                                    <FileTemplate></FileTemplate>
-                                    <ButtonsTemplate></ButtonsTemplate>
-                                </FilePicker>
-                            </Field>
-                        </Column>
-                    </Row>
-                </Validations>
-            </Form>
-        </CardBody>
-    </Card>
+                                    </Column>
+                                </Row>
+                            </CardBody>
+                        </Card>
+                    </TabPanel>
+                </Content>
+            </Tabs>
+        </Validations>
+    </Form>
     @if (CanEditTenantSettings && !ViewMode)
     {
         <Div Class="text-end">
