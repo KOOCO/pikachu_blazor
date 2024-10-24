@@ -59,7 +59,7 @@
                             <Validation MessageLocalizer="@LH.Localize">
                             <Column ColumnSize="ColumnSize.Is6">
                                 <Label>@L["From"]</Label>
-                                <DateEdit @bind-Date="CreateDiscountCode.StartDate" TValue="DateTime" >
+                                <DateEdit @bind-Date="CreateDiscountCode.StartDate" TValue="DateTime?" >
                                 <Feedback><ValidationError/></Feedback>    
                                 </DateEdit>
                             </Column>
@@ -67,7 +67,7 @@
                               <Validation MessageLocalizer="@LH.Localize">
                             <Column ColumnSize="ColumnSize.Is6">
                                 <Label>@L["To"]</Label>
-                            <DateEdit @bind-Date="CreateDiscountCode.EndDate" TValue="DateTime" >
+                            <DateEdit @bind-Date="CreateDiscountCode.EndDate" TValue="DateTime?" >
                             <ValidationError/>    
                             </DateEdit>
                             </Column>
@@ -239,6 +239,8 @@
                     </Validation>
 
                 </Column>
+                        @if (CreateDiscountCode.DiscountMethod == "ShippingDiscount")
+                        {
                 <Column ColumnSize="ColumnSize.Is12">
                     <Validation MessageLocalizer="@LH.Localize">
                     <Label>@L["ShippingSettings"]</Label>
@@ -274,18 +276,23 @@
                     </EditForm>
 
                 </Column>
+                }
                 <Divider></Divider>
                 <Column ColumnSize="ColumnSize.Is12">
                      
                     <Label>@L["DiscountAmount"]</Label>
-                     
-                    <Radio Group="DiscountAmount" Value="@("Amount")">@L["DiscountOf$"]<NumericEdit @bind-Value="CreateDiscountCode.DiscountAmount" TValue="int" />
 
-                    </Radio>
-                  
-                    <Radio Group="DiscountAmount" Value="@("Percentage")">@L["DiscountOf%"]<NumericEdit @bind-Value="CreateDiscountCode.DiscountPercentage" Max="100" TValue="int" /></Radio>
-                   
+                            <RadioGroup TValue="string" @bind-CheckedValue="SelectedDiscountType">
+                                <Radio Value="@("Amount")" CheckedChanged="SetAmountDiscount">
+                                    @L["DiscountOf$"]
+                                    <NumericEdit @bind-Value="CreateDiscountCode.DiscountAmount" TValue="int" @onchange="OnAmountChanged" />
+                                </Radio>
 
+                                <Radio Value="@("Percentage")" CheckedChanged="SetPercentageDiscount">
+                                    @L["DiscountOf%"]
+                                    <NumericEdit @bind-Value="CreateDiscountCode.DiscountPercentage" Max="100" TValue="int" @onchange="OnPercentageChanged" />
+                                </Radio>
+                            </RadioGroup>
                 </Column>
             </Column>
           
