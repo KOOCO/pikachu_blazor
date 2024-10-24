@@ -43,6 +43,7 @@ public class PikachuAccountAppService(IConfiguration configuration, IdentityUser
         var request = new RestRequest("/connect/token", Method.Post);
 
         request.AddHeader("Content-Type", ContentType.FormUrlEncoded);
+        request.AddHeader("__tenant", CurrentTenant.Name);
 
         var param = await SetupLoginParams(input);
 
