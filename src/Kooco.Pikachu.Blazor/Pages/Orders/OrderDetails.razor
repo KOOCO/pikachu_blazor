@@ -787,6 +787,8 @@
                                                     <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
                                                 }
                                                 @item.Item?.ItemName
+                                                <br />
+                                                @item.Spec
                                             }
 
                                             @if (item.ItemType is ItemType.SetItem)
@@ -799,6 +801,8 @@
                                                         <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
                                                     }
                                                     @item.SetItem?.SetItemName
+                                                    <br />
+                                                    @item.Spec
                                                 </Div>
                                             }
 
@@ -811,6 +815,8 @@
                                                     <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
                                                 }
                                                 @item.Freebie?.ItemName
+                                                <br />
+                                                @item.Spec
                                             }
                                         </td>
                                         @if (item.IsSelected && IsItemsEditMode)
