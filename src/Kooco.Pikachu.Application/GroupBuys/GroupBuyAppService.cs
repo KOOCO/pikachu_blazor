@@ -477,7 +477,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                 }
             }
 
-            foreach(string method in shippingMethods ?? [])
+            foreach (string method in shippingMethods ?? [])
             {
                 if (method.Contains("DeliveredByStore"))
                 {
@@ -503,6 +503,25 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                                 List<string> matchingTimes = blackCatTCatPickupTimes.Where(time => !string.IsNullOrEmpty(time)).ToList();
 
                                 response.DeliveredByStoreType[deliveryTemperatureCost.Temperature.ToString()].DeliveryTime = matchingTimes.Count > 0 ? matchingTimes : ["No time preference"];
+                                response.DeliveredByStoreType[deliveryTemperatureCost.Temperature.ToString()].DeliveryType = 0;
+                            }
+                            else if ((deliveryTemperatureCost.DeliveryMethod is not null &&
+                                 (deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.HomeDelivery ||
+                                 deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.PostOffice)))
+                            {
+                                response.DeliveredByStoreType[deliveryTemperatureCost.Temperature.ToString()].DeliveryType = 0;
+                            }
+                            else if (deliveryTemperatureCost.DeliveryMethod is not null &&
+                                 (deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.SevenToEleven1 ||
+                                 deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.SevenToElevenC2C ||
+                                 deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.FamilyMart1 ||
+                                 deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.FamilyMartC2C ||
+                                 deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFreeze ||
+                                 deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFrozen ||
+                                 deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.TCatDeliverySevenElevenNormal ||
+                                 deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.SevenToElevenFrozen))
+                            {
+                                response.DeliveredByStoreType[deliveryTemperatureCost.Temperature.ToString()].DeliveryType = 1;
                             }
                         }
                     }
@@ -541,7 +560,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
             }
 
             else result.Status = "Closed";
-            
+
             return result;
         }
     }

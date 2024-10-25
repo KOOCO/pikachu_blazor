@@ -25,4 +25,5 @@ public class DeliveredByStoreTypeResponse
 {
     public string? DeliveryMethod { get; set; }
     public List<string> DeliveryTime { get; set; }
+    public int DeliveryType { get; set; }
 } 
