@@ -38,7 +38,7 @@
 
 <h3>@L["OrderDetails"]</h3>
 <LoadingIndicator @ref="loading" FullScreen FadeIn>
-    <div  class="row">
+    <div class="row">
         <div class="col-md-6 col-sm-12">
             <Card>
                 <CardBody>
@@ -68,7 +68,7 @@
                                             <td>@L["Email"]</td>
                                             <td>@Order.CustomerEmail</td>
                                         </tr>
-                                        @if ((Order.GroupBuy?.IsEnterprise ==null ||!Order.GroupBuy.IsEnterprise))
+                                        @if ((Order.GroupBuy?.IsEnterprise == null || !Order.GroupBuy.IsEnterprise))
                                         {
                                             <tr>
                                                 <td>@L["PaymentMethod"]</td>
@@ -83,7 +83,7 @@
                                             <td>@L["CarrierNumber"]</td>
                                             <td>@(Order.UniformNumber != "/" ? Order.UniformNumber : "")</td>
                                         </tr>
-                                         <tr>
+                                        <tr>
                                             <td>@L["TaxTitle"]</td>
                                             <td>@Order.TaxTitle</td>
                                         </tr>
@@ -110,25 +110,25 @@
                                 </table>
                             </div>
                         </div>
-                       @*   <div class="row">
-                            <div class="col-12 text-end"> *@
-                              @*   <Button Type="ButtonType.Button" @onclick="OpenShipmentModal" Class="btn btn-sm btn-primary me-1">
-                                    @L["ShipmentNotify"]
-                                </Button> *@
-                               @*  @if (Order.PaymentMethod == PaymentMethods.CreditCard && Order.IsRefunded == false)
-                                {
-                                    <Button Type="ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="ApplyRefund">
-                                        @L["ApplyRefund"]
-                                    </Button>
-                                }
-                                else
-                                {
-                                    <Button Type="ButtonType.Button" Disabled Class="btn btn-sm btn-danger" Clicked="ApplyRefund">
-                                         @L["ApplyRefund"]
-                                    </Button>
-                                }
-                            </div>
-                        </div>  *@
+                        @*   <div class="row">
+                    <div class="col-12 text-end"> *@
+                        @*   <Button Type="ButtonType.Button" @onclick="OpenShipmentModal" Class="btn btn-sm btn-primary me-1">
+                    @L["ShipmentNotify"]
+                    </Button> *@
+                        @*  @if (Order.PaymentMethod == PaymentMethods.CreditCard && Order.IsRefunded == false)
+                    {
+                    <Button Type="ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="ApplyRefund">
+                    @L["ApplyRefund"]
+                    </Button>
+                    }
+                    else
+                    {
+                    <Button Type="ButtonType.Button" Disabled Class="btn btn-sm btn-danger" Clicked="ApplyRefund">
+                    @L["ApplyRefund"]
+                    </Button>
+                    }
+                    </div>
+                    </div>  *@
                         <Divider></Divider>
                         <div class="row">
                             <div class="col-12">
@@ -171,7 +171,7 @@
                                                     {
                                                         @Order.RecipientName
                                                     }
-                                                    @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus!=OrderStatus.Refund)
+                                                    @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
                                                     {
                                                         <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientName">
                                                             <i class="fa fa-pencil text-secondary"></i>
@@ -207,7 +207,7 @@
                                                     {
                                                         @Order.RecipientPhone
                                                     }
-                                                     @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus!=OrderStatus.Refund)
+                                                    @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
                                                     {
                                                         <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientPhone">
                                                             <i class="fa fa-pencil text-secondary"></i>
@@ -220,10 +220,10 @@
                                             <td>@L["RecipientPostalCode"]</td>
 
                                             @* <td>@Order.PostalCode</td> *@
-                                               @if (ModificationTrack.IsPostalCodeInputVisible)
+                                            @if (ModificationTrack.IsPostalCodeInputVisible)
                                             {
                                                 <td>
-                                         
+
                                                     <div class="row">
                                                         <div class="col-12">
                                                             <div class="input-group">
@@ -276,7 +276,7 @@
 
                                                                 <select class="form-select form-select-sm @errorClass" @onchange=@((e) => ModificationTrack.NewCity = Convert.ToString(e.Value))>
                                                                     <option value=""> Select City </option>
-                                                                    @foreach(string city in Enum.GetNames<RecipientCities>()) 
+                                                                    @foreach (string city in Enum.GetNames<RecipientCities>())
                                                                     {
                                                                         <option value="@city">@city</option>
                                                                     }
@@ -300,7 +300,7 @@
                                                     }
                                                     else
                                                     {
-                                                        @L[Order.City??""]
+                                                        @L[Order.City ?? ""]
                                                         @*  + ", " + Order.Road + ", " + Order.District + ", " + Order.City *@
                                                     }
                                                     @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
@@ -388,11 +388,81 @@
                                         {
                                             <tr>
                                                 <td>@L["CVS Store Id"]</td>
-                                                <td>@Order.StoreId</td>
+                                                @if (ModificationTrack.IsCVSStoreIdInputVisible)
+                                                {
+                                                    <td>
+                                                        <div class="input-group">
+
+                                                            @{
+                                                                var errorClass = ModificationTrack.IsInvalidCVSStoreId ? "invalid" : "";
+                                                            }
+                                                            <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewCVSStoreId" />
+
+
+                                                            <Button Type="ButtonType.Button" @onclick="SaveCVSStoreId" Class="btn btn-sm btn-primary">
+                                                                <i class="fa fa-check"></i>
+                                                            </Button>
+                                                        </div>
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <td class="d-flex justify-content-between">
+                                                        @if (ModificationTrack.IsCVSStoreIdModified)
+                                                        {
+                                                            @ModificationTrack.NewCVSStoreId
+                                                        }
+                                                        else
+                                                        {
+                                                            @Order.StoreId
+                                                        }
+                                                        @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
+                                                        {
+                                                            <span class="text-secondary cursor-pointer me-2" @onclick="EditCVSStoreId">
+                                                                <i class="fa fa-pencil text-secondary"></i>
+                                                            </span>
+                                                        }
+                                                    </td>
+                                                }
                                             </tr>
                                             <tr>
                                                 <td>@L["CVS Store OutSide"]</td>
-                                                <td>@Order.CVSStoreOutSide</td>
+                                                @if (ModificationTrack.IsCVSStoreOutsideInputVisible)
+                                                {
+                                                    <td>
+                                                        <div class="input-group">
+
+                                                            @{
+                                                                var errorClass = ModificationTrack.IsInvalidCVSStoreOutside ? "invalid" : "";
+                                                            }
+                                                            <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewCVSStoreOutside" />
+
+
+                                                            <Button Type="ButtonType.Button" @onclick="SaveCVSStoreOutside" Class="btn btn-sm btn-primary">
+                                                                <i class="fa fa-check"></i>
+                                                            </Button>
+                                                        </div>
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <td class="d-flex justify-content-between">
+                                                        @if (ModificationTrack.IsCVSStoreOutsideModified)
+                                                        {
+                                                            @ModificationTrack.NewCVSStoreOutside
+                                                        }
+                                                        else
+                                                        {
+                                                            @Order.CVSStoreOutSide
+                                                        }
+                                                        @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
+                                                        {
+                                                            <span class="text-secondary cursor-pointer me-2" @onclick="EditCVSStoreOutside">
+                                                                <i class="fa fa-pencil text-secondary"></i>
+                                                            </span>
+                                                        }
+                                                    </td>
+                                                }
                                             </tr>
                                         }
                                     </tbody>
@@ -421,14 +491,14 @@
         <div class="col-md-6 col-sm-12">
             <div class="row mb-2">
                 <div class="col-md-6 col-sm-12">
-                   @*  @if (Order?.ShippingStatus != ShippingStatus.WaitingForPayment || Order?.OrderStatus == OrderStatus.Closed)
+                    @*  @if (Order?.ShippingStatus != ShippingStatus.WaitingForPayment || Order?.OrderStatus == OrderStatus.Closed)
                     {
-                        var text = Order?.OrderStatus == OrderStatus.Closed ? "Closed" : "CancelOrder";
-                        <Button Type="ButtonType.Button" disabled Class="btn btn-sm btn-danger">@L[text]</Button>
+                    var text = Order?.OrderStatus == OrderStatus.Closed ? "Closed" : "CancelOrder";
+                    <Button Type="ButtonType.Button" disabled Class="btn btn-sm btn-danger">@L[text]</Button>
                     }
                     else
                     {
-                        <Button Type="ButtonType.Button" @onclick="CancelOrder" Class="btn btn-sm btn-danger">@L["CancelOrder"]</Button>
+                    <Button Type="ButtonType.Button" @onclick="CancelOrder" Class="btn btn-sm btn-danger">@L["CancelOrder"]</Button>
                     } *@
                     @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
                     {
@@ -441,53 +511,54 @@
                         else
                         {
                             <Button Type="ButtonType.Button"
-                                    Disabled Class="btn btn-sm btn-danger" Clicked="OpenRefundModal">
+                                                Disabled Class="btn btn-sm btn-danger" Clicked="OpenRefundModal">
                                  @L["ApplyRefund"]
                             </Button>
                         }
                         @if (Order?.OrderStatus != OrderStatus.Returned && Order?.OrderStatus != OrderStatus.Exchange && Order?.ShippingStatus != ShippingStatus.WaitingForPayment && Order?.ShippingStatus != ShippingStatus.PrepareShipment && Order.OrderStatus != OrderStatus.Refund)
                         {
                             <Button Type="ButtonType.Button" Clicked="ReturnOrder" Class="btn btn-sm btn-secondary me-1">@L["ReturnOrder"]</Button>
-                         <Button Type="ButtonType.Button" Clicked="ExchangeOrder" Class="btn btn-sm btn-secondary me-1">@L["ExchangeItem"]</Button>
+                            <Button Type="ButtonType.Button" Clicked="ExchangeOrder" Class="btn btn-sm btn-secondary me-1">@L["ExchangeItem"]</Button>
                         }
                     }
                 </div>
                 <div class="col-md-6 col-sm-12 text-lg-end">
-                    @if(Order.Id!=Guid.Empty)
+                    @if (Order.Id != Guid.Empty)
                     {
                         @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
-                    {
-                        @if (Order.ShippingStatus == ShippingStatus.PrepareShipment && Order.OrderItems.Any(x => x.IsSelected == true) && Order.OrderType == null)
                         {
-                            <Button Clicked="SplitOrder" Type="ButtonType.Button" Class="btn btn-sm btn-secondary">@L["SplitOrder"]</Button>
+                            @if (Order.ShippingStatus == ShippingStatus.PrepareShipment && Order.OrderItems.Any(x => x.IsSelected == true) && Order.OrderType == null)
+                            {
+                                <Button Clicked="SplitOrder" Type="ButtonType.Button" Class="btn btn-sm btn-secondary">@L["SplitOrder"]</Button>
+                            }
+                            else if (Order.ShippingStatus == ShippingStatus.WaitingForPayment && Order.OrderItems.Any(x => x.IsSelected == true) && Order.OrderType == null)
+                            {
+                                <Button Clicked="SplitOrder" Type="ButtonType.Button" Class="btn btn-sm btn-secondary">@L["SplitOrder"]</Button>
+                            }
+                            else
+                            {
+                                <Button Type="ButtonType.Button"
+                                                    Disabled Class="btn btn-sm btn-secondary me-1">
+                                     @L["SplitOrder"]
+                                </Button>
+                            }
                         }
-                        else if(Order.ShippingStatus == ShippingStatus.WaitingForPayment && Order.OrderItems.Any(x => x.IsSelected == true) && Order.OrderType == null)
-                        {
-                        <Button Clicked="SplitOrder" Type="ButtonType.Button" Class="btn btn-sm btn-secondary">@L["SplitOrder"]</Button>
-                        }
-                        else
-                        {
-                            <Button Type="ButtonType.Button"    
-
-                                Disabled Class="btn btn-sm btn-secondary me-1">@L["SplitOrder"]</Button>
-                        }
-                    }
                     }
                     <Button Type="ButtonType.Button" @onclick="NavigateToOrderShipmentDetails" Class="btn btn-sm btn-primary">
-                            <Icon Class="fa fa-print"></Icon>
-                            @L["PrintOrder"]
-                        </Button>
-                    
+                        <Icon Class="fa fa-print"></Icon>
+                        @L["PrintOrder"]
+                    </Button>
+
                 </div>
             </div>
             <Card>
                 <CardBody>
                     <div class="row">
-                         <div class="col-12 d-flex justify-content-between">
-                    <p class="fw-bold">@L["Date"]</p>
-                    <p class="fw-bold">@L["Editor"]</p>
-                    <p class="fw-bold">@L["OrderStatus"]</p>
-                    </div>
+                        <div class="col-12 d-flex justify-content-between">
+                            <p class="fw-bold">@L["Date"]</p>
+                            <p class="fw-bold">@L["Editor"]</p>
+                            <p class="fw-bold">@L["OrderStatus"]</p>
+                        </div>
                     </div>
                     <div class="row">
                         @if (Order?.ShippingStatus == ShippingStatus.WaitingForPayment)
@@ -519,18 +590,18 @@
                             </div>
                             <div class="col-12 d-flex justify-content-between">
                                 <p>@Order?.PaymentDate?.ToShortDateString()</p>
-                                  <p>@Order?.PrepareShipmentBy</p>
+                                <p>@Order?.PrepareShipmentBy</p>
                                 <p>@L[ShippingStatus.PrepareShipment.ToString()]</p>
                             </div>
                             <div class="col-12 d-flex justify-content-between">
                                 <p>@Order?.ShippingDate?.ToShortDateString()</p>
-                                  <p>@Order?.ShippedBy</p>
+                                <p>@Order?.ShippedBy</p>
                                 <p>@L[ShippingStatus.Shipped.ToString()]</p>
                             </div>
                         }
-                         @if (Order?.ShippingStatus == ShippingStatus.Completed)
+                        @if (Order?.ShippingStatus == ShippingStatus.Completed)
                         {
-                              <div class="col-12 d-flex justify-content-between">
+                            <div class="col-12 d-flex justify-content-between">
                                 <p>@Order?.CreationTime.ToShortDateString()</p>
                                 <p>@L[ShippingStatus.WaitingForPayment.ToString()]</p>
                             </div>
@@ -538,54 +609,54 @@
                             {
                                 <div class="col-12 d-flex justify-content-between">
                                     <p>@Order?.PaymentDate?.ToShortDateString()</p>
-                                  <p>@Order?.PrepareShipmentBy</p>
-                                <p>@L[ShippingStatus.PrepareShipment.ToString()]</p>
-                            </div>
+                                    <p>@Order?.PrepareShipmentBy</p>
+                                    <p>@L[ShippingStatus.PrepareShipment.ToString()]</p>
+                                </div>
                             }
                             @if (Order?.ShippingDate != null && Order?.ShippedBy != null)
                             {
                                 <div class="col-12 d-flex justify-content-between">
                                     <p>@Order?.ShippingDate?.ToShortDateString()</p>
-                                  <p>@Order?.ShippedBy</p>
-                                <p>@L[ShippingStatus.Shipped.ToString()]</p>
-                            </div>
+                                    <p>@Order?.ShippedBy</p>
+                                    <p>@L[ShippingStatus.Shipped.ToString()]</p>
+                                </div>
                             }
                             <div class="col-12 d-flex justify-content-between">
                                 <p>@Order?.CompletionTime?.ToShortDateString()</p>
-                                 <p>@Order?.CompletedBy</p>
+                                <p>@Order?.CompletedBy</p>
                                 <p>@L[ShippingStatus.Completed.ToString()]</p>
                             </div>
                         }
                         @if (Order?.ShippingStatus == ShippingStatus.Exchange)
                         {
-                                  <div class="col-12 d-flex justify-content-between">
-                                    <p>@Order?.CreationTime.ToShortDateString()</p>
-                                    <p>@L[ShippingStatus.WaitingForPayment.ToString()]</p>
-                                </div>
+                            <div class="col-12 d-flex justify-content-between">
+                                <p>@Order?.CreationTime.ToShortDateString()</p>
+                                <p>@L[ShippingStatus.WaitingForPayment.ToString()]</p>
+                            </div>
                             @if (Order?.PaymentDate != null && Order?.PrepareShipmentBy != null)
                             {
-                                        <div class="col-12 d-flex justify-content-between">
-                                            <p>@Order?.PaymentDate?.ToShortDateString()</p>
-                                          <p>@Order?.PrepareShipmentBy</p>
-                                        <p>@L[ShippingStatus.PrepareShipment.ToString()]</p>
-                                    </div>
+                                <div class="col-12 d-flex justify-content-between">
+                                    <p>@Order?.PaymentDate?.ToShortDateString()</p>
+                                    <p>@Order?.PrepareShipmentBy</p>
+                                    <p>@L[ShippingStatus.PrepareShipment.ToString()]</p>
+                                </div>
                             }
                             @if (Order?.ShippingDate != null && Order?.ShippedBy != null)
                             {
-                                        <div class="col-12 d-flex justify-content-between">
-                                            <p>@Order?.ShippingDate?.ToShortDateString()</p>
-                                          <p>@Order?.ShippedBy</p>
-                                        <p>@L[ShippingStatus.Shipped.ToString()]</p>
-                                    </div>
+                                <div class="col-12 d-flex justify-content-between">
+                                    <p>@Order?.ShippingDate?.ToShortDateString()</p>
+                                    <p>@Order?.ShippedBy</p>
+                                    <p>@L[ShippingStatus.Shipped.ToString()]</p>
+                                </div>
                             }
-                             @if (Order?.CompletionTime != null && Order?.CompletedBy != null)
-                             {
+                            @if (Order?.CompletionTime != null && Order?.CompletedBy != null)
+                            {
                                 <div class="col-12 d-flex justify-content-between">
                                     <p>@Order?.CompletionTime?.ToShortDateString()</p>
-                                     <p>@Order?.CompletedBy</p>
+                                    <p>@Order?.CompletedBy</p>
                                     <p>@L[ShippingStatus.Completed.ToString()]</p>
                                 </div>
-                             }
+                            }
                             <div class="col-12 d-flex justify-content-between">
                                 <p>@Order?.ExchangeTime?.ToShortDateString()</p>
                                 <p>@Order?.ExchangeBy</p>
@@ -594,7 +665,7 @@
                         }
                         @if (Order?.ShippingStatus == ShippingStatus.Closed)
                         {
-                              <div class="col-12 d-flex justify-content-between">
+                            <div class="col-12 d-flex justify-content-between">
                                 <p>@Order?.CreationTime.ToShortDateString()</p>
                                 <p>@L[ShippingStatus.WaitingForPayment.ToString()]</p>
                             </div>
@@ -602,21 +673,21 @@
                             {
                                 <div class="col-12 d-flex justify-content-between">
                                     <p>@Order?.PaymentDate?.ToShortDateString()</p>
-                                  <p>@Order?.PrepareShipmentBy</p>
-                                <p>@L[ShippingStatus.PrepareShipment.ToString()]</p>
-                            </div>
+                                    <p>@Order?.PrepareShipmentBy</p>
+                                    <p>@L[ShippingStatus.PrepareShipment.ToString()]</p>
+                                </div>
                             }
-                              @if (Order?.ShippingDate != null && Order?.ShippedBy != null)
+                            @if (Order?.ShippingDate != null && Order?.ShippedBy != null)
                             {
-                            <div class="col-12 d-flex justify-content-between">
-                                <p>@Order?.ShippingDate?.ToShortDateString()</p>
-                                  <p>@Order?.ShippedBy</p>
-                                <p>@L[ShippingStatus.Shipped.ToString()]</p>
-                            </div>
+                                <div class="col-12 d-flex justify-content-between">
+                                    <p>@Order?.ShippingDate?.ToShortDateString()</p>
+                                    <p>@Order?.ShippedBy</p>
+                                    <p>@L[ShippingStatus.Shipped.ToString()]</p>
+                                </div>
                             }
                             <div class="col-12 d-flex justify-content-between">
                                 <p>@Order?.CancellationDate?.ToShortDateString()</p>
-                                 <p>@Order?.ClosedBy</p>
+                                <p>@Order?.ClosedBy</p>
                                 <p>@L[ShippingStatus.Closed.ToString()]</p>
                             </div>
                         }
@@ -634,21 +705,21 @@
                         </div>
                         <div class="row">
                             <div class="col-12 d-flex justify-content-between">
-                                <Select TValue="ShippingStatus" 
+                                <Select TValue="ShippingStatus"
                                         Class="form-select form-select-sm"
                                         SelectedValue="@Order.ShippingStatus"
                                         SelectedValueChanged="@(e => ShippingStatusChanged(e))">
-                                @if(Order.ShippingStatus is not ShippingStatus.Exchange)
-                                {
-                                    <SelectItem />
-                                    @foreach (var enumValue in Enum.GetValues(typeof(ShippingStatus)))
+                                    @if (Order.ShippingStatus is not ShippingStatus.Exchange)
                                     {
-                                        @if(enumValue.ToString() is not "Exchange")
+                                        <SelectItem />
+                                        @foreach (var enumValue in Enum.GetValues(typeof(ShippingStatus)))
                                         {
-                                            <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                            @if (enumValue.ToString() is not "Exchange")
+                                            {
+                                                <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                            }
                                         }
                                     }
-                                }
                                 </Select>
                             </div>
                         </div>
@@ -663,26 +734,26 @@
             <h4 class="d-inline-block">@L["OrderItems"]</h4>
         </div>
         @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
-                                                    {
-        <div class="col-6 text-end">
-            @if (IsItemsEditMode)
-            {
-                <Button Type="ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="CancelOrderItemChanges">
-                    @L["Cancel"]
-                </Button>
-                <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="SubmitOrderItemChanges">
-                    <i class="fa fa-pencil"></i>
-                    @L["SaveChanges"]
-                </Button>
-            }
-            else
-            {
-                <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="ToggleEditMode">
-                    <i class="fa fa-pencil"></i>
-                    @L["Edit"]
-                </Button>
-            }
-        </div>
+        {
+            <div class="col-6 text-end">
+                @if (IsItemsEditMode)
+                {
+                    <Button Type="ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="CancelOrderItemChanges">
+                        @L["Cancel"]
+                    </Button>
+                    <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="SubmitOrderItemChanges">
+                        <i class="fa fa-pencil"></i>
+                        @L["SaveChanges"]
+                    </Button>
+                }
+                else
+                {
+                    <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="ToggleEditMode">
+                        <i class="fa fa-pencil"></i>
+                        @L["Edit"]
+                    </Button>
+                }
+            </div>
         }
         <div class="col-12">
             <Card>
@@ -773,11 +844,11 @@
                                         }
                                     </tr>
 
-                                    if (item.ItemType is ItemType.SetItem && 
-                                        item.SetItem is not null && 
-                                        item.SetItem.SetItemDetails is { Count: > 0 })
+                                    if (item.ItemType is ItemType.SetItem &&
+                                    item.SetItem is not null &&
+                                    item.SetItem.SetItemDetails is { Count: > 0 })
                                     {
-                                        @foreach (Items.Dtos.SetItemDetailsDto setItem in item.SetItem.SetItemDetails) 
+                                        @foreach (Items.Dtos.SetItemDetailsDto setItem in item.SetItem.SetItemDetails)
                                         {
                                             <tr>
                                                 <td colspan="5">
@@ -787,7 +858,9 @@
                                                                 <InputCheckbox class="form-check-input" @bind-Value="setItem.IsSelected" />
                                                             </td>
                                                             <td class="text-start" style="width: 90%;">
-                                                                @{string? firstImage = setItem.Item?.Images?.FirstOrDefault()?.ImageUrl;}
+                                                                @{
+                                                                    string? firstImage = setItem.Item?.Images?.FirstOrDefault()?.ImageUrl;
+                                                                }
 
                                                                 <Div>
                                                                     @if (!string.IsNullOrEmpty(firstImage))
@@ -813,7 +886,7 @@
                                     <td>
                                     </td>
                                     <td>
-                                        $@Order.OrderItems.Sum(x=>x.TotalAmount).ToString("N2")
+                                        $@Order.OrderItems.Sum(x => x.TotalAmount).ToString("N2")
                                     </td>
                                 </tr>
                                 <tr>
@@ -825,7 +898,7 @@
                                     <td>
                                     </td>
                                     <td>
-                                       $@((Order.TotalAmount-Order.OrderItems.Sum(x=>x.TotalAmount)).ToString("N2"))
+                                        $@((Order.TotalAmount - Order.OrderItems.Sum(x => x.TotalAmount)).ToString("N2"))
                                     </td>
                                 </tr>
                                 <tr>
@@ -847,7 +920,7 @@
             </Card>
         </div>
     </div>
-    
+
     <div class="row">
         <div class="col-6">
             <h4 class="d-inline-block">@L["OrderDelivery"]</h4>
@@ -860,72 +933,73 @@
                               Data="@OrderDeliveries"
                               @bind-SelectedRow="@SelectedOrder"
                               DetailRowTrigger="@((e) => e.Item.Items?.Count > 0 && e.Item.Id == SelectedOrder?.Id)"
-                              Responsive
-                              RowClicked="ToggleRow">
-                 <DataGridColumns>
-                     <DataGridCommandColumn />
-                     
-                     <DataGridColumn Field="@nameof(OrderDeliveryDto.DeliveryNo)" Caption="@L["DeliveryNo"]">
-                         <DisplayTemplate>
-                             @{
-                                var isExpanded = ExpandedRows.Contains(context.Id);
-                                var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
-                            }
-                            <i class="@chevronClass"></i>
-                            @context.DeliveryNo
-                        </DisplayTemplate>
-                    </DataGridColumn>
-                   
-                    <DataGridColumn Field="@nameof(OrderDeliveryDto.DeliveryMethod)" Caption="@L["DeliveryMethod"]" >
+                                    Responsive
+                               RowClicked="ToggleRow">
+                         <DataGridColumns>
+                             <DataGridCommandColumn />
+
+                             <DataGridColumn Field="@nameof(OrderDeliveryDto.DeliveryNo)" Caption="@L["DeliveryNo"]">
+                                 <DisplayTemplate>
+                                     @{
+                                        var isExpanded = ExpandedRows.Contains(context.Id);
+                                        var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
+                                    }
+                                    <i class="@chevronClass"></i>
+                                    @context.DeliveryNo
+                                </DisplayTemplate>
+                            </DataGridColumn>
+
+                            <DataGridColumn Field="@nameof(OrderDeliveryDto.DeliveryMethod)" Caption="@L["DeliveryMethod"]">
                                 <DisplayTemplate>
                                     @if (context.DeliveryMethod is DeliveryMethod.DeliveredByStore && context.ActualDeliveryMethod is not null)
                                     {
                                         @(L[context.DeliveryMethod.ToString()] + " (" + L[context.ActualDeliveryMethod.ToString()] + ")")
                                     }
-                                    else {
+                                    else
+                                    {
                                         @L[context.DeliveryMethod.ToString()]
                                     }
                                 </DisplayTemplate>
-                        </DataGridColumn>
-                        <DataGridColumn Field="@nameof(OrderDeliveryDto.LastModificationTime)" Caption="@L["LastUpdatedDate"]" >
+                            </DataGridColumn>
+                            <DataGridColumn Field="@nameof(OrderDeliveryDto.LastModificationTime)" Caption="@L["LastUpdatedDate"]">
                                 <DisplayTemplate>
                                     @context.LastModificationTime
                                 </DisplayTemplate>
-                        </DataGridColumn>
-                         <DataGridColumn Field="@nameof(OrderDeliveryDto.Editor)" Caption="@L["Editor"]" >
+                            </DataGridColumn>
+                            <DataGridColumn Field="@nameof(OrderDeliveryDto.Editor)" Caption="@L["Editor"]">
                                 <DisplayTemplate>
                                     @context.Editor
                                 </DisplayTemplate>
-                        </DataGridColumn>
-                    <DataGridColumn Field="@nameof(OrderDeliveryDto.DeliveryStatus)" Caption="@L["DeliveryStatus"]">
-                        <DisplayTemplate>
-                            @L[context.DeliveryStatus.ToString()]
-                        </DisplayTemplate>
-                     
-                    </DataGridColumn>
-                     <DataGridColumn  Caption="@L["DeliveryTemperature"]" >
-                        <DisplayTemplate>
-                            @if(context.Items.Count>0)
-                            {
-                            @L[context.Items[0]?.DeliveryTemperature.ToString()]
-                            }
-                        </DisplayTemplate>
-                       </DataGridColumn>
-                 <DataGridColumn  Caption="@L["AllPayLogisticsID"]" >
-                        <DisplayTemplate>
-                            @context.AllPayLogisticsID
-                        </DisplayTemplate>
-                       </DataGridColumn>
-                    
-                     <DataGridColumn Width="300px"
+                            </DataGridColumn>
+                            <DataGridColumn Field="@nameof(OrderDeliveryDto.DeliveryStatus)" Caption="@L["DeliveryStatus"]">
+                                <DisplayTemplate>
+                                    @L[context.DeliveryStatus.ToString()]
+                                </DisplayTemplate>
+
+                            </DataGridColumn>
+                            <DataGridColumn Caption="@L["DeliveryTemperature"]">
+                                <DisplayTemplate>
+                                    @if (context.Items.Count > 0)
+                                    {
+                                        @L[context.Items[0]?.DeliveryTemperature.ToString()]
+                                    }
+                                </DisplayTemplate>
+                            </DataGridColumn>
+                            <DataGridColumn Caption="@L["AllPayLogisticsID"]">
+                                <DisplayTemplate>
+                                    @context.AllPayLogisticsID
+                                </DisplayTemplate>
+                            </DataGridColumn>
+
+                            <DataGridColumn Width="300px"
                                             TItem="OrderDeliveryDto"
                                             Field="@nameof(OrderDeliveryDto.Id)"
-                                Sortable="false"
-                                Caption="@L["Actions"]">
-                        <DisplayTemplate>
+                                            Sortable="false"
+                                            Caption="@L["Actions"]">
+                                <DisplayTemplate>
                                     @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
                                     {
-                                        
+
                                         <div class="btn-group me-1" role="group" aria-label="Button group with nested dropdown">
                                             @if (CheckForDeliveryMethod(context.DeliveryMethod))
                                             {
@@ -938,30 +1012,30 @@
                                             <Button Type="ButtonType.Button" Clicked="() => OpenShipmentModal(context)" style="margin-left: 1px;" Class="btn btn-primary"><Icon Class="dropdown-toggle"></Icon></Button>
 
 
-                                            </div>
+                                        </div>
                                         @*   <Button Type="ButtonType.Button" Clicked="() => OpenShipmentModal(context)" Class="btn btn-sm btn-primary me-1">
                                     @L["ShipmentNotify"]
-                                </Button> *@
-                                    <Button Type="ButtonType.Button" 
-                                            Clicked="() => TestLabel(context)" 
-                                            Class="btn btn-sm btn-secondary me-1"
-                                            hidden>
-                                        Test Label
-                                    </Button>
+                                    </Button> *@
+                                        <Button Type="ButtonType.Button"
+                                                Clicked="() => TestLabel(context)"
+                                                Class="btn btn-sm btn-secondary me-1"
+                                                hidden>
+                                            Test Label
+                                        </Button>
                                         @if (context.DeliveryStatus is DeliveryStatus.ToBeShipped)
                                         {
-                                            <Button Type="ButtonType.Button" 
-                                                    Clicked="() => OrderItemShipped(context)" 
+                                            <Button Type="ButtonType.Button"
+                                                    Clicked="() => OrderItemShipped(context)"
                                                     Class="btn btn-sm btn-secondary me-1">
                                                 @L["Shipped"]
                                             </Button>
                                         }
                                         else
                                         {
-                                            <Button Type="ButtonType.Button"     
-                                                    Disabled 
-                                                    Clicked="() => OrderItemShipped(context)" 
-                                                    Class="btn btn-sm btn-secondary me-1">
+                                            <Button Type="ButtonType.Button"
+                                                                Disabled
+                                                     Clicked="() => OrderItemShipped(context)"
+                                                     Class="btn btn-sm btn-secondary me-1">
                                                  @L["Shipped"]
                                             </Button>
                                         }
@@ -969,19 +1043,19 @@
                                     }
                                 </DisplayTemplate>
                             </DataGridColumn>
-                </DataGridColumns>
+                        </DataGridColumns>
                         <DetailRowTemplate>
                             @{
                                 isDeliveryCostDisplayed = false;
 
                                 isNormal = context.Items.Any(i => i.DeliveryTemperature is ItemStorageTemperature.Normal);
 
-                                isFreeze = context.Items.Any(i => i.DeliveryTemperature is ItemStorageTemperature.Freeze) && 
-                                           OrderDeliveries.Count(a => a.Items.Any(af => af.DeliveryTemperature is ItemStorageTemperature.Normal)) is 0;
+                                isFreeze = context.Items.Any(i => i.DeliveryTemperature is ItemStorageTemperature.Freeze) &&
+                                OrderDeliveries.Count(a => a.Items.Any(af => af.DeliveryTemperature is ItemStorageTemperature.Normal)) is 0;
 
-                                isFrozen = context.Items.Any(i => i.DeliveryTemperature is ItemStorageTemperature.Frozen) && 
-                                           OrderDeliveries.Count(a => a.Items.Any(af => af.DeliveryTemperature is ItemStorageTemperature.Normal)) is 0 &&
-                                           OrderDeliveries.Count(a => a.Items.Any(af => af.DeliveryTemperature is ItemStorageTemperature.Freeze)) is 0;
+                                isFrozen = context.Items.Any(i => i.DeliveryTemperature is ItemStorageTemperature.Frozen) &&
+                                OrderDeliveries.Count(a => a.Items.Any(af => af.DeliveryTemperature is ItemStorageTemperature.Normal)) is 0 &&
+                                OrderDeliveries.Count(a => a.Items.Any(af => af.DeliveryTemperature is ItemStorageTemperature.Freeze)) is 0;
                             }
                             <table class="table table-responsive table-striped text-center">
                                 <thead>
@@ -1004,7 +1078,7 @@
                                                     @if (item.ItemType is ItemType.Item)
                                                     {
                                                         string? firstImage = item.Item?.Images?.FirstOrDefault()?.ImageUrl;
-                                                        
+
                                                         @if (!string.IsNullOrEmpty(firstImage))
                                                         {
                                                             <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
@@ -1015,7 +1089,7 @@
                                                     @if (item.ItemType is ItemType.SetItem)
                                                     {
                                                         string? firstImage = item.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
-                                                        
+
                                                         <Div>
                                                             @if (!string.IsNullOrEmpty(firstImage))
                                                             {
@@ -1028,7 +1102,7 @@
                                                     @if (item.ItemType is ItemType.Freebie)
                                                     {
                                                         string? firstImage = item.Freebie?.Images?.FirstOrDefault()?.ImageUrl;
-                                                        
+
                                                         @if (!string.IsNullOrEmpty(firstImage))
                                                         {
                                                             <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
@@ -1059,8 +1133,8 @@
                                                     </td>
                                                     <td>
                                                         @if (!isDeliveryCostDisplayed && isNormal ||
-                                                             !isDeliveryCostDisplayed && isFreeze || 
-                                                             !isDeliveryCostDisplayed && isFrozen)
+                                                       !isDeliveryCostDisplayed && isFreeze ||
+                                                       !isDeliveryCostDisplayed && isFrozen)
                                                         {
                                                             if (Order.DeliveryMethod == DeliveryMethod.DeliveredByStore)
                                                             {
@@ -1086,15 +1160,15 @@
                                                     </td>
                                                     <td>
                                                         $@CalculateItemTotal(item, !isDeliveryCostDisplayed && isNormal ||
-                                                                                   !isDeliveryCostDisplayed && isFreeze ||
-                                                                                   !isDeliveryCostDisplayed && isFrozen).ToString("N2")
+                                                                !isDeliveryCostDisplayed && isFreeze ||
+                                                                !isDeliveryCostDisplayed && isFrozen).ToString("N2")
                                                     </td>
                                                 }
                                             </tr>
 
                                             if (item.ItemType is ItemType.SetItem &&
-                                                item.SetItem is not null &&
-                                                item.SetItem.SetItemDetails is { Count: > 0 })
+                                            item.SetItem is not null &&
+                                            item.SetItem.SetItemDetails is { Count: > 0 })
                                             {
                                                 @foreach (Items.Dtos.SetItemDetailsDto setItem in item.SetItem.SetItemDetails)
                                                 {
@@ -1104,7 +1178,9 @@
                                                                 <tr>
                                                                     <td></td>
                                                                     <td class="text-start" style="width: 100%;">
-                                                                        @{ string? firstImage = setItem.Item?.Images?.FirstOrDefault()?.ImageUrl; }
+                                                                        @{
+                                                                            string? firstImage = setItem.Item?.Images?.FirstOrDefault()?.ImageUrl;
+                                                                        }
 
                                                                         <Div>
                                                                             @if (!string.IsNullOrEmpty(firstImage))
@@ -1131,8 +1207,8 @@
                                                 <td class="text-center" style="width: 10%;" />
                                                 <td>
                                                     $@(context.Items.GroupBy(s => s.DeliveryTemperatureCost)
-                                                                    .Select(s => s.Key)
-                                                                    .FirstOrDefault())
+                                                       .Select(s => s.Key)
+                                                       .FirstOrDefault())
                                                 </td>
                                             </tr>
                                         }
@@ -1143,16 +1219,18 @@
                                             <td class="text-center" style="width: 10%;" />
                                             <td class="text-center" style="width: 10%;" />
                                             <td>
-                                                @{ SetTotalAmount(context); Task.Delay(500); }
+                                                @{
+                                                    SetTotalAmount(context); Task.Delay(500);
+                                                }
 
                                                 $@(
-                                                    (context.Items.Sum(s => s.TotalAmount) 
-                                                    + (Order.DeliveryMethod is DeliveryMethod.DeliveredByStore 
-                                                        ? context.Items.GroupBy(s => s.DeliveryTemperatureCost)
-                                                                       .Select(s => s.Key)
-                                                                       .FirstOrDefault() 
-                                                          : context.TotalAmount!.Value)).ToString("N2")
-                                                )
+                                                   (context.Items.Sum(s => s.TotalAmount)
+                                                   + (Order.DeliveryMethod is DeliveryMethod.DeliveredByStore
+                                                   ? context.Items.GroupBy(s => s.DeliveryTemperatureCost)
+                                                   .Select(s => s.Key)
+                                                   .FirstOrDefault()
+                                                   : context.TotalAmount!.Value)).ToString("N2")
+                                                   )
                                             </td>
                                         </tr>
                                     }
@@ -1192,7 +1270,7 @@
                                     else
                                     {
                                         <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
-                                                <i class="fa fa-check"></i>
+                                            <i class="fa fa-check"></i>
                                             @L["Update"]
                                         </Button>
                                     }
@@ -1332,7 +1410,7 @@
                         <label class="form-label">@L["ShippingNumber"]</label>
                         <div class="col-12 mb-2">
                             <InputText class="form-control" @bind-Value="@shipments.ShippingNumber"></InputText>
-                          
+
                         </div>
                     </div>
                 </ModalBody>
@@ -1350,7 +1428,7 @@
         </ModalContent>
     </Modal>
 
-     <Modal @ref="RefundModal">
+    <Modal @ref="RefundModal">
         <ModalBackdrop />
         <ModalContent IsCentered="true" Size="ModalSize.Large">
             <EditForm Model="@refunds" OnValidSubmit="ApplyRefundAsync">
@@ -1365,17 +1443,17 @@
                             <Div Class="col-6">
                                 <Label>
                                     @L["RefundChannel"]: @(GetRefundChannel())
-                                </Label>
-                            </Div>
-                            <Div Class="col-6">
-                                <Label>
-                                    @L["PaymentStatus"]: @(PaymentStatus)
-                                </Label>
-                            </Div>
+                            </Label>
                         </Div>
+                        <Div Class="col-6">
+                            <Label>
+                                @L["PaymentStatus"]: @(PaymentStatus)
+                            </Label>
+                        </Div>
+                    </Div>
 
-                        <div class="row my-2">
-                            <label class="form-label">@L["RefundWholeOrder"]</label>
+                    <div class="row my-2">
+                        <label class="form-label">@L["RefundWholeOrder"]</label>
                         <div class="col-12">
                             <input type="checkbox" class="form-check-input" checked="@refunds.IsRefundOrder" @onchange="() => UpdateCheckState(1)" />
                         </div>
@@ -1384,146 +1462,146 @@
                         <label class="form-label">@L["SelectItemForRefund"]</label>
                         <div class="col-12 mb-2">
                             <input type="checkbox" class="form-check-input" checked="@refunds.IsRefundItems" @onchange="() => UpdateCheckState(2)" />
-                          
+
                         </div>
                     </div>
-                    @if(refunds.IsRefundItems)
+                    @if (refunds.IsRefundItems)
                     {
-                    <div class="row my-2">
-                      
-            <Card>
-                <CardBody>
-                    <table class="table table-responsive table-striped text-center">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th></th>
-                                <th>@L["Quantity"]</th>
-                                <th>@L["UnitPrice"]</th>
-                                <th>@L["Subtotal"]</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (Order is not null && Order.OrderItems is not null)
-                            {
-                                @foreach (OrderItemDto item in Order.OrderItems)
-                                {
-                                    <tr>
-                                        <td>
-                                            @if (item.ItemType is not ItemType.SetItem) 
+                        <div class="row my-2">
+
+                            <Card>
+                                <CardBody>
+                                    <table class="table table-responsive table-striped text-center">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th></th>
+                                                <th>@L["Quantity"]</th>
+                                                <th>@L["UnitPrice"]</th>
+                                                <th>@L["Subtotal"]</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Order is not null && Order.OrderItems is not null)
                                             {
-                                                <InputCheckbox class="form-check-input" 
-                                                               ValueChanged="@((e) => CheckboxChanged(e, item))" 
-                                                               ValueExpression="@(() => item.IsSelected)"
-                                                               Value="item.IsSelected" />
-                                            }
-                                        </td>
-                                        <td class="text-start" style="width: 50%;">
-                                            @if (item.ItemType == ItemType.Item)
-                                            {
-                                                var firstImage = item.Item?.Images?.FirstOrDefault()?.ImageUrl;
-                                                @if (!string.IsNullOrEmpty(firstImage))
+                                                @foreach (OrderItemDto item in Order.OrderItems)
                                                 {
-                                                    <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                    <tr>
+                                                        <td>
+                                                            @if (item.ItemType is not ItemType.SetItem)
+                                                            {
+                                                                <InputCheckbox class="form-check-input"
+                                                                               ValueChanged="@((e) => CheckboxChanged(e, item))"
+                                                                               ValueExpression="@(() => item.IsSelected)"
+                                                                               Value="item.IsSelected" />
+                                                            }
+                                                        </td>
+                                                        <td class="text-start" style="width: 50%;">
+                                                            @if (item.ItemType == ItemType.Item)
+                                                            {
+                                                                var firstImage = item.Item?.Images?.FirstOrDefault()?.ImageUrl;
+                                                                @if (!string.IsNullOrEmpty(firstImage))
+                                                                {
+                                                                    <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                                }
+                                                                @item.Item?.ItemName
+                                                            }
+
+                                                            @if (item.ItemType == ItemType.SetItem)
+                                                            {
+                                                                var firstImage = item.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
+
+                                                                <Div Class="mx-4">
+                                                                    @if (!string.IsNullOrEmpty(firstImage))
+                                                                    {
+                                                                        <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                                    }
+                                                                    @item.SetItem?.SetItemName
+                                                                </Div>
+                                                            }
+
+                                                            @if (item.ItemType == ItemType.Freebie)
+                                                            {
+                                                                var firstImage = item.Freebie?.Images?.FirstOrDefault()?.ImageUrl;
+                                                                @if (!string.IsNullOrEmpty(firstImage))
+                                                                {
+                                                                    <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                                }
+                                                                @item.Freebie?.ItemName
+                                                            }
+
+                                                        </td>
+                                                        @if (item.IsSelected && IsItemsEditMode)
+                                                        {
+                                                            var thisItem = EditingItems.FirstOrDefault(e => e.Id == item.Id);
+                                                            @if (thisItem != null)
+                                                            {
+                                                                <td>
+                                                                    <input type="number" min="1" class="form-control form-control-sm @(thisItem.IsQuantiyError ? "invalid" : "")" @bind-value="thisItem.Quantity" @onblur="() => CalculateTotal(thisItem)" />
+                                                                </td>
+                                                                <td>
+                                                                    <input type="number" min="1" class="form-control form-control-sm @(thisItem.IsItemPriceError ? "invalid" : "")" @bind-value="thisItem.ItemPrice" @onblur="() => CalculateTotal(thisItem)" />
+                                                                </td>
+                                                                <td>
+                                                                    $@thisItem.TotalAmount.ToString("N2")
+                                                                </td>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <td>
+                                                                @item.Quantity
+                                                            </td>
+                                                            <td>
+                                                                <span>$@item.ItemPrice.ToString("N2")</span>
+                                                            </td>
+                                                            <td>
+                                                                $@item.TotalAmount.ToString("N2")
+                                                            </td>
+                                                        }
+                                                    </tr>
                                                 }
-                                                @item.Item?.ItemName
-                                            }
 
-                                            @if (item.ItemType == ItemType.SetItem)
-                                            {
-                                                var firstImage = item.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
 
-                                                <Div Class="mx-4">
-                                                    @if (!string.IsNullOrEmpty(firstImage))
-                                                    {
-                                                        <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
-                                                    }
-                                                    @item.SetItem?.SetItemName
-                                                </Div>
+                                                <tr>
+                                                    <td colspan="2" class="text-end">
+                                                        @L["RefundAmount"]
+                                                    </td>
+                                                    <td>
+                                                    </td>
+                                                    <td>
+                                                    </td>
+                                                    <td>
+                                                        $@Order.OrderItems.Where(x => x.IsSelected == true).Sum(x => x.ItemPrice * x.Quantity).ToString("N2")
+                                                    </td>
+                                                </tr>
                                             }
+                                        </tbody>
+                                    </table>
+                                </CardBody>
+                            </Card>
 
-                                            @if (item.ItemType == ItemType.Freebie)
-                                            {
-                                                var firstImage = item.Freebie?.Images?.FirstOrDefault()?.ImageUrl;
-                                                @if (!string.IsNullOrEmpty(firstImage))
-                                                {
-                                                    <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
-                                                }
-                                                @item.Freebie?.ItemName
-                                            }
 
-                                        </td>
-                                        @if (item.IsSelected && IsItemsEditMode)
-                                        {
-                                            var thisItem = EditingItems.FirstOrDefault(e => e.Id == item.Id);
-                                            @if (thisItem != null)
-                                            {
-                                                <td>
-                                                    <input type="number" min="1" class="form-control form-control-sm @(thisItem.IsQuantiyError ? "invalid" : "")" @bind-value="thisItem.Quantity" @onblur="() => CalculateTotal(thisItem)" />
-                                                </td>
-                                                <td>
-                                                    <input type="number" min="1" class="form-control form-control-sm @(thisItem.IsItemPriceError ? "invalid" : "")" @bind-value="thisItem.ItemPrice" @onblur="() => CalculateTotal(thisItem)" />
-                                                </td>
-                                                <td>
-                                                    $@thisItem.TotalAmount.ToString("N2")
-                                                </td>
-                                            }
-                                        }
-                                        else
-                                        {
-                                            <td>
-                                                @item.Quantity
-                                            </td>
-                                            <td>
-                                                <span>$@item.ItemPrice.ToString("N2")</span>
-                                            </td>
-                                            <td>
-                                                $@item.TotalAmount.ToString("N2")
-                                            </td>
-                                        }
-                                    </tr>
-                                }
-                              
-                               
-                                <tr>
-                                    <td colspan="2" class="text-end">
-                                        @L["RefundAmount"]
-                                    </td>
-                                    <td>
-                                    </td>
-                                    <td>
-                                    </td>
-                                    <td>
-                                        $@Order.OrderItems.Where(x=>x.IsSelected==true).Sum(x=>x.ItemPrice*x.Quantity).ToString("N2")
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </CardBody>
-            </Card>
-         
-                    
-                    </div>
+                        </div>
                     }
                     <div class="row my-2">
                         <label class="form-label">@L["RefundAmount"]</label>
                         <div class="col-12 mb-2">
-                            <input type="checkbox" class="form-check-input"checked="@refunds.IsRefundAmount" @onchange="() => UpdateCheckState(3)" />
-                           
+                            <input type="checkbox" class="form-check-input" checked="@refunds.IsRefundAmount" @onchange="() => UpdateCheckState(3)" />
+
                         </div>
                     </div>
-                      @if (refunds.IsRefundAmount)
+                    @if (refunds.IsRefundAmount)
                     {
                         <div class="row my-2">
                             <label class="form-label">@L["RefundAmount"]</label>
-                        <div class="col-12 mb-2">
-                           
-                          
-                                <InputNumber class="form-control"  @bind-Value="@refunds.Amount" />
-                            
+                            <div class="col-12 mb-2">
+
+
+                                <InputNumber class="form-control" @bind-Value="@refunds.Amount" />
+
+                            </div>
                         </div>
-                    </div>
                     }
                 </ModalBody>
                 <ModalFooter>

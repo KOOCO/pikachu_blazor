@@ -1085,6 +1085,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         order.Road = input.Road;
         order.AddressDetails = input.AddressDetails;
         order.OrderStatus = input.OrderStatus;
+        order.StoreId = input.StoreId;
+        order.CVSStoreOutSide = input.CVSStoreOutSide;
         await _orderRepository.UpdateAsync(order);
         return ObjectMapper.Map<Order, OrderDto>(order);
     }

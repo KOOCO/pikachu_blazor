@@ -273,13 +273,24 @@ public partial class OrderDetails
             await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
         }
     }
+    void EditCVSStoreId()
+    {
+        ModificationTrack.IsModified = true;
+        ModificationTrack.NewCVSStoreId ??= Order.StoreId;
+        ModificationTrack.IsCVSStoreIdInputVisible = true;
+    }
+    void EditCVSStoreOutside()
+    {
+        ModificationTrack.IsModified = true;
+        ModificationTrack.NewCVSStoreOutside ??= Order.CVSStoreOutSide;
+        ModificationTrack.IsCVSStoreOutsideInputVisible = true;
+    }
     void EditRecipientName()
     {
         ModificationTrack.IsModified = true;
         ModificationTrack.NewName ??= Order.RecipientName;
         ModificationTrack.IsNameInputVisible = true;
     }
-
     void EditRecipientPhone()
     {
         ModificationTrack.IsModified = true;
@@ -307,6 +318,35 @@ public partial class OrderDetails
         ModificationTrack.IsModified = true;
         ModificationTrack.NewCity ??= Order.City;
         ModificationTrack.IsCityInputVisible = true;
+    }
+
+    void SaveCVSStoreId()
+    {
+        if (ModificationTrack.NewCVSStoreId.IsNullOrWhiteSpace())
+        {
+            ModificationTrack.IsInvalidCVSStoreId = true;
+        }
+        else
+        {
+            ModificationTrack.IsCVSStoreIdModified = true;
+            ModificationTrack.IsCVSStoreIdInputVisible = false;
+            ModificationTrack.IsInvalidCVSStoreId = false;
+        }
+
+    }
+    void SaveCVSStoreOutside()
+    {
+        if (ModificationTrack.NewCVSStoreOutside.IsNullOrWhiteSpace())
+        {
+            ModificationTrack.IsInvalidCVSStoreOutside = true;
+        }
+        else
+        {
+            ModificationTrack.IsCVSStoreOutsideModified = true;
+            ModificationTrack.IsCVSStoreOutsideInputVisible = false;
+            ModificationTrack.IsInvalidCVSStoreOutside = false;
+        }
+
     }
     void SaveRecipientName()
     {
@@ -384,7 +424,12 @@ public partial class OrderDetails
     {
         try
         {
-            if (ModificationTrack.IsInvalidName || ModificationTrack.IsInvalidPhone || ModificationTrack.IsInvalidAddress||ModificationTrack.IsInvalidPostalCode)
+            if (ModificationTrack.IsInvalidName ||
+                ModificationTrack.IsInvalidPhone ||
+                ModificationTrack.IsInvalidAddress ||
+                ModificationTrack.IsInvalidPostalCode ||
+                ModificationTrack.IsInvalidCVSStoreId ||
+                ModificationTrack.IsInvalidCVSStoreOutside)
             {
                 return;
             }
@@ -413,6 +458,14 @@ public partial class OrderDetails
                 ModificationTrack.IsInvalidCity = true;
                 return;
             }
+            else if (ModificationTrack.IsCVSStoreIdInputVisible)
+            {
+                ModificationTrack.IsInvalidCVSStoreId = true;
+            }
+            else if (ModificationTrack.IsCVSStoreOutsideInputVisible)
+            {
+                ModificationTrack.IsInvalidCVSStoreOutside = true;
+            }
             else
             {
                 ModificationTrack.IsInvalidName = false;
@@ -420,6 +473,8 @@ public partial class OrderDetails
                 ModificationTrack.IsInvalidAddress = false;
                 ModificationTrack.IsInvalidPostalCode = false;
                 ModificationTrack.IsInvalidCity = false;
+                ModificationTrack.IsInvalidCVSStoreId = false;
+                ModificationTrack.IsInvalidCVSStoreOutside = false;
             }
 
             UpdateOrder = _ObjectMapper.Map<OrderDto, CreateOrderDto>(Order);
@@ -443,6 +498,14 @@ public partial class OrderDetails
             UpdateOrder.AddressDetails = ModificationTrack.IsAddressModified ?
                                          ModificationTrack.NewAddress : 
                                          Order.AddressDetails;
+
+            UpdateOrder.StoreId = ModificationTrack.IsCVSStoreIdModified ?
+                                  ModificationTrack.NewCVSStoreId :
+                                  Order.StoreId;
+
+            UpdateOrder.CVSStoreOutSide = ModificationTrack.IsCVSStoreOutsideModified ?
+                                 ModificationTrack.NewCVSStoreOutside :
+                                 Order.CVSStoreOutSide;
 
             await loading.Show();
             UpdateOrder.OrderStatus = Order.OrderStatus;
@@ -1372,6 +1435,14 @@ public class ModificationTrack
     public bool IsAddressModified { get; set; }
     public bool IsPostalCodeModified { get; set; }
     public bool IsCityModified { get; set; }
+    public bool IsCVSStoreIdModified { get; set; }
+    public string NewCVSStoreId { get; set; }
+    public bool IsCVSStoreIdInputVisible { get; set; }
+    public bool IsInvalidCVSStoreId { get; set; }
+    public bool IsCVSStoreOutsideModified { get; set; }
+    public string NewCVSStoreOutside { get; set; }
+    public bool IsCVSStoreOutsideInputVisible { get; set; }
+    public bool IsInvalidCVSStoreOutside { get; set; }
 }
 public class Shipments
 {
