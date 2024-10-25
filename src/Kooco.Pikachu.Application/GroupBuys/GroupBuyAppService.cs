@@ -726,11 +726,9 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     /// <returns></returns>
     public async Task<List<FreebieDto>> GetFreebieForStoreAsync(Guid groupBuyId)
     {
-        using (_dataFilter.Disable<IMultiTenant>())
-        {
-            List<Freebie> freebie = await _freebieRepository.GetFreebieStoreAsync(groupBuyId);
-            return ObjectMapper.Map<List<Freebie>, List<FreebieDto>>(freebie);
-        }
+        List<Freebie> freebie = await _freebieRepository.GetFreebieStoreAsync(groupBuyId);
+
+        return ObjectMapper.Map<List<Freebie>, List<FreebieDto>>(freebie);
     }
 
     public async Task<bool> CheckShortCodeForCreate(string shortCode)
