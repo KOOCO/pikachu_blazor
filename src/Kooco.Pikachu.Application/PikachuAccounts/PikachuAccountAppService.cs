@@ -32,6 +32,22 @@ public class PikachuAccountAppService(IConfiguration configuration, IdentityUser
         AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(3)
     };
 
+    public async Task<GenericResponseDto> FindByTokenAsync(LoginMethod method, string thirdPartyToken)
+    {
+        if (method == LoginMethod.UserNameOrPassword)
+        {
+            return new GenericResponseDto(false, "Invalid_Method");
+        }
+        var externalUser = await SetupExternalUserAsync(method, thirdPartyToken);
+        var user = await identityUserRepository.FindByExternalIdAsync(method, externalUser.ExternalId, false);
+        if (user is null)
+        {
+            return new GenericResponseDto(false, "NOT_FOUND");
+        }
+
+        return new GenericResponseDto(true);
+    }
+
     public async Task<PikachuLoginResponseDto> LoginAsync(PikachuLoginInputDto input)
     {
         ValidateLogin(input);

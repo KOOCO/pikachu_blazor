@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Members;
 using Kooco.Pikachu.Orders;
@@ -146,5 +147,11 @@ public class MemberController(IMemberAppService memberAppService, IPikachuAccoun
     public Task<GenericResponseDto> ResetPasswordAsync(PikachuResetPasswordDto input)
     {
         return pikachuAccountAppService.ResetPasswordAsync(input);
+    }
+
+    [HttpPost("find-by-token/{method}")]
+    public Task<GenericResponseDto> FindByTokenAsync(LoginMethod method, [FromBody] string thirdPartyToken)
+    {
+        return pikachuAccountAppService.FindByTokenAsync(method, thirdPartyToken);
     }
 }
