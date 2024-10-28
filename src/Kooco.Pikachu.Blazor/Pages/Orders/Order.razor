@@ -380,7 +380,7 @@
                                                     <tr>
                                                         <td>@L["OrderItems"]</td>
                                                         <td>
-                                                            @foreach (var item in orderItems)
+                                                            @foreach (OrderItemDto item in orderItems.OrderBy(o => o.ItemType).ToList())
                                                             {
                                                                 @if (item.ItemType is ItemType.Item)
                                                                 {
@@ -558,7 +558,7 @@
                                                     <tr>
                                                         <td>@L["OrderItems"]</td>
                                                         <td>
-                                                            @foreach (var item in orderItems)
+                                                            @foreach (OrderItemDto item in orderItems.OrderBy(o => o.ItemType).ToList())
                                                             {
                                                                 @if (item.ItemType == ItemType.Item)
                                                                 {
@@ -1628,7 +1628,7 @@
                                                 <tr>
                                                     <td>@L["OrderItems"]</td>
                                                     <td>
-                                                        @foreach (var item in orderItems)
+                                                        @foreach (OrderItemDto item in orderItems.OrderBy(o => o.ItemType).ToList())
                                                         {
                                                             @if (item.ItemType == ItemType.Item)
                                                             {
@@ -2185,7 +2185,7 @@
                                                 <tr>
                                                     <td>@L["OrderItems"]</td>
                                                     <td>
-                                                        @foreach (var item in orderItems)
+                                                        @foreach (OrderItemDto item in orderItems.OrderBy(o => o.ItemType).ToList())
                                                         {
                                                             @if (item.ItemType == ItemType.Item)
                                                             {
