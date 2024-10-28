@@ -216,174 +216,7 @@
                                                 </td>
                                             }
                                         </tr>
-                                        <tr>
-                                            <td>@L["RecipientPostalCode"]</td>
 
-                                            @* <td>@Order.PostalCode</td> *@
-                                            @if (ModificationTrack.IsPostalCodeInputVisible)
-                                            {
-                                                <td>
-
-                                                    <div class="row">
-                                                        <div class="col-12">
-                                                            <div class="input-group">
-                                                                @{
-                                                                    var errorClass = ModificationTrack.IsInvalidPostalCode ? "invalid" : "";
-                                                                }
-                                                                <input class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewPostalCode" />
-                                                                <Button Type="ButtonType.Button" @onclick="SaveRecipientPostalCode" Class="btn btn-sm btn-primary">
-                                                                    <i class="fa fa-check"></i>
-                                                                </Button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            }
-                                            else
-                                            {
-                                                <td class="d-flex justify-content-between">
-                                                    @if (ModificationTrack.IsPostalCodeModified)
-                                                    {
-                                                        @(ModificationTrack.NewPostalCode)
-                                                        @* +", " + ModificationTrack.NewRoad + ", " + ModificationTrack.NewDistrict + ", " + ModificationTrack.NewCity *@
-                                                    }
-                                                    else
-                                                    {
-                                                        @(Order.PostalCode)
-                                                        @*  + ", " + Order.Road + ", " + Order.District + ", " + Order.City *@
-                                                    }
-                                                    @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
-                                                    {
-                                                        <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientPostalCode">
-                                                            <i class="fa fa-pencil text-secondary"></i>
-                                                        </span>
-                                                    }
-                                                </td>
-                                            }
-                                        </tr>
-                                        <tr>
-                                            <td>@L["RecipientCity"]</td>
-                                            @if (ModificationTrack.IsCityInputVisible)
-                                            {
-                                                <td>
-                                                    <div class="row">
-                                                        <div class="col-12">
-                                                            <div class="input-group">
-                                                                @{
-                                                                    string errorClass = ModificationTrack.IsInvalidCity ? "invalid" : "";
-                                                                }
-                                                                @* <input class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewCity" /> *@
-
-                                                                <select class="form-select form-select-sm @errorClass" @onchange=@((e) => ModificationTrack.NewCity = Convert.ToString(e.Value))>
-                                                                    <option value=""> Select City </option>
-                                                                    @foreach (string city in Enum.GetNames<RecipientCities>())
-                                                                    {
-                                                                        <option value="@city">@city</option>
-                                                                    }
-                                                                </select>
-
-                                                                <Button Type="ButtonType.Button" @onclick="SaveRecipientCity" Class="btn btn-sm btn-primary">
-                                                                    <i class="fa fa-check"></i>
-                                                                </Button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            }
-                                            else
-                                            {
-                                                <td class="d-flex justify-content-between">
-                                                    @if (ModificationTrack.IsCityModified)
-                                                    {
-                                                        @L[ModificationTrack.NewCity]
-                                                        @* +", " + ModificationTrack.NewRoad + ", " + ModificationTrack.NewDistrict + ", " + ModificationTrack.NewCity *@
-                                                    }
-                                                    else
-                                                    {
-                                                        @L[Order.City ?? ""]
-                                                        @*  + ", " + Order.Road + ", " + Order.District + ", " + Order.City *@
-                                                    }
-                                                    @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
-                                                    {
-                                                        <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientCity">
-                                                            <i class="fa fa-pencil text-secondary"></i>
-                                                        </span>
-                                                    }
-                                                </td>
-                                            }
-                                        </tr>
-                                        <tr>
-                                            <td>@L["RecipientAddress"]</td>
-                                            @if (ModificationTrack.IsAddressInputVisible)
-                                            {
-                                                <td>
-                                                    @* <div class="row mb-1">
-                                            <div class="col-4">
-                                            <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewRoad">
-                                            <option disabled="disabled" selected="selected">選擇城市</option>
-                                            <option value="臺北市">臺北市</option>
-                                            <option value="桃園市">桃園市</option>
-                                            <option value="嘉義市">嘉義市</option>
-                                            </InputSelect>
-                                            </div>
-                                            <div class="col-4">
-                                            <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewDistrict">
-                                            <option disabled="disabled" selected="selected">選擇地區</option>
-                                            <option value="石碇區">石碇區</option>
-                                            <option value="坪林區">坪林區</option>
-                                            <option value="烏來區">烏來區</option>
-                                            </InputSelect>
-                                            </div>
-                                            <div class="col-4">
-                                            <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewCity">
-                                            <option disabled="disabled" selected="selected">選擇城市</option>
-                                            <option value="臺北市">臺北市</option>
-                                            <option value="桃園市">桃園市</option>
-                                            <option value="嘉義市">嘉義市</option>
-                                            </InputSelect>
-                                            </div>
-                                            </div> *@
-                                                    <div class="row">
-                                                        <div class="col-12">
-                                                            <div class="input-group">
-                                                                @{
-                                                                    var errorClass = ModificationTrack.IsInvalidAddress ? "invalid" : "";
-                                                                }
-                                                                <input class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewAddress" />
-                                                                <Button Type="ButtonType.Button" @onclick="SaveRecipientAddress" Class="btn btn-sm btn-primary">
-                                                                    <i class="fa fa-check"></i>
-                                                                </Button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            }
-                                            else
-                                            {
-                                                <td class="d-flex justify-content-between">
-                                                    @if (ModificationTrack.IsAddressModified)
-                                                    {
-                                                        @(ModificationTrack.NewAddress)
-                                                        @* +", " + ModificationTrack.NewRoad + ", " + ModificationTrack.NewDistrict + ", " + ModificationTrack.NewCity *@
-                                                    }
-                                                    else
-                                                    {
-                                                        @(Order.AddressDetails)
-                                                        @*  + ", " + Order.Road + ", " + Order.District + ", " + Order.City *@
-                                                    }
-                                                    @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
-                                                    {
-                                                        <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientAddress">
-                                                            <i class="fa fa-pencil text-secondary"></i>
-                                                        </span>
-                                                    }
-                                                </td>
-                                            }
-                                        </tr>
-                                        <tr>
-                                            <td>@L["RecipientComments"]</td>
-                                            <td>@Order.Remarks</td>
-                                        </tr>
                                         @if (IsShowConvenienceStoreDetails)
                                         {
                                             <tr>
@@ -465,6 +298,178 @@
                                                 }
                                             </tr>
                                         }
+
+                                        else 
+                                        {
+                                            <tr>
+                                                <td>@L["RecipientPostalCode"]</td>
+
+                                                @* <td>@Order.PostalCode</td> *@
+                                                @if (ModificationTrack.IsPostalCodeInputVisible)
+                                                {
+                                                    <td>
+
+                                                        <div class="row">
+                                                            <div class="col-12">
+                                                                <div class="input-group">
+                                                                    @{
+                                                                        var errorClass = ModificationTrack.IsInvalidPostalCode ? "invalid" : "";
+                                                                    }
+                                                                    <input class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewPostalCode" />
+                                                                    <Button Type="ButtonType.Button" @onclick="SaveRecipientPostalCode" Class="btn btn-sm btn-primary">
+                                                                        <i class="fa fa-check"></i>
+                                                                    </Button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <td class="d-flex justify-content-between">
+                                                        @if (ModificationTrack.IsPostalCodeModified)
+                                                        {
+                                                            @(ModificationTrack.NewPostalCode)
+                                                            @* +", " + ModificationTrack.NewRoad + ", " + ModificationTrack.NewDistrict + ", " + ModificationTrack.NewCity *@
+                                                        }
+                                                        else
+                                                        {
+                                                            @(Order.PostalCode)
+                                                            @*  + ", " + Order.Road + ", " + Order.District + ", " + Order.City *@
+                                                        }
+                                                        @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
+                                                        {
+                                                            <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientPostalCode">
+                                                                <i class="fa fa-pencil text-secondary"></i>
+                                                            </span>
+                                                        }
+                                                    </td>
+                                                }
+                                            </tr>
+                                            <tr>
+                                                <td>@L["RecipientCity"]</td>
+                                                @if (ModificationTrack.IsCityInputVisible)
+                                                {
+                                                    <td>
+                                                        <div class="row">
+                                                            <div class="col-12">
+                                                                <div class="input-group">
+                                                                    @{
+                                                                        string errorClass = ModificationTrack.IsInvalidCity ? "invalid" : "";
+                                                                    }
+                                                                    @* <input class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewCity" /> *@
+
+                                                                    <select class="form-select form-select-sm @errorClass" @onchange=@((e) => ModificationTrack.NewCity = Convert.ToString(e.Value))>
+                                                                        <option value=""> Select City </option>
+                                                                        @foreach (string city in Enum.GetNames<RecipientCities>())
+                                                                        {
+                                                                            <option value="@city">@city</option>
+                                                                        }
+                                                                    </select>
+
+                                                                    <Button Type="ButtonType.Button" @onclick="SaveRecipientCity" Class="btn btn-sm btn-primary">
+                                                                        <i class="fa fa-check"></i>
+                                                                    </Button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <td class="d-flex justify-content-between">
+                                                        @if (ModificationTrack.IsCityModified)
+                                                        {
+                                                            @L[ModificationTrack.NewCity]
+                                                            @* +", " + ModificationTrack.NewRoad + ", " + ModificationTrack.NewDistrict + ", " + ModificationTrack.NewCity *@
+                                                        }
+                                                        else
+                                                        {
+                                                            @L[Order.City ?? ""]
+                                                            @*  + ", " + Order.Road + ", " + Order.District + ", " + Order.City *@
+                                                        }
+                                                        @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
+                                                        {
+                                                            <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientCity">
+                                                                <i class="fa fa-pencil text-secondary"></i>
+                                                            </span>
+                                                        }
+                                                    </td>
+                                                }
+                                            </tr>
+                                            <tr>
+                                                <td>@L["RecipientAddress"]</td>
+                                                @if (ModificationTrack.IsAddressInputVisible)
+                                                {
+                                                    <td>
+                                                        @* <div class="row mb-1">
+                                            <div class="col-4">
+                                            <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewRoad">
+                                            <option disabled="disabled" selected="selected">選擇城市</option>
+                                            <option value="臺北市">臺北市</option>
+                                            <option value="桃園市">桃園市</option>
+                                            <option value="嘉義市">嘉義市</option>
+                                            </InputSelect>
+                                            </div>
+                                            <div class="col-4">
+                                            <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewDistrict">
+                                            <option disabled="disabled" selected="selected">選擇地區</option>
+                                            <option value="石碇區">石碇區</option>
+                                            <option value="坪林區">坪林區</option>
+                                            <option value="烏來區">烏來區</option>
+                                            </InputSelect>
+                                            </div>
+                                            <div class="col-4">
+                                            <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewCity">
+                                            <option disabled="disabled" selected="selected">選擇城市</option>
+                                            <option value="臺北市">臺北市</option>
+                                            <option value="桃園市">桃園市</option>
+                                            <option value="嘉義市">嘉義市</option>
+                                            </InputSelect>
+                                            </div>
+                                            </div> *@
+                                                        <div class="row">
+                                                            <div class="col-12">
+                                                                <div class="input-group">
+                                                                    @{
+                                                                        var errorClass = ModificationTrack.IsInvalidAddress ? "invalid" : "";
+                                                                    }
+                                                                    <input class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewAddress" />
+                                                                    <Button Type="ButtonType.Button" @onclick="SaveRecipientAddress" Class="btn btn-sm btn-primary">
+                                                                        <i class="fa fa-check"></i>
+                                                                    </Button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <td class="d-flex justify-content-between">
+                                                        @if (ModificationTrack.IsAddressModified)
+                                                        {
+                                                            @(ModificationTrack.NewAddress)
+                                                            @* +", " + ModificationTrack.NewRoad + ", " + ModificationTrack.NewDistrict + ", " + ModificationTrack.NewCity *@
+                                                        }
+                                                        else
+                                                        {
+                                                            @(Order.AddressDetails)
+                                                            @*  + ", " + Order.Road + ", " + Order.District + ", " + Order.City *@
+                                                        }
+                                                        @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
+                                                        {
+                                                            <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientAddress">
+                                                                <i class="fa fa-pencil text-secondary"></i>
+                                                            </span>
+                                                        }
+                                                    </td>
+                                                }
+                                            </tr>
+                                        }
+                                        <tr>
+                                            <td>@L["RecipientComments"]</td>
+                                            <td>@Order.Remarks</td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
