@@ -316,119 +316,148 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     public async Task<OrderDto> MergeOrdersAsync(List<Guid> Ids)
     {
-        decimal TotalAmount = 0;
-        int TotalQuantity = 0;
-        var ord = await _orderRepository.GetWithDetailsAsync(Ids[0]);
+        decimal TotalAmount = 0; int TotalQuantity = 0;
+
+        Order ord = await _orderRepository.GetWithDetailsAsync(Ids[0]);
+        
         GroupBuy groupBuy = new();
+
         using (_dataFilter.Disable<IMultiTenant>())
         {
             groupBuy = await _groupBuyRepository.GetAsync(ord.GroupBuyId);
         }
-        List<OrderItemsCreateDto> orderItems = new List<OrderItemsCreateDto>();
+
+        List<OrderItemsCreateDto> orderItems = [];
+
         using (CurrentTenant.Change(groupBuy?.TenantId))
         {
-            foreach (var id in Ids)
+            foreach (Guid id in Ids)
             {
+                Order order = await _orderRepository.GetWithDetailsAsync(id);
 
-                var order = await _orderRepository.GetWithDetailsAsync(id);
                 TotalAmount += order.TotalAmount;
-                TotalQuantity += order.TotalQuantity;
-                
+                TotalQuantity += order.TotalQuantity;   
 
-                foreach (var item in order.OrderItems)
+                foreach (OrderItem item in order.OrderItems)
                 {
-
-                    if (orderItems.Any(x => x.ItemId == item.ItemId && x.FreebieId==null) || orderItems.Any(x => x.FreebieId == item.FreebieId&& x.ItemId==null))
+                    if (orderItems.Any(x => x.ItemId == item.ItemId && x.FreebieId == null) || 
+                        orderItems.Any(x => x.FreebieId == item.FreebieId && x.ItemId == null))
                     {
-                        if (item.ItemId != null)
+                        if (item.ItemId is not null)
                         {
-                            var orderItem = orderItems.Where(x => x.ItemId == item.ItemId).FirstOrDefault();
+                            OrderItemsCreateDto? orderItem = orderItems.Where(x => x.ItemId == item.ItemId).FirstOrDefault();
+
+                            if (orderItem.SKU is null || orderItem.SKU == item.SKU)
+                            {
+                                orderItem.TotalAmount += item.TotalAmount;
+                                orderItem.Quantity += item.Quantity;
+                            }
+
+                            else
+                            {
+                                OrderItemsCreateDto orderItemCreate = new()
+                                {
+                                    ItemId = item.ItemId,
+                                    SetItemId = item.SetItemId,
+                                    FreebieId = item.FreebieId,
+                                    ItemType = item.ItemType,
+                                    Spec = item.Spec,
+                                    ItemPrice = item.ItemPrice,
+                                    TotalAmount = item.TotalAmount,
+                                    Quantity = item.Quantity,
+                                    SKU = item.SKU
+                                };
+
+                                orderItems.Add(orderItemCreate);
+                            }
+                        }
+                        else
+                        {
+                            OrderItemsCreateDto? orderItem = orderItems.Where(x => x.FreebieId == item.FreebieId).FirstOrDefault();
+
                             orderItem.TotalAmount += item.TotalAmount;
                             orderItem.Quantity += item.Quantity;
                         }
-                        else {
-                            var orderItem = orderItems.Where(x => x.FreebieId == item.FreebieId).FirstOrDefault();
-                            orderItem.TotalAmount += item.TotalAmount;
-                            orderItem.Quantity += item.Quantity;
-
-                        }
-
-
-
                     }
-                    else {
-                        OrderItemsCreateDto orderItem = new OrderItemsCreateDto();
-                        orderItem.ItemId = item.ItemId;
-                        orderItem.SetItemId = item.SetItemId;
-                        orderItem.FreebieId = item.FreebieId;
-                        orderItem.ItemType = item.ItemType;
+                    else 
+                    {
+                        OrderItemsCreateDto orderItem = new()
+                        {
+                            ItemId = item.ItemId,
+                            SetItemId = item.SetItemId,
+                            FreebieId = item.FreebieId,
+                            ItemType = item.ItemType,
+                            Spec = item.Spec,
+                            ItemPrice = item.ItemPrice,
+                            TotalAmount = item.TotalAmount,
+                            Quantity = item.Quantity,
+                            SKU = item.SKU
+                        };
 
-                        orderItem.Spec = item.Spec;
-                        orderItem.ItemPrice = item.ItemPrice;
-                        orderItem.TotalAmount = item.TotalAmount;
-                        orderItem.Quantity = item.Quantity;
-                        orderItem.SKU = item.SKU;
                         orderItems.Add(orderItem);
                     }
-
                 }
-
             }
-            var order1 = await _orderManager.CreateAsync(
-                      ord.GroupBuyId,
-                      ord.IsIndividual,
-                      ord.CustomerName,
-                      ord.CustomerPhone,
-                      ord.CustomerEmail,
-                      ord.PaymentMethod,
-                      ord.InvoiceType,
-                      ord.InvoiceNumber,
-                      ord.CarrierId,
-                      ord.UniformNumber,
-                      ord.TaxTitle,
-                      ord.IsAsSameBuyer,
-                      ord.RecipientName,
-                      ord.RecipientPhone,
-                      ord.RecipientEmail,
-                      ord.DeliveryMethod,
-                      ord.PostalCode,
-                      ord.City,
-                      ord.District,
-                      ord.Road,
-                      ord.AddressDetails,
-                      ord.Remarks,
-                      ord.ReceivingTime,
-                      TotalQuantity,
-                      TotalAmount,
-                      ord.ReturnStatus,
-                      OrderType.NewMarge
-                      );
+
+            orderItems = [.. orderItems.OrderBy(o => o.ItemType)];
+
+            Order order1 = await _orderManager.CreateAsync(
+                ord.GroupBuyId,
+                ord.IsIndividual,
+                ord.CustomerName,
+                ord.CustomerPhone,
+                ord.CustomerEmail,
+                ord.PaymentMethod,
+                ord.InvoiceType,
+                ord.InvoiceNumber,
+                ord.CarrierId,
+                ord.UniformNumber,
+                ord.TaxTitle,
+                ord.IsAsSameBuyer,
+                ord.RecipientName,
+                ord.RecipientPhone,
+                ord.RecipientEmail,
+                ord.DeliveryMethod,
+                ord.PostalCode,
+                ord.City,
+                ord.District,
+                ord.Road,
+                ord.AddressDetails,
+                ord.Remarks,
+                ord.ReceivingTime,
+                TotalQuantity,
+                TotalAmount,
+                ord.ReturnStatus,
+                OrderType.NewMarge
+            );
+
             order1.ShippingStatus = ord.ShippingStatus;
+
             order1.MerchantTradeNo = ord.OrderNo;
 
-            foreach (var item in orderItems)
+            foreach (OrderItemsCreateDto item in orderItems)
             {
                 _orderManager.AddOrderItem(
-                               order1,
-                               item.ItemId,
-                               item.SetItemId,
-                               item.FreebieId,
-                               item.ItemType,
-                               order1.Id,
-                               item.Spec,
-                               item.ItemPrice,
-                               item.TotalAmount,
-                               item.Quantity,
-                               item.SKU,
-                               item.DeliveryTemperature,
-                               item.DeliveryTemperatureCost
-                               );
-
+                    order1,
+                    item.ItemId,
+                    item.SetItemId,
+                    item.FreebieId,
+                    item.ItemType,
+                    order1.Id,
+                    item.Spec,
+                    item.ItemPrice,
+                    item.TotalAmount,
+                    item.Quantity,
+                    item.SKU,
+                    item.DeliveryTemperature,
+                    item.DeliveryTemperatureCost
+                );
             }
 
             await _orderRepository.InsertAsync(order1);
             await UnitOfWorkManager.Current.SaveChangesAsync();
-            if (order1.ShippingStatus == ShippingStatus.PrepareShipment)
+
+            if (order1.ShippingStatus is ShippingStatus.PrepareShipment)
             {
                 if (order1.OrderItems.Any(x => x.Item?.IsFreeShipping == true))
                 {
@@ -471,23 +500,34 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
                         order1.UpdateOrderItem(order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen && x.Item?.IsFreeShipping == false).ToList(), OrderDelivery.Id);
                     }
-
                 }
                 await UnitOfWorkManager.Current.SaveChangesAsync();
+
                 if (order1.OrderItems.Any(x => x.FreebieId != null))
                 {
-
                     var OrderDelivery1 = await _orderDeliveryRepository.FirstOrDefaultAsync(x => x.OrderId == order1.Id);
                     order1.UpdateOrderItem(order1.OrderItems.Where(x => x.FreebieId != null).ToList(), OrderDelivery1.Id);
                 }
+
                 await _orderRepository.UpdateAsync(order1);
                 await UnitOfWorkManager.Current.SaveChangesAsync();
             }
 
-            foreach (var id in Ids)
+            foreach (Guid id in Ids)
             {
-                var ord1 = await _orderRepository.GetAsync(id);
+                Order ord1 = await _orderRepository.GetWithDetailsAsync(id);
+
                 ord1.OrderType = OrderType.MargeToNew;
+
+                ord1.ShippingStatus = ShippingStatus.Closed;
+
+                ord1.TotalAmount = 0;
+
+                foreach (OrderItem item in ord1.OrderItems)
+                {
+                    item.ItemPrice = 0; item.TotalAmount = 0;
+                }
+
                 await _orderRepository.UpdateAsync(ord1, autoSave: true);
             }
             await UnitOfWorkManager.Current.SaveChangesAsync();

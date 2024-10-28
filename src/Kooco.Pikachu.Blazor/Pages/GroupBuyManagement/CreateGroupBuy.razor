@@ -922,7 +922,7 @@
                 {
                     <Select TValue="GroupBuyTemplateType"
                             @onchange="@((e) => SelectTemplate(e))">
-                        <option value="">@L["SelectTemplate"]</option>
+                        <option value="0" selected>@L["SelectTemplate"]</option>
                         <option value="@GroupBuyTemplateType.PikachuOne">@L["PikachuOne"]</option>
                         <option value="@GroupBuyTemplateType.PikachuTwo">@L["PikachuTwo"]</option>
                     </Select>
