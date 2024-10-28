@@ -505,55 +505,81 @@
                     {
                     <Button Type="ButtonType.Button" @onclick="CancelOrder" Class="btn btn-sm btn-danger">@L["CancelOrder"]</Button>
                     } *@
-                    @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
+                    @if (Order.OrderType is not OrderType.MargeToNew && Order.OrderStatus is not OrderStatus.Refund)
                     {
-                        @if (Order.ShippingStatus != ShippingStatus.WaitingForPayment && Order.IsRefunded == false)
+                        @if (Order.ShippingStatus is not ShippingStatus.WaitingForPayment && Order.IsRefunded is false)
                         {
-                            <Button Type="ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="OpenRefundModal">
+                            <Button Type="ButtonType.Button" 
+                                    Class="btn btn-sm btn-danger" 
+                                    Clicked="OpenRefundModal">
                                 @L["ApplyRefund"]
                             </Button>
                         }
                         else
                         {
                             <Button Type="ButtonType.Button"
-                                                Disabled Class="btn btn-sm btn-danger" Clicked="OpenRefundModal">
+                                    Disabled 
+                                    Class="btn btn-sm btn-danger" 
+                                    Clicked="OpenRefundModal">
                                  @L["ApplyRefund"]
                             </Button>
                         }
-                        @if (Order?.OrderStatus != OrderStatus.Returned && Order?.OrderStatus != OrderStatus.Exchange && Order?.ShippingStatus != ShippingStatus.WaitingForPayment && Order?.ShippingStatus != ShippingStatus.PrepareShipment && Order.OrderStatus != OrderStatus.Refund)
+                        @if (Order?.OrderStatus is not OrderStatus.Returned && 
+                             Order?.OrderStatus is not OrderStatus.Exchange && 
+                             Order?.ShippingStatus is not ShippingStatus.WaitingForPayment && 
+                             Order?.ShippingStatus is not ShippingStatus.PrepareShipment && 
+                             Order.OrderStatus is not OrderStatus.Refund)
                         {
-                            <Button Type="ButtonType.Button" Clicked="ReturnOrder" Class="btn btn-sm btn-secondary me-1">@L["ReturnOrder"]</Button>
-                            <Button Type="ButtonType.Button" Clicked="ExchangeOrder" Class="btn btn-sm btn-secondary me-1">@L["ExchangeItem"]</Button>
+                            <Button Type="ButtonType.Button" 
+                                    Clicked="ReturnOrder" 
+                                    Class="btn btn-sm btn-secondary me-1">
+                                @L["ReturnOrder"]
+                            </Button>
+                            <Button Type="ButtonType.Button" 
+                                    Clicked="ExchangeOrder" 
+                                    Class="btn btn-sm btn-secondary me-1">
+                                @L["ExchangeItem"]
+                            </Button>
                         }
                     }
                 </div>
                 <div class="col-md-6 col-sm-12 text-lg-end">
                     @if (Order.Id != Guid.Empty)
                     {
-                        @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
+                        @if (Order.OrderType is not OrderType.MargeToNew && Order.OrderStatus is not OrderStatus.Refund)
                         {
-                            @if (Order.ShippingStatus == ShippingStatus.PrepareShipment && Order.OrderItems.Any(x => x.IsSelected == true) && Order.OrderType == null)
+                            @if (Order.ShippingStatus is ShippingStatus.PrepareShipment && Order.OrderItems.Any(x => x.IsSelected == true) && Order.OrderType is null)
                             {
-                                <Button Clicked="SplitOrder" Type="ButtonType.Button" Class="btn btn-sm btn-secondary">@L["SplitOrder"]</Button>
+                                <Button Clicked="SplitOrder" 
+                                        Type="ButtonType.Button" 
+                                        Class="btn btn-sm btn-secondary me-1">
+                                    @L["SplitOrder"]
+                                </Button>
                             }
-                            else if (Order.ShippingStatus == ShippingStatus.WaitingForPayment && Order.OrderItems.Any(x => x.IsSelected == true) && Order.OrderType == null)
+                            else if (Order.ShippingStatus is ShippingStatus.WaitingForPayment && Order.OrderItems.Any(x => x.IsSelected == true) && Order.OrderType is null)
                             {
-                                <Button Clicked="SplitOrder" Type="ButtonType.Button" Class="btn btn-sm btn-secondary">@L["SplitOrder"]</Button>
+                                <Button Clicked="SplitOrder" 
+                                        Type="ButtonType.Button" 
+                                        Class="btn btn-sm btn-secondary me-1">
+                                    @L["SplitOrder"]
+                                </Button>
                             }
                             else
                             {
                                 <Button Type="ButtonType.Button"
-                                                    Disabled Class="btn btn-sm btn-secondary me-1">
+                                        Disabled 
+                                        Class="btn btn-sm btn-secondary me-1">
                                      @L["SplitOrder"]
                                 </Button>
                             }
                         }
                     }
-                    <Button Type="ButtonType.Button" @onclick="NavigateToOrderShipmentDetails" Class="btn btn-sm btn-primary">
-                        <Icon Class="fa fa-print"></Icon>
+                    <Button Type="ButtonType.Button" 
+                            @onclick="NavigateToOrderShipmentDetails" 
+                            Class="btn btn-sm btn-primary">
+                        <Icon Class="fa fa-print" />
                         @L["PrintOrder"]
                     </Button>
-
                 </div>
             </div>
             <Card>
@@ -908,9 +934,18 @@
                                     </td>
                                     <td>
                                     </td>
-                                    <td>
-                                        $@((Order.TotalAmount - Order.OrderItems.Sum(x => x.TotalAmount)).ToString("N2"))
-                                    </td>
+                                    @* <td> *@
+                                        @if (Order.DeliveryCost is null) 
+                                        {
+                                            <td>$0</td>
+                                        }
+
+                                        else 
+                                        {
+                                            <td>$@(Order.DeliveryCost?.ToString("N2"))</td>
+                                        }
+                                        @* $@((Order.TotalAmount - Order.OrderItems.Sum(x => x.TotalAmount)).ToString("N2")) *@
+                                    @* </td> *@
                                 </tr>
                                 <tr>
                                     <td colspan="2" class="text-end">
@@ -1501,10 +1536,18 @@
                                                         <td>
                                                             @if (item.ItemType is not ItemType.SetItem)
                                                             {
-                                                                <InputCheckbox class="form-check-input"
-                                                                               ValueChanged="@((e) => CheckboxChanged(e, item))"
-                                                                               ValueExpression="@(() => item.IsSelected)"
-                                                                               Value="item.IsSelected" />
+                                                                if (item.Quantity > 0) 
+                                                                {
+                                                                    <InputCheckbox class="form-check-input"
+                                                                                   ValueChanged="@((e) => CheckboxChanged(e, item))"
+                                                                                   ValueExpression="@(() => item.IsSelected)"
+                                                                                   Value="item.IsSelected" />
+                                                                }
+
+                                                                else 
+                                                                {
+                                                                    <input type="checkbox" disabled class="form-check-input" />
+                                                                }
                                                             }
                                                         </td>
                                                         <td class="text-start" style="width: 50%;">

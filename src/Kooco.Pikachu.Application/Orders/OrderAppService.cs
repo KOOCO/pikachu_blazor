@@ -775,8 +775,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     orderItem.Quantity = item.Quantity;
                     orderItem.SKU = item.SKU;
 
-                    ord.TotalAmount = ord.TotalAmount- item.TotalAmount;
-                    ord.TotalQuantity = ord.TotalQuantity- item.Quantity;
+                    //ord.TotalAmount = ord.TotalAmount - item.TotalAmount;
+                    ord.TotalQuantity = ord.TotalQuantity - item.Quantity;
                     //await _orderItemRepository.DeleteAsync(item.Id);
                    
                     _orderManager.AddOrderItem(
@@ -794,8 +794,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         orderItem.DeliveryTemperatureCost
                     );
 
-                    item.TotalAmount = item.TotalAmount - item.TotalAmount;
-                    item.ItemPrice = item.ItemPrice - item.ItemPrice;
+                    //item.TotalAmount = item.TotalAmount - item.TotalAmount;
+                    //item.ItemPrice = item.ItemPrice - item.ItemPrice;
                     item.Quantity = item.Quantity - item.Quantity;
                     await _orderRepository.InsertAsync(order1);
                     await _orderRepository.UpdateAsync(ord);
@@ -811,7 +811,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             {
                 if (ord.ShippingStatus == ShippingStatus.PrepareShipment)
                 {
-                   var orderItemList= ord.OrderItems.Where(x => x.TotalAmount >= 0).ToList();
+                    var orderItemList = ord.OrderItems.Where(x => x.TotalAmount >= 0).ToList();
                     foreach (var orderItem in orderItemList)
                     {
                         if (orderItem.Item?.IsFreeShipping == true)
