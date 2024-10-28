@@ -353,6 +353,14 @@ public class OrderAppService : ApplicationService, IOrderAppService
                                 orderItem.Quantity += item.Quantity;
                             }
 
+                            else if (item.SKU is not null && orderItems.Any(a => a.SKU == item.SKU))
+                            {
+                                orderItem = orderItems.First(f => f.SKU == item.SKU);
+
+                                orderItem.TotalAmount += item.TotalAmount;
+                                orderItem.Quantity += item.Quantity;
+                            }
+
                             else
                             {
                                 OrderItemsCreateDto orderItemCreate = new()
