@@ -13,7 +13,7 @@ namespace Kooco.Pikachu.Orders
             var instance = validationContext.ObjectInstance;
 
             // Use reflection to get the property values
-            var refundAmount = (int)instance.GetType().GetProperty("RefundAmount")?.GetValue(instance);
+            var refundAmount = (decimal)instance.GetType().GetProperty("RefundAmount")?.GetValue(instance);
             var refundRecordId = (Guid?)instance.GetType().GetProperty("RefundRecordId")?.GetValue(instance);
             var creditDeductionAmount = (int)instance.GetType().GetProperty("CreditDeductionAmount")?.GetValue(instance);
             var creditDeductionRecordId = (Guid?)instance.GetType().GetProperty("CreditDeductionRecordId")?.GetValue(instance);

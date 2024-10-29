@@ -508,10 +508,18 @@
 
                                             <Div Width="Width.Max100">
                                                 <select class="form-select form-select my-1" @onchange=TemperatureControlChange>
-                                                    <option value="">Select Temp Control</option>
+                                                    <option value="">Select Temperature Control</option>
                                                     @foreach (string temperature in Enum.GetNames<ItemStorageTemperature>()) 
                                                     {
-                                                        <option value="@temperature">@L[temperature]</option>
+                                                        if (temperature == ItemStorageTemperature.Normal.ToString())
+                                                        {
+                                                            <option value="@temperature" selected>@L[temperature]</option>
+                                                        }
+
+                                                        else 
+                                                        {
+                                                            <option value="@temperature">@L[temperature]</option>
+                                                        }
                                                     }
                                                 </select>
                                             </Div>

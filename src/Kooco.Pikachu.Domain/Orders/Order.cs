@@ -114,6 +114,32 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public IdentityUser? User { get; set; }
     [ForeignKey(nameof(DiscountCodeId))]
     public DiscountCode? DiscountCode { get; set; }
+
+    public string? RecipientNameDbsNormal { get; set; }
+    public string? RecipientNameDbsFreeze { get; set; }
+    public string? RecipientNameDbsFrozen { get; set; }
+    public string? RecipientPhoneDbsNormal { get; set; }
+    public string? RecipientPhoneDbsFreeze { get; set; }
+    public string? RecipientPhoneDbsFrozen { get; set; }
+    public string? PostalCodeDbsNormal { get; set; }
+    public string? PostalCodeDbsFreeze { get; set; }
+    public string? PostalCodeDbsFrozen { get; set; }
+    public string? CityDbsNormal { get; set; }
+    public string? CityDbsFreeze { get; set; }
+    public string? CityDbsFrozen { get; set; }
+    public string? AddressDetailsDbsNormal { get; set; }
+    public string? AddressDetailsDbsFreeze { get; set; }
+    public string? AddressDetailsDbsFrozen { get; set; }
+    public string? RemarksDbsNormal { get; set; }
+    public string? RemarksDbsFreeze { get; set; }
+    public string? RemarksDbsFrozen { get; set; }
+    public string? StoreIdNormal { get; set; }
+    public string? StoreIdFreeze { get; set; }
+    public string? StoreIdFrozen { get; set; }
+    public string? CVSStoreOutSideNormal { get; set; }
+    public string? CVSStoreOutSideFreeze { get; set; }
+    public string? CVSStoreOutSideFrozen { get; set; }
+
     public Order() { }
 
     public Order(
@@ -153,8 +179,32 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
         decimal creditRefundAmount = 0,
         Guid? creditRefundRecordId = null,
         Guid? discountCodeId = null,
-        int? discountCodeAmount = null
-     )
+        int? discountCodeAmount = null,
+        string? recipientNameDbsNormal = null,
+        string? recipientNameDbsFreeze = null,
+        string? recipientNameDbsFrozen = null,
+        string? recipientPhoneDbsNormal = null,
+        string? recipientPhoneDbsFreeze = null,
+        string? recipientPhoneDbsFrozen = null,
+        string? postalCodeDbsNormal = null,
+        string? postalCodeDbsFreeze = null,
+        string? postalCodeDbsFrozen = null,
+        string? cityDbsNormal = null,
+        string? cityDbsFreeze = null,
+        string? cityDbsFrozen = null,
+        string? addressDetailsDbsNormal = null,
+        string? addressDetailsDbsFreeze = null,
+        string? addressDetailsDbsFrozen = null,
+        string? remarksDbsNormal = null,
+        string? remarksDbsFreeze = null,
+        string? remarksDbsFrozen = null,
+        string? storeIdNormal = null,
+        string? storeIdFreeze = null,
+        string? storeIdFrozen = null,
+        string? cVSStoreOutSideNormal = null,
+        string? cVSStoreOutSideFreeze = null,
+        string? cVSStoreOutSideFrozen = null
+    )
     {
         Id = id;
         GroupBuyId = groupBuyId;
@@ -202,6 +252,30 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
         RefundRecordId = creditRefundRecordId;
         DiscountAmount = discountCodeAmount;
         DiscountCodeId = discountCodeId;
+        RecipientNameDbsNormal = recipientNameDbsNormal;
+        RecipientNameDbsFreeze = recipientNameDbsFreeze;
+        RecipientNameDbsFrozen = recipientNameDbsFrozen;
+        RecipientPhoneDbsNormal = recipientPhoneDbsNormal;
+        RecipientPhoneDbsFreeze = recipientPhoneDbsFreeze;
+        RecipientPhoneDbsFrozen = recipientPhoneDbsFrozen;
+        PostalCodeDbsNormal = postalCodeDbsNormal;
+        PostalCodeDbsFreeze = postalCodeDbsFreeze;
+        PostalCodeDbsFrozen = postalCodeDbsFrozen;
+        CityDbsNormal = cityDbsNormal;
+        CityDbsFreeze = cityDbsFreeze;
+        CityDbsFrozen = cityDbsFrozen;
+        AddressDetailsDbsNormal = addressDetailsDbsNormal;
+        AddressDetailsDbsFreeze = addressDetailsDbsFreeze;
+        AddressDetailsDbsFrozen = addressDetailsDbsFrozen;
+        RemarksDbsNormal = remarksDbsNormal;
+        RemarksDbsFreeze = remarksDbsFreeze;
+        RemarksDbsFrozen = remarksDbsFrozen;
+        StoreIdNormal = storeIdNormal;
+        StoreIdFreeze = storeIdFreeze;
+        StoreIdFrozen = storeIdFrozen;
+        CVSStoreOutSideNormal = cVSStoreOutSideNormal;
+        CVSStoreOutSideFreeze = cVSStoreOutSideFreeze;
+        CVSStoreOutSideFrozen = cVSStoreOutSideFrozen;
     }
 
     public void AddOrderItem(

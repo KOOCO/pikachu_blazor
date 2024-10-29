@@ -159,8 +159,32 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     creditRefundAmount:input.RefundAmount,
                     creditRefundRecordId:input.RefundRecordId,
                     discountAmountId:input.DiscountCodeId,
-                    discountCodeAmount:input.DiscountCodeAmount
-                    );
+                    discountCodeAmount:input.DiscountCodeAmount,
+                    recipientNameDbsNormal: input.RecipientNameDbsNormal,
+                    recipientNameDbsFreeze: input.RecipientNameDbsFreeze,
+                    recipientNameDbsFrozen: input.RecipientNameDbsFrozen,
+                    recipientPhoneDbsNormal: input.RecipientPhoneDbsNormal,
+                    recipientPhoneDbsFreeze: input.RecipientPhoneDbsFreeze,
+                    recipientPhoneDbsFrozen: input.RecipientPhoneDbsFrozen,
+                    postalCodeDbsNormal: input.PostalCodeDbsNormal,
+                    postalCodeDbsFreeze: input.PostalCodeDbsFreeze,
+                    postalCodeDbsFrozen: input.PostalCodeDbsFrozen,
+                    cityDbsNormal: input.CityDbsNormal,
+                    cityDbsFreeze: input.CityDbsFreeze,
+                    cityDbsFrozen: input.CityDbsFrozen,
+                    addressDetailsDbsNormal: input.AddressDetailsDbsNormal,
+                    addressDetailsDbsFreeze: input.AddressDetailsDbsFreeze,
+                    addressDetailsDbsFrozen: input.AddressDetailsDbsFrozen,
+                    remarksDbsNormal: input.RemarksDbsNormal,
+                    remarksDbsFreeze: input.RemarksDbsFreeze,
+                    remarksDbsFrozen: input.RemarksDbsFrozen,
+                    storeIdNormal: input.StoreIdNormal,
+                    storeIdFreeze: input.StoreIdFreeze,
+                    storeIdFrozen: input.StoreIdFrozen,
+                    cVSStoreOutSideNormal: input.CVSStoreOutSideNormal,
+                    cVSStoreOutSideFreeze: input.CVSStoreOutSideFreeze,
+                    cVSStoreOutSideFrozen: input.CVSStoreOutSideFrozen
+            );
             order.StoreId = input.StoreId;
             order.CVSStoreOutSide = input.CVSStoreOutSide;
             order.ShippingStatus = input.ShippingStatus;
@@ -1137,7 +1161,31 @@ public class OrderAppService : ApplicationService, IOrderAppService
         order.OrderStatus = input.OrderStatus;
         order.StoreId = input.StoreId;
         order.CVSStoreOutSide = input.CVSStoreOutSide;
+
+        order.RecipientNameDbsNormal = input.RecipientNameDbsNormal;
+        order.RecipientNameDbsFreeze = input.RecipientNameDbsFreeze;
+        order.RecipientNameDbsFrozen = input.RecipientNameDbsFrozen;
+        order.RecipientPhoneDbsNormal = input.RecipientPhoneDbsNormal;
+        order.RecipientPhoneDbsFreeze = input.RecipientPhoneDbsFreeze;
+        order.RecipientPhoneDbsFrozen = input.RecipientPhoneDbsFrozen;
+        order.PostalCodeDbsNormal = input.PostalCodeDbsNormal;
+        order.PostalCodeDbsFreeze = input.PostalCodeDbsFreeze;
+        order.PostalCodeDbsFrozen = input.PostalCodeDbsFrozen;
+        order.CityDbsNormal = input.CityDbsNormal;
+        order.CityDbsFreeze = input.CityDbsFreeze;
+        order.CityDbsFrozen = input.CityDbsFrozen;
+        order.AddressDetailsDbsNormal = input.AddressDetailsDbsNormal;
+        order.AddressDetailsDbsFreeze = input.AddressDetailsDbsFreeze;
+        order.AddressDetailsDbsFrozen = input.AddressDetailsDbsFrozen;
+        order.StoreIdNormal = input.StoreIdNormal;
+        order.StoreIdFreeze = input.StoreIdFreeze;
+        order.StoreIdFrozen = input.StoreIdFrozen;
+        order.CVSStoreOutSideNormal = input.CVSStoreOutSideNormal;
+        order.CVSStoreOutSideFreeze = input.CVSStoreOutSideFreeze;
+        order.CVSStoreOutSideFrozen = input.CVSStoreOutSideFrozen;
+
         await _orderRepository.UpdateAsync(order);
+
         return ObjectMapper.Map<Order, OrderDto>(order);
     }
 

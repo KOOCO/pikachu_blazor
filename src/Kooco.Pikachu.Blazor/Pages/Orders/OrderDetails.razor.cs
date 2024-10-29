@@ -80,7 +80,7 @@ public partial class OrderDetails
 
     private bool IsShowConvenienceStoreDetails = false;
 
-    private ItemStorageTemperature? SelectedTemperatureControl = null;
+    private ItemStorageTemperature? SelectedTemperatureControl = ItemStorageTemperature.Normal;
     #endregion
 
     #region Constructor

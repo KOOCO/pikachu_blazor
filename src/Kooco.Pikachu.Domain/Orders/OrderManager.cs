@@ -62,13 +62,39 @@ namespace Kooco.Pikachu.Orders
              decimal creditRefundAmount = 0,
              Guid? creditRefundRecordId = null,
              int? discountCodeAmount=null,
-             Guid? discountAmountId=null)
+             Guid? discountAmountId=null,
+             string? recipientNameDbsNormal = null,
+             string? recipientNameDbsFreeze = null,
+             string? recipientNameDbsFrozen = null,
+             string? recipientPhoneDbsNormal = null,
+             string? recipientPhoneDbsFreeze = null,
+             string? recipientPhoneDbsFrozen = null,
+             string? postalCodeDbsNormal = null,
+             string? postalCodeDbsFreeze = null,
+             string? postalCodeDbsFrozen = null,
+             string? cityDbsNormal = null,
+             string? cityDbsFreeze = null,
+             string? cityDbsFrozen = null,
+             string? addressDetailsDbsNormal = null,
+             string? addressDetailsDbsFreeze = null,
+             string? addressDetailsDbsFrozen = null,
+             string? remarksDbsNormal = null,
+             string? remarksDbsFreeze = null,
+             string? remarksDbsFrozen = null,
+             string? storeIdNormal = null,
+             string? storeIdFreeze = null,
+             string? storeIdFrozen = null,
+             string? cVSStoreOutSideNormal = null,
+             string? cVSStoreOutSideFreeze = null,
+             string? cVSStoreOutSideFrozen = null
+        )
         {
             //string orderNo = await GenerateOrderNoAsync(groupBuyId);
             var newGuid = Guid.NewGuid();
             string orderNo = newGuid.ToString().Replace("-", "");
             orderNo = orderNo.Length >= 10 ? orderNo.Substring(0, 11) : orderNo;
             orderNo = orderNo.ToUpper();
+
             return new Order(
                 GuidGenerator.Create(),
                 groupBuyId,
@@ -106,7 +132,31 @@ namespace Kooco.Pikachu.Orders
                 creditRefundAmount,
                 creditRefundRecordId,
                 discountAmountId,
-                discountCodeAmount
+                discountCodeAmount,
+                recipientNameDbsNormal,
+                recipientNameDbsFreeze,
+                recipientNameDbsFrozen,
+                recipientPhoneDbsNormal,
+                recipientPhoneDbsFreeze,
+                recipientPhoneDbsFrozen,
+                postalCodeDbsNormal,
+                postalCodeDbsFreeze,
+                postalCodeDbsFrozen,
+                cityDbsNormal,
+                cityDbsFreeze,
+                cityDbsFrozen,
+                addressDetailsDbsNormal,
+                addressDetailsDbsFreeze,
+                addressDetailsDbsFrozen,
+                remarksDbsNormal,
+                remarksDbsFreeze,
+                remarksDbsFrozen,
+                storeIdNormal,
+                storeIdFreeze,
+                storeIdFrozen,
+                cVSStoreOutSideNormal,
+                cVSStoreOutSideFreeze,
+                cVSStoreOutSideFrozen
             );
         }
 
