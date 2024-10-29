@@ -79,6 +79,8 @@ public partial class OrderDetails
     private string? PaymentStatus;
 
     private bool IsShowConvenienceStoreDetails = false;
+
+    private ItemStorageTemperature? SelectedTemperatureControl = null;
     #endregion
 
     #region Constructor
@@ -126,6 +128,11 @@ public partial class OrderDetails
     public void ChangeStore(ChangeEventArgs e)
     {
         IsShowConvenienceStoreDetails = e.Value is not null && e.Value.ToString() is "convenienceStore" ? true : false;
+    }
+
+    public void TemperatureControlChange(ChangeEventArgs e)
+    {
+        SelectedTemperatureControl = Enum.TryParse(e.Value.ToString(), out ItemStorageTemperature temperature) ? temperature : null;
     }
 
     void ToggleRow(DataGridRowMouseEventArgs<OrderDeliveryDto> e)
@@ -291,6 +298,132 @@ public partial class OrderDetails
         ModificationTrack.NewName ??= Order.RecipientName;
         ModificationTrack.IsNameInputVisible = true;
     }
+    void EditRecipientNameDbsNormal()
+    {
+        ModificationTrack.IsModified = true;
+        ModificationTrack.NewRecipientNameDbsNormal ??= Order.RecipientNameDbsNormal;
+        ModificationTrack.IsRecipientNameDbsNormalInputVisible = true;
+    }
+    void EditRecipientNameDbsFreeze()
+    {
+        ModificationTrack.IsModified = true;
+        ModificationTrack.NewRecipientNameDbsFreeze ??= Order.RecipientNameDbsFreeze;
+        ModificationTrack.IsRecipientNameDbsFreezeInputVisible = true;
+    }
+    void EditRecipientNameDbsFrozen()
+    {
+        ModificationTrack.IsModified = true;
+        ModificationTrack.NewRecipientNameDbsFrozen ??= Order.RecipientNameDbsFrozen;
+        ModificationTrack.IsRecipientNameDbsFrozenInputVisible = true;
+    }
+    void EditRecipientPhoneDbsNormal()
+    {
+        ModificationTrack.IsModified = true;
+        ModificationTrack.NewRecipientPhoneDbsNormal ??= Order.RecipientPhoneDbsNormal;
+        ModificationTrack.IsRecipientPhoneDbsNormalInputVisible = true;
+    }
+    void EditRecipientPhoneDbsFreeze()
+    {
+        ModificationTrack.IsModified = true;
+        ModificationTrack.NewRecipientPhoneDbsFreeze ??= Order.RecipientPhoneDbsFreeze;
+        ModificationTrack.IsRecipientPhoneDbsFreezeInputVisible = true;
+    }
+    void EditRecipientPhoneDbsFrozen()
+    {
+        ModificationTrack.IsModified = true;
+        ModificationTrack.NewRecipientPhoneDbsFrozen ??= Order.RecipientPhoneDbsFrozen;
+        ModificationTrack.IsRecipientPhoneDbsFrozenInputVisible = true;
+    }
+    void EditStoreIdNormal()
+    {
+        ModificationTrack.IsModified = true;
+        ModificationTrack.NewStoreIdNormal ??= Order.StoreIdNormal;
+        ModificationTrack.IsStoreIdNormalInputVisible = true;
+    }
+    void EditStoreIdFreeze()
+    {
+        ModificationTrack.IsModified = true;
+        ModificationTrack.NewStoreIdFreeze ??= Order.StoreIdFreeze;
+        ModificationTrack.IsStoreIdFreezeInputVisible = true;
+    }
+    void EditStoreIdFrozen()
+    {
+        ModificationTrack.IsModified = true;
+        ModificationTrack.NewStoreIdFrozen ??= Order.StoreIdFrozen;
+        ModificationTrack.IsStoreIdFrozenInputVisible = true;
+    }
+    void EditCVSStoreOutSideNormal()
+    {
+        ModificationTrack.IsModified = true;
+        ModificationTrack.NewCVSStoreOutSideNormal ??= Order.CVSStoreOutSideNormal;
+        ModificationTrack.IsCVSStoreOutSideNormalInputVisible = true;
+    }
+    void EditCVSStoreOutSideFreeze()
+    {
+        ModificationTrack.IsModified = true;
+        ModificationTrack.NewCVSStoreOutSideFreeze ??= Order.CVSStoreOutSideFreeze;
+        ModificationTrack.IsCVSStoreOutSideFreezeInputVisible = true;
+    }
+    void EditCVSStoreOutSideFrozen()
+    {
+        ModificationTrack.IsModified = true;
+        ModificationTrack.NewCVSStoreOutSideFrozen ??= Order.CVSStoreOutSideFrozen;
+        ModificationTrack.IsCVSStoreOutSideFrozenInputVisible = true;
+    }
+    void EditPostalCodeDbsNormal()
+    {
+        ModificationTrack.IsModified = true;
+        ModificationTrack.NewPostalCodeDbsNormal ??= Order.PostalCodeDbsNormal;
+        ModificationTrack.IsPostalCodeDbsNormalInputVisible = true;
+    }
+    void EditPostalCodeDbsFreeze()
+    {
+        ModificationTrack.IsModified = true;
+        ModificationTrack.NewPostalCodeDbsFreeze ??= Order.PostalCodeDbsFreeze;
+        ModificationTrack.IsPostalCodeDbsFreezeInputVisible = true;
+    }
+    void EditPostalCodeDbsFrozen()
+    {
+        ModificationTrack.IsModified = true;
+        ModificationTrack.NewPostalCodeDbsFrozen ??= Order.PostalCodeDbsFrozen;
+        ModificationTrack.IsPostalCodeDbsFrozenInputVisible = true;
+    }
+    void EditCityDbsNormal()
+    {
+        ModificationTrack.IsModified = true;
+        ModificationTrack.NewCityDbsNormal ??= Order.CityDbsNormal;
+        ModificationTrack.IsCityDbsNormalInputVisible = true;
+    }
+    void EditCityDbsFreeze()
+    {
+        ModificationTrack.IsModified = true;
+        ModificationTrack.NewCityDbsFreeze ??= Order.CityDbsFreeze;
+        ModificationTrack.IsCityDbsFreezeInputVisible = true;
+    }
+    void EditCityDbsFrozen()
+    {
+        ModificationTrack.IsModified = true;
+        ModificationTrack.NewCityDbsFrozen ??= Order.CityDbsFrozen;
+        ModificationTrack.IsCityDbsFrozenInputVisible = true;
+    }
+    void EditAddressDetailsDbsNormal()
+    {
+        ModificationTrack.IsModified = true;
+        ModificationTrack.NewAddressDetailsDbsNormal ??= Order.AddressDetailsDbsNormal;
+        ModificationTrack.IsAddressDetailsDbsNormalInputVisible = true;
+    }
+    void EditAddressDetailsDbsFreeze()
+    {
+        ModificationTrack.IsModified = true;
+        ModificationTrack.NewAddressDetailsDbsFreeze ??= Order.AddressDetailsDbsFreeze;
+        ModificationTrack.IsAddressDetailsDbsFreezeInputVisible = true;
+    }
+    void EditAddressDetailsDbsFrozen()
+    {
+        ModificationTrack.IsModified = true;
+        ModificationTrack.NewAddressDetailsDbsFrozen ??= Order.AddressDetailsDbsFrozen;
+        ModificationTrack.IsAddressDetailsDbsFrozenInputVisible = true;
+    }
     void EditRecipientPhone()
     {
         ModificationTrack.IsModified = true;
@@ -362,6 +495,258 @@ public partial class OrderDetails
         }
 
     }
+    void SaveRecipientNameDbsNormal()
+    {
+        if (ModificationTrack.NewRecipientNameDbsNormal.IsNullOrWhiteSpace()) 
+            ModificationTrack.IsInvalidRecipientNameDbsNormal = true;
+
+        else
+        {
+            ModificationTrack.IsRecipientNameDbsNormalModified = true;
+            ModificationTrack.IsRecipientNameDbsNormalInputVisible = false;
+            ModificationTrack.IsInvalidRecipientNameDbsNormal = false;
+        }
+    }
+    void SaveRecipientNameDbsFreeze()
+    {
+        if (ModificationTrack.NewRecipientNameDbsFreeze.IsNullOrWhiteSpace()) 
+            ModificationTrack.IsInvalidRecipientNameDbsFreeze = true;
+
+        else
+        {
+            ModificationTrack.IsRecipientNameDbsFreezeModified = true;
+            ModificationTrack.IsRecipientNameDbsFreezeInputVisible = false;
+            ModificationTrack.IsInvalidRecipientNameDbsFreeze = false;
+        }
+    }
+    void SaveRecipientNameDbsFrozen()
+    {
+        if (ModificationTrack.NewRecipientNameDbsFrozen.IsNullOrWhiteSpace()) 
+            ModificationTrack.IsInvalidRecipientNameDbsFrozen = true;
+
+        else
+        {
+            ModificationTrack.IsRecipientNameDbsFrozenModified = true;
+            ModificationTrack.IsRecipientNameDbsFrozenInputVisible = false;
+            ModificationTrack.IsInvalidRecipientNameDbsFrozen = false;
+        }
+    }
+    void SaveRecipientPhoneDbsNormal()
+    {
+        if (ModificationTrack.NewRecipientPhoneDbsNormal.IsNullOrWhiteSpace()) 
+            ModificationTrack.IsInvalidRecipientPhoneDbsNormal = true;
+
+        else
+        {
+            ModificationTrack.IsRecipientPhoneDbsNormalModified = true;
+            ModificationTrack.IsRecipientPhoneDbsNormalInputVisible = false;
+            ModificationTrack.IsInvalidRecipientPhoneDbsNormal = false;
+        }
+    }
+    void SaveRecipientPhoneDbsFreeze()
+    {
+        if (ModificationTrack.NewRecipientPhoneDbsFreeze.IsNullOrWhiteSpace()) 
+            ModificationTrack.IsInvalidRecipientPhoneDbsFreeze = true;
+
+        else
+        {
+            ModificationTrack.IsRecipientPhoneDbsFreezeModified = true;
+            ModificationTrack.IsRecipientPhoneDbsFreezeInputVisible = false;
+            ModificationTrack.IsInvalidRecipientPhoneDbsFreeze = false;
+        }
+    }
+    void SaveRecipientPhoneDbsFrozen()
+    {
+        if (ModificationTrack.NewRecipientPhoneDbsFrozen.IsNullOrWhiteSpace()) 
+            ModificationTrack.IsInvalidRecipientPhoneDbsFrozen = true;
+
+        else
+        {
+            ModificationTrack.IsRecipientPhoneDbsFrozenModified = true;
+            ModificationTrack.IsRecipientPhoneDbsFrozenInputVisible = false;
+            ModificationTrack.IsInvalidRecipientPhoneDbsFrozen = false;
+        }
+    }
+    void SaveStoreIdNormal()
+    {
+        if (ModificationTrack.NewStoreIdNormal.IsNullOrWhiteSpace()) 
+            ModificationTrack.IsInvalidStoreIdNormal = true;
+
+        else
+        {
+            ModificationTrack.IsStoreIdNormalModified = true;
+            ModificationTrack.IsStoreIdNormalInputVisible = false;
+            ModificationTrack.IsInvalidStoreIdNormal = false;
+        }
+    }
+    void SaveStoreIdFreeze()
+    {
+        if (ModificationTrack.NewStoreIdFreeze.IsNullOrWhiteSpace()) 
+            ModificationTrack.IsInvalidStoreIdFreeze = true;
+
+        else
+        {
+            ModificationTrack.IsStoreIdFreezeModified = true;
+            ModificationTrack.IsStoreIdFreezeInputVisible = false;
+            ModificationTrack.IsInvalidStoreIdFreeze = false;
+        }
+    }
+    void SaveStoreIdFrozen()
+    {
+        if (ModificationTrack.NewStoreIdFrozen.IsNullOrWhiteSpace()) 
+            ModificationTrack.IsInvalidStoreIdFrozen = true;
+
+        else
+        {
+            ModificationTrack.IsStoreIdFrozenModified = true;
+            ModificationTrack.IsStoreIdFrozenInputVisible = false;
+            ModificationTrack.IsInvalidStoreIdFrozen = false;
+        }
+    }
+    void SaveCVSStoreOutSideNormal()
+    {
+        if (ModificationTrack.NewCVSStoreOutSideNormal.IsNullOrWhiteSpace()) 
+            ModificationTrack.IsInvalidCVSStoreOutSideNormal = true;
+
+        else
+        {
+            ModificationTrack.IsCVSStoreOutSideNormalModified = true;
+            ModificationTrack.IsCVSStoreOutSideNormalInputVisible = false;
+            ModificationTrack.IsInvalidCVSStoreOutSideNormal = false;
+        }
+    }
+    void SaveCVSStoreOutSideFreeze()
+    {
+        if (ModificationTrack.NewCVSStoreOutSideFreeze.IsNullOrWhiteSpace()) 
+            ModificationTrack.IsInvalidCVSStoreOutSideFreeze = true;
+
+        else
+        {
+            ModificationTrack.IsCVSStoreOutSideFreezeModified = true;
+            ModificationTrack.IsCVSStoreOutSideFreezeInputVisible = false;
+            ModificationTrack.IsInvalidCVSStoreOutSideFreeze = false;
+        }
+    }
+    void SaveCVSStoreOutSideFrozen()
+    {
+        if (ModificationTrack.NewCVSStoreOutSideFrozen.IsNullOrWhiteSpace()) 
+            ModificationTrack.IsInvalidCVSStoreOutSideFrozen = true;
+
+        else
+        {
+            ModificationTrack.IsCVSStoreOutSideFrozenModified = true;
+            ModificationTrack.IsCVSStoreOutSideFrozenInputVisible = false;
+            ModificationTrack.IsInvalidCVSStoreOutSideFrozen = false;
+        }
+    }
+    void SavePostalCodeDbsNormal()
+    {
+        if (ModificationTrack.NewPostalCodeDbsNormal.IsNullOrWhiteSpace()) 
+            ModificationTrack.IsInvalidPostalCodeDbsNormal = true;
+
+        else
+        {
+            ModificationTrack.IsPostalCodeDbsNormalModified = true;
+            ModificationTrack.IsPostalCodeDbsNormalInputVisible = false;
+            ModificationTrack.IsInvalidPostalCodeDbsNormal = false;
+        }
+    }
+    void SavePostalCodeDbsFreeze()
+    {
+        if (ModificationTrack.NewPostalCodeDbsFreeze.IsNullOrWhiteSpace()) 
+            ModificationTrack.IsInvalidPostalCodeDbsFreeze = true;
+
+        else
+        {
+            ModificationTrack.IsPostalCodeDbsFreezeModified = true;
+            ModificationTrack.IsPostalCodeDbsFreezeInputVisible = false;
+            ModificationTrack.IsInvalidPostalCodeDbsFreeze = false;
+        }
+    }
+    void SavePostalCodeDbsFrozen()
+    {
+        if (ModificationTrack.NewPostalCodeDbsFrozen.IsNullOrWhiteSpace()) 
+            ModificationTrack.IsInvalidPostalCodeDbsFrozen = true;
+
+        else
+        {
+            ModificationTrack.IsPostalCodeDbsFrozenModified = true;
+            ModificationTrack.IsPostalCodeDbsFrozenInputVisible = false;
+            ModificationTrack.IsInvalidPostalCodeDbsFrozen = false;
+        }
+    }
+    void SaveCityDbsNormal()
+    {
+        if (ModificationTrack.NewCityDbsNormal.IsNullOrWhiteSpace()) 
+            ModificationTrack.IsInvalidCityDbsNormal = true;
+
+        else
+        {
+            ModificationTrack.IsCityDbsNormalModified = true;
+            ModificationTrack.IsCityDbsNormalInputVisible = false;
+            ModificationTrack.IsInvalidCityDbsNormal = false;
+        }
+    }
+    void SaveCityDbsFreeze()
+    {
+        if (ModificationTrack.NewCityDbsFreeze.IsNullOrWhiteSpace()) 
+            ModificationTrack.IsInvalidCityDbsFreeze = true;
+
+        else
+        {
+            ModificationTrack.IsCityDbsFreezeModified = true;
+            ModificationTrack.IsCityDbsFreezeInputVisible = false;
+            ModificationTrack.IsInvalidCityDbsFreeze = false;
+        }
+    }
+    void SaveCityDbsFrozen()
+    {
+        if (ModificationTrack.NewCityDbsFrozen.IsNullOrWhiteSpace()) 
+            ModificationTrack.IsInvalidCityDbsFrozen = true;
+
+        else
+        {
+            ModificationTrack.IsCityDbsFrozenModified = true;
+            ModificationTrack.IsCityDbsFrozenInputVisible = false;
+            ModificationTrack.IsInvalidCityDbsFrozen = false;
+        }
+    }
+    void SaveAddressDetailsDbsNormal()
+    {
+        if (ModificationTrack.NewAddressDetailsDbsNormal.IsNullOrWhiteSpace()) 
+            ModificationTrack.IsInvalidAddressDetailsDbsNormal = true;
+
+        else
+        {
+            ModificationTrack.IsAddressDetailsDbsNormalModified = true;
+            ModificationTrack.IsAddressDetailsDbsNormalInputVisible = false;
+            ModificationTrack.IsInvalidAddressDetailsDbsNormal = false;
+        }
+    }
+    void SaveAddressDetailsDbsFreeze()
+    {
+        if (ModificationTrack.NewAddressDetailsDbsFreeze.IsNullOrWhiteSpace()) 
+            ModificationTrack.IsInvalidAddressDetailsDbsFreeze = true;
+
+        else
+        {
+            ModificationTrack.IsAddressDetailsDbsFreezeModified = true;
+            ModificationTrack.IsAddressDetailsDbsFreezeInputVisible = false;
+            ModificationTrack.IsInvalidAddressDetailsDbsFreeze = false;
+        }
+    }
+    void SaveAddressDetailsDbsFrozen()
+    {
+        if (ModificationTrack.NewAddressDetailsDbsFrozen.IsNullOrWhiteSpace()) 
+            ModificationTrack.IsInvalidAddressDetailsDbsFrozen = true;
+
+        else
+        {
+            ModificationTrack.IsAddressDetailsDbsFrozenModified = true;
+            ModificationTrack.IsAddressDetailsDbsFrozenInputVisible = false;
+            ModificationTrack.IsInvalidAddressDetailsDbsFrozen = false;
+        }
+    }
     void SaveRecipientPhone()
     {
         string pat = @"^\d+$";
@@ -429,7 +814,29 @@ public partial class OrderDetails
                 ModificationTrack.IsInvalidAddress ||
                 ModificationTrack.IsInvalidPostalCode ||
                 ModificationTrack.IsInvalidCVSStoreId ||
-                ModificationTrack.IsInvalidCVSStoreOutside)
+                ModificationTrack.IsInvalidCVSStoreOutside ||
+                ModificationTrack.IsInvalidRecipientNameDbsNormal ||
+                ModificationTrack.IsInvalidRecipientNameDbsFreeze ||
+                ModificationTrack.IsInvalidRecipientNameDbsFrozen ||
+                ModificationTrack.IsInvalidRecipientPhoneDbsNormal ||
+                ModificationTrack.IsInvalidRecipientPhoneDbsFreeze ||
+                ModificationTrack.IsInvalidRecipientPhoneDbsFrozen ||
+                ModificationTrack.IsInvalidPostalCodeDbsNormal ||
+                ModificationTrack.IsInvalidPostalCodeDbsFreeze ||
+                ModificationTrack.IsInvalidPostalCodeDbsFrozen ||
+                ModificationTrack.IsInvalidCityDbsNormal ||
+                ModificationTrack.IsInvalidCityDbsFreeze ||
+                ModificationTrack.IsInvalidCityDbsFrozen ||
+                ModificationTrack.IsInvalidAddressDetailsDbsNormal ||
+                ModificationTrack.IsInvalidAddressDetailsDbsFreeze ||
+                ModificationTrack.IsInvalidAddressDetailsDbsFrozen ||
+                ModificationTrack.IsInvalidStoreIdNormal ||
+                ModificationTrack.IsInvalidStoreIdFreeze ||
+                ModificationTrack.IsInvalidStoreIdFrozen ||
+                ModificationTrack.IsInvalidCVSStoreOutSideNormal ||
+                ModificationTrack.IsInvalidCVSStoreOutSideFreeze ||
+                ModificationTrack.IsInvalidCVSStoreOutSideFrozen
+            )
             {
                 return;
             }
@@ -461,10 +868,117 @@ public partial class OrderDetails
             else if (ModificationTrack.IsCVSStoreIdInputVisible)
             {
                 ModificationTrack.IsInvalidCVSStoreId = true;
+                return;
             }
             else if (ModificationTrack.IsCVSStoreOutsideInputVisible)
             {
                 ModificationTrack.IsInvalidCVSStoreOutside = true;
+                return;
+            }
+            else if (ModificationTrack.IsRecipientNameDbsNormalInputVisible)
+            {
+                ModificationTrack.IsInvalidRecipientNameDbsNormal = true;
+                return;
+            }
+            else if (ModificationTrack.IsRecipientNameDbsFreezeInputVisible)
+            {
+                ModificationTrack.IsInvalidRecipientNameDbsFreeze = true;
+                return;
+            }
+            else if (ModificationTrack.IsRecipientNameDbsFrozenInputVisible)
+            {
+                ModificationTrack.IsInvalidRecipientNameDbsFrozen = true;
+                return;
+            }
+            else if (ModificationTrack.IsRecipientPhoneDbsNormalInputVisible)
+            {
+                ModificationTrack.IsInvalidRecipientPhoneDbsNormal = true;
+                return;
+            }
+            else if (ModificationTrack.IsRecipientPhoneDbsFreezeInputVisible)
+            {
+                ModificationTrack.IsInvalidRecipientPhoneDbsFreeze = true;
+                return;
+            }
+            else if (ModificationTrack.IsRecipientPhoneDbsFrozenInputVisible)
+            {
+                ModificationTrack.IsInvalidRecipientPhoneDbsFrozen = true;
+                return;
+            }
+            else if (ModificationTrack.IsPostalCodeDbsNormalInputVisible)
+            {
+                ModificationTrack.IsInvalidPostalCodeDbsNormal = true;
+                return;
+            }
+            else if (ModificationTrack.IsPostalCodeDbsFreezeInputVisible)
+            {
+                ModificationTrack.IsInvalidPostalCodeDbsFreeze = true;
+                return;
+            }
+            else if (ModificationTrack.IsPostalCodeDbsFrozenInputVisible)
+            {
+                ModificationTrack.IsInvalidPostalCodeDbsFrozen = true;
+                return;
+            }
+            else if (ModificationTrack.IsCityDbsNormalInputVisible)
+            {
+                ModificationTrack.IsInvalidCityDbsNormal = true;
+                return;
+            }
+            else if (ModificationTrack.IsCityDbsFreezeInputVisible)
+            {
+                ModificationTrack.IsInvalidCityDbsFreeze = true;
+                return;
+            }
+            else if (ModificationTrack.IsCityDbsFrozenInputVisible)
+            {
+                ModificationTrack.IsInvalidCityDbsFrozen = true;
+                return;
+            }
+            else if (ModificationTrack.IsAddressDetailsDbsNormalInputVisible)
+            {
+                ModificationTrack.IsInvalidAddressDetailsDbsNormal = true;
+                return;
+            }
+            else if (ModificationTrack.IsAddressDetailsDbsFreezeInputVisible)
+            {
+                ModificationTrack.IsInvalidAddressDetailsDbsFreeze = true;
+                return;
+            }
+            else if (ModificationTrack.IsAddressDetailsDbsFrozenInputVisible)
+            {
+                ModificationTrack.IsInvalidAddressDetailsDbsFrozen = true;
+                return;
+            }
+            else if (ModificationTrack.IsStoreIdNormalInputVisible)
+            {
+                ModificationTrack.IsInvalidStoreIdNormal = true;
+                return;
+            }
+            else if (ModificationTrack.IsStoreIdFreezeInputVisible)
+            {
+                ModificationTrack.IsInvalidStoreIdFreeze = true;
+                return;
+            }
+            else if (ModificationTrack.IsStoreIdFrozenInputVisible)
+            {
+                ModificationTrack.IsInvalidStoreIdFrozen = true;
+                return;
+            }
+            else if (ModificationTrack.IsCVSStoreOutSideNormalInputVisible)
+            {
+                ModificationTrack.IsInvalidCVSStoreOutSideNormal = true;
+                return;
+            }
+            else if (ModificationTrack.IsCVSStoreOutSideFreezeInputVisible)
+            {
+                ModificationTrack.IsInvalidCVSStoreOutSideFreeze = true;
+                return;
+            }
+            else if (ModificationTrack.IsCVSStoreOutSideFrozenInputVisible)
+            {
+                ModificationTrack.IsInvalidCVSStoreOutSideFrozen = true;
+                return;
             }
             else
             {
@@ -475,6 +989,27 @@ public partial class OrderDetails
                 ModificationTrack.IsInvalidCity = false;
                 ModificationTrack.IsInvalidCVSStoreId = false;
                 ModificationTrack.IsInvalidCVSStoreOutside = false;
+                ModificationTrack.IsInvalidRecipientNameDbsNormal = false;
+                ModificationTrack.IsInvalidRecipientNameDbsFreeze = false;
+                ModificationTrack.IsInvalidRecipientNameDbsFrozen = false;
+                ModificationTrack.IsInvalidRecipientPhoneDbsNormal = false;
+                ModificationTrack.IsInvalidRecipientPhoneDbsFreeze = false;
+                ModificationTrack.IsInvalidRecipientPhoneDbsFrozen = false;
+                ModificationTrack.IsInvalidPostalCodeDbsNormal = false;
+                ModificationTrack.IsInvalidPostalCodeDbsFreeze = false;
+                ModificationTrack.IsInvalidPostalCodeDbsFrozen = false;
+                ModificationTrack.IsInvalidCityDbsNormal = false;
+                ModificationTrack.IsInvalidCityDbsFreeze = false;
+                ModificationTrack.IsInvalidCityDbsFrozen = false;
+                ModificationTrack.IsInvalidAddressDetailsDbsNormal = false;
+                ModificationTrack.IsInvalidAddressDetailsDbsFreeze = false;
+                ModificationTrack.IsInvalidAddressDetailsDbsFrozen = false;
+                ModificationTrack.IsInvalidStoreIdNormal = false;
+                ModificationTrack.IsInvalidStoreIdFreeze = false;
+                ModificationTrack.IsInvalidStoreIdFrozen = false;
+                ModificationTrack.IsInvalidCVSStoreOutSideNormal = false;
+                ModificationTrack.IsInvalidCVSStoreOutSideFreeze = false;
+                ModificationTrack.IsInvalidCVSStoreOutSideFrozen = false;
             }
 
             UpdateOrder = _ObjectMapper.Map<OrderDto, CreateOrderDto>(Order);
@@ -506,6 +1041,90 @@ public partial class OrderDetails
             UpdateOrder.CVSStoreOutSide = ModificationTrack.IsCVSStoreOutsideModified ?
                                  ModificationTrack.NewCVSStoreOutside :
                                  Order.CVSStoreOutSide;
+
+            UpdateOrder.RecipientNameDbsNormal = ModificationTrack.IsRecipientNameDbsNormalModified ?
+                                ModificationTrack.NewRecipientNameDbsNormal :
+                                Order.RecipientNameDbsNormal;
+
+            UpdateOrder.RecipientNameDbsFreeze = ModificationTrack.IsRecipientNameDbsFreezeModified ?
+                                ModificationTrack.NewRecipientNameDbsFreeze :
+                                Order.RecipientNameDbsFreeze;
+
+            UpdateOrder.RecipientNameDbsFrozen = ModificationTrack.IsRecipientNameDbsFrozenModified ?
+                                ModificationTrack.NewRecipientNameDbsFrozen :
+                                Order.RecipientNameDbsFrozen;
+
+            UpdateOrder.RecipientPhoneDbsNormal = ModificationTrack.IsRecipientPhoneDbsNormalModified ?
+                                ModificationTrack.NewRecipientPhoneDbsNormal :
+                                Order.RecipientPhoneDbsNormal;
+
+            UpdateOrder.RecipientPhoneDbsFreeze = ModificationTrack.IsRecipientPhoneDbsFreezeModified ?
+                                ModificationTrack.NewRecipientPhoneDbsFreeze :
+                                Order.RecipientPhoneDbsFreeze;
+
+            UpdateOrder.RecipientPhoneDbsFrozen = ModificationTrack.IsRecipientPhoneDbsFrozenModified ?
+                                ModificationTrack.NewRecipientPhoneDbsFrozen :
+                                Order.RecipientPhoneDbsFrozen;
+
+            UpdateOrder.PostalCodeDbsNormal = ModificationTrack.IsPostalCodeDbsNormalModified ?
+                                ModificationTrack.NewPostalCodeDbsNormal :
+                                Order.PostalCodeDbsNormal;
+
+            UpdateOrder.PostalCodeDbsFreeze = ModificationTrack.IsPostalCodeDbsFreezeModified ?
+                                ModificationTrack.NewPostalCodeDbsFreeze :
+                                Order.PostalCodeDbsFreeze;
+
+            UpdateOrder.PostalCodeDbsFrozen = ModificationTrack.IsPostalCodeDbsFrozenModified ?
+                                ModificationTrack.NewPostalCodeDbsFrozen :
+                                Order.PostalCodeDbsFrozen;
+
+            UpdateOrder.CityDbsNormal = ModificationTrack.IsCityDbsNormalModified ?
+                                ModificationTrack.NewCityDbsNormal :
+                                Order.CityDbsNormal;
+
+            UpdateOrder.CityDbsFreeze = ModificationTrack.IsCityDbsFreezeModified ?
+                                ModificationTrack.NewCityDbsFreeze :
+                                Order.CityDbsFreeze;
+
+            UpdateOrder.CityDbsFrozen = ModificationTrack.IsCityDbsFrozenModified ?
+                                ModificationTrack.NewCityDbsFrozen :
+                                Order.CityDbsFrozen;
+
+            UpdateOrder.AddressDetailsDbsNormal = ModificationTrack.IsAddressDetailsDbsNormalModified ?
+                                ModificationTrack.NewAddressDetailsDbsNormal :
+                                Order.AddressDetailsDbsNormal;
+
+            UpdateOrder.AddressDetailsDbsFreeze = ModificationTrack.IsAddressDetailsDbsFreezeModified ?
+                                ModificationTrack.NewAddressDetailsDbsFreeze :
+                                Order.AddressDetailsDbsFreeze;
+
+            UpdateOrder.AddressDetailsDbsFrozen = ModificationTrack.IsAddressDetailsDbsFrozenModified ?
+                                ModificationTrack.NewAddressDetailsDbsFrozen :
+                                Order.AddressDetailsDbsFrozen;
+
+            UpdateOrder.StoreIdNormal = ModificationTrack.IsStoreIdNormalModified ?
+                                ModificationTrack.NewStoreIdNormal :
+                                Order.StoreIdNormal;
+
+            UpdateOrder.StoreIdFreeze = ModificationTrack.IsStoreIdFreezeModified ?
+                                ModificationTrack.NewStoreIdFreeze :
+                                Order.StoreIdFreeze;
+
+            UpdateOrder.StoreIdFrozen = ModificationTrack.IsStoreIdFrozenModified ?
+                                ModificationTrack.NewStoreIdFrozen :
+                                Order.StoreIdFrozen;
+
+            UpdateOrder.CVSStoreOutSideNormal = ModificationTrack.IsCVSStoreOutSideNormalModified ?
+                                ModificationTrack.NewCVSStoreOutSideNormal :
+                                Order.CVSStoreOutSideNormal;
+
+            UpdateOrder.CVSStoreOutSideFreeze = ModificationTrack.IsCVSStoreOutSideFreezeModified ?
+                                ModificationTrack.NewCVSStoreOutSideFreeze :
+                                Order.CVSStoreOutSideFreeze;
+
+            UpdateOrder.CVSStoreOutSideFrozen = ModificationTrack.IsCVSStoreOutSideFrozenModified ?
+                                ModificationTrack.NewCVSStoreOutSideFrozen :
+                                Order.CVSStoreOutSideFrozen;
 
             await loading.Show();
             UpdateOrder.OrderStatus = Order.OrderStatus;
@@ -1443,6 +2062,90 @@ public class ModificationTrack
     public string NewCVSStoreOutside { get; set; }
     public bool IsCVSStoreOutsideInputVisible { get; set; }
     public bool IsInvalidCVSStoreOutside { get; set; }
+    public bool IsRecipientNameDbsNormalInputVisible { get; set; }
+    public bool IsRecipientNameDbsFreezeInputVisible { get; set; }
+    public bool IsRecipientNameDbsFrozenInputVisible { get; set; }
+    public bool IsRecipientPhoneDbsNormalInputVisible { get; set; }
+    public bool IsRecipientPhoneDbsFreezeInputVisible { get; set; }
+    public bool IsRecipientPhoneDbsFrozenInputVisible { get; set; }
+    public bool IsStoreIdNormalInputVisible { get; set; }
+    public bool IsStoreIdFreezeInputVisible { get; set; }
+    public bool IsStoreIdFrozenInputVisible { get; set; }
+    public bool IsCVSStoreOutSideNormalInputVisible { get; set; }
+    public bool IsCVSStoreOutSideFreezeInputVisible { get; set; }
+    public bool IsCVSStoreOutSideFrozenInputVisible { get; set; }
+    public bool IsPostalCodeDbsNormalInputVisible { get; set; }
+    public bool IsPostalCodeDbsFreezeInputVisible { get; set; }
+    public bool IsPostalCodeDbsFrozenInputVisible { get; set; }
+    public bool IsCityDbsNormalInputVisible { get; set; }
+    public bool IsCityDbsFreezeInputVisible { get; set; }
+    public bool IsCityDbsFrozenInputVisible { get; set; }
+    public bool IsAddressDetailsDbsNormalInputVisible { get; set; }
+    public bool IsAddressDetailsDbsFreezeInputVisible { get; set; }
+    public bool IsAddressDetailsDbsFrozenInputVisible { get; set; }
+    public bool IsInvalidRecipientNameDbsNormal { get; set; }
+    public bool IsInvalidRecipientNameDbsFreeze { get; set; }
+    public bool IsInvalidRecipientNameDbsFrozen { get; set; }
+    public bool IsInvalidRecipientPhoneDbsNormal { get; set; }
+    public bool IsInvalidRecipientPhoneDbsFreeze { get; set; }
+    public bool IsInvalidRecipientPhoneDbsFrozen { get; set; }
+    public bool IsInvalidStoreIdNormal { get; set; }
+    public bool IsInvalidStoreIdFreeze { get; set; }
+    public bool IsInvalidStoreIdFrozen { get; set; }
+    public bool IsInvalidCVSStoreOutSideNormal { get; set; }
+    public bool IsInvalidCVSStoreOutSideFreeze { get; set; }
+    public bool IsInvalidCVSStoreOutSideFrozen { get; set; }
+    public bool IsInvalidPostalCodeDbsNormal { get; set; }
+    public bool IsInvalidPostalCodeDbsFreeze { get; set; }
+    public bool IsInvalidPostalCodeDbsFrozen { get; set; }
+    public bool IsInvalidCityDbsNormal { get; set; }
+    public bool IsInvalidCityDbsFreeze { get; set; }
+    public bool IsInvalidCityDbsFrozen { get; set; }
+    public bool IsInvalidAddressDetailsDbsNormal { get; set; }
+    public bool IsInvalidAddressDetailsDbsFreeze { get; set; }
+    public bool IsInvalidAddressDetailsDbsFrozen { get; set; }
+    public string NewRecipientNameDbsNormal { get; set; }
+    public string NewRecipientNameDbsFreeze { get; set; }
+    public string NewRecipientNameDbsFrozen { get; set; }
+    public string NewRecipientPhoneDbsNormal { get; set; }
+    public string NewRecipientPhoneDbsFreeze { get; set; }
+    public string NewRecipientPhoneDbsFrozen { get; set; }
+    public string NewStoreIdNormal { get; set; }
+    public string NewStoreIdFreeze { get; set; }
+    public string NewStoreIdFrozen { get; set; }
+    public string NewCVSStoreOutSideNormal { get; set; }
+    public string NewCVSStoreOutSideFreeze { get; set; }
+    public string NewCVSStoreOutSideFrozen { get; set; }
+    public string NewPostalCodeDbsNormal { get; set; }
+    public string NewPostalCodeDbsFreeze { get; set; }
+    public string NewPostalCodeDbsFrozen { get; set; }
+    public string NewCityDbsNormal { get; set; }
+    public string NewCityDbsFreeze { get; set; }
+    public string NewCityDbsFrozen { get; set; }
+    public string NewAddressDetailsDbsNormal { get; set; }
+    public string NewAddressDetailsDbsFreeze { get; set; }
+    public string NewAddressDetailsDbsFrozen { get; set; }
+    public bool IsRecipientNameDbsNormalModified { get; set; }
+    public bool IsRecipientNameDbsFreezeModified { get; set; }
+    public bool IsRecipientNameDbsFrozenModified { get; set; }
+    public bool IsRecipientPhoneDbsNormalModified { get; set; }
+    public bool IsRecipientPhoneDbsFreezeModified { get; set; }
+    public bool IsRecipientPhoneDbsFrozenModified { get; set; }
+    public bool IsStoreIdNormalModified { get; set; }
+    public bool IsStoreIdFreezeModified { get; set; }
+    public bool IsStoreIdFrozenModified { get; set; }
+    public bool IsCVSStoreOutSideNormalModified { get; set; }
+    public bool IsCVSStoreOutSideFreezeModified { get; set; }
+    public bool IsCVSStoreOutSideFrozenModified { get; set; }
+    public bool IsPostalCodeDbsNormalModified { get; set; }
+    public bool IsPostalCodeDbsFreezeModified { get; set; }
+    public bool IsPostalCodeDbsFrozenModified { get; set; }
+    public bool IsCityDbsNormalModified { get; set; }
+    public bool IsCityDbsFreezeModified { get; set; }
+    public bool IsCityDbsFrozenModified { get; set; }
+    public bool IsAddressDetailsDbsNormalModified { get; set; }
+    public bool IsAddressDetailsDbsFreezeModified { get; set; }
+    public bool IsAddressDetailsDbsFrozenModified { get; set; }
 }
 public class Shipments
 {

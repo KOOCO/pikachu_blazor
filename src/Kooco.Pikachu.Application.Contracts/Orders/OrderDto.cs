@@ -79,6 +79,30 @@ public class OrderDto : FullAuditedEntityDto<Guid>
     public int? GWSR { get; set; }
     public OrderRefundType? OrderRefundType { get; set; }
     public decimal RefundAmount { get; set; }
-
     public Guid? UserId { get; set; }
+    public string? RecipientNameDbsNormal { get; set; }
+    public string? RecipientNameDbsFreeze { get; set; }
+    public string? RecipientNameDbsFrozen { get; set; }
+    public string? RecipientPhoneDbsNormal { get; set; }
+    public string? RecipientPhoneDbsFreeze { get; set; }
+    public string? RecipientPhoneDbsFrozen { get; set; }
+    public string? PostalCodeDbsNormal { get; set; }
+    public string? PostalCodeDbsFreeze { get; set; }
+    public string? PostalCodeDbsFrozen { get; set; }
+    public string? CityDbsNormal { get; set; }
+    public string? CityDbsFreeze { get; set; }
+    public string? CityDbsFrozen { get; set; }
+    public string? AddressDetailsDbsNormal { get; set; }
+    public string? AddressDetailsDbsFreeze { get; set; }
+    public string? AddressDetailsDbsFrozen { get; set; }
+    public string? RemarksDbsNormal { get; set; }
+    public string? RemarksDbsFreeze { get; set; }
+    public string? RemarksDbsFrozen { get; set; }
+    public string? StoreIdNormal { get; set; }
+    public string? StoreIdFreeze { get; set; }
+    public string? StoreIdFrozen { get; set; }
+    public string? CVSStoreOutSideNormal { get; set; }
+    public string? CVSStoreOutSideFreeze { get; set; }
+    public string? CVSStoreOutSideFrozen { get; set; }
+    public ItemStorageTemperature? TemperatureControlDbs { get; set; }
 }

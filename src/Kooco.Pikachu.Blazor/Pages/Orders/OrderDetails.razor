@@ -130,109 +130,34 @@
                     </div>
                     </div>  *@
                         <Divider></Divider>
-                        <div class="row">
-                            <div class="col-12">
-                                <table class="w-100">
-                                    <tbody>
-                                        <Div Width="Width.Max100">
-                                            <select class="form-select form-select" @onchange=ChangeStore>
-                                                <option value="homeDelivery">Home Delivery</option>
-                                                <option value="convenienceStore">Convenience Store</option>
-                                            </select>
-                                        </Div>
-                                        <br />
-                                        <tr>
-                                            <td>@L["Recipient"]</td>
-                                            @if (ModificationTrack.IsNameInputVisible)
-                                            {
-                                                <td>
-                                                    <div class="input-group">
 
-                                                        @{
-                                                            var errorClass = ModificationTrack.IsInvalidName ? "invalid" : "";
-                                                        }
-                                                        <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewName" />
-
-
-                                                        <Button Type="ButtonType.Button" @onclick="SaveRecipientName" Class="btn btn-sm btn-primary">
-                                                            <i class="fa fa-check"></i>
-                                                        </Button>
-                                                    </div>
-                                                </td>
-                                            }
-                                            else
-                                            {
-                                                <td class="d-flex justify-content-between">
-                                                    @if (ModificationTrack.IsNameModified)
-                                                    {
-                                                        @ModificationTrack.NewName
-                                                    }
-                                                    else
-                                                    {
-                                                        @Order.RecipientName
-                                                    }
-                                                    @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
-                                                    {
-                                                        <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientName">
-                                                            <i class="fa fa-pencil text-secondary"></i>
-                                                        </span>
-                                                    }
-                                                </td>
-                                            }
-                                        </tr>
-                                        <tr>
-                                            <td>@L["RecipientPhoneNumber"]</td>
-                                            @if (ModificationTrack.IsPhoneInputVisible)
-                                            {
-                                                <td>
-                                                    <div class="input-group">
-                                                        @{
-                                                            var errorClass2 = ModificationTrack.IsInvalidPhone ? "invalid" : "";
-                                                        }
-                                                        <input type="text" class="form-control form-control-sm @errorClass2" @bind-value="@ModificationTrack.NewPhone" />
-                                                        <Button Type="ButtonType.Button" @onclick="SaveRecipientPhone" Class="btn btn-sm btn-primary">
-                                                            <i class="fa fa-check"></i>
-                                                        </Button>
-                                                    </div>
-                                                </td>
-                                            }
-                                            else
-                                            {
-                                                <td class="d-flex justify-content-between">
-                                                    @if (ModificationTrack.IsPhoneModified)
-                                                    {
-                                                        @ModificationTrack.NewPhone
-                                                    }
-                                                    else
-                                                    {
-                                                        @Order.RecipientPhone
-                                                    }
-                                                    @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
-                                                    {
-                                                        <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientPhone">
-                                                            <i class="fa fa-pencil text-secondary"></i>
-                                                        </span>
-                                                    }
-                                                </td>
-                                            }
-                                        </tr>
-
-                                        @if (IsShowConvenienceStoreDetails)
-                                        {
+                        @if (Order.DeliveryMethod is not DeliveryMethod.DeliveredByStore) 
+                        {
+                            <div class="row">
+                                <div class="col-12">
+                                    <table class="w-100">
+                                        <tbody>
+                                            <Div Width="Width.Max100">
+                                                <select class="form-select form-select" @onchange=ChangeStore>
+                                                    <option value="homeDelivery">Home Delivery</option>
+                                                    <option value="convenienceStore">Convenience Store</option>
+                                                </select>
+                                            </Div>
+                                            <br />
                                             <tr>
-                                                <td>@L["CVS Store Id"]</td>
-                                                @if (ModificationTrack.IsCVSStoreIdInputVisible)
+                                                <td>@L["Recipient"]</td>
+                                                @if (ModificationTrack.IsNameInputVisible)
                                                 {
                                                     <td>
                                                         <div class="input-group">
 
                                                             @{
-                                                                var errorClass = ModificationTrack.IsInvalidCVSStoreId ? "invalid" : "";
+                                                                var errorClass = ModificationTrack.IsInvalidName ? "invalid" : "";
                                                             }
-                                                            <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewCVSStoreId" />
+                                                            <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewName" />
 
 
-                                                            <Button Type="ButtonType.Button" @onclick="SaveCVSStoreId" Class="btn btn-sm btn-primary">
+                                                            <Button Type="ButtonType.Button" @onclick="SaveRecipientName" Class="btn btn-sm btn-primary">
                                                                 <i class="fa fa-check"></i>
                                                             </Button>
                                                         </div>
@@ -241,17 +166,17 @@
                                                 else
                                                 {
                                                     <td class="d-flex justify-content-between">
-                                                        @if (ModificationTrack.IsCVSStoreIdModified)
+                                                        @if (ModificationTrack.IsNameModified)
                                                         {
-                                                            @ModificationTrack.NewCVSStoreId
+                                                            @ModificationTrack.NewName
                                                         }
                                                         else
                                                         {
-                                                            @Order.StoreId
+                                                            @Order.RecipientName
                                                         }
                                                         @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
                                                         {
-                                                            <span class="text-secondary cursor-pointer me-2" @onclick="EditCVSStoreId">
+                                                            <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientName">
                                                                 <i class="fa fa-pencil text-secondary"></i>
                                                             </span>
                                                         }
@@ -259,19 +184,16 @@
                                                 }
                                             </tr>
                                             <tr>
-                                                <td>@L["CVS Store OutSide"]</td>
-                                                @if (ModificationTrack.IsCVSStoreOutsideInputVisible)
+                                                <td>@L["RecipientPhoneNumber"]</td>
+                                                @if (ModificationTrack.IsPhoneInputVisible)
                                                 {
                                                     <td>
                                                         <div class="input-group">
-
                                                             @{
-                                                                var errorClass = ModificationTrack.IsInvalidCVSStoreOutside ? "invalid" : "";
+                                                                var errorClass2 = ModificationTrack.IsInvalidPhone ? "invalid" : "";
                                                             }
-                                                            <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewCVSStoreOutside" />
-
-
-                                                            <Button Type="ButtonType.Button" @onclick="SaveCVSStoreOutside" Class="btn btn-sm btn-primary">
+                                                            <input type="text" class="form-control form-control-sm @errorClass2" @bind-value="@ModificationTrack.NewPhone" />
+                                                            <Button Type="ButtonType.Button" @onclick="SaveRecipientPhone" Class="btn btn-sm btn-primary">
                                                                 <i class="fa fa-check"></i>
                                                             </Button>
                                                         </div>
@@ -280,129 +202,210 @@
                                                 else
                                                 {
                                                     <td class="d-flex justify-content-between">
-                                                        @if (ModificationTrack.IsCVSStoreOutsideModified)
+                                                        @if (ModificationTrack.IsPhoneModified)
                                                         {
-                                                            @ModificationTrack.NewCVSStoreOutside
+                                                            @ModificationTrack.NewPhone
                                                         }
                                                         else
                                                         {
-                                                            @Order.CVSStoreOutSide
+                                                            @Order.RecipientPhone
                                                         }
                                                         @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
                                                         {
-                                                            <span class="text-secondary cursor-pointer me-2" @onclick="EditCVSStoreOutside">
+                                                            <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientPhone">
                                                                 <i class="fa fa-pencil text-secondary"></i>
                                                             </span>
                                                         }
                                                     </td>
                                                 }
                                             </tr>
-                                        }
 
-                                        else 
-                                        {
-                                            <tr>
-                                                <td>@L["RecipientPostalCode"]</td>
+                                            @if (IsShowConvenienceStoreDetails)
+                                            {
+                                                <tr>
+                                                    <td>@L["CVS Store Id"]</td>
+                                                    @if (ModificationTrack.IsCVSStoreIdInputVisible)
+                                                    {
+                                                        <td>
+                                                            <div class="input-group">
 
-                                                @* <td>@Order.PostalCode</td> *@
-                                                @if (ModificationTrack.IsPostalCodeInputVisible)
-                                                {
-                                                    <td>
+                                                                @{
+                                                                    var errorClass = ModificationTrack.IsInvalidCVSStoreId ? "invalid" : "";
+                                                                }
+                                                                <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewCVSStoreId" />
 
-                                                        <div class="row">
-                                                            <div class="col-12">
-                                                                <div class="input-group">
-                                                                    @{
-                                                                        var errorClass = ModificationTrack.IsInvalidPostalCode ? "invalid" : "";
-                                                                    }
-                                                                    <input class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewPostalCode" />
-                                                                    <Button Type="ButtonType.Button" @onclick="SaveRecipientPostalCode" Class="btn btn-sm btn-primary">
-                                                                        <i class="fa fa-check"></i>
-                                                                    </Button>
-                                                                </div>
+
+                                                                <Button Type="ButtonType.Button" @onclick="SaveCVSStoreId" Class="btn btn-sm btn-primary">
+                                                                    <i class="fa fa-check"></i>
+                                                                </Button>
                                                             </div>
-                                                        </div>
-                                                    </td>
-                                                }
-                                                else
-                                                {
-                                                    <td class="d-flex justify-content-between">
-                                                        @if (ModificationTrack.IsPostalCodeModified)
-                                                        {
-                                                            @(ModificationTrack.NewPostalCode)
-                                                            @* +", " + ModificationTrack.NewRoad + ", " + ModificationTrack.NewDistrict + ", " + ModificationTrack.NewCity *@
-                                                        }
-                                                        else
-                                                        {
-                                                            @(Order.PostalCode)
-                                                            @*  + ", " + Order.Road + ", " + Order.District + ", " + Order.City *@
-                                                        }
-                                                        @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
-                                                        {
-                                                            <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientPostalCode">
-                                                                <i class="fa fa-pencil text-secondary"></i>
-                                                            </span>
-                                                        }
-                                                    </td>
-                                                }
-                                            </tr>
-                                            <tr>
-                                                <td>@L["RecipientCity"]</td>
-                                                @if (ModificationTrack.IsCityInputVisible)
-                                                {
-                                                    <td>
-                                                        <div class="row">
-                                                            <div class="col-12">
-                                                                <div class="input-group">
-                                                                    @{
-                                                                        string errorClass = ModificationTrack.IsInvalidCity ? "invalid" : "";
-                                                                    }
-                                                                    @* <input class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewCity" /> *@
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td class="d-flex justify-content-between">
+                                                            @if (ModificationTrack.IsCVSStoreIdModified)
+                                                            {
+                                                                @ModificationTrack.NewCVSStoreId
+                                                            }
+                                                            else
+                                                            {
+                                                                @Order.StoreId
+                                                            }
+                                                            @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
+                                                            {
+                                                                <span class="text-secondary cursor-pointer me-2" @onclick="EditCVSStoreId">
+                                                                    <i class="fa fa-pencil text-secondary"></i>
+                                                                </span>
+                                                            }
+                                                        </td>
+                                                    }
+                                                </tr>
+                                                <tr>
+                                                    <td>@L["CVS Store OutSide"]</td>
+                                                    @if (ModificationTrack.IsCVSStoreOutsideInputVisible)
+                                                    {
+                                                        <td>
+                                                            <div class="input-group">
 
-                                                                    <select class="form-select form-select-sm @errorClass" @onchange=@((e) => ModificationTrack.NewCity = Convert.ToString(e.Value))>
-                                                                        <option value=""> Select City </option>
-                                                                        @foreach (string city in Enum.GetNames<RecipientCities>())
-                                                                        {
-                                                                            <option value="@city">@city</option>
+                                                                @{
+                                                                    var errorClass = ModificationTrack.IsInvalidCVSStoreOutside ? "invalid" : "";
+                                                                }
+                                                                <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewCVSStoreOutside" />
+
+
+                                                                <Button Type="ButtonType.Button" @onclick="SaveCVSStoreOutside" Class="btn btn-sm btn-primary">
+                                                                    <i class="fa fa-check"></i>
+                                                                </Button>
+                                                            </div>
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td class="d-flex justify-content-between">
+                                                            @if (ModificationTrack.IsCVSStoreOutsideModified)
+                                                            {
+                                                                @ModificationTrack.NewCVSStoreOutside
+                                                            }
+                                                            else
+                                                            {
+                                                                @Order.CVSStoreOutSide
+                                                            }
+                                                            @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
+                                                            {
+                                                                <span class="text-secondary cursor-pointer me-2" @onclick="EditCVSStoreOutside">
+                                                                    <i class="fa fa-pencil text-secondary"></i>
+                                                                </span>
+                                                            }
+                                                        </td>
+                                                    }
+                                                </tr>
+                                            }
+
+                                            else
+                                            {
+                                                <tr>
+                                                    <td>@L["RecipientPostalCode"]</td>
+
+                                                    @* <td>@Order.PostalCode</td> *@
+                                                    @if (ModificationTrack.IsPostalCodeInputVisible)
+                                                    {
+                                                        <td>
+
+                                                            <div class="row">
+                                                                <div class="col-12">
+                                                                    <div class="input-group">
+                                                                        @{
+                                                                            var errorClass = ModificationTrack.IsInvalidPostalCode ? "invalid" : "";
                                                                         }
-                                                                    </select>
-
-                                                                    <Button Type="ButtonType.Button" @onclick="SaveRecipientCity" Class="btn btn-sm btn-primary">
-                                                                        <i class="fa fa-check"></i>
-                                                                    </Button>
+                                                                        <input class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewPostalCode" />
+                                                                        <Button Type="ButtonType.Button" @onclick="SaveRecipientPostalCode" Class="btn btn-sm btn-primary">
+                                                                            <i class="fa fa-check"></i>
+                                                                        </Button>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    </td>
-                                                }
-                                                else
-                                                {
-                                                    <td class="d-flex justify-content-between">
-                                                        @if (ModificationTrack.IsCityModified)
-                                                        {
-                                                            @L[ModificationTrack.NewCity]
-                                                            @* +", " + ModificationTrack.NewRoad + ", " + ModificationTrack.NewDistrict + ", " + ModificationTrack.NewCity *@
-                                                        }
-                                                        else
-                                                        {
-                                                            @L[Order.City ?? ""]
-                                                            @*  + ", " + Order.Road + ", " + Order.District + ", " + Order.City *@
-                                                        }
-                                                        @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
-                                                        {
-                                                            <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientCity">
-                                                                <i class="fa fa-pencil text-secondary"></i>
-                                                            </span>
-                                                        }
-                                                    </td>
-                                                }
-                                            </tr>
-                                            <tr>
-                                                <td>@L["RecipientAddress"]</td>
-                                                @if (ModificationTrack.IsAddressInputVisible)
-                                                {
-                                                    <td>
-                                                        @* <div class="row mb-1">
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td class="d-flex justify-content-between">
+                                                            @if (ModificationTrack.IsPostalCodeModified)
+                                                            {
+                                                                @(ModificationTrack.NewPostalCode)
+                                                                @* +", " + ModificationTrack.NewRoad + ", " + ModificationTrack.NewDistrict + ", " + ModificationTrack.NewCity *@
+                                                            }
+                                                            else
+                                                            {
+                                                                @(Order.PostalCode)
+                                                                @*  + ", " + Order.Road + ", " + Order.District + ", " + Order.City *@
+                                                            }
+                                                            @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
+                                                            {
+                                                                <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientPostalCode">
+                                                                    <i class="fa fa-pencil text-secondary"></i>
+                                                                </span>
+                                                            }
+                                                        </td>
+                                                    }
+                                                </tr>
+                                                <tr>
+                                                    <td>@L["RecipientCity"]</td>
+                                                    @if (ModificationTrack.IsCityInputVisible)
+                                                    {
+                                                        <td>
+                                                            <div class="row">
+                                                                <div class="col-12">
+                                                                    <div class="input-group">
+                                                                        @{
+                                                                            string errorClass = ModificationTrack.IsInvalidCity ? "invalid" : "";
+                                                                        }
+                                                                        @* <input class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewCity" /> *@
+
+                                                                        <select class="form-select form-select-sm @errorClass" @onchange=@((e) => ModificationTrack.NewCity = Convert.ToString(e.Value))>
+                                                                            <option value=""> Select City </option>
+                                                                            @foreach (string city in Enum.GetNames<RecipientCities>())
+                                                                            {
+                                                                                <option value="@city">@city</option>
+                                                                            }
+                                                                        </select>
+
+                                                                        <Button Type="ButtonType.Button" @onclick="SaveRecipientCity" Class="btn btn-sm btn-primary">
+                                                                            <i class="fa fa-check"></i>
+                                                                        </Button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td class="d-flex justify-content-between">
+                                                            @if (ModificationTrack.IsCityModified)
+                                                            {
+                                                                @L[ModificationTrack.NewCity]
+                                                                @* +", " + ModificationTrack.NewRoad + ", " + ModificationTrack.NewDistrict + ", " + ModificationTrack.NewCity *@
+                                                            }
+                                                            else
+                                                            {
+                                                                @L[Order.City ?? ""]
+                                                                @*  + ", " + Order.Road + ", " + Order.District + ", " + Order.City *@
+                                                            }
+                                                            @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
+                                                            {
+                                                                <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientCity">
+                                                                    <i class="fa fa-pencil text-secondary"></i>
+                                                                </span>
+                                                            }
+                                                        </td>
+                                                    }
+                                                </tr>
+                                                <tr>
+                                                    <td>@L["RecipientAddress"]</td>
+                                                    @if (ModificationTrack.IsAddressInputVisible)
+                                                    {
+                                                        <td>
+                                                            @* <div class="row mb-1">
                                             <div class="col-4">
                                             <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewRoad">
                                             <option disabled="disabled" selected="selected">選擇城市</option>
@@ -428,65 +431,944 @@
                                             </InputSelect>
                                             </div>
                                             </div> *@
-                                                        <div class="row">
-                                                            <div class="col-12">
-                                                                <div class="input-group">
-                                                                    @{
-                                                                        var errorClass = ModificationTrack.IsInvalidAddress ? "invalid" : "";
-                                                                    }
-                                                                    <input class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewAddress" />
-                                                                    <Button Type="ButtonType.Button" @onclick="SaveRecipientAddress" Class="btn btn-sm btn-primary">
-                                                                        <i class="fa fa-check"></i>
-                                                                    </Button>
+                                                            <div class="row">
+                                                                <div class="col-12">
+                                                                    <div class="input-group">
+                                                                        @{
+                                                                            var errorClass = ModificationTrack.IsInvalidAddress ? "invalid" : "";
+                                                                        }
+                                                                        <input class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewAddress" />
+                                                                        <Button Type="ButtonType.Button" @onclick="SaveRecipientAddress" Class="btn btn-sm btn-primary">
+                                                                            <i class="fa fa-check"></i>
+                                                                        </Button>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    </td>
-                                                }
-                                                else
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td class="d-flex justify-content-between">
+                                                            @if (ModificationTrack.IsAddressModified)
+                                                            {
+                                                                @(ModificationTrack.NewAddress)
+                                                                @* +", " + ModificationTrack.NewRoad + ", " + ModificationTrack.NewDistrict + ", " + ModificationTrack.NewCity *@
+                                                            }
+                                                            else
+                                                            {
+                                                                @(Order.AddressDetails)
+                                                                @*  + ", " + Order.Road + ", " + Order.District + ", " + Order.City *@
+                                                            }
+                                                            @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
+                                                            {
+                                                                <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientAddress">
+                                                                    <i class="fa fa-pencil text-secondary"></i>
+                                                                </span>
+                                                            }
+                                                        </td>
+                                                    }
+                                                </tr>
+                                            }
+                                            <tr>
+                                                <td>@L["RecipientComments"]</td>
+                                                <td>@Order.Remarks</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            @if (ModificationTrack.IsModified)
+                            {
+                                <div class="row">
+                                    <div class="col-12 text-end">
+                                        <Button Type="ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="CancelChanges">
+                                            @L["Cancel"]
+                                        </Button>
+                                        <Button Type="ButtonType.Button" Clicked="SaveChangesAsync" Class="btn btn-sm btn-primary">
+                                            <i class="fa fa-check"></i>
+                                            @L["SaveChanges"]
+                                        </Button>
+                                    </div>
+                                </div>
+                            }
+                        }
+
+                        else 
+                        {
+                            <div class="row">
+                                <div class="col-12">
+                                    <table class="w-100">
+                                        <tbody>
+                                            <Div Width="Width.Max100">
+                                                <select class="form-select form-select" @onchange=ChangeStore>
+                                                    <option value="homeDelivery">Home Delivery</option>
+                                                    <option value="convenienceStore">Convenience Store</option>
+                                                </select>
+                                            </Div>
+
+                                            <Div Width="Width.Max100">
+                                                <select class="form-select form-select my-1" @onchange=TemperatureControlChange>
+                                                    <option value="">Select Temp Control</option>
+                                                    @foreach (string temperature in Enum.GetNames<ItemStorageTemperature>()) 
+                                                    {
+                                                        <option value="@temperature">@L[temperature]</option>
+                                                    }
+                                                </select>
+                                            </Div>
+                                            <br />
+                                            <tr>
+                                                <td>@L["Recipient"]</td>
+                                                @if (SelectedTemperatureControl is ItemStorageTemperature.Normal)
                                                 {
-                                                    <td class="d-flex justify-content-between">
-                                                        @if (ModificationTrack.IsAddressModified)
+                                                    @if (ModificationTrack.IsRecipientNameDbsNormalInputVisible)
+                                                    {
+                                                        <td>
+                                                            <div class="input-group">
+                                                                @{
+                                                                    string errorClass = ModificationTrack.IsInvalidRecipientNameDbsNormal ? "invalid" : string.Empty;
+                                                                }
+                                                                <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewRecipientNameDbsNormal" />
+
+                                                                <Button Type="ButtonType.Button" @onclick="SaveRecipientNameDbsNormal" Class="btn btn-sm btn-primary">
+                                                                    <i class="fa fa-check" />
+                                                                </Button>
+                                                            </div>
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td class="d-flex justify-content-between">
+                                                            @if (ModificationTrack.IsRecipientNameDbsNormalModified)
+                                                            {
+                                                                @ModificationTrack.NewRecipientNameDbsNormal
+                                                            }
+                                                            else
+                                                            {
+                                                                @Order.RecipientNameDbsNormal
+                                                            }
+                                                            @if (Order.OrderType is not OrderType.MargeToNew && Order.OrderStatus is not OrderStatus.Refund)
+                                                            {
+                                                                <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientNameDbsNormal">
+                                                                    <i class="fa fa-pencil text-secondary"></i>
+                                                                </span>
+                                                            }
+                                                        </td>
+                                                    }
+                                                }
+
+                                                else if (SelectedTemperatureControl is ItemStorageTemperature.Freeze)
+                                                {
+                                                    @if (ModificationTrack.IsRecipientNameDbsFreezeInputVisible)
+                                                    {
+                                                        <td>
+                                                            <div class="input-group">
+                                                                @{
+                                                                    string errorClass = ModificationTrack.IsInvalidRecipientNameDbsFreeze ? "invalid" : string.Empty;
+                                                                }
+                                                                <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewRecipientNameDbsFreeze" />
+
+                                                                <Button Type="ButtonType.Button" @onclick="SaveRecipientNameDbsFreeze" Class="btn btn-sm btn-primary">
+                                                                    <i class="fa fa-check" />
+                                                                </Button>
+                                                            </div>
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td class="d-flex justify-content-between">
+                                                            @if (ModificationTrack.IsRecipientNameDbsFreezeModified)
+                                                            {
+                                                                @ModificationTrack.NewRecipientNameDbsFreeze
+                                                            }
+                                                            else
+                                                            {
+                                                                @Order.RecipientNameDbsFreeze
+                                                            }
+                                                            @if (Order.OrderType is not OrderType.MargeToNew && Order.OrderStatus is not OrderStatus.Refund)
+                                                            {
+                                                                <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientNameDbsFreeze">
+                                                                    <i class="fa fa-pencil text-secondary"></i>
+                                                                </span>
+                                                            }
+                                                        </td>
+                                                    }
+                                                }
+
+                                                else if (SelectedTemperatureControl is ItemStorageTemperature.Frozen)
+                                                {
+                                                    @if (ModificationTrack.IsRecipientNameDbsFrozenInputVisible)
+                                                    {
+                                                        <td>
+                                                            <div class="input-group">
+                                                                @{
+                                                                    string errorClass = ModificationTrack.IsInvalidRecipientNameDbsFrozen ? "invalid" : string.Empty;
+                                                                }
+                                                                <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewRecipientNameDbsFrozen" />
+
+                                                                <Button Type="ButtonType.Button" @onclick="SaveRecipientNameDbsFrozen" Class="btn btn-sm btn-primary">
+                                                                    <i class="fa fa-check" />
+                                                                </Button>
+                                                            </div>
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td class="d-flex justify-content-between">
+                                                            @if (ModificationTrack.IsRecipientNameDbsFrozenModified)
+                                                            {
+                                                                @ModificationTrack.NewRecipientNameDbsFrozen
+                                                            }
+                                                            else
+                                                            {
+                                                                @Order.RecipientNameDbsFrozen
+                                                            }
+                                                            @if (Order.OrderType is not OrderType.MargeToNew && Order.OrderStatus is not OrderStatus.Refund)
+                                                            {
+                                                                <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientNameDbsFrozen">
+                                                                    <i class="fa fa-pencil text-secondary"></i>
+                                                                </span>
+                                                            }
+                                                        </td>
+                                                    }
+                                                }
+                                            </tr>
+                                            <tr>
+                                                <td>@L["RecipientPhoneNumber"]</td>
+                                                @if (SelectedTemperatureControl is ItemStorageTemperature.Normal)
+                                                {
+                                                    @if (ModificationTrack.IsRecipientPhoneDbsNormalInputVisible)
+                                                    {
+                                                        <td>
+                                                            <div class="input-group">
+                                                                @{
+                                                                    string errorClass = ModificationTrack.IsInvalidRecipientPhoneDbsNormal ? "invalid" : string.Empty;
+                                                                }
+                                                                <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewRecipientPhoneDbsNormal" />
+
+                                                                <Button Type="ButtonType.Button" @onclick="SaveRecipientPhoneDbsNormal" Class="btn btn-sm btn-primary">
+                                                                    <i class="fa fa-check" />
+                                                                </Button>
+                                                            </div>
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td class="d-flex justify-content-between">
+                                                            @if (ModificationTrack.IsRecipientPhoneDbsNormalModified)
+                                                            {
+                                                                @ModificationTrack.NewRecipientPhoneDbsNormal
+                                                            }
+                                                            else
+                                                            {
+                                                                @Order.RecipientPhoneDbsNormal
+                                                            }
+                                                            @if (Order.OrderType is not OrderType.MargeToNew && Order.OrderStatus is not OrderStatus.Refund)
+                                                            {
+                                                                <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientPhoneDbsNormal">
+                                                                    <i class="fa fa-pencil text-secondary"></i>
+                                                                </span>
+                                                            }
+                                                        </td>
+                                                    }
+                                                }
+
+                                                else if (SelectedTemperatureControl is ItemStorageTemperature.Freeze)
+                                                {
+                                                    @if (ModificationTrack.IsRecipientPhoneDbsFreezeInputVisible)
+                                                    {
+                                                        <td>
+                                                            <div class="input-group">
+                                                                @{
+                                                                    string errorClass = ModificationTrack.IsInvalidRecipientPhoneDbsFreeze ? "invalid" : string.Empty;
+                                                                }
+                                                                <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewRecipientPhoneDbsFreeze" />
+
+                                                                <Button Type="ButtonType.Button" @onclick="SaveRecipientPhoneDbsFreeze" Class="btn btn-sm btn-primary">
+                                                                    <i class="fa fa-check" />
+                                                                </Button>
+                                                            </div>
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td class="d-flex justify-content-between">
+                                                            @if (ModificationTrack.IsRecipientPhoneDbsFreezeModified)
+                                                            {
+                                                                @ModificationTrack.NewRecipientPhoneDbsFreeze
+                                                            }
+                                                            else
+                                                            {
+                                                                @Order.RecipientPhoneDbsFreeze
+                                                            }
+                                                            @if (Order.OrderType is not OrderType.MargeToNew && Order.OrderStatus is not OrderStatus.Refund)
+                                                            {
+                                                                <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientPhoneDbsFreeze">
+                                                                    <i class="fa fa-pencil text-secondary" />
+                                                                </span>
+                                                            }
+                                                        </td>
+                                                    }
+                                                }
+
+                                                else if (SelectedTemperatureControl is ItemStorageTemperature.Frozen)
+                                                {
+                                                    @if (ModificationTrack.IsRecipientPhoneDbsFrozenInputVisible)
+                                                    {
+                                                        <td>
+                                                            <div class="input-group">
+                                                                @{
+                                                                    string errorClass = ModificationTrack.IsInvalidRecipientPhoneDbsFrozen ? "invalid" : string.Empty;
+                                                                }
+                                                                <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewRecipientPhoneDbsFrozen" />
+
+                                                                <Button Type="ButtonType.Button" @onclick="SaveRecipientPhoneDbsFrozen" Class="btn btn-sm btn-primary">
+                                                                    <i class="fa fa-check" />
+                                                                </Button>
+                                                            </div>
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td class="d-flex justify-content-between">
+                                                            @if (ModificationTrack.IsRecipientPhoneDbsFrozenModified)
+                                                            {
+                                                                @ModificationTrack.NewRecipientPhoneDbsFrozen
+                                                            }
+                                                            else
+                                                            {
+                                                                @Order.RecipientPhoneDbsFrozen
+                                                            }
+                                                            @if (Order.OrderType is not OrderType.MargeToNew && Order.OrderStatus is not OrderStatus.Refund)
+                                                            {
+                                                                <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientPhoneDbsFrozen">
+                                                                    <i class="fa fa-pencil text-secondary" />
+                                                                </span>
+                                                            }
+                                                        </td>
+                                                    }
+                                                }
+                                            </tr>
+
+                                            @if (IsShowConvenienceStoreDetails)
+                                            {
+                                                <tr>
+                                                    <td>@L["CVS Store Id"]</td>
+                                                    @if (SelectedTemperatureControl is ItemStorageTemperature.Normal)
+                                                    {
+                                                        @if (ModificationTrack.IsStoreIdNormalInputVisible)
                                                         {
-                                                            @(ModificationTrack.NewAddress)
-                                                            @* +", " + ModificationTrack.NewRoad + ", " + ModificationTrack.NewDistrict + ", " + ModificationTrack.NewCity *@
+                                                            <td>
+                                                                <div class="input-group">
+                                                                    @{
+                                                                        string errorClass = ModificationTrack.IsInvalidStoreIdNormal ? "invalid" : string.Empty;
+                                                                    }
+                                                                    <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewStoreIdNormal" />
+
+                                                                    <Button Type="ButtonType.Button" @onclick="SaveStoreIdNormal" Class="btn btn-sm btn-primary">
+                                                                        <i class="fa fa-check" />
+                                                                    </Button>
+                                                                </div>
+                                                            </td>
                                                         }
                                                         else
                                                         {
-                                                            @(Order.AddressDetails)
-                                                            @*  + ", " + Order.Road + ", " + Order.District + ", " + Order.City *@
+                                                            <td class="d-flex justify-content-between">
+                                                                @if (ModificationTrack.IsStoreIdNormalModified)
+                                                                {
+                                                                    @ModificationTrack.NewStoreIdNormal
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Order.StoreIdNormal
+                                                                }
+                                                                @if (Order.OrderType is not OrderType.MargeToNew && Order.OrderStatus is not OrderStatus.Refund)
+                                                                {
+                                                                    <span class="text-secondary cursor-pointer me-2" @onclick="EditStoreIdNormal">
+                                                                        <i class="fa fa-pencil text-secondary" />
+                                                                    </span>
+                                                                }
+                                                            </td>
                                                         }
-                                                        @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
+                                                    }
+
+                                                    else if (SelectedTemperatureControl is ItemStorageTemperature.Freeze)
+                                                    {
+                                                        @if (ModificationTrack.IsStoreIdFreezeInputVisible)
                                                         {
-                                                            <span class="text-secondary cursor-pointer me-2" @onclick="EditRecipientAddress">
-                                                                <i class="fa fa-pencil text-secondary"></i>
-                                                            </span>
+                                                            <td>
+                                                                <div class="input-group">
+                                                                    @{
+                                                                        string errorClass = ModificationTrack.IsInvalidStoreIdFreeze ? "invalid" : string.Empty;
+                                                                    }
+                                                                    <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewStoreIdFreeze" />
+
+                                                                    <Button Type="ButtonType.Button" @onclick="SaveStoreIdFreeze" Class="btn btn-sm btn-primary">
+                                                                        <i class="fa fa-check" />
+                                                                    </Button>
+                                                                </div>
+                                                            </td>
                                                         }
-                                                    </td>
+                                                        else
+                                                        {
+                                                            <td class="d-flex justify-content-between">
+                                                                @if (ModificationTrack.IsStoreIdFreezeModified)
+                                                                {
+                                                                    @ModificationTrack.NewStoreIdFreeze
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Order.StoreIdFreeze
+                                                                }
+                                                                @if (Order.OrderType is not OrderType.MargeToNew && Order.OrderStatus is not OrderStatus.Refund)
+                                                                {
+                                                                    <span class="text-secondary cursor-pointer me-2" @onclick="EditStoreIdFreeze">
+                                                                        <i class="fa fa-pencil text-secondary" />
+                                                                    </span>
+                                                                }
+                                                            </td>
+                                                        }
+                                                    }
+
+                                                    else if (SelectedTemperatureControl is ItemStorageTemperature.Frozen)
+                                                    {
+                                                        @if (ModificationTrack.IsStoreIdFrozenInputVisible)
+                                                        {
+                                                            <td>
+                                                                <div class="input-group">
+                                                                    @{
+                                                                        string errorClass = ModificationTrack.IsInvalidStoreIdFrozen ? "invalid" : string.Empty;
+                                                                    }
+                                                                    <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewStoreIdFrozen" />
+
+                                                                    <Button Type="ButtonType.Button" @onclick="SaveStoreIdFrozen" Class="btn btn-sm btn-primary">
+                                                                        <i class="fa fa-check" />
+                                                                    </Button>
+                                                                </div>
+                                                            </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td class="d-flex justify-content-between">
+                                                                @if (ModificationTrack.IsStoreIdFrozenModified)
+                                                                {
+                                                                    @ModificationTrack.NewStoreIdFrozen
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Order.StoreIdFrozen
+                                                                }
+                                                                @if (Order.OrderType is not OrderType.MargeToNew && Order.OrderStatus is not OrderStatus.Refund)
+                                                                {
+                                                                    <span class="text-secondary cursor-pointer me-2" @onclick="EditStoreIdFrozen">
+                                                                        <i class="fa fa-pencil text-secondary" />
+                                                                    </span>
+                                                                }
+                                                            </td>
+                                                        }
+                                                    }
+                                                </tr>
+                                                <tr>
+                                                    <td>@L["CVS Store OutSide"]</td>
+                                                    @if (SelectedTemperatureControl is ItemStorageTemperature.Normal)
+                                                    {
+                                                        @if (ModificationTrack.IsCVSStoreOutSideNormalInputVisible)
+                                                        {
+                                                            <td>
+                                                                <div class="input-group">
+                                                                    @{
+                                                                        string errorClass = ModificationTrack.IsInvalidCVSStoreOutSideNormal ? "invalid" : string.Empty;
+                                                                    }
+                                                                    <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewCVSStoreOutSideNormal" />
+
+                                                                    <Button Type="ButtonType.Button" @onclick="SaveCVSStoreOutSideNormal" Class="btn btn-sm btn-primary">
+                                                                        <i class="fa fa-check" />
+                                                                    </Button>
+                                                                </div>
+                                                            </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td class="d-flex justify-content-between">
+                                                                @if (ModificationTrack.IsCVSStoreOutSideNormalModified)
+                                                                {
+                                                                    @ModificationTrack.NewCVSStoreOutSideNormal
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Order.CVSStoreOutSideNormal
+                                                                }
+                                                                @if (Order.OrderType is not OrderType.MargeToNew && Order.OrderStatus is not OrderStatus.Refund)
+                                                                {
+                                                                    <span class="text-secondary cursor-pointer me-2" @onclick="EditCVSStoreOutSideNormal">
+                                                                        <i class="fa fa-pencil text-secondary" />
+                                                                    </span>
+                                                                }
+                                                            </td>
+                                                        }
+                                                    }
+
+                                                    else if (SelectedTemperatureControl is ItemStorageTemperature.Freeze)
+                                                    {
+                                                        @if (ModificationTrack.IsCVSStoreOutSideFreezeInputVisible)
+                                                        {
+                                                            <td>
+                                                                <div class="input-group">
+                                                                    @{
+                                                                        string errorClass = ModificationTrack.IsInvalidCVSStoreOutSideFreeze ? "invalid" : string.Empty;
+                                                                    }
+                                                                    <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewCVSStoreOutSideFreeze" />
+
+                                                                    <Button Type="ButtonType.Button" @onclick="SaveCVSStoreOutSideFreeze" Class="btn btn-sm btn-primary">
+                                                                        <i class="fa fa-check" />
+                                                                    </Button>
+                                                                </div>
+                                                            </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td class="d-flex justify-content-between">
+                                                                @if (ModificationTrack.IsCVSStoreOutSideFreezeModified)
+                                                                {
+                                                                    @ModificationTrack.NewCVSStoreOutSideFreeze
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Order.CVSStoreOutSideFreeze
+                                                                }
+                                                                @if (Order.OrderType is not OrderType.MargeToNew && Order.OrderStatus is not OrderStatus.Refund)
+                                                                {
+                                                                    <span class="text-secondary cursor-pointer me-2" @onclick="EditCVSStoreOutSideFreeze">
+                                                                        <i class="fa fa-pencil text-secondary" />
+                                                                    </span>
+                                                                }
+                                                            </td>
+                                                        }
+                                                    }
+
+                                                    else if (SelectedTemperatureControl is ItemStorageTemperature.Frozen)
+                                                    {
+                                                        @if (ModificationTrack.IsCVSStoreOutSideFrozenInputVisible)
+                                                        {
+                                                            <td>
+                                                                <div class="input-group">
+                                                                    @{
+                                                                        string errorClass = ModificationTrack.IsInvalidCVSStoreOutSideFrozen ? "invalid" : string.Empty;
+                                                                    }
+                                                                    <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewCVSStoreOutSideFrozen" />
+
+                                                                    <Button Type="ButtonType.Button" @onclick="SaveCVSStoreOutSideFrozen" Class="btn btn-sm btn-primary">
+                                                                        <i class="fa fa-check" />
+                                                                    </Button>
+                                                                </div>
+                                                            </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td class="d-flex justify-content-between">
+                                                                @if (ModificationTrack.IsCVSStoreOutSideFrozenModified)
+                                                                {
+                                                                    @ModificationTrack.NewCVSStoreOutSideFrozen
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Order.CVSStoreOutSideFrozen
+                                                                }
+                                                                @if (Order.OrderType is not OrderType.MargeToNew && Order.OrderStatus is not OrderStatus.Refund)
+                                                                {
+                                                                    <span class="text-secondary cursor-pointer me-2" @onclick="EditCVSStoreOutSideFrozen">
+                                                                        <i class="fa fa-pencil text-secondary" />
+                                                                    </span>
+                                                                }
+                                                            </td>
+                                                        }
+                                                    }
+                                                </tr>
+                                            }
+
+                                            else
+                                            {
+                                                <tr>
+                                                    <td>@L["RecipientPostalCode"]</td>
+                                                    @if (SelectedTemperatureControl is ItemStorageTemperature.Normal)
+                                                    {
+                                                        @if (ModificationTrack.IsPostalCodeDbsNormalInputVisible)
+                                                        {
+                                                            <td>
+                                                                <div class="input-group">
+                                                                    @{
+                                                                        string errorClass = ModificationTrack.IsInvalidPostalCodeDbsNormal ? "invalid" : string.Empty;
+                                                                    }
+                                                                    <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewPostalCodeDbsNormal" />
+
+                                                                    <Button Type="ButtonType.Button" @onclick="SavePostalCodeDbsNormal" Class="btn btn-sm btn-primary">
+                                                                        <i class="fa fa-check" />
+                                                                    </Button>
+                                                                </div>
+                                                            </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td class="d-flex justify-content-between">
+                                                                @if (ModificationTrack.IsPostalCodeDbsNormalModified)
+                                                                {
+                                                                    @ModificationTrack.NewPostalCodeDbsNormal
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Order.PostalCodeDbsNormal
+                                                                }
+                                                                @if (Order.OrderType is not OrderType.MargeToNew && Order.OrderStatus is not OrderStatus.Refund)
+                                                                {
+                                                                    <span class="text-secondary cursor-pointer me-2" @onclick="EditPostalCodeDbsNormal">
+                                                                        <i class="fa fa-pencil text-secondary" />
+                                                                    </span>
+                                                                }
+                                                            </td>
+                                                        }
+                                                    }
+
+                                                    else if (SelectedTemperatureControl is ItemStorageTemperature.Freeze)
+                                                    {
+                                                        @if (ModificationTrack.IsPostalCodeDbsFreezeInputVisible)
+                                                        {
+                                                            <td>
+                                                                <div class="input-group">
+                                                                    @{
+                                                                        string errorClass = ModificationTrack.IsInvalidPostalCodeDbsFreeze ? "invalid" : string.Empty;
+                                                                    }
+                                                                    <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewPostalCodeDbsFreeze" />
+
+                                                                    <Button Type="ButtonType.Button" @onclick="SavePostalCodeDbsFreeze" Class="btn btn-sm btn-primary">
+                                                                        <i class="fa fa-check" />
+                                                                    </Button>
+                                                                </div>
+                                                            </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td class="d-flex justify-content-between">
+                                                                @if (ModificationTrack.IsPostalCodeDbsFreezeModified)
+                                                                {
+                                                                    @ModificationTrack.NewPostalCodeDbsFreeze
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Order.PostalCodeDbsFreeze
+                                                                }
+                                                                @if (Order.OrderType is not OrderType.MargeToNew && Order.OrderStatus is not OrderStatus.Refund)
+                                                                {
+                                                                    <span class="text-secondary cursor-pointer me-2" @onclick="EditPostalCodeDbsFreeze">
+                                                                        <i class="fa fa-pencil text-secondary" />
+                                                                    </span>
+                                                                }
+                                                            </td>
+                                                        }
+                                                    }
+
+                                                    else if (SelectedTemperatureControl is ItemStorageTemperature.Frozen)
+                                                    {
+                                                        @if (ModificationTrack.IsPostalCodeDbsFrozenInputVisible)
+                                                        {
+                                                            <td>
+                                                                <div class="input-group">
+                                                                    @{
+                                                                        string errorClass = ModificationTrack.IsInvalidPostalCodeDbsFrozen ? "invalid" : string.Empty;
+                                                                    }
+                                                                    <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewPostalCodeDbsFrozen" />
+
+                                                                    <Button Type="ButtonType.Button" @onclick="SavePostalCodeDbsFrozen" Class="btn btn-sm btn-primary">
+                                                                        <i class="fa fa-check" />
+                                                                    </Button>
+                                                                </div>
+                                                            </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td class="d-flex justify-content-between">
+                                                                @if (ModificationTrack.IsPostalCodeDbsFrozenModified)
+                                                                {
+                                                                    @ModificationTrack.NewPostalCodeDbsFrozen
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Order.PostalCodeDbsFrozen
+                                                                }
+                                                                @if (Order.OrderType is not OrderType.MargeToNew && Order.OrderStatus is not OrderStatus.Refund)
+                                                                {
+                                                                    <span class="text-secondary cursor-pointer me-2" @onclick="EditPostalCodeDbsFrozen">
+                                                                        <i class="fa fa-pencil text-secondary" />
+                                                                    </span>
+                                                                }
+                                                            </td>
+                                                        }
+                                                    }
+                                                </tr>
+                                                <tr>
+                                                    <td>@L["RecipientCity"]</td>
+                                                    @if (SelectedTemperatureControl is ItemStorageTemperature.Normal)
+                                                    {
+                                                        @if (ModificationTrack.IsCityDbsNormalInputVisible)
+                                                        {
+                                                            <td>
+                                                                <div class="input-group">
+                                                                    @{
+                                                                        string errorClass = ModificationTrack.IsInvalidCityDbsNormal ? "invalid" : string.Empty;
+                                                                    }
+                                                                    <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewCityDbsNormal" />
+
+                                                                    <Button Type="ButtonType.Button" @onclick="SaveCityDbsNormal" Class="btn btn-sm btn-primary">
+                                                                        <i class="fa fa-check" />
+                                                                    </Button>
+                                                                </div>
+                                                            </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td class="d-flex justify-content-between">
+                                                                @if (ModificationTrack.IsCityDbsNormalModified)
+                                                                {
+                                                                    @ModificationTrack.NewCityDbsNormal
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Order.CityDbsNormal
+                                                                }
+                                                                @if (Order.OrderType is not OrderType.MargeToNew && Order.OrderStatus is not OrderStatus.Refund)
+                                                                {
+                                                                    <span class="text-secondary cursor-pointer me-2" @onclick="EditCityDbsNormal">
+                                                                        <i class="fa fa-pencil text-secondary" />
+                                                                    </span>
+                                                                }
+                                                            </td>
+                                                        }
+                                                    }
+
+                                                    else if (SelectedTemperatureControl is ItemStorageTemperature.Freeze)
+                                                    {
+                                                        @if (ModificationTrack.IsCityDbsFreezeInputVisible)
+                                                        {
+                                                            <td>
+                                                                <div class="input-group">
+                                                                    @{
+                                                                        string errorClass = ModificationTrack.IsInvalidCityDbsFreeze ? "invalid" : string.Empty;
+                                                                    }
+                                                                    <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewCityDbsFreeze" />
+
+                                                                    <Button Type="ButtonType.Button" @onclick="SaveCityDbsFreeze" Class="btn btn-sm btn-primary">
+                                                                        <i class="fa fa-check" />
+                                                                    </Button>
+                                                                </div>
+                                                            </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td class="d-flex justify-content-between">
+                                                                @if (ModificationTrack.IsCityDbsFreezeModified)
+                                                                {
+                                                                    @ModificationTrack.NewCityDbsFreeze
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Order.CityDbsFreeze
+                                                                }
+                                                                @if (Order.OrderType is not OrderType.MargeToNew && Order.OrderStatus is not OrderStatus.Refund)
+                                                                {
+                                                                    <span class="text-secondary cursor-pointer me-2" @onclick="EditCityDbsFreeze">
+                                                                        <i class="fa fa-pencil text-secondary" />
+                                                                    </span>
+                                                                }
+                                                            </td>
+                                                        }
+                                                    }
+
+                                                    else if (SelectedTemperatureControl is ItemStorageTemperature.Frozen)
+                                                    {
+                                                        @if (ModificationTrack.IsCityDbsFrozenInputVisible)
+                                                        {
+                                                            <td>
+                                                                <div class="input-group">
+                                                                    @{
+                                                                        string errorClass = ModificationTrack.IsInvalidCityDbsFrozen ? "invalid" : string.Empty;
+                                                                    }
+                                                                    <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewCityDbsFrozen" />
+
+                                                                    <Button Type="ButtonType.Button" @onclick="SaveCityDbsFrozen" Class="btn btn-sm btn-primary">
+                                                                        <i class="fa fa-check" />
+                                                                    </Button>
+                                                                </div>
+                                                            </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td class="d-flex justify-content-between">
+                                                                @if (ModificationTrack.IsCityDbsFrozenModified)
+                                                                {
+                                                                    @ModificationTrack.NewCityDbsFrozen
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Order.CityDbsFrozen
+                                                                }
+                                                                @if (Order.OrderType is not OrderType.MargeToNew && Order.OrderStatus is not OrderStatus.Refund)
+                                                                {
+                                                                    <span class="text-secondary cursor-pointer me-2" @onclick="EditCityDbsFrozen">
+                                                                        <i class="fa fa-pencil text-secondary" />
+                                                                    </span>
+                                                                }
+                                                            </td>
+                                                        }
+                                                    }
+                                                </tr>
+                                                <tr>
+                                                    <td>@L["RecipientAddress"]</td>
+                                                    @if (SelectedTemperatureControl is ItemStorageTemperature.Normal)
+                                                    {
+                                                        @if (ModificationTrack.IsAddressDetailsDbsNormalInputVisible)
+                                                        {
+                                                            <td>
+                                                                <div class="input-group">
+                                                                    @{
+                                                                        string errorClass = ModificationTrack.IsInvalidAddressDetailsDbsNormal ? "invalid" : string.Empty;
+                                                                    }
+                                                                    <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewAddressDetailsDbsNormal" />
+
+                                                                    <Button Type="ButtonType.Button" @onclick="SaveAddressDetailsDbsNormal" Class="btn btn-sm btn-primary">
+                                                                        <i class="fa fa-check" />
+                                                                    </Button>
+                                                                </div>
+                                                            </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td class="d-flex justify-content-between">
+                                                                @if (ModificationTrack.IsAddressDetailsDbsNormalModified)
+                                                                {
+                                                                    @ModificationTrack.NewAddressDetailsDbsNormal
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Order.AddressDetailsDbsNormal
+                                                                }
+                                                                @if (Order.OrderType is not OrderType.MargeToNew && Order.OrderStatus is not OrderStatus.Refund)
+                                                                {
+                                                                    <span class="text-secondary cursor-pointer me-2" @onclick="EditAddressDetailsDbsNormal">
+                                                                        <i class="fa fa-pencil text-secondary" />
+                                                                    </span>
+                                                                }
+                                                            </td>
+                                                        }
+                                                    }
+
+                                                    else if (SelectedTemperatureControl is ItemStorageTemperature.Freeze)
+                                                    {
+                                                        @if (ModificationTrack.IsAddressDetailsDbsFreezeInputVisible)
+                                                        {
+                                                            <td>
+                                                                <div class="input-group">
+                                                                    @{
+                                                                        string errorClass = ModificationTrack.IsInvalidAddressDetailsDbsFreeze ? "invalid" : string.Empty;
+                                                                    }
+                                                                    <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewAddressDetailsDbsFreeze" />
+
+                                                                    <Button Type="ButtonType.Button" @onclick="SaveAddressDetailsDbsFreeze" Class="btn btn-sm btn-primary">
+                                                                        <i class="fa fa-check" />
+                                                                    </Button>
+                                                                </div>
+                                                            </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td class="d-flex justify-content-between">
+                                                                @if (ModificationTrack.IsAddressDetailsDbsFreezeModified)
+                                                                {
+                                                                    @ModificationTrack.NewAddressDetailsDbsFreeze
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Order.AddressDetailsDbsFreeze
+                                                                }
+                                                                @if (Order.OrderType is not OrderType.MargeToNew && Order.OrderStatus is not OrderStatus.Refund)
+                                                                {
+                                                                    <span class="text-secondary cursor-pointer me-2" @onclick="EditAddressDetailsDbsFreeze">
+                                                                        <i class="fa fa-pencil text-secondary" />
+                                                                    </span>
+                                                                }
+                                                            </td>
+                                                        }
+                                                    }
+
+                                                    else if (SelectedTemperatureControl is ItemStorageTemperature.Frozen)
+                                                    {
+                                                        @if (ModificationTrack.IsAddressDetailsDbsFrozenInputVisible)
+                                                        {
+                                                            <td>
+                                                                <div class="input-group">
+                                                                    @{
+                                                                        string errorClass = ModificationTrack.IsInvalidAddressDetailsDbsFrozen ? "invalid" : string.Empty;
+                                                                    }
+                                                                    <input type="text" class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewAddressDetailsDbsFrozen" />
+
+                                                                    <Button Type="ButtonType.Button" @onclick="SaveAddressDetailsDbsFrozen" Class="btn btn-sm btn-primary">
+                                                                        <i class="fa fa-check" />
+                                                                    </Button>
+                                                                </div>
+                                                            </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td class="d-flex justify-content-between">
+                                                                @if (ModificationTrack.IsAddressDetailsDbsFrozenModified)
+                                                                {
+                                                                    @ModificationTrack.NewAddressDetailsDbsFrozen
+                                                                }
+                                                                else
+                                                                {
+                                                                    @Order.AddressDetailsDbsFrozen
+                                                                }
+                                                                @if (Order.OrderType is not OrderType.MargeToNew && Order.OrderStatus is not OrderStatus.Refund)
+                                                                {
+                                                                    <span class="text-secondary cursor-pointer me-2" @onclick="EditAddressDetailsDbsFrozen">
+                                                                        <i class="fa fa-pencil text-secondary" />
+                                                                    </span>
+                                                                }
+                                                            </td>
+                                                        }
+                                                    }
+                                                </tr>
+                                            }
+                                            <tr>
+                                                <td>@L["RecipientComments"]</td>
+                                                @if (SelectedTemperatureControl is ItemStorageTemperature.Normal) 
+                                                {
+                                                    <td>@Order.RemarksDbsNormal</td>
+                                                }
+
+                                                else if (SelectedTemperatureControl is ItemStorageTemperature.Freeze) {
+                                                    <td>@Order.RemarksDbsFreeze</td>
+                                                }
+
+                                                else if (SelectedTemperatureControl is ItemStorageTemperature.Frozen) {
+                                                    <td>@Order.RemarksDbsFrozen</td>
                                                 }
                                             </tr>
-                                        }
-                                        <tr>
-                                            <td>@L["RecipientComments"]</td>
-                                            <td>@Order.Remarks</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        @if (ModificationTrack.IsModified)
-                        {
-                            <div class="row">
-                                <div class="col-12 text-end">
-                                    <Button Type="ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="CancelChanges">
-                                        @L["Cancel"]
-                                    </Button>
-                                    <Button Type="ButtonType.Button" Clicked="SaveChangesAsync" Class="btn btn-sm btn-primary">
-                                        <i class="fa fa-check"></i>
-                                        @L["SaveChanges"]
-                                    </Button>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
+                            @if (ModificationTrack.IsModified)
+                            {
+                                <div class="row">
+                                    <div class="col-12 text-end">
+                                        <Button Type="ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="CancelChanges">
+                                            @L["Cancel"]
+                                        </Button>
+                                        <Button Type="ButtonType.Button" Clicked="SaveChangesAsync" Class="btn btn-sm btn-primary">
+                                            <i class="fa fa-check"></i>
+                                            @L["SaveChanges"]
+                                        </Button>
+                                    </div>
+                                </div>
+                            }
                         }
                     }
                 </CardBody>
