@@ -58,6 +58,7 @@ public class UpdateTenantSettingsDto
     [Url]
     public string? Instagram { get; set; }
 
+    [Url]
     public string? Line { get; set; }
 
     // Google Tag Manager
