@@ -78,7 +78,7 @@ public class CreateOrderDto
     [RequiredIfRefundOrDeduction]
     public Guid? UserId { get; set; }
    
-    public int RefundAmount { get; set; }
+    public decimal RefundAmount { get; set; }
 
     public Guid? RefundRecordId { get; set; }
     public int CreditDeductionAmount { get; set; }

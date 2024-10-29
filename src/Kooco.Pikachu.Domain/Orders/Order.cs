@@ -99,7 +99,7 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
     [ForeignKey(nameof(CreditDeductionRecordId))]
     public UserShoppingCredit? CreditDeductionRecord { get; set; }
 
-    public int RefundAmount { get; set; }
+    public decimal RefundAmount { get; set; }
 
     public Guid? RefundRecordId { get; set; }
 
@@ -150,10 +150,10 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
         Guid? userId = null,
         int creditDeductionAmount = 0,
         Guid? creditDeductionRecordId = null,
-        int creditRefundAmount=0,
-         Guid? creditRefundRecordId = null,
-        Guid? discountCodeId=null,
-        int? discountCodeAmount=null
+        decimal creditRefundAmount = 0,
+        Guid? creditRefundRecordId = null,
+        Guid? discountCodeId = null,
+        int? discountCodeAmount = null
      )
     {
         Id = id;

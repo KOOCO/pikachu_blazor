@@ -861,7 +861,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     }
                 }
             }
-           
+
+            ord.RefundAmount = newOrder.TotalAmount;
+
             await _orderRepository.UpdateAsync(ord);
             
             await UnitOfWorkManager.Current.SaveChangesAsync();

@@ -257,6 +257,7 @@ public class PikachuDbContext :
             b.HasMany(o => o.OrderItems).WithOne().HasForeignKey(d => d.OrderId);
             b.HasMany(o => o.StoreComments).WithOne();
             b.Property(o => o.TotalAmount).HasColumnType("money");
+            b.Property(p => p.RefundAmount).HasColumnType("decimal(18,2)");
         });
         builder.Entity<OrderDelivery>(b =>
         {

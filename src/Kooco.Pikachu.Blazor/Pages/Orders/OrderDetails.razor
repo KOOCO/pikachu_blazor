@@ -947,6 +947,21 @@
                                         @* $@((Order.TotalAmount - Order.OrderItems.Sum(x => x.TotalAmount)).ToString("N2")) *@
                                     @* </td> *@
                                 </tr>
+                                @if (Order.RefundAmount > 0) 
+                                {
+                                    <tr>
+                                        <td colspan="2" class="text-end">
+                                            @L["RefundAmount"]
+                                        </td>
+                                        <td>
+                                        </td>
+                                        <td>
+                                        </td>
+                                        <td>
+                                            $@Order.RefundAmount.ToString("N2")
+                                        </td>
+                                    </tr>
+                                }
                                 <tr>
                                     <td colspan="2" class="text-end">
                                         @L["Total"]

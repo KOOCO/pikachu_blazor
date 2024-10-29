@@ -59,7 +59,7 @@ namespace Kooco.Pikachu.Orders
              Guid? userId = null,
              int creditDeductionAmount = 0,
              Guid? creditDeductionRecordId = null,
-             int creditRefundAmount = 0,
+             decimal creditRefundAmount = 0,
              Guid? creditRefundRecordId = null,
              int? discountCodeAmount=null,
              Guid? discountAmountId=null)
@@ -107,8 +107,7 @@ namespace Kooco.Pikachu.Orders
                 creditRefundRecordId,
                 discountAmountId,
                 discountCodeAmount
-
-                );
+            );
         }
 
         public void AddOrderItem(
