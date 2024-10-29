@@ -1,6 +1,7 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Identity;
 using Kooco.Pikachu.PikachuAccounts.ExternalUsers;
+using Kooco.Pikachu.TenantManagement;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
@@ -9,6 +10,7 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -23,7 +25,8 @@ namespace Kooco.Pikachu.PikachuAccounts;
 [RemoteService(IsEnabled = false)]
 public class PikachuAccountAppService(IConfiguration configuration, IdentityUserManager identityUserManager,
     IIdentityRoleRepository identityRoleRepository, IMemoryCache memoryCache, IEmailSender emailSender,
-    IMyIdentityUserRepository identityUserRepository, IExternalUserAppService externalUserAppService) : PikachuAppService, IPikachuAccountAppService
+    IMyIdentityUserRepository identityUserRepository, IExternalUserAppService externalUserAppService,
+    ITenantSettingsAppService tenantSettingsAppService) : PikachuAppService, IPikachuAccountAppService
 {
     public const string VerificationCodePrefix = "__VerificationCode:";
     public const string PasswordResetCodePrefix = "__ResetPasswordCode:";
@@ -332,11 +335,24 @@ public class PikachuAccountAppService(IConfiguration configuration, IdentityUser
 
         memoryCache.Set(VerificationCodePrefix + normalizedEmail, code, CacheEntryOptions);
 
-        string body = $"<p style=\"text-align: center;\">{L["VerificationCodeEmailBody"].Value}</p><h4 style=\"text-align:center\">{code}</h4>";
+        string body = File.ReadAllText("wwwroot/EmailTemplates/verification_code.html");
+        body ??= $"<p style=\"text-align: center;\">{L["VerificationCodeEmailBody"].Value}</p><h4 style=\"text-align:center\">{code}</h4>";
+
+        var tenantSettings = await tenantSettingsAppService.FirstOrDefaultAsync();
+        if (tenantSettings != null)
+        {
+            body = body
+                .Replace("{{logo_url}}", tenantSettings.LogoUrl)
+                .Replace("{{facebook_url}}", tenantSettings.Facebook)
+                .Replace("{{instagram_url}}", tenantSettings.Instagram)
+                .Replace("{{line_url}}", tenantSettings.Line)
+                .Replace("{{code}}", code)
+                .Replace("{{title}}", "感謝您的註冊");
+        }
 
         try
         {
-            await emailSender.SendAsync(email, L["VerificationToken"].Value, body);
+            await emailSender.SendAsync(email, $"【{tenantSettings?.WebpageTitle}】註冊驗證碼", body);
         }
         catch (Exception ex)
         {
@@ -388,9 +404,24 @@ public class PikachuAccountAppService(IConfiguration configuration, IdentityUser
 
         memoryCache.Set(PasswordResetCodePrefix + normalizedEmail, code, CacheEntryOptions);
 
-        string body = $"<p style=\"text-align: center;\">{L["ResetPasswordCodeEmailBody"].Value}</p><h4 style=\"text-align:center\">{code}</h4>";
+        memoryCache.Set(VerificationCodePrefix + normalizedEmail, code, CacheEntryOptions);
 
-        await emailSender.SendAsync(email, L["ResetPasswordCode"].Value, body);
+        string body = File.ReadAllText("wwwroot/EmailTemplates/verification_code.html");
+        body ??= $"<p style=\"text-align: center;\">{L["ResetPasswordCodeEmailBody"].Value}</p><h4 style=\"text-align:center\">{code}</h4>";
+
+        var tenantSettings = await tenantSettingsAppService.FirstOrDefaultAsync();
+        if (tenantSettings != null)
+        {
+            body = body
+                .Replace("{{logo_url}}", tenantSettings.LogoUrl)
+                .Replace("{{facebook_url}}", tenantSettings.Facebook)
+                .Replace("{{instagram_url}}", tenantSettings.Instagram)
+                .Replace("{{line_url}}", tenantSettings.Line)
+                .Replace("{{code}}", code)
+                .Replace("{{title}}", "重設密碼");
+        }
+
+        await emailSender.SendAsync(email, $"【{tenantSettings?.WebpageTitle}】重設密碼驗證碼", body);
         return new GenericResponseDto(true);
     }
 
