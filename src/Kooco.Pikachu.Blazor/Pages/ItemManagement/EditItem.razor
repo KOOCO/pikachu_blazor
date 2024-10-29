@@ -288,6 +288,13 @@
                                         @L["CopyToAll"]
                                     </Span>
                                 </TableHeaderCell>
+                                  <TableHeaderCell Class="text-center">
+                                    @L["StockOnHand"]
+                                    <Span Class="d-block pt-1 text-primary cursor-pointer"
+                                          @onclick="() => CopyToAll(nameof(CreateItemDetailsDto.StockOnHand))">
+                                        @L["CopyToAll"]
+                                    </Span>
+                                </TableHeaderCell>
                                 <TableHeaderCell Class="text-center">
                                     @L["PreorderQuantity"]
                                     <Span Class="d-block pt-1 text-primary cursor-pointer"
@@ -336,6 +343,9 @@
                                     </TableRowCell>
                                     <TableRowCell>
                                         <NumericEdit Class="form-control form-control-sm" @bind-Value="@item.SaleableQuantity"></NumericEdit>
+                                    </TableRowCell>
+                                      <TableRowCell>
+                                        <NumericEdit Class="form-control form-control-sm" @bind-Value="@item.StockOnHand"></NumericEdit>
                                     </TableRowCell>
                                     <TableRowCell>
                                         <NumericEdit Class="form-control form-control-sm" @bind-Value="@item.PreOrderableQuantity"></NumericEdit>

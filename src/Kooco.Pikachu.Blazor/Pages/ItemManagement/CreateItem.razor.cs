@@ -667,6 +667,7 @@ public partial class CreateItem
                 options.Add(item.Name);
             }
         });
+        options.Add(new string("ItemName"));
         options.Add(new string("SelectCustomText"));
         return options;
     }
@@ -694,16 +695,26 @@ public partial class CreateItem
         }
         else
         {
-            item.CustomValueEnabled = false;
-            item.SelectedSampleValue = value;
-            if (item.SelectedSampleValue.IsNullOrWhiteSpace())
+            if (value == "ItemName")
             {
-                item.SampleDisplayValue = string.Empty;
+                item.CustomValueEnabled = false;
+                item.SelectedSampleValue = value;
+                item.SampleDisplayValue = CreateItemDto.ItemName;
                 GeneratePreview();
-                return;
             }
-            item.SampleDisplayValue = SKUModel.AttributesDictionary[item.SelectedSampleValue];
-            GeneratePreview();
+            else
+            {
+                item.CustomValueEnabled = false;
+                item.SelectedSampleValue = value;
+                if (item.SelectedSampleValue.IsNullOrWhiteSpace())
+                {
+                    item.SampleDisplayValue = string.Empty;
+                    GeneratePreview();
+                    return;
+                }
+                item.SampleDisplayValue = SKUModel.AttributesDictionary[item.SelectedSampleValue];
+                GeneratePreview();
+            }
         }
     }
     private void CharactersLengthInputChange(SKUModelOptions item, ChangeEventArgs e)
@@ -751,8 +762,15 @@ public partial class CreateItem
 
             else if (!string.IsNullOrWhiteSpace(item.SelectedSampleValue))
             {
-                var temp = attributesDictionary[item.SelectedSampleValue];
-
+                var temp ="";
+                if (item.SelectedSampleValue == "ItemName")
+                {
+                    temp = item.SampleDisplayValue;
+                }
+                else
+                {
+                    temp = attributesDictionary[item.SelectedSampleValue];
+                }
                 if (temp != null && item.CharactersLength != null)
                 {
                     if (item.CharactersLength.Value > temp.Length)

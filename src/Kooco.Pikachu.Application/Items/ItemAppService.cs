@@ -95,6 +95,7 @@ public class ItemAppService :
                     itemDetail.LimitQuantity,
                     itemDetail.SellingPrice,
                     itemDetail.SaleableQuantity,
+                    itemDetail.StockOnHand,
                     itemDetail.PreOrderableQuantity,
                     itemDetail.SaleablePreOrderQuantity,
                     itemDetail.GroupBuyPrice,
@@ -190,6 +191,7 @@ public class ItemAppService :
                         itemDetail.LimitQuantity,
                         itemDetail.SellingPrice,
                         itemDetail.SaleableQuantity ?? 0,
+                        itemDetail.StockOnHand,
                         itemDetail.PreOrderableQuantity,
                         itemDetail.SaleablePreOrderQuantity,
                         itemDetail.GroupBuyPrice,
@@ -301,6 +303,7 @@ public class ItemAppService :
                     existing.LimitQuantity = itemDetail.LimitQuantity;
                     existing.SellingPrice = itemDetail.SellingPrice;
                     existing.SaleableQuantity = itemDetail.SaleableQuantity;
+                    existing.StockOnHand=itemDetail.StockOnHand;
                     existing.PreOrderableQuantity = itemDetail.PreOrderableQuantity;
                     existing.SaleablePreOrderQuantity = itemDetail.SaleablePreOrderQuantity;
                     existing.GroupBuyPrice = itemDetail.GroupBuyPrice;
@@ -321,6 +324,7 @@ public class ItemAppService :
                         itemDetail.LimitQuantity,
                         itemDetail.SellingPrice,
                         itemDetail.SaleableQuantity,
+                        itemDetail.StockOnHand,
                         itemDetail.PreOrderableQuantity,
                         itemDetail.SaleablePreOrderQuantity,
                         itemDetail.GroupBuyPrice,

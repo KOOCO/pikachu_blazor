@@ -669,6 +669,7 @@ public partial class EditItem
                 options.Add(item.Name);
             }
         });
+        options.Add(new string("ItemName"));
         options.Add(new string("SelectCustomText"));
         return options;
     }
@@ -685,7 +686,6 @@ public partial class EditItem
         });
         return options;
     }
-
     private void OnDropdownOptionsChanged(SKUModelOptions item, string value)
     {
         if (value == SKUModel.DropdownOptions.LastOrDefault())
@@ -696,18 +696,29 @@ public partial class EditItem
         }
         else
         {
-            item.CustomValueEnabled = false;
-            item.SelectedSampleValue = value;
-            if (item.SelectedSampleValue.IsNullOrWhiteSpace())
+            if (value == "ItemName")
             {
-                item.SampleDisplayValue = string.Empty;
+                item.CustomValueEnabled = false;
+                item.SelectedSampleValue = value;
+                item.SampleDisplayValue = UpdateItemDto.ItemName;
                 GeneratePreview();
-                return;
             }
-            item.SampleDisplayValue = SKUModel.AttributesDictionary[item.SelectedSampleValue];
-            GeneratePreview();
+            else
+            {
+                item.CustomValueEnabled = false;
+                item.SelectedSampleValue = value;
+                if (item.SelectedSampleValue.IsNullOrWhiteSpace())
+                {
+                    item.SampleDisplayValue = string.Empty;
+                    GeneratePreview();
+                    return;
+                }
+                item.SampleDisplayValue = SKUModel.AttributesDictionary[item.SelectedSampleValue];
+                GeneratePreview();
+            }
         }
     }
+   
     private void CharactersLengthInputChange(SKUModelOptions item, ChangeEventArgs e)
     {
         var value = e?.Value;
@@ -734,8 +745,8 @@ public partial class EditItem
     }
 
     private string? GenerateItemSKU(
-        IDictionary<string, string?> attributesDictionary
-        )
+         IDictionary<string, string?> attributesDictionary
+         )
     {
         var preview = new StringBuilder();
         var lastItem = SKUModel.SKUModelOptions.LastOrDefault();
@@ -753,9 +764,16 @@ public partial class EditItem
 
             else if (!string.IsNullOrWhiteSpace(item.SelectedSampleValue))
             {
-                var temp = attributesDictionary[item.SelectedSampleValue];
-
-                if (item.CharactersLength != null)
+                var temp = "";
+                if (item.SelectedSampleValue == "ItemName")
+                {
+                    temp = item.SampleDisplayValue;
+                }
+                else
+                {
+                    temp = attributesDictionary[item.SelectedSampleValue];
+                }
+                if (temp != null && item.CharactersLength != null)
                 {
                     if (item.CharactersLength.Value > temp.Length)
                     {

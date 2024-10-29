@@ -57,6 +57,7 @@ namespace Kooco.Pikachu.Items
             int? limitQuantity,
             float sellingPrice,
             float saleableQuantity,
+            int? openingStock,
             float? groupBuyPrice,
             float? preOrderableQuantity,
             float? saleablePreOrderQuantity,
@@ -76,6 +77,7 @@ namespace Kooco.Pikachu.Items
             ItemName = itemName;
             LimitQuantity = limitQuantity;
             SellingPrice = sellingPrice;
+            OpeningStock = openingStock;
             SaleableQuantity = saleableQuantity;
             PreOrderableQuantity = preOrderableQuantity;
             SaleablePreOrderQuantity = saleablePreOrderQuantity;
