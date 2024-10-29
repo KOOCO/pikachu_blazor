@@ -120,9 +120,9 @@ public class TenantSettings : FullAuditedEntity<Guid>, IMultiTenant
 
     public TenantSettings SetSocials(string? facebook, string? instagram, string? line)
     {
-        Facebook = facebook.IsValidUrl() ? facebook : throw new InvalidUrlException(nameof(facebook));
-        Instagram = instagram.IsValidUrl() ? instagram : throw new InvalidUrlException(nameof(instagram));
-        Line = line;
+        Facebook = facebook.IsEmptyOrValidUrl() ? facebook : throw new InvalidUrlException(nameof(facebook));
+        Instagram = instagram.IsEmptyOrValidUrl() ? instagram : throw new InvalidUrlException(nameof(instagram));
+        Line = line.IsEmptyOrValidUrl() ? line : throw new InvalidUrlException(nameof(line));
         return this;
     }
 
