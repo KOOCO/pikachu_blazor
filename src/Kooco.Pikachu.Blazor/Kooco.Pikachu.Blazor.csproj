@@ -107,5 +107,8 @@
     <Content Update="wwwroot\EmailTemplates\email.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Update="wwwroot\EmailTemplates\verification_code.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>
