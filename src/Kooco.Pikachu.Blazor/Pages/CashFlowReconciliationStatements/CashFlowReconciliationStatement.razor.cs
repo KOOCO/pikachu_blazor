@@ -188,7 +188,7 @@ public partial class CashFlowReconciliationStatement
     {
         await loading.Show();
         var selectedOrder = Orders.SingleOrDefault(x => x.IsSelected);
-        await _orderAppService.VoidInvoice(selectedOrder.Id, VoidReason.Reason);
+        await _orderAppService.VoidInvoice(selectedOrder.OrderId, VoidReason.Reason);
         await CreateVoidReasonModal.Hide();
         await UpdateItemList();
         await InvokeAsync(StateHasChanged);
@@ -208,7 +208,7 @@ public partial class CashFlowReconciliationStatement
 
         OrderDto? selectedOrder = Orders.SingleOrDefault(x => x.IsSelected);
         
-        await _orderAppService.CreditNoteInvoice(selectedOrder.Id, CreditReason.Reason);
+        await _orderAppService.CreditNoteInvoice(selectedOrder.OrderId, CreditReason.Reason);
 
         await CreateCreditNoteReasonModal.Hide();
         
