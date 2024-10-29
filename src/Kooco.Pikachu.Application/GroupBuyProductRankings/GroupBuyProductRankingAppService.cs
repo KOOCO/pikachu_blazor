@@ -57,5 +57,10 @@ public class GroupBuyProductRankingAppService :
             await _GroupBuyProductRankingRepository.GetListByGroupBuyIdAsync(groupBuyId)
         );
     }
+
+    public async Task DeleteByGroupBuyIdAsync(Guid groupBuyId)
+    {
+        await _GroupBuyProductRankingRepository.DeleteDirectAsync(d => d.GroupBuyId == groupBuyId);
+    }
     #endregion
 }

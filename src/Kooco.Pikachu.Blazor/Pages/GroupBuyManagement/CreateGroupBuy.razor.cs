@@ -1425,6 +1425,30 @@ public partial class CreateGroupBuy
                 }
             }
 
+            if (ProductRankingCarouselModules is { Count: > 0 })
+            {
+                foreach (ProductRankingCarouselModule productRankingCarouselModule in ProductRankingCarouselModules)
+                {
+                    if (productRankingCarouselModule.Title.IsNullOrEmpty())
+                    {
+                        await _uiMessageService.Error("Title Cannot be empty in Group Purchase Overview Module");
+
+                        await Loading.Hide();
+
+                        return;
+                    }
+
+                    if (productRankingCarouselModule.SubTitle.IsNullOrEmpty())
+                    {
+                        await _uiMessageService.Error("SubTitle Cannot be empty in Group Purchase Overview Module");
+
+                        await Loading.Hide();
+
+                        return;
+                    }
+                }
+            }
+
             CreateGroupBuyDto.NotifyMessage = await NotifyEmailHtml.GetHTML();
             CreateGroupBuyDto.GroupBuyConditionDescription = await GroupBuyHtml.GetHTML();
             CreateGroupBuyDto.ExchangePolicyDescription = await ExchangePolicyHtml.GetHTML();

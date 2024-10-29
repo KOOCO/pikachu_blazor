@@ -20,4 +20,6 @@ public interface IGroupBuyProductRankingAppService :
     Task<GroupBuyProductRankingDto> UpdateGroupBuyProductRankingAsync(GroupBuyProductRankingDto groupBuyProductRanking);
 
     Task<List<GroupBuyProductRankingDto>> GetListByGroupBuyIdAsync(Guid groupBuyId);
+
+    Task DeleteByGroupBuyIdAsync(Guid groupBuyId);
 }

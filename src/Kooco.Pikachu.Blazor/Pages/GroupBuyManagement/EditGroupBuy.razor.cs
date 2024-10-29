@@ -32,6 +32,7 @@ using Kooco.Pikachu.Tenants;
 using Volo.Abp.MultiTenancy;
 using Kooco.Pikachu.GroupBuyProductRankings;
 using Kooco.Pikachu.GroupBuyProductRankings.Interface;
+using Kooco.Pikachu.Groupbuys.Interface;
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
 
 public partial class EditGroupBuy
@@ -540,7 +541,7 @@ public partial class EditGroupBuy
                         {
                             Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
                             SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
-                            GroupBuyModuleType = GroupBuyModuleType.OrderInstruction
+                            GroupBuyModuleType = GroupBuyModuleType.ProductRankingCarouselModule
                         });
 
                     ProductRankingCarouselPickers.Add(new());
@@ -611,7 +612,7 @@ public partial class EditGroupBuy
                         collapseItem = new()
                         {
                             Id = itemGroup.Id,
-                            Index = i++,
+                            Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
                             SortOrder = itemGroup.SortOrder,
                             GroupBuyModuleType = itemGroup.GroupBuyModuleType,
                             AdditionalInfo = itemGroup.AdditionalInfo
@@ -623,7 +624,7 @@ public partial class EditGroupBuy
                         collapseItem = new CollapseItem
                         {
                             Id = itemGroup.Id,
-                            Index = i++,
+                            Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
                             SortOrder = itemGroup.SortOrder,
                             GroupBuyModuleType = itemGroup.GroupBuyModuleType,
                             ProductGroupModuleTitle = itemGroup.ProductGroupModuleTitle,
@@ -1805,6 +1806,30 @@ public partial class EditGroupBuy
                 }
             }
 
+            if (ProductRankingCarouselModules is { Count: > 0 })
+            {
+                foreach (ProductRankingCarouselModule productRankingCarouselModule in ProductRankingCarouselModules)
+                {
+                    if (productRankingCarouselModule.Title.IsNullOrEmpty())
+                    {
+                        await _uiMessageService.Error("Title Cannot be empty in Group Purchase Overview Module");
+
+                        await Loading.Hide();
+
+                        return;
+                    }
+
+                    if (productRankingCarouselModule.SubTitle.IsNullOrEmpty())
+                    {
+                        await _uiMessageService.Error("SubTitle Cannot be empty in Group Purchase Overview Module");
+
+                        await Loading.Hide();
+
+                        return;
+                    }
+                }
+            }
+
             EditGroupBuyDto.NotifyMessage = await NotifyEmailHtml.GetHTML();
             EditGroupBuyDto.GroupBuyConditionDescription = await GroupBuyHtml.GetHTML();
             EditGroupBuyDto.ExchangePolicyDescription = await ExchangePolicyHtml.GetHTML();
@@ -1881,6 +1906,28 @@ public partial class EditGroupBuy
                         GroupBuyModuleType = item.GroupBuyModuleType,
                         AdditionalInfo = item.AdditionalInfo
                     };
+
+                    if (item.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule &&
+                        ProductRankingCarouselModules is { Count: > 0 })
+                    {
+                        foreach (ProductRankingCarouselModule module in ProductRankingCarouselModules)
+                        {
+                            foreach (ItemWithItemTypeDto itemDetail in module.Selected)
+                            {
+                                if (itemDetail.Id == Guid.Empty) continue;
+
+                                itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
+                                {
+                                    SortOrder = j++,
+                                    ItemId = itemDetail.ItemType is ItemType.Item && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
+                                    SetItemId = itemDetail.ItemType == ItemType.SetItem && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
+                                    ItemType = itemDetail.ItemType,
+                                    DisplayText = itemGroup.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor ? itemDetail.Name : null,
+                                    ModuleNumber = ProductRankingCarouselModules.IndexOf(module) + 1
+                                });
+                            }
+                        }
+                    }
 
                     EditGroupBuyDto.ItemGroups.Add(itemGroup);
                 }
@@ -2109,13 +2156,14 @@ public partial class EditGroupBuy
             var item = CollapseItem.Where(i => i.Index == index).FirstOrDefault();
             if (item?.Id != null)
             {
-                var confirm = await _uiMessageService.Confirm(L["ThisDeleteActionCannotBeReverted"]);
-                if (!confirm)
-                {
-                    return;
-                }
+                bool confirm = await _uiMessageService.Confirm(L["ThisDeleteActionCannotBeReverted"]);
+
+                if (!confirm) return;
+
                 await Loading.Show();
+                
                 Guid GroupBuyId = Guid.Parse(id);
+                
                 await _groupBuyAppService.DeleteGroupBuyItemAsync(item.Id.Value, GroupBuyId);
 
                 if (item.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview)
@@ -2129,6 +2177,9 @@ public partial class EditGroupBuy
 
                 else if (item.GroupBuyModuleType is GroupBuyModuleType.BannerImages)
                     await _imageAppService.DeleteByGroupBuyIdAndImageTypeAsync(GroupBuyId, ImageType.GroupBuyBannerImage);
+
+                else if (item.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
+                    await _GroupBuyProductRankingAppService.DeleteByGroupBuyIdAsync(GroupBuyId);
 
                 StateHasChanged();
             }
