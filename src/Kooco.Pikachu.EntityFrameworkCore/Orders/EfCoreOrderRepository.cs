@@ -323,8 +323,8 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
             ).WhereIf(orderIds != null && orderIds.Any(), x => orderIds.Contains(x.Id))
             .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate.Value.Date)
             .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
-            .Where(x => x.ShippingStatus == ShippingStatus.Shipped)
-            .Where(x => x.OrderType != OrderType.MargeToNew)
+            //.Where(x => x.ShippingStatus == ShippingStatus.Shipped)
+            //.Where(x => x.OrderType != OrderType.MargeToNew)
             .Where(x=>x.IsVoidInvoice==true);
     }
     #endregion
