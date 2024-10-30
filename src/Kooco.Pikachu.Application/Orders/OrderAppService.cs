@@ -1476,9 +1476,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
         if (order.OrderItems != null)
         {
             StringBuilder sb = new();
+            string orderItemsHtml = File.ReadAllText("wwwroot/EmailTemplates/order_items.html");
             foreach (var item in order.OrderItems)
             {
-                string itemName = "";
+                string? itemName = "";
                 if (item.ItemType == ItemType.Item)
                 {
                     itemName = item.Item?.ItemName;
@@ -1492,19 +1493,28 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     itemName = item.Freebie?.ItemName;
                 }
 
-                itemName += $" {item.ItemPrice:N0} x {item.Quantity}";
-                sb.Append(
-                    $@"
-                    <tr>
-                        <td>{itemName}</td>
-                        <td>${item.ItemPrice:N0}</td>
-                        <td>{item.Quantity}</td>
-                        <td>${item.TotalAmount:N0}</td>
-                    </tr>"
-                );
+                //itemName += $" {item.ItemPrice:N0} x {item.Quantity}";
+                sb.Append(orderItemsHtml
+                    .Replace("{{image_url}}", item.Item?.ItemMainImageURL)
+                    .Replace("{{item_name}}", itemName)
+                    .Replace("{{item_details}}", item.SKU)
+                    .Replace("{{unit_price}}", item.ItemPrice.ToString("N0"))
+                    .Replace("{{quantity}}", item.Quantity.ToString("N0"))
+                    .Replace("{{total}}", item.TotalAmount.ToString("N0"))
+                    );
+                //sb.Append(
+                //    $@"
+                //    <tr>
+                //        <td><img src=""{item.Item?.ItemMainImageURL}"" style=""height: 30px;""/></td>
+                //        <td>{itemName}<br/>{item.SKU}</td>
+                //        <td>${item.ItemPrice:N0}</td>
+                //        <td>{item.Quantity}</td>
+                //        <td>${item.TotalAmount:N0}</td>
+                //    </tr>"
+                //);
             }
 
-            body = body.Replace("{{OrderItems}}", sb.ToString());
+            body = body.Replace("{{order_items}}", sb.ToString());
         }
 
         body = body.Replace("{{DeliveryFee}}", "$0");
