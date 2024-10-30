@@ -85,7 +85,7 @@ public partial class CreateItem
         Attributes.Add(new Attributes
         {
             Id = 1,
-            Name = L["ItemStyle1"],
+            //Name = L["ItemStyle1"],
             ItemTags = []
         });
     }
@@ -281,7 +281,7 @@ public partial class CreateItem
             Attributes.Add(new Attributes
             {
                 Id = attribute == null ? 1 : +attribute.Id + 1,
-                Name = L["ItemStyle" + (attribute == null ? 1 : +attribute.Id + 1)],
+                
                 ItemTags = []
             });
         }
