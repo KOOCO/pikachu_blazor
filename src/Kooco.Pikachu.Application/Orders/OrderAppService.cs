@@ -1,6 +1,4 @@
-﻿using Hangfire.Server;
-using Hangfire.Storage;
-using Kooco.Pikachu.ElectronicInvoiceSettings;
+﻿using Kooco.Pikachu.ElectronicInvoiceSettings;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Groupbuys;
@@ -13,21 +11,18 @@ using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.Refunds;
 using Kooco.Pikachu.Response;
+using Kooco.Pikachu.TenantManagement;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.Localization;
 using MiniExcelLibs;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -39,8 +34,6 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Security.Encryption;
-using Volo.Abp.Validation.Localization;
-using static Kooco.Pikachu.Permissions.PikachuPermissions;
 
 namespace Kooco.Pikachu.Orders;
 
@@ -66,6 +59,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IFreebieRepository _freebieRepository;
     private readonly IRefundAppService _refundAppService;
     private readonly IRefundRepository _refundRepository;
+    private readonly ITenantSettingsAppService _tenantSettingsAppService;
     #endregion
 
     #region Constructor
@@ -87,7 +81,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         IBackgroundJobManager backgroundJobManager,
         IElectronicInvoiceSettingRepository electronicInvoiceSettingRepository,
         IRefundAppService refundAppService,
-        IRefundRepository refundRepository
+        IRefundRepository refundRepository,
+        ITenantSettingsAppService tenantSettingsAppService
     )
     {
         _orderRepository = orderRepository;
@@ -100,15 +95,16 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _orderItemRepository = orderItemRepository;
         _orderDeliveryRepository = orderDeliveryRepository;
         _l = l;
-        _itemRepository= itemRepository;
-        _orderItemRepository= orderItemRepository;
+        _itemRepository = itemRepository;
+        _orderItemRepository = orderItemRepository;
         _itemDetailsRepository = itemDetailsRepository;
         _electronicInvoiceAppService = electronicInvoiceAppService;
         _freebieRepository = freebieRepository;
         _backgroundJobManager = backgroundJobManager;
-        _electronicInvoiceSettingRepository= electronicInvoiceSettingRepository;
+        _electronicInvoiceSettingRepository = electronicInvoiceSettingRepository;
         _refundAppService = refundAppService;
         _refundRepository = refundRepository;
+        _tenantSettingsAppService = tenantSettingsAppService;
     }
     #endregion
 
@@ -154,12 +150,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     input.ReturnStatus,
                     input.OrderType,
                     userId: input.UserId,
-                    creditDeductionAmount:input.CreditDeductionAmount,
-                    creditDeductionRecordId:input.CreditDeductionRecordId,
-                    creditRefundAmount:input.RefundAmount,
-                    creditRefundRecordId:input.RefundRecordId,
-                    discountAmountId:input.DiscountCodeId,
-                    discountCodeAmount:input.DiscountCodeAmount,
+                    creditDeductionAmount: input.CreditDeductionAmount,
+                    creditDeductionRecordId: input.CreditDeductionRecordId,
+                    creditRefundAmount: input.RefundAmount,
+                    creditRefundRecordId: input.RefundRecordId,
+                    discountAmountId: input.DiscountCodeId,
+                    discountCodeAmount: input.DiscountCodeAmount,
                     recipientNameDbsNormal: input.RecipientNameDbsNormal,
                     recipientNameDbsFreeze: input.RecipientNameDbsFreeze,
                     recipientNameDbsFrozen: input.RecipientNameDbsFrozen,
@@ -223,7 +219,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
                         if (item.FreebieId != null)
                         {
-                          var freebie=  await _freebieRepository.FirstOrDefaultAsync(x => x.Id == item.FreebieId);
+                            var freebie = await _freebieRepository.FirstOrDefaultAsync(x => x.Id == item.FreebieId);
                             freebie.FreebieAmount -= item.Quantity;
                             await _freebieRepository.UpdateAsync(freebie);
                         }
@@ -317,8 +313,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         order.PaymentMethod = request.PaymentMethod;
 
-        return ObjectMapper.Map<Order, OrderDto>( 
-            await _orderRepository.UpdateAsync(order) 
+        return ObjectMapper.Map<Order, OrderDto>(
+            await _orderRepository.UpdateAsync(order)
         );
     }
 
@@ -343,7 +339,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         decimal TotalAmount = 0; int TotalQuantity = 0;
 
         Order ord = await _orderRepository.GetWithDetailsAsync(Ids[0]);
-        
+
         GroupBuy groupBuy = new();
 
         using (_dataFilter.Disable<IMultiTenant>())
@@ -360,11 +356,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 Order order = await _orderRepository.GetWithDetailsAsync(id);
 
                 TotalAmount += order.TotalAmount;
-                TotalQuantity += order.TotalQuantity;   
+                TotalQuantity += order.TotalQuantity;
 
                 foreach (OrderItem item in order.OrderItems)
                 {
-                    if (orderItems.Any(x => x.ItemId == item.ItemId && x.FreebieId == null) || 
+                    if (orderItems.Any(x => x.ItemId == item.ItemId && x.FreebieId == null) ||
                         orderItems.Any(x => x.FreebieId == item.FreebieId && x.ItemId == null))
                     {
                         if (item.ItemId is not null)
@@ -411,7 +407,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                             orderItem.Quantity += item.Quantity;
                         }
                     }
-                    else 
+                    else
                     {
                         OrderItemsCreateDto orderItem = new()
                         {
@@ -563,14 +559,14 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 await _orderRepository.UpdateAsync(ord1, autoSave: true);
             }
             await UnitOfWorkManager.Current.SaveChangesAsync();
-          
+
             return ObjectMapper.Map<Order, OrderDto>(order1);
         }
     }
 
     public async Task<OrderDto> SplitOrderAsync(List<Guid> OrderItemIds, Guid OrderId)
     {
-        Order newOrder= new Order();
+        Order newOrder = new Order();
         var ord = await _orderRepository.GetWithDetailsAsync(OrderId);
         decimal TotalAmount = ord.TotalAmount;
         int TotalQuantity = ord.TotalQuantity;
@@ -701,7 +697,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 }
 
             }
-            if (ord.OrderItems.Count <=0)
+            if (ord.OrderItems.Count <= 0)
             {
                 //var newOrder = await _orderRepository.GetAsync(newOrderId);
                 newOrder.TotalAmount += TotalAmount;
@@ -709,11 +705,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 ord.TotalAmount = 0;
                 ord.TotalQuantity = 0;
             }
-            else {
+            else
+            {
                 ord.TotalAmount = TotalAmount;
                 ord.TotalQuantity = TotalQuantity;
             }
-            
+
             ord.OrderType = OrderType.SplitToNew;
             await _orderRepository.UpdateAsync(ord);
             await UnitOfWorkManager.Current.SaveChangesAsync();
@@ -722,16 +719,16 @@ public class OrderAppService : ApplicationService, IOrderAppService
     }
     public async Task<OrderDto> RefundOrderItems(List<Guid> OrderItemIds, Guid OrderId)
     {
-        Order newOrder = new ();
+        Order newOrder = new();
 
         Order ord = await _orderRepository.GetWithDetailsAsync(OrderId);
 
         decimal TotalAmount = ord.TotalAmount;
 
         int TotalQuantity = ord.TotalQuantity;
-        
+
         GroupBuy groupBuy = new();
-        
+
         using (_dataFilter.Disable<IMultiTenant>())
         {
             groupBuy = await _groupBuyRepository.GetAsync(ord.GroupBuyId);
@@ -787,7 +784,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             {
                 if (OrderItemIds.Any(x => x == item.Id))
                 {
-                    OrderItemsCreateDto orderItem = new ();
+                    OrderItemsCreateDto orderItem = new();
                     orderItem.ItemId = item.ItemId;
                     orderItem.SetItemId = item.SetItemId;
                     orderItem.FreebieId = item.FreebieId;
@@ -802,7 +799,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     //ord.TotalAmount = ord.TotalAmount - item.TotalAmount;
                     ord.TotalQuantity = ord.TotalQuantity - item.Quantity;
                     //await _orderItemRepository.DeleteAsync(item.Id);
-                   
+
                     _orderManager.AddOrderItem(
                         order1,
                         orderItem.ItemId,
@@ -824,7 +821,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     await _orderRepository.InsertAsync(order1);
                     await _orderRepository.UpdateAsync(ord);
                     await UnitOfWorkManager.Current.SaveChangesAsync();
-                    newOrder = order1;  
+                    newOrder = order1;
                 }
             }
             newOrder.TotalAmount = newOrder.OrderItems.Sum(x => x.TotalAmount);
@@ -889,30 +886,30 @@ public class OrderAppService : ApplicationService, IOrderAppService
             ord.RefundAmount = newOrder.TotalAmount;
 
             await _orderRepository.UpdateAsync(ord);
-            
+
             await UnitOfWorkManager.Current.SaveChangesAsync();
-            
+
             await _refundAppService.CreateAsync(newOrder.Id);
-            
+
             return ObjectMapper.Map<Order, OrderDto>(ord);
         }
     }
 
     public async Task RefundAmountAsync(double amount, Guid OrderId)
     {
-        Order newOrder = new ();
+        Order newOrder = new();
 
         Order ord = await _orderRepository.GetWithDetailsAsync(OrderId);
-        
+
         ord.TotalAmount -= (decimal)amount;
 
         GroupBuy groupBuy = new();
-        
+
         using (_dataFilter.Disable<IMultiTenant>())
         {
             groupBuy = await _groupBuyRepository.GetAsync(ord.GroupBuyId);
         }
-        
+
         using (CurrentTenant.Change(groupBuy?.TenantId))
         {
             Order order1 = await _orderManager.CreateAsync(
@@ -959,9 +956,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
             order1.OrderRefundType = OrderRefundType.PartialRefund;
 
             await _orderRepository.InsertAsync(order1);
-            
+
             await UnitOfWorkManager.Current.SaveChangesAsync();
-            
+
             await _refundAppService.CreateAsync(order1.Id);
         }
     }
@@ -1009,7 +1006,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             return new PagedResultDto<OrderDto>
             {
-                TotalCount = totalCount, Items = dtos
+                TotalCount = totalCount,
+                Items = dtos
             };
         }
         catch (Exception e)
@@ -1198,10 +1196,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
             order.OrderStatus = OrderStatus.Open;
 
         }
-        
+
         if (orderReturnStatus == OrderReturnStatus.Approve)
         {
-          
+
             if (order.OrderStatus == OrderStatus.Returned)
             {
                 await _refundAppService.CreateAsync(id);
@@ -1209,9 +1207,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 await _refundAppService.UpdateRefundReviewAsync(refund.Id, RefundReviewStatus.Proccessing);
                 await _refundAppService.SendRefundRequestAsync(refund.Id);
             }
-            order.ReturnStatus=OrderReturnStatus.Processing;
+            order.ReturnStatus = OrderReturnStatus.Processing;
         }
-        if (orderReturnStatus == OrderReturnStatus.Succeeded && order.OrderStatus==OrderStatus.Exchange)
+        if (orderReturnStatus == OrderReturnStatus.Succeeded && order.OrderStatus == OrderStatus.Exchange)
         {
             order.ExchangeBy = CurrentUser.UserName;
             order.ExchangeTime = DateTime.Now;
@@ -1225,7 +1223,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var order = await _orderRepository.GetAsync(id);
         order.ReturnStatus = OrderReturnStatus.Pending;
         order.OrderStatus = OrderStatus.Exchange;
-       
+
         await _orderRepository.UpdateAsync(order);
 
 
@@ -1278,18 +1276,18 @@ public class OrderAppService : ApplicationService, IOrderAppService
         order.LastModifierId = CurrentUser.Id;
         await _orderRepository.UpdateAsync(order);
         await _electronicInvoiceAppService.CreateVoidInvoiceAsync(id, reason);
-    
+
     }
     public async Task CreditNoteInvoice(Guid id, string reason)
     {
         Order order = await _orderRepository.GetAsync(id);
-      
+
         order.IsVoidInvoice = true;
         order.CreditNoteReason = reason;
         order.CreditNoteUser = CurrentUser.Name;
         order.CreditNoteDate = DateTime.Now;
         order.InvoiceStatus = InvoiceStatus.CreditNote;
-      
+
         await _orderRepository.UpdateAsync(order);
 
         await _electronicInvoiceAppService.CreateCreditNoteAsync(id);
@@ -1334,11 +1332,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
     public async Task<OrderDto> OrderShipped(Guid id)
     {
         var order = await _orderRepository.GetWithDetailsAsync(id);
-       
+
         order.ShippingStatus = ShippingStatus.Shipped;
         order.ShippedBy = CurrentUser.Name;
         order.ShippingDate = DateTime.Now;
-       
+
         await _orderRepository.UpdateAsync(order);
         await UnitOfWorkManager.Current.SaveChangesAsync();
         var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
@@ -1361,7 +1359,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 }
             }
         }
-       // await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+        // await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
         await SendEmailAsync(order.Id);
         return ObjectMapper.Map<Order, OrderDto>(order);
     }
@@ -1440,21 +1438,17 @@ public class OrderAppService : ApplicationService, IOrderAppService
         DateTimeOffset creationTimeInTimeZone = TimeZoneInfo.ConvertTime(creationTime, tz);
         string formattedTime = creationTimeInTimeZone.ToString("yyyy-MM-dd HH:mm:ss");
 
-        body = body.Replace("{{Greetings}}", "");
-        body = body.Replace("{{Footer}}", "");
         if (order.ShippingStatus == ShippingStatus.WaitingForPayment)
         {
             body = body.Replace("{{NotifyMessage}}", groupbuy.NotifyMessage);
         }
-        else {
+        else
+        {
             body = body.Replace("{{NotifyMessage}}", "");
         }
-        string pattern = @"<span class=""spacer""></span>\s*<p>貨運號碼</p>\s*<p>\{\{DeliveryNo\}\}</p>";
-
-        // Replace the matched pattern with an empty string
-        body = Regex.Replace(body, pattern, "");
 
         body = body.Replace("{{GroupBuyName}}", groupbuy.GroupBuyName);
+        body = body.Replace("{{GroupBuyUrl}}", groupbuy.EntryURL);
         body = body.Replace("{{OrderNo}}", order.OrderNo);
         body = body.Replace("{{OrderDate}}", formattedTime);
         body = body.Replace("{{CustomerName}}", order.CustomerName);
@@ -1472,6 +1466,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         body = body.Replace("{{RecipientAddress}}", order.AddressDetails);
         body = body.Replace("{{ShippingStatus}}", _l[order.ShippingStatus.ToString()]);
         body = body.Replace("{{RecipientComments}}", order.Remarks);
+        body = body.Replace("{{OrderStatus}}", status);
 
         if (order.OrderItems != null)
         {
@@ -1480,38 +1475,32 @@ public class OrderAppService : ApplicationService, IOrderAppService
             foreach (var item in order.OrderItems)
             {
                 string? itemName = "";
+                string? imageUrl = "";
                 if (item.ItemType == ItemType.Item)
                 {
                     itemName = item.Item?.ItemName;
+                    imageUrl = item.Item?.Images?.FirstOrDefault()?.ImageUrl;
                 }
                 else if (item.ItemType == ItemType.SetItem)
                 {
                     itemName = item.SetItem?.SetItemName;
+                    imageUrl = item.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
                 }
                 else
                 {
                     itemName = item.Freebie?.ItemName;
+                    imageUrl = item.Freebie?.Images?.FirstOrDefault()?.ImageUrl;
                 }
 
-                //itemName += $" {item.ItemPrice:N0} x {item.Quantity}";
-                sb.Append(orderItemsHtml
-                    .Replace("{{ImageUrl}}", item.Item?.ItemMainImageURL)
+                var itemHtml = orderItemsHtml
+                    .Replace("{{ImageUrl}}", imageUrl)
                     .Replace("{{ItemName}}", itemName)
                     .Replace("{{ItemDetails}}", item.SKU)
-                    .Replace("{{UnitPrice}}", item.ItemPrice.ToString("N0"))
+                    .Replace("{{UnitPrice}}", $"${item.ItemPrice:N0}")
                     .Replace("{{ItemQuantity}}", item.Quantity.ToString("N0"))
-                    .Replace("{{ItemTotal}}", item.TotalAmount.ToString("N0"))
-                    );
-                //sb.Append(
-                //    $@"
-                //    <tr>
-                //        <td><img src=""{item.Item?.ItemMainImageURL}"" style=""height: 30px;""/></td>
-                //        <td>{itemName}<br/>{item.SKU}</td>
-                //        <td>${item.ItemPrice:N0}</td>
-                //        <td>{item.Quantity}</td>
-                //        <td>${item.TotalAmount:N0}</td>
-                //    </tr>"
-                //);
+                    .Replace("{{ItemTotal}}", $"${item.TotalAmount:N0}");
+
+                sb.Append(itemHtml);
             }
 
             body = body.Replace("{{OrderItems}}", sb.ToString());
@@ -1519,6 +1508,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         body = body.Replace("{{DeliveryFee}}", "$0");
         body = body.Replace("{{TotalAmount}}", $"${order.TotalAmount:N0}");
+
+        var tenantSettings = await _tenantSettingsAppService.FirstOrDefaultAsync();
+        body = body.Replace("{{LogoUrl}}", tenantSettings?.LogoUrl);
+        body = body.Replace("{{FacebookUrl}}", tenantSettings?.Facebook);
+        body = body.Replace("{{InstagramUrl}}", tenantSettings?.Instagram);
+        body = body.Replace("{{LineUrl}}", tenantSettings?.Line);
 
         await _emailSender.SendAsync(order.CustomerEmail, subject, body);
     }
@@ -1555,7 +1550,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     {
         if (paymentResult.SimulatePaid is 0)
         {
-            Order order = new ();
+            Order order = new();
             var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
             using (_dataFilter.Disable<IMultiTenant>())
             {
@@ -1571,7 +1566,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
                     if (paymentResult.TradeAmt != order.TotalAmount) throw new Exception();
                 }
-                else {
+                else
+                {
                     order = await _orderRepository
                                       .FirstOrDefaultAsync(o => o.Id == paymentResult.OrderId)
                                       ?? throw new EntityNotFoundException();
@@ -1583,14 +1579,14 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 order.ShippingStatus = ShippingStatus.PrepareShipment;
                 order.PrepareShipmentBy = CurrentUser.Name ?? "System";
                 _ = DateTime.TryParse(paymentResult.PaymentDate, out DateTime parsedDate);
-                order.PaymentDate =paymentResult.OrderId==null? parsedDate:DateTime.Now;
-                if (order.OrderItems.Any(x => x.Item?.IsFreeShipping==true))
+                order.PaymentDate = paymentResult.OrderId == null ? parsedDate : DateTime.Now;
+                if (order.OrderItems.Any(x => x.Item?.IsFreeShipping == true))
                 {
-                    if (order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Normal&&(x.Item!=null|| x.Item?.IsFreeShipping == true)).Any())
+                    if (order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Normal && (x.Item != null || x.Item?.IsFreeShipping == true)).Any())
                     {
                         var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order.Id);
                         OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
-                        order.UpdateOrderItem(order.OrderItems.Where(x => (x.DeliveryTemperature == ItemStorageTemperature.Normal && x.Item?.IsFreeShipping==true)).ToList(), OrderDelivery.Id);
+                        order.UpdateOrderItem(order.OrderItems.Where(x => (x.DeliveryTemperature == ItemStorageTemperature.Normal && x.Item?.IsFreeShipping == true)).ToList(), OrderDelivery.Id);
                     }
                     if (order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze && x.Item?.IsFreeShipping == true).Any())
                     {
@@ -1637,13 +1633,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         order.UpdateOrderItem(order.OrderItems.Where(x => x.FreebieId != null).ToList(), orderDelivery.Id);
                 }
 
-                if (order.OrderItems.Any(a => a.SetItemId is not null && a.SetItemId != Guid.Empty)) 
+                if (order.OrderItems.Any(a => a.SetItemId is not null && a.SetItemId != Guid.Empty))
                 {
                     if (orderDelivery is not null)
                         order.UpdateOrderItem([.. order.OrderItems.Where(w => w.SetItemId is not null && w.SetItemId != Guid.Empty)], orderDelivery.Id);
                 }
-               
-                
+
+
                 if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.Processing)
                 {
                     if (order.GroupBuy.IssueInvoice)

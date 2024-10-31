@@ -6,7 +6,7 @@
   <meta name="x-apple-disable-message-reformatting">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta content="telephone=no" name="format-detection">
-  <title>New Message 2</title><!--[if (mso 16)]>
+  <title></title><!--[if (mso 16)]>
     <style type="text/css">
     a {text-decoration: none;}
     </style>
@@ -130,13 +130,13 @@ a[x-apple-data-detectors],
                   <td align="center" valign="top" style="padding:0;Margin:0;width:560px">
                    <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
                      <tr>
-                      <td align="center" style="padding:0;Margin:0"><h5 class="es-m-txt-c" style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:20px;font-style:normal;font-weight:normal;line-height:40px !important;color:#333333">親愛的 {{CustomerName}} 先生/小姐，</h5><h5 class="es-m-txt-c" style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:20px;font-style:normal;font-weight:normal;line-height:40px !important;color:#333333">您在 {{GroupBuyName}} 的</h5><h2 class="es-m-txt-c" style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:26px;font-style:normal;font-weight:bold;line-height:52px !important;color:#333333">訂單 <a target="_blank" style="mso-line-height-rule:exactly;text-decoration:underline;color:#23856d;font-size:26px;line-height:52px !important" href="">#{{OrderNo}}</a> 狀態為 {{order_status}}</h2></td>
+                      <td align="center" style="padding:0;Margin:0"><h5 class="es-m-txt-c" style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:20px;font-style:normal;font-weight:normal;line-height:40px !important;color:#333333">親愛的 {{CustomerName}} 先生/小姐，</h5><h5 class="es-m-txt-c" style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:20px;font-style:normal;font-weight:normal;line-height:40px !important;color:#333333">您在 {{GroupBuyName}} 的</h5><h2 class="es-m-txt-c" style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;mso-line-height-rule:exactly;letter-spacing:0;font-size:26px;font-style:normal;font-weight:bold;line-height:52px !important;color:#333333">訂單 <a href="{{GroupBuyUrl}}" target="_blank" style="mso-line-height-rule:exactly;text-decoration:underline;color:#23856d;font-size:26px;line-height:52px !important" href="">#{{OrderNo}}</a> 狀態為 {{OrderStatus}}</h2></td>
                      </tr>
                      <tr>
                       <td align="center" style="padding:0;Margin:0;padding-top:25px;padding-bottom:15px"><span class="es-button-border" style="border-style:solid;border-color:transparent;background:#23856d;border-width:2px;display:inline-block;border-radius:6px;width:auto"><a href="" target="_blank" class="es-button" style="mso-style-priority:100 !important;text-decoration:none !important;mso-line-height-rule:exactly;color:#FFFFFF;font-size:20px;padding:10px 30px 10px 30px;display:inline-block;background:#23856d;border-radius:6px;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-weight:normal;font-style:normal;line-height:24px;width:auto;text-align:center;letter-spacing:0;mso-padding-alt:0;mso-border-alt:10px solid #23856d;border-left-width:30px;border-right-width:30px">前往商店</a></span></td>
                      </tr>
                      <tr>
-                      <td align="center" style="padding:0;Margin:0;padding-top:20px;padding-bottom:20px"><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">訂購日期 &nbsp;2024-10-15 10:04:25</p></td>
+                      <td align="center" style="padding:0;Margin:0;padding-top:20px;padding-bottom:20px"><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">訂購日期 &nbsp;{{OrderDate}}</p></td>
                      </tr>
                    </table></td>
                  </tr>
@@ -208,7 +208,7 @@ a[x-apple-data-detectors],
                        <table cellpadding="0" cellspacing="0" class="es-table" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;width:100%" role="presentation">
                        </table>
                        <table cellpadding="0" cellspacing="0" class="es-table" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;width:100%" role="presentation">
-                       </table><p class="es-m-txt-r" style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">運費：<strong>$0.00</strong><br>總計：<strong>$50.00</strong></p></td>
+                       </table><p class="es-m-txt-r" style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">運費：<strong>{{DeliveryFee}}</strong><br>總計：<strong>{{TotalAmount}}</strong></p></td>
                      </tr>
                    </table></td>
                  </tr>
@@ -221,7 +221,7 @@ a[x-apple-data-detectors],
                   <td align="left" style="padding:0;Margin:0;width:280px">
                    <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
                      <tr>
-                      <td align="left" style="padding:0;Margin:0;padding-left:10px"><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:28px !important;letter-spacing:0;color:#333333;font-size:14px">顧客姓名：coco</p><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:28px !important;letter-spacing:0;color:#333333;font-size:14px">電子郵件：<a href="mailto:coco@kooco.com.tw" style="mso-line-height-rule:exactly;text-decoration:underline;color:#5C68E2;font-size:14px;line-height:28px !important">coco@kooco.com.tw</a></p><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:28px !important;letter-spacing:0;color:#333333;font-size:14px">電話：0900123456</p><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:28px !important;letter-spacing:0;color:#333333;font-size:14px">付款方式：Credit Card</p></td>
+                      <td align="left" style="padding:0;Margin:0;padding-left:10px"><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:28px !important;letter-spacing:0;color:#333333;font-size:14px">顧客姓名：{{CustomerName}}</p><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:28px !important;letter-spacing:0;color:#333333;font-size:14px">電子郵件：<a href="mailto:{{CustomerEmail}}" style="mso-line-height-rule:exactly;text-decoration:underline;color:#5C68E2;font-size:14px;line-height:28px !important">{{CustomerEmail}}</a></p><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:28px !important;letter-spacing:0;color:#333333;font-size:14px">電話：{{CustomerPhone}}</p><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:28px !important;letter-spacing:0;color:#333333;font-size:14px">付款方式：{{PaymentMethod}}</p></td>
                      </tr>
                    </table></td>
                  </tr>
@@ -231,7 +231,7 @@ a[x-apple-data-detectors],
                   <td align="center" class="es-m-p0r" style="padding:0;Margin:0;width:280px">
                    <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
                      <tr>
-                      <td align="left" style="padding:0;Margin:0;padding-right:10px;padding-left:10px"><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:28px !important;letter-spacing:0;color:#333333;font-size:14px">收件人姓名：coco</p><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:28px !important;letter-spacing:0;color:#333333;font-size:14px">收件人電話：0900123456</p><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:28px !important;letter-spacing:0;color:#333333;font-size:14px">收件者地址：111</p><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:28px !important;letter-spacing:0;color:#333333;font-size:14px">寄送方式：Post Office&nbsp;</p></td>
+                      <td align="left" style="padding:0;Margin:0;padding-right:10px;padding-left:10px"><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:28px !important;letter-spacing:0;color:#333333;font-size:14px">收件人姓名：{{RecipientName}}</p><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:28px !important;letter-spacing:0;color:#333333;font-size:14px">收件人電話：{{RecipientPhone}}</p><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:28px !important;letter-spacing:0;color:#333333;font-size:14px">收件者地址：{{RecipientAddress}}</p><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:28px !important;letter-spacing:0;color:#333333;font-size:14px">寄送方式：{{ShippingMethod}}&nbsp;</p></td>
                      </tr>
                    </table></td>
                  </tr>
@@ -244,7 +244,7 @@ a[x-apple-data-detectors],
                   <td align="left" style="padding:0;Margin:0;width:560px">
                    <table cellspacing="0" width="100%" role="presentation" cellpadding="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
                      <tr>
-                      <td align="left" style="padding:0;Margin:0;padding-bottom:20px;padding-left:10px;padding-right:5px"><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:28px !important;letter-spacing:0;color:#333333;font-size:14px">訂單備註：</p></td>
+                      <td align="left" style="padding:0;Margin:0;padding-bottom:20px;padding-left:10px;padding-right:5px"><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:28px !important;letter-spacing:0;color:#333333;font-size:14px">訂單備註：{{RecipientComments}}</p></td>
                      </tr>
                    </table></td>
                  </tr>
@@ -256,7 +256,7 @@ a[x-apple-data-detectors],
                        <table cellpadding="0" cellspacing="0" class="es-table" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;width:100%" role="presentation">
                        </table>
                        <table cellpadding="0" cellspacing="0" class="es-table" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px;width:100%" role="presentation">
-                       </table><p class="es-m-txt-r" style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">[Group-buy Notify Email]</p></td>
+                       </table><p class="es-m-txt-r" style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">{{NotifyMessage}}</p></td>
                      </tr>
                      <tr>
                       <td align="center" style="padding:0;Margin:0;padding-top:10px;padding-bottom:20px"><p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">若有任何與訂單相關的問題，可透過商店的查詢訂單或下方的 Line 客服與我們聯繫。</p></td>
@@ -282,9 +282,9 @@ a[x-apple-data-detectors],
                       <td align="center" style="padding:0;Margin:0;padding-top:15px;padding-bottom:15px;font-size:0">
                        <table cellpadding="0" cellspacing="0" class="es-table-not-adapt es-social" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
                          <tr>
-                          <td align="center" valign="top" style="padding:0;Margin:0;padding-right:40px"><img title="Facebook" src="https://frhjfai.stripocdn.email/content/assets/img/social-icons/logo-black/facebook-logo-black.png" alt="Fb" width="32" style="display:block;font-size:14px;border:0;outline:none;text-decoration:none"></td>
-                          <td align="center" valign="top" style="padding:0;Margin:0;padding-right:40px"><img title="Instagram" src="https://frhjfai.stripocdn.email/content/assets/img/social-icons/logo-black/instagram-logo-black.png" alt="Inst" width="32" style="display:block;font-size:14px;border:0;outline:none;text-decoration:none"></td>
-                          <td align="center" valign="top" style="padding:0;Margin:0"><img alt="Line" width="32" title="Line" src="https://frhjfai.stripocdn.email/content/assets/img/messenger-icons/logo-black/line-logo-black.png" style="display:block;font-size:14px;border:0;outline:none;text-decoration:none"></td>
+                          <td align="center" valign="top" style="padding:0;Margin:0;padding-right:40px"><a href="{{FacebookUrl}}" target="_blank"><img title="Facebook" src="https://frhjfai.stripocdn.email/content/assets/img/social-icons/logo-black/facebook-logo-black.png" alt="Fb" width="32" style="display:block;font-size:14px;border:0;outline:none;text-decoration:none" /></a></td>
+                          <td align="center" valign="top" style="padding:0;Margin:0;padding-right:40px"><a href="{{InstagramUrl}}" target="_blank"><img title="Instagram" src="https://frhjfai.stripocdn.email/content/assets/img/social-icons/logo-black/instagram-logo-black.png" alt="Inst" width="32" style="display:block;font-size:14px;border:0;outline:none;text-decoration:none" /></a></td>
+                          <td align="center" valign="top" style="padding:0;Margin:0"><a href="{{LineUrl}}" target="_blank"><img alt="Line" width="32" title="Line" src="https://frhjfai.stripocdn.email/content/assets/img/messenger-icons/logo-black/line-logo-black.png" style="display:block;font-size:14px;border:0;outline:none;text-decoration:none" /></a></td>
                          </tr>
                        </table></td>
                      </tr>
