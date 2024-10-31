@@ -1434,7 +1434,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         string subject = $"{groupbuy.GroupBuyName} 訂單#{order.OrderNo} {status}";
 
-        string body = File.ReadAllText("wwwroot/EmailTemplates/email.html");
+        string body = File.ReadAllText("wwwroot/EmailTemplates/order_status.html");
         DateTime creationTime = order.CreationTime;
         TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById("China Standard Time"); // UTC+8
         DateTimeOffset creationTimeInTimeZone = TimeZoneInfo.ConvertTime(creationTime, tz);
@@ -1495,12 +1495,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
                 //itemName += $" {item.ItemPrice:N0} x {item.Quantity}";
                 sb.Append(orderItemsHtml
-                    .Replace("{{image_url}}", item.Item?.ItemMainImageURL)
-                    .Replace("{{item_name}}", itemName)
-                    .Replace("{{item_details}}", item.SKU)
-                    .Replace("{{unit_price}}", item.ItemPrice.ToString("N0"))
-                    .Replace("{{quantity}}", item.Quantity.ToString("N0"))
-                    .Replace("{{total}}", item.TotalAmount.ToString("N0"))
+                    .Replace("{{ImageUrl}}", item.Item?.ItemMainImageURL)
+                    .Replace("{{ItemName}}", itemName)
+                    .Replace("{{ItemDetails}}", item.SKU)
+                    .Replace("{{UnitPrice}}", item.ItemPrice.ToString("N0"))
+                    .Replace("{{ItemQuantity}}", item.Quantity.ToString("N0"))
+                    .Replace("{{ItemTotal}}", item.TotalAmount.ToString("N0"))
                     );
                 //sb.Append(
                 //    $@"
@@ -1514,7 +1514,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 //);
             }
 
-            body = body.Replace("{{order_items}}", sb.ToString());
+            body = body.Replace("{{OrderItems}}", sb.ToString());
         }
 
         body = body.Replace("{{DeliveryFee}}", "$0");
