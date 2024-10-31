@@ -77,7 +77,7 @@ public class CreateOrderDto
     public Guid? DiscountCodeId { get; set; }
     [RequiredIfRefundOrDeduction]
     public Guid? UserId { get; set; }
-   
+
     public decimal RefundAmount { get; set; }
 
     public Guid? RefundRecordId { get; set; }
@@ -109,4 +109,5 @@ public class CreateOrderDto
     public string? CVSStoreOutSideFreeze { get; set; }
     public string? CVSStoreOutSideFrozen { get; set; }
     public ItemStorageTemperature? TemperatureControlDbs { get; set; }
+    public bool ShouldSendEmail { get; set; } = false;
 }

@@ -1128,6 +1128,8 @@ public partial class OrderDetails
 
             await loading.Show();
             UpdateOrder.OrderStatus = Order.OrderStatus;
+            UpdateOrder.ShouldSendEmail = true;
+
             Order = await _orderAppService.UpdateAsync(OrderId, UpdateOrder);
             ModificationTrack = new();
             await InvokeAsync(StateHasChanged);

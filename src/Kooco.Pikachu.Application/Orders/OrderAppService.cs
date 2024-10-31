@@ -1184,6 +1184,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         await _orderRepository.UpdateAsync(order);
 
+        if (input.ShouldSendEmail)
+        {
+            CurrentUnitOfWork?.SaveChangesAsync();
+            await SendEmailAsync(order.Id);
+        }
+
         return ObjectMapper.Map<Order, OrderDto>(order);
     }
 
