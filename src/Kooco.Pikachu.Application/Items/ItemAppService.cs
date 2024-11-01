@@ -257,6 +257,7 @@ public class ItemAppService :
         var item = await _itemRepository.GetAsync(id);
         await _itemRepository.EnsureCollectionLoadedAsync(item, i => i.ItemDetails);
         await _itemRepository.EnsureCollectionLoadedAsync(item, i => i.Images);
+        await _itemRepository.EnsureCollectionLoadedAsync(item, i => i.CategoryProducts);
 
         item.ItemName = input.ItemName;
         item.ItemDescriptionTitle = input.ItemDescriptionTitle;
@@ -370,6 +371,16 @@ public class ItemAppService :
                     var itemImage = item.Images.First(x => x.BlobImageName == image.BlobImageName);
                     itemImage.SortNo = image.SortNo;
                 }
+            }
+        }
+
+        item.CategoryProducts.Clear();
+        if (input.ItemCategories != null)
+        {
+            foreach (var itemCategory in input.ItemCategories)
+            {
+                Check.NotDefaultOrNull(itemCategory.ProductCategoryId, nameof(itemCategory.ProductCategoryId));
+                item.CategoryProducts.Add(new CategoryProduct(item.Id, itemCategory.ProductCategoryId.Value));
             }
         }
 
@@ -492,6 +503,12 @@ public class ItemAppService :
     {
         var items = await _itemRepository.GetManyAsync(itemIds);
         return ObjectMapper.Map<List<Item>, List<ItemDto>>(items);
+    }
+
+    public async Task<List<CategoryProductDto>> GetItemCategoriesAsync(Guid id)
+    {
+        var itemProducts = await _itemRepository.GetItemCategoriesAsync(id);
+        return ObjectMapper.Map<List<CategoryProduct>, List<CategoryProductDto>>(itemProducts);
     }
     #endregion
 }

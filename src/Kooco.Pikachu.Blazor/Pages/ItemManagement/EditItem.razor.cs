@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
 using Blazored.TextEditor;
 using Blazorise;
+using Blazorise.Components;
 using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.AzureStorage.Image;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
+using Kooco.Pikachu.ProductCategories;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
@@ -63,6 +65,11 @@ public partial class EditItem
     private bool OnDetailClose = false;
 
     private bool _isRenderComplete = false;
+
+    private List<KeyValueDto> ProductCategoryLookup { get; set; } = [];
+    private bool RowLoading { get; set; } = false;
+    private Autocomplete<KeyValueDto, Guid?> AutocompleteField { get; set; }
+    private string SelectedAutoCompleteText { get; set; }
     #endregion
 
     #region Constructor
@@ -111,7 +118,7 @@ public partial class EditItem
                         new Attributes
                         {
                             Id = 1,
-                            Name =L[ExistingItem.Attribute1Name],
+                            Name = L[ExistingItem.Attribute1Name],
                             ItemTags = ItemDetailsList.Where(x => x.Attribute1Value != null).Select(x => x.Attribute1Value).Distinct().ToList()
                         });
                 }
@@ -146,6 +153,12 @@ public partial class EditItem
                 }
                 await LoadHtmlContent();
 
+                var itemCategories = await _itemAppService.GetItemCategoriesAsync(EditingId);
+                UpdateItemDto.ItemCategories = ObjectMapper.Map<List<CategoryProductDto>, List<CreateUpdateItemCategoryDto>>(itemCategories);
+                ProductCategoryLookup = await ProductCategoryAppService.GetProductCategoryLookupAsync();
+
+                var itemCategoryIds = itemCategories.Select(ic => ic.ProductCategoryId);
+                ProductCategoryLookup.RemoveAll(pc => itemCategoryIds.Contains(pc.Id));
                 StateHasChanged();
             }
             catch (Exception ex)
@@ -718,7 +731,7 @@ public partial class EditItem
             }
         }
     }
-   
+
     private void CharactersLengthInputChange(SKUModelOptions item, ChangeEventArgs e)
     {
         var value = e?.Value;
@@ -919,6 +932,55 @@ public partial class EditItem
             await _imageContainerManager.DeleteAsync(item.Image);
 
             item.Image = string.Empty;
+
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnSelectedValueChanged(Guid? id)
+    {
+        try
+        {
+            if (id != null)
+            {
+                RowLoading = true;
+                StateHasChanged();
+                await AutocompleteField.Clear();
+                var productCategory = ProductCategoryLookup.Where(x => x.Id == id).FirstOrDefault();
+
+                if (productCategory == null) return;
+
+                var itemCategory = new CreateUpdateItemCategoryDto
+                {
+                    ProductCategoryId = productCategory.Id,
+                    ProductCategoryName = productCategory.Name,
+                    ImageUrl = await ProductCategoryAppService.GetDefaultImageUrlAsync(productCategory.Id)
+                };
+
+                UpdateItemDto.ItemCategories.Add(itemCategory);
+                RowLoading = false;
+
+                ProductCategoryLookup = ProductCategoryLookup.Where(x => x.Id != id).ToList();
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            RowLoading = false;
+            await HandleErrorAsync(ex);
+        }
+    }
+
+    private void RemoveItemCategory(CreateUpdateItemCategoryDto itemCategory)
+    {
+        if (itemCategory != null)
+        {
+            UpdateItemDto.ItemCategories.Remove(itemCategory);
+            ProductCategoryLookup.Add(new KeyValueDto
+            {
+                Id = itemCategory.ProductCategoryId!.Value,
+                Name = itemCategory.ProductCategoryName
+            });
 
             StateHasChanged();
         }

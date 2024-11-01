@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
+using Kooco.Pikachu.ProductCategories;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -124,5 +125,11 @@ public class ItemController(
     public Task<List<ItemDto>> GetManyAsync(List<Guid> itemIds)
     {
         return _itemAppService.GetManyAsync(itemIds);
+    }
+
+    [HttpGet("item-categories")]
+    public Task<List<CategoryProductDto>> GetItemCategoriesAsync(Guid id)
+    {
+        return _itemAppService.GetItemCategoriesAsync(id);
     }
 }

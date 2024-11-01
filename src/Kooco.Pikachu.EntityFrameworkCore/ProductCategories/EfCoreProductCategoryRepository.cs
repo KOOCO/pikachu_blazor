@@ -10,12 +10,8 @@ using Volo.Abp.EntityFrameworkCore;
 
 namespace Kooco.Pikachu.ProductCategories;
 
-public class EfCoreProductCategoryRepository : EfCoreRepository<PikachuDbContext, ProductCategory, Guid>, IProductCategoryRepository
+public class EfCoreProductCategoryRepository(IDbContextProvider<PikachuDbContext> dbContextProvider) : EfCoreRepository<PikachuDbContext, ProductCategory, Guid>(dbContextProvider), IProductCategoryRepository
 {
-    public EfCoreProductCategoryRepository(IDbContextProvider<PikachuDbContext> dbContextProvider) : base(dbContextProvider)
-    {
-    }
-
     public async Task<long> GetCountAsync(string? filter)
     {
         var queryable = await GetFilteredQueryableAsync(filter);
@@ -68,5 +64,17 @@ public class EfCoreProductCategoryRepository : EfCoreRepository<PikachuDbContext
         }
 
         return await queryable.FirstOrDefaultAsync();
+    }
+
+    public async Task<string?> GetDefaultImageUrlAsync(Guid id)
+    {
+        var productImage = await (await GetQueryableAsync())
+            .Where(x => x.Id == id)
+            .SelectMany(x => x.ProductCategoryImages)
+            .OrderBy(i => i.SortNo)
+            .Where(i => i.Url != null)
+            .FirstOrDefaultAsync();
+
+        return productImage?.Url;
     }
 }

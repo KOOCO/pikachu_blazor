@@ -880,6 +880,7 @@
     "GoogleTagManager": "Google Tag Manager",
     "GtmEnabled": "GTM Enabled",
     "ContainerId": "Container ID",
-    "GtmContainerIdIsRequired": "The Container ID field is required."
+    "GtmContainerIdIsRequired": "The Container ID field is required.",
+    "ProductCategory": "Product Category"
   }
 }

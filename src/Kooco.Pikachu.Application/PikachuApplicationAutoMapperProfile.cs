@@ -40,6 +40,7 @@ using Kooco.Pikachu.GroupBuyOrderInstructions;
 using Kooco.Pikachu.LoginConfigurations;
 using Kooco.Pikachu.GroupBuyProductRankings;
 using Kooco.Pikachu.ProductCategories;
+using System.Linq;
 
 namespace Kooco.Pikachu;
 
@@ -261,7 +262,10 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<ProductCategoryImageDto, CreateUpdateProductCategoryImageDto>();
         CreateMap<CategoryProduct, CategoryProductDto>()
             .ForMember(dest => dest.ProductCategoryName, opt => opt.MapFrom(src => src.ProductCategory!.Name))
-            .ForMember(dest => dest.ItemName, opt => opt.MapFrom(src => src.Item!.ItemName));
+            .ForMember(dest => dest.ItemName, opt => opt.MapFrom(src => src.Item!.ItemName))
+            .ForMember(dest => dest.ProductCategoryFirstImageUrl, opt => opt.MapFrom(src => src.ProductCategory!.ProductCategoryImages.FirstOrDefault() != null ? src.ProductCategory.ProductCategoryImages.OrderBy(x => x.SortNo).FirstOrDefault()!.Url : null));
         CreateMap<CategoryProductDto, CreateUpdateCategoryProductDto>();
+        CreateMap<CategoryProductDto, CreateUpdateItemCategoryDto>()
+            .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ProductCategoryFirstImageUrl));
     }
 }

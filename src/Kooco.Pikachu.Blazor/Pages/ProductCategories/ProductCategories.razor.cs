@@ -143,6 +143,7 @@ public partial class ProductCategories
     {
         Selected = productCategory;
         SelectedSlide = 0;
+        Selected.ProductCategoryImages = [.. Selected.ProductCategoryImages.OrderBy(i => i.SortNo)];
         CarousalModal.Show();
     }
 }

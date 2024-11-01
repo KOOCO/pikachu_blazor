@@ -1,5 +1,6 @@
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Images;
+using Kooco.Pikachu.ProductCategories;
 using Kooco.Pikachu.Response;
 using System;
 using System.Collections.Generic;
@@ -33,5 +34,6 @@ public class ItemDto : FullAuditedEntityDto<Guid>
 
     public virtual ICollection<ItemDetailsDto> ItemDetails { get; set; }
     public virtual ICollection<ImageDto> Images { get; set; }
+    public List<CategoryProductDto> CategoryProducts { get; set; } = [];
     public List<AttributeNameOption> AttributeNameOptions { get; set; }
 }

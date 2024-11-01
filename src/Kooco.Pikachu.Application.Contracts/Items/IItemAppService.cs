@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Kooco.Pikachu.Items.Dtos;
+using Kooco.Pikachu.ProductCategories;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 
@@ -26,4 +27,5 @@ public interface IItemAppService :
     Task<ItemDto> CopyAysnc(Guid Id);
     Task<ItemDto> GetSKUAndItemAsync(Guid itemId, Guid itemDetailId);
     Task<List<ItemDto>> GetManyAsync(List<Guid> itemIds);
+    Task<List<CategoryProductDto>> GetItemCategoriesAsync(Guid id);
 }

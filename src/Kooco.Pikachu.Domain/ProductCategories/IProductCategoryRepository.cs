@@ -13,4 +13,5 @@ public interface IProductCategoryRepository : IRepository<ProductCategory, Guid>
     Task<IQueryable<ProductCategory>> GetFilteredQueryableAsync(string? filter = null);
     Task<ProductCategory?> FindByNameAsync(string name);
     Task<ProductCategory> GetWithDetailsAsync(Guid id, bool includeItem = false);
+    Task<string?> GetDefaultImageUrlAsync(Guid id);
 }

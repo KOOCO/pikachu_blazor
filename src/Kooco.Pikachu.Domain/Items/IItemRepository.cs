@@ -1,3 +1,4 @@
+using Kooco.Pikachu.ProductCategories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,4 +40,5 @@ public interface IItemRepository : IRepository<Item, Guid>
     Task<Item> GetSKUAndItemAsync(Guid itemId, Guid itemDetailId);
     Task<List<Item>> GetManyAsync(List<Guid> itemIds);
     Task<ItemDetails?> FindItemDetailAsync(Guid itemDetailId);
+    Task<List<CategoryProduct>> GetItemCategoriesAsync(Guid id);
 }

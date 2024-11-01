@@ -5,6 +5,7 @@ using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Kooco.Pikachu.EntityFrameworkCore;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.ProductCategories;
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -157,5 +158,18 @@ public class ItemRepository : EfCoreRepository<PikachuDbContext, Item, Guid>, II
         var dbContext = await GetDbContextAsync();
         return await dbContext.ItemDetails
             .Where(x => x.Id == itemDetailId).FirstOrDefaultAsync();
+    }
+
+    public async Task<List<CategoryProduct>> GetItemCategoriesAsync(Guid id)
+    {
+        var queryable = await GetQueryableAsync();
+
+        return await queryable
+            .Where(x => x.Id == id)
+            .Include(x => x.CategoryProducts)
+            .ThenInclude(x => x.ProductCategory)
+            .ThenInclude(x => x.ProductCategoryImages)
+            .SelectMany(x => x.CategoryProducts)
+            .ToListAsync();
     }
 }

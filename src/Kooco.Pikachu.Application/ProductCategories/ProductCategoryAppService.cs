@@ -141,17 +141,7 @@ public class ProductCategoryAppService(ProductCategoryManager productCategoryMan
     [AllowAnonymous]
     public async Task<string?> GetDefaultImageUrlAsync(Guid id)
     {
-        var productCategory = (await productCategoryRepository.GetQueryableAsync())
-            .Where(pc => pc.Id == id).FirstOrDefault();
-        if (productCategory is null)
-        {
-            return default;
-        }
-
-        await productCategoryRepository.EnsureCollectionLoadedAsync(productCategory, pc => pc.ProductCategoryImages);
-        return productCategory.ProductCategoryImages
-            .Where(i => i.Url != null)
-            .Select(i => i.Url)
-            .FirstOrDefault();
+        var url = await productCategoryRepository.GetDefaultImageUrlAsync(id);
+        return url;
     }
 }
