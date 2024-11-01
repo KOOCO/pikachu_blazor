@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kooco.Pikachu.Items.Dtos;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
@@ -14,4 +15,6 @@ public interface IProductCategoryAppService : IApplicationService
     Task<ProductCategoryDto> GetAsync(Guid id, bool includeDetails = false);
     Task<PagedResultDto<ProductCategoryDto>> GetListAsync(GetProductCategoryListDto input);
     Task<List<CreateUpdateProductCategoryImageDto>> UploadImagesAsync(List<CreateUpdateProductCategoryImageDto> input, bool deleteExisting = false);
+    Task<List<KeyValueDto>> GetProductCategoryLookupAsync();
+    Task<string?> GetDefaultImageUrlAsync(Guid id);
 }

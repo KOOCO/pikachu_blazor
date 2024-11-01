@@ -1,11 +1,16 @@
 ﻿using Blazored.TextEditor;
 using Blazorise;
+using Blazorise.Components;
+using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.AzureStorage.Image;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
+using Kooco.Pikachu.ProductCategories;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,10 +19,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
-using Kooco.Pikachu.Images;
-using Blazorise.LoadingIndicator;
-using Microsoft.JSInterop;
-using Kooco.Pikachu.GroupBuyOrderInstructions;
 
 namespace Kooco.Pikachu.Blazor.Pages.ItemManagement;
 
@@ -49,6 +50,11 @@ public partial class CreateItem
     LoadingIndicator Loading { get; set; }
     int CurrentIndex { get; set; }
     private List<FilePicker> ItemDetailPickers = [];
+
+    private List<KeyValueDto> ProductCategoryLookup { get; set; } = [];
+    private bool RowLoading { get; set; } = false;
+    private Autocomplete<KeyValueDto, Guid?> AutocompleteField { get; set; }
+    private string SelectedAutoCompleteText { get; set; }
     #endregion
 
     #region Constructor
@@ -93,6 +99,23 @@ public partial class CreateItem
     {
         return L[key];
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                ProductCategoryLookup = await ProductCategoryAppService.GetProductCategoryLookupAsync();
+                await InvokeAsync(StateHasChanged);
+            }
+            catch (Exception ex)
+            {
+                await HandleErrorAsync(ex);
+            }
+        }
+    }
+
     async Task OnFileUploadAsync(FileChangedEventArgs e)
     {
         if (e.Files.Length > MaxAllowedFilesPerUpload)
@@ -110,7 +133,7 @@ public partial class CreateItem
         var count = 0;
         try
         {
-            
+
             foreach (var file in e.Files)
             {
                 await Loading.Show();
@@ -281,7 +304,7 @@ public partial class CreateItem
             Attributes.Add(new Attributes
             {
                 Id = attribute == null ? 1 : +attribute.Id + 1,
-                
+
                 ItemTags = []
             });
         }
@@ -317,7 +340,7 @@ public partial class CreateItem
                 Status = true
             });
 
-            ItemDetailsQuillHtml.Add(new ());
+            ItemDetailsQuillHtml.Add(new());
 
             ItemDetailPickers.Add(new());
         }
@@ -431,13 +454,13 @@ public partial class CreateItem
             GenerateAttributesForItemDetails();
 
             CreateItemDto.ItemDetails = ItemDetailsList;
-            
+
             CreateItemDto.ItemDescription = await QuillHtml.GetHTML();
 
             if (ItemTags.Any()) CreateItemDto.ItemTags = string.Join(",", ItemTags);
 
             await _itemAppService.CreateAsync(CreateItemDto);
-            
+
             NavigationManager.NavigateTo("Items");
         }
         catch (BusinessException ex)
@@ -762,7 +785,7 @@ public partial class CreateItem
 
             else if (!string.IsNullOrWhiteSpace(item.SelectedSampleValue))
             {
-                var temp ="";
+                var temp = "";
                 if (item.SelectedSampleValue == "ItemName")
                 {
                     temp = item.SampleDisplayValue;
@@ -842,6 +865,55 @@ public partial class CreateItem
         item.IsExpanded = !item.IsExpanded;
 
         StateHasChanged();
+    }
+
+    private async Task OnSelectedValueChanged(Guid? id)
+    {
+        try
+        {
+            if (id != null)
+            {
+                RowLoading = true;
+                StateHasChanged();
+                await AutocompleteField.Clear();
+                var productCategory = ProductCategoryLookup.Where(x => x.Id == id).FirstOrDefault();
+
+                if (productCategory == null) return;
+
+                var itemCategory = new CreateUpdateItemCategoryDto
+                {
+                    ProductCategoryId = productCategory.Id,
+                    ProductCategoryName = productCategory.Name,
+                    ImageUrl = await ProductCategoryAppService.GetDefaultImageUrlAsync(productCategory.Id)
+                };
+
+                CreateItemDto.ItemCategories.Add(itemCategory);
+                RowLoading = false;
+
+                ProductCategoryLookup = ProductCategoryLookup.Where(x => x.Id != id).ToList();
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            RowLoading = false;
+            await HandleErrorAsync(ex);
+        }
+    }
+
+    private void RemoveItemCategory(CreateUpdateItemCategoryDto itemCategory)
+    {
+        if (itemCategory != null)
+        {
+            CreateItemDto.ItemCategories.Remove(itemCategory);
+            ProductCategoryLookup.Add(new KeyValueDto
+            {
+                Id = itemCategory.ProductCategoryId!.Value,
+                Name = itemCategory.ProductCategoryName
+            });
+
+            StateHasChanged();
+        }
     }
     #endregion
 }

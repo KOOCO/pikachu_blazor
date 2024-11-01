@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.ProductCategories;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -33,10 +34,22 @@ public class ProductCategoryController(IProductCategoryAppService productCategor
         return productCategoryAppService.GetAsync(id, includeDetails);
     }
 
+    [HttpGet("default-image-url")]
+    public Task<string?> GetDefaultImageUrlAsync(Guid id)
+    {
+        return productCategoryAppService.GetDefaultImageUrlAsync(id);
+    }
+
     [HttpGet("list")]
     public Task<PagedResultDto<ProductCategoryDto>> GetListAsync(GetProductCategoryListDto input)
     {
         return productCategoryAppService.GetListAsync(input);
+    }
+
+    [HttpGet("lookup")]
+    public Task<List<KeyValueDto>> GetProductCategoryLookupAsync()
+    {
+        return productCategoryAppService.GetProductCategoryLookupAsync();
     }
 
     [HttpPut("{id}")]

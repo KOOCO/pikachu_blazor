@@ -1,14 +1,16 @@
 ﻿using Kooco.Pikachu.AzureStorage.Image;
+using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Permissions;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.Domain.Repositories;
 
 namespace Kooco.Pikachu.ProductCategories;
 
@@ -127,5 +129,29 @@ public class ProductCategoryAppService(ProductCategoryManager productCategoryMan
                 Logger.LogException(ex);
             }
         }
+    }
+
+    [AllowAnonymous]
+    public async Task<List<KeyValueDto>> GetProductCategoryLookupAsync()
+    {
+        var queryable = await productCategoryRepository.GetQueryableAsync();
+        return [.. queryable.Select(x => new KeyValueDto { Id = x.Id, Name = x.Name })];
+    }
+
+    [AllowAnonymous]
+    public async Task<string?> GetDefaultImageUrlAsync(Guid id)
+    {
+        var productCategory = (await productCategoryRepository.GetQueryableAsync())
+            .Where(pc => pc.Id == id).FirstOrDefault();
+        if (productCategory is null)
+        {
+            return default;
+        }
+
+        await productCategoryRepository.EnsureCollectionLoadedAsync(productCategory, pc => pc.ProductCategoryImages);
+        return productCategory.ProductCategoryImages
+            .Where(i => i.Url != null)
+            .Select(i => i.Url)
+            .FirstOrDefault();
     }
 }

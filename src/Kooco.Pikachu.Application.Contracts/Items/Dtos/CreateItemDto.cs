@@ -1,5 +1,6 @@
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Images;
+using Kooco.Pikachu.ProductCategories;
 using System;
 using System.Collections.Generic;
 
@@ -48,4 +49,6 @@ public class CreateItemDto
     public string? Attribute3Name { get; set; }
 
     public ItemStorageTemperature? ItemStorageTemperature { get; set; }
+
+    public List<CreateUpdateItemCategoryDto> ItemCategories { get; set; } = [];
 }

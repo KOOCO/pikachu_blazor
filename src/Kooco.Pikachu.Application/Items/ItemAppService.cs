@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp;
+using Kooco.Pikachu.ProductCategories;
 
 namespace Kooco.Pikachu.Items;
 
@@ -126,6 +127,15 @@ public class ItemAppService :
                     image.ImageType,
                     image.SortNo
                     );
+            }
+        }
+
+        if (input.ItemCategories != null)
+        {
+            foreach (var itemCategory in input.ItemCategories)
+            {
+                Check.NotDefaultOrNull(itemCategory.ProductCategoryId, nameof(itemCategory.ProductCategoryId));
+                item.CategoryProducts.Add(new CategoryProduct(item.Id, itemCategory.ProductCategoryId.Value));
             }
         }
 
@@ -303,7 +313,7 @@ public class ItemAppService :
                     existing.LimitQuantity = itemDetail.LimitQuantity;
                     existing.SellingPrice = itemDetail.SellingPrice;
                     existing.SaleableQuantity = itemDetail.SaleableQuantity;
-                    existing.StockOnHand=itemDetail.StockOnHand;
+                    existing.StockOnHand = itemDetail.StockOnHand;
                     existing.PreOrderableQuantity = itemDetail.PreOrderableQuantity;
                     existing.SaleablePreOrderQuantity = itemDetail.SaleablePreOrderQuantity;
                     existing.GroupBuyPrice = itemDetail.GroupBuyPrice;
