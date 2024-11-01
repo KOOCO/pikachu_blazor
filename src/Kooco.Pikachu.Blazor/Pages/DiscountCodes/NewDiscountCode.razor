@@ -262,14 +262,17 @@
                     <AntDesign.Select Mode="multiple"
                                       TItem="DeliveryMethod"
                                       TItemValue="DeliveryMethod"
-                                      @bind-Values="@SelectedShippings"
+                                                      @bind-Values="@SelectedShippings"
                                       Placeholder="@L["SelectaShippings"]"
                                       EnableSearch>
                         <SelectOptions>
-                            @foreach (var item in Enum.GetNames(typeof(DeliveryMethod)))
-                            {
-                                <AntDesign.SelectOption TItemValue="DeliveryMethod" TItem="DeliveryMethod" Label=@L[item] />
-                            }
+                             @foreach (var item in (DeliveryMethod[])Enum.GetValues(typeof(DeliveryMethod)))
+        {
+                                                <AntDesign.SelectOption TItemValue="DeliveryMethod"
+                               TItem="DeliveryMethod"
+                               Value="item"
+                                 Label="@L[item.ToString()]" />
+        }
                         </SelectOptions>
                     </AntDesign.Select>
                                 <ValidationMessage For="() => CreateDiscountCode!.SpecificShippingMethods" />

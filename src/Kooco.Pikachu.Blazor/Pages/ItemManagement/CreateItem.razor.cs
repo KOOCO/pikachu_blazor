@@ -788,7 +788,7 @@ public partial class CreateItem
                 var temp = "";
                 if (item.SelectedSampleValue == "ItemName")
                 {
-                    temp = item.SampleDisplayValue;
+                    temp = CreateItemDto.ItemName;
                 }
                 else
                 {

@@ -19,5 +19,6 @@ namespace Kooco.Pikachu.DiscountCodes
         Task<List<ItemDto>> GetProductsAsync(Guid id);
         Task<List<GroupBuyDto>> GetGroupBuysAsync(Guid id);
         Task UpdateStatusAsync(Guid id);
+        Task<DiscountCheckOutputDto> CheckDiscountCodeAsync(DiscountCheckInputDto input);
     }
 }

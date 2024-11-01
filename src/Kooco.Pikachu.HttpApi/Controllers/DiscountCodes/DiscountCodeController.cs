@@ -19,6 +19,12 @@ namespace Kooco.Pikachu.Controllers.DiscountCodes
     [Route("api/app/discount-code")]
     public class DiscountCodeController(IDiscountCodeAppService discountCodeAppService) : PikachuController, IDiscountCodeAppService
     {
+        [HttpPost("check-for-discount")]
+        public Task<DiscountCheckOutputDto> CheckDiscountCodeAsync(DiscountCheckInputDto input)
+        {
+            return discountCodeAppService.CheckDiscountCodeAsync(input);
+        }
+
         [HttpPost]
         public Task<DiscountCodeDto> CreateAsync(CreateUpdateDiscountCodeDto input)
         {

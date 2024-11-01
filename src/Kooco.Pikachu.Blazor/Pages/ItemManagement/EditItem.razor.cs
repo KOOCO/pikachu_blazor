@@ -780,7 +780,7 @@ public partial class EditItem
                 var temp = "";
                 if (item.SelectedSampleValue == "ItemName")
                 {
-                    temp = item.SampleDisplayValue;
+                    temp = UpdateItemDto.ItemName;
                 }
                 else
                 {
