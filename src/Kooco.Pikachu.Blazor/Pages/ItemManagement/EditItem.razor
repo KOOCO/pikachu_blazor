@@ -281,6 +281,13 @@
                                     </Span>
                                 </TableHeaderCell>
                                 <TableHeaderCell Class="text-center">@L["InventoryAccount"]</TableHeaderCell>
+                                   <TableHeaderCell Class="text-center">
+                                    @L["CurrentStock"]
+                                    <Span Class="d-block pt-1 text-primary cursor-pointer"
+                                          @onclick="() => CopyToAll(nameof(CreateItemDetailsDto.StockOnHand))">
+                                        @L["CopyToAll"]
+                                    </Span>
+                                </TableHeaderCell>
                                 <TableHeaderCell Class="text-center">
                                     @L["SaleableQuantity"]
                                     <Span Class="d-block pt-1 text-primary cursor-pointer"
@@ -288,13 +295,7 @@
                                         @L["CopyToAll"]
                                     </Span>
                                 </TableHeaderCell>
-                                  <TableHeaderCell Class="text-center">
-                                    @L["CurrentStock"]
-                                    <Span Class="d-block pt-1 text-primary cursor-pointer"
-                                          @onclick="() => CopyToAll(nameof(CreateItemDetailsDto.StockOnHand))">
-                                        @L["CopyToAll"]
-                                    </Span>
-                                </TableHeaderCell>
+                               
                                 <TableHeaderCell Class="text-center">
                                     @L["PreorderQuantity"]
                                     <Span Class="d-block pt-1 text-primary cursor-pointer"
@@ -341,12 +342,13 @@
                                     <TableRowCell>
                                         <input class="form-control form-control-sm" style="min-width: 100px;" @bind-value="@item.InventoryAccount" />
                                     </TableRowCell>
+                                       <TableRowCell>
+                                        <NumericEdit Class="form-control form-control-sm" @bind-Value="@item.StockOnHand"></NumericEdit>
+                                    </TableRowCell>
                                     <TableRowCell>
                                         <NumericEdit Class="form-control form-control-sm" @bind-Value="@item.SaleableQuantity"></NumericEdit>
                                     </TableRowCell>
-                                      <TableRowCell>
-                                        <NumericEdit Class="form-control form-control-sm" @bind-Value="@item.StockOnHand"></NumericEdit>
-                                    </TableRowCell>
+                                   
                                     <TableRowCell>
                                         <NumericEdit Class="form-control form-control-sm" @bind-Value="@item.PreOrderableQuantity"></NumericEdit>
                                     </TableRowCell>
