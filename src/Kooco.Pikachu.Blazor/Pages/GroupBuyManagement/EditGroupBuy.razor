@@ -30,7 +30,8 @@
     .row {
         margin-top: 10px;
     }
-    .drag-drop-span{
+
+    .drag-drop-span {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -38,142 +39,163 @@
         max-height: 55px !important;
     }
 
-    .drag-drop-span i{
-        cursor: pointer;
-    }
+        .drag-drop-span i {
+            cursor: pointer;
+        }
 
     .color-scheme > .b-input-color-picker-preview {
         height: 9.55rem;
     }
 </style>
-  <h3>@L["EditGroupBuy"]</h3>
+<h3>@L["EditGroupBuy"]</h3>
 <LoadingIndicator @ref="Loading" FullScreen FadeIn></LoadingIndicator>
 <Card>
-    
- <CardBody>
-        <div class="row">
-            <div class="col-12">
-                <h4>@L["SalesURL"]</h4>  
-            </div>
-            <div class="row">
-                <div class="col-1"></div>
-                <div class="col-2">
-                    <label>@L["SalesURL1"]
-                        <a href="@EditGroupBuyDto.EntryURL" target="_blank" class="text-primary">
-                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                        </a>
-                    </label>
-                </div>
-                <div class="col-7">
-                    <TextEdit @bind-Text="@EditGroupBuyDto.EntryURL" ReadOnly />
-                </div>
-            </div>
-             <div class="row">
-                  <div class="col-1"></div>
-                <div class="col-2">
-                    <label>@L["SalesURL2"]</label>
-                </div>
-                <div class="col-7">
-                    <TextEdit @bind-Text="@EditGroupBuyDto.EntryURL2" />
-                </div>
-            </div>
-            <Validations @ref="@EditValidationsRef" Model="@EditGroupBuyDto" ValidateOnLoad="false">
-                <div class="row">
-                      <div class="col-1"></div>
-                    <div class="col-2">
-                        <label>@L["ShortCode"]</label>
-                    </div>
-                    <div class="col-7">
-                        <Validation UsePattern>
-                            <TextEdit Pattern="^[A-Za-z0-9]{4,12}$" MaxLength="12" @bind-Text="@EditGroupBuyDto.ShortCode">
-                                <Feedback>
-                                    <ValidationError>@L["ShortCodePatternDoesnotMatch"]</ValidationError>
-                                </Feedback>
-                            </TextEdit>
-                        </Validation>
-                    </div>
-                    <div class="col-1">
-                        <span>
-                            @((string.IsNullOrWhiteSpace(EditGroupBuyDto.ShortCode) ? 0 : (0 + EditGroupBuyDto.ShortCode.Count())))/@(12)
-                        </span>
-                    </div>
-                </div>
-            </Validations>
+    <CardBody>
+        <div class="col-12">
+            <h4>@L["SalesURL"]</h4>
         </div>
+        <div class="row">
+            <div class="col-2">
+                <label>
+                    @L["SalesURL1"]
+                    <a href="@EditGroupBuyDto.EntryURL" target="_blank" class="text-primary">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                </label>
+            </div>
+            <div class="col-10">
+                <TextEdit @bind-Text="@EditGroupBuyDto.EntryURL" ReadOnly />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2">
+                <label>@L["SalesURL2"]</label>
+            </div>
+            <div class="col-10">
+                <TextEdit @bind-Text="@EditGroupBuyDto.EntryURL2" />
+            </div>
+        </div>
+        <Validations @ref="@EditValidationsRef" Model="@EditGroupBuyDto" ValidateOnLoad="false">
+            <div class="row">
+                <div class="col-2">
+                    <label>@L["ShortCode"]</label>
+                </div>
+                <div class="col-10">
+                    <Validation UsePattern>
+                        <Addons>
+                            <Addon AddonType="AddonType.Start">
+                                <AddonLabel Style="background-color: #f5f5f7">
+                                    @((string.IsNullOrWhiteSpace(EditGroupBuyDto.ShortCode) ? 0 : (EditGroupBuyDto.ShortCode.Count())))/@(12)
+                                </AddonLabel>
+                            </Addon>
+                            <Addon AddonType="AddonType.Body">
+                                <TextEdit Pattern="^[A-Za-z0-9]{4,12}$" MaxLength="12" @bind-Text="@EditGroupBuyDto.ShortCode">
+                                    <Feedback>
+                                        <ValidationError>@L["ShortCodePatternDoesnotMatch"]</ValidationError>
+                                    </Feedback>
+                                </TextEdit>
+                            </Addon>
+                        </Addons>
+                    </Validation>
+                </div>
+            </div>
+        </Validations>
         <Divider></Divider>
-         <div class="row">
+        <div class="row">
             <div class="col-2">
                 <label>@L["GroupBuyName"] <span class="text-danger"> *</span></label>
             </div>
-            <div class="col-9">
-                <TextEdit  MaxLength="@MaxtextCount" @bind-Text="@EditGroupBuyDto.GroupBuyName" />
-            </div>
-            <div class="col-1">
-                <span>
-                    @(string.IsNullOrWhiteSpace(EditGroupBuyDto.GroupBuyName) ? 60 : (MaxtextCount - EditGroupBuyDto.GroupBuyName.Count()))/@MaxtextCount
-                </span>
+            <div class="col-10">
+                <Addons>
+                    <Addon AddonType="AddonType.Body">
+                        <TextEdit MaxLength="@MaxtextCount" @bind-Text="@EditGroupBuyDto.GroupBuyName" />
+                    </Addon>
+                    <Addon AddonType="AddonType.End">
+                        <AddonLabel Style="background-color: #f5f5f7">
+                            @(string.IsNullOrWhiteSpace(EditGroupBuyDto.GroupBuyName) ? 0 : (EditGroupBuyDto.GroupBuyName.Count()))/@MaxtextCount
+                        </AddonLabel>
+                    </Addon>
+                </Addons>
             </div>
         </div>
         <div class="row">
             <div class="col-2">
                 <label>@L["Subject"]</label>
             </div>
-            <div class="col-9">
-                <TextEdit  MaxLength="@MaxtextCount" @bind-Text="@EditGroupBuyDto.SubjectLine" />
-            </div>
-                <div class="col-1">
-                <span>
-                    @(string.IsNullOrWhiteSpace(EditGroupBuyDto.SubjectLine) ? 60 : (MaxtextCount - EditGroupBuyDto.SubjectLine.Count()))/@MaxtextCount
-                </span>
+            <div class="col-10">
+                <Addons>
+                    <Addon AddonType="AddonType.Body">
+                        <MemoEdit MaxLength="@MaxtextCount" @bind-Text="@EditGroupBuyDto.SubjectLine" Rows="5" />
+                    </Addon>
+                    <Addon AddonType="AddonType.End">
+                        <AddonLabel Style="background-color: #f5f5f7">
+                            @(string.IsNullOrWhiteSpace(EditGroupBuyDto.SubjectLine) ? 0 : (EditGroupBuyDto.SubjectLine.Count()))/@MaxtextCount
+                        </AddonLabel>
+                    </Addon>
+                </Addons>
             </div>
         </div>
         <div class="row">
-            <div class="col-2">
-                    <label>@L["GroupBuyShortName"]</label>
+            <div class="col-2">@L["GroupBuyTime"]</div>
+            <div class="col-5">
+                <DatePicker TValue="DateTime?" @bind-Date="EditGroupBuyDto.StartTime" InputMode="DateInputMode.DateTime" Placeholder="@L["StartTime"]" />
             </div>
-            <div class="col-9">
-                <TextEdit  MaxLength="@MaxtextCount" @bind-Text="@EditGroupBuyDto.ShortName" />
-            </div>
-                <div class="col-1">
-                <span>
-                    @(string.IsNullOrWhiteSpace(EditGroupBuyDto.ShortName) ? 60 : (MaxtextCount - EditGroupBuyDto.ShortName.Count()))/@MaxtextCount
-                </span>
+            <div class="col-5">
+                <DatePicker TValue="DateTime?" @bind-Date="EditGroupBuyDto.EndTime" InputMode="DateInputMode.DateTime" Placeholder="@L["EndDate"]" />
             </div>
         </div>
-        <Div Class="row">
-            <Div Class="col-2">
-                <label>@L["Facebook"]</label>
-            </Div>
-            <Div Class="col-9">
-                <TextEdit @bind-Text="@EditGroupBuyDto.FacebookLink" />
-            </Div>
+        @* <div class="row">
+        <div class="col-2">
+        <label>@L["GroupBuyShortName"]</label>
+        </div>
+        <div class="col-10">
+        <Addons>
+        <Addon AddonType="AddonType.Body">
+        <TextEdit MaxLength="@MaxtextCount" @bind-Text="@EditGroupBuyDto.ShortName" />
+        </Addon>
+        <Addon AddonType="AddonType.End">
+        <AddonLabel Style="background-color: #f5f5f7">
+        @(string.IsNullOrWhiteSpace(EditGroupBuyDto.ShortName) ? 60 : (MaxtextCount - EditGroupBuyDto.ShortName.Count()))/@MaxtextCount
+        </AddonLabel>
+        </Addon>
+        </Addons>
+        </div>
+        </div> *@
+        @* <Div Class="row">
+        <Div Class="col-2">
+        <label>@L["Facebook"]</label>
+        </Div>
+        <Div Class="col-10">
+        <TextEdit @bind-Text="@EditGroupBuyDto.FacebookLink" />
+        </Div>
         </Div>
         <Div Class="row">
-            <Div Class="col-2">
-                <label>@L["Instagram"]</label>
-            </Div>
-            <Div Class="col-9">
-                <TextEdit @bind-Text="@EditGroupBuyDto.InstagramLink" />
-            </Div>
+        <Div Class="col-2">
+        <label>@L["Instagram"]</label>
+        </Div>
+        <Div Class="col-10">
+        <TextEdit @bind-Text="@EditGroupBuyDto.InstagramLink" />
+        </Div>
         </Div>
         <Div Class="row">
-            <Div Class="col-2">
-                <label>@L["LINE"]</label>
-            </Div>
-            <Div Class="col-9">
-                <TextEdit @bind-Text="@EditGroupBuyDto.LINELink" />
-            </Div>
+        <Div Class="col-2">
+        <label>@L["LINE"]</label>
         </Div>
+        <Div Class="col-10">
+        <TextEdit @bind-Text="@EditGroupBuyDto.LINELink" />
+        </Div>
+        </Div> *@
         <div class="row">
             <div class="col-2">
-                <label>@L["GroupBuyLogo"]
+                <label>
+                    @L["GroupBuyLogo"]
                     <span class="text-danger"> *</span>
                 </label>
             </div>
             <div class="col-10">
                 <Field>
                     <FilePicker @ref="LogoPickerCustom"
-                        FilePickerLocalizer="(key,args)=>LocalizeFilePicker(key,args)"
+                                FilePickerLocalizer="(key,args)=>LocalizeFilePicker(key,args)"
                                 Changed="OnLogoUploadAsync"
                                 ShowMode="FilePickerShowMode.List"
                                 Accept=".jpg, .png, .svg,.jpeg,.webp">
@@ -185,7 +207,7 @@
                                 </Div>
                                 <Div Class="ps-2">
                                     <Div>
-                                            @if (context.File.Status == FileEntryStatus.Ready)
+                                        @if (context.File.Status == FileEntryStatus.Ready)
                                         {
                                             <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
                                         }
@@ -214,108 +236,96 @@
                     </FilePicker>
                 </Field>
             </div>
-            @if(EditGroupBuyDto.LogoURL != null)
+            @if (EditGroupBuyDto.LogoURL != null)
             {
-                <div Class="row">
-                    <div class="col-2"></div>
-                    <div class="col-10">
-                        <div class="image-list-container">
-                            <div class="image-container">
-                                <Image class="blur-image" Source="@EditGroupBuyDto.LogoURL" Text="Logo Image" Fluid />
-                                <button class="delete-button" @onclick="() => DeleteLogoAsync(EditGroupBuyDto.BannerURL)">
-                                    <i class="fa fa-trash"></i>
-                                </button>
-                            </div>
+                <div class="col-2"></div>
+                <div class="col-10">
+                    <div class="image-list-container">
+                        <div class="image-container">
+                            <Image class="blur-image" Source="@EditGroupBuyDto.LogoURL" Text="Logo Image" Fluid />
+                            <button class="delete-button" @onclick="() => DeleteLogoAsync(EditGroupBuyDto.BannerURL)">
+                                <i class="fa fa-trash"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
             }
         </div>
         @* <div class="row">
-            <div class="col-2">
-                <label>@L["GroupBuyBanner"]</label>
-            </div>
-            <div class="col-10">
-                <Field>
-                    <FilePicker @ref="BannerPickerCustom"
-                                Changed="OnBannerUploadAsync"
-                                ShowMode="FilePickerShowMode.List"
-                                Accept=".jpg, .png, .svg ,.jpeg,.webp">
-                        <FileTemplate>
-                            <Div Flex="Flex.JustifyContent.Between">
-                                <Div>
-                                    <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
-                                    <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
-                                </Div>
-                                <Div Class="ps-2">
-                                    <Div>
-                                            @if (context.File.Status == FileEntryStatus.Ready)
-                                        {
-                                            <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
-                                        }
-                                        else if (context.File.Status == FileEntryStatus.Uploading)
-                                        {
-                                            <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
-                                        }
-                                        else if (context.File.Status == FileEntryStatus.Uploaded)
-                                        {
-                                            <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
-                                        }
-                                        else if (context.File.Status == FileEntryStatus.Error)
-                                        {
-                                            <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
-                                        }
-                                    </Div>
-                                    <Div>
-                                        <Icon TextColor="TextColor.Danger" Name="IconName.Delete" class="cursor-pointer" Clicked="context.RemoveFile" />
-                                    </Div>
-                                </Div>
-                            </Div>
-                        </FileTemplate>
-                        <ButtonsTemplate>
-                            <Progress Value="@BannerPickerCustom.GetProgressPercentage()" />
-                        </ButtonsTemplate>
-                    </FilePicker>
-                </Field>
-            </div>
-            @if(EditGroupBuyDto.BannerURL != null)
-            {
-                <div class="row">
-                    <div class="col-2"></div>
-                    <div class="col-10">
-                        <div class="image-list-container">
-                            <div class="image-container">
-                                <Image class="blur-image" Source="@EditGroupBuyDto.BannerURL" Text="Logo Image" Fluid />
-                                <button class="delete-button" @onclick="() => DeleteBannerAsync(EditGroupBuyDto.BannerURL)">
-                                    <i class="fa fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
-        </div> *@
-        
-        <Divider></Divider>
-
-        <div class="row">
-            <div class="col-2">@L["GroupBuyTime"]</div>
-            <div class="col-4">
-                <DateEdit Class="form-control" InputMode="DateInputMode.DateTime" @bind-Date=EditGroupBuyDto.StartTime Placeholder="@L["StartDate"].ToString()" TValue="DateTime?"/>
-            </div>
-            <div class="col-4">
-               <DateEdit Class="form-control" InputMode="DateInputMode.DateTime" @bind-Date=EditGroupBuyDto.EndTime Placeholder="@L["EndDate"].ToString()" TValue="DateTime?"  />
-            </div>
+        <div class="col-2">
+        <label>@L["GroupBuyBanner"]</label>
         </div>
+        <div class="col-10">
+        <Field>
+        <FilePicker @ref="BannerPickerCustom"
+        Changed="OnBannerUploadAsync"
+        ShowMode="FilePickerShowMode.List"
+        Accept=".jpg, .png, .svg ,.jpeg,.webp">
+        <FileTemplate>
+        <Div Flex="Flex.JustifyContent.Between">
+        <Div>
+        <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
+        <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+        </Div>
+        <Div Class="ps-2">
+        <Div>
+        @if (context.File.Status == FileEntryStatus.Ready)
+        {
+        <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
+        }
+        else if (context.File.Status == FileEntryStatus.Uploading)
+        {
+        <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
+        }
+        else if (context.File.Status == FileEntryStatus.Uploaded)
+        {
+        <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
+        }
+        else if (context.File.Status == FileEntryStatus.Error)
+        {
+        <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
+        }
+        </Div>
+        <Div>
+        <Icon TextColor="TextColor.Danger" Name="IconName.Delete" class="cursor-pointer" Clicked="context.RemoveFile" />
+        </Div>
+        </Div>
+        </Div>
+        </FileTemplate>
+        <ButtonsTemplate>
+        <Progress Value="@BannerPickerCustom.GetProgressPercentage()" />
+        </ButtonsTemplate>
+        </FilePicker>
+        </Field>
+        </div>
+        @if(EditGroupBuyDto.BannerURL != null)
+        {
+        <div class="row">
+        <div class="col-2"></div>
+        <div class="col-10">
+        <div class="image-list-container">
+        <div class="image-container">
+        <Image class="blur-image" Source="@EditGroupBuyDto.BannerURL" Text="Logo Image" Fluid />
+        <button class="delete-button" @onclick="() => DeleteBannerAsync(EditGroupBuyDto.BannerURL)">
+        <i class="fa fa-trash"></i>
+        </button>
+        </div>
+        </div>
+        </div>
+        </div>
+        }
+        </div> *@
+
+        <Divider></Divider>
         <div class="row">
             <div class="col-2">@L["Logistic"]</div>
             <div class="col-2">@L["FreeShipping"]</div>
             <div class="col-2"> <Switch TValue="bool" @bind-Checked="@EditGroupBuyDto.FreeShipping"></Switch></div>
-                 <div class="col-1">@L["Threshold"]</div>
+            <div class="col-1">@L["Threshold"]</div>
             <div class="col-2">  <InputNumber id="h-threshold" class="form-control" @bind-Value="EditGroupBuyDto.FreeShippingThreshold" DisplayName="Free Shipping Threshold"></InputNumber></div>
-       
+
         </div>
-          <div class="row">
+        <div class="row">
             <div class="col-2"></div>
             <div class="col-2">@L["AllowShipToOuterIsland"]</div>
             <div class="col-4"> <Switch TValue="bool" @bind-Checked="@EditGroupBuyDto.AllowShipToOuterTaiwan"></Switch></div>
@@ -337,13 +347,13 @@
                     @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
                     {
                         if (item == Enum.GetName(DeliveryMethod.BlackCat1) ||
-                            item == Enum.GetName(DeliveryMethod.BlackCatFreeze) ||
-                            item == Enum.GetName(DeliveryMethod.BlackCatFrozen) ||
-                            item == Enum.GetName(DeliveryMethod.TCatDeliveryNormal) ||
-                            item == Enum.GetName(DeliveryMethod.TCatDeliveryFreeze) ||
-                            item == Enum.GetName(DeliveryMethod.TCatDeliveryFrozen))
+                        item == Enum.GetName(DeliveryMethod.BlackCatFreeze) ||
+                        item == Enum.GetName(DeliveryMethod.BlackCatFrozen) ||
+                        item == Enum.GetName(DeliveryMethod.TCatDeliveryNormal) ||
+                        item == Enum.GetName(DeliveryMethod.TCatDeliveryFreeze) ||
+                        item == Enum.GetName(DeliveryMethod.TCatDeliveryFrozen))
                         {
-                            if (IsShippingMethodEnabled(item)) 
+                            if (IsShippingMethodEnabled(item))
                             {
                                 <label for="@item" class="form-label ">
                                     <input type="checkbox"
@@ -363,15 +373,15 @@
                     @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
                     {
                         if (item == Enum.GetName(DeliveryMethod.PostOffice) ||
-                            item == Enum.GetName(DeliveryMethod.HomeDelivery) ||
-                            item == Enum.GetName(DeliveryMethod.BlackCat1) ||
-                            item == Enum.GetName(DeliveryMethod.BlackCatFreeze) ||
-                            item == Enum.GetName(DeliveryMethod.BlackCatFrozen) ||
-                            item == Enum.GetName(DeliveryMethod.TCatDeliveryNormal) ||
-                            item == Enum.GetName(DeliveryMethod.TCatDeliveryFreeze) ||
-                            item == Enum.GetName(DeliveryMethod.TCatDeliveryFrozen))
+                        item == Enum.GetName(DeliveryMethod.HomeDelivery) ||
+                        item == Enum.GetName(DeliveryMethod.BlackCat1) ||
+                        item == Enum.GetName(DeliveryMethod.BlackCatFreeze) ||
+                        item == Enum.GetName(DeliveryMethod.BlackCatFrozen) ||
+                        item == Enum.GetName(DeliveryMethod.TCatDeliveryNormal) ||
+                        item == Enum.GetName(DeliveryMethod.TCatDeliveryFreeze) ||
+                        item == Enum.GetName(DeliveryMethod.TCatDeliveryFrozen))
                         {
-                            if (IsShippingMethodEnabled(item)) 
+                            if (IsShippingMethodEnabled(item))
                             {
                                 <label for="@item" class="form-label">
                                     <input type="checkbox"
@@ -396,9 +406,9 @@
                     @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
                     {
                         if (item == Enum.GetName(DeliveryMethod.SevenToElevenC2C) ||
-                            item == Enum.GetName(DeliveryMethod.SevenToEleven1))
+                        item == Enum.GetName(DeliveryMethod.SevenToEleven1))
                         {
-                            if (IsShippingMethodEnabled(item)) 
+                            if (IsShippingMethodEnabled(item))
                             {
                                 <label for="@item" class="form-label ">
                                     <input type="checkbox"
@@ -418,15 +428,15 @@
                     @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
                     {
                         if (item == Enum.GetName(DeliveryMethod.FamilyMart1) ||
-                            item == Enum.GetName(DeliveryMethod.FamilyMartC2C) ||
-                            item == Enum.GetName(DeliveryMethod.SevenToElevenC2C) ||
-                            item == Enum.GetName(DeliveryMethod.SevenToEleven1) ||
-                            item == Enum.GetName(DeliveryMethod.SevenToElevenFrozen) ||
-                            item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenNormal) ||
-                            item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenFreeze) ||
-                            item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenFrozen))
+                        item == Enum.GetName(DeliveryMethod.FamilyMartC2C) ||
+                        item == Enum.GetName(DeliveryMethod.SevenToElevenC2C) ||
+                        item == Enum.GetName(DeliveryMethod.SevenToEleven1) ||
+                        item == Enum.GetName(DeliveryMethod.SevenToElevenFrozen) ||
+                        item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenNormal) ||
+                        item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenFreeze) ||
+                        item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenFrozen))
                         {
-                            if (IsShippingMethodEnabled(item)) 
+                            if (IsShippingMethodEnabled(item))
                             {
                                 <label for="@item" class="form-label">
                                     <input type="checkbox"
@@ -486,55 +496,55 @@
                 }
             </div>
         </div>
-      
+
         <div class="row">
             <div class="col-2"></div>
             <div class="col-2">@L[PikachuResource.DeliveryTimePreference]</div>
-         <div class="col-8">
-                    <label class="form-label">@L["SelfPickup"]<span class="text-danger"> </span></label>
-                </div>
-                <div class="col-2"></div>
-                <div class="col-2"></div>
-                <div class="col-8">
-                    @if (DeliveryTimeConts.SelfPickUp != null)
+            <div class="col-8">
+                <label class="form-label">@L["SelfPickup"]<span class="text-danger"> </span></label>
+            </div>
+            <div class="col-2"></div>
+            <div class="col-2"></div>
+            <div class="col-8">
+                @if (DeliveryTimeConts.SelfPickUp != null)
+                {
+                    @foreach (string island in DeliveryTimeConts.SelfPickUp)
                     {
-                        @foreach(string island in DeliveryTimeConts.SelfPickUp)
-                        {    
-                            @if ((EditGroupBuyDto.ExcludeShippingMethod is not null) && 
-                                 (EditGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup")))
-                            {
-                                <label for="@(island)_SelfPickUp" class="form-label">
-                                    <input type="checkbox" 
-                                           class="form-check-input me-1" 
-                                           id="@island" 
-                                           disabled="@(island is not PikachuResource.UnableToSpecifyDuringPeakPeriods ? 
+                        @if ((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup")))
+                        {
+                            <label for="@(island)_SelfPickUp" class="form-label">
+                                <input type="checkbox"
+                                       class="form-check-input me-1"
+                                       id="@island"
+                                       disabled="@(island is not PikachuResource.UnableToSpecifyDuringPeakPeriods ?
                                                         IsUnableToSpecifyDuringPeakPeriodsForSelfPickups :
                                                         false)"
-                                           checked="@(EditGroupBuyDto.SelfPickupDeliveryTime is not null && 
-                                                      EditGroupBuyDto.SelfPickupDeliveryTime.Contains(island))" 
-                                           @onchange="(value) => SelfPickupDeliveryTimeCheckedChange(island, value)" />
-                                        @L[island]
-                                </label>
-                            }
-                            else
-                            {
-                                <label for="@(island)_SelfPickUp" class="form-label">
-                                    <input disabled 
-                                           type="checkbox" 
-                                           class="form-check-input me-1" 
-                                           id="@island" 
-                                           checked="@(EditGroupBuyDto.SelfPickupDeliveryTime is not null && 
-                                                      EditGroupBuyDto.SelfPickupDeliveryTime.Contains(island))" 
-                                           @onchange="(value) => SelfPickupDeliveryTimeCheckedChange(island, value)" />
-                                        @L[island]
-                                </label> 
-                            }
+                                       checked="@(EditGroupBuyDto.SelfPickupDeliveryTime is not null &&
+                                                      EditGroupBuyDto.SelfPickupDeliveryTime.Contains(island))"
+                                       @onchange="(value) => SelfPickupDeliveryTimeCheckedChange(island, value)" />
+                                @L[island]
+                            </label>
+                        }
+                        else
+                        {
+                            <label for="@(island)_SelfPickUp" class="form-label">
+                                <input disabled
+                                       type="checkbox"
+                                       class="form-check-input me-1"
+                                       id="@island"
+                                       checked="@(EditGroupBuyDto.SelfPickupDeliveryTime is not null &&
+                                                      EditGroupBuyDto.SelfPickupDeliveryTime.Contains(island))"
+                                       @onchange="(value) => SelfPickupDeliveryTimeCheckedChange(island, value)" />
+                                @L[island]
+                            </label>
                         }
                     }
-                </div>
-                    <div class="col-2"></div>
+                }
+            </div>
             <div class="col-2"></div>
-         <div class="col-8">
+            <div class="col-2"></div>
+            <div class="col-8">
                 @if (EditGroupBuyDto.ExcludeShippingMethod != null && EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1"))
                 {
                     <label class="form-label">@L["BlackCat"] / @L[PikachuResource.TCatDelivery]<span class="text-danger"> </span></label>
@@ -551,136 +561,137 @@
                 {
                     <label class="form-label">@L["BlackCat"] / @L[PikachuResource.TCatDelivery]<span class="text-danger"> </span></label>
                 }
-                </div>
-                <div class="col-2"></div>
-                <div class="col-2"></div>
-                <div class="col-8">
-                    @if (DeliveryTimeConts.BlackCat is not null)
+            </div>
+            <div class="col-2"></div>
+            <div class="col-2"></div>
+            <div class="col-8">
+                @if (DeliveryTimeConts.BlackCat is not null)
+                {
+                    @foreach (string island in DeliveryTimeConts.BlackCat)
                     {
-                        @foreach(string island in DeliveryTimeConts.BlackCat)
+                        @if ((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                       ((EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1")) ||
+                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFreeze")) ||
+                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFrozen")) ||
+                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryNormal")) ||
+                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryFreeze")) ||
+                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryFrozen")) ||
+                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenNormal")) ||
+                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenFreeze")) ||
+                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenFrozen")) ||
+                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))))
                         {
-                            @if ((EditGroupBuyDto.ExcludeShippingMethod is not null) && 
-                                ((EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1")) || 
-                                (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFreeze")) || 
-                                (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFrozen")) || 
-                                (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryNormal")) ||
-                                (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryFreeze")) || 
-                                (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryFrozen")) || 
-                                (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenNormal")) ||
-                                (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenFreeze")) ||
-                                (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenFrozen")) ||
-                                (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))))
-                            {
-                                <label for="@island" class="form-label">
-                                    <input type="checkbox" 
-                                           class="form-check-input me-1" 
-                                           id="@island" 
-                                           checked="@(EditGroupBuyDto.BlackCatDeliveryTime is not null && EditGroupBuyDto.BlackCatDeliveryTime.Contains(island))" 
-                                           @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)"   />
-                                    @L[island]
-                                </label>
-                            }
-                            else
-                            {
-                                <label for="@island" class="form-label">
-                                      <input disabled 
-                                             type="checkbox" 
-                                             class="form-check-input me-1" 
-                                             id="@island" 
-                                             checked="@(EditGroupBuyDto.BlackCatDeliveryTime is not null && EditGroupBuyDto.BlackCatDeliveryTime.Contains(island))" 
-                                             @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)"   />
-                                      @L[island]
-                                </label>
-                            
-                            }
+                            <label for="@island" class="form-label">
+                                <input type="checkbox"
+                                       class="form-check-input me-1"
+                                       id="@island"
+                                       checked="@(EditGroupBuyDto.BlackCatDeliveryTime is not null && EditGroupBuyDto.BlackCatDeliveryTime.Contains(island))"
+                                       @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)" />
+                                @L[island]
+                            </label>
+                        }
+                        else
+                        {
+                            <label for="@island" class="form-label">
+                                <input disabled
+                                       type="checkbox"
+                                       class="form-check-input me-1"
+                                       id="@island"
+                                       checked="@(EditGroupBuyDto.BlackCatDeliveryTime is not null && EditGroupBuyDto.BlackCatDeliveryTime.Contains(island))"
+                                       @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)" />
+                                @L[island]
+                            </label>
+
                         }
                     }
-                </div>
-                            <div class="col-2"></div>
+                }
+            </div>
             <div class="col-2"></div>
-         <div class="col-8">
-                    <label class="form-label">@L["HomeDelivery"]<span class="text-danger"> </span></label>
-                </div>
-                <div class="col-2"></div>
-                <div class="col-2"></div>
-                <div class="col-8">
-                    @if (DeliveryTimeConts.HomeDelivery != null)
+            <div class="col-2"></div>
+            <div class="col-8">
+                <label class="form-label">@L["HomeDelivery"]<span class="text-danger"> </span></label>
+            </div>
+            <div class="col-2"></div>
+            <div class="col-2"></div>
+            <div class="col-8">
+                @if (DeliveryTimeConts.HomeDelivery != null)
+                {
+                    @foreach (string island in DeliveryTimeConts.HomeDelivery)
                     {
-                        @foreach(string island in DeliveryTimeConts.HomeDelivery)
+                        @if ((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery")))
                         {
-                            @if ((EditGroupBuyDto.ExcludeShippingMethod is not null) && 
-                                 (EditGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery")))
-                            {
-                                <label for="@(island)_HomeDelivery" class="form-label">
-                                    <input type="checkbox" 
-                                           class="form-check-input me-1" 
-                                           id="@island" 
-                                           disabled="@(island is not PikachuResource.UnableToSpecifyDuringPeakPeriods ?
+                            <label for="@(island)_HomeDelivery" class="form-label">
+                                <input type="checkbox"
+                                       class="form-check-input me-1"
+                                       id="@island"
+                                       disabled="@(island is not PikachuResource.UnableToSpecifyDuringPeakPeriods ?
                                                     IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery :
                                                     false)"
-                                           checked="@(EditGroupBuyDto.HomeDeliveryDeliveryTime is not null && 
-                                                      EditGroupBuyDto.HomeDeliveryDeliveryTime.Contains(island))" 
-                                           @onchange="(value) => HomeDeliveryTimeCheckedChange(island, value)"   />
-                                    @L[island]
-                                </label>
-                            }
-                            else{
-                                <label for="@(island)_HomeDelivery" class="form-label">
-                                       <input disabled 
-                                              type="checkbox" 
-                                              class="form-check-input me-1" 
-                                              id="@island" 
-                                              checked="@(EditGroupBuyDto.HomeDeliveryDeliveryTime is not null && 
-                                                         EditGroupBuyDto.HomeDeliveryDeliveryTime.Contains(island))" 
-                                              @onchange="(value) => HomeDeliveryTimeCheckedChange(island, value)"   />
-                                       @L[island]
-                                </label>
-                            
-                            }
+                                       checked="@(EditGroupBuyDto.HomeDeliveryDeliveryTime is not null &&
+                                                      EditGroupBuyDto.HomeDeliveryDeliveryTime.Contains(island))"
+                                       @onchange="(value) => HomeDeliveryTimeCheckedChange(island, value)" />
+                                @L[island]
+                            </label>
+                        }
+                        else
+                        {
+                            <label for="@(island)_HomeDelivery" class="form-label">
+                                <input disabled
+                                       type="checkbox"
+                                       class="form-check-input me-1"
+                                       id="@island"
+                                       checked="@(EditGroupBuyDto.HomeDeliveryDeliveryTime is not null &&
+                                                         EditGroupBuyDto.HomeDeliveryDeliveryTime.Contains(island))"
+                                       @onchange="(value) => HomeDeliveryTimeCheckedChange(island, value)" />
+                                @L[island]
+                            </label>
+
                         }
                     }
-                </div>
+                }
+            </div>
             <div class="col-2"></div>
             <div class="col-2"></div>
-        <div class="col-8">
-            <label class="form-label">@L["DeliveredByStore"]<span class="text-danger"> </span></label>
+            <div class="col-8">
+                <label class="form-label">@L["DeliveredByStore"]<span class="text-danger"> </span></label>
             </div>
             <div class="col-2"></div>
             <div class="col-2"></div>
             <div class="col-8">
                 @if (DeliveryTimeConts.DeliveredByStore != null)
                 {
-                    @foreach(string island in DeliveryTimeConts.DeliveredByStore)
+                    @foreach (string island in DeliveryTimeConts.DeliveredByStore)
                     {
-                        @if ((EditGroupBuyDto.ExcludeShippingMethod is not null) && 
-                             (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
+                        @if ((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
                         {
                             <label for="@(island)_DeliveredByStore" class="form-label">
-                                <input type="checkbox" 
-                                       class="form-check-input me-1" 
+                                <input type="checkbox"
+                                       class="form-check-input me-1"
                                        id="@island"
                                        disabled="@(island is not PikachuResource.UnableToSpecifyDuringPeakPeriods ?
                                                     IsUnableToSpecifyDuringPeakPeriodsForDeliveredByStore :
                                                     false)"
-                                       checked="@(EditGroupBuyDto.DeliveredByStoreDeliveryTime is not null && 
-                                                  EditGroupBuyDto.DeliveredByStoreDeliveryTime.Contains(island))" 
-                                       @onchange="(value) => DeliveredByStoreTimeCheckedChange(island, value)"   />
+                                       checked="@(EditGroupBuyDto.DeliveredByStoreDeliveryTime is not null &&
+                                                  EditGroupBuyDto.DeliveredByStoreDeliveryTime.Contains(island))"
+                                       @onchange="(value) => DeliveredByStoreTimeCheckedChange(island, value)" />
                                 @L[island]
                             </label>
                         }
                         else
                         {
                             <label for="@(island)_DeliveredByStore" class="form-label">
-                                   <input disabled 
-                                          type="checkbox" 
-                                          class="form-check-input me-1" 
-                                          id="@island" 
-                                          checked="@(EditGroupBuyDto.DeliveredByStoreDeliveryTime is not null && 
-                                                     EditGroupBuyDto.DeliveredByStoreDeliveryTime.Contains(island))" 
-                                          @onchange="(value) => DeliveredByStoreTimeCheckedChange(island, value)"   />
-                                   @L[island]
+                                <input disabled
+                                       type="checkbox"
+                                       class="form-check-input me-1"
+                                       id="@island"
+                                       checked="@(EditGroupBuyDto.DeliveredByStoreDeliveryTime is not null &&
+                                                     EditGroupBuyDto.DeliveredByStoreDeliveryTime.Contains(island))"
+                                       @onchange="(value) => DeliveredByStoreTimeCheckedChange(island, value)" />
+                                @L[island]
                             </label>
-                        
+
                         }
                     }
                 }
@@ -708,7 +719,7 @@
                 </select>
             </Div>
         </Div>
-
+        <Divider></Divider>
         <div class="row">
             <div class="col-2">@L["Gateway"]</div>
             <div class="col-2">@L["PaymentMethod"] <span class="text-danger"> *</span></div>
@@ -729,37 +740,37 @@
                 </Div>
             </Div>
         </div>
-       
+
         <div class="row">
             <div class="col-2">@L["Invoice"]</div>
             <div class="col-2">@L["IssueInvoice"]</div>
             <div class="col-4"> <Switch TValue="bool" @bind-Checked="@EditGroupBuyDto.IssueInvoice"></Switch></div>
         </div>
-      @*   <div class="row">
-            <div class="col-2"></div>
-            <div class="col-2 form-label">@L["AutoIssueTriplicateInvoice"]</div>
-            <div class="col-4"> <Switch TValue="bool" @bind-Checked="@EditGroupBuyDto.AutoIssueTriplicateInvoice"></Switch></div>
+        @*   <div class="row">
+        <div class="col-2"></div>
+        <div class="col-2 form-label">@L["AutoIssueTriplicateInvoice"]</div>
+        <div class="col-4"> <Switch TValue="bool" @bind-Checked="@EditGroupBuyDto.AutoIssueTriplicateInvoice"></Switch></div>
         </div> *@
         <div class="row">
             <div class="col-2"></div>
             <div class="col-2 form-label">@L["InvoiceComment"]</div>
-            <div class="col-8"> 
-                <InputTextArea class="form-control"   maxlength="200" @bind-Value="@EditGroupBuyDto.InvoiceNote"></InputTextArea>
+            <div class="col-8">
+                <InputTextArea class="form-control" maxlength="200" @bind-Value="@EditGroupBuyDto.InvoiceNote"></InputTextArea>
             </div>
         </div>
-          <div class="row">
+        <div class="row">
             <div class="col-2"></div>
             <div class="col-2">
                 <label>@L["TaxType"]</label>
             </div>
             <div class="col-5">
-                   <Select TValue="TaxType" Class="form-select"
-                            @bind-SelectedValue="@EditGroupBuyDto.TaxType">
-                                @foreach (var enumValue in Enum.GetValues(typeof(TaxType)))
-                                {
-                                    <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
-                                }
-                            </Select>
+                <Select TValue="TaxType" Class="form-select"
+                        @bind-SelectedValue="@EditGroupBuyDto.TaxType">
+                    @foreach (var enumValue in Enum.GetValues(typeof(TaxType)))
+                    {
+                        <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                    }
+                </Select>
             </div>
         </div>
         <Divider></Divider>
@@ -782,7 +793,7 @@
                 <TextEdit @bind-Text="@EditGroupBuyDto.InviteCode" />
             </div>
         </div>
-         <div class="row">
+        <div class="row">
             <div class="col-2"></div>
             <div class="col-2">
                 <label>@L["ProfitShare"]</label>
@@ -791,80 +802,80 @@
                 <InputNumber class="form-control" @bind-Value="@EditGroupBuyDto.ProfitShare" />
             </div>
         </div>
-       
-     @*    <div class="row">
-            <div class="col-2"></div>
-            <div class="col-2">
-                <label>@L["FaceBookPixelID"]</label>
-            </div>
-            <div class="col-5">
-                <InputNumber class="form-control" @bind-Value="@EditGroupBuyDto.MetaPixelNo" />
-            </div>
+
+        @*    <div class="row">
+        <div class="col-2"></div>
+        <div class="col-2">
+        <label>@L["FaceBookPixelID"]</label>
+        </div>
+        <div class="col-5">
+        <InputNumber class="form-control" @bind-Value="@EditGroupBuyDto.MetaPixelNo" />
+        </div>
         </div>
         <div class="row">
-            <div class="col-2"></div>
-            <div class="col-2">
-                <label>@L["FaceBookID"]</label>
-            </div>
-            <div class="col-5">
-                <TextEdit @bind-Text="@EditGroupBuyDto.FBID" />
-            </div>
+        <div class="col-2"></div>
+        <div class="col-2">
+        <label>@L["FaceBookID"]</label>
+        </div>
+        <div class="col-5">
+        <TextEdit @bind-Text="@EditGroupBuyDto.FBID" />
+        </div>
         </div>
         <div class="row">
-            <div class="col-2"></div>
-            <div class="col-2">
-                <label>@L["IGID"]</label>
-            </div>
-            <div class="col-5">
-                <TextEdit  @bind-Text="@EditGroupBuyDto.IGID" />
-            </div>
+        <div class="col-2"></div>
+        <div class="col-2">
+        <label>@L["IGID"]</label>
+        </div>
+        <div class="col-5">
+        <TextEdit  @bind-Text="@EditGroupBuyDto.IGID" />
+        </div>
         </div>
         <div class="row">
-            <div class="col-2"></div>
-            <div class="col-2">
-                <label>@L["LINEID"]</label>
-            </div>
-            <div class="col-5">
-                <TextEdit  @bind-Text="@EditGroupBuyDto.LineID" />
-            </div>
+        <div class="col-2"></div>
+        <div class="col-2">
+        <label>@L["LINEID"]</label>
+        </div>
+        <div class="col-5">
+        <TextEdit  @bind-Text="@EditGroupBuyDto.LineID" />
+        </div>
         </div>
         <div class="row">
-            <div class="col-2"></div>
-            <div class="col-2">
-                <label>@L["GAID"]</label>
-            </div>
-            <div class="col-5">
-                <TextEdit  @bind-Text="@EditGroupBuyDto.GAID" />
-            </div>
+        <div class="col-2"></div>
+        <div class="col-2">
+        <label>@L["GAID"]</label>
+        </div>
+        <div class="col-5">
+        <TextEdit  @bind-Text="@EditGroupBuyDto.GAID" />
+        </div>
         </div>
         <div class="row">
-            <div class="col-2"></div>
-             <div class="col-2">
-                <label>@L["GTM"]</label>
-            </div>
-            <div class="col-5">
-                <TextEdit  @bind-Text="@EditGroupBuyDto.GTM" />
-            </div>
+        <div class="col-2"></div>
+        <div class="col-2">
+        <label>@L["GTM"]</label>
+        </div>
+        <div class="col-5">
+        <TextEdit  @bind-Text="@EditGroupBuyDto.GTM" />
+        </div>
         </div> *@
 
         <Divider></Divider>
         <Div Class="row">
             <Div Class="col-2">@L["Color Schemes"]</Div>
-                <Div Class="col-2">@L["Select Color Theme"]</Div>
-                <Div Class="col-8">
-                    <select class="form-select"
-                            @onchange=OnColorSchemeChange>
-                        <option>@L["Choose Color Theme"]</option>
+            <Div Class="col-2">@L["Select Color Theme"]</Div>
+            <Div Class="col-8">
+                <select class="form-select"
+                        @onchange=OnColorSchemeChange>
+                    <option>@L["Choose Color Theme"]</option>
                     @foreach (ColorScheme value in Enum.GetValues<ColorScheme>())
                     {
                         if (value == EditGroupBuyDto.ColorSchemeType)
                         {
-                            <option value="@value" selected>@L[value.ToString() ?? string.Empty]</option>
+                            <option value="@value" selected>@L["Enum:ColorScheme." + (int)value]</option>
                         }
 
                         else
                         {
-                            <option value="@value">@L[value.ToString() ?? string.Empty]</option>
+                            <option value="@value">@L["Enum:ColorScheme." + (int)value]</option>
                         }
                     }
                 </select>
@@ -873,42 +884,37 @@
 
         @if (IsColorPickerOpen)
         {
-            <br />
-            <Div Class="row">
-                <Div Class="col-4" />
-                <Div Class="col-8 d-flex">
-                    <Div Class="col-2">
-                        <label class="form-label">@L["Primary"]</label>
-                        <ColorPicker Class="color-scheme" @bind-Color="@EditGroupBuyDto.PrimaryColor" />
-                        <TextEdit Disabled @bind-text="EditGroupBuyDto.PrimaryColor" class="form-control mt-2" />
-                    </Div>
+            <Div Class="row d-flex justify-content-center">
+                <Div Class="col-2">
+                    <label class="form-label">@L["Primary"]</label>
+                    <ColorPicker Class="color-scheme" @bind-Color="@EditGroupBuyDto.PrimaryColor" />
+                    <TextEdit Disabled @bind-text="EditGroupBuyDto.PrimaryColor" class="form-control mt-2" />
+                </Div>
+                <Div Class="col-2">
+                    <label class="form-label">@L["Secondary"]</label>
+                    <ColorPicker Class="color-scheme" @bind-Color="@EditGroupBuyDto.SecondaryColor" />
+                    <TextEdit Disabled @bind-text="EditGroupBuyDto.SecondaryColor" class="form-control mt-2" />
+                </Div>
 
-                    <Div Class="col-2" Style="margin-left: 39px;">
-                        <label class="form-label">@L["Secondary"]</label>
-                        <ColorPicker Class="color-scheme" @bind-Color="@EditGroupBuyDto.SecondaryColor" />
-                        <TextEdit Disabled @bind-text="EditGroupBuyDto.SecondaryColor" class="form-control mt-2" />
-                    </Div>
+                <Div Class="col-2">
+                    <label class="form-label">@L["Background"]</label>
+                    <ColorPicker Class="color-scheme" @bind-Color="@EditGroupBuyDto.BackgroundColor" />
+                    <TextEdit Disabled @bind-text="EditGroupBuyDto.BackgroundColor" class="form-control mt-2" />
+                </Div>
 
-                    <Div Class="col-2" Style="margin-left: 39px;">
-                        <label class="form-label">@L["Background"]</label>
-                        <ColorPicker Class="color-scheme" @bind-Color="@EditGroupBuyDto.BackgroundColor" />
-                        <TextEdit Disabled @bind-text="EditGroupBuyDto.BackgroundColor" class="form-control mt-2" />
-                    </Div>
+                <Div Class="col-2">
+                    <label class="form-label d-none d-xl-block">@L["SecondaryBackground"]</label>
+                    <label class="form-label d-block d-xl-none">@L["SecondaryBg"]</label>
+                    <ColorPicker Class="color-scheme" @bind-Color="@EditGroupBuyDto.SecondaryBackgroundColor" />
+                    <TextEdit Disabled @bind-text="EditGroupBuyDto.SecondaryBackgroundColor" class="form-control mt-2" />
+                </Div>
 
-                    <Div Class="col-2" Style="margin-left: 39px;">
-                        <label class="form-label">@L["Secondary Background"]</label>
-                        <ColorPicker Class="color-scheme" @bind-Color="@EditGroupBuyDto.SecondaryBackgroundColor" />
-                        <TextEdit Disabled @bind-text="EditGroupBuyDto.SecondaryBackgroundColor" class="form-control mt-2" />
-                    </Div>
-
-                    <Div Class="col-2" Style="margin-left: 39px;">
-                        <label class="form-label">@L["Alert"]</label>
-                        <ColorPicker Class="color-scheme" @bind-Color="@EditGroupBuyDto.AlertColor" />
-                        <TextEdit Disabled @bind-text="EditGroupBuyDto.AlertColor" class="form-control mt-2" />
-                    </Div>
+                <Div Class="col-2">
+                    <label class="form-label">@L["Alert"]</label>
+                    <ColorPicker Class="color-scheme" @bind-Color="@EditGroupBuyDto.AlertColor" />
+                    <TextEdit Disabled @bind-text="EditGroupBuyDto.AlertColor" class="form-control mt-2" />
                 </Div>
             </Div>
-            <br />
         }
 
         <Divider></Divider>
@@ -920,14 +926,14 @@
                     <Select TValue="GroupBuyTemplateType"
                             @onchange="@((e) => SelectTemplate(e))">
                         <option value="">@L["SelectTemplate"]</option>
-                        @foreach (GroupBuyTemplateType type in TemplateTypes) 
+                        @foreach (GroupBuyTemplateType type in TemplateTypes)
                         {
-                            if (EditGroupBuyDto.TemplateType == type) 
+                            if (EditGroupBuyDto.TemplateType == type)
                             {
                                 <option value="@type" selected>@L[type.ToString()]</option>
                             }
 
-                            else 
+                            else
                             {
                                 <option value="@type">@L[type.ToString()]</option>
                             }
@@ -976,8 +982,8 @@
 
                                         @if (module.IsWarnedForInCompatible)
                                         {
-                                            <Tooltip Text="@($"Incompatible Module for {L[SelectedTemplate.ToString()]}")" 
-                                                     TriggerTargetId="tooltip-custom-target" 
+                                            <Tooltip Text="@($"Incompatible Module for {L[SelectedTemplate.ToString()]}")"
+                                                     TriggerTargetId="tooltip-custom-target"
                                                      Inline
                                                      Style="margin-left: 5px;">
                                                 <Badge Color="Color.Warning">
@@ -998,7 +1004,7 @@
                                                     {
                                                         <option selected="selected" value="3">3</option>
                                                         <option value="4">4</option>
-                                                    } 
+                                                    }
                                                     else if (module.Selected.Count == 4)
                                                     {
                                                         <option value="3">3</option>
@@ -1028,8 +1034,8 @@
                                                         <FilePicker @ref="CarouselFilePickers[CarouselModules.IndexOf(carouselImages)]"
                                                                     Disabled="carouselImages.Count >= 5"
                                                                     Multiple
-                                                                    Changed="@(async (e) => await OnImageModuleUploadAsync(e, 
-                                                                                                                           carouselImages, 
+                                                                    Changed="@(async (e) => await OnImageModuleUploadAsync(e,
+                                                                                                                           carouselImages,
                                                                                                                            CarouselModules.IndexOf(carouselImages) + 1,
                                                                                                                            CarouselFilePickers[CarouselModules.IndexOf(carouselImages)],
                                                                                                                            ImageType.GroupBuyCarouselImage))"
@@ -1083,8 +1089,8 @@
                                                                     {
                                                                         <Div Class="image-container">
                                                                             <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image" Fluid />
-                                                                            <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName, 
-                                                                                                                                           carouselImages, 
+                                                                            <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName,
+                                                                                                                                           carouselImages,
                                                                                                                                            ImageType.GroupBuyCarouselImage)">
                                                                                 <i class="fa fa-trash"></i>
                                                                             </button>
@@ -1140,8 +1146,8 @@
                                                                         <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
                                                                         <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
                                                                     </Div>
-                                                                        <Div Class="ps-2">
-                                                                            <Div>
+                                                                    <Div Class="ps-2">
+                                                                        <Div>
                                                                             @if (context.File.Status is FileEntryStatus.Ready)
                                                                             {
                                                                                 <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
@@ -1182,12 +1188,12 @@
                                                                     {
                                                                         <Div Class="image-container">
                                                                             <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image" Fluid />
-                                                                             <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName, 
-                                                                                                                                            bannerImages, 
+                                                                            <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName,
+                                                                                                                                            bannerImages,
                                                                                                                                             ImageType.GroupBuyBannerImage)">
-                                                                                 <i class="fa fa-trash"></i>
-                                                                             </button>
-                                                                         </Div>
+                                                                                <i class="fa fa-trash"></i>
+                                                                            </button>
+                                                                        </Div>
                                                                     }
                                                                 </Div>
 
@@ -1227,11 +1233,11 @@
                                                                 <Div Flex="Flex.JustifyContent.Between">
                                                                     <Div>
                                                                         <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
-                                                                            <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
-                                                                        </Div>
-                                                                        <Div Class="ps-2">
-                                                                            <Div>
-                                                                                @if (context.File.Status is FileEntryStatus.Ready)
+                                                                        <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                                                    </Div>
+                                                                    <Div Class="ps-2">
+                                                                        <Div>
+                                                                            @if (context.File.Status is FileEntryStatus.Ready)
                                                                             {
                                                                                 <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
                                                                             }
@@ -1270,14 +1276,14 @@
                                                                 <Div Class="image-list-container">
                                                                     <Div Class="image-container">
                                                                         <Image Class="blur-image" Source="@module.Image" Text="Logo Image" Fluid />
-                                                                         <Button Class="delete-button"
-                                                                                 Clicked="@(async (e) => await DeleteImageAsync(e, module))">
-                                                                             <i class="fa fa-trash" />
-                                                                         </Button>
-                                                                     </Div>
-                                                                 </Div>
-                                                             </Div>
-                                                         </Div>
+                                                                        <Button Class="delete-button"
+                                                                                Clicked="@(async (e) => await DeleteImageAsync(e, module))">
+                                                                            <i class="fa fa-trash" />
+                                                                        </Button>
+                                                                    </Div>
+                                                                </Div>
+                                                            </Div>
+                                                        </Div>
                                                     }
                                                 </Div>
                                                 <Div Class="col-6">
@@ -1327,7 +1333,7 @@
 
                                     @if (module.GroupBuyModuleType is GroupBuyModuleType.OrderInstruction)
                                     {
-                                        foreach (GroupBuyOrderInstructionDto module in GroupBuyOrderInstructionModules) 
+                                        foreach (GroupBuyOrderInstructionDto module in GroupBuyOrderInstructionModules)
                                         {
                                             <Div Class="row d-flex">
                                                 <Div Class="col-6 pb-1">
@@ -1446,12 +1452,12 @@
                                                                               HighlightSearch
                                                                               Immediate="true"
                                                                               SelectedValue="selectedItem.Id"
-                                                                              SelectedValueChanged="(id) => OnSelectedValueChanged(selectedItem.Item is not null && selectedItem.Item.Id != Guid.Empty ? 
-                                                                                                                                   selectedItem.Item.Id : 
-                                                                                                                                   id, 
-                                                                                                                                   productModule, 
+                                                                              SelectedValueChanged="(id) => OnSelectedValueChanged(selectedItem.Item is not null && selectedItem.Item.Id != Guid.Empty ?
+                                                                                                                                   selectedItem.Item.Id :
+                                                                                                                                   id,
+                                                                                                                                   productModule,
                                                                                                                                    selectedItem)">
-                                                                     <NotFoundContent> @L["NotFound"] </NotFoundContent>
+                                                                    <NotFoundContent> @L["NotFound"] </NotFoundContent>
                                                                 </Autocomplete>
                                                             </div>
 
@@ -1615,7 +1621,7 @@
                                                             </Div>
                                                             <Div Class="col-2 pb-1">
                                                                 <Label>@L["SubTitle"] <Span Class="text-danger">*</Span></Label>
-                                                                </Div>
+                                                            </Div>
                                                             <Div Class="col-12 pb-1">
                                                                 <TextEdit @bind-Text="@productModule.SubTitle" />
                                                             </Div>
@@ -1678,11 +1684,11 @@
                                                                       Placeholder="Search..."
                                                                       Filter="AutocompleteFilter.StartsWith"
                                                                       CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
-                                                                                            HighlightSearch
-                                                                       Immediate="true"
-                                                                       SelectedValue="selectedItem.Id"
-                                                                       SelectedValueChanged="(id) => OnSelectedValueChanged(id, module, selectedItem)">
-                                                             <NotFoundContent> @L["NotFound"] </NotFoundContent>
+                                                                      HighlightSearch
+                                                                      Immediate="true"
+                                                                      SelectedValue="selectedItem.Id"
+                                                                      SelectedValueChanged="(id) => OnSelectedValueChanged(id, module, selectedItem)">
+                                                            <NotFoundContent> @L["NotFound"] </NotFoundContent>
                                                         </Autocomplete>
                                                     }
                                                     @if (selectedItem.Id != Guid.Empty)
@@ -1781,10 +1787,9 @@
                         </Accordion>
                     </div>
                     <div class="py-2"
-                            draggable="true"
-                            @ondrop="@(()=> Drop(module))" 
-                            @ondrag="@(()=> StartDrag(module))"
-                            >
+                         draggable="true"
+                         @ondrop="@(()=> Drop(module))"
+                         @ondrag="@(()=> StartDrag(module))">
                         <span class="drag-drop-span">
                             <i class="fa-solid fa-bars fa-2xl"></i>
                         </span>
@@ -1799,7 +1804,7 @@
             </div>
             <div class="col-10">
                 <div class="col-12">
-                    <TextEdit Placeholder="@L["GroupBuyCondition"]" Disabled @bind-Text="EditGroupBuyDto.GroupBuyCondition" MaxLength="60"  />
+                    <TextEdit Placeholder="@L["GroupBuyCondition"]" Disabled @bind-Text="EditGroupBuyDto.GroupBuyCondition" MaxLength="60" />
                 </div>
                 <div class="col-12">
                     <Blazored.TextEditor.BlazoredTextEditor @ref="@GroupBuyHtml">
@@ -1832,12 +1837,12 @@
                             <span class="ql-formats">
                                 <button class="ql-image"></button>
                             </span>
-                             <span class="ql-formats">
+                            <span class="ql-formats">
                                 <button class="ql-video"></button>
                             </span>
                         </ToolbarContent>
                     </Blazored.TextEditor.BlazoredTextEditor>
-       
+
                 </div>
             </div>
         </div>
@@ -1846,45 +1851,45 @@
             </div>
             <div class="col-10">
                 <div class="col-12">
-                     <TextEdit Placeholder="@L["CustomerInformation"]" Disabled @bind-Text="@EditGroupBuyDto.CustomerInformation" MaxLength="60"  />
+                    <TextEdit Placeholder="@L["CustomerInformation"]" Disabled @bind-Text="@EditGroupBuyDto.CustomerInformation" MaxLength="60" />
                 </div>
                 <div class="col-12">
-                     <Blazored.TextEditor.BlazoredTextEditor @ref="@CustomerInformationHtml">
-                         <ToolbarContent>
-                             <select class="ql-header">
-                                 <option selected=""></option>
-                                 <option value="1"></option>
-                                 <option value="2"></option>
-                                 <option value="3"></option>
-                                 <option value="4"></option>
-                                 <option value="5"></option>
-                             </select>
-                             <span class="ql-formats">
-                                 <button class="ql-bold"></button>
-                                 <button class="ql-italic"></button>
-                                 <button class="ql-underline"></button>
-                                 <button class="ql-strike"></button>
-                             </span>
-                             <span class="ql-formats">
-                                 <select class="ql-color"></select>
-                                 <select class="ql-background"></select>
-                             </span>
-                             <span class="ql-formats">
-                                 <button class="ql-list" value="ordered"></button>
-                                 <button class="ql-list" value="bullet"></button>
-                             </span>
-                             <span class="ql-formats">
-                                 <button class="ql-link"></button>
-                             </span>
-                             <span class="ql-formats">
-                                 <button class="ql-image"></button>
-                             </span>
-                              <span class="ql-formats">
-                                 <button class="ql-video"></button>
-                             </span>
-                         </ToolbarContent>
-                     </Blazored.TextEditor.BlazoredTextEditor>
-                 </div>
+                    <Blazored.TextEditor.BlazoredTextEditor @ref="@CustomerInformationHtml">
+                        <ToolbarContent>
+                            <select class="ql-header">
+                                <option selected=""></option>
+                                <option value="1"></option>
+                                <option value="2"></option>
+                                <option value="3"></option>
+                                <option value="4"></option>
+                                <option value="5"></option>
+                            </select>
+                            <span class="ql-formats">
+                                <button class="ql-bold"></button>
+                                <button class="ql-italic"></button>
+                                <button class="ql-underline"></button>
+                                <button class="ql-strike"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <select class="ql-color"></select>
+                                <select class="ql-background"></select>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-list" value="ordered"></button>
+                                <button class="ql-list" value="bullet"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-link"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-image"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-video"></button>
+                            </span>
+                        </ToolbarContent>
+                    </Blazored.TextEditor.BlazoredTextEditor>
+                </div>
             </div>
         </div>
         <div class="row">
@@ -1896,89 +1901,90 @@
                 </div>
                 <div class=" col-12">
                     <Blazored.TextEditor.BlazoredTextEditor @ref="@ExchangePolicyHtml">
-                         <ToolbarContent>
-                             <select class="ql-header">
-                                 <option selected=""></option>
-                                 <option value="1"></option>
-                                 <option value="2"></option>
-                                 <option value="3"></option>
-                                 <option value="4"></option>
-                                 <option value="5"></option>
-                             </select>
-                             <span class="ql-formats">
-                                 <button class="ql-bold"></button>
-                                 <button class="ql-italic"></button>
-                                 <button class="ql-underline"></button>
-                                 <button class="ql-strike"></button>
-                             </span>
-                             <span class="ql-formats">
-                                 <select class="ql-color"></select>
-                                 <select class="ql-background"></select>
-                             </span>
-                             <span class="ql-formats">
-                                 <button class="ql-list" value="ordered"></button>
-                                 <button class="ql-list" value="bullet"></button>
-                             </span>
-                             <span class="ql-formats">
-                                 <button class="ql-link"></button>
-                             </span>
-                             <span class="ql-formats">
-                                 <button class="ql-image"></button>
-                             </span>
-                              <span class="ql-formats">
-                                 <button class="ql-video"></button>
-                             </span>
-                         </ToolbarContent>
-                     </Blazored.TextEditor.BlazoredTextEditor>
+                        <ToolbarContent>
+                            <select class="ql-header">
+                                <option selected=""></option>
+                                <option value="1"></option>
+                                <option value="2"></option>
+                                <option value="3"></option>
+                                <option value="4"></option>
+                                <option value="5"></option>
+                            </select>
+                            <span class="ql-formats">
+                                <button class="ql-bold"></button>
+                                <button class="ql-italic"></button>
+                                <button class="ql-underline"></button>
+                                <button class="ql-strike"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <select class="ql-color"></select>
+                                <select class="ql-background"></select>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-list" value="ordered"></button>
+                                <button class="ql-list" value="bullet"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-link"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-image"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-video"></button>
+                            </span>
+                        </ToolbarContent>
+                    </Blazored.TextEditor.BlazoredTextEditor>
                 </div>
             </div>
         </div>
+        <Divider></Divider>
         <div class="row">
-             <div class="col-2">
-                 <fieldLabel>@L["NotifyEmail"]</fieldLabel>
-             </div>
-             <div class="col-10">
-                 <div class="col-12">
-                     <Blazored.TextEditor.BlazoredTextEditor @ref="@NotifyEmailHtml">
-                         <ToolbarContent>
-                             <select class="ql-header">
-                                 <option selected=""></option>
-                                 <option value="1"></option>
-                                 <option value="2"></option>
-                                 <option value="3"></option>
-                                 <option value="4"></option>
-                                 <option value="5"></option>
-                             </select>
-                             <span class="ql-formats">
-                                 <button class="ql-bold"></button>
-                                 <button class="ql-italic"></button>
-                                 <button class="ql-underline"></button>
-                                 <button class="ql-strike"></button>
-                             </span>
-                             <span class="ql-formats">
-                                 <select class="ql-color"></select>
-                                 <select class="ql-background"></select>
-                             </span>
-                             <span class="ql-formats">
-                                 <button class="ql-list" value="ordered"></button>
-                                 <button class="ql-list" value="bullet"></button>
-                             </span>
-                             <span class="ql-formats">
-                                 <button class="ql-link"></button>
-                             </span>
-                             <span class="ql-formats">
-                                 <button class="ql-image"></button>
-                             </span>
-                             <span class="ql-formats">
-                                 <button class="ql-video"></button>
-                             </span>
-                         </ToolbarContent>
-                     </Blazored.TextEditor.BlazoredTextEditor>
-                 </div>
-             </div>
+            <div class="col-2">
+                <fieldLabel>@L["NotifyEmail"]</fieldLabel>
+            </div>
+            <div class="col-10">
+                <div class="col-12">
+                    <Blazored.TextEditor.BlazoredTextEditor @ref="@NotifyEmailHtml">
+                        <ToolbarContent>
+                            <select class="ql-header">
+                                <option selected=""></option>
+                                <option value="1"></option>
+                                <option value="2"></option>
+                                <option value="3"></option>
+                                <option value="4"></option>
+                                <option value="5"></option>
+                            </select>
+                            <span class="ql-formats">
+                                <button class="ql-bold"></button>
+                                <button class="ql-italic"></button>
+                                <button class="ql-underline"></button>
+                                <button class="ql-strike"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <select class="ql-color"></select>
+                                <select class="ql-background"></select>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-list" value="ordered"></button>
+                                <button class="ql-list" value="bullet"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-link"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-image"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-video"></button>
+                            </span>
+                        </ToolbarContent>
+                    </Blazored.TextEditor.BlazoredTextEditor>
+                </div>
+            </div>
         </div>
     </CardBody>
-    
+
 </Card>
 <div class="row">
     <div class="col-12 text-lg-end">

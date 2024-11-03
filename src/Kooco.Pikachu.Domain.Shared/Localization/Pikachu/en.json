@@ -881,6 +881,17 @@
     "GtmEnabled": "GTM Enabled",
     "ContainerId": "Container ID",
     "GtmContainerIdIsRequired": "The Container ID field is required.",
-    "ProductCategory": "Product Category"
+    "ProductCategory": "Product Category",
+    "Enum:ColorScheme.1": "Forest Dawn",
+    "Enum:ColorScheme.2": "Tropical Sunset",
+    "Enum:ColorScheme.3": "Deep Sea Night",
+    "Enum:ColorScheme.4": "Sweet Apricot Cream",
+    "Enum:ColorScheme.5": "Desert Dawn",
+    "Primary": "Primary",
+    "Secondary": "Secondary",
+    "Background": "Background",
+    "SecondaryBg": "Secondary Bg",
+    "SecondaryBackground": "Secondary Background",
+    "Alert": "Alert"
   }
 }
