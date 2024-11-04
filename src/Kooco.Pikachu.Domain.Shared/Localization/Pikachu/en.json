@@ -1,6 +1,11 @@
 {
   "culture": "en",
   "texts": {
+    "ChooseMethod": "Choose a Method",
+    "PureImage_LeftRightSlide": "Pure Image (Left/Right Slide)",
+    "PureImage_VerticalSlide": "Pure Image (Vertical Strip)",
+    "SpecificationIntroduction": "Specification Introduction (Image on the Left, Text Description on the Right)",
+    "DisplayMethodForProductDetails": "Display Method For Product Details",
     "AllowOffshoreIslands": "Allow Offshore Islands",
     "ActivateLogisticProvider": "Activate Logistic Provider",
     "SevenToElevenFrozen": "7-11 Frozen",

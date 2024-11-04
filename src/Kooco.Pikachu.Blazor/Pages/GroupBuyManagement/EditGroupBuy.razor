@@ -918,6 +918,30 @@
         }
 
         <Divider></Divider>
+
+        <Div Class="row">
+            <Div Class="col-2">@L["DisplayMethodForProductDetails"]</Div>
+                <Div Class="col-8">
+                    <select class="form-select"
+                            @onchange=OnProductDetailsDisplayMethodChange>
+                        <option value="0" selected>@L["ChooseMethod"]</option>
+                    @foreach (ProductDetailsDisplayMethod value in Enum.GetValues<ProductDetailsDisplayMethod>())
+                    {
+                        if (value == EditGroupBuyDto.ProductDetailsDisplayMethod) 
+                        {
+                            <option value="@value" selected>@L[value.ToString()]</option>
+                        }
+
+                        else 
+                        {
+                            <option value="@value">@L[value.ToString()]</option>
+                        }
+                    }
+                </select>
+            </Div>
+        </Div>
+
+        <Divider></Divider>
         <div class="row">
             <div class="col-2"><label>@L["AddModule"]</label></div>
             <div class="col-3 d-flex gap-2">

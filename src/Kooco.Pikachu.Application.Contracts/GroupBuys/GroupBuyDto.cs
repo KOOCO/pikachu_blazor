@@ -224,4 +224,5 @@ public class GroupBuyDto: EntityDto<Guid>,IHasConcurrencyStamp
     public string? BackgroundColor { get; set; }
     public string? SecondaryBackgroundColor { get; set; }
     public string? AlertColor { get; set; }
+    public ProductDetailsDisplayMethod? ProductDetailsDisplayMethod { get; set; }
 }

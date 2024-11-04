@@ -298,6 +298,15 @@ public partial class EditGroupBuy
         }
     }
 
+    private void OnProductDetailsDisplayMethodChange(ChangeEventArgs e)
+    {
+        string? selectedMethod = e.Value.ToString();
+
+        EditGroupBuyDto.ProductDetailsDisplayMethod = !selectedMethod.IsNullOrEmpty() ?
+                                                      Enum.Parse<ProductDetailsDisplayMethod>(selectedMethod) :
+                                                      null;
+    }
+
     public bool IsShippingMethodEnabled(string method)
     {
         if (LogisticsProviders is { Count: 0 }) return false;

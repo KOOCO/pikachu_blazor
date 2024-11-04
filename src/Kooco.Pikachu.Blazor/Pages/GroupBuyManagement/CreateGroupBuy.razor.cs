@@ -347,6 +347,15 @@ public partial class CreateGroupBuy
         }
     }
 
+    private void OnProductDetailsDisplayMethodChange(ChangeEventArgs e)
+    {
+        string? selectedMethod = e.Value.ToString();
+
+        CreateGroupBuyDto.ProductDetailsDisplayMethod = !selectedMethod.IsNullOrEmpty() ? 
+                                                        Enum.Parse<ProductDetailsDisplayMethod>(selectedMethod) : 
+                                                        null;
+    }
+
     async Task OnLogoUploadAsync(FileChangedEventArgs e)
     {
         if (e.Files.Length > 1)

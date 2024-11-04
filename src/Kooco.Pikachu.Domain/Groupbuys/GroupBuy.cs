@@ -222,6 +222,7 @@ public class GroupBuy : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public string? BackgroundColor { get; set; }
     public string? SecondaryBackgroundColor { get; set; }
     public string? AlertColor { get; set; }
+    public ProductDetailsDisplayMethod? ProductDetailsDisplayMethod { get; set; }
     public ICollection<GroupBuyItemGroup> ItemGroups { get; set; }
 
     public GroupBuy()
@@ -284,7 +285,8 @@ public class GroupBuy : FullAuditedAggregateRoot<Guid>, IMultiTenant
         string? secondaryColor,
         string? backgroundColor,
         string? secondaryBackgroundColor,
-        string? alertColor
+        string? alertColor,
+        ProductDetailsDisplayMethod? productDetailsDisplayMethod
         )
     {
         Id = id;
@@ -345,6 +347,7 @@ public class GroupBuy : FullAuditedAggregateRoot<Guid>, IMultiTenant
         BackgroundColor = backgroundColor;
         SecondaryBackgroundColor = secondaryBackgroundColor;
         AlertColor = alertColor;
+        ProductDetailsDisplayMethod = productDetailsDisplayMethod;
     }
 
     public GroupBuyItemGroup AddItemGroup(
