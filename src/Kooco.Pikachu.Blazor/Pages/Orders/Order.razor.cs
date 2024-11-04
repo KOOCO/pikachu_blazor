@@ -10,6 +10,8 @@ using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.Response;
+using Kooco.Pikachu.StoreLogisticOrders;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -17,6 +19,7 @@ using Microsoft.EntityFrameworkCore.Update.Internal;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
 using NUglify.Html;
+using OneOf.Types;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -24,6 +27,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Volo.Abp.Account.Web;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form;
 using static Kooco.Pikachu.Permissions.PikachuPermissions;
@@ -87,6 +91,94 @@ public partial class Order
         TotalCount = 0;
 
         StateHasChanged();
+    }
+
+    public async Task OnGenerateDeliveryNumber(MouseEventArgs e)
+    {
+        await loading.Show();
+
+        List<Guid> orderIds = [.. Orders.Where(w => w.IsSelected).Select(s => s.OrderId)];
+
+        List<Dictionary<string, string>> responseResults = []; string wholeErrorMessage = string.Empty;
+
+        foreach (Guid orderId in orderIds) 
+        {
+            OrderDto order = await _orderAppService.GetAsync(orderId);
+
+            List<OrderDeliveryDto> orderDeliveries = await _OrderDeliveryAppService.GetListByOrderAsync(orderId);
+
+            foreach (OrderDeliveryDto orderDelivery in orderDeliveries)
+            {
+                if (orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.PostOffice || 
+                    orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.BlackCat1)
+                {
+                    ResponseResultDto result = await _StoreLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(orderId, orderDelivery.Id);
+
+                    if (result.ResponseCode is not "1") AddToDictionary(responseResults, order.OrderNo, result.ResponseMessage);
+                }
+
+                else if (orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.SevenToEleven1 ||
+                         orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.SevenToElevenC2C ||
+                         orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.FamilyMart1 ||
+                         orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.FamilyMartC2C)
+                {
+                    ResponseResultDto result = await _StoreLogisticsOrderAppService.CreateStoreLogisticsOrderAsync(orderId, orderDelivery.Id);
+
+                    if (result.ResponseCode is not "1") AddToDictionary(responseResults, order.OrderNo, result.ResponseMessage);
+                }
+
+                else if (orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryNormal ||
+                         orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryFreeze ||
+                         orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryFrozen)
+                {
+                    PrintObtResponse? response = await _StoreLogisticsOrderAppService.GenerateDeliveryNumberForTCatDeliveryAsync(orderId, orderDelivery.Id);
+
+                    if (response is null || response.Data is null) AddToDictionary(responseResults, order.OrderNo, response.Message);
+                }
+
+                else if (orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenNormal ||
+                         orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenFreeze ||
+                         orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenFrozen)
+                {
+                    PrintOBTB2SResponse? response = await _StoreLogisticsOrderAppService.GenerateDeliveryNumberForTCat711DeliveryAsync(orderId, orderDelivery.Id);
+
+                    if (response is null || response.Data is null) AddToDictionary(responseResults, order.OrderNo, response.Message);
+                }
+            }
+        }
+
+        if (responseResults is { Count: > 0 })
+        {
+            foreach (Dictionary<string, string> response in responseResults)
+            {
+                if (wholeErrorMessage.IsNullOrEmpty())
+                    wholeErrorMessage = wholeErrorMessage.Insert(0, response.Keys.First() + " -> " + response.Values.First());
+
+                else
+                    wholeErrorMessage = wholeErrorMessage.Insert(wholeErrorMessage.Length + 1, Environment.NewLine + response.Keys.First() + " -> " + response.Values.First());
+            }
+
+            await loading.Hide();
+
+            await _uiMessageService.Error(wholeErrorMessage);
+
+            return;
+        }
+
+        await loading.Hide();
+
+        if (SelectedTabName is "All") await UpdateItemList();
+
+        else await LoadTabAsPerNameAsync(SelectedTabName);
+    }
+
+    public void AddToDictionary(List<Dictionary<string, string>> dictionaryList, string key, string value)
+    {
+        Dictionary<string, string> keyValuePairs = [];
+
+        keyValuePairs.Add(key, value);
+
+        dictionaryList.Add(keyValuePairs);
     }
 
     public async Task OnOrderDeliveryDataReadAsync(DataGridReadDataEventArgs<OrderDeliveryDto> e, Guid orderId)

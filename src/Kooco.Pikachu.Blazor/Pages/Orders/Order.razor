@@ -6,6 +6,7 @@
 @using Kooco.Pikachu.OrderItems;
 @using Kooco.Pikachu.GroupBuys;
 @using Kooco.Pikachu.Orders;
+@using Kooco.Pikachu.StoreLogisticOrders
 @using Microsoft.Extensions.Localization;
 @using Blazorise;
 @using Volo.Abp.AspNetCore.Components.Messages;
@@ -16,6 +17,8 @@
 @inject IUiMessageService _uiMessageService;
 @inject IElectronicInvoiceAppService _electronicInvoiceAppService;
 @inject IOrderAppService _orderAppService;
+@inject IStoreLogisticsOrderAppService _StoreLogisticsOrderAppService;
+@inject IOrderDeliveryRepository _OrderDeliveryRepository;
 @inject IOrderDeliveryAppService _OrderDeliveryAppService;
 @inject IGroupBuyAppService _groupBuyAppService;
 @using Microsoft.JSInterop;
@@ -105,17 +108,21 @@
 
             @if (SelectedTabName is PikachuResource.PrepareShipment)
             {
-                @if ((Orders.Where(x => x.IsSelected).Count() != 1) || (Orders.Where(x => x.InvoiceNumber != null && x.IsSelected).Any()))
+                @if ((Orders.Where(x => x.IsSelected).Count() < 1) || (Orders.Where(x => x.InvoiceNumber != null && x.IsSelected).Any()))
                 {
-                    <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
-                        <i class="fa fa-print"></i>
+                    <Button Type="@ButtonType.Button" 
+                            Disabled 
+                            Class="ms-1 btn btn-sm btn-primary">
+                        <i class="fa fa-print" />
                         @L["Generate Delivery Number"]
                     </Button>
                 }
                 else
                 { 
-                    <Button Type="@ButtonType.Button" Class="ms-1 btn btn-sm btn-primary">
-                        <i class="fa fa-print"></i>
+                    <Button Type="@ButtonType.Button" 
+                            Clicked="OnGenerateDeliveryNumber"
+                            Class="ms-1 btn btn-sm btn-primary">
+                        <i class="fa fa-print" />
                         @L["Generate Delivery Number"]
                     </Button>
                 }

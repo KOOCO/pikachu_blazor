@@ -208,6 +208,45 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         return result;
     }
 
+    public void MapAllLogistics(List<LogisticsProviderSettingsDto> providers)
+    {
+        LogisticsProviderSettingsDto? greenWorld = providers.FirstOrDefault(p => p.LogisticProvider is LogisticProviders.GreenWorldLogistics);
+
+        if (greenWorld is not null) GreenWorld = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorld);
+
+        LogisticsProviderSettingsDto? homeDelivery = providers.FirstOrDefault(p => p.LogisticProvider is LogisticProviders.HomeDelivery);
+
+        if (homeDelivery is not null) HomeDelivery = ObjectMapper.Map<LogisticsProviderSettingsDto, HomeDeliveryCreateUpdateDto>(homeDelivery);
+
+        LogisticsProviderSettingsDto? postOffice = providers.FirstOrDefault(p => p.LogisticProvider is LogisticProviders.PostOffice);
+
+        if (postOffice is not null) PostOffice = ObjectMapper.Map<LogisticsProviderSettingsDto, PostOfficeCreateUpdateDto>(postOffice);
+
+        LogisticsProviderSettingsDto? sevenToEleven = providers.FirstOrDefault(p => p.LogisticProvider is LogisticProviders.SevenToEleven);
+
+        if (sevenToEleven is not null) SevenToEleven = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(sevenToEleven);
+
+        LogisticsProviderSettingsDto? familyMart = providers.FirstOrDefault(p => p.LogisticProvider is LogisticProviders.FamilyMart);
+
+        if (familyMart is not null) FamilyMart = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(familyMart);
+
+        LogisticsProviderSettingsDto? sevenToElevenFrozen = providers.FirstOrDefault(p => p.LogisticProvider is LogisticProviders.SevenToElevenFrozen);
+
+        if (sevenToElevenFrozen is not null) SevenToElevenFrozen = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(sevenToElevenFrozen);
+
+        LogisticsProviderSettingsDto? bNormal = providers.FirstOrDefault(p => p.LogisticProvider is LogisticProviders.BNormal);
+
+        if (bNormal is not null) BNormal = ObjectMapper.Map<LogisticsProviderSettingsDto, BNormalCreateUpdateDto>(bNormal);
+
+        LogisticsProviderSettingsDto? bFreeze = providers.FirstOrDefault(p => p.LogisticProvider is LogisticProviders.BFreeze);
+
+        if (bFreeze is not null) BFreeze = ObjectMapper.Map<LogisticsProviderSettingsDto, BNormalCreateUpdateDto>(bFreeze);
+
+        LogisticsProviderSettingsDto? bFrozen = providers.FirstOrDefault(p => p.LogisticProvider is LogisticProviders.BFrozen);
+
+        if (bFrozen is not null) BFrozen = ObjectMapper.Map<LogisticsProviderSettingsDto, BNormalCreateUpdateDto>(bFrozen);
+    }
+
     public async Task<PrintObtResponse?> GenerateDeliveryNumberForTCatDeliveryAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null)
     {
         Order order = await _orderRepository.GetAsync(orderId);
