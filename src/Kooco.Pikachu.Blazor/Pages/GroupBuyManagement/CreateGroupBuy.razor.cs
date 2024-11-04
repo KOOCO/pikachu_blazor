@@ -1,15 +1,23 @@
 ﻿using Blazored.TextEditor;
 using Blazorise;
+using Blazorise.Extensions;
+using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.AzureStorage.Image;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.GroupBuyOrderInstructions;
+using Kooco.Pikachu.GroupBuyOrderInstructions.Interface;
+using Kooco.Pikachu.GroupBuyProductRankings.Interface;
 using Kooco.Pikachu.GroupBuys;
+using Kooco.Pikachu.GroupPurchaseOverviews;
+using Kooco.Pikachu.GroupPurchaseOverviews.Interface;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
-using Microsoft.AspNetCore.Components;
+using Kooco.Pikachu.Localization;
+using Kooco.Pikachu.LogisticsProviders;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using Newtonsoft.Json.Linq;
+using Microsoft.JSInterop;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -19,18 +27,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
-using Microsoft.JSInterop;
-using System.Runtime.CompilerServices;
-using Blazorise.LoadingIndicator;
-using Blazorise.Extensions;
-using Kooco.Pikachu.Localization;
-using Kooco.Pikachu.GroupPurchaseOverviews;
-using Kooco.Pikachu.GroupPurchaseOverviews.Interface;
-using Kooco.Pikachu.GroupBuyOrderInstructions;
-using Kooco.Pikachu.GroupBuyOrderInstructions.Interface;
-using Blazorise.Localization;
-using Kooco.Pikachu.LogisticsProviders;
-using Kooco.Pikachu.GroupBuyProductRankings.Interface;
 
 
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
@@ -292,7 +288,7 @@ public partial class CreateGroupBuy
         CreateGroupBuyDto.ColorSchemeType = !selectedTheme.IsNullOrEmpty() ? Enum.Parse<ColorScheme>(selectedTheme) : null;
 
         IsColorPickerOpen = true;
-        
+
         switch (CreateGroupBuyDto.ColorSchemeType)
         {
             case ColorScheme.ForestDawn:
@@ -334,7 +330,7 @@ public partial class CreateGroupBuy
                 CreateGroupBuyDto.SecondaryBackgroundColor = "#EBC7AD";
                 CreateGroupBuyDto.AlertColor = "#FF902A";
                 break;
-           
+
 
             default:
                 CreateGroupBuyDto.PrimaryColor = string.Empty;
@@ -342,7 +338,7 @@ public partial class CreateGroupBuy
                 CreateGroupBuyDto.BackgroundColor = string.Empty;
                 CreateGroupBuyDto.SecondaryBackgroundColor = string.Empty;
                 CreateGroupBuyDto.AlertColor = string.Empty;
-                IsColorPickerOpen = false; 
+                IsColorPickerOpen = false;
                 break;
         }
     }
@@ -351,8 +347,8 @@ public partial class CreateGroupBuy
     {
         string? selectedMethod = e.Value.ToString();
 
-        CreateGroupBuyDto.ProductDetailsDisplayMethod = !selectedMethod.IsNullOrEmpty() ? 
-                                                        Enum.Parse<ProductDetailsDisplayMethod>(selectedMethod) : 
+        CreateGroupBuyDto.ProductDetailsDisplayMethod = !selectedMethod.IsNullOrEmpty() ?
+                                                        Enum.Parse<ProductDetailsDisplayMethod>(selectedMethod) :
                                                         null;
     }
 
@@ -1459,7 +1455,7 @@ public partial class CreateGroupBuy
             }
 
             CreateGroupBuyDto.NotifyMessage = await NotifyEmailHtml.GetHTML();
-            CreateGroupBuyDto.GroupBuyConditionDescription = await GroupBuyHtml.GetHTML();
+            //CreateGroupBuyDto.GroupBuyConditionDescription = await GroupBuyHtml.GetHTML();
             CreateGroupBuyDto.ExchangePolicyDescription = await ExchangePolicyHtml.GetHTML();
             CreateGroupBuyDto.CustomerInformationDescription = await CustomerInformationHtml.GetHTML();
 

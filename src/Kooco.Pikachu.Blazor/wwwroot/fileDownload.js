@@ -24,3 +24,10 @@ window.clipboard = {
         }
     }
 }
+
+function enforceLineLimit(element) {
+    let lines = element.value.split('\n');
+    if (lines.length > 5) {
+        element.value = lines.slice(0, 5).join('\n');
+    }
+}

@@ -921,18 +921,18 @@
 
         <Div Class="row">
             <Div Class="col-2">@L["DisplayMethodForProductDetails"]</Div>
-                <Div Class="col-8">
-                    <select class="form-select"
-                            @onchange=OnProductDetailsDisplayMethodChange>
-                        <option value="0" selected>@L["ChooseMethod"]</option>
+            <Div Class="col-8">
+                <select class="form-select"
+                        @onchange=OnProductDetailsDisplayMethodChange>
+                    <option value="0" selected>@L["ChooseMethod"]</option>
                     @foreach (ProductDetailsDisplayMethod value in Enum.GetValues<ProductDetailsDisplayMethod>())
                     {
-                        if (value == EditGroupBuyDto.ProductDetailsDisplayMethod) 
+                        if (value == EditGroupBuyDto.ProductDetailsDisplayMethod)
                         {
                             <option value="@value" selected>@L[value.ToString()]</option>
                         }
 
-                        else 
+                        else
                         {
                             <option value="@value">@L[value.ToString()]</option>
                         }
@@ -1831,42 +1831,42 @@
                     <TextEdit Placeholder="@L["GroupBuyCondition"]" Disabled @bind-Text="EditGroupBuyDto.GroupBuyCondition" MaxLength="60" />
                 </div>
                 <div class="col-12">
-                    <Blazored.TextEditor.BlazoredTextEditor @ref="@GroupBuyHtml">
-                        <ToolbarContent>
-                            <select class="ql-header">
-                                <option selected=""></option>
-                                <option value="1"></option>
-                                <option value="2"></option>
-                                <option value="3"></option>
-                                <option value="4"></option>
-                                <option value="5"></option>
-                            </select>
-                            <span class="ql-formats">
-                                <button class="ql-bold"></button>
-                                <button class="ql-italic"></button>
-                                <button class="ql-underline"></button>
-                                <button class="ql-strike"></button>
-                            </span>
-                            <span class="ql-formats">
-                                <select class="ql-color"></select>
-                                <select class="ql-background"></select>
-                            </span>
-                            <span class="ql-formats">
-                                <button class="ql-list" value="ordered"></button>
-                                <button class="ql-list" value="bullet"></button>
-                            </span>
-                            <span class="ql-formats">
-                                <button class="ql-link"></button>
-                            </span>
-                            <span class="ql-formats">
-                                <button class="ql-image"></button>
-                            </span>
-                            <span class="ql-formats">
-                                <button class="ql-video"></button>
-                            </span>
-                        </ToolbarContent>
-                    </Blazored.TextEditor.BlazoredTextEditor>
-
+                    @* <Blazored.TextEditor.BlazoredTextEditor @ref="@GroupBuyHtml">
+                    <ToolbarContent>
+                    <select class="ql-header">
+                    <option selected=""></option>
+                    <option value="1"></option>
+                    <option value="2"></option>
+                    <option value="3"></option>
+                    <option value="4"></option>
+                    <option value="5"></option>
+                    </select>
+                    <span class="ql-formats">
+                    <button class="ql-bold"></button>
+                    <button class="ql-italic"></button>
+                    <button class="ql-underline"></button>
+                    <button class="ql-strike"></button>
+                    </span>
+                    <span class="ql-formats">
+                    <select class="ql-color"></select>
+                    <select class="ql-background"></select>
+                    </span>
+                    <span class="ql-formats">
+                    <button class="ql-list" value="ordered"></button>
+                    <button class="ql-list" value="bullet"></button>
+                    </span>
+                    <span class="ql-formats">
+                    <button class="ql-link"></button>
+                    </span>
+                    <span class="ql-formats">
+                    <button class="ql-image"></button>
+                    </span>
+                    <span class="ql-formats">
+                    <button class="ql-video"></button>
+                    </span>
+                    </ToolbarContent>
+                    </Blazored.TextEditor.BlazoredTextEditor> *@
+                    <textarea rows="5" @bind="@EditGroupBuyDto.GroupBuyConditionDescription" oninput="enforceLineLimit(this)" class="form-control" />
                 </div>
             </div>
         </div>

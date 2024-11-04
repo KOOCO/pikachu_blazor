@@ -33,6 +33,7 @@ using Volo.Abp.MultiTenancy;
 using Kooco.Pikachu.GroupBuyProductRankings;
 using Kooco.Pikachu.GroupBuyProductRankings.Interface;
 using Kooco.Pikachu.Groupbuys.Interface;
+using Microsoft.AspNetCore.Components.Forms;
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
 
 public partial class EditGroupBuy
@@ -593,7 +594,7 @@ public partial class EditGroupBuy
         {
             await LoadHtmlContent();
         }
-        await GroupBuyHtml.LoadHTMLContent(EditGroupBuyDto.GroupBuyConditionDescription);
+        //await GroupBuyHtml.LoadHTMLContent(EditGroupBuyDto.GroupBuyConditionDescription);
         await CustomerInformationHtml.LoadHTMLContent(EditGroupBuyDto.CustomerInformationDescription);
         await ExchangePolicyHtml.LoadHTMLContent(EditGroupBuyDto.ExchangePolicyDescription);
         await NotifyEmailHtml.LoadHTMLContent(EditGroupBuyDto.NotifyMessage);
@@ -1840,7 +1841,7 @@ public partial class EditGroupBuy
             }
 
             EditGroupBuyDto.NotifyMessage = await NotifyEmailHtml.GetHTML();
-            EditGroupBuyDto.GroupBuyConditionDescription = await GroupBuyHtml.GetHTML();
+            //EditGroupBuyDto.GroupBuyConditionDescription = await GroupBuyHtml.GetHTML();
             EditGroupBuyDto.ExchangePolicyDescription = await ExchangePolicyHtml.GetHTML();
             EditGroupBuyDto.CustomerInformationDescription = await CustomerInformationHtml.GetHTML();
 
@@ -2260,5 +2261,6 @@ public partial class EditGroupBuy
             await Loading.Hide();
         }
     }
+
     #endregion
 }
