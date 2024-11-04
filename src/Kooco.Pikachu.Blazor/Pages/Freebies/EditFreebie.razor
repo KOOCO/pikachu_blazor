@@ -31,42 +31,48 @@
                         <span class="text-danger">*</span>
                     </label>
                 </div>
-                <div class="col-8">
-                    <TextEdit @bind-Text="UpdateFreebieDto.ItemName" />
-                </div>
-                <div class="col-1">
-                    <span>
-                        @(string.IsNullOrWhiteSpace(UpdateFreebieDto.ItemName) ? 60 : (MaxTextCount - UpdateFreebieDto.ItemName.Count()))/@MaxTextCount
-                    </span>
+                <div class="col-10">
+                    <Addons>
+                        <Addon AddonType="AddonType.Body">
+                            <TextEdit @bind-Text="UpdateFreebieDto.ItemName" MaxLength="@MaxTextCount" />
+                        </Addon>
+                        <Addon AddonType="AddonType.End">
+                            <AddonLabel Style="background-color: #f5f5f7">
+                                @(string.IsNullOrWhiteSpace(UpdateFreebieDto.ItemName) ? 0 : (UpdateFreebieDto.ItemName.Count()))/@MaxTextCount
+                            </AddonLabel>
+                        </Addon>
+                    </Addons>
+
                 </div>
             </div>
             <div class="row mt-2">
                 <div class="col-2">
                     <label>
                         @L["ItemImages"]
-                        <span class="text-danger">*</span><Span>
-                            <Tooltip Text="@L["uploadUpto10Images"]">
+                        <span class="text-danger">*</span>
+                        <Span>
+                            <Tooltip Display="Display.InlineBlock" Text="@L["uploadUpto10Images"]">
                                 <Icon class="fa-question-circle "></Icon>
                             </Tooltip>
                         </Span>
                     </label>
                 </div>
-                <div class="col-9">
+                <div class="col-10">
                     <Field>
                         <FilePicker @ref="FilePicker"
-                                                Multiple
-                                     Changed="OnImageUploadAsync"
-                                     ShowMode="FilePickerShowMode.List"
-                                     Accept=".jpg, .png, .svg">
-                             <FileTemplate>
-                                 <Div Flex="Flex.JustifyContent.Between">
-                                     <Div>
-                                         <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
-                                         <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
-                                     </Div>
-                                     <Div Class="ps-2">
-                                         <Div>
-                                             @if (context.File.Status == FileEntryStatus.Ready)
+                                    Multiple
+                                    Changed="OnImageUploadAsync"
+                                    ShowMode="FilePickerShowMode.List"
+                                    Accept=".jpg, .png, .svg">
+                            <FileTemplate>
+                                <Div Flex="Flex.JustifyContent.Between">
+                                    <Div>
+                                        <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
+                                        <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                    </Div>
+                                    <Div Class="ps-2">
+                                        <Div>
+                                            @if (context.File.Status == FileEntryStatus.Ready)
                                             {
                                                 <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
                                             }
@@ -97,20 +103,18 @@
                 </div>
                 @if (UpdateFreebieDto?.Images != null && UpdateFreebieDto.Images.Count > 0)
                 {
-                    <div Class="row mt-2">
-                        <div class="col-2"></div>
-                        <div class="col-9">
-                            <div class="image-list-container">
-                                @foreach (var image in UpdateFreebieDto.Images)
-                                {
-                                    <div class="image-container">
-                                        <Image class="blur-image" Source="@image.ImageUrl" Text="Item Image" Fluid />
-                                         <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName)">
-                                             <i class="fa fa-trash"></i>
-                                         </button>
-                                     </div>
-                                }
-                            </div>
+                    <div class="col-2"></div>
+                    <div class="col-10">
+                        <div class="image-list-container">
+                            @foreach (var image in UpdateFreebieDto.Images)
+                            {
+                                <div class="image-container">
+                                    <Image class="blur-image" Source="@image.ImageUrl" Text="Item Image" Fluid />
+                                    <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName)">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </div>
+                            }
                         </div>
                     </div>
                 }
@@ -119,7 +123,7 @@
                 <div class="col-2">
                     <label>@L["ItemDescription"]</label>
                 </div>
-                <div class="col-9">
+                <div class="col-10">
                     <Blazored.TextEditor.BlazoredTextEditor @ref="@ItemDescription">
                         <ToolbarContent>
                             <select class="ql-header">
@@ -169,7 +173,7 @@
                                 CheckedValue="@UpdateFreebieDto.ApplyToAllGroupBuy"
                                 CheckedValueChanged="@OnGroupbuyCheckedValueChanged"
                                 Name="ApplyToAllGroupBuy"
-                                Class="d-flex flex-row">
+                                Class="horizontal-radiogroup">
                         <Radio Value="@(true)">
                             @L["ApplyToAllGroupBuys"]
                         </Radio>
@@ -185,7 +189,7 @@
                 <div class="row mt-2">
                     <div class="col-2">
                     </div>
-                    <div class="col-9">
+                    <div class="col-10">
                         <Autocomplete TItem="KeyValueDto"
                                       TValue="Guid"
                                       Data="@GroupBuyList"
@@ -200,10 +204,10 @@
                                       HighlightSearch
                                       Immediate="true"
                                       Size="Blazorise.Size.Small">
-                             <NotFoundContent> @L["NotFound"] </NotFoundContent>
-                         </Autocomplete>
-                     </div>
-                 </div>
+                            <NotFoundContent> @L["NotFound"] </NotFoundContent>
+                        </Autocomplete>
+                    </div>
+                </div>
             }
 
             <div class="row mt-3">
@@ -216,7 +220,7 @@
                                 CheckedValue="@UpdateFreebieDto.UnCondition"
                                 CheckedValueChanged="@OnUnconditionCheckedValueChanged"
                                 Name="Condition"
-                                Class="d-flex flex-row">
+                                Class="horizontal-radiogroup">
                         <Radio Value="@(true)">
                             @L["Uncondition"]
                         </Radio>
@@ -248,28 +252,26 @@
                     </div>
                     @if (UpdateFreebieDto.FreebieOrderReach is FreebieOrderReach.MinimumAmount)
                     {
-                        <div class="col-2">
+                        <div class="col-3">
                             <Label>@L["AmountReach"]</Label>
                             <div class="input-group">
                                 <Span Class="bg-primary text-light px-2 py-2">$</Span>
-                                <MudNumericField @bind-Value="UpdateFreebieDto.MinimumAmount"
-                                                 Min="0" />
+                                <MudNumericField @bind-Value="UpdateFreebieDto.MinimumAmount" Min="0" />
                             </div>
                         </div>
                     }
                     else
                     {
-                        <div class="col-2">
+                        <div class="col-3">
                             <Label>@L["QuantityReach"]</Label>
                             <div class="input-group">
                                 <Span Class="bg-primary text-light px-2 py-2">@L["Piece"]</Span>
-                                <MudNumericField @bind-Value="UpdateFreebieDto.MinimumPiece"
-                                                 Min="0" />
+                                <MudNumericField @bind-Value="UpdateFreebieDto.MinimumPiece" Min="0" />
                             </div>
                         </div>
                     }
-                   
-                    <div class="col-2">
+
+                    <div class="col-3">
                         <Label l>@L["Get"]</Label>
                         <div class="input-group">
                             <MudNumericField @bind-Value="UpdateFreebieDto.FreebieQuantity"
@@ -283,18 +285,18 @@
 
             <div class="row mt-3">
                 <div class="col-2">@L["ActivityDate"]</div>
-                <div class="col-2">
-                    <DateEdit Class="form-control" 
-                              DateChanged="@((e) => OnActivityDateChanged(e, true))" 
-                              Date="UpdateFreebieDto.ActivityStartDate" 
-                              Placeholder="@L["StartDate"].ToString()" 
+                <div class="col-5">
+                    <DateEdit Class="form-control"
+                              DateChanged="@((e) => OnActivityDateChanged(e, true))"
+                              Date="UpdateFreebieDto.ActivityStartDate"
+                              Placeholder="@L["StartDate"].ToString()"
                               TValue="DateTime?" />
                 </div>
-                <div class="col-2">
-                    <DateEdit Class="form-control" 
-                              DateChanged="@((e) => OnActivityDateChanged(e))" 
-                              Date="UpdateFreebieDto.ActivityEndDate" 
-                              Placeholder="@L["EndDate"].ToString()" 
+                <div class="col-5">
+                    <DateEdit Class="form-control"
+                              DateChanged="@((e) => OnActivityDateChanged(e))"
+                              Date="UpdateFreebieDto.ActivityEndDate"
+                              Placeholder="@L["EndDate"].ToString()"
                               TValue="DateTime?" />
                 </div>
             </div>
@@ -305,9 +307,8 @@
                         <span class="text-danger">*</span>
                     </label>
                 </div>
-                <div class="col-9">
-                    <MudNumericField @bind-Value="@freebieAmount"
-                                     Min="0" />
+                <div class="col-10">
+                    <MudNumericField @bind-Value="@freebieAmount" Min="0" />
                 </div>
             </div>
         </div>
