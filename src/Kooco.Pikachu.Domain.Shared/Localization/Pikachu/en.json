@@ -897,6 +897,7 @@
     "Background": "Background",
     "SecondaryBg": "Secondary Bg",
     "SecondaryBackground": "Secondary Background",
-    "Alert": "Alert"
+    "Alert": "Alert",
+    "uploadUpto10Images": "Upload upto 10 images"
   }
 }

@@ -491,3 +491,11 @@
     min-height: 580px;
     margin-bottom: 1rem;
 }
+
+.horizontal-radiogroup > .form-check-inline {
+    display: block !important;
+}
+
+.b-is-autocomplete.b-is-autocomplete-multipleselection.focus {
+    background-color: unset;
+}

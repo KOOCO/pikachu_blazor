@@ -258,7 +258,7 @@ public partial class EditFreebie
         {
             throw new BusinessException(L[PikachuDomainErrorCodes.SelectAtLeastOneGroupBuy]);
         }
-        if (UpdateFreebieDto.FreebieOrderReach is FreebieOrderReach.MinimumAmount && UpdateFreebieDto.MinimumAmount is null)
+        if (!UpdateFreebieDto.UnCondition && UpdateFreebieDto.FreebieOrderReach is FreebieOrderReach.MinimumAmount && UpdateFreebieDto.MinimumAmount is null)
         {
             throw new BusinessException(L[PikachuDomainErrorCodes.MinimumAmountReachCannotBeEmpty]);
         }
