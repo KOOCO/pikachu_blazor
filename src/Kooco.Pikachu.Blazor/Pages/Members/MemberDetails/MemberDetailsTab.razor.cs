@@ -1,4 +1,5 @@
 using Kooco.Pikachu.Members;
+using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.UserAddresses;
 using Kooco.Pikachu.UserCumulativeFinancials;
 using Microsoft.AspNetCore.Components;
@@ -19,6 +20,9 @@ public partial class MemberDetailsTab
     public bool CanDeleteMember { get; set; }
 
     private UserCumulativeFinancialDto? CumulativeFinancials { get; set; }
+    decimal PaidAmount = 0;
+    decimal UnpaidAmount = 0;
+    decimal RefundedAmount = 0;
 
     bool IsDeleting = false;
 
@@ -32,6 +36,7 @@ public partial class MemberDetailsTab
             {
                 DefaultAddress = await MemberAppService.GetDefaultAddressAsync(Member.Id);
                 CumulativeFinancials = await MemberAppService.GetMemberCumulativeFinancialsAsync(Member.Id);
+                (PaidAmount,UnpaidAmount,RefundedAmount)=await OrderAppService.GetOrderStatusAmountsAsync(Member.Id);
                 StateHasChanged();
             }
         }
