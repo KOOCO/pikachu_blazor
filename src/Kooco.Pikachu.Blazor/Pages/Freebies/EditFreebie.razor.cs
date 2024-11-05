@@ -262,7 +262,7 @@ public partial class EditFreebie
         {
             throw new BusinessException(L[PikachuDomainErrorCodes.MinimumAmountReachCannotBeEmpty]);
         }
-        if (UpdateFreebieDto.FreebieOrderReach is FreebieOrderReach.MinimumPiece && UpdateFreebieDto.MinimumPiece is null)
+        if (!UpdateFreebieDto.UnCondition && UpdateFreebieDto.FreebieOrderReach is FreebieOrderReach.MinimumPiece && UpdateFreebieDto.MinimumPiece is null)
         {
             throw new BusinessException(L[PikachuDomainErrorCodes.MinimumPieceCannotBeEmpty]);
         }
