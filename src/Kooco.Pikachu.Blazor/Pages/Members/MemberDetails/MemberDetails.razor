@@ -1,9 +1,11 @@
 ﻿@page "/Members/Details/{Id:guid}"
 @using Kooco.Pikachu.Members
+
 @using Kooco.Pikachu.Permissions
 @attribute [Authorize(PikachuPermissions.Members.Default)]
 @inherits PikachuComponentBase
 @inject IMemberAppService MemberAppService
+
 @inject NavigationManager NavigationManager
 
 <Div Class="rounded-cards">

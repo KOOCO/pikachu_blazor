@@ -1851,6 +1851,70 @@ public class OrderAppService : ApplicationService, IOrderAppService
     {
         return await _orderRepository.GetTotalDeliveryTemperatureCountsAsync();
     }
+
+    public async Task<(decimal PaidAmount, decimal UnpaidAmount, decimal RefundedAmount)> GetOrderStatusAmountsAsync(Guid userId)
+    {
+        // Sum of Paid orders
+        var paidAmount = (await _orderRepository.GetQueryableAsync())
+            .Where(order =>
+                (order.PaymentMethod != PaymentMethods.CashOnDelivery &&
+                    (order.ShippingStatus == ShippingStatus.PrepareShipment ||
+                     order.ShippingStatus == ShippingStatus.ToBeShipped ||
+                     order.ShippingStatus == ShippingStatus.Shipped ||
+                     order.ShippingStatus == ShippingStatus.Delivered)) ||
+                (order.PaymentMethod == PaymentMethods.CashOnDelivery &&
+                    order.ShippingStatus == ShippingStatus.Delivered)
+                    && order.UserId==userId
+                    )
+            
+            .Sum(order => order.TotalAmount);
+
+        // Sum of Unpaid/Due orders
+        var unpaidAmount = (await _orderRepository.GetQueryableAsync())
+            .Where(order =>
+                (order.PaymentMethod == PaymentMethods.CashOnDelivery &&
+                    (order.ShippingStatus == ShippingStatus.WaitingForPayment ||
+                     order.ShippingStatus == ShippingStatus.PrepareShipment ||
+                     order.ShippingStatus == ShippingStatus.ToBeShipped ||
+                     order.ShippingStatus == ShippingStatus.Shipped)) ||
+                (order.PaymentMethod != PaymentMethods.CashOnDelivery &&
+                    order.ShippingStatus == ShippingStatus.WaitingForPayment)
+                     && order.UserId == userId)
+            .Sum(order => order.TotalAmount);
+
+        // Sum of Refunded orders
+        var refundedAmount = (await _orderRepository.GetQueryableAsync())
+            .Where(order => order.IsRefunded && order.UserId == userId)
+            .Sum(order => order.RefundAmount);
+
+        return (paidAmount, unpaidAmount, refundedAmount);
+    }
+
+    public async Task<(int Open, int Exchange, int Return)> GetOrderStatusCountsAsync(Guid userId)
+    {
+        // Sum of Paid orders
+        var paidAmount = (await _orderRepository.GetQueryableAsync())
+            .Where(order =>
+                (order.OrderStatus==OrderStatus.Open)
+                    && order.UserId == userId
+                    )
+
+            .Count();
+
+        // Sum of Unpaid/Due orders
+        var unpaidAmount = (await _orderRepository.GetQueryableAsync())
+            .Where(order =>
+                (order.OrderStatus == OrderStatus.Exchange)
+                     && order.UserId == userId)
+            .Count();
+
+        // Sum of Refunded orders
+        var refundedAmount = (await _orderRepository.GetQueryableAsync())
+            .Where(order => order.OrderStatus == OrderStatus.Exchange && order.UserId == userId)
+            .Count();
+
+        return (paidAmount, unpaidAmount, refundedAmount);
+    }
     #endregion
 }
 

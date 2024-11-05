@@ -308,4 +308,14 @@ public class OrderController(
     {
         return _ordersAppService.OrderToBeShipped(id);
     }
+    [HttpGet("get-order-status-amount")]
+    public Task<(decimal PaidAmount, decimal UnpaidAmount, decimal RefundedAmount)> GetOrderStatusAmountsAsync(Guid UserId)
+    {
+        return _ordersAppService.GetOrderStatusAmountsAsync(UserId);
+    }
+    [HttpGet("get-order-status-count")]
+    public Task<(int Open, int Exchange, int Return)> GetOrderStatusCountsAsync(Guid userId)
+    {
+        return _ordersAppService.GetOrderStatusCountsAsync(userId);
+    }
 }
