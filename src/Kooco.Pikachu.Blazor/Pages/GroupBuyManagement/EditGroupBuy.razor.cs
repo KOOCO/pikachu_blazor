@@ -416,52 +416,59 @@ public partial class EditGroupBuy
 
     public async Task GetProductRankingCarouselsAsync()
     {
-        await Task.Delay(100);
-
-        List<ImageDto> productRankingImages = await _imageAppService.GetGroupBuyImagesAsync(Id, ImageType.GroupBuyProductRankingCarousel);
-
-        List<CreateImageDto> createImageDtos = _objectMapper.Map<List<ImageDto>, List<CreateImageDto>>(productRankingImages);
-
-        List<List<CreateImageDto>> createImagesGroupedByModules = [.. createImageDtos.GroupBy(g => g.ModuleNumber).Select(s => s.ToList())];
-
-        List<GroupBuyProductRankingDto> productRankingDto = await _GroupBuyProductRankingAppService.GetListByGroupBuyIdAsync(Id);
-
-        foreach (GroupBuyProductRankingDto ranking in productRankingDto)
+        try
         {
-            ProductRankingCarouselModules.Add(new()
+            //await Task.Delay(500);
+
+            List<ImageDto> productRankingImages = await _imageAppService.GetGroupBuyImagesAsync(Id, ImageType.GroupBuyProductRankingCarousel);
+
+            List<CreateImageDto> createImageDtos = _objectMapper.Map<List<ImageDto>, List<CreateImageDto>>(productRankingImages);
+
+            List<List<CreateImageDto>> createImagesGroupedByModules = [.. createImageDtos.GroupBy(g => g.ModuleNumber).Select(s => s.ToList())];
+
+            List<GroupBuyProductRankingDto> productRankingDto = await _GroupBuyProductRankingAppService.GetListByGroupBuyIdAsync(Id);
+
+            foreach (GroupBuyProductRankingDto ranking in productRankingDto)
             {
-                Id = ranking.Id,
-                Title = ranking.Title,
-                Content = ranking.Content,
-                SubTitle = ranking.SubTitle,
-                ModuleNumber = ranking.ModuleNumber
-            });
-        }
-
-        foreach (ProductRankingCarouselModule module in ProductRankingCarouselModules)
-        {
-            module.Images = [.. createImageDtos.Where(w => w.ModuleNumber == module.ModuleNumber)];
-
-            List<GroupBuyItemGroupDetailsDto> itemDetails = GroupBuy.ItemGroups
-                                                                    .SelectMany(w => w.ItemGroupDetails.Where(d => d.ModuleNumber == module.ModuleNumber))
-                                                                    .ToList();
-
-            foreach (GroupBuyItemGroupDetailsDto groupBuyItemGroup in itemDetails)
-            {
-                module.Selected.Add(new()
+                ProductRankingCarouselModules.Add(new()
                 {
-                    Id = groupBuyItemGroup.Id,
-                    Item = groupBuyItemGroup.Item,
-                    ItemType = groupBuyItemGroup.ItemType,
-                    Name = groupBuyItemGroup.Item.ItemName,
-                    SetItem = groupBuyItemGroup.SetItem
+                    Id = ranking.Id,
+                    Title = ranking.Title,
+                    Content = ranking.Content,
+                    SubTitle = ranking.SubTitle,
+                    ModuleNumber = ranking.ModuleNumber
                 });
             }
 
-            while (module.Selected.Count < 3)
+            foreach (ProductRankingCarouselModule module in ProductRankingCarouselModules)
             {
-                module.Selected.Add(new());
+                module.Images = [.. createImageDtos.Where(w => w.ModuleNumber == module.ModuleNumber)];
+
+                List<GroupBuyItemGroupDetailsDto> itemDetails = GroupBuy.ItemGroups
+                                                                        .SelectMany(w => w.ItemGroupDetails.Where(d => d.ModuleNumber == module.ModuleNumber))
+                                                                        .ToList();
+
+                foreach (GroupBuyItemGroupDetailsDto groupBuyItemGroup in itemDetails)
+                {
+                    module.Selected.Add(new()
+                    {
+                        Id = groupBuyItemGroup.Id,
+                        Item = groupBuyItemGroup.Item,
+                        ItemType = groupBuyItemGroup.ItemType,
+                        Name = groupBuyItemGroup.Item.ItemName,
+                        SetItem = groupBuyItemGroup.SetItem
+                    });
+                }
+
+                while (module.Selected.Count < 3)
+                {
+                    module.Selected.Add(new());
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            await GetProductRankingCarouselsAsync();
         }
     }
 

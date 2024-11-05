@@ -915,7 +915,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 }
             }
 
-            ord.RefundAmount = newOrder.TotalAmount;
+            ord.RefundAmount += newOrder.TotalAmount;
 
             await _orderRepository.UpdateAsync(ord);
 
@@ -929,11 +929,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     public async Task RefundAmountAsync(double amount, Guid OrderId)
     {
-        Order newOrder = new();
-
         Order ord = await _orderRepository.GetWithDetailsAsync(OrderId);
 
-        ord.TotalAmount -= (decimal)amount;
+        ord.RefundAmount += (decimal)amount;
 
         GroupBuy groupBuy = new();
 
@@ -989,6 +987,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             await _orderRepository.InsertAsync(order1);
 
+            await _orderRepository.UpdateAsync(ord);
+           
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
             await _refundAppService.CreateAsync(order1.Id);
