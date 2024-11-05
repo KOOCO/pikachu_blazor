@@ -4,6 +4,7 @@ using Kooco.Pikachu.AzureStorage.Image;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Freebies.Dtos;
+using Kooco.Pikachu.FreeBies.Dtos;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items.Dtos;
@@ -192,6 +193,18 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
             if (FreebieCreateDto.ApplyToAllGroupBuy == false && !FreebieCreateDto.FreebieGroupBuys.Any())
             {
                 throw new BusinessException(L[PikachuDomainErrorCodes.SelectAtLeastOneGroupBuy]);
+            }
+            if (!FreebieCreateDto.UnCondition && FreebieCreateDto.FreebieOrderReach is FreebieOrderReach.MinimumAmount && FreebieCreateDto.MinimumAmount is null)
+            {
+                throw new BusinessException(L[PikachuDomainErrorCodes.MinimumAmountReachCannotBeEmpty]);
+            }
+            if (!FreebieCreateDto.UnCondition && FreebieCreateDto.FreebieOrderReach is FreebieOrderReach.MinimumPiece && FreebieCreateDto.MinimumPiece is null)
+            {
+                throw new BusinessException(L[PikachuDomainErrorCodes.MinimumPieceCannotBeEmpty]);
+            }
+            if (!FreebieCreateDto.UnCondition && FreebieCreateDto.FreebieQuantity <= 0)
+            {
+                throw new BusinessException(L[PikachuDomainErrorCodes.GetCannotBeEmptyOrZero]);
             }
         }
 
