@@ -1,5 +1,8 @@
 ﻿using Asp.Versioning;
+using ECPay.Payment.Integration;
+using Kooco.Pikachu.Controllers.Common;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.PaymentGateways;
@@ -8,9 +11,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -24,16 +30,182 @@ namespace Kooco.Pikachu.Controllers.Orders;
 [ControllerName("Orders")]
 [Area("app")]
 [Route("api/app/orders")]
-public class OrderController(
-    IOrderAppService _ordersAppService
-    ) : AbpController, IOrderAppService
+public class OrderController : AbpController, IOrderAppService
 {
+    #region Inject
+    private readonly IOrderAppService _ordersAppService;
+    private readonly IConfiguration _Configuration;
+    private readonly IGroupBuyAppService _GroupBuyAppService;
+    #endregion
+
+    #region Constructor
+    public OrderController(
+        IOrderAppService ordersAppService,
+        IConfiguration Configuration,
+        IGroupBuyAppService GroupBuyAppService
+    )
+    {
+        _ordersAppService = ordersAppService;
+        _Configuration = Configuration;
+        _GroupBuyAppService = GroupBuyAppService;
+    }
+    #endregion
+
     [HttpPost]
     public Task<OrderDto> CreateAsync(CreateOrderDto input)
     {
         if (input.CreationTime == DateTime.MinValue) input.CreationTime = DateTime.Now;
 
         return _ordersAppService.CreateAsync(input);
+    }
+
+    [HttpGet("ecpay-proceed-to-checkout")]
+    public async Task<IActionResult> ProceedToCheckout(Guid orderId, string clientBackUrl)
+    {
+        OrderDto order = await GetAsync(orderId);
+
+        GroupBuyDto groupBuy = await _GroupBuyAppService.GetAsync(order.GroupBuyId);
+
+        PaymentGatewayDto ecPay = await GetPaymentGatewayConfigurationsAsync(order.GroupBuyId);
+
+        bool isDefaultPayment = groupBuy.IsDefaultPaymentGateWay;
+
+        string? paymentMethods = groupBuy.PaymentMethod;
+
+        PaymentMethod paymentMethod = new();
+
+        if (!string.IsNullOrEmpty(paymentMethods))
+        {
+            if (order.PaymentMethod is PaymentMethods.BankTransfer)
+            {
+                paymentMethod = PaymentMethod.WebATM;
+
+                isDefaultPayment = false;
+            }
+            else if (order.PaymentMethod is PaymentMethods.CreditCard)
+            {
+                paymentMethod = PaymentMethod.Credit;
+
+                isDefaultPayment = false;
+            }
+        }
+
+        else isDefaultPayment = true;
+
+        string ecpayUrl = _Configuration["EcPay:PaymentApiUrl"]!;
+        string? hashKey = ecPay.HashKey;
+        string? hashIV = ecPay.HashIV;
+        string? merchantID = ecPay.MerchantId;
+        string? tradeDesc = ecPay.TradeDescription;
+
+        List<string> enErrors = [];
+
+        try
+        {
+            if (order.DeliveryMethod is DeliveryMethod.SelfPickup || groupBuy.IsEnterprise)
+            {
+                if (order.OrderItems.Any(x => x.DeliveryTemperature == 0))
+                    order.TotalAmount = order.TotalAmount - order.OrderItems.Where(x => x.DeliveryTemperature == 0)
+                                                                            .Select(x => x.DeliveryTemperatureCost)
+                                                                            .FirstOrDefault();
+
+                if (order.OrderItems.Any(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze))
+                    order.TotalAmount = order.TotalAmount - order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze)
+                                                                            .Select(x => x.DeliveryTemperatureCost)
+                                                                            .FirstOrDefault();
+
+                if (order.OrderItems.Any(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen))
+                    order.TotalAmount = order.TotalAmount - order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen)
+                                                                            .Select(x => x.DeliveryTemperatureCost)
+                                                                            .FirstOrDefault();
+            }
+
+            using AllInOne oPayment = new();
+
+            oPayment.ServiceMethod = HttpMethod.HttpPOST;
+            oPayment.ServiceURL = ecpayUrl;
+            oPayment.HashKey = hashKey;
+            oPayment.HashIV = hashIV;
+            oPayment.MerchantID = merchantID;
+            oPayment.Send.ReturnURL = $"{Request.Scheme}://{Request.Host}/api/app/orders/callback";
+            oPayment.Send.ClientBackURL = clientBackUrl;
+            oPayment.Send.MerchantTradeNo = order.OrderNo;
+            oPayment.Send.MerchantTradeDate = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+            oPayment.Send.TotalAmount = Convert.ToInt32(order.TotalAmount);
+            oPayment.Send.TradeDesc = tradeDesc;
+            oPayment.Send.ChoosePayment = isDefaultPayment ? PaymentMethod.ALL : paymentMethod;
+            oPayment.Send.Remark = string.Empty;
+            oPayment.Send.ChooseSubPayment = PaymentMethodItem.None;
+            oPayment.Send.NeedExtraPaidInfo = ExtraPaymentInfo.Yes;
+            oPayment.Send.DeviceSource = DeviceType.PC;
+            oPayment.Send.IgnorePayment = string.Empty;
+            oPayment.Send.PlatformID = string.Empty;
+            oPayment.Send.HoldTradeAMT = HoldTradeType.Yes;
+            oPayment.Send.CustomField1 = Guid.NewGuid().ToString();
+            oPayment.Send.CustomField2 = order.GroupBuyId.ToString();
+            oPayment.Send.CustomField3 = string.Empty;
+            oPayment.Send.CustomField4 = string.Empty;
+            oPayment.Send.EncryptType = 1;
+
+            foreach (OrderItemDto item in order.OrderItems)
+            {
+                if (item.Item is null) continue;
+
+                oPayment.Send.Items.Add(new ECPay.Payment.Integration.Item()
+                {
+                    Name = item.Item.ItemName + " NT$ ",
+                    Price = item.ItemPrice,
+                    Currency = string.Empty,
+                    Quantity = item.Quantity,
+                    URL = string.Empty,
+                });
+            }
+
+            AllInOneResult result = oPayment.CheckOut();
+
+            enErrors = [.. result.ErrorList];
+
+            PaymentResponse? response =
+                new()
+                {
+                    IsSuccessStatusCode = true,
+                    Result = result,
+                    Errors = enErrors,
+                    EcPayUrl = ecpayUrl
+                };
+
+            if (response.IsSuccessStatusCode)
+            {
+                string? checkMacValue = response.Result.htParameters["CustomField1"]?.ToString();
+
+                await _ordersAppService.AddValuesAsync(orderId, checkMacValue ?? string.Empty, order.OrderNo);
+            }
+
+            StringBuilder htmlForm = new();
+
+            htmlForm.Append($"<form id='ecpay_form' method='post' action='{response.EcPayUrl}'>");
+
+            foreach (DictionaryEntry parameter in response.Result.htParameters)
+            {
+                htmlForm.Append(
+                    $"<input type='hidden' name='{parameter.Key}' value='{parameter.Value}'>"
+                );
+            }
+
+            htmlForm.Append("</form>");
+
+            htmlForm.Append("<script>document.getElementById('ecpay_form').submit();</script>");
+
+            return Ok(htmlForm.ToString());
+        }
+        catch (Exception ex)
+        {
+            enErrors.Add(ex.Message);
+
+            return BadRequest(
+                new PaymentResponse { IsSuccessStatusCode = false, Errors = enErrors }
+            );
+        }
     }
 
     [HttpPost("callback")]
