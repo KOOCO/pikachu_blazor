@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.ElectronicInvoiceSettings;
+﻿using Kooco.Pikachu.DiscountCodes;
+using Kooco.Pikachu.ElectronicInvoiceSettings;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Groupbuys;
@@ -59,6 +60,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IFreebieRepository _freebieRepository;
     private readonly IRefundAppService _refundAppService;
     private readonly IRefundRepository _refundRepository;
+    private readonly IDiscountCodeRepository _discountCodeRepository;
     private readonly ITenantSettingsAppService _tenantSettingsAppService;
     #endregion
 
@@ -82,7 +84,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         IElectronicInvoiceSettingRepository electronicInvoiceSettingRepository,
         IRefundAppService refundAppService,
         IRefundRepository refundRepository,
-        ITenantSettingsAppService tenantSettingsAppService
+        ITenantSettingsAppService tenantSettingsAppService,
+        IDiscountCodeRepository discountCodeRepository
     )
     {
         _orderRepository = orderRepository;
@@ -105,6 +108,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _refundAppService = refundAppService;
         _refundRepository = refundRepository;
         _tenantSettingsAppService = tenantSettingsAppService;
+        _discountCodeRepository = discountCodeRepository;
     }
     #endregion
 
@@ -292,6 +296,32 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     if (orderDelivery is not null)
                         newOrder.UpdateOrderItem([.. newOrder.OrderItems.Where(w => w.SetItemId is not null && w.SetItemId != Guid.Empty)], orderDelivery.Id);
                 }
+            }
+            if (order.DiscountCodeId != null)
+            {
+                var discountCode = await _discountCodeRepository.GetAsync(order.DiscountCodeId.Value);
+                discountCode.AvailableQuantity = discountCode.AvailableQuantity - 1;
+                await _discountCodeRepository.EnsureCollectionLoadedAsync(discountCode, x => x.DiscountCodeUsages);
+                if (discountCode.DiscountCodeUsages != null && discountCode.DiscountCodeUsages.Count > 0)
+                {
+                    var usage = discountCode.DiscountCodeUsages.FirstOrDefault();
+                    usage.TotalOrders = usage.TotalOrders + 1;
+                    usage.TotalDiscountAmount = usage.TotalDiscountAmount + (int)(order.DiscountAmount.HasValue ? order?.DiscountAmount.Value : 0);
+                }
+                else {
+
+                    var newusage = new DiscountCodeUsage(GuidGenerator.Create(), 1, 0, order.DiscountAmount ?? 0);
+                    discountCode.DiscountCodeUsages.Add(newusage);
+
+                
+                
+                }
+
+                await _discountCodeRepository.UpdateAsync(discountCode);
+                await  CurrentUnitOfWork.SaveChangesAsync();
+              
+
+
             }
 
             if (groupBuy?.IsEnterprise is true) await SendEmailAsync(order.Id);
