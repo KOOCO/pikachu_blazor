@@ -311,11 +311,11 @@ public partial class Order
 
         else OrdersSelected.Remove(order);
 
-        NormalCount = OrdersSelected.Sum(order => order.OrderItems.Count(item => item.DeliveryTemperature is ItemStorageTemperature.Normal));
+        NormalCount = OrdersSelected.Any(a => a.OrderItems.Any(ai => ai.DeliveryTemperature is ItemStorageTemperature.Normal)) ? NormalCount + 1 : NormalCount;
 
-        FreezeCount = OrdersSelected.Sum(order => order.OrderItems.Count(item => item.DeliveryTemperature is ItemStorageTemperature.Freeze));
+        FreezeCount = OrdersSelected.Any(a => a.OrderItems.Any(ai => ai.DeliveryTemperature is ItemStorageTemperature.Freeze)) ? FreezeCount + 1 : FreezeCount;
 
-        FrozenCount = OrdersSelected.Sum(order => order.OrderItems.Count(item => item.DeliveryTemperature is ItemStorageTemperature.Frozen));
+        FrozenCount = OrdersSelected.Any(a => a.OrderItems.Any(ai => ai.DeliveryTemperature is ItemStorageTemperature.Frozen)) ? FrozenCount + 1 : FrozenCount;
     }
 
     async Task OnSearch(Guid? e=null)
