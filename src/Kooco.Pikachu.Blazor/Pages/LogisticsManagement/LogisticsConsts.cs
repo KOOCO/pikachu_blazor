@@ -27,6 +27,6 @@ namespace Kooco.Pikachu.Blazor.Pages.LogisticsManagement
             "花蓮縣",
             "台東縣"
         };
-        public static List<string> OuterIslands = new() { "澎湖縣", "金門縣", "馬祖縣" };
+        public static List<string> OuterIslands = new() { "澎湖縣", "金門縣", "連江縣" };
     }
 }
