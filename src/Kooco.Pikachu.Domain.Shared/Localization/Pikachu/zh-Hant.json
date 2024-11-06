@@ -905,6 +905,7 @@
     "TenantShortCode": "統一編號",
     "DomainIsRequired": "請填寫域名。",
     "Domain": "域名",
-    "InvalidUrl": "請提供一個以 http 或 https 開頭的完整 URL。"
+    "InvalidUrl": "請提供一個以 http 或 https 開頭的完整 URL。",
+    "PleaseFillInTheRequiredInformation": "請填寫所需資料"
   }
 }
