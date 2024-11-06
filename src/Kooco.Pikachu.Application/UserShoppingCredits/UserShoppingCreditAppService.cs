@@ -8,7 +8,7 @@ using Volo.Abp.Application.Dtos;
 
 namespace Kooco.Pikachu.UserShoppingCredits;
 
-[RemoteService(IsEnabled = false)]
+//[RemoteService(IsEnabled = false)]
 [Authorize(PikachuPermissions.UserShoppingCredits.Default)]
 public class UserShoppingCreditAppService(UserShoppingCreditManager userShoppingCreditManager,
     IUserShoppingCreditRepository userShoppingCreditRepository) : PikachuAppService, IUserShoppingCreditAppService
@@ -57,6 +57,16 @@ public class UserShoppingCreditAppService(UserShoppingCreditManager userShopping
             TotalCount = totalCount,
             Items = ObjectMapper.Map<List<UserShoppingCredit>, List<UserShoppingCreditDto>>(items)
         };
+    }
+    [Authorize(PikachuPermissions.UserShoppingCredits.Create)]
+    public async Task<UserShoppingCreditDto> RecordShoppingCreditAsync(RecordUserShoppingCreditDto input)
+    {
+        Check.NotNull(input, nameof(input));
+
+        var userShoppingCredit = await userShoppingCreditManager.CreateAsync(input.UserId, input.Amount,
+            input.CurrentRemainingCredits, input.TransactionDescription, input.ExpirationDate, input.IsActive);
+
+        return ObjectMapper.Map<UserShoppingCredit, UserShoppingCreditDto>(userShoppingCredit);
     }
 
     [Authorize(PikachuPermissions.UserShoppingCredits.SetIsActive)]

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Services;
 
 namespace Kooco.Pikachu.UserShoppingCredits;
@@ -21,7 +22,8 @@ public class UserShoppingCreditManager(IUserShoppingCreditRepository userShoppin
         {
             throw new ExpirationDateCannotBePastException();
         }
-
+        var oldCredit = await userShoppingCreditRepository.LastOrDefaultAsync(x=>x.UserId==userId);
+        currentRemainingCredits = currentRemainingCredits + oldCredit?.CurrentRemainingCredits??0;
         var userShoppingCredit = new UserShoppingCredit(GuidGenerator.Create(), userId, amount,
             currentRemainingCredits, transactionDescription, expirationDate, isActive);
 
