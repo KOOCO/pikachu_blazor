@@ -110,7 +110,7 @@
 
             @if (SelectedTabName is PikachuResource.PrepareShipment)
             {
-                @if ((Orders.Where(x => x.IsSelected).Count() < 1) || (Orders.Where(x => x.InvoiceNumber != null && x.IsSelected).Any()))
+                @if (Orders.Where(x => x.IsSelected).Count() < 1)
                 {
                     <Button Type="@ButtonType.Button" 
                             Disabled 
@@ -173,7 +173,7 @@
                  SelectedTabName is PikachuResource.Delivered || 
                  SelectedTabName is PikachuResource.Completed)
             {
-                @if ((Orders.Where(x => x.IsSelected).Count() != 1) || (Orders.Where(x => x.InvoiceNumber != null && x.IsSelected).Any()))
+                @if ((Orders.Where(x => x.IsSelected).Count() < 1) || (Orders.Where(x => x.InvoiceNumber is not null && x.IsSelected).Any()))
                 {
                     <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
                         <i class="fa fa-print"></i>
