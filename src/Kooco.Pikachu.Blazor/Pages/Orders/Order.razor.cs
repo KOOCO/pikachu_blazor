@@ -111,7 +111,9 @@ public partial class Order
             foreach (OrderDeliveryDto orderDelivery in orderDeliveries)
             {
                 if (orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.PostOffice || 
-                    orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.BlackCat1)
+                    orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.BlackCat1 ||
+                    orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.BlackCatFrozen ||
+                    orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.BlackCatFreeze)
                 {
                     ResponseResultDto result = await _StoreLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(orderId, orderDelivery.Id);
 
