@@ -1858,7 +1858,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     {
         // Sum of Paid orders
         var paidAmount = (await _orderRepository.GetQueryableAsync())
-            .Where(order =>
+            .Where(order => order.UserId == userId &&(
                 (order.PaymentMethod != PaymentMethods.CashOnDelivery &&
                     (order.ShippingStatus == ShippingStatus.PrepareShipment ||
                      order.ShippingStatus == ShippingStatus.ToBeShipped ||
@@ -1866,14 +1866,14 @@ public class OrderAppService : ApplicationService, IOrderAppService
                      order.ShippingStatus == ShippingStatus.Delivered)) ||
                 (order.PaymentMethod == PaymentMethods.CashOnDelivery &&
                     order.ShippingStatus == ShippingStatus.Delivered)
-                    && order.UserId==userId
-                    )
+                   
+                    ))
             
             .Sum(order => order.TotalAmount);
 
         // Sum of Unpaid/Due orders
         var unpaidAmount = (await _orderRepository.GetQueryableAsync())
-            .Where(order =>
+            .Where(order => order.UserId == userId &&(
                 (order.PaymentMethod == PaymentMethods.CashOnDelivery &&
                     (order.ShippingStatus == ShippingStatus.WaitingForPayment ||
                      order.ShippingStatus == ShippingStatus.PrepareShipment ||
@@ -1881,12 +1881,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
                      order.ShippingStatus == ShippingStatus.Shipped)) ||
                 (order.PaymentMethod != PaymentMethods.CashOnDelivery &&
                     order.ShippingStatus == ShippingStatus.WaitingForPayment)
-                     && order.UserId == userId)
+                    ))
             .Sum(order => order.TotalAmount);
 
         // Sum of Refunded orders
         var refundedAmount = (await _orderRepository.GetQueryableAsync())
-            .Where(order => order.IsRefunded && order.UserId == userId)
+            .Where(order => order.UserId == userId && order.IsRefunded)
             .Sum(order => order.RefundAmount);
 
         return (paidAmount, unpaidAmount, refundedAmount);
