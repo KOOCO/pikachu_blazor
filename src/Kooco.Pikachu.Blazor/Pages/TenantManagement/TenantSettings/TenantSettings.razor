@@ -27,13 +27,6 @@
                         <Copy Text="@CurrentTenant?.Id" ShouldDisplayIcon="false"></Copy>
                     </Span>
                 </Div>
-                @if (CanEditTenantSettings && ViewMode)
-                {
-                    <PikachuButton Class="pk-btn-light" Clicked="@EditAsync">
-                        @L["Edit"]
-                        <Icon Name="IconName.Pen" Class="ms-1"></Icon>
-                    </PikachuButton>
-                }
             </Div>
         </CardBody>
     </Card>
@@ -50,84 +43,7 @@
                 </Items>
                 <Content>
                     <TabPanel Name="TenantInformation">
-                        <Card>
-                            <CardBody>
-                                <Row>
-                                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
-                                        <h4>@L["TenantInformation"]</h4>
-                                    </Column>
-                                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                                        <Validation MessageLocalizer="@LH.Localize">
-                                            <Field>
-                                                <FieldLabel>@L["Domain"]<Span> *</Span></FieldLabel>
-                                                <TextEdit @bind-Text="Entity.Domain" Disabled="@ViewMode">
-                                                    <Feedback>
-                                                        <ValidationError />
-                                                    </Feedback>
-                                                </TextEdit>
-                                            </Field>
-                                        </Validation>
-                                        <Validation MessageLocalizer="@LH.Localize">
-                                            <Field>
-                                                <FieldLabel>@L["ShortCode"]<Span> *</Span></FieldLabel>
-                                                <TextEdit MaxLength="8" @bind-Text="Entity.ShortCode" Disabled="@ViewMode">
-                                                    <Feedback>
-                                                        <ValidationError />
-                                                    </Feedback>
-                                                </TextEdit>
-                                            </Field>
-                                        </Validation>
-                                        <Validation MessageLocalizer="@LH.Localize">
-                                            <Field>
-                                                <FieldLabel>@L["TenantContactTitle"]<Span> *</Span></FieldLabel>
-                                                <Select TValue="string" @bind-SelectedValue="Entity.TenantContactTitle" Disabled="@ViewMode">
-                                                    <Feedback>
-                                                        <ValidationError />
-                                                    </Feedback>
-                                                    <ChildContent>
-                                                        <SelectItem Value="(string?)null"></SelectItem>
-                                                        @foreach (string title in TenantContactTitles)
-                                                        {
-                                                            <SelectItem Value="@title">@L[title]</SelectItem>
-                                                        }
-                                                    </ChildContent>
-                                                </Select>
-                                            </Field>
-                                        </Validation>
-                                        <Validation MessageLocalizer="@LH.Localize">
-                                            <Field>
-                                                <FieldLabel>@L["TenantContactPerson"]<Span> *</Span></FieldLabel>
-                                                <TextEdit @bind-Text="Entity.TenantContactPerson" Disabled="@ViewMode">
-                                                    <Feedback>
-                                                        <ValidationError />
-                                                    </Feedback>
-                                                </TextEdit>
-                                            </Field>
-                                        </Validation>
-                                        <Validation MessageLocalizer="@LH.Localize">
-                                            <Field>
-                                                <FieldLabel>@L["ContactPhone"]<Span> *</Span></FieldLabel>
-                                                <TextEdit @bind-Text="Entity.ContactPhone" Disabled="@ViewMode">
-                                                    <Feedback>
-                                                        <ValidationError />
-                                                    </Feedback>
-                                                </TextEdit>
-                                            </Field>
-                                        </Validation>
-                                        <Validation MessageLocalizer="@LH.Localize">
-                                            <Field>
-                                                <FieldLabel>@L["TenantContactEmail"]<Span> *</Span></FieldLabel>
-                                                <TextEdit @bind-Text="Entity.TenantContactEmail" Disabled="@ViewMode">
-                                                    <Feedback>
-                                                        <ValidationError />
-                                                    </Feedback>
-                                                </TextEdit>
-                                            </Field>
-                                        </Validation>
-                                    </Column>
-                                </Row>
-                            </CardBody>
-                        </Card>
+                        <TenantInformation AppService="TenantSettingsAppService"></TenantInformation>
                     </TabPanel>
                     <TabPanel Name="CustomerServiceInformation">
                         <Card>
@@ -139,8 +55,18 @@
                                     <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
                                         <Validation MessageLocalizer="@LH.Localize">
                                             <Field>
+                                                <FieldLabel>@L["ShortCode"]<Span> *</Span></FieldLabel>
+                                                <TextEdit MaxLength="8" @bind-Text="Entity.ShortCode">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                        <Validation MessageLocalizer="@LH.Localize">
+                                            <Field>
                                                 <FieldLabel>@L["CompanyName"]<Span> *</Span></FieldLabel>
-                                                <TextEdit @bind-Text="Entity.CompanyName" Disabled="@ViewMode">
+                                                <TextEdit @bind-Text="Entity.CompanyName">
                                                     <Feedback>
                                                         <ValidationError />
                                                     </Feedback>
@@ -150,7 +76,7 @@
                                         <Validation MessageLocalizer="@LH.Localize">
                                             <Field>
                                                 <FieldLabel>@L["BusinessRegistrationNumber"]<Span> *</Span></FieldLabel>
-                                                <TextEdit @bind-Text="Entity.BusinessRegistrationNumber" Disabled="@ViewMode">
+                                                <TextEdit @bind-Text="Entity.BusinessRegistrationNumber">
                                                     <Feedback>
                                                         <ValidationError />
                                                     </Feedback>
@@ -160,7 +86,7 @@
                                         <Validation MessageLocalizer="@LH.Localize">
                                             <Field>
                                                 <FieldLabel>@L["CustomerServiceEmail"]<Span> *</Span></FieldLabel>
-                                                <TextEdit @bind-Text="Entity.CustomerServiceEmail" Disabled="@ViewMode">
+                                                <TextEdit @bind-Text="Entity.CustomerServiceEmail">
                                                     <Feedback>
                                                         <ValidationError />
                                                     </Feedback>
@@ -180,7 +106,7 @@
                                                 <Validation MessageLocalizer="@LH.Localize">
                                                     <Field>
                                                         <FieldLabel>@L["From"]<Span> *</Span></FieldLabel>
-                                                        <TimeEdit TValue="DateTime?" @bind-Time="Entity.ServiceHoursFrom" Disabled="@ViewMode">
+                                                        <TimeEdit TValue="DateTime?" @bind-Time="Entity.ServiceHoursFrom">
                                                             <Feedback>
                                                                 <ValidationError />
                                                             </Feedback>
@@ -192,7 +118,7 @@
                                                 <Validation MessageLocalizer="@LH.Localize">
                                                     <Field>
                                                         <FieldLabel>@L["To"]<Span> *</Span></FieldLabel>
-                                                        <TimeEdit TValue="DateTime?" @bind-Time="Entity.ServiceHoursTo" Disabled="@ViewMode">
+                                                        <TimeEdit TValue="DateTime?" @bind-Time="Entity.ServiceHoursTo">
                                                             <Feedback>
                                                                 <ValidationError />
                                                             </Feedback>
@@ -219,10 +145,9 @@
                                                 <Div Class="d-flex align-items-center justify-content-between mb-1">
                                                     <FieldLabel Class="m-0">@L["SpecifyCompanyPrivacyPolicy"]<Span> *</Span></FieldLabel>
                                                     <PikachuButton Class="pk-btn-sm pk-btn-outline-primary"
-                                                                   Clicked="SetDefaultPrivacyPolicy"
-                                                                   Disabled="ViewMode">@L["DefaultPrivacyPolicy"]</PikachuButton>
+                                                                   Clicked="SetDefaultPrivacyPolicy">@L["DefaultPrivacyPolicy"]</PikachuButton>
                                                 </Div>
-                                                <BlazoredTextEditor ReadOnly="true" @ref="@PrivacyPolicyHtml">
+                                                <BlazoredTextEditor @ref="@PrivacyPolicyHtml">
                                                     <ToolbarContent>
                                                         <select class="ql-header">
                                                             <option selected=""></option>
@@ -257,7 +182,7 @@
                                                         </span>
                                                     </ToolbarContent>
                                                 </BlazoredTextEditor>
-                                                <MemoEdit Rows="5" @bind-Text="Entity.PrivacyPolicy" Disabled="@ViewMode" Visibility="Visibility.Invisible" Style="height: 0; margin: 0; padding: 0;">
+                                                <MemoEdit Rows="5" @bind-Text="Entity.PrivacyPolicy" Visibility="Visibility.Invisible" Style="height: 0; margin: 0; padding: 0;">
                                                     <Feedback>
                                                         <ValidationError />
                                                     </Feedback>
@@ -280,7 +205,7 @@
                                         <Validation MessageLocalizer="@LH.Localize">
                                             <Field>
                                                 <FieldLabel>@L["WebpageTitle"]<Span> *</Span></FieldLabel>
-                                                <TextEdit @bind-Text="Entity.WebpageTitle" Disabled="@ViewMode">
+                                                <TextEdit @bind-Text="Entity.WebpageTitle">
                                                     <Feedback>
                                                         <ValidationError />
                                                     </Feedback>
@@ -310,8 +235,7 @@
                                         <Field Class="container-less-filepicker">
                                             <FilePicker Changed="@((e) => OnFileUploadAsync(e, "logo"))"
                                                         ShowMode="FilePickerShowMode.List"
-                                                        Accept="@(string.Join(", ", Constant.ValidImageExtensions))"
-                                                        Disabled="@ViewMode">
+                                                        Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
                                                 <FileTemplate></FileTemplate>
                                                 <ButtonsTemplate></ButtonsTemplate>
                                             </FilePicker>
@@ -339,8 +263,7 @@
                                         <Field Class="container-less-filepicker">
                                             <FilePicker Changed="@((e) => OnFileUploadAsync(e, "banner"))"
                                                         ShowMode="FilePickerShowMode.List"
-                                                        Accept="@(string.Join(", ", Constant.ValidImageExtensions))"
-                                                        Disabled="@ViewMode">
+                                                        Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
                                                 <FileTemplate></FileTemplate>
                                                 <ButtonsTemplate></ButtonsTemplate>
                                             </FilePicker>
@@ -368,8 +291,7 @@
                                         <Field Class="container-less-filepicker">
                                             <FilePicker Changed="@((e) => OnFileUploadAsync(e, "favicon"))"
                                                         ShowMode="FilePickerShowMode.List"
-                                                        Accept="@(string.Join(", ", Constant.ValidFaviconExtensions))"
-                                                        Disabled="@ViewMode">
+                                                        Accept="@(string.Join(", ", Constant.ValidFaviconExtensions))">
                                                 <FileTemplate></FileTemplate>
                                                 <ButtonsTemplate></ButtonsTemplate>
                                             </FilePicker>
@@ -390,7 +312,7 @@
                                         <Validation MessageLocalizer="@LH.Localize">
                                             <Field>
                                                 <FieldLabel>@L["Facebook"]</FieldLabel>
-                                                <TextEdit @bind-Text="Entity.Facebook" Disabled="@ViewMode">
+                                                <TextEdit @bind-Text="Entity.Facebook">
                                                     <Feedback>
                                                         <ValidationError />
                                                     </Feedback>
@@ -400,7 +322,7 @@
                                         <Validation MessageLocalizer="@LH.Localize">
                                             <Field>
                                                 <FieldLabel>@L["Instagram"]</FieldLabel>
-                                                <TextEdit @bind-Text="Entity.Instagram" Disabled="@ViewMode">
+                                                <TextEdit @bind-Text="Entity.Instagram">
                                                     <Feedback>
                                                         <ValidationError />
                                                     </Feedback>
@@ -410,7 +332,7 @@
                                         <Validation MessageLocalizer="@LH.Localize">
                                             <Field>
                                                 <FieldLabel>@L["Line"]</FieldLabel>
-                                                <TextEdit @bind-Text="Entity.Line" Disabled="@ViewMode">
+                                                <TextEdit @bind-Text="Entity.Line">
                                                     <Feedback>
                                                         <ValidationError />
                                                     </Feedback>
@@ -432,7 +354,7 @@
                                     <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
                                         <Field>
                                             <FieldLabel>@L["GtmEnabled"]</FieldLabel>
-                                            <Switch TValue="bool" @bind-Checked="@Entity.GtmEnabled" Disabled="@ViewMode"></Switch>
+                                            <Switch TValue="bool" @bind-Checked="@Entity.GtmEnabled"></Switch>
                                         </Field>
                                         <Field>
                                             <FieldLabel>
@@ -442,7 +364,7 @@
                                                     <Span> *</Span>
                                                 }
                                             </FieldLabel>
-                                            <TextEdit Class="@(Entity.GtmEnabled && Entity.GtmContainerId.IsNullOrWhiteSpace() ? "invalid" : "")" @bind-Text="Entity.GtmContainerId" Disabled="@ViewMode" Placeholder="GTM-XXXXXX"></TextEdit>
+                                            <TextEdit Class="@(Entity.GtmEnabled && Entity.GtmContainerId.IsNullOrWhiteSpace() ? "invalid" : "")" @bind-Text="Entity.GtmContainerId" Placeholder="GTM-XXXXXX"></TextEdit>
                                             @if (Entity.GtmEnabled && Entity.GtmContainerId.IsNullOrWhiteSpace())
                                             {
                                                 <Div Class="validation-message">@L["GtmContainerIdIsRequired"]</Div>
@@ -457,17 +379,12 @@
             </Tabs>
         </Validations>
     </Form>
-    @if (CanEditTenantSettings && !ViewMode)
-    {
-        <Div Class="text-end">
-            <PikachuButton Class="pk-btn-transparent" Disabled="IsLoading" Loading="IsCancelling" Clicked="CancelAsync">
-                @L["Cancel"]
-            </PikachuButton>
-            <PikachuButton Class="pk-btn-primary" Disabled="IsCancelling" Loading="IsLoading" Clicked="UpdateAsync">
-                @L["Update"]
-            </PikachuButton>
-        </Div>
-    }
+    <Div Class="text-end">
+        <PikachuButton Class="pk-btn-transparent" Disabled="IsLoading" Loading="IsCancelling" Clicked="CancelAsync">
+            @L["Cancel"]
+        </PikachuButton>
+        <PikachuButton Class="pk-btn-primary" Disabled="IsCancelling" Loading="IsLoading" Clicked="UpdateAsync">
+            @L["Update"]
+        </PikachuButton>
+    </Div>
 </Div>
-
-

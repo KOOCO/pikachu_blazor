@@ -10,29 +10,41 @@ namespace Kooco.Pikachu.Controllers.TenantManagement;
 [ControllerName("TenantSettings")]
 [Area("app")]
 [Route("api/app/tenant-settings")]
-public class TenantSettingsController(ITenantSettingsAppService tenantset) : PikachuController, ITenantSettingsAppService
+public class TenantSettingsController(ITenantSettingsAppService tenantSettingsAppService) : PikachuController, ITenantSettingsAppService
 {
     [HttpDelete("{blobName}")]
     public Task DeleteImageAsync(string blobName)
     {
-        return tenantset.DeleteImageAsync(blobName);
+        return tenantSettingsAppService.DeleteImageAsync(blobName);
     }
 
     [HttpGet("default")]
     public Task<TenantSettingsDto?> FirstOrDefaultAsync()
     {
-        return tenantset.FirstOrDefaultAsync();
+        return tenantSettingsAppService.FirstOrDefaultAsync();
+    }
+
+    [HttpGet("tenant-information")]
+    public Task<TenantInformationDto> GetTenantInformationAsync()
+    {
+        return tenantSettingsAppService.GetTenantInformationAsync();
     }
 
     [HttpPost]
     public Task<TenantSettingsDto> UpdateAsync(UpdateTenantSettingsDto input)
     {
-        return tenantset.UpdateAsync(input);
+        return tenantSettingsAppService.UpdateAsync(input);
+    }
+
+    [HttpPost("tenant-information")]
+    public Task<TenantInformationDto> UpdateTenantInformationAsync(UpdateTenantInformationDto input)
+    {
+        return tenantSettingsAppService.UpdateTenantInformationAsync(input);
     }
 
     [HttpPost("upload-image")]
     public Task<string> UploadImageAsync(UploadImageDto input)
     {
-        return tenantset.UploadImageAsync(input);
+        return tenantSettingsAppService.UploadImageAsync(input);
     }
 }

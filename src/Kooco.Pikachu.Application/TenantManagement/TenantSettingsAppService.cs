@@ -58,6 +58,25 @@ public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManage
         return ObjectMapper.Map<TenantSettings, TenantSettingsDto>(tenantSettings);
     }
 
+    [Authorize(PikachuPermissions.TenantSettings.Edit)]
+    public async Task<TenantInformationDto> UpdateTenantInformationAsync(UpdateTenantInformationDto input)
+    {
+        Check.NotNull(input, nameof(input));
+
+        var tenantSettings = await tenantSettingsManager.UpdateTenantInformationAsync(input.Domain, input.TenantContactTitle, input.TenantContactPerson,
+            input.ContactPhone, input.TenantContactEmail);
+        await tenantSettingsRepository.UpdateAsync(tenantSettings);
+
+        return ObjectMapper.Map<TenantSettings, TenantInformationDto>(tenantSettings);
+    }
+
+    public async Task<TenantInformationDto> GetTenantInformationAsync()
+    {
+        var tenantSettings = await tenantSettingsManager.GetAsync();
+
+        return ObjectMapper.Map<TenantSettings, TenantInformationDto>(tenantSettings);
+    }
+
     public async Task<string> UploadImageAsync(UploadImageDto input)
     {
         Check.NotNull(input, nameof(input));

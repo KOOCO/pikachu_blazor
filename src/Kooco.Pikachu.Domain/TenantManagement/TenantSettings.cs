@@ -34,6 +34,8 @@ public class TenantSettings : FullAuditedEntity<Guid>, IMultiTenant
 
     public TenantSettings() { }
 
+    public TenantSettings(Guid id) : base(id) { }
+
     public TenantSettings(
         Guid id,
         string? faviconUrl,

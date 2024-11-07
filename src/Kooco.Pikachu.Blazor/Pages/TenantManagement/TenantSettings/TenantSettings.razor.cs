@@ -11,7 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Kooco.Pikachu.Blazor.Pages.TenantManagement;
+namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantSettings;
 
 public partial class TenantSettings
 {
@@ -21,7 +21,6 @@ public partial class TenantSettings
     private Validations ValidationsRef { get; set; }
     private bool IsLoading { get; set; } = false;
     private bool IsCancelling { get; set; } = false;
-    private bool ViewMode { get; set; } = true;
 
     private readonly List<string> TenantContactTitles = ["Mr.", "Ms."];
     private BlazoredTextEditor PrivacyPolicyHtml { get; set; }
@@ -147,24 +146,14 @@ public partial class TenantSettings
         await PrivacyPolicyHtml.LoadHTMLContent(TenantSettingsConsts.DefaultPrivacyPolicy);
     }
 
-    async Task EditAsync()
-    {
-        ViewMode = false;
-        await PrivacyPolicyHtml.LoadHTMLContent(Entity.PrivacyPolicy);
-        await PrivacyPolicyHtml.EnableEditor(true);
-        await InvokeAsync(StateHasChanged);
-    }
-
     private async Task ResetAsync()
     {
         try
         {
-            ViewMode = true;
             TenantSettingsDto = await TenantSettingsAppService.FirstOrDefaultAsync();
             Entity = ObjectMapper.Map<TenantSettingsDto, UpdateTenantSettingsDto>(TenantSettingsDto) ?? new();
             ValidationsRef?.ClearAll();
             await PrivacyPolicyHtml.LoadHTMLContent(Entity.PrivacyPolicy);
-            await PrivacyPolicyHtml.EnableEditor(false);
         }
         catch (Exception ex)
         {

@@ -1,0 +1,86 @@
+﻿@using Kooco.Pikachu.Localization
+@using Volo.Abp.AspNetCore.Components.Web
+@inherits PikachuComponentBase
+@inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
+
+<Form>
+    <Validations @ref="@ValidationsRef" Model="@Entity" ValidateOnLoad="false">
+        <Card>
+            <CardBody>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                        <h4>@L["TenantInformation"]</h4>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <FieldLabel>@L["Domain"]<Span> *</Span></FieldLabel>
+                                <TextEdit @bind-Text="Entity.Domain">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <FieldLabel>@L["TenantContactTitle"]<Span> *</Span></FieldLabel>
+                                <Select TValue="string" @bind-SelectedValue="Entity.TenantContactTitle">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                    <ChildContent>
+                                        <SelectItem Value="(string?)null"></SelectItem>
+                                        @foreach (string title in Constant.TenantContactTitles)
+                                        {
+                                            <SelectItem Value="@title">@L[title]</SelectItem>
+                                        }
+                                    </ChildContent>
+                                </Select>
+                            </Field>
+                        </Validation>
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <FieldLabel>@L["TenantContactPerson"]<Span> *</Span></FieldLabel>
+                                <TextEdit @bind-Text="Entity.TenantContactPerson">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <FieldLabel>@L["ContactPhone"]<Span> *</Span></FieldLabel>
+                                <TextEdit @bind-Text="Entity.ContactPhone">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <FieldLabel>@L["TenantContactEmail"]<Span> *</Span></FieldLabel>
+                                <TextEdit @bind-Text="Entity.TenantContactEmail">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                    </Column>
+                </Row>
+            </CardBody>
+        </Card>
+    </Validations>
+
+    <Div Class="text-end">
+        <PikachuButton Class="pk-btn-transparent" Disabled="IsLoading" Loading="IsCancelling" Clicked="CancelAsync">
+            @L["Cancel"]
+        </PikachuButton>
+        <PikachuButton Class="pk-btn-primary" Disabled="IsCancelling" Loading="IsLoading" Clicked="UpdateAsync">
+            @L["Update"]
+        </PikachuButton>
+    </Div>
+</Form>

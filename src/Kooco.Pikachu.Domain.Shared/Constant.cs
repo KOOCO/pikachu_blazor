@@ -29,5 +29,7 @@ namespace Kooco.Pikachu
         public const int MaxImageSizeInBytes = 512000;
         public static readonly List<string> ValidImageExtensions = [".jpg", ".png", ".svg", ".jpeg", ".webp"];
         public static readonly List<string> ValidFaviconExtensions = [".ico"];
+
+        public static readonly List<string> TenantContactTitles = ["Mr.", "Ms."];
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 
 namespace Kooco.Pikachu.TenantManagement;
@@ -7,6 +6,8 @@ namespace Kooco.Pikachu.TenantManagement;
 public interface ITenantSettingsAppService : IApplicationService
 {
     Task<TenantSettingsDto> UpdateAsync(UpdateTenantSettingsDto input);
+    Task<TenantInformationDto> UpdateTenantInformationAsync(UpdateTenantInformationDto input);
+    Task<TenantInformationDto> GetTenantInformationAsync();
     Task<TenantSettingsDto?> FirstOrDefaultAsync();
     Task<string> UploadImageAsync(UploadImageDto input);
     Task DeleteImageAsync(string blobName);
