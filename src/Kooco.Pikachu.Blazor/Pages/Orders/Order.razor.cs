@@ -47,6 +47,7 @@ public partial class Order
     private OrderDto SelectedOrder { get; set; }
     private OrderItemDto SelectedOrderItem { get; set; }
     private OrderDeliveryDto SelectedOrderDelivery { get; set; }
+    private Guid OrderDeliveryId { get; set; }
     private Guid? GroupBuyFilter { get; set; }
     private int PageIndex { get; set; } = 1;
     private int PageSize { get; set; } = 10;
@@ -102,7 +103,7 @@ public partial class Order
 
         List<Dictionary<string, string>> responseResults = []; string wholeErrorMessage = string.Empty;
 
-        foreach (Guid orderId in orderIds) 
+        foreach (Guid orderId in orderIds)
         {
             OrderDto order = await _orderAppService.GetAsync(orderId);
 
@@ -110,7 +111,7 @@ public partial class Order
 
             foreach (OrderDeliveryDto orderDelivery in orderDeliveries)
             {
-                if (orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.PostOffice || 
+                if (orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.PostOffice ||
                     orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.BlackCat1 ||
                     orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.BlackCatFrozen ||
                     orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.BlackCatFreeze)
@@ -330,13 +331,14 @@ public partial class Order
         await InvokeAsync(StateHasChanged);
     }
 
-    private async Task GetGroupBuyList() {
+    private async Task GetGroupBuyList()
+    {
         await loading.Show();
         GroupBuyList = await _groupBuyAppService.GetGroupBuyLookupAsync();
         await loading.Hide();
-    
+
     }
-    
+
     private async Task UpdateItemList()
     {
         try
@@ -349,9 +351,9 @@ public partial class Order
                 MaxResultCount = PageSize,
                 SkipCount = skipCount,
                 Filter = Filter,
-                GroupBuyId=GroupBuyFilter,
-                StartDate=StartDate,
-                EndDate=EndDate,
+                GroupBuyId = GroupBuyFilter,
+                StartDate = StartDate,
+                EndDate = EndDate,
                 DeliveryMethod = DeliveryMethod
             });
             Orders = result?.Items.ToList() ?? new List<OrderDto>();
@@ -385,7 +387,7 @@ public partial class Order
             await loading.Show();
 
             int skipCount = PageIndex * PageSize;
-            
+
             PagedResultDto<OrderDto> result = await _orderAppService.GetListAsync(new GetOrderListDto
             {
                 Sorting = Sorting,
@@ -432,17 +434,17 @@ public partial class Order
         FrozenCount = OrdersSelected.Any(a => a.OrderItems.Any(ai => ai.DeliveryTemperature is ItemStorageTemperature.Frozen)) ? FrozenCount + 1 : FrozenCount;
     }
 
-    async Task OnSearch(Guid? e=null)
+    async Task OnSearch(Guid? e = null)
     {
         if (e == Guid.Empty) GroupBuyFilter = null;
 
         else GroupBuyFilter = e;
 
         PageIndex = 0;
-      
+
         await UpdateItemList();
     }
-  
+
     void HandleSelectAllChange(ChangeEventArgs e)
     {
         IsAllSelected = e.Value != null ? (bool)e.Value : false;
@@ -467,7 +469,7 @@ public partial class Order
     {
         var selectedOrders = Orders.Where(x => x.IsSelected).ToList();
 
-        if (selectedOrders.Count>1)
+        if (selectedOrders.Count > 1)
         {
             var firstSelectedOrder = selectedOrders.First();
             bool allMatch = true;
@@ -478,10 +480,10 @@ public partial class Order
                      order.CustomerName != firstSelectedOrder.CustomerName ||
                     order.CustomerEmail != firstSelectedOrder.CustomerEmail ||
                    order.ShippingStatus != firstSelectedOrder.ShippingStatus ||
-                
-                   
-                    order.OrderType!=null
-                    || order.ShippingStatus==ShippingStatus.Shipped
+
+
+                    order.OrderType != null
+                    || order.ShippingStatus == ShippingStatus.Shipped
                     || order.ShippingStatus == ShippingStatus.Completed
                     || order.ShippingStatus == ShippingStatus.Closed)
                 {
@@ -541,7 +543,7 @@ public partial class Order
         return ExpandedOrderId == order.Id;
     }
 
-    private async void MergeOrders() 
+    private async void MergeOrders()
     {
         var orderIds = Orders.Where(x => x.IsSelected).Select(x => x.OrderId).ToList();
         await _orderAppService.MergeOrdersAsync(orderIds);
@@ -558,7 +560,23 @@ public partial class Order
 
         await JSRuntime.InvokeVoidAsync("openInNewTab", $"Orders/OrderShippingDetails/{selectedIdsStr}");
     }
-    
+    private async void OrderItemShipped()
+    {
+        await loading.Show();
+        var selectedOrders = OrdersSelected;
+        foreach (var selectedOrder in selectedOrders)
+        {
+            List<OrderDeliveryDto> orderDeliveries = await _OrderDeliveryAppService.GetListByOrderAsync(selectedOrder.OrderId);
+            if (orderDeliveries is { Count: > 0 })
+            {
+                foreach(var orderDelivery in orderDeliveries)
+                    await _OrderDeliveryAppService.UpdateOrderDeliveryStatus(orderDelivery.Id);
+            }
+        }
+        await UpdateItemList();
+        await InvokeAsync(StateHasChanged);
+        await loading.Hide();
+    }
     public async void IssueInvoice()
     {
         try
@@ -576,18 +594,18 @@ public partial class Order
         {
             await loading.Hide();
             await _uiMessageService.Error(ex.Message.ToString());
-            
+
 
         }
-       
+
     }
-    
+
     async Task DownloadExcel()
     {
         try
         {
             int skipCount = PageIndex * PageSize;
-            var orderIds = Orders.Where(x => x.IsSelected).Select(x=>x.Id).ToList();
+            var orderIds = Orders.Where(x => x.IsSelected).Select(x => x.Id).ToList();
             Sorting = Sorting != null ? Sorting : "OrderNo Ascending";
 
             var remoteStreamContent = await _orderAppService.GetListAsExcelFileAsync(new GetOrderListDto
@@ -596,7 +614,7 @@ public partial class Order
                 MaxResultCount = PageSize,
                 SkipCount = skipCount,
                 Filter = Filter,
-                OrderIds=orderIds,
+                OrderIds = orderIds,
             });
 
             using (var responseStream = remoteStreamContent.GetStream())
