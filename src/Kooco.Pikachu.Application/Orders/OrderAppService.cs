@@ -1218,7 +1218,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         if (input.ShouldSendEmail)
         {
-            CurrentUnitOfWork?.SaveChangesAsync();
+            await UnitOfWorkManager.Current.SaveChangesAsync();
             await SendEmailAsync(order.Id);
         }
 
