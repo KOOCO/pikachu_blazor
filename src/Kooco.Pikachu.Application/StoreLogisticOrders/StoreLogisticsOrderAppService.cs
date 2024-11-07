@@ -287,9 +287,9 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             spec = GetSpec(TCatNormal.Size);
 
-            isCollection = TCatNormal.Payment ? "Y" : "N";
+            isCollection = TCatNormal.Payment && order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment ? "Y" : "N";
 
-            collectionAmount = TCatNormal.Payment ?
+            collectionAmount = TCatNormal.Payment && order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment ?
                                 GetCollectionAmount(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost) :
                                 0;
 
@@ -303,9 +303,9 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             spec = GetSpec(TCatFreeze.Size);
 
-            isCollection = TCatFreeze.Payment ? "Y" : "N";
+            isCollection = TCatFreeze.Payment && order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment ? "Y" : "N";
 
-            collectionAmount = TCatFreeze.Payment ?
+            collectionAmount = TCatFreeze.Payment && order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment ?
                                 GetCollectionAmount(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost) :
                                 0;
 
@@ -319,9 +319,9 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             spec = GetSpec(TCatFrozen.Size);
 
-            isCollection = TCatFrozen.Payment ? "Y" : "N";
+            isCollection = TCatFrozen.Payment && order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment ? "Y" : "N";
 
-            collectionAmount = TCatFrozen.Payment ?
+            collectionAmount = TCatFrozen.Payment && order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment ?
                                 GetCollectionAmount(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost) :
                                 0;
 

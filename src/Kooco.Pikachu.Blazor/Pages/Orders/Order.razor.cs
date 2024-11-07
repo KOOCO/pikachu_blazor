@@ -295,6 +295,7 @@ public partial class Order
 
     public async Task OnOrderDeliveryDataReadAsync(DataGridReadDataEventArgs<OrderDeliveryDto> e, Guid orderId)
     {
+        await loading.Show();
         OrderDeliveries = [];
 
         if (!OrderDeliveriesByOrderId.ContainsKey(orderId))
@@ -305,6 +306,7 @@ public partial class Order
         }
 
         StateHasChanged();
+        await loading.Hide();
     }
 
     public List<OrderDeliveryDto> GetOrderDeliveries(Guid orderId)
