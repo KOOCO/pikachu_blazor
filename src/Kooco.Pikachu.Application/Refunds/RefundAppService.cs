@@ -137,13 +137,17 @@ public class RefundAppService : ApplicationService, IRefundAppService
 
         Order order = await _orderRepository.GetWithDetailsAsync(refund.OrderId);
 
+        Order OriginalOrder = await _orderRepository.GetWithDetailsAsync((Guid)order.SplitFromId);
+
+        OriginalOrder.TotalAmount -= order.TotalAmount;
+
         if (
             order.ShippingStatus is ShippingStatus.WaitingForPayment ||
             order.ShippingStatus is ShippingStatus.PrepareShipment ||
             order.ShippingStatus is ShippingStatus.ToBeShipped ||
             order.ShippingStatus is ShippingStatus.EnterpricePurchase
         )
-            order.TotalAmount -= order.TotalAmount;
+            order.TotalAmount -= order.TotalAmount; 
 
         else if (
             order.ShippingStatus is ShippingStatus.Shipped ||
@@ -166,6 +170,7 @@ public class RefundAppService : ApplicationService, IRefundAppService
         }
 
         await _orderRepository.UpdateAsync(order);
+        await _orderRepository.UpdateAsync(OriginalOrder);
 
         PaymentGatewayDto? ecpay = (await _PaymentGatewayAppService.GetAllAsync()).FirstOrDefault(f => f.PaymentIntegrationType is PaymentIntegrationType.EcPay) ??
                                     throw new UserFriendlyException("Please Set Ecpay Setting First"); ;
