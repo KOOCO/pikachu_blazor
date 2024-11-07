@@ -15,24 +15,43 @@ public partial class LogisticsProviderSettings
 {
     #region Inject
     GreenWorldLogisticsCreateUpdateDto GreenWorld = new();
+    bool IsGreenWorldNotExists = false;
     GreenWorldLogisticsCreateUpdateDto GreenWorldC2C = new();
+    bool IsGreenWorldC2CNotExists = false;
     HomeDeliveryCreateUpdateDto HomeDelivery = new();
+    bool IsHomeDeliveyNotExists = false;
     PostOfficeCreateUpdateDto PostOffice = new();
+    bool IsPostOfficeNotExists = false;
     SevenToElevenCreateUpdateDto SevenToEleven = new();
+    bool IsSevenToElevenNotExists = false;
     SevenToElevenCreateUpdateDto SevenToElevenC2C = new();
+    bool IsSevenToElevenC2CNotExists = false;
     SevenToElevenCreateUpdateDto SevenToElevenFrozen = new();
+    bool IsSevenToElevenFrozenNotExists = false;
     SevenToElevenCreateUpdateDto FamilyMart = new();
+    bool IsFamilyMartNotExists = false;
     SevenToElevenCreateUpdateDto FamilyMartC2C = new();
+    bool IsFamilyMartC2CNotExists = false;
     BNormalCreateUpdateDto BNormal = new();
+    bool IsBNormalNotExists = false;
     BNormalCreateUpdateDto BFreeze = new();
+    bool IsBFreezeNotExists = false;
     BNormalCreateUpdateDto BFrozen = new();
+    bool IsBFrozenNotExists = false;
     TCatLogisticsCreateUpdateDto TCatLogistics = new();
+    bool IsTCatLogisticsNotExists = false;
     TCatNormalCreateUpdateDto TCatNormal = new();
+    bool IsTCatNormalNotExists = false;
     TCatFreezeCreateUpdateDto TCatFreeze = new();
+    bool IsTCatFreezeNotExists = false;
     TCatFrozenCreateUpdateDto TCatFrozen = new();
+    bool IsTCatFrozenNotExists = false;
     TCat711NormalCreateUpdate TCat711Normal = new();
+    bool IsTCat711NormalNotExists = false;
     TCat711FreezeCreateUpdateDto TCat711Freeze = new();
+    bool IsTCat711FreezeNotExists = false;
     TCat711FrozenCreateUpdateDto TCat711Frozen = new();
+    bool IsTCat711FrozenNotExists = false;
     LoadingIndicator Loading { get; set; }
     #endregion
 
@@ -78,77 +97,115 @@ public partial class LogisticsProviderSettings
         
         if (greenWorld is not null) GreenWorld = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorld);
 
+        IsGreenWorldNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.GreenWorldLogistics);
+
         LogisticsProviderSettingsDto? greenWorldC2C = providers.Where(p => p.LogisticProvider is LogisticProviders.GreenWorldLogisticsC2C).FirstOrDefault();
         
         if (greenWorldC2C is not null) GreenWorldC2C = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorldC2C);
 
+        IsGreenWorldC2CNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.GreenWorldLogisticsC2C);
+
         LogisticsProviderSettingsDto? homeDelivery = providers.Where(p => p.LogisticProvider is LogisticProviders.HomeDelivery).FirstOrDefault();
 
         if (homeDelivery is not null) HomeDelivery = ObjectMapper.Map<LogisticsProviderSettingsDto, HomeDeliveryCreateUpdateDto>(homeDelivery);
-        
+
+        IsHomeDeliveyNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.HomeDelivery);
+
         LogisticsProviderSettingsDto? postOffice = providers.Where(p => p.LogisticProvider is LogisticProviders.PostOffice).FirstOrDefault();
 
         if (postOffice is not null) PostOffice = ObjectMapper.Map<LogisticsProviderSettingsDto, PostOfficeCreateUpdateDto>(postOffice);
         
+        IsPostOfficeNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.PostOffice);
+
         LogisticsProviderSettingsDto? sevenToEleven = providers.Where(p => p.LogisticProvider is LogisticProviders.SevenToEleven).FirstOrDefault();
 
         if (sevenToEleven is not null) SevenToEleven = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(sevenToEleven);
+
+        IsSevenToElevenNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.SevenToEleven);
 
         LogisticsProviderSettingsDto? sevenToElevenC2C = providers.Where(p => p.LogisticProvider is LogisticProviders.SevenToElevenC2C).FirstOrDefault();
 
         if (sevenToElevenC2C is not null) SevenToElevenC2C = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(sevenToElevenC2C);
 
+        IsSevenToElevenC2CNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.SevenToElevenC2C);
+
         LogisticsProviderSettingsDto? familyMart = providers.Where(p => p.LogisticProvider is LogisticProviders.FamilyMart).FirstOrDefault();
         
         if (familyMart is not null) FamilyMart = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(familyMart);
-        
+
+        IsFamilyMartNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.FamilyMart);
+
         LogisticsProviderSettingsDto? familyMartC2C = providers.Where(p => p.LogisticProvider is LogisticProviders.FamilyMartC2C).FirstOrDefault();
         
         if (familyMartC2C is not null) FamilyMartC2C = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(familyMartC2C);
+
+        IsFamilyMartC2CNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.FamilyMartC2C);
 
         LogisticsProviderSettingsDto? sevenToElevenFrozen = providers.Where(p => p.LogisticProvider is LogisticProviders.SevenToElevenFrozen).FirstOrDefault();
         
         if (sevenToElevenFrozen is not null) SevenToElevenFrozen = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(sevenToElevenFrozen);
 
+        IsSevenToElevenFrozenNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.SevenToElevenFrozen);
+
         LogisticsProviderSettingsDto? bNormal = providers.Where(p => p.LogisticProvider is LogisticProviders.BNormal).FirstOrDefault();
         
         if (bNormal is not null) BNormal = ObjectMapper.Map<LogisticsProviderSettingsDto, BNormalCreateUpdateDto>(bNormal);
+
+        IsBNormalNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.BNormal);
 
         LogisticsProviderSettingsDto? bFreeze = providers.Where(p => p.LogisticProvider is LogisticProviders.BFreeze).FirstOrDefault();
         
         if (bFreeze is not null) BFreeze = ObjectMapper.Map<LogisticsProviderSettingsDto, BNormalCreateUpdateDto>(bFreeze);
 
+        IsBFreezeNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.BFreeze);
+
         LogisticsProviderSettingsDto? bFrozen = providers.Where(p => p.LogisticProvider is LogisticProviders.BFrozen).FirstOrDefault();
 
         if (bFrozen is not null) BFrozen = ObjectMapper.Map<LogisticsProviderSettingsDto, BNormalCreateUpdateDto>(bFrozen);
+
+        IsBFrozenNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.BFrozen); 
 
         LogisticsProviderSettingsDto? tCat = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCat);
 
         if (tCat is not null) TCatLogistics = ObjectMapper.Map<LogisticsProviderSettingsDto, TCatLogisticsCreateUpdateDto>(tCat);
 
+        IsTCatLogisticsNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.TCat);
+
         LogisticsProviderSettingsDto? tCatNormal = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCatNormal);
 
         if (tCatNormal is not null) TCatNormal = ObjectMapper.Map<LogisticsProviderSettingsDto, TCatNormalCreateUpdateDto>(tCatNormal);
+
+        IsTCatNormalNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.TCatNormal);
 
         LogisticsProviderSettingsDto? tCatFreeze = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCatFreeze);
 
         if (tCatFreeze is not null) TCatFreeze = ObjectMapper.Map<LogisticsProviderSettingsDto, TCatFreezeCreateUpdateDto>(tCatFreeze);
 
+        IsTCatFreezeNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.TCatFreeze);
+
         LogisticsProviderSettingsDto? tCatFrozen = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCatFrozen);
 
         if (tCatFrozen is not null) TCatFrozen = ObjectMapper.Map<LogisticsProviderSettingsDto, TCatFrozenCreateUpdateDto>(tCatFrozen);
+
+        IsTCatFrozenNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.TCatFrozen);
 
         LogisticsProviderSettingsDto? tCat711Normal = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCat711Normal);
 
         if (tCat711Normal is not null) TCat711Normal = ObjectMapper.Map<LogisticsProviderSettingsDto, TCat711NormalCreateUpdate>(tCat711Normal);
 
+        IsTCat711NormalNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.TCat711Normal);
+
         LogisticsProviderSettingsDto? tCat711Freeze = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCat711Freeze);
 
         if (tCat711Freeze is not null) TCat711Freeze = ObjectMapper.Map<LogisticsProviderSettingsDto, TCat711FreezeCreateUpdateDto>(tCat711Freeze);
 
+        IsTCat711FreezeNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.TCat711Freeze);
+
         LogisticsProviderSettingsDto? tCat711Frozen = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCat711Frozen);
 
         if (tCat711Frozen is not null) TCat711Frozen = ObjectMapper.Map<LogisticsProviderSettingsDto, TCat711FrozenCreateUpdateDto>(tCat711Frozen);
+
+        IsTCat711FrozenNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.TCat711Frozen);
     }
 
     public void OuterIslandsChecked(bool e)

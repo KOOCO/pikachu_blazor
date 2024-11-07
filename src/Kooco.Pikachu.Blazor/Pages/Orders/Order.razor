@@ -1,4 +1,5 @@
 ﻿@page "/Orders"
+@using Kooco.Pikachu.DeliveryTemperatureCosts
 @using Kooco.Pikachu.ElectronicInvoiceSettings
 @using Kooco.Pikachu.EnumValues;
 @using Kooco.Pikachu.Localization;
@@ -21,6 +22,7 @@
 @inject IOrderDeliveryRepository _OrderDeliveryRepository;
 @inject IOrderDeliveryAppService _OrderDeliveryAppService;
 @inject IGroupBuyAppService _groupBuyAppService;
+@inject IDeliveryTemperatureCostAppService _DeliveryTemperatureCostAppService;
 @using Microsoft.JSInterop;
 @inject IJSRuntime JSRuntime;
 
@@ -108,7 +110,7 @@
 
             @if (SelectedTabName is PikachuResource.PrepareShipment)
             {
-                @if ((Orders.Where(x => x.IsSelected).Count() < 1) || (Orders.Where(x => x.InvoiceNumber != null && x.IsSelected).Any()))
+                @if (Orders.Where(x => x.IsSelected).Count() < 1)
                 {
                     <Button Type="@ButtonType.Button" 
                             Disabled 
@@ -171,7 +173,7 @@
                  SelectedTabName is PikachuResource.Delivered || 
                  SelectedTabName is PikachuResource.Completed)
             {
-                @if ((Orders.Where(x => x.IsSelected).Count() != 1) || (Orders.Where(x => x.InvoiceNumber != null && x.IsSelected).Any()))
+                @if ((Orders.Where(x => x.IsSelected).Count() < 1) || (Orders.Where(x => x.InvoiceNumber is not null && x.IsSelected).Any()))
                 {
                     <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
                         <i class="fa fa-print"></i>
@@ -910,8 +912,8 @@
                             <DetailRowTemplate Context="order">
                                 <DataGrid TItem="OrderDeliveryDto"
                                           @bind-SelectedRow="@SelectedOrderDelivery"
-                                          ReadData="@(async (e) => await OnOrderDeliveryDataReadAsync(e, order.Id))"
-                                          Data="@GetOrderDeliveries(order.Id)"
+                                          ReadData="@(async (e) => await OnOrderDeliveryDataReadAsync(e,order.OrderId))"
+                                          Data="@GetOrderDeliveries(order.OrderId)"
                                           DetailRowTrigger="@((e) => e.Item.Items?.Count > 0 && e.Item.Id == SelectedOrderDelivery?.Id)"
                                           Responsive
                                           Bordered>
@@ -925,11 +927,13 @@
                                             <DisplayTemplate>@L[order.DeliveryMethod.ToString()]</DisplayTemplate>
                                         </DataGridColumn>
                                         <DataGridColumn Caption="@L["Last Updated Date"]">
+                                             <DisplayTemplate>@L[order.LastModificationTime.ToString()]</DisplayTemplate>
                                         </DataGridColumn>
-                                        <DataGridColumn Caption="@L["Edition"]">
+                                        <DataGridColumn Field="@nameof(OrderDeliveryDto.Editor)" Caption="@L["Editor"]">
+                                             <DisplayTemplate>@L[context.Editor]</DisplayTemplate>
                                         </DataGridColumn>
                                         <DataGridColumn Caption="@L["Delivery Status"]">
-                                            <DisplayTemplate>@L[order.ShippingStatus.ToString()]</DisplayTemplate>
+                                            <DisplayTemplate>@L[context.DeliveryStatus.ToString()]</DisplayTemplate>
                                         </DataGridColumn>
                                         <DataGridColumn Caption="@L["Delivery Temperature"]">
                                             <DisplayTemplate>
@@ -1135,8 +1139,8 @@
                             <DetailRowTemplate Context="order">
                                 <DataGrid TItem="OrderDeliveryDto"
                                           @bind-SelectedRow="@SelectedOrderDelivery"
-                                          ReadData="@(async (e) => await OnOrderDeliveryDataReadAsync(e, order.Id))"
-                                          Data="@GetOrderDeliveries(order.Id)"
+                                          ReadData="@(async (e) => await OnOrderDeliveryDataReadAsync(e, order.OrderId))"
+                                          Data="@GetOrderDeliveries(order.OrderId)"
                                           DetailRowTrigger="@((e) => e.Item.Items?.Count > 0 && e.Item.Id == SelectedOrderDelivery?.Id)"
                                           Responsive
                                           Bordered>
@@ -1150,8 +1154,10 @@
                                             <DisplayTemplate>@L[order.DeliveryMethod.ToString()]</DisplayTemplate>
                                         </DataGridColumn>
                                         <DataGridColumn Caption="@L["Last Updated Date"]">
+                                            <DisplayTemplate>@L[order.LastModificationTime.ToString()]</DisplayTemplate>
                                         </DataGridColumn>
-                                        <DataGridColumn Caption="@L["Edition"]">
+                                        <DataGridColumn Caption="@L["Editor"]">
+                                            <DisplayTemplate>@L[context.Editor]</DisplayTemplate>
                                         </DataGridColumn>
                                         <DataGridColumn Caption="@L["Delivery Status"]">
                                             <DisplayTemplate>@L[order.ShippingStatus.ToString()]</DisplayTemplate>
@@ -1361,8 +1367,8 @@
                             <DetailRowTemplate Context="order">
                                 <DataGrid TItem="OrderDeliveryDto"
                                           @bind-SelectedRow="@SelectedOrderDelivery"
-                                          ReadData="@(async (e) => await OnOrderDeliveryDataReadAsync(e, order.Id))"
-                                          Data="@GetOrderDeliveries(order.Id)"
+                                          ReadData="@(async (e) => await OnOrderDeliveryDataReadAsync(e, order.OrderId))"
+                                          Data="@GetOrderDeliveries(order.OrderId)"
                                           DetailRowTrigger="@((e) => e.Item.Items?.Count > 0 && e.Item.Id == SelectedOrderDelivery?.Id)"
                                           Responsive
                                           Bordered>
@@ -1376,8 +1382,10 @@
                                             <DisplayTemplate>@L[order.DeliveryMethod.ToString()]</DisplayTemplate>
                                         </DataGridColumn>
                                         <DataGridColumn Caption="@L["Last Updated Date"]">
+                                            <DisplayTemplate>@L[order.LastModificationTime.ToString()]</DisplayTemplate>
                                         </DataGridColumn>
-                                        <DataGridColumn Caption="@L["Edition"]">
+                                        <DataGridColumn Caption="@L["Editor"]">
+                                            <DisplayTemplate>@L[context.Editor]</DisplayTemplate>
                                         </DataGridColumn>
                                         <DataGridColumn Caption="@L["Delivery Status"]">
                                             <DisplayTemplate>@L[order.ShippingStatus.ToString()]</DisplayTemplate>
@@ -1918,8 +1926,8 @@
                             <DetailRowTemplate Context="order">
                                 <DataGrid TItem="OrderDeliveryDto"
                                           @bind-SelectedRow="@SelectedOrderDelivery"
-                                          ReadData="@(async (e) => await OnOrderDeliveryDataReadAsync(e, order.Id))"
-                                          Data="@GetOrderDeliveries(order.Id)"
+                                          ReadData="@(async (e) => await OnOrderDeliveryDataReadAsync(e, order.OrderId))"
+                                          Data="@GetOrderDeliveries(order.OrderId)"
                                           DetailRowTrigger="@((e) => e.Item.Items?.Count > 0 && e.Item.Id == SelectedOrderDelivery?.Id)"
                                           Responsive
                                           Bordered>
@@ -1933,8 +1941,10 @@
                                             <DisplayTemplate>@L[order.DeliveryMethod.ToString()]</DisplayTemplate>
                                         </DataGridColumn>
                                         <DataGridColumn Caption="@L["Last Updated Date"]">
+                                            <DisplayTemplate>@L[order.LastModificationTime.ToString()]</DisplayTemplate>
                                         </DataGridColumn>
-                                        <DataGridColumn Caption="@L["Edition"]">
+                                        <DataGridColumn Caption="@L["Editor"]">
+                                            <DisplayTemplate>@L[context.Editor]</DisplayTemplate>
                                         </DataGridColumn>
                                         <DataGridColumn Caption="@L["Delivery Status"]">
                                             <DisplayTemplate>@L[order.ShippingStatus.ToString()]</DisplayTemplate>

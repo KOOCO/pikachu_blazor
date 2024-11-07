@@ -3,6 +3,7 @@ using Blazorise.DataGrid;
 using Blazorise.LoadingIndicator;
 using Hangfire.Server;
 using Kooco.Pikachu.Blazor.Pages.ItemManagement;
+using Kooco.Pikachu.DeliveryTemperatureCosts;
 using Kooco.Pikachu.ElectronicInvoiceSettings;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Items.Dtos;
@@ -110,7 +111,9 @@ public partial class Order
             foreach (OrderDeliveryDto orderDelivery in orderDeliveries)
             {
                 if (orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.PostOffice || 
-                    orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.BlackCat1)
+                    orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.BlackCat1 ||
+                    orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.BlackCatFrozen ||
+                    orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.BlackCatFreeze)
                 {
                     ResponseResultDto result = await _StoreLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(orderId, orderDelivery.Id);
 
@@ -143,6 +146,115 @@ public partial class Order
                     PrintOBTB2SResponse? response = await _StoreLogisticsOrderAppService.GenerateDeliveryNumberForTCat711DeliveryAsync(orderId, orderDelivery.Id);
 
                     if (response is null || response.Data is null) AddToDictionary(responseResults, order.OrderNo, response.Message);
+                }
+
+                else if (orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.DeliveredByStore)
+                {
+                    LogisticProviders? logisticProvider = null; DeliveryMethod? deliveryMethod = null; ItemStorageTemperature? temperature = null;
+
+                    List<DeliveryTemperatureCostDto> deliveryTemperatureCosts = await _DeliveryTemperatureCostAppService.GetListAsync();
+
+                    foreach (DeliveryTemperatureCostDto entity in deliveryTemperatureCosts)
+                    {
+                        if (orderDelivery.Items.Any(a => a.DeliveryTemperature == entity.Temperature))
+                        {
+                            logisticProvider = entity.LogisticProvider;
+
+                            deliveryMethod = entity.DeliveryMethod;
+
+                            temperature = entity.Temperature;
+                        }
+                    }
+
+                    if (temperature is ItemStorageTemperature.Normal)
+                    {
+                        if (logisticProvider is LogisticProviders.GreenWorldLogistics && deliveryMethod is EnumValues.DeliveryMethod.FamilyMart1 ||
+                            logisticProvider is LogisticProviders.GreenWorldLogistics && deliveryMethod is EnumValues.DeliveryMethod.SevenToEleven1 ||
+                            logisticProvider is LogisticProviders.GreenWorldLogisticsC2C && deliveryMethod is EnumValues.DeliveryMethod.FamilyMartC2C ||
+                            logisticProvider is LogisticProviders.GreenWorldLogisticsC2C && deliveryMethod is EnumValues.DeliveryMethod.SevenToElevenC2C)
+                        {
+                            ResponseResultDto result = await _StoreLogisticsOrderAppService.CreateStoreLogisticsOrderAsync(orderId, orderDelivery.Id, deliveryMethod);
+
+                            if (result.ResponseCode is not "1") AddToDictionary(responseResults, order.OrderNo, result.ResponseMessage);
+                        }
+
+                        else if (logisticProvider is LogisticProviders.GreenWorldLogistics && deliveryMethod is EnumValues.DeliveryMethod.PostOffice ||
+                                 logisticProvider is LogisticProviders.GreenWorldLogistics && deliveryMethod is EnumValues.DeliveryMethod.BlackCat1)
+                        {
+                            ResponseResultDto result = await _StoreLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(orderId, orderDelivery.Id, deliveryMethod);
+
+                            if (result.ResponseCode is not "1") AddToDictionary(responseResults, order.OrderNo, result.ResponseMessage);
+                        }
+
+                        else if (logisticProvider is LogisticProviders.TCat && deliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryNormal)
+                        {
+                            PrintObtResponse? response = await _StoreLogisticsOrderAppService.GenerateDeliveryNumberForTCatDeliveryAsync(orderId, orderDelivery.Id, deliveryMethod);
+
+                            if (response is null || response.Data is null) AddToDictionary(responseResults, order.OrderNo, response.Message);
+                        }
+
+                        else if (logisticProvider is LogisticProviders.TCat && deliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenNormal)
+                        {
+                            PrintOBTB2SResponse? response = await _StoreLogisticsOrderAppService.GenerateDeliveryNumberForTCat711DeliveryAsync(orderId, orderDelivery.Id, deliveryMethod);
+
+                            if (response is null || response.Data is null) AddToDictionary(responseResults, order.OrderNo, response.Message);
+                        }
+                    }
+
+                    else if (temperature is ItemStorageTemperature.Freeze)
+                    {
+                        if (logisticProvider is LogisticProviders.GreenWorldLogistics && deliveryMethod is EnumValues.DeliveryMethod.BlackCatFreeze)
+                        {
+                            ResponseResultDto result = await _StoreLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(orderId, orderDelivery.Id, deliveryMethod);
+
+                            if (result.ResponseCode is not "1") AddToDictionary(responseResults, order.OrderNo, result.ResponseMessage);
+                        }
+
+                        else if (logisticProvider is LogisticProviders.TCat && deliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryFreeze)
+                        {
+                            PrintObtResponse? response = await _StoreLogisticsOrderAppService.GenerateDeliveryNumberForTCatDeliveryAsync(orderId, orderDelivery.Id, deliveryMethod);
+
+                            if (response is null || response.Data is null) AddToDictionary(responseResults, order.OrderNo, response.Message);
+                        }
+
+                        else if (logisticProvider is LogisticProviders.TCat && deliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenFreeze)
+                        {
+                            PrintOBTB2SResponse? response = await _StoreLogisticsOrderAppService.GenerateDeliveryNumberForTCat711DeliveryAsync(orderId, orderDelivery.Id, deliveryMethod);
+
+                            if (response is null || response.Data is null) AddToDictionary(responseResults, order.OrderNo, response.Message);
+                        }
+                    }
+
+                    else if (temperature is ItemStorageTemperature.Frozen)
+                    {
+                        if (logisticProvider is LogisticProviders.TCat && deliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryFrozen)
+                        {
+                            PrintObtResponse? response = await _StoreLogisticsOrderAppService.GenerateDeliveryNumberForTCatDeliveryAsync(orderId, orderDelivery.Id, deliveryMethod);
+
+                            if (response is null || response.Data is null) AddToDictionary(responseResults, order.OrderNo, response.Message);
+                        }
+
+                        else if (logisticProvider is LogisticProviders.TCat && deliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenFrozen)
+                        {
+                            PrintOBTB2SResponse? response = await _StoreLogisticsOrderAppService.GenerateDeliveryNumberForTCat711DeliveryAsync(orderId, orderDelivery.Id, deliveryMethod);
+
+                            if (response is null || response.Data is null) AddToDictionary(responseResults, order.OrderNo, response.Message);
+                        }
+
+                        else if (logisticProvider is LogisticProviders.GreenWorldLogistics && deliveryMethod is EnumValues.DeliveryMethod.BlackCatFrozen)
+                        {
+                            ResponseResultDto result = await _StoreLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(orderId, orderDelivery.Id, deliveryMethod);
+
+                            if (result.ResponseCode is not "1") AddToDictionary(responseResults, order.OrderNo, result.ResponseMessage);
+                        }
+
+                        else if (logisticProvider is LogisticProviders.GreenWorldLogistics && deliveryMethod is EnumValues.DeliveryMethod.SevenToElevenFrozen)
+                        {
+                            ResponseResultDto result = await _StoreLogisticsOrderAppService.CreateStoreLogisticsOrderAsync(orderId, orderDelivery.Id, deliveryMethod);
+
+                            if (result.ResponseCode is not "1") AddToDictionary(responseResults, order.OrderNo, result.ResponseMessage);
+                        }
+                    }
                 }
             }
         }

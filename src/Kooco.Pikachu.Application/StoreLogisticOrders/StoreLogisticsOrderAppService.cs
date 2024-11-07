@@ -25,6 +25,7 @@ using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
@@ -682,6 +683,10 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         string marchentDate = DateTime.Now.ToString("yyyy/MM/dd");
 
+        string validatePattern = @"[\^'`!@#%&*+\\\""<>|_\[\]]";
+        string goodsName = order.GroupBuy.GroupBuyName;
+        goodsName = Regex.Replace(goodsName, validatePattern, "");
+
         request.AddHeader("Accept", "text/html");
         request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
         request.AddParameter("MerchantID", GreenWorld.StoreCode);
@@ -713,7 +718,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         {
             request.AddParameter("LogisticsSubType", "UNIMARTC2C");
             logisticSubType = "UNIMARTC2C";
-            request.AddParameter("GoodsName", order.GroupBuy.GroupBuyName);
+
+            request.AddParameter("GoodsName", goodsName);
             request.AddParameter("SenderCellPhone", GreenWorld.SenderPhoneNumber);
         }
         else if (orderDelivery.DeliveryMethod is DeliveryMethod.FamilyMartC2C || 
@@ -721,7 +727,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         {
             request.AddParameter("LogisticsSubType", "FAMIC2C");
             logisticSubType = "FAMIC2C";
-            request.AddParameter("GoodsName", order.GroupBuy.GroupBuyName);
+            request.AddParameter("GoodsName", goodsName);
             request.AddParameter("SenderCellPhone", GreenWorld.SenderPhoneNumber);
         }
         request.AddParameter("GoodsAmount", Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)));
@@ -743,7 +749,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             deliveryMethod is DeliveryMethod.SevenToElevenC2C)
         {
             request.AddParameter("CheckMacValue", GenerateRequestString(GreenWorld.HashKey, GreenWorld.HashIV, GreenWorld.StoreCode, order.OrderNo, marchentDate, "CVS", logisticSubType, Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)), GreenWorld.SenderName, order.RecipientName, order.RecipientPhone,
-                "https://www.ecpay.com.tw/ServerReplyURL", order.StoreId,order.GroupBuy.GroupBuyName,GreenWorld.SenderPhoneNumber, isCollection: isCollection));
+                "https://www.ecpay.com.tw/ServerReplyURL", order.StoreId, goodsName, GreenWorld.SenderPhoneNumber, isCollection: isCollection));
         }
         else {
             request.AddParameter("CheckMacValue", GenerateRequestString(GreenWorld.HashKey, GreenWorld.HashIV, GreenWorld.StoreCode, order.OrderNo, marchentDate, "CVS", logisticSubType, Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)), GreenWorld.SenderName, order.RecipientName, order.RecipientPhone,

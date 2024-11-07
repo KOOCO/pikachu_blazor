@@ -898,6 +898,7 @@
     "SecondaryBg": "Secondary Bg",
     "SecondaryBackground": "Secondary Background",
     "Alert": "Alert",
-    "uploadUpto10Images": "Upload upto 10 images"
+    "uploadUpto10Images": "Upload upto 10 images",
+    "PleaseFillInTheRequiredInformation": "Please Fill In The Required Information"
   }
 }
