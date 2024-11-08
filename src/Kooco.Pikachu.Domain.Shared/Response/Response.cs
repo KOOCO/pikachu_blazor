@@ -9,6 +9,19 @@ public class Response
 {
 }
 
+public static class EcPayStoreData
+{
+    public static string CVSStoreID { get; set; }
+    public static string CVSAddress { get; set; }
+    public static string CVSOutSide { get; set; }
+    public static string LogisticsSubType { get; set; }
+    public static string CVSStoreName { get; set; }
+    public static string CVSTelephone { get; set; }
+    public static string MerchantID { get; set; }
+    public static string MerchantTradeNo { get; set; }
+    public static string ExtraData { get; set; }
+}
+
 public class AttributeNameOption
 {
     public string AttributeName { get; set; }

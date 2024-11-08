@@ -1,6 +1,9 @@
 ﻿using Asp.Versioning;
 using Kooco.Pikachu.PaymentGateways;
+using Kooco.Pikachu.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -22,6 +25,35 @@ public class PaymentGatewayController(
         return _paymentGatewayAppService.GetAllAsync();
     }
 
+    [HttpPost("ecpay-serverReplyUrl")]
+    [AllowAnonymous]
+    public IActionResult PostAsync()
+    {
+        EcPayStoreData.CVSStoreID = Request.Form.TryGetValue("CVSStoreID", out StringValues cvsStoreId) ? cvsStoreId.ToString() : string.Empty;
+
+        EcPayStoreData.CVSStoreName = Request.Form.TryGetValue("CVSStoreName", out StringValues cvsStoreName) ? cvsStoreName.ToString() : string.Empty;
+
+        EcPayStoreData.CVSAddress = Request.Form.TryGetValue("CVSAddress", out StringValues cvsAddress) ? cvsAddress.ToString() : string.Empty;
+
+        EcPayStoreData.CVSOutSide = Request.Form.TryGetValue("CVSOutSide", out StringValues cvsOutSide) ? cvsOutSide.ToString() : string.Empty;
+
+        return Content(CloseWindowsScript(), "text/html");
+    }
+
+    [HttpGet("get-ecpayStoreData")]
+    public IActionResult GetEcPayStoreData() 
+    {
+        return Ok(
+            new { 
+                CVSStoreID = EcPayStoreData.CVSStoreID,
+                CVSStoreName = EcPayStoreData.CVSStoreName,
+                CVSAddress = EcPayStoreData.CVSAddress,
+                CVSOutSide = EcPayStoreData.CVSOutSide,
+                IsDataRetrieved = true
+            }
+        );
+    }
+
     [HttpPut("china-trust")]
     public Task UpdateChinaTrustAsync(UpdateChinaTrustDto input)
     {
@@ -39,4 +71,27 @@ public class PaymentGatewayController(
     {
         return _paymentGatewayAppService.UpdateLinePayAsync(input);
     }
+
+    #region Private Functions
+    private string CloseWindowsScript()
+    {
+        return @"
+            <script>
+                if (confirm('please go back to main checkout page to continue the order placement.')) 
+                { 
+                    setTimeout(() => {
+                         window.close();
+                    }, 500);
+                }
+
+                else 
+                {
+                    setTimeout(() => {
+                         window.close();
+                    }, 500);
+                }
+            </script>
+        ";
+    }
+    #endregion
 }
