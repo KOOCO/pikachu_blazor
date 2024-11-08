@@ -344,7 +344,7 @@
                 <span class="text-danger"> *</span>
             </div>
             <div class="col-8">
-                <label class="form-label">Home Delivery Type</label><br />
+                <label class="form-label">@L["HomeDeliveryType"]</label><br />
                 @if (CreateGroupBuyDto.AllowShipToOuterTaiwan && !CreateGroupBuyDto.AllowShipOversea)
                 {
                     @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
@@ -400,7 +400,7 @@
                     }
                 }
                 <br />
-                <label class="form-label">Convenience Store Type</label><br />
+                <label class="form-label">@L["ConvenienceStoreType"]</label><br />
                 @if (CreateGroupBuyDto.AllowShipToOuterTaiwan && !CreateGroupBuyDto.AllowShipOversea)
                 {
                     @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
@@ -452,7 +452,7 @@
                     }
                 }
                 <br />
-                <label class="form-label">Self-Pickup Type</label><br />
+                <label class="form-label">@L["Self-PickupType"]</label><br />
                 @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
                 {
                     if (item == Enum.GetName(DeliveryMethod.SelfPickup))
@@ -469,7 +469,7 @@
                     }
                 }
                 <br />
-                <label class="form-label">Delivered By Store Type</label><br />
+                <label class="form-label">@L["DeliveredByStoreType"]</label><br />
                 @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
                 {
                     if (item == Enum.GetName(DeliveryMethod.DeliveredByStore))
@@ -869,12 +869,12 @@
         </div> *@
         <Divider></Divider>
         <Div Class="row">
-            <Div Class="col-2">@L["Color Schemes"]</Div>
-            <Div Class="col-2">@L["Select Color Theme"]</Div>
+            <Div Class="col-2">@L["ColorSchemes"]</Div>
+            <Div Class="col-2">@L["SelectColorTheme"]</Div>
             <Div Class="col-8">
                 <select class="form-select"
                         @onchange=OnColorSchemeChange>
-                    <option value="" selected>@L["Choose Color Theme"]</option>
+                    <option value="" selected>@L["ChooseColorTheme"]</option>
                     @foreach (ColorScheme value in Enum.GetValues<ColorScheme>())
                     {
                         <option value="@value">@L["Enum:ColorScheme." + (int)value]</option>
@@ -1103,7 +1103,7 @@
                                                                         <button type="button"
                                                                                 class="btn btn-primary @(carouselImages.IndexOf(createImageDto) > 0 ? "mx-1" : "")"
                                                                                 @onclick="() => OpenAddLinkModal(createImageDto)">
-                                                                            @L["Add Link"]
+                                                                            @L["AddLink"]
                                                                         </button>
                                                                     }
                                                                 </Div>
@@ -1226,10 +1226,12 @@
                                                     </Div>
                                                     <Field>
                                                         <FilePicker @ref="GroupPurchaseOverviewFilePickers[GroupPurchaseOverviewModules.IndexOf(module)]"
+                                                         FilePickerLocalizer="(key,args)=>LocalizeFilePicker(key,args)"
                                                                     Changed="@(async (e) => await OnImageUploadAsync(e,
                                                                                                                      module,
                                                                                                                      GroupPurchaseOverviewFilePickers[GroupPurchaseOverviewModules.IndexOf(module)]))"
-                                                                    ShowMode="FilePickerShowMode.List"
+                                                                    ShowMode="FilePickerShowMode.List",
+                                                                    
                                                                     Accept=".jpg, .png, .svg ,.jpeg,.webp">
                                                             <FileTemplate>
                                                                 <Div Flex="Flex.JustifyContent.Between">
@@ -1644,9 +1646,9 @@
                                             </Div>
                                             <Div Class="col-md-6 text-right mb-3">
                                                 <Select TValue="string" @onchange=@((e) => module.ProductGroupModuleImageSize = e.Value.ToString())>
-                                                    <option value="">-- Select Style --</option>
-                                                    <option value="SmallImage">Small Image</option>
-                                                    <option value="LargeImage">Large Image</option>
+                                                    <option value="">@L["SelectStyle"] </option>
+                                                    <option value="SmallImage">@L["SmallImage"]</option>
+                                                    <option value="LargeImage">@L["LargeImage"]</option>
                                                 </Select>
                                             </Div>
                                         }
@@ -1667,7 +1669,7 @@
                                                                   Data="@ItemsList"
                                                                   TextField="@(( item ) => item.Name)"
                                                                   ValueField="@(( item ) => item.Id)"
-                                                                  Placeholder="Search..."
+                                                                  Placeholder="@L["Search..."]"
                                                                   Filter="AutocompleteFilter.StartsWith"
                                                                   CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
                                                                   HighlightSearch
