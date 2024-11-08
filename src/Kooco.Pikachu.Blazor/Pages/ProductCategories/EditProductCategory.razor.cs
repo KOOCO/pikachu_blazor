@@ -92,7 +92,10 @@ public partial class EditProductCategory
     {
         NavigationManager.NavigateTo("Product-Categories");
     }
-
+    private string LocalizeFilePicker(string key, object[] args)
+    {
+        return L[key];
+    }
     async Task OnFileUploadAsync(FileChangedEventArgs e)
     {
         if (e?.Files == null)

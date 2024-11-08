@@ -948,7 +948,14 @@
     "ProductCategories": "產品類別",
     "Description": "敘述",
     "AddNew": "新增商品類別",
-    "CarousalImages": "輪播圖片"
+    "CarousalImages": "輪播圖片",
+    "Products": "商品",
+    "Item": "品項",
+    "Image": "圖片",
+    "Remove": "移除",
+    "AddProductCategory": "建立商品類別",
+    "Choose files": "選擇檔案",
+    "EditProductCategory": "編輯商品類別"
 
   }
 }
