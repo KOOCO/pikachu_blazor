@@ -43,15 +43,21 @@ public class PaymentGatewayController(
     [HttpGet("get-ecpayStoreData")]
     public IActionResult GetEcPayStoreData() 
     {
-        return Ok(
-            new { 
-                CVSStoreID = EcPayStoreData.CVSStoreID,
-                CVSStoreName = EcPayStoreData.CVSStoreName,
-                CVSAddress = EcPayStoreData.CVSAddress,
-                CVSOutSide = EcPayStoreData.CVSOutSide,
-                IsDataRetrieved = true
-            }
-        );
+        var ecPayData = new
+        {
+            CVSStoreID = EcPayStoreData.CVSStoreID,
+            CVSStoreName = EcPayStoreData.CVSStoreName,
+            CVSAddress = EcPayStoreData.CVSAddress,
+            CVSOutSide = EcPayStoreData.CVSOutSide,
+            IsDataRetrieved = true
+        };
+
+        EcPayStoreData.CVSStoreID = string.Empty;
+        EcPayStoreData.CVSStoreName = string.Empty;
+        EcPayStoreData.CVSAddress = string.Empty;
+        EcPayStoreData.CVSOutSide = string.Empty;
+
+        return Ok(ecPayData);
     }
 
     [HttpPut("china-trust")]
