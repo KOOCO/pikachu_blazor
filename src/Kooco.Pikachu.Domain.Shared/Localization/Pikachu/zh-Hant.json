@@ -26,7 +26,7 @@
     "AllowShipToOuterIsland": "可寄送台灣離島",
     "AllowShipToOverSea": "可寄送海外",
     "AllPayLogisticsID": "綠界物流號",
-    "AmountReach": "當訂單到達",
+    "AmountReach": "當金額達到",
     "AmountReceived/AmountReceivedExcludingShipping": "已收款項 / 已收款項 (不包含運費)",
     "ApplyCondition": "套用條件",
     "ApplyRefund": "執行退款",
@@ -942,6 +942,8 @@
     "Sub Title": "副標題",
     "Body Text": "內文",
     "Button Text": "按鈕文字",
-    "Button Link": "按鈕連結"
+    "Button Link": "按鈕連結",
+    "QuantityReach": "當數量達到"
+
   }
 }

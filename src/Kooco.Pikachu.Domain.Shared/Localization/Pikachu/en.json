@@ -232,7 +232,7 @@
     "SelectGroupBuys": "Select Group Buys",
     "ApplyCondition": "Apply Condition",
     "Uncondition": "Uncondition",
-    "AmountReach": "Amount Reach",
+    "AmountReach": "Amount Reaches",
     "Get": "Get",
     "Piece": "Piece",
     "ActivityDate": "Activity Date",
@@ -925,7 +925,8 @@
     "SubTitle": "Sub Title",
     "BodyText": "Body Text",
     "ButtonText": "Button Text",
-    "ButtonLink": "Button Link"
+    "ButtonLink": "Button Link",
+    "QuantityReach": "Quantity Reaches"
 
 
   }
