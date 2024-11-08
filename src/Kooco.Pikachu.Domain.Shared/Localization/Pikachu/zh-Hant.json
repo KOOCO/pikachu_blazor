@@ -936,14 +936,19 @@
     "Small Image": "小圖",
     "Large Image": "大圖",
     "Search...": "輸入商品名稱搜尋",
-    "Carousel Images": "輪播圖",
+
     "Add Link": "新增連結",
     "Title": "標題",
     "Sub Title": "副標題",
     "Body Text": "內文",
     "Button Text": "按鈕文字",
     "Button Link": "按鈕連結",
-    "QuantityReach": "當數量達到"
+    "QuantityReach": "當數量達到",
+    "Menu:ProductCategories": "產品類別",
+    "ProductCategories": "產品類別",
+    "Description": "敘述",
+    "AddNew": "新增商品類別",
+    "CarousalImages": "輪播圖片"
 
   }
 }

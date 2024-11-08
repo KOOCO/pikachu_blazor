@@ -926,7 +926,9 @@
     "BodyText": "Body Text",
     "ButtonText": "Button Text",
     "ButtonLink": "Button Link",
-    "QuantityReach": "Quantity Reaches"
+    "QuantityReach": "Quantity Reaches",
+    "Description": "Description",
+    "AddNew": "Add New"
 
 
   }
