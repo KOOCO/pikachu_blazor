@@ -216,7 +216,10 @@ public partial class CreateProductCategory
             await HandleErrorAsync(ex);
         }
     }
-
+    private string LocalizeFilePicker(string key, object[] args)
+    {
+        return L[key];
+    }
     private void RemoveCategoryProduct(CreateUpdateCategoryProductDto categoryProduct)
     {
         if (categoryProduct != null)

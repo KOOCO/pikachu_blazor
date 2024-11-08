@@ -94,6 +94,7 @@
                         <Div Class="container-less-filepicker">
                             <Field>
                                 <FilePicker Changed="@OnFileUploadAsync"
+                                    FilePickerLocalizer="(key,args)=>LocalizeFilePicker(key,args)"
                                             ShowMode="FilePickerShowMode.List"
                                             Multiple
                                             @ref="FilePicker"

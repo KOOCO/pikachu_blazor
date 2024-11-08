@@ -341,7 +341,7 @@
                 @L["ShippingMethod"] <span class="text-danger"> *</span>
             </div>
             <div class="col-8">
-                <label class="form-label">Home Delivery Type</label><br />
+                <label class="form-label">@L["HomeDeliveryType"]</label><br />
                 @if (EditGroupBuyDto.AllowShipToOuterTaiwan && !EditGroupBuyDto.AllowShipOversea)
                 {
                     @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
@@ -400,7 +400,7 @@
                     }
                 }
                 <br />
-                <label class="form-label">Convenience Store Type</label><br />
+                <label class="form-label">@L["ConvenienceStoreType"]</label><br />
                 @if (EditGroupBuyDto.AllowShipToOuterTaiwan && !EditGroupBuyDto.AllowShipOversea)
                 {
                     @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
@@ -455,7 +455,7 @@
                     }
                 }
                 <br />
-                <label class="form-label">Self-Pickup Type</label><br />
+                <label class="form-label">@L["Self-PickupType"]</label><br />
                 @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
                 {
                     if (item == Enum.GetName(DeliveryMethod.SelfPickup))
@@ -475,7 +475,7 @@
                     }
                 }
                 <br />
-                <label class="form-label">Delivered By Store Type</label><br />
+                <label class="form-label">@L["DeliveredByStoreType"]</label><br />
                 @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
                 {
                     if (item == Enum.GetName(DeliveryMethod.DeliveredByStore))
@@ -860,12 +860,12 @@
 
         <Divider></Divider>
         <Div Class="row">
-            <Div Class="col-2">@L["Color Schemes"]</Div>
-            <Div Class="col-2">@L["Select Color Theme"]</Div>
+            <Div Class="col-2">@L["ColorSchemes"]</Div>
+            <Div Class="col-2">@L["SelectColorTheme"]</Div>
             <Div Class="col-8">
                 <select class="form-select"
                         @onchange=OnColorSchemeChange>
-                    <option>@L["Choose Color Theme"]</option>
+                    <option>@L["ChooseColorTheme"]</option>
                     @foreach (ColorScheme value in Enum.GetValues<ColorScheme>())
                     {
                         if (value == EditGroupBuyDto.ColorSchemeType)
@@ -1127,7 +1127,7 @@
                                                                     <button type="button"
                                                                             class="btn btn-primary @(carouselImages.IndexOf(createImageDto) > 0 ? "mx-1" : "")"
                                                                             @onclick="() => OpenAddLinkModal(createImageDto)">
-                                                                        @L["Add Link"]
+                                                                        @L["AddLink"]
                                                                     </button>
                                                                 }
                                                             </Div>
@@ -1226,7 +1226,7 @@
                                                                     <button type="button"
                                                                             class="btn btn-primary @(bannerImages.IndexOf(createImageDto) > 0 ? "mx-1" : "")"
                                                                             @onclick="() => OpenAddLinkModal(createImageDto)">
-                                                                        @L["Add Link"]
+                                                                        @L["AddLink"]
                                                                     </button>
                                                                 }
                                                             </Div>
@@ -1470,7 +1470,7 @@
                                                                               Data="@ItemsList"
                                                                               TextField="@(( item ) => item.Name)"
                                                                               ValueField="@(( item ) => item.Id)"
-                                                                              Placeholder="Search..."
+                                                                              Placeholder="@L["Search..."]"
                                                                               Filter="AutocompleteFilter.StartsWith"
                                                                               CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
                                                                               HighlightSearch
@@ -1672,7 +1672,7 @@
                                                 </Div>
                                                 <Div Class="col-md-6 text-right mb-3">
                                                     <select class="form-select form-select" @onchange=@((e) => module.ProductGroupModuleImageSize = e.Value.ToString())>
-                                                        <option value="">-- Select Style --</option>
+                                                        <option value="">@L["SelectStyle"]</option>
                                                         @foreach (string size in ImageSizes)
                                                         {
                                                             @if (module.ProductGroupModuleImageSize == size)
@@ -1705,7 +1705,7 @@
                                                                       Data="@ItemsList"
                                                                       TextField="@(( item ) => item.Name)"
                                                                       ValueField="@(( item ) => item.Id)"
-                                                                      Placeholder="Search..."
+                                                                      Placeholder="@L["Search..."]"
                                                                       Filter="AutocompleteFilter.StartsWith"
                                                                       CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
                                                                       HighlightSearch

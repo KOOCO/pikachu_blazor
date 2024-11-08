@@ -146,4 +146,5 @@ public partial class ProductCategories
         Selected.ProductCategoryImages = [.. Selected.ProductCategoryImages.OrderBy(i => i.SortNo)];
         CarousalModal.Show();
     }
+   
 }
