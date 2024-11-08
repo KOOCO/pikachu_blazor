@@ -498,7 +498,7 @@ public partial class EditGroupBuy
                 GroupBuyOrderInstructionModules = await _GroupBuyOrderInstructionAppService.GetListByGroupBuyIdAsync(Id);
 
                 await GetProductRankingCarouselsAsync();
-
+                
                 foreach (List<CreateImageDto> carouselImages in CarouselModules)
                 {
                     if (!CollapseItem.Any(a => a.GroupBuyModuleType is GroupBuyModuleType.CarouselImages))
@@ -510,6 +510,13 @@ public partial class EditGroupBuy
                         });
 
                     CarouselFilePickers.Add(new());
+                }
+
+                if (CarouselModules is { Count: 0 })
+                {
+                    CarouselFilePickers.Add(new());
+
+                    CarouselModules.Add([]);
                 }
 
                 foreach (List<CreateImageDto> carouselImages in BannerModules)
@@ -525,6 +532,13 @@ public partial class EditGroupBuy
                     BannerFilePickers.Add(new());
                 }
 
+                if (BannerModules is { Count: 0 })
+                {
+                    BannerFilePickers.Add(new());
+
+                    BannerModules.Add([]);
+                }
+
                 foreach (GroupPurchaseOverviewDto module in GroupPurchaseOverviewModules)
                 {
                     if (!CollapseItem.Any(a => a.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview))
@@ -536,6 +550,13 @@ public partial class EditGroupBuy
                         });
 
                     GroupPurchaseOverviewFilePickers.Add(new());
+                }
+
+                if (GroupPurchaseOverviewModules is { Count: 0 })
+                {
+                    GroupPurchaseOverviewFilePickers.Add(new());
+
+                    GroupPurchaseOverviewModules.Add(new());
                 }
 
                 foreach (GroupBuyOrderInstructionDto module in GroupBuyOrderInstructionModules)
@@ -551,6 +572,13 @@ public partial class EditGroupBuy
                     GroupBuyOrderInstructionPickers.Add(new());
                 }
 
+                if (GroupBuyOrderInstructionModules is { Count: 0 })
+                {
+                    GroupBuyOrderInstructionPickers.Add(new());
+
+                    GroupBuyOrderInstructionModules.Add(new());
+                }
+
                 foreach (ProductRankingCarouselModule module in ProductRankingCarouselModules)
                 {
                     if (!CollapseItem.Any(a => a.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule))
@@ -562,6 +590,20 @@ public partial class EditGroupBuy
                         });
 
                     ProductRankingCarouselPickers.Add(new());
+                }
+
+                if (ProductRankingCarouselModules is { Count: 0 })
+                {
+                    ProductRankingCarouselPickers.Add(new());
+
+                    ProductRankingCarouselModules.Add(new()
+                    {
+                        Selected = [
+                            new ItemWithItemTypeDto(),
+                            new ItemWithItemTypeDto(),
+                            new ItemWithItemTypeDto()
+                        ]
+                    });
                 }
 
                 ItemsList = await _itemAppService.GetItemsLookupAsync();
