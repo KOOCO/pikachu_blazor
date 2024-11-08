@@ -4,6 +4,7 @@ using Kooco.Pikachu.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -27,17 +28,19 @@ public class PaymentGatewayController(
 
     [HttpPost("ecpay-serverReplyUrl")]
     [AllowAnonymous]
-    public IActionResult PostAsync()
+    public IActionResult EcPayServerReply()
     {
-        EcPayStoreData.CVSStoreID = Request.Form.TryGetValue("CVSStoreID", out StringValues cvsStoreId) ? cvsStoreId.ToString() : string.Empty;
+        if (!Request.HasFormContentType) return BadRequest("Invalid content type");
 
-        EcPayStoreData.CVSStoreName = Request.Form.TryGetValue("CVSStoreName", out StringValues cvsStoreName) ? cvsStoreName.ToString() : string.Empty;
+        EcPayStoreData.CVSStoreID = Request.Form["CVSStoreID"];
+        
+        EcPayStoreData.CVSStoreName = Request.Form["CVSStoreName"];
+        
+        EcPayStoreData.CVSAddress = Request.Form["CVSAddress"];
+        
+        EcPayStoreData.CVSOutSide = Request.Form["CVSOutSide"];
 
-        EcPayStoreData.CVSAddress = Request.Form.TryGetValue("CVSAddress", out StringValues cvsAddress) ? cvsAddress.ToString() : string.Empty;
-
-        EcPayStoreData.CVSOutSide = Request.Form.TryGetValue("CVSOutSide", out StringValues cvsOutSide) ? cvsOutSide.ToString() : string.Empty;
-
-        return Content(CloseWindowsScript(), "text/html");
+        return Redirect("/RedirectionPage");
     }
 
     [HttpGet("get-ecpayStoreData")]
@@ -62,19 +65,21 @@ public class PaymentGatewayController(
 
     [HttpPost("tcat-serverReplyUrl")]
     [AllowAnonymous]
-    public IActionResult TCatPostAsync()
+    public IActionResult TCatServerReply()
     {
-        TCatStoreData.outside = Request.Form.TryGetValue("outside", out StringValues outside) ? outside.ToString() : string.Empty;
+        if (!Request.HasFormContentType) return BadRequest("Invalid content type");
 
-        TCatStoreData.ship = Request.Form.TryGetValue("ship", out StringValues ship) ? ship.ToString() : string.Empty;
+        TCatStoreData.outside = Request.Form["outside"];
 
-        TCatStoreData.storeaddress = Request.Form.TryGetValue("storeaddress", out StringValues stroreaddress) ? stroreaddress.ToString() : string.Empty;
+        TCatStoreData.ship = Request.Form["ship"];
 
-        TCatStoreData.storeid = Request.Form.TryGetValue("storeid", out StringValues storeid) ? storeid.ToString() : string.Empty;
+        TCatStoreData.storeaddress = Request.Form["storeaddress"];
 
-        TCatStoreData.storename = Request.Form.TryGetValue("storename", out StringValues storename) ? storename.ToString() : string.Empty;
+        TCatStoreData.storeid = Request.Form["storeid"];
 
-        return Content(CloseWindowsScript(), "text/html");
+        TCatStoreData.storename = Request.Form["storename"];
+
+        return Redirect("/RedirectionPage");
     }
 
     [HttpGet("get-tcatStoreData")]
@@ -121,7 +126,9 @@ public class PaymentGatewayController(
     private string CloseWindowsScript()
     {
         return @"
+            
             <script>
+                debugger;
                 if (confirm('please go back to main checkout page to continue the order placement.')) 
                 { 
                     setTimeout(() => {
