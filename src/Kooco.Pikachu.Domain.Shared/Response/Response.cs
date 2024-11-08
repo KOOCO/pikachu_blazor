@@ -22,6 +22,15 @@ public static class EcPayStoreData
     public static string ExtraData { get; set; }
 }
 
+public static class TCatStoreData
+{
+    public static string outside { get; set; }
+    public static string ship { get; set; }
+    public static string storeaddress { get; set; }
+    public static string storeid { get; set; }
+    public static string storename { get; set; }
+}
+
 public class AttributeNameOption
 {
     public string AttributeName { get; set; }

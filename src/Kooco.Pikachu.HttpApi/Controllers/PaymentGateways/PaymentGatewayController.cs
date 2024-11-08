@@ -58,6 +58,45 @@ public class PaymentGatewayController(
         EcPayStoreData.CVSOutSide = string.Empty;
 
         return Ok(ecPayData);
+    } 
+
+    [HttpPost("tcat-serverReplyUrl")]
+    [AllowAnonymous]
+    public IActionResult TCatPostAsync()
+    {
+        TCatStoreData.outside = Request.Form.TryGetValue("outside", out StringValues outside) ? outside.ToString() : string.Empty;
+
+        TCatStoreData.ship = Request.Form.TryGetValue("ship", out StringValues ship) ? ship.ToString() : string.Empty;
+
+        TCatStoreData.storeaddress = Request.Form.TryGetValue("storeaddress", out StringValues stroreaddress) ? stroreaddress.ToString() : string.Empty;
+
+        TCatStoreData.storeid = Request.Form.TryGetValue("storeid", out StringValues storeid) ? storeid.ToString() : string.Empty;
+
+        TCatStoreData.storename = Request.Form.TryGetValue("storename", out StringValues storename) ? storename.ToString() : string.Empty;
+
+        return Content(CloseWindowsScript(), "text/html");
+    }
+
+    [HttpGet("get-tcatStoreData")]
+    public IActionResult GetTCatStoreData() 
+    {
+        var TCatData = new
+        {
+            outside = TCatStoreData.outside,
+            ship = TCatStoreData.ship,
+            storeaddress = TCatStoreData.storeaddress,
+            storeid = TCatStoreData.storeid,
+            storename = TCatStoreData.storename,
+            IsDataRetrieved = true
+        };
+
+        TCatStoreData.outside = string.Empty;
+        TCatStoreData.ship = string.Empty;
+        TCatStoreData.storeaddress = string.Empty;
+        TCatStoreData.storeid = string.Empty;
+        TCatStoreData.storename = string.Empty;
+
+        return Ok(TCatData);
     }
 
     [HttpPut("china-trust")]
