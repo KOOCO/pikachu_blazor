@@ -26,82 +26,91 @@ public class PaymentGatewayController(
         return _paymentGatewayAppService.GetAllAsync();
     }
 
-    [HttpPost("ecpay-serverReplyUrl")]
+    [HttpPost("ecpay-serverReplyUrlWith/{UniqueId}")]
     [AllowAnonymous]
-    public IActionResult EcPayServerReply()
+    public IActionResult EcPayServerReplyQS(Guid UniqueId)
     {
         if (!Request.HasFormContentType) return BadRequest("Invalid content type");
 
-        EcPayStoreData.CVSStoreID = Request.Form["CVSStoreID"];
-        
-        EcPayStoreData.CVSStoreName = Request.Form["CVSStoreName"];
-        
-        EcPayStoreData.CVSAddress = Request.Form["CVSAddress"];
-        
-        EcPayStoreData.CVSOutSide = Request.Form["CVSOutSide"];
+        EcPayStoreData ecpayStoreData = new()
+        {
+            CVSStoreID = Request.Form["CVSStoreID"],
+            CVSStoreName = Request.Form["CVSStoreName"],
+            CVSAddress = Request.Form["CVSAddress"],
+            CVSOutSide = Request.Form["CVSOutSide"],
+            UniqueId = UniqueId.ToString()
+        };
+
+        RecordEcPay.UniqueEcPayData ??= [];
+
+        RecordEcPay.UniqueEcPayData.TryAdd(UniqueId, ecpayStoreData);
+
+        return Redirect("/RedirectionPage");
+    }  
+
+    [HttpGet("get-ecpayStoreData/{UniqueId}")]
+    public IActionResult GetEcPayStoreData(Guid UniqueId)
+    {
+        if (RecordEcPay.UniqueEcPayData.TryGetValue(UniqueId, out EcPayStoreData? ecpayStoreData))
+        {
+            RecordEcPay.UniqueEcPayData.Remove(UniqueId);
+
+            return Ok(new {
+                CVSStoreID = ecpayStoreData.CVSStoreID,
+                CVSStoreName = ecpayStoreData.CVSStoreName,
+                CVSAddress = ecpayStoreData.CVSAddress,
+                CVSOutSide = ecpayStoreData.CVSOutSide,
+                UniqueId = UniqueId.ToString(),
+                IsDataRetrieved = true
+            });
+        }
+
+        return Ok($"Data not available with UniqueId: {UniqueId}");
+    }
+
+    [HttpPost("tcat-serverReplyUrl/{UniqueId}")]
+    [AllowAnonymous]
+    public IActionResult TCatServerReply(Guid UniqueId)
+    {
+        if (!Request.HasFormContentType) return BadRequest("Invalid content type");
+
+        TCatStoreData tcatStoreData = new()
+        {
+            outside = Request.Form["outside"],
+            ship = Request.Form["ship"],
+            storeaddress = Request.Form["storeaddress"],
+            storeid = Request.Form["storeid"],
+            storename = Request.Form["storename"],
+            UniqueId = UniqueId.ToString()
+        };
+
+        RecordEcPay.UniqueTCatStoreData ??= [];
+
+        RecordEcPay.UniqueTCatStoreData.TryAdd(UniqueId, tcatStoreData);
 
         return Redirect("/RedirectionPage");
     }
 
-    [HttpGet("get-ecpayStoreData")]
-    public IActionResult GetEcPayStoreData() 
+    [HttpGet("get-tcatStoreData/{UniqueId}")]
+    public IActionResult GetTCatStoreData(Guid UniqueId) 
     {
-        var ecPayData = new
+        if (RecordEcPay.UniqueTCatStoreData.TryGetValue(UniqueId, out TCatStoreData? tcatStoreData))
         {
-            CVSStoreID = EcPayStoreData.CVSStoreID,
-            CVSStoreName = EcPayStoreData.CVSStoreName,
-            CVSAddress = EcPayStoreData.CVSAddress,
-            CVSOutSide = EcPayStoreData.CVSOutSide,
-            IsDataRetrieved = true
-        };
+            RecordEcPay.UniqueTCatStoreData.Remove(UniqueId);
 
-        EcPayStoreData.CVSStoreID = string.Empty;
-        EcPayStoreData.CVSStoreName = string.Empty;
-        EcPayStoreData.CVSAddress = string.Empty;
-        EcPayStoreData.CVSOutSide = string.Empty;
+            return Ok(new
+            {
+                outside = tcatStoreData.outside,
+                ship = tcatStoreData.ship,
+                storeaddress = tcatStoreData.storeaddress,
+                storeid = tcatStoreData.storeid,
+                storename = tcatStoreData.storename,
+                UniqueId = UniqueId.ToString(),
+                IsDataRetrieved = true
+            });
+        }
 
-        return Ok(ecPayData);
-    } 
-
-    [HttpPost("tcat-serverReplyUrl")]
-    [AllowAnonymous]
-    public IActionResult TCatServerReply()
-    {
-        if (!Request.HasFormContentType) return BadRequest("Invalid content type");
-
-        TCatStoreData.outside = Request.Form["outside"];
-
-        TCatStoreData.ship = Request.Form["ship"];
-
-        TCatStoreData.storeaddress = Request.Form["storeaddress"];
-
-        TCatStoreData.storeid = Request.Form["storeid"];
-
-        TCatStoreData.storename = Request.Form["storename"];
-
-        return Redirect("/RedirectionPage");
-    }
-
-    [HttpGet("get-tcatStoreData")]
-    public IActionResult GetTCatStoreData() 
-    {
-        var TCatData = new
-        {
-            outside = TCatStoreData.outside,
-            ship = TCatStoreData.ship,
-            storeaddress = TCatStoreData.storeaddress,
-            storeid = TCatStoreData.storeid,
-            storename = TCatStoreData.storename,
-            IsDataRetrieved = true
-        };
-
-        TCatStoreData.outside = string.Empty;
-        TCatStoreData.ship = string.Empty;
-        TCatStoreData.storeaddress = string.Empty;
-        TCatStoreData.storeid = string.Empty;
-        TCatStoreData.storename = string.Empty;
-
-        return Ok(TCatData);
+        return Ok($"Data not available with UniqueId: {UniqueId}");
     }
 
     [HttpPut("china-trust")]

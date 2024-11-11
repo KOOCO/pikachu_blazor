@@ -9,26 +9,34 @@ public class Response
 {
 }
 
-public static class EcPayStoreData
+public static class RecordEcPay
 {
-    public static string CVSStoreID { get; set; }
-    public static string CVSAddress { get; set; }
-    public static string CVSOutSide { get; set; }
-    public static string LogisticsSubType { get; set; }
-    public static string CVSStoreName { get; set; }
-    public static string CVSTelephone { get; set; }
-    public static string MerchantID { get; set; }
-    public static string MerchantTradeNo { get; set; }
-    public static string ExtraData { get; set; }
+    public static Dictionary<Guid, EcPayStoreData> UniqueEcPayData { get; set; }
+    public static Dictionary<Guid, TCatStoreData> UniqueTCatStoreData { get; set; }
 }
 
-public static class TCatStoreData
+public class EcPayStoreData
 {
-    public static string outside { get; set; }
-    public static string ship { get; set; }
-    public static string storeaddress { get; set; }
-    public static string storeid { get; set; }
-    public static string storename { get; set; }
+    public string CVSStoreID { get; set; }
+    public string CVSAddress { get; set; }
+    public string CVSOutSide { get; set; }
+    public string LogisticsSubType { get; set; }
+    public string CVSStoreName { get; set; }
+    public string CVSTelephone { get; set; }
+    public string MerchantID { get; set; }
+    public string MerchantTradeNo { get; set; }
+    public string UniqueId { get; set; }
+    public string ExtraData { get; set; }
+}
+
+public class TCatStoreData
+{
+    public string outside { get; set; }
+    public string ship { get; set; }
+    public string storeaddress { get; set; }
+    public string storeid { get; set; }
+    public string storename { get; set; }
+    public string UniqueId { get; set; }
 }
 
 public class AttributeNameOption
