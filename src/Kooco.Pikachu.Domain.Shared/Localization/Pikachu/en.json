@@ -929,7 +929,9 @@
     "QuantityReach": "Quantity Reaches",
     "Description": "Description",
     "AddNew": "Add New",
-    "Choose files": "Choose files"
+    "Choose files": "Choose files",
+    "UseECPayelectronicreceipt": "Use ECPay electronic invoice",
+    
 
 
   }

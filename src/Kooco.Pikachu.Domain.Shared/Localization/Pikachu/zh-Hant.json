@@ -955,7 +955,16 @@
     "Remove": "移除",
     "AddProductCategory": "建立商品類別",
     "Choose files": "選擇檔案",
-    "EditProductCategory": "編輯商品類別"
+    "EditProductCategory": "編輯商品類別",
+    "UseECPayelectronicreceipt": "使用綠界電子發票",
+    "ColorSchemes": "前台配色",
+    "SelectColorTheme": "選擇前台配色",
+    "ChooseColorTheme": "配色主題",
+    "DisplayMethodForProductDetails": "商品內容顯示方式",
+    "ChooseMethod": "選擇顯示方式",
+    "PureImage_LeftRightSlide": "純圖片（左右滑動）",
+    "PureImage_VerticalSlide": "純圖片（垂直條）",
+    "SpecificationIntroduction": "規格介紹（左圖，右文說明"
 
   }
 }
