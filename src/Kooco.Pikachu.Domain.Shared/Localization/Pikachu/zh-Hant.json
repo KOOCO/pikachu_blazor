@@ -617,7 +617,7 @@
     "SelectShippingMethod": "請選擇運送方式",
     "StoreName": "商店名稱",
     "InvoiceNameDisplay": "發票抬頭顯示",
-    "DaysAfterShipmentToGenerateInvoice": "出貨後幾天開立發票",
+    "DaysAfterShipmentToGenerateInvoice": "到指定狀態後幾天開立發票",
     "DeliveryByStoreSettings": "廠商統一出貨設定",
     "SenderName": "寄件人姓名",
     "SenderPhoneNumber": "寄件人手機號碼",
@@ -964,7 +964,11 @@
     "ChooseMethod": "選擇顯示方式",
     "PureImage_LeftRightSlide": "純圖片（左右滑動）",
     "PureImage_VerticalSlide": "純圖片（垂直條）",
-    "SpecificationIntroduction": "規格介紹（左圖，右文說明"
+    "SpecificationIntroduction": "規格介紹（左圖，右文說明",
+    "Ifthissettingisturnedoff,pleaseprinttheinvoiceforthecustomer": "若此設置關閉，請自行為顧客列印發票",
+    "Info": "提醒您",
+    "StatusOnInvoiceIssue": "開立發票狀態"
+
 
   }
 }

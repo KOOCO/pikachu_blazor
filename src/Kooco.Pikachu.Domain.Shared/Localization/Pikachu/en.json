@@ -931,7 +931,9 @@
     "AddNew": "Add New",
     "Choose files": "Choose files",
     "UseECPayelectronicreceipt": "Use ECPay electronic invoice",
-    
+    "Ifthissettingisturnedoff,pleaseprinttheinvoiceforthecustomer": "If this setting is turned off,please print the invoice for the customer",
+    "StatusOnInvoiceIssue": "Status On Invoice Issue",
+
 
 
   }
