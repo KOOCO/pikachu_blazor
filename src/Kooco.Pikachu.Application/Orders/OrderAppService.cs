@@ -337,6 +337,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
     }
 
+/// <summary>
+/// get order by Order No
+/// </summary>
+/// <param name="groupBuyId"></param>
+/// <param name="orderNo"></param>
+/// <param name="extraInfo"></param>
+/// <returns></returns>
     public async Task<OrderDto> GetOrderAsync(Guid groupBuyId, string orderNo, string extraInfo)
     {
         return ObjectMapper.Map<Order, OrderDto>(
