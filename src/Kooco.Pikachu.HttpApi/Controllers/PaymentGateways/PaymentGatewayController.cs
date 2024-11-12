@@ -26,7 +26,8 @@ public class PaymentGatewayController(
         return _paymentGatewayAppService.GetAllAsync();
     }
 
-    [HttpPost("ecpay-serverReplyUrlWith/{UniqueId}")]
+    [HttpPost("ecpay-serverReplyUrl/{UniqueId}")]
+    [IgnoreAntiforgeryToken]
     [AllowAnonymous]
     public IActionResult EcPayServerReplyQS(Guid UniqueId)
     {
@@ -38,6 +39,7 @@ public class PaymentGatewayController(
             CVSStoreName = Request.Form["CVSStoreName"],
             CVSAddress = Request.Form["CVSAddress"],
             CVSOutSide = Request.Form["CVSOutSide"],
+            ExtraData = Request.Form["ExtraData"],
             UniqueId = UniqueId.ToString()
         };
 
@@ -60,6 +62,7 @@ public class PaymentGatewayController(
                 CVSStoreName = ecpayStoreData.CVSStoreName,
                 CVSAddress = ecpayStoreData.CVSAddress,
                 CVSOutSide = ecpayStoreData.CVSOutSide,
+                ExtraData = ecpayStoreData.ExtraData,
                 UniqueId = UniqueId.ToString(),
                 IsDataRetrieved = true
             });
@@ -69,6 +72,7 @@ public class PaymentGatewayController(
     }
 
     [HttpPost("tcat-serverReplyUrl/{UniqueId}")]
+    [IgnoreAntiforgeryToken]
     [AllowAnonymous]
     public IActionResult TCatServerReply(Guid UniqueId)
     {
