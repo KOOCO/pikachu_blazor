@@ -26,10 +26,10 @@ public class PaymentGatewayController(
         return _paymentGatewayAppService.GetAllAsync();
     }
 
-    [HttpPost("ecpay-serverReplyUrl/{UniqueId}")]
+    [HttpPost("ecpay-serverReplyUrl/{UniqueId}/{ReturnURL}")]
     [IgnoreAntiforgeryToken]
     [AllowAnonymous]
-    public IActionResult EcPayServerReplyQS(Guid UniqueId)
+    public IActionResult EcPayServerReplyQS(Guid UniqueId, string ReturnURL)
     {
         if (!Request.HasFormContentType) return BadRequest("Invalid content type");
 
@@ -39,7 +39,7 @@ public class PaymentGatewayController(
             CVSStoreName = Request.Form["CVSStoreName"],
             CVSAddress = Request.Form["CVSAddress"],
             CVSOutSide = Request.Form["CVSOutSide"],
-            ExtraData = Request.Form["ExtraData"],
+            ExtraData = ReturnURL,
             UniqueId = UniqueId.ToString()
         };
 
@@ -71,10 +71,10 @@ public class PaymentGatewayController(
         return Ok($"Data not available with UniqueId: {UniqueId}");
     }
 
-    [HttpPost("tcat-serverReplyUrl/{UniqueId}")]
+    [HttpPost("tcat-serverReplyUrl/{UniqueId}/{ReturnURL}")]
     [IgnoreAntiforgeryToken]
     [AllowAnonymous]
-    public IActionResult TCatServerReply(Guid UniqueId)
+    public IActionResult TCatServerReply(Guid UniqueId, string ReturnURL)
     {
         if (!Request.HasFormContentType) return BadRequest("Invalid content type");
 
@@ -85,6 +85,7 @@ public class PaymentGatewayController(
             storeaddress = Request.Form["storeaddress"],
             storeid = Request.Form["storeid"],
             storename = Request.Form["storename"],
+            ExtraData = ReturnURL,
             UniqueId = UniqueId.ToString()
         };
 
@@ -109,6 +110,7 @@ public class PaymentGatewayController(
                 storeaddress = tcatStoreData.storeaddress,
                 storeid = tcatStoreData.storeid,
                 storename = tcatStoreData.storename,
+                ExtraData = tcatStoreData.ExtraData,
                 UniqueId = UniqueId.ToString(),
                 IsDataRetrieved = true
             });

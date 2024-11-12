@@ -37,6 +37,7 @@ public class TCatStoreData
     public string storeaddress { get; set; }
     public string storeid { get; set; }
     public string storename { get; set; }
+    public string ExtraData { get; set; }
     public string UniqueId { get; set; }
 }
 
