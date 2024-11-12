@@ -20,7 +20,7 @@ namespace Kooco.Pikachu.Orders
         Task<OrderDto> UpdateMerchantTradeNoAsync(OrderPaymentMethodRequest request);
         Task<OrderDto> GetAsync(Guid id);
         Task<PagedResultDto<OrderDto>> GetListAsync(GetOrderListDto input, bool hideCredentials = false);
-        Task<OrderDto> CreateAsync(CreateOrderDto input);
+        Task<OrderDto> CreateAsync(CreateUpdateOrderDto input);
         Task<OrderDto> UpdateAsync(Guid id,CreateOrderDto input);
         Task<OrderDto> UpdateShippingDetails(Guid id, CreateOrderDto input);
         Task<OrderDto> GetWithDetailsAsync(Guid id);

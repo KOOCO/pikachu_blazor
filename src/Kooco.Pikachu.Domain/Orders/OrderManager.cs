@@ -171,9 +171,10 @@ namespace Kooco.Pikachu.Orders
             decimal itemPrice,
             decimal totalAmount,
             int quantity,
-            string? sku, ItemStorageTemperature temperature,
+            string? sku, 
+            ItemStorageTemperature temperature,
             decimal temperatureCost
-            )
+        )
         {
             order.AddOrderItem(
                 GuidGenerator.Create(),
@@ -188,7 +189,7 @@ namespace Kooco.Pikachu.Orders
                 sku,
                 temperature,
                 temperatureCost
-                );
+            );
         }
 
         async Task<string> GenerateOrderNoAsync(Guid groupBuyId)

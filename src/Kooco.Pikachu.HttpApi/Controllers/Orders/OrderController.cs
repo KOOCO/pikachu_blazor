@@ -52,7 +52,7 @@ public class OrderController : AbpController, IOrderAppService
     #endregion
 
     [HttpPost]
-    public Task<OrderDto> CreateAsync(CreateOrderDto input)
+    public Task<OrderDto> CreateAsync(CreateUpdateOrderDto input)
     {
         if (input.CreationTime == DateTime.MinValue) input.CreationTime = DateTime.Now;
 

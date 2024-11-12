@@ -101,9 +101,11 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
 
     public decimal RefundAmount { get; set; }
 
-    public Guid? RefundRecordId { get; set; }
+    public decimal cashback_amount { get; set; }
 
-    [ForeignKey(nameof(RefundRecordId))]
+    public Guid? cashback_record_id { get; set; }
+
+    [ForeignKey(nameof(cashback_record_id))]
     public UserShoppingCredit? RefundRecord { get; set; }
 
     public Guid? UserId { get; set; }
@@ -248,8 +250,8 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
         UserId = userId;
         CreditDeductionAmount = creditDeductionAmount;
         CreditDeductionRecordId = creditDeductionRecordId;
-        RefundAmount = creditRefundAmount;
-        RefundRecordId = creditRefundRecordId;
+        cashback_amount = creditRefundAmount;
+        cashback_record_id = creditRefundRecordId;
         DiscountAmount = discountCodeAmount;
         DiscountCodeId = discountCodeId;
         RecipientNameDbsNormal = recipientNameDbsNormal;
