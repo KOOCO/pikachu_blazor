@@ -101,6 +101,7 @@ public partial class CreateGroupBuy
     public bool IsSelectedModule = true;
 
     private bool IsShowCarouselImageModule = false;
+    private List<StyleForCarouselImages> StyleForCarouselImage { get; set; } = new List<StyleForCarouselImages>();
 
     public List<List<CreateImageDto>> CarouselModules = [];
     public List<List<CreateImageDto>> BannerModules = [];
@@ -1554,6 +1555,20 @@ public partial class CreateGroupBuy
 
             GroupBuyDto result = await _groupBuyAppService.CreateAsync(CreateGroupBuyDto);
 
+            if (CarouselModules is { Count: > 0 })
+            {
+                for (int i = 0; i < CarouselModules.Count; i++)
+                {
+                    var carouselImages = CarouselModules[i];
+                    var style = StyleForCarouselImage[i];
+
+                    foreach (var image in carouselImages)
+                    {
+                        image.Style = style;
+                    }
+                }
+            }
+
             List<List<List<CreateImageDto>>> imageModules = [CarouselModules, BannerModules];
 
             IEnumerable<CreateImageDto> allImages = imageModules.SelectMany(module => module.SelectMany(images => images));
@@ -1697,7 +1712,13 @@ public partial class CreateGroupBuy
             await _uiMessageService.Error(ex.GetType().ToString());
         }
     }
-
+    private void EnsureStyleListSize(int index)
+    {
+        while (StyleForCarouselImage.Count <= index)
+        {
+            StyleForCarouselImage.Add(StyleForCarouselImages.FullWidthwithLargeImage滿版大圖);
+        }
+    }
     private void RemoveCollapseItem(int index)
     {
         var item = CollapseItem.Where(i => i.Index == index).FirstOrDefault();

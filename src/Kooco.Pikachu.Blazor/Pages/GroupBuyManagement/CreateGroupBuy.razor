@@ -1019,6 +1019,8 @@
                                     {
                                         foreach (List<CreateImageDto> carouselImages in CarouselModules)
                                         {
+                                            int index = CarouselModules.IndexOf(carouselImages);
+                                            EnsureStyleListSize(index);
                                             <div class="row">
                                                 <div class="col-2">
                                                     <label>
@@ -1111,7 +1113,20 @@
                                                         </Div>
                                                     </Div>
                                                 }
+                                                <div class="col-2">
+                                                    <label>@L["Style"]</label>
+                                                </div>
+                                                <div class="col-10">
+                                                    <Select TValue="StyleForCarouselImages" Class="form-select"
+                                                            @bind-SelectedValue="StyleForCarouselImage[index]">
+                                                        @foreach (var enumValue in Enum.GetValues(typeof(StyleForCarouselImages)))
+                                                        {
+                                                            <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                                        }
+                                                    </Select>
+                                                </div>
                                             </div>
+                                            
                                         }
                                     }
 
