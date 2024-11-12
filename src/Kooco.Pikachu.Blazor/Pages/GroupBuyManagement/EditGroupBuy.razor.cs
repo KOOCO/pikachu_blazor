@@ -552,7 +552,7 @@ public partial class EditGroupBuy
                     GroupPurchaseOverviewFilePickers.Add(new());
                 }
 
-                if (GroupPurchaseOverviewModules is { Count: 0 })
+                if (GroupPurchaseOverviewModules is { Count: 0 } && CollapseItem.Any(x => x.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview))
                 {
                     GroupPurchaseOverviewFilePickers.Add(new());
 
@@ -572,7 +572,7 @@ public partial class EditGroupBuy
                     GroupBuyOrderInstructionPickers.Add(new());
                 }
 
-                if (GroupBuyOrderInstructionModules is { Count: 0 })
+                if (GroupBuyOrderInstructionModules is { Count: 0 } && CollapseItem.Any(x => x.GroupBuyModuleType is GroupBuyModuleType.OrderInstruction))
                 {
                     GroupBuyOrderInstructionPickers.Add(new());
 
@@ -592,7 +592,7 @@ public partial class EditGroupBuy
                     ProductRankingCarouselPickers.Add(new());
                 }
 
-                if (ProductRankingCarouselModules is { Count: 0 })
+                if (ProductRankingCarouselModules is { Count: 0 } && CollapseItem.Any(x => x.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule))
                 {
                     ProductRankingCarouselPickers.Add(new());
 
