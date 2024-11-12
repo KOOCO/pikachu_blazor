@@ -115,6 +115,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
     #endregion
 
     #region Methods
+    /// <summary>
+    /// Create Order
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
     [AllowAnonymous]
     public async Task<OrderDto> CreateAsync(CreateOrderDto input)
     {
