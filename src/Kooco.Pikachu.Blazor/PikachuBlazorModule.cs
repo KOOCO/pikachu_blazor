@@ -52,6 +52,8 @@ using Volo.Abp.TenantManagement.Blazor.Server;
 using Volo.Abp.UI.Navigation;
 using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.VirtualFileSystem;
+using System.Reflection;
+
 
 namespace Kooco.Pikachu.Blazor;
 
@@ -329,9 +331,13 @@ public class PikachuBlazorModule : AbpModule
         services.AddAbpSwaggerGen(
             options =>
             {
-                options.SwaggerDoc("v1", new OpenApiInfo { Title = "Pikachu API", Version = "v1" });
+                options.SwaggerDoc("Pikachu v1", new OpenApiInfo { Title = "Pikachu API", Version = "v1", Description = "Application API" });
+                options.SwaggerDoc("Pikachu-admin v1", new OpenApiInfo { Title = "ABP API", Version = "v1", Description = "ABP API" });
                 options.DocInclusionPredicate((docName, description) => true);
                 options.CustomSchemaIds(type => type.FullName);
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                options.IncludeXmlComments(xmlPath);
             }
         );
     }
@@ -419,7 +425,8 @@ public class PikachuBlazorModule : AbpModule
         app.UseSwagger();
         app.UseAbpSwaggerUI(options =>
         {
-            options.SwaggerEndpoint("/swagger/v1/swagger.json", "Pikachu API");
+             options.SwaggerEndpoint("/swagger/Pikachu v1/swagger.json", "Pikachu API v1");
+             options.SwaggerEndpoint("/swagger/Pikachu-admin v1/swagger.json", "ABP API v1");
         });
 
         app.UseHangfireDashboard("/hangfire", new DashboardOptions
