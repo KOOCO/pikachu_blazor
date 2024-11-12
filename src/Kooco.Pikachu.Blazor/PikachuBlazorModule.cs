@@ -52,8 +52,6 @@ using Volo.Abp.TenantManagement.Blazor.Server;
 using Volo.Abp.UI.Navigation;
 using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.VirtualFileSystem;
-using System.Reflection;
-
 
 namespace Kooco.Pikachu.Blazor;
 
@@ -334,9 +332,7 @@ public class PikachuBlazorModule : AbpModule
                 options.SwaggerDoc("v1", new OpenApiInfo { Title = "Pikachu API", Version = "v1", Description = "Application API" });
                 options.DocInclusionPredicate((docName, description) => true);
                 options.CustomSchemaIds(type => type.FullName);
-                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                options.IncludeXmlComments(xmlPath);
+                
             }
         );
     }
