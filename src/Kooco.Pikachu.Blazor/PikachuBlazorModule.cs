@@ -329,9 +329,10 @@ public class PikachuBlazorModule : AbpModule
         services.AddAbpSwaggerGen(
             options =>
             {
-                options.SwaggerDoc("v1", new OpenApiInfo { Title = "Pikachu API", Version = "v1" });
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "Pikachu API", Version = "v1", Description = "Application API" });
                 options.DocInclusionPredicate((docName, description) => true);
                 options.CustomSchemaIds(type => type.FullName);
+                
             }
         );
     }
