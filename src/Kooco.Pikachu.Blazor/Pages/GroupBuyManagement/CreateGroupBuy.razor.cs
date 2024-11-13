@@ -468,15 +468,29 @@ public partial class CreateGroupBuy
 
                     int sortNo = carouselImages.LastOrDefault()?.SortNo ?? 0;
 
-                    carouselImages.Add(new CreateImageDto
+                    if (sortNo is 0 && carouselImages.Any(a => a.Id != Guid.Empty && a.CarouselStyle != null && a.BlobImageName == string.Empty))
                     {
-                        Name = file.Name,
-                        BlobImageName = newFileName,
-                        ImageUrl = url,
-                        ImageType = imageType,
-                        SortNo = sortNo + 1,
-                        ModuleNumber = carouselModuleNumber
-                    });
+                        carouselImages[0].Name = file.Name;
+                        carouselImages[0].BlobImageName = newFileName;
+                        carouselImages[0].ImageUrl = url;
+                        carouselImages[0].ImageType = imageType;
+                        carouselImages[0].SortNo = sortNo + 1;
+                        carouselImages[0].ModuleNumber = carouselModuleNumber;
+                    }
+
+                    else
+                    {
+                        carouselImages.Add(new CreateImageDto
+                        {
+                            Name = file.Name,
+                            BlobImageName = newFileName,
+                            ImageUrl = url,
+                            ImageType = imageType,
+                            SortNo = sortNo + 1,
+                            ModuleNumber = carouselModuleNumber,
+                            CarouselStyle = carouselImages.FirstOrDefault(f => f.CarouselStyle != null)?.CarouselStyle
+                        });
+                    }
 
                     await carouselPicker.Clear();
                 }
@@ -496,6 +510,34 @@ public partial class CreateGroupBuy
             await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
         }
     }
+
+    void OnStyleCarouselChange(ChangeEventArgs e, List<CreateImageDto> carouselImages, int carouselModuleNumber)
+    {
+        if (carouselImages is { Count: 0 })
+        {
+            carouselImages.Add(new CreateImageDto()
+            {
+                Name = string.Empty,
+                ImageUrl = string.Empty,
+                ImageType = ImageType.GroupBuyCarouselImage,
+                BlobImageName = string.Empty,
+                CarouselStyle = e.Value is not null ? Enum.Parse<StyleForCarouselImages>(e.Value.ToString()) : null,
+                ModuleNumber = carouselModuleNumber,
+                SortNo = 0
+            });
+        }
+
+        else
+        {
+            foreach (CreateImageDto image in carouselImages)
+            {
+                image.CarouselStyle = e.Value is not null ? Enum.Parse<StyleForCarouselImages>(e.Value.ToString()) : null;
+            }
+        }
+
+        StateHasChanged();
+    }
+
 
     async Task OnBannerUploadAsync(FileChangedEventArgs e)
     {
@@ -1555,14 +1597,14 @@ public partial class CreateGroupBuy
 
             GroupBuyDto result = await _groupBuyAppService.CreateAsync(CreateGroupBuyDto);
 
-            if(CarouselModules is { Count: > 0 })
-            {
-                for(int i = 0;  i < CarouselModules.Count; i++) 
-                {
-                    List<CreateImageDto> createImages = CarouselModules[i];
-                    foreach (CreateImageDto image in createImages) image.CarouselStyle = StyleForCarouselImages[i];
-                }
-            }
+            //if(CarouselModules is { Count: > 0 })
+            //{
+            //    for(int i = 0;  i < CarouselModules.Count; i++) 
+            //    {
+            //        List<CreateImageDto> createImages = CarouselModules[i];
+            //        foreach (CreateImageDto image in createImages) image.CarouselStyle = StyleForCarouselImages[i];
+            //    }
+            //}
 
             List<List<List<CreateImageDto>>> imageModules = [CarouselModules, BannerModules];
 

@@ -1019,12 +1019,6 @@
                                     {
                                         @foreach (List<CreateImageDto> carouselImages in CarouselModules)
                                         {
-                                            int index = CarouselModules.IndexOf(carouselImages);
-                                            if (StyleForCarouselImages.Count is 0 || index >= StyleForCarouselImages.Count)
-                                            {
-                                                 AddCarouselStyle();
-                                            }
-
                                             <div class="row">
                                                 <div class="col-2">
                                                     <label>
@@ -1084,14 +1078,14 @@
                                                         </FilePicker>
                                                     </Field>
                                                 </div>
-                                                @if (carouselImages.Count > 0)
+                                                @if (carouselImages.Count > 0 && carouselImages.Any(a => !a.ImageUrl.IsNullOrEmpty()))
                                                 {
                                                     <Div Class="row">
                                                         <Div Class="col-2"></Div>
                                                         <Div Class="col-10">
                                                             <Div Class="image-list-container d-block flex-nowrap">
                                                                 <Div Class="d-flex flex-wrap">
-                                                                    @foreach (CreateImageDto image in carouselImages)
+                                                                    @foreach (CreateImageDto image in carouselImages.Where(w => !w.ImageUrl.IsNullOrEmpty()).ToList())
                                                                     {
                                                                         <Div Class="image-container">
                                                                             <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image" Fluid />
@@ -1104,7 +1098,7 @@
                                                                     }
                                                                 </Div>
                                                                 <Div Class="d-flex">
-                                                                    @foreach (CreateImageDto createImageDto in carouselImages)
+                                                                    @foreach (CreateImageDto createImageDto in carouselImages.Where(w => !w.ImageUrl.IsNullOrEmpty()).ToList())
                                                                     {
                                                                         <button type="button"
                                                                                 class="btn btn-primary @(carouselImages.IndexOf(createImageDto) > 0 ? "mx-1" : "")"
@@ -1122,14 +1116,22 @@
                                                         <label>@L["Style"]</label>
                                                     </Div>
                                                     <Div class="col-10 pt-2 pb-4">
-                                                        <Select TValue="StyleForCarouselImages" Class="form-select"
-                                                                @bind-SelectedValue="StyleForCarouselImages[index]">
-                                                                <SelectItem Disabled>Select Style</SelectItem>
-                                                            @foreach (var enumValue in Enum.GetValues(typeof(StyleForCarouselImages)))
+                                                        <select class="form-select form-select"
+                                                                @onchange=@((e) => OnStyleCarouselChange(e, carouselImages, CarouselModules.IndexOf(carouselImages) + 1))>
+                                                            <option>Select Style</option>
+                                                            @foreach (object? enumValue in Enum.GetValues(typeof(StyleForCarouselImages)))
                                                             {
-                                                                <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                                                if (enumValue is not null && carouselImages.Any(a => a.CarouselStyle == (StyleForCarouselImages)enumValue))
+                                                                {
+                                                                    <option value="@enumValue" selected>@L[enumValue.ToString()]</option>
+                                                                }
+
+                                                                else
+                                                                {
+                                                                    <option value="@enumValue">@L[enumValue.ToString()]</option>
+                                                                }
                                                             }
-                                                        </Select>
+                                                        </select>
                                                     </Div>
                                                 </Div>
                                             </div>
