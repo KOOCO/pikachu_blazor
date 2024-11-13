@@ -1017,8 +1017,14 @@
 
                                     @if (module.GroupBuyModuleType is GroupBuyModuleType.CarouselImages)
                                     {
-                                        foreach (List<CreateImageDto> carouselImages in CarouselModules)
+                                        @foreach (List<CreateImageDto> carouselImages in CarouselModules)
                                         {
+                                            int index = CarouselModules.IndexOf(carouselImages);
+                                            if (StyleForCarouselImages.Count is 0 || index >= StyleForCarouselImages.Count)
+                                            {
+                                                 AddCarouselStyle();
+                                            }
+
                                             <div class="row">
                                                 <div class="col-2">
                                                     <label>
@@ -1111,6 +1117,21 @@
                                                         </Div>
                                                     </Div>
                                                 }
+                                                <Div class="row">
+                                                    <Div class="col-2 pt-2 pb-4">
+                                                        <label>@L["Style"]</label>
+                                                    </Div>
+                                                    <Div class="col-10 pt-2 pb-4">
+                                                        <Select TValue="StyleForCarouselImages" Class="form-select"
+                                                                @bind-SelectedValue="StyleForCarouselImages[index]">
+                                                                <SelectItem Disabled>Select Style</SelectItem>
+                                                            @foreach (var enumValue in Enum.GetValues(typeof(StyleForCarouselImages)))
+                                                            {
+                                                                <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                                            }
+                                                        </Select>
+                                                    </Div>
+                                                </Div>
                                             </div>
                                         }
                                     }

@@ -50,6 +50,7 @@ public partial class CreateGroupBuy
     public List<string> DeliverdByStoreTimeList = new List<string>();
     private GroupBuyCreateDto CreateGroupBuyDto = new();
     public List<CreateImageDto> CarouselImages { get; set; }
+    public List<StyleForCarouselImages> StyleForCarouselImages { get; set; } = new List<StyleForCarouselImages>();
     private string TagInputValue { get; set; }
     private LoadingIndicator Loading { get; set; } = new();
     private IReadOnlyList<string> ItemTags { get; set; } = new List<string>(); //used for store item tags 
@@ -1554,6 +1555,15 @@ public partial class CreateGroupBuy
 
             GroupBuyDto result = await _groupBuyAppService.CreateAsync(CreateGroupBuyDto);
 
+            if(CarouselModules is { Count: > 0 })
+            {
+                for(int i = 0;  i < CarouselModules.Count; i++) 
+                {
+                    List<CreateImageDto> createImages = CarouselModules[i];
+                    foreach (CreateImageDto image in createImages) image.CarouselStyle = StyleForCarouselImages[i];
+                }
+            }
+
             List<List<List<CreateImageDto>>> imageModules = [CarouselModules, BannerModules];
 
             IEnumerable<CreateImageDto> allImages = imageModules.SelectMany(module => module.SelectMany(images => images));
@@ -1707,6 +1717,10 @@ public partial class CreateGroupBuy
     private void BackToGroupBuyList()
     {
         NavigationManager.NavigateTo("GroupBuyManagement/GroupBuyList");
+    }
+    private void AddCarouselStyle()
+    {
+        StyleForCarouselImages.Add(new StyleForCarouselImages());
     }
 
     void StartDrag(CollapseItem item)

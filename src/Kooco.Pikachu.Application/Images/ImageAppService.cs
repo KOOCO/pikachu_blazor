@@ -78,5 +78,25 @@ namespace Kooco.Pikachu.Images
         {
             await _repository.DeleteDirectAsync(d => d.TargetId == groupBuyId && d.ImageType == imageType);
         }
+        public async Task UpdateCarouselStyleAsync(CreateImageDto carouselImage)
+        {
+            List<ImageDto> existingImages = await GetGroupBuyImagesAsync(carouselImage.TargetId);
+            if (existingImages != null)
+            {
+                existingImages = existingImages.Where(x => x.ModuleNumber == carouselImage.ModuleNumber).ToList();
+
+                if (existingImages.Any())
+                {
+                    foreach (var image in existingImages)
+                    {
+                        image.CarouselStyle = carouselImage.CarouselStyle;
+                    }
+
+                    List<Image> updatedImages = ObjectMapper.Map<List<ImageDto>, List<Image>>(existingImages);
+                    await _repository.UpdateManyAsync(updatedImages, true);
+                }
+            }
+        }
+
     }
 }

@@ -19,5 +19,6 @@ namespace Kooco.Pikachu.Images
         Task<string> UploadImageAsync(string fileName, byte[] bytes, bool overrideExisting = true);
         Task<bool> DeleteImageAsync(string blobName, bool configureAwait = true);
         Task DeleteByGroupBuyIdAndImageTypeAsync(Guid groupBuyId, ImageType imageType);
+        Task UpdateCarouselStyleAsync(CreateImageDto carouselImage);
     }
 }

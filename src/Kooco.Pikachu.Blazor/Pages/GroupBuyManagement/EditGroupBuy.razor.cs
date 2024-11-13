@@ -50,6 +50,7 @@ public partial class EditGroupBuy
     private GroupBuyDto GroupBuy { get; set; }
     private GroupBuyUpdateDto EditGroupBuyDto { get; set; }
     private List<CreateImageDto> CarouselImages { get; set; }
+    public List<StyleForCarouselImages?> StyleForCarouselImages { get; set; } = new List<StyleForCarouselImages?>();
     private List<CreateImageDto> BannerImages { get; set; }
     private const int MaxAllowedFilesPerUpload = 5;
     private const int TotalMaxAllowedFiles = 5;
@@ -508,7 +509,11 @@ public partial class EditGroupBuy
                             SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
                             GroupBuyModuleType = GroupBuyModuleType.CarouselImages
                         });
+                    CreateImageDto? firstImage = carouselImages.FirstOrDefault();
 
+                    if(firstImage != null) StyleForCarouselImages.Add(firstImage.CarouselStyle ?? 
+                                                                                    EnumValues.StyleForCarouselImages.RoundedCornersWithoutFullWidth圓角無滿版);
+                    
                     CarouselFilePickers.Add(new());
                 }
 
@@ -2001,12 +2006,34 @@ public partial class EditGroupBuy
             {
                 foreach (CreateImageDto carouselImage in carouselImages)
                 {
+                    int index = CarouselModules.IndexOf(carouselImages);
+
                     if (!ExistingImages.Any(a => a.BlobImageName == carouselImage.BlobImageName))
                     {
                         carouselImage.TargetId = Id;
 
+                        if(index < StyleForCarouselImages.Count) carouselImage.CarouselStyle = StyleForCarouselImages[index];
+
                         await _imageAppService.CreateAsync(carouselImage);
                     }
+
+                    //else if (ExistingImages.Count < carouselImages.Count)
+                    //{
+                    //    carouselImage.TargetId = Id;
+
+                    //    if (index < StyleForCarouselImages.Count)
+                    //    {
+                    //        carouselImage.CarouselStyle = StyleForCarouselImages[index];
+                    //    }
+
+                    //    bool styleAlreadyAdded = ExistingImages.Any(a => a.CarouselStyle == carouselImage.CarouselStyle);
+
+                    //    if (!styleAlreadyAdded)
+                    //    {
+                    //        await _imageAppService.CreateAsync(carouselImage);
+                    //    }
+                    //}
+
                 }
             }
 
@@ -2259,6 +2286,14 @@ public partial class EditGroupBuy
     void StartDrag(CollapseItem item)
     {
         CurrentIndex = CollapseItem.IndexOf(item);
+    }
+    private void AddCarouselStyle()
+    {
+        StyleForCarouselImages.Add(new StyleForCarouselImages());
+    } 
+    private async Task UpdateCarouselStyle(CreateImageDto image)
+    {
+        await _imageAppService.UpdateCarouselStyleAsync(image);
     }
 
     async void Drop(CollapseItem item)
