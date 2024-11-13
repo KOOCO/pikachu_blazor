@@ -26,10 +26,10 @@ public class PaymentGatewayController(
         return _paymentGatewayAppService.GetAllAsync();
     }
 
-    [HttpPost("ecpay-serverReplyUrl/{UniqueId}/{ReturnURL}")]
+    [HttpPost("ecpay-serverReplyUrl/{UniqueId}/{GroupBuyId}")]
     [IgnoreAntiforgeryToken]
     [AllowAnonymous]
-    public IActionResult EcPayServerReplyQS(Guid UniqueId, string ReturnURL)
+    public IActionResult EcPayServerReplyQS(Guid UniqueId, Guid GroupBuyId)
     {
         if (!Request.HasFormContentType) return BadRequest("Invalid content type");
 
@@ -39,7 +39,7 @@ public class PaymentGatewayController(
             CVSStoreName = Request.Form["CVSStoreName"],
             CVSAddress = Request.Form["CVSAddress"],
             CVSOutSide = Request.Form["CVSOutSide"],
-            ExtraData = ReturnURL,
+            GroupBuyId = GroupBuyId.ToString(),
             UniqueId = UniqueId.ToString()
         };
 
@@ -62,7 +62,7 @@ public class PaymentGatewayController(
                 CVSStoreName = ecpayStoreData.CVSStoreName,
                 CVSAddress = ecpayStoreData.CVSAddress,
                 CVSOutSide = ecpayStoreData.CVSOutSide,
-                ExtraData = ecpayStoreData.ExtraData,
+                GroupBuyId = ecpayStoreData.GroupBuyId,
                 UniqueId = UniqueId.ToString(),
                 IsDataRetrieved = true
             });
@@ -71,10 +71,10 @@ public class PaymentGatewayController(
         return Ok($"Data not available with UniqueId: {UniqueId}");
     }
 
-    [HttpPost("tcat-serverReplyUrl/{UniqueId}/{ReturnURL}")]
+    [HttpPost("tcat-serverReplyUrl/{UniqueId}/{GroupBuyId}")]
     [IgnoreAntiforgeryToken]
     [AllowAnonymous]
-    public IActionResult TCatServerReply(Guid UniqueId, string ReturnURL)
+    public IActionResult TCatServerReply(Guid UniqueId, Guid GroupBuyId)
     {
         if (!Request.HasFormContentType) return BadRequest("Invalid content type");
 
@@ -85,7 +85,7 @@ public class PaymentGatewayController(
             storeaddress = Request.Form["storeaddress"],
             storeid = Request.Form["storeid"],
             storename = Request.Form["storename"],
-            ExtraData = ReturnURL,
+            GroupBuyId = GroupBuyId.ToString(),
             UniqueId = UniqueId.ToString()
         };
 
@@ -110,7 +110,7 @@ public class PaymentGatewayController(
                 storeaddress = tcatStoreData.storeaddress,
                 storeid = tcatStoreData.storeid,
                 storename = tcatStoreData.storename,
-                ExtraData = tcatStoreData.ExtraData,
+                GroupBuyId = tcatStoreData.GroupBuyId,
                 UniqueId = UniqueId.ToString(),
                 IsDataRetrieved = true
             });

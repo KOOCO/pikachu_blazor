@@ -27,6 +27,7 @@ public class EcPayStoreData
     public string MerchantID { get; set; }
     public string MerchantTradeNo { get; set; }
     public string UniqueId { get; set; }
+    public string GroupBuyId { get; set; }
     public string ExtraData { get; set; }
 }
 
@@ -39,6 +40,7 @@ public class TCatStoreData
     public string storename { get; set; }
     public string ExtraData { get; set; }
     public string UniqueId { get; set; }
+    public string GroupBuyId { get; set; }
 }
 
 public class AttributeNameOption
