@@ -139,8 +139,8 @@
                                         <tbody>
                                             <Div Width="Width.Max100">
                                                 <select class="form-select form-select" @onchange=ChangeStore>
-                                                    <option value="homeDelivery">Home Delivery</option>
-                                                    <option value="convenienceStore">Convenience Store</option>
+                                                    <option value="homeDelivery">@L["HomeDelivery"]</option>
+                                                    <option value="convenienceStore">@L["ConvenienceStore"]</option>
                                                 </select>
                                             </Div>
                                             <br />
@@ -223,7 +223,7 @@
                                             @if (IsShowConvenienceStoreDetails)
                                             {
                                                 <tr>
-                                                    <td>@L["CVS Store Id"]</td>
+                                                    <td>@L["CVSStoreId"]</td>
                                                     @if (ModificationTrack.IsCVSStoreIdInputVisible)
                                                     {
                                                         <td>
@@ -262,7 +262,7 @@
                                                     }
                                                 </tr>
                                                 <tr>
-                                                    <td>@L["CVS Store OutSide"]</td>
+                                                    <td>@L["CVSStoreOutSide"]</td>
                                                     @if (ModificationTrack.IsCVSStoreOutsideInputVisible)
                                                     {
                                                         <td>
@@ -501,14 +501,14 @@
                                         <tbody>
                                             <Div Width="Width.Max100">
                                                 <select class="form-select form-select" @onchange=ChangeStore>
-                                                    <option value="homeDelivery">Home Delivery</option>
-                                                    <option value="convenienceStore">Convenience Store</option>
+                                                    <option value="homeDelivery">@L["HomeDelivery"]</option>
+                                                    <option value="convenienceStore">@L["ConvenienceStore"]</option>
                                                 </select>
                                             </Div>
 
                                             <Div Width="Width.Max100">
                                                 <select class="form-select form-select my-1" @onchange=TemperatureControlChange>
-                                                    <option value="">Select Temperature Control</option>
+                                                    <option value="">@L["SelectTemperatureControl"]</option>
                                                     @foreach (string temperature in Enum.GetNames<ItemStorageTemperature>()) 
                                                     {
                                                         if (temperature == ItemStorageTemperature.Normal.ToString())
@@ -760,7 +760,7 @@
                                             @if (IsShowConvenienceStoreDetails)
                                             {
                                                 <tr>
-                                                    <td>@L["CVS Store Id"]</td>
+                                                    <td>@L["CVSStoreId"]</td>
                                                     @if (SelectedTemperatureControl is ItemStorageTemperature.Normal)
                                                     {
                                                         @if (ModificationTrack.IsStoreIdNormalInputVisible)
@@ -876,7 +876,7 @@
                                                     }
                                                 </tr>
                                                 <tr>
-                                                    <td>@L["CVS Store OutSide"]</td>
+                                                    <td>@L["CVSStoreOutSide"]</td>
                                                     @if (SelectedTemperatureControl is ItemStorageTemperature.Normal)
                                                     {
                                                         @if (ModificationTrack.IsCVSStoreOutSideNormalInputVisible)

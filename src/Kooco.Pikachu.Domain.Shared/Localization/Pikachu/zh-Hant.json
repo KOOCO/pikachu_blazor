@@ -967,7 +967,14 @@
     "SpecificationIntroduction": "規格介紹（左圖，右文說明",
     "Ifthissettingisturnedoff,pleaseprinttheinvoiceforthecustomer": "若此設置關閉，請自行為顧客列印發票",
     "Info": "提醒您",
-    "StatusOnInvoiceIssue": "開立發票狀態"
+    "StatusOnInvoiceIssue": "開立發票狀態",
+    "City": "城市",
+    "CVSStoreId": "門市店號",
+    "CVSStoreOutSide": "是否為離島",
+    "StoreCustomerServiceReply": "商店客服回覆",
+    "CustomerServiceHistory": "客服歷史記錄",
+    "SelectTemperatureControl": "選擇溫層",
+    "ConvenienceStore": "超商取貨資訊"
 
 
   }
