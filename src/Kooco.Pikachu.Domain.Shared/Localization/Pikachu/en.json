@@ -933,7 +933,14 @@
     "UseECPayelectronicreceipt": "Use ECPay electronic invoice",
     "Ifthissettingisturnedoff,pleaseprinttheinvoiceforthecustomer": "If this setting is turned off,please print the invoice for the customer",
     "StatusOnInvoiceIssue": "Status On Invoice Issue",
-    "City": "City"
+    "City": "City",
+    "CVSStoreId": "CVS Store Id",
+    "CVSStoreOutSide": "CVS Store OutSide",
+    "StoreCustomerServiceReply": "Store Customer Service Reply",
+    "CustomerServiceHistory": "Customer Service History",
+    "SelectTemperatureControl": "Select Temperature Control",
+    "ConvenienceStore": "Convenience Store"
+
 
 
   }
