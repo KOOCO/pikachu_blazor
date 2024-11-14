@@ -17,6 +17,7 @@ namespace Kooco.Pikachu.GroupBuys
         public string? AdditionalInfo { get; set; }
         public string? ProductGroupModuleTitle { get; set; }
         public string? ProductGroupModuleImageSize { get; set; }
+        public int? ModuleNumber { get; set; }
         public ICollection<GroupBuyItemGroupDetailCreateUpdateDto> ItemDetails { get; set; }
 
         public GroupBuyItemGroupCreateUpdateDto()

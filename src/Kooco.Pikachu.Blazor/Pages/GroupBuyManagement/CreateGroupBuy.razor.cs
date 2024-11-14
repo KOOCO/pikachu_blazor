@@ -425,18 +425,7 @@ public partial class CreateGroupBuy
             await carouselPicker.Clear();
             return;
         }
-        //if (e.Files.Length > MaxAllowedFilesPerUpload)
-        //{
-        //    await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesExceedMaxAllowedPerUpload]);
-        //    await CarouselPickerCustom.Clear();
-        //    return;
-        //}
-        //if (CarouselImages.Count > TotalMaxAllowedFiles)
-        //{
-        //    await _uiMessageService.Error(L[PikachuDomainErrorCodes.AlreadyUploadMaxAllowedFiles]);
-        //    await CarouselPickerCustom.Clear();
-        //    return;
-        //}
+
         int count = 0;
         try
         {
@@ -480,16 +469,38 @@ public partial class CreateGroupBuy
 
                     else
                     {
-                        carouselImages.Add(new CreateImageDto
+                        int indexInCarouselModules = CarouselModules.FindIndex(module => module.Any(img => img.ModuleNumber == carouselModuleNumber));
+
+                        if (indexInCarouselModules >= 0)
                         {
-                            Name = file.Name,
-                            BlobImageName = newFileName,
-                            ImageUrl = url,
-                            ImageType = imageType,
-                            SortNo = sortNo + 1,
-                            ModuleNumber = carouselModuleNumber,
-                            CarouselStyle = carouselImages.FirstOrDefault(f => f.CarouselStyle != null)?.CarouselStyle
-                        });
+                            List<CreateImageDto> originalCarouselImages = CarouselModules[indexInCarouselModules];
+
+                            if (originalCarouselImages.Any(a => a.SortNo is 0))
+                            {
+                                int index = originalCarouselImages.IndexOf(originalCarouselImages.First(f => f.SortNo == 0));
+
+                                originalCarouselImages[index].Name = file.Name;
+                                originalCarouselImages[index].BlobImageName = newFileName;
+                                originalCarouselImages[index].ImageUrl = url;
+                                originalCarouselImages[index].ImageType = imageType;
+                                originalCarouselImages[index].SortNo = sortNo + 1;
+                                originalCarouselImages[index].ModuleNumber = carouselModuleNumber;
+                            }
+
+                            else
+                            {
+                                originalCarouselImages.Add(new CreateImageDto
+                                {
+                                    Name = file.Name,
+                                    BlobImageName = newFileName,
+                                    ImageUrl = url,
+                                    ImageType = imageType,
+                                    SortNo = sortNo + 1,
+                                    ModuleNumber = carouselModuleNumber,
+                                    CarouselStyle = originalCarouselImages.FirstOrDefault(f => f.CarouselStyle != null)?.CarouselStyle
+                                });
+                            }
+                        }
                     }
 
                     await carouselPicker.Clear();
@@ -699,21 +710,19 @@ public partial class CreateGroupBuy
 
         else if (groupBuyModuleType is GroupBuyModuleType.CarouselImages)
         {
-            if (CarouselModules.Count is 0)
+            CollapseItem collapseItem = new()
             {
-                CollapseItem collapseItem = new()
-                {
-                    Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
-                    SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
-                    GroupBuyModuleType = groupBuyModuleType
-                };
+                Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
+                GroupBuyModuleType = groupBuyModuleType,
+                ModuleNumber = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1
+            };
 
-                CollapseItem.Add(collapseItem);
-            }
-
+            CollapseItem.Add(collapseItem);
+            
             CarouselFilePickers.Add(new());
 
-            CarouselModules.Add([]);
+            CarouselModules.Add([new() { ModuleNumber = collapseItem.ModuleNumber }]);
         }
 
         else if (groupBuyModuleType is GroupBuyModuleType.BannerImages)
@@ -1566,7 +1575,8 @@ public partial class CreateGroupBuy
                     {
                         SortOrder = item.SortOrder,
                         GroupBuyModuleType = item.GroupBuyModuleType,
-                        AdditionalInfo = item.AdditionalInfo
+                        AdditionalInfo = item.AdditionalInfo,
+                        ModuleNumber = item.ModuleNumber
                     };
 
                     if (item.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule &&
@@ -1596,15 +1606,6 @@ public partial class CreateGroupBuy
             }
 
             GroupBuyDto result = await _groupBuyAppService.CreateAsync(CreateGroupBuyDto);
-
-            //if(CarouselModules is { Count: > 0 })
-            //{
-            //    for(int i = 0;  i < CarouselModules.Count; i++) 
-            //    {
-            //        List<CreateImageDto> createImages = CarouselModules[i];
-            //        foreach (CreateImageDto image in createImages) image.CarouselStyle = StyleForCarouselImages[i];
-            //    }
-            //}
 
             List<List<List<CreateImageDto>>> imageModules = [CarouselModules, BannerModules];
 
@@ -1807,6 +1808,7 @@ public class CollapseItem
     public string? AdditionalInfo { get; set; }
     public string? ProductGroupModuleTitle { get; set; }
     public string? ProductGroupModuleImageSize { get; set; }
+    public int? ModuleNumber { get; set; }
     public CollapseItem()
     {
         Selected = [];

@@ -37,6 +37,15 @@ public class ImageAppService : CrudAppService<Image,
     }
     #endregion
 
+    public async Task<List<CreateImageDto>> GetImageListByModuleNumberAsync(Guid groupBuyId, ImageType imageType, int moduleNumber)
+    {
+        return ObjectMapper.Map<List<Image>, List<CreateImageDto>>(
+            [.. (await _repository.GetQueryableAsync()).Where(w => w.TargetId == groupBuyId &&
+                                                                   w.ImageType == imageType &&
+                                                                   w.ModuleNumber == moduleNumber)]
+        );
+    }
+
     public async Task UpdateImageAsync(CreateImageDto image)
     {
         await UpdateAsync(image.Id, ObjectMapper.Map<CreateImageDto, UpdateImageDto>(image));

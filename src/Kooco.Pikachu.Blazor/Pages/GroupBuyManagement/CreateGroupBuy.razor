@@ -1017,7 +1017,9 @@
 
                                     @if (module.GroupBuyModuleType is GroupBuyModuleType.CarouselImages)
                                     {
-                                        @foreach (List<CreateImageDto> carouselImages in CarouselModules)
+                                        List<List<CreateImageDto>> carouselModules = CarouselModules.Select(s => s.Where(w => w.ModuleNumber == module.ModuleNumber).ToList()).Where(w => w.Count > 0).ToList();
+
+                                        @foreach (List<CreateImageDto> carouselImages in carouselModules)
                                         {
                                             <div class="row">
                                                 <div class="col-2">
@@ -1031,25 +1033,25 @@
                                                 </div>
                                                 <div class="col-10 ">
                                                     <Field>
-                                                        <FilePicker @ref="CarouselFilePickers[CarouselModules.IndexOf(carouselImages)]"
+                                                        <FilePicker @ref="CarouselFilePickers[carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1]"
                                                                     Disabled="carouselImages.Count >= 5"
                                                                     Multiple
                                                                     Changed="@(async (e) => await OnImageModuleUploadAsync(e,
                                                                                                                            carouselImages,
-                                                                                                                           CarouselModules.IndexOf(carouselImages) + 1,
-                                                                                                                           CarouselFilePickers[CarouselModules.IndexOf(carouselImages)],
+                                                                                                                           carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value,
+                                                                                                                           CarouselFilePickers[carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1],
                                                                                                                            ImageType.GroupBuyCarouselImage))"
-                                                                    ShowMode="FilePickerShowMode.List"
-                                                                    Accept=".jpg, .png, .svg, .jpeg, .webp">
-                                                            <FileTemplate>
-                                                                <Div Flex="Flex.JustifyContent.Between">
-                                                                    <Div>
-                                                                        <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
-                                                                        <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
-                                                                    </Div>
-                                                                    <Div Class="ps-2">
-                                                                        <Div>
-                                                                            @if (context.File.Status is FileEntryStatus.Ready)
+                                                         ShowMode="FilePickerShowMode.List"
+                                                         Accept=".jpg, .png, .svg, .jpeg, .webp">
+                                                             <FileTemplate>
+                                                                 <Div Flex="Flex.JustifyContent.Between">
+                                                                     <Div>
+                                                                         <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
+                                                                            <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                                                        </Div>
+                                                                        <Div Class="ps-2">
+                                                                            <Div>
+                                                                                @if (context.File.Status is FileEntryStatus.Ready)
                                                                             {
                                                                                 <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
                                                                             }
@@ -1073,7 +1075,7 @@
                                                                 </Div>
                                                             </FileTemplate>
                                                             <ButtonsTemplate>
-                                                                <Progress Value="@CarouselFilePickers[CarouselModules.IndexOf(carouselImages)].GetProgressPercentage()" />
+                                                                <Progress Value="@CarouselFilePickers[carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1].GetProgressPercentage()" />
                                                             </ButtonsTemplate>
                                                         </FilePicker>
                                                     </Field>
@@ -1088,21 +1090,23 @@
                                                                     @foreach (CreateImageDto image in carouselImages.Where(w => !w.ImageUrl.IsNullOrEmpty()).ToList())
                                                                     {
                                                                         <Div Class="image-container">
-                                                                            <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image" Fluid />
-                                                                            <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName,
+                                                                            <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image"      
+                                                                                Fluid
+                                                                             />
+                                                                             <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName,
                                                                                                                                            carouselImages,
                                                                                                                                            ImageType.GroupBuyCarouselImage)">
-                                                                                <i class="fa fa-trash"></i>
-                                                                            </button>
-                                                                        </Div>
+                                                                                 <i class="fa fa-trash"></i>
+                                                                             </button>
+                                                                         </Div>
                                                                     }
                                                                 </Div>
                                                                 <Div Class="d-flex">
                                                                     @foreach (CreateImageDto createImageDto in carouselImages.Where(w => !w.ImageUrl.IsNullOrEmpty()).ToList())
                                                                     {
                                                                         <button type="button"
-                                                                                class="btn btn-primary @(carouselImages.IndexOf(createImageDto) > 0 ? "mx-1" : "")"
-                                                                                @onclick="() => OpenAddLinkModal(createImageDto)">
+                                                                        class="btn btn-primary @(carouselImages.IndexOf(createImageDto) > 0 ? "mx-1" : "")"
+                                                                        @onclick="() => OpenAddLinkModal(createImageDto)">
                                                                             @L["AddLink"]
                                                                         </button>
                                                                     }
@@ -1117,7 +1121,7 @@
                                                     </Div>
                                                     <Div class="col-10 pt-2 pb-4">
                                                         <select class="form-select form-select"
-                                                                @onchange=@((e) => OnStyleCarouselChange(e, carouselImages, CarouselModules.IndexOf(carouselImages) + 1))>
+                                                                @onchange=@((e) => OnStyleCarouselChange(e, carouselImages, carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value))>
                                                             <option>Select Style</option>
                                                             @foreach (object? enumValue in Enum.GetValues(typeof(StyleForCarouselImages)))
                                                             {

@@ -482,13 +482,13 @@ public partial class EditGroupBuy
                 await Loading.Show();
                 await OnInitializedAsync();
                 //await LoadHtmlContent();
-                ExistingImages = await _imageAppService.GetGroupBuyImagesAsync(Id, ImageType.GroupBuyCarouselImage);
+                //ExistingImages = await _imageAppService.GetGroupBuyImagesAsync(Id, ImageType.GroupBuyCarouselImage);
 
                 ExistingBannerImages = await _imageAppService.GetGroupBuyImagesAsync(Id, ImageType.GroupBuyBannerImage);
 
-                CarouselImages = _objectMapper.Map<List<ImageDto>, List<CreateImageDto>>(ExistingImages);
+                //CarouselImages = _objectMapper.Map<List<ImageDto>, List<CreateImageDto>>(ExistingImages);
 
-                CarouselModules = CarouselImages.GroupBy(g => g.ModuleNumber).Select(s => s.ToList()).ToList();
+                //CarouselModules = CarouselImages.GroupBy(g => g.ModuleNumber).Select(s => s.ToList()).ToList();
 
                 BannerImages = _objectMapper.Map<List<ImageDto>, List<CreateImageDto>>(ExistingBannerImages);
 
@@ -500,25 +500,38 @@ public partial class EditGroupBuy
 
                 await GetProductRankingCarouselsAsync();
                 
-                foreach (List<CreateImageDto> carouselImages in CarouselModules)
-                {
-                    if (!CollapseItem.Any(a => a.GroupBuyModuleType is GroupBuyModuleType.CarouselImages))
-                        CollapseItem.Add(new()
-                        {
-                            Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
-                            SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
-                            GroupBuyModuleType = GroupBuyModuleType.CarouselImages
-                        });
+                //foreach (List<CreateImageDto> carouselImages in CarouselModules)
+                //{
+                //    int? moduleNumber = carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key;
+
+                //    CollapseItem collapseItem = new()
+                //    {
+                //        Id = GroupBuy.ItemGroups.FirstOrDefault(w => w.ModuleNumber == moduleNumber && w.GroupBuyModuleType == GroupBuyModuleType.CarouselImages).Id,
+                //        Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                //        SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
+                //        GroupBuyModuleType = GroupBuyModuleType.CarouselImages,
+                //        ModuleNumber = moduleNumber
+                //    };
+
+                //    //if (!CollapseItem.Any(a => a.GroupBuyModuleType is GroupBuyModuleType.CarouselImages))
+                //    //    CollapseItem.Add(new()
+                //    //    {
+                //    //        Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                //    //        SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
+                //    //        GroupBuyModuleType = GroupBuyModuleType.CarouselImages
+                //    //    });
+
+                //    CollapseItem.Add(collapseItem);
                     
-                    CarouselFilePickers.Add(new());
-                }
+                //    CarouselFilePickers.Add(new());
+                //}
 
-                if (CarouselModules is { Count: 0 })
-                {
-                    CarouselFilePickers.Add(new());
+                //if (CarouselModules is { Count: 0 })
+                //{
+                //    CarouselFilePickers.Add(new());
 
-                    CarouselModules.Add([]);
-                }
+                //    CarouselModules.Add([]);
+                //}
 
                 foreach (List<CreateImageDto> carouselImages in BannerModules)
                 {
@@ -650,16 +663,27 @@ public partial class EditGroupBuy
         await NotifyEmailHtml.LoadHTMLContent(EditGroupBuyDto.NotifyMessage);
     }
 
-    private void LoadItemGroups()
+    private async Task LoadItemGroups()
     {
         if (CollapseItem.Count == 0)
         {
             var itemGroups = GroupBuy.ItemGroups;
+
             if (itemGroups.Any())
             {
-                var i = 0;
+                if (itemGroups.Any(a => a.GroupBuyModuleType is GroupBuyModuleType.CarouselImages))
+                {
+                    ExistingImages = await _imageAppService.GetGroupBuyImagesAsync(Id, ImageType.GroupBuyCarouselImage);
+
+                    CarouselImages = _objectMapper.Map<List<ImageDto>, List<CreateImageDto>>(ExistingImages);
+                }
+
+                int i = 0;
+
                 foreach (var itemGroup in itemGroups)
                 {
+                    //if (itemGroup.GroupBuyModuleType is GroupBuyModuleType.CarouselImages) continue;
+
                     CollapseItem collapseItem = new();
 
                     if (itemGroup.GroupBuyModuleType is GroupBuyModuleType.CarouselImages ||
@@ -675,8 +699,18 @@ public partial class EditGroupBuy
                             Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
                             SortOrder = itemGroup.SortOrder,
                             GroupBuyModuleType = itemGroup.GroupBuyModuleType,
-                            AdditionalInfo = itemGroup.AdditionalInfo
+                            AdditionalInfo = itemGroup.AdditionalInfo,
+                            ModuleNumber = itemGroup.ModuleNumber
                         };
+
+                        if (itemGroup.GroupBuyModuleType is GroupBuyModuleType.CarouselImages)
+                        {
+                            List<CreateImageDto> imageList = await _imageAppService.GetImageListByModuleNumberAsync(Id, ImageType.GroupBuyCarouselImage, collapseItem.ModuleNumber!.Value);
+
+                            CarouselFilePickers.Add(new());
+
+                            CarouselModules.Add(imageList);
+                        }
                     }
 
                     else
@@ -813,21 +847,19 @@ public partial class EditGroupBuy
 
         else if (groupBuyModuleType is GroupBuyModuleType.CarouselImages)
         {
-            if (CarouselModules.Count is 0)
+            CollapseItem collapseItem = new()
             {
-                CollapseItem collapseItem = new()
-                {
-                    Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
-                    SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
-                    GroupBuyModuleType = groupBuyModuleType
-                };
+                Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
+                GroupBuyModuleType = groupBuyModuleType,
+                ModuleNumber = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1
+            };
 
-                CollapseItem.Add(collapseItem);
-            }
+            CollapseItem.Add(collapseItem);
 
             CarouselFilePickers.Add(new());
 
-            CarouselModules.Add([]);
+            CarouselModules.Add([new() { ModuleNumber = collapseItem.ModuleNumber }]);
         }
 
         else if (groupBuyModuleType is GroupBuyModuleType.BannerImages)
@@ -1201,18 +1233,7 @@ public partial class EditGroupBuy
             await carouselPicker.Clear();
             return;
         }
-        //if (e.Files.Length > MaxAllowedFilesPerUpload)
-        //{
-        //    await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesExceedMaxAllowedPerUpload]);
-        //    await CarouselPickerCustom.Clear();
-        //    return;
-        //}
-        //if (CarouselImages.Count > TotalMaxAllowedFiles)
-        //{
-        //    await _uiMessageService.Error(L[PikachuDomainErrorCodes.AlreadyUploadMaxAllowedFiles]);
-        //    await CarouselPickerCustom.Clear();
-        //    return;
-        //}
+        
         int count = 0;
         try
         {
@@ -1257,16 +1278,38 @@ public partial class EditGroupBuy
 
                     else
                     {
-                        carouselImages.Add(new CreateImageDto
+                        int indexInCarouselModules = CarouselModules.FindIndex(module => module.Any(img => img.ModuleNumber == carouselModuleNumber));
+
+                        if (indexInCarouselModules >= 0)
                         {
-                            Name = file.Name,
-                            BlobImageName = newFileName,
-                            ImageUrl = url,
-                            ImageType = imageType,
-                            SortNo = sortNo + 1,
-                            ModuleNumber = carouselModuleNumber,
-                            CarouselStyle = carouselImages.FirstOrDefault(f => f.CarouselStyle != null)?.CarouselStyle
-                        });
+                            List<CreateImageDto> originalCarouselImages = CarouselModules[indexInCarouselModules];
+
+                            if (originalCarouselImages.Any(a => a.SortNo is 0))
+                            {
+                                int index = originalCarouselImages.IndexOf(originalCarouselImages.First(f => f.SortNo == 0));
+
+                                originalCarouselImages[index].Name = file.Name;
+                                originalCarouselImages[index].BlobImageName = newFileName;
+                                originalCarouselImages[index].ImageUrl = url;
+                                originalCarouselImages[index].ImageType = imageType;
+                                originalCarouselImages[index].SortNo = sortNo + 1;
+                                originalCarouselImages[index].ModuleNumber = carouselModuleNumber;
+                            }
+
+                            else
+                            {
+                                originalCarouselImages.Add(new CreateImageDto
+                                {
+                                    Name = file.Name,
+                                    BlobImageName = newFileName,
+                                    ImageUrl = url,
+                                    ImageType = imageType,
+                                    SortNo = sortNo + 1,
+                                    ModuleNumber = carouselModuleNumber,
+                                    CarouselStyle = originalCarouselImages.FirstOrDefault(f => f.CarouselStyle != null)?.CarouselStyle
+                                });
+                            }
+                        }
                     }
 
                     await carouselPicker.Clear();
@@ -1708,11 +1751,6 @@ public partial class EditGroupBuy
     {
         try
         {
-            //if (EditGroupBuyDto.GroupBuyName.IsNullOrWhiteSpace())
-            //{
-            //    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyNameCannotBeNull]);
-            //    return;
-            //}
             await Loading.Show();
 
             if (CollapseItem.Any(a => a.IsWarnedForInCompatible))
@@ -1945,7 +1983,7 @@ public partial class EditGroupBuy
                     || item.Selected.Any(x => x.Id != Guid.Empty || (item.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor && !x.Name.IsNullOrEmpty()));
                 if (check)
                 {
-                    var itemGroup = new GroupBuyItemGroupCreateUpdateDto
+                    GroupBuyItemGroupCreateUpdateDto itemGroup = new() 
                     {
                         Id = item.Id,
                         SortOrder = item.SortOrder,
@@ -1953,7 +1991,8 @@ public partial class EditGroupBuy
                         GroupBuyId = GroupBuy.Id,
                         AdditionalInfo = item.AdditionalInfo,
                         ProductGroupModuleTitle = item.ProductGroupModuleTitle,
-                        ProductGroupModuleImageSize = item.ProductGroupModuleImageSize
+                        ProductGroupModuleImageSize = item.ProductGroupModuleImageSize,
+                        ModuleNumber = item.ModuleNumber
                     };
 
                     if (item.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule &&
@@ -2336,7 +2375,7 @@ public partial class EditGroupBuy
 
             for (int i = 0; i < CollapseItem.Count; i++)
             {
-                CollapseItem[i].Index = i;
+                CollapseItem[i].Index = i + 1;
                 CollapseItem[i].SortOrder = i + 1;
             }
             await UpdateSortOrderAsync();

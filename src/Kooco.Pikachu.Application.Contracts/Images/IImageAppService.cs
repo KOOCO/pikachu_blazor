@@ -12,6 +12,7 @@ namespace Kooco.Pikachu.Images
                                                         CreateImageDto,
                                                         UpdateImageDto>
     {
+        Task<List<CreateImageDto>> GetImageListByModuleNumberAsync(Guid groupBuyId, ImageType imageType, int moduleNumber);
         Task UpdateImageAsync(CreateImageDto image);
         Task InsertManyImageAsync(List<CreateImageDto> images);
         Task<List<ImageDto>> GetGroupBuyImagesAsync(Guid GroupBuyId, ImageType? imageType = null);

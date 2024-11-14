@@ -128,6 +128,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                     group.ProductGroupModuleImageSize
                 );
 
+                itemGroup.ModuleNumber = group.ModuleNumber;
+
                 if (group.ItemDetails != null && group.ItemDetails.Any())
                 {
                     foreach (var item in group.ItemDetails)
@@ -939,16 +941,15 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
     public async Task UpdateSortOrderAsync(Guid id, List<GroupBuyItemGroupCreateUpdateDto> itemGroups)
     {
-        var groupbuy = await _groupBuyRepository.GetAsync(id);
+        GroupBuy groupbuy = await _groupBuyRepository.GetAsync(id);
+
         await _groupBuyRepository.EnsureCollectionLoadedAsync(groupbuy, g => g.ItemGroups);
 
         foreach (var item in itemGroups)
         {
-            var itemGroup = groupbuy.ItemGroups.FirstOrDefault(x => x.Id == item.Id);
-            if (itemGroup != null)
-            {
-                itemGroup.SortOrder = item.SortOrder;
-            }
+            GroupBuyItemGroup? itemGroup = groupbuy.ItemGroups.FirstOrDefault(x => x.Id == item.Id);
+
+            if (itemGroup is not null) itemGroup.SortOrder = item.SortOrder;
         }
 
         await _groupBuyRepository.UpdateAsync(groupbuy);
