@@ -469,11 +469,42 @@ public partial class CreateGroupBuy
 
                     else
                     {
-                        int indexInCarouselModules = CarouselModules.FindIndex(module => module.Any(img => img.ModuleNumber == carouselModuleNumber));
+                        //int indexInCarouselModules = CarouselModules.FindIndex(module => module.Any(img => img.ModuleNumber == carouselModuleNumber));
+                        int indexInCarouselModules = 0;
+
+                        switch (imageType)
+                        {
+                            case ImageType.GroupBuyCarouselImage:
+                                indexInCarouselModules = CarouselModules.FindIndex(module => module.Any(img => img.ModuleNumber == carouselModuleNumber));
+                                break;
+
+                            case ImageType.GroupBuyBannerImage:
+                                indexInCarouselModules = BannerModules.FindIndex(module => module.Any(img => img.ModuleNumber == carouselModuleNumber));
+                                break;
+
+                            default:
+                                break;
+                        }
 
                         if (indexInCarouselModules >= 0)
                         {
-                            List<CreateImageDto> originalCarouselImages = CarouselModules[indexInCarouselModules];
+                            // List<CreateImageDto> originalCarouselImages = CarouselModules[indexInCarouselModules];
+
+                            List<CreateImageDto> originalCarouselImages = new();
+
+                            switch (imageType)
+                            {
+                                case ImageType.GroupBuyCarouselImage:
+                                    originalCarouselImages = CarouselModules[indexInCarouselModules];
+                                    break;
+
+                                case ImageType.GroupBuyBannerImage:
+                                    originalCarouselImages = BannerModules[indexInCarouselModules];
+                                    break;
+
+                                default:
+                                    break;
+                            }
 
                             if (originalCarouselImages.Any(a => a.SortNo is 0))
                             {
@@ -497,7 +528,7 @@ public partial class CreateGroupBuy
                                     ImageType = imageType,
                                     SortNo = sortNo + 1,
                                     ModuleNumber = carouselModuleNumber,
-                                    CarouselStyle = originalCarouselImages.FirstOrDefault(f => f.CarouselStyle != null)?.CarouselStyle
+                                    CarouselStyle = originalCarouselImages.FirstOrDefault(f => f.CarouselStyle != null)?.CarouselStyle ?? null
                                 });
                             }
                         }
@@ -715,7 +746,8 @@ public partial class CreateGroupBuy
                 Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
                 SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
                 GroupBuyModuleType = groupBuyModuleType,
-                ModuleNumber = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1
+                ModuleNumber = CollapseItem.Any(c => c.GroupBuyModuleType is GroupBuyModuleType.CarouselImages) ? 
+                               CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.CarouselImages) + 1 : 1
             };
 
             CollapseItem.Add(collapseItem);
@@ -727,21 +759,21 @@ public partial class CreateGroupBuy
 
         else if (groupBuyModuleType is GroupBuyModuleType.BannerImages)
         {
-            if (BannerModules.Count is 0)
+            
+            CollapseItem collapseItem = new()
             {
-                CollapseItem collapseItem = new()
-                {
-                    Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
-                    SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
-                    GroupBuyModuleType = groupBuyModuleType
-                };
+                Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
+                GroupBuyModuleType = groupBuyModuleType,
+                ModuleNumber = CollapseItem.Any(c => c.GroupBuyModuleType is GroupBuyModuleType.BannerImages) ?
+                               CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.BannerImages) + 1: 1
+            };
 
-                CollapseItem.Add(collapseItem);
-            }
+            CollapseItem.Add(collapseItem);
 
             BannerFilePickers.Add(new());
 
-            BannerModules.Add([]);
+            BannerModules.Add([new() { ModuleNumber = collapseItem.ModuleNumber }]);
         }
 
         else if (groupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview)
@@ -1753,19 +1785,18 @@ public partial class CreateGroupBuy
 
     private void RemoveCollapseItem(int index)
     {
-        var item = CollapseItem.Where(i => i.Index == index).FirstOrDefault();
-        CollapseItem.Remove(item);
+        CollapseItem? collapseItem = CollapseItem.FirstOrDefault(f => f.Index == index);
+
+        if (collapseItem.GroupBuyModuleType is GroupBuyModuleType.CarouselImages) 
+            CarouselFilePickers.RemoveAt((int)collapseItem.ModuleNumber! - 1);
+
+        CollapseItem.Remove(collapseItem);
     }
 
     private void BackToGroupBuyList()
     {
         NavigationManager.NavigateTo("GroupBuyManagement/GroupBuyList");
     }
-    private void AddCarouselStyle()
-    {
-        StyleForCarouselImages.Add(new StyleForCarouselImages());
-    }
-
     void StartDrag(CollapseItem item)
     {
         CurrentIndex = CollapseItem.IndexOf(item);

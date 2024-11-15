@@ -165,7 +165,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
             groupBuy = ObjectMapper.Map<GroupBuyUpdateDto, GroupBuy>(input);
 
-            if (input?.ItemGroups != null)
+            if (input?.ItemGroups is { Count: > 0 })
             {
                 foreach (GroupBuyItemGroupCreateUpdateDto group in input.ItemGroups)
                 {
@@ -180,6 +180,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                             itemGroup.AdditionalInfo = group.AdditionalInfo;
                             itemGroup.ProductGroupModuleTitle = group.ProductGroupModuleTitle;
                             itemGroup.ProductGroupModuleImageSize = group.ProductGroupModuleImageSize;
+                            itemGroup.ModuleNumber = group.ModuleNumber;
                             itemGroup.TenantId = CurrentTenant.Id;
 
                             if (group.ItemDetails.Count is 0) groupBuy.ItemGroups.Remove(itemGroup);
@@ -207,6 +208,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                                 group.ProductGroupModuleTitle,
                                 group.ProductGroupModuleImageSize
                         );
+
+                        itemGroup.ModuleNumber = group.ModuleNumber;
 
                         await _GroupBuyItemGroupsRepository.InsertAsync(itemGroup);
 
