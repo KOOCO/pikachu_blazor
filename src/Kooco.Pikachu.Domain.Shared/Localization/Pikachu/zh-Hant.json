@@ -267,7 +267,8 @@
     "Menu:LogisticsManagement": "物流管理",
     "Menu:LogisticsProviderSettings": "物流商設定",
     "Menu:OrderManagement": "訂單管理",
-    "Menu:Orders": "訂單管理",
+    "Menu:Orders": "訂單列表",
+
     "Menu:PaymentManagement": "金流管理",
     "Menu:ProductManagement": "商品管理",
     "Menu:ReturnAndExchangeOrder": "退換貨列表",
@@ -303,7 +304,8 @@
     "Open": "開啟",
     //Orders
     "Order": "訂單",
-    "Orders": "訂單",
+    "OrdersList": "訂單列表",
+    "Orders": "總訂單",
     "OrderCreated": "訂單成立",
     "OrderDate": "訂購日期",
     "OrderDelivery": "物流單",
@@ -974,7 +976,18 @@
     "StoreCustomerServiceReply": "商店客服回覆",
     "CustomerServiceHistory": "客服歷史記錄",
     "SelectTemperatureControl": "選擇溫層",
-    "ConvenienceStore": "超商取貨資訊"
+    "ConvenienceStore": "超商取貨資訊",
+    "Phone": "電話",
+
+    "Spent": "總消費",
+    "Birthday": "生日",
+
+    "Unpaid/Due": "未付款/已過期",
+
+    "Update": "更新",
+    "Amount": "總發放金額",
+    "Deductions": "總使用金額"
+
 
 
   }

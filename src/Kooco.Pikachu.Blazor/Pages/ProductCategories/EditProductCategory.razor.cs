@@ -43,7 +43,7 @@ public partial class EditProductCategory
         {
             Selected = await ProductCategoryAppService.GetAsync(Id, true);
             EditingEntity = ObjectMapper.Map<ProductCategoryDto, UpdateProductCategoryDto>(Selected);
-            if (!EditingEntity.Description.IsNullOrWhiteSpace())
+            if (DescriptionHtml != null && !EditingEntity.Description.IsNullOrWhiteSpace())
             {
                 await DescriptionHtml.LoadHTMLContent(EditingEntity.Description);
             }
@@ -62,6 +62,10 @@ public partial class EditProductCategory
             try
             {
                 ItemsLookup = await ItemAppService.GetItemsLookupAsync();
+                if (DescriptionHtml != null && !EditingEntity.Description.IsNullOrWhiteSpace())
+                {
+                    await DescriptionHtml.LoadHTMLContent(EditingEntity.Description);
+                }
                 StateHasChanged();
             }
             catch (Exception ex)

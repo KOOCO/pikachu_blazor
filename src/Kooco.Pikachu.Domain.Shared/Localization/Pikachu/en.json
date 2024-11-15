@@ -251,7 +251,8 @@
 
     //Orders
     "Order": "Orders",
-    "Menu:Orders": "Orders",
+    "OrdersList": "Orders List",
+    "Menu:Orders": "Orders List",
     "OrderNo": "Order No",
     "OrderDate": "Order Date",
     "CustomerName": "Customer Name",
@@ -939,8 +940,17 @@
     "StoreCustomerServiceReply": "Store Customer Service Reply",
     "CustomerServiceHistory": "Customer Service History",
     "SelectTemperatureControl": "Select Temperature Control",
-    "ConvenienceStore": "Convenience Store"
-
+    "ConvenienceStore": "Convenience Store",
+    "Phone": "Phone",
+    "Orders": "Orders",
+    "Spent": "Spent",
+    "Birthday": "Birthday",
+    "Paid": "Paid",
+    "Unpaid/Due": "Unpaid/Due",
+    "Refunded": "Refunded",
+    "Update": "Update",
+    "Amount": "Amount",
+    "Deductions": "Deductions"
 
 
   }

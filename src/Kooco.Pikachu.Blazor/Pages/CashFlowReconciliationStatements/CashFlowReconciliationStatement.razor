@@ -72,7 +72,7 @@
             @bind-SelectedRow="@SelectedOrder"
                       ReadData="OnDataGridReadAsync"
                       TotalItems="TotalCount"
-                      DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.Id == SelectedOrder?.Id)"
+                      DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.Id == SelectedOrder?.OrderId)"
                       Responsive
                        ShowPager="true"
                        PageSize="PageSize"
@@ -89,7 +89,7 @@
                      <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                          <DisplayTemplate>
                              @{
-                                var isExpanded = ExpandedRows.Contains(context.Id);
+                                var isExpanded = ExpandedRows.Contains(context.OrderId);
                                 var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
                             }
                             <i class="@chevronClass"></i>
