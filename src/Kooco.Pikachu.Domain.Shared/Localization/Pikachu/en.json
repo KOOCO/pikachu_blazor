@@ -251,7 +251,8 @@
 
     //Orders
     "Order": "Orders",
-    "Menu:Orders": "Orders",
+    "OrdersList": "Orders List",
+    "Menu:Orders": "Orders List",
     "OrderNo": "Order No",
     "OrderDate": "Order Date",
     "CustomerName": "Customer Name",
