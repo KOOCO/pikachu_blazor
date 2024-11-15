@@ -66,7 +66,7 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
 
             order = await _orderRepository.GetWithDetailsAsync(orderId);
 
-            if (order.InvoiceNumber is not null) return;
+            if (!order.InvoiceNumber.IsNullOrEmpty()) return;
 
             GroupBuy groupBuy = await _groupBuyRepository.GetAsync(order.GroupBuyId);
 
