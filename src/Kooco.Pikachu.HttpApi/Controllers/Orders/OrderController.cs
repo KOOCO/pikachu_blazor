@@ -63,7 +63,7 @@ public class OrderController : AbpController, IOrderAppService
     [HttpGet("ecpay-proceed-to-checkout")]
     public async Task<IActionResult> ProceedToCheckout(Guid orderId, string clientBackUrl)
     {
-        OrderDto order = await GetAsync(orderId);
+        OrderDto order = await _ordersAppService.GetWithDetailsAsync(orderId);
 
         GroupBuyDto groupBuy = await _GroupBuyAppService.GetAsync(order.GroupBuyId);
 
