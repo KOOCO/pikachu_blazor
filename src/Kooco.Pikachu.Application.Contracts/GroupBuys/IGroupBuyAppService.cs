@@ -15,6 +15,7 @@ namespace Kooco.Pikachu.GroupBuys
 {
     public interface IGroupBuyAppService : IApplicationService
     {
+        Task GroupBuyItemModuleNoReindexingAsync(Guid groupBuyId, GroupBuyModuleType groupBuyModuleType);
         Task<ShippingMethodResponse> GetGroupBuyShippingMethodAsync(Guid id);
         Task<PagedResultDto<GroupBuyDto>> GetListAsync(GetGroupBuyInput input);
         Task DeleteManyGroupBuyItemsAsync(List<Guid> groupBuyIds);

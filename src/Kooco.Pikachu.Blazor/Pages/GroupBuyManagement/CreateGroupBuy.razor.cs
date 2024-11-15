@@ -472,19 +472,11 @@ public partial class CreateGroupBuy
                         //int indexInCarouselModules = CarouselModules.FindIndex(module => module.Any(img => img.ModuleNumber == carouselModuleNumber));
                         int indexInCarouselModules = 0;
 
-                        switch (imageType)
-                        {
-                            case ImageType.GroupBuyCarouselImage:
-                                indexInCarouselModules = CarouselModules.FindIndex(module => module.Any(img => img.ModuleNumber == carouselModuleNumber));
-                                break;
+                        if (imageType is ImageType.GroupBuyCarouselImage)
+                            indexInCarouselModules = CarouselModules.FindIndex(module => module.Any(img => img.ModuleNumber == carouselModuleNumber));
 
-                            case ImageType.GroupBuyBannerImage:
-                                indexInCarouselModules = BannerModules.FindIndex(module => module.Any(img => img.ModuleNumber == carouselModuleNumber));
-                                break;
-
-                            default:
-                                break;
-                        }
+                        else if (imageType is ImageType.GroupBuyBannerImage)
+                            indexInCarouselModules = BannerModules.FindIndex(module => module.Any(img => img.ModuleNumber == carouselModuleNumber));
 
                         if (indexInCarouselModules >= 0)
                         {
@@ -492,19 +484,11 @@ public partial class CreateGroupBuy
 
                             List<CreateImageDto> originalCarouselImages = new();
 
-                            switch (imageType)
-                            {
-                                case ImageType.GroupBuyCarouselImage:
-                                    originalCarouselImages = CarouselModules[indexInCarouselModules];
-                                    break;
+                            if (imageType is ImageType.GroupBuyCarouselImage)
+                                originalCarouselImages = CarouselModules[indexInCarouselModules];
 
-                                case ImageType.GroupBuyBannerImage:
-                                    originalCarouselImages = BannerModules[indexInCarouselModules];
-                                    break;
-
-                                default:
-                                    break;
-                            }
+                            else if (imageType is ImageType.GroupBuyBannerImage)
+                                originalCarouselImages = BannerModules[indexInCarouselModules];
 
                             if (originalCarouselImages.Any(a => a.SortNo is 0))
                             {
@@ -1787,12 +1771,59 @@ public partial class CreateGroupBuy
     {
         CollapseItem? collapseItem = CollapseItem.FirstOrDefault(f => f.Index == index);
 
-        if (collapseItem.GroupBuyModuleType is GroupBuyModuleType.CarouselImages) 
-            CarouselFilePickers.RemoveAt((int)collapseItem.ModuleNumber! - 1);
+        int moduleNumber = (int)collapseItem.ModuleNumber!;
+
+        if (collapseItem.GroupBuyModuleType is GroupBuyModuleType.CarouselImages)
+        {
+            CarouselFilePickers.RemoveAt(moduleNumber - 1);
+
+            CarouselModules.RemoveAll(r => r.Any(w => w.ModuleNumber == moduleNumber));
+        }
+
+        else if (collapseItem.GroupBuyModuleType is GroupBuyModuleType.BannerImages)
+        {
+            BannerFilePickers.RemoveAt(moduleNumber - 1);
+
+            BannerModules.RemoveAll(r => r.Any(w => w.ModuleNumber == moduleNumber));
+        }
 
         CollapseItem.Remove(collapseItem);
+
+        ReindexingCollapseItem(moduleNumber, collapseItem.GroupBuyModuleType);
     }
 
+    private void ReindexingCollapseItem(int moduleNumber, GroupBuyModuleType groupBuyModuleType)
+    {
+        foreach(CollapseItem collapseItem in CollapseItem.Where(w => w.GroupBuyModuleType == groupBuyModuleType && w.ModuleNumber > moduleNumber).ToList())
+        {
+            int oldModuleNumber = (int)collapseItem.ModuleNumber!;
+
+            collapseItem.ModuleNumber = collapseItem.ModuleNumber - 1;
+
+            if(groupBuyModuleType is GroupBuyModuleType.CarouselImages)
+            {
+                foreach (List<CreateImageDto> images in CarouselModules.Select(s => s.Where(w => w.ModuleNumber == oldModuleNumber && s.Count > 0).ToList()).ToList())
+                {
+                    foreach (CreateImageDto image in images)
+                    {
+                        image.ModuleNumber = image.ModuleNumber - 1;
+                    }
+                }
+            }
+
+            else if(groupBuyModuleType is GroupBuyModuleType.BannerImages)
+            {
+                foreach (List<CreateImageDto> images in BannerModules.Select(s => s.Where(w => w.ModuleNumber == oldModuleNumber && s.Count > 0).ToList()).ToList())
+                {
+                    foreach (CreateImageDto image in images)
+                    {
+                        image.ModuleNumber = image.ModuleNumber - 1;
+                    }
+                }
+            }
+
+        }
+    }
     private void BackToGroupBuyList()
     {
         NavigationManager.NavigateTo("GroupBuyManagement/GroupBuyList");

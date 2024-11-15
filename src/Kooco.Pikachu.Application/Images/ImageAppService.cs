@@ -37,6 +37,22 @@ public class ImageAppService : CrudAppService<Image,
     }
     #endregion
 
+    public async Task ImagesModuleNoReindexingAsync(Guid targetId, ImageType imageType, int oldModuleNo, int newModuleNo)
+    {
+        List<CreateImageDto> images = ObjectMapper.Map<List<Image>, List<CreateImageDto>>(
+            [.. (await _repository.GetQueryableAsync()).Where(w => w.TargetId == targetId && 
+                                                                   w.ImageType == imageType && 
+                                                                   w.ModuleNumber == oldModuleNo)]
+        );
+
+        foreach (CreateImageDto image in images) 
+        {
+            image.ModuleNumber = newModuleNo;
+
+            await UpdateImageAsync(image);
+        }
+    }
+
     public async Task<List<CreateImageDto>> GetImageListByModuleNumberAsync(Guid groupBuyId, ImageType imageType, int moduleNumber)
     {
         return ObjectMapper.Map<List<Image>, List<CreateImageDto>>(
@@ -92,9 +108,9 @@ public class ImageAppService : CrudAppService<Image,
         return isDeleted;
     }
 
-    public async Task DeleteByGroupBuyIdAndImageTypeAsync(Guid groupBuyId, ImageType imageType)
+    public async Task DeleteByGroupBuyIdAndImageTypeAsync(Guid groupBuyId, ImageType imageType, int moduleNumber)
     {
-        await _repository.DeleteDirectAsync(d => d.TargetId == groupBuyId && d.ImageType == imageType);
+        await _repository.DeleteDirectAsync(d => d.TargetId == groupBuyId && d.ImageType == imageType && d.ModuleNumber == moduleNumber);
     }
     public async Task UpdateCarouselStyleAsync(CreateImageDto carouselImage)
     {

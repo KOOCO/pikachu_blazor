@@ -57,6 +57,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     private readonly IGroupPurchaseOverviewAppService _GroupPurchaseOverviewAppService;
     private readonly IGroupBuyOrderInstructionAppService _GroupBuyOrderInstructionAppService;
     private readonly IDeliveryTemperatureCostAppService _DeliveryTemperatureCostAppService;
+    private readonly IImageAppService _ImageAppService;
     #endregion
 
     #region Constructor
@@ -74,7 +75,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         IGroupBuyItemGroupDetailsRepository GroupBuyItemGroupDetailsRepository,
         IGroupPurchaseOverviewAppService GroupPurchaseOverviewAppService,
         IGroupBuyOrderInstructionAppService GroupBuyOrderInstructionAppService,
-        IDeliveryTemperatureCostAppService DeliveryTemperatureCostAppService
+        IDeliveryTemperatureCostAppService DeliveryTemperatureCostAppService,
+        IImageAppService ImageAppService
     )
     {
         _groupBuyManager = groupBuyManager;
@@ -91,6 +93,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         _GroupPurchaseOverviewAppService = GroupPurchaseOverviewAppService;
         _GroupBuyOrderInstructionAppService = GroupBuyOrderInstructionAppService;
         _DeliveryTemperatureCostAppService = DeliveryTemperatureCostAppService;
+        _ImageAppService = ImageAppService;
     }
     #endregion
 
@@ -324,6 +327,39 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         groupbuy.ItemGroups.Remove(itemGroup);
         await _groupBuyRepository.UpdateAsync(groupbuy);
     }
+
+    public async Task GroupBuyItemModuleNoReindexingAsync(Guid groupBuyId, GroupBuyModuleType groupBuyModuleType)
+    {
+        GroupBuy groupbuy = await _groupBuyRepository.GetAsync(groupBuyId);
+        
+        await _groupBuyRepository.EnsureCollectionLoadedAsync(groupbuy, i => i.ItemGroups);
+
+        int moduleNumber = 0;
+
+        foreach (GroupBuyItemGroup itemGroup in groupbuy.ItemGroups.Where(w => w.GroupBuyModuleType == groupBuyModuleType).ToList())
+        {
+            int oldModuleNumber = (int)itemGroup.ModuleNumber;
+
+            itemGroup.ModuleNumber = moduleNumber + 1;
+
+            int newModuleNumber = (int)itemGroup.ModuleNumber;
+
+            await _ImageAppService.ImagesModuleNoReindexingAsync(groupBuyId, GetImageType(groupBuyModuleType), oldModuleNumber, newModuleNumber);
+
+            await _GroupBuyItemGroupsRepository.UpdateAsync(itemGroup);
+        }
+    }
+
+    private ImageType GetImageType(GroupBuyModuleType groupBuyModuleType)
+    {
+        return groupBuyModuleType switch
+        {
+            GroupBuyModuleType.CarouselImages => ImageType.GroupBuyCarouselImage,
+            GroupBuyModuleType.BannerImages => ImageType.GroupBuyBannerImage,
+            _ => ImageType.GroupBuyCarouselImage,
+        };
+    }
+
     public async Task<PagedResultDto<GroupBuyDto>> GetListAsync(GetGroupBuyInput input)
     {
         var sorting = "CreationTime DESC";

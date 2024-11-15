@@ -263,4 +263,10 @@ public class GroupBuyController : AbpController, IGroupBuyAppService
     {
         return _groupBuyAppService.GetGroupBuyIdAsync(shortCode);
     }
+
+    [HttpGet("reindexing-moduleNo/{groupBuyId}/{groupBuyModuleType}")]
+    public Task GroupBuyItemModuleNoReindexingAsync(Guid groupBuyId, GroupBuyModuleType groupBuyModuleType)
+    {
+        throw new NotImplementedException();
+    }
 }
