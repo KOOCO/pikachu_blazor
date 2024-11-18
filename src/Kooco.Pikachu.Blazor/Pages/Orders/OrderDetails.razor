@@ -1,4 +1,5 @@
 ﻿@page "/Orders/OrderDetails/{id}"
+@using Kooco.Pikachu.Blazor.Pages.LogisticsManagement
 @using Kooco.Pikachu.EnumValues;
 @using Kooco.Pikachu.Localization;
 @using Kooco.Pikachu.OrderItems;
@@ -11,6 +12,7 @@
 @using Volo.Abp.AspNetCore.Components.Messages;
 @using Volo.Abp.Users;
 @using Blazorise.LoadingIndicator;
+@using Kooco.Pikachu.LogisticsProviders;
 
 @inject IJSRuntime JSRuntime;
 @inject IStringLocalizer<PikachuResource> L;
@@ -364,7 +366,7 @@
 
                                                                         <select class="form-select form-select-sm @errorClass" @onchange=@((e) => ModificationTrack.NewCity = Convert.ToString(e.Value))>
                                                                             <option value=""> Select City </option>
-                                                                            @foreach (string city in Enum.GetNames<RecipientCities>())
+                                                                            @foreach (var city in LogisticsConsts.MainIslands)
                                                                             {
                                                                                 <option value="@city">@city</option>
                                                                             }
