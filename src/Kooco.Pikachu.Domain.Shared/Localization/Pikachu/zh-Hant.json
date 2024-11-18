@@ -1002,10 +1002,9 @@
     "SocialMedia": "社群媒體",
     "GoogleTagManager": "Google 標籤管理",
     "GtmEnabled": "啟用 GTM",
-    "GtmContainerIdIsRequired": "Container ID 欄位不可為空"
-
-
-
-
+    "GtmContainerIdIsRequired": "Container ID 欄位不可為空",
+    "RoundedCornersWithoutFullWidth": "圓角無滿版",
+    "SquareCornersWithoutFullWidth": "直角無滿版",
+    "FullWidthWithLargeImage": "滿版大圖"
   }
 }

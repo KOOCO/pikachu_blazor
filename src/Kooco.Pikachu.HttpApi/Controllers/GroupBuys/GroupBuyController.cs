@@ -85,10 +85,10 @@ public class GroupBuyController : AbpController, IGroupBuyAppService
         return _groupBuyAppService.GetCarouselImagesAsync(id);
     }
 
-    [HttpGet("get-carousel-images-module-wise/{id}")]
-    public Task<List<List<string>>> GetCarouselImagesModuleWiseAsync(Guid id)
+    [HttpGet("get-carousel-images-module-wise/{id}/{moduleNumber}")]
+    public Task<List<string>> GetCarouselImagesModuleWiseAsync(Guid id, int moduleNumber)
     {
-        return _groupBuyAppService.GetCarouselImagesModuleWiseAsync(id);
+        return _groupBuyAppService.GetCarouselImagesModuleWiseAsync(id, moduleNumber);
     }
 
     [HttpGet("get-banner-images/{id}")]
@@ -97,10 +97,10 @@ public class GroupBuyController : AbpController, IGroupBuyAppService
         return _groupBuyAppService.GetBannerImagesAsync(id);
     }
 
-    [HttpGet("get-banner-images-module-wise/{id}")]
-    public Task<List<List<string>>> GetBannerImagesModuleWiseAsync(Guid id)
+    [HttpGet("get-banner-images-module-wise/{id}/{moduleNumber}")]
+    public Task<List<string>> GetBannerImagesModuleWiseAsync(Guid id, int moduleNumber)
     {
-        return _groupBuyAppService.GetBannerImagesModuleWiseAsync(id);
+        return _groupBuyAppService.GetBannerImagesModuleWiseAsync(id, moduleNumber);
     }
 
     [HttpGet("get-group-purchase-overviews/{groupBuyId}")]

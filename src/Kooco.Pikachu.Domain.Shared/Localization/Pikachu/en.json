@@ -958,8 +958,9 @@
     "UpdateDiscountCode": "Update Discount Code",
     "StagedSettings": "Staged Settings",
     "Members": "Members List",
-    "Export": "Export"
-
-
+    "Export": "Export",
+    "RoundedCornersWithoutFullWidth": "Rounded Corners Without Full Width",
+    "SquareCornersWithoutFullWidth": "Square Corners Without Full Width",
+    "FullWidthWithLargeImage": "Full Width With Large Image"
   }
 }
