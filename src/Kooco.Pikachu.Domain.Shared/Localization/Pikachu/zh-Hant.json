@@ -995,8 +995,11 @@
     "StagedSettings": "分段設定",
     "Members": "會員列表",
     "Export": "導出",
-    "RefundsList": "退款列表"
+    "RefundsList": "退款列表",
 
+    "RoundedCornersWithoutFullWidth": "圓角無滿版",
+    "SquareCornersWithoutFullWidth": "直角無滿版",
+    "FullWidthWithLargeImage": "滿版大圖"
 
 
   }

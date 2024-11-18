@@ -677,10 +677,10 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                 module.GroupBuyModuleTypeName = module.GroupBuyModuleType.ToString();
 
                 if (module.GroupBuyModuleType is GroupBuyModuleType.CarouselImages)
-                    module.CarouselModulesImages = await GetCarouselImagesModuleWiseAsync(groupBuyId);
+                    module.CarouselModulesImages = await GetCarouselImagesModuleWiseAsync(groupBuyId, module.ModuleNumber!.Value);
 
                 if (module.GroupBuyModuleType is GroupBuyModuleType.BannerImages)
-                    module.BannerModulesImages = await GetBannerImagesModuleWiseAsync(groupBuyId);
+                    module.BannerModulesImages = await GetBannerImagesModuleWiseAsync(groupBuyId, module.ModuleNumber!.Value);
 
                 if (module.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview)
                     module.GroupPurchaseOverviewModules = await GetGroupPurchaseOverviewsAsync(groupBuyId);
@@ -719,29 +719,23 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         }
     }
 
-    public async Task<List<List<string>>> GetCarouselImagesModuleWiseAsync(Guid id)
+    public async Task<List<string>> GetCarouselImagesModuleWiseAsync(Guid id, int moduleNumber)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            List<Image> images = await _imageRepository.GetListAsync(x => x.TargetId == id && x.ImageType == ImageType.GroupBuyCarouselImage);
+            List<Image> images = await _imageRepository.GetListAsync(x => x.TargetId == id && x.ImageType == ImageType.GroupBuyCarouselImage && x.ModuleNumber == moduleNumber);
 
-            return [.. images.GroupBy(g => g.ModuleNumber)
-                             .Select(s => s.ToList()
-                                           .Select(se => se.ImageUrl)
-                                           .ToList())];
+            return [.. images.Select(s => s.ImageUrl)];
         }
     }
 
-    public async Task<List<List<string>>> GetBannerImagesModuleWiseAsync(Guid id)
+    public async Task<List<string>> GetBannerImagesModuleWiseAsync(Guid id, int moduleNumber)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            List<Image> images = await _imageRepository.GetListAsync(x => x.TargetId == id && x.ImageType == ImageType.GroupBuyBannerImage);
+            List<Image> images = await _imageRepository.GetListAsync(x => x.TargetId == id && x.ImageType == ImageType.GroupBuyBannerImage && x.ModuleNumber == moduleNumber);
 
-            return [.. images.GroupBy(g => g.ModuleNumber)
-                             .Select(s => s.ToList()
-                                           .Select(se => se.ImageUrl)
-                                           .ToList())];
+            return [.. images.Select(s => s.ImageUrl)];
         }
     }
 

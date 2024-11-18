@@ -19,9 +19,10 @@ public class GroupBuyItemGroupModuleDetailsDto
     public string? AdditionalInfo { get; set; }
     public string? ProductGroupModuleTitle { get; set; }
     public string? ProductGroupModuleImageSize { get; set; }
+    public int? ModuleNumber { get; set; }
     public ICollection<GroupBuyItemGroupDetailsDto> ItemGroupDetails { get; set; }
-    public List<List<string>> CarouselModulesImages { get; set; }
-    public List<List<string>> BannerModulesImages { get; set; }
+    public List<string> CarouselModulesImages { get; set; }
+    public List<string> BannerModulesImages { get; set; }
     public List<GroupPurchaseOverviewDto> GroupPurchaseOverviewModules { get; set; }
     public List<GroupBuyOrderInstructionDto> GetGroupBuyOrderInstructionModules { get; set; }
     public string? ConcurrencyStamp { get; set; }
