@@ -1771,7 +1771,7 @@ public partial class CreateGroupBuy
     {
         CollapseItem? collapseItem = CollapseItem.FirstOrDefault(f => f.Index == index);
 
-        int moduleNumber = (int)collapseItem.ModuleNumber!;
+        int moduleNumber = collapseItem.ModuleNumber.HasValue ? collapseItem.ModuleNumber.Value : 0;
 
         if (collapseItem.GroupBuyModuleType is GroupBuyModuleType.CarouselImages)
         {
@@ -1789,7 +1789,9 @@ public partial class CreateGroupBuy
 
         CollapseItem.Remove(collapseItem);
 
-        ReindexingCollapseItem(moduleNumber, collapseItem.GroupBuyModuleType);
+        if(collapseItem.GroupBuyModuleType is GroupBuyModuleType.CarouselImages || 
+            collapseItem.GroupBuyModuleType is GroupBuyModuleType.BannerImages)
+                ReindexingCollapseItem(moduleNumber, collapseItem.GroupBuyModuleType);
     }
 
     private void ReindexingCollapseItem(int moduleNumber, GroupBuyModuleType groupBuyModuleType)

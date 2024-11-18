@@ -2135,13 +2135,21 @@ public partial class EditGroupBuy
 
             foreach (List<CreateImageDto> bannerImages in BannerModules)
             {
-                foreach (CreateImageDto carouselImage in bannerImages)
+                foreach (CreateImageDto bannerImage in bannerImages)
                 {
-                    if (!ExistingBannerImages.Any(a => a.BlobImageName == carouselImage.BlobImageName))
+                    if (!ExistingBannerImages.Any(a => a.BlobImageName == bannerImage.BlobImageName))
                     {
-                        carouselImage.TargetId = Id;
+                        if (bannerImage.Id != Guid.Empty)
+                        {
+                            await _imageAppService.UpdateImageAsync(bannerImage);
+                        }
 
-                        await _imageAppService.CreateAsync(carouselImage);
+                        else
+                        {
+                            bannerImage.TargetId = Id;
+
+                            await _imageAppService.CreateAsync(bannerImage);
+                        }
                     }
                 }
             }
@@ -2227,12 +2235,6 @@ public partial class EditGroupBuy
             await Loading.Hide();
             Console.WriteLine(ex.ToString());
             await _uiMessageService.Error(L[ex.Code]);
-        }
-        catch (Exception ex)
-        {
-            await Loading.Hide();
-            Console.WriteLine(ex.ToString());
-            await _uiMessageService.Error(ex.Message.GetType()?.ToString());
         }
     }
 
@@ -2367,7 +2369,7 @@ public partial class EditGroupBuy
                 StateHasChanged();
             }
 
-            int moduleNumber = (int)item.ModuleNumber!;
+            int moduleNumber = item.ModuleNumber.HasValue ? (int)item.ModuleNumber! : 0;
 
             if (item.GroupBuyModuleType is GroupBuyModuleType.CarouselImages)
             {
