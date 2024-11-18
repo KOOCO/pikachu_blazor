@@ -129,7 +129,7 @@ public class OrderController : AbpController, IOrderAppService
             oPayment.HashIV = hashIV;
             oPayment.MerchantID = merchantID;
             oPayment.Send.ReturnURL = $"{Request.Scheme}://{Request.Host}/api/app/orders/callback";
-            oPayment.Send.ClientBackURL = System.Net.WebUtility.UrlEncode(clientBackUrl);
+            oPayment.Send.ClientBackURL = string.Empty;
             oPayment.Send.MerchantTradeNo = order.OrderNo;
             oPayment.Send.MerchantTradeDate = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
             oPayment.Send.TotalAmount = Convert.ToInt32(order.TotalAmount);

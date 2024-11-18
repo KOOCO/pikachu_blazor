@@ -278,7 +278,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         string thermosphere = string.Empty; string spec = string.Empty; string isSwipe = string.Empty;
 
-        string isCollection = string.Empty; int collectionAmount = 0;
+        string isCollection = string.Empty; int collectionAmount = 0; string deliveryTime = string.Empty;
 
         if (orderDelivery.Items is { Count: > 0 } &&
             orderDelivery.Items.First().DeliveryTemperature is ItemStorageTemperature.Normal)
@@ -294,6 +294,13 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                                 0;
 
             isSwipe = TCatNormal.Payment && TCatNormal.TCatPaymentMethod is TCatPaymentMethod.CardAndMobilePaymentsAccepted ? "Y" : "N";
+
+            deliveryTime = order.ReceivingTimeNormal switch
+            {
+                ReceivingTime.Before13PM => "01",
+                ReceivingTime.Between14To18PM => "02",
+                _ => "04"
+            };
         }
 
         else if (orderDelivery.Items is { Count: > 0 } &&
@@ -310,6 +317,13 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                                 0;
 
             isSwipe = TCatFreeze.Payment && TCatFreeze.TCatPaymentMethod is TCatPaymentMethod.CardAndMobilePaymentsAccepted ? "Y" : "N";
+
+            deliveryTime = order.ReceivingTimeFreeze switch
+            {
+                ReceivingTime.Before13PM => "01",
+                ReceivingTime.Between14To18PM => "02",
+                _ => "04"
+            };
         }
 
         else if (orderDelivery.Items is { Count: > 0 } &&
@@ -326,14 +340,14 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                                 0;
 
             isSwipe = TCatFrozen.Payment && TCatFrozen.TCatPaymentMethod is TCatPaymentMethod.CardAndMobilePaymentsAccepted ? "Y" : "N";
-        }
 
-        string deliveryTime = order.ReceivingTime switch 
-        { 
-            ReceivingTime.Before13PM => "01",
-            ReceivingTime.Between14To18PM => "02",
-            _ => "04"
-        };
+            deliveryTime = order.ReceivingTimeFrozen switch
+            {
+                ReceivingTime.Before13PM => "01",
+                ReceivingTime.Between14To18PM => "02",
+                _ => "04"
+            };
+        }
 
         if(order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment)
             isCollection = "Y";
