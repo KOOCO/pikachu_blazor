@@ -950,7 +950,12 @@
     "Refunded": "Refunded",
     "Update": "Update",
     "Amount": "Amount",
-    "Deductions": "Deductions"
+    "Deductions": "Deductions",
+    "Eligableadd-onrange": "Eligable Add-On Range",
+    "NoOfIssuedCodes": "No Of Issued Codes",
+    "MaximunUsePerPerson": "Maximun Use Per Person",
+    "UpdateDiscountCode": "Update Discount Code",
+    "StagedSettings": "Staged Settings"
 
 
   }

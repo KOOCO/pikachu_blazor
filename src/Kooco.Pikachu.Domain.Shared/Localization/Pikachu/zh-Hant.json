@@ -986,7 +986,13 @@
 
     "Update": "更新",
     "Amount": "總發放金額",
-    "Deductions": "總使用金額"
+    "Deductions": "總使用金額",
+    "GroupbuysScope": "团购范围",
+    "Eligableadd-onrange": "可選加購範圍",
+    "NoOfIssuedCodes": "折扣碼發行數量",
+    "MaximunUsePerPerson": "每人最多使用次數",
+    "UpdateDiscountCode": "更新加購商品",
+    "StagedSettings": "分段設定"
 
 
 
