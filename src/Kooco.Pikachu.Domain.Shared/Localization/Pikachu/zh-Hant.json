@@ -992,7 +992,9 @@
     "NoOfIssuedCodes": "折扣碼發行數量",
     "MaximunUsePerPerson": "每人最多使用次數",
     "UpdateDiscountCode": "更新加購商品",
-    "StagedSettings": "分段設定"
+    "StagedSettings": "分段設定",
+    "Members": "會員列表",
+    "Export": "導出"
 
 
 

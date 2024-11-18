@@ -955,7 +955,9 @@
     "NoOfIssuedCodes": "No Of Issued Codes",
     "MaximunUsePerPerson": "Maximun Use Per Person",
     "UpdateDiscountCode": "Update Discount Code",
-    "StagedSettings": "Staged Settings"
+    "StagedSettings": "Staged Settings",
+    "Members": "Members List",
+    "Export": "Export"
 
 
   }
