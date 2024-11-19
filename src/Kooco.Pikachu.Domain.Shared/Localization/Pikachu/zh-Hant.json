@@ -1039,9 +1039,12 @@
 
 
 
-   
+
     "RoundedCornersWithoutFullWidth": "圓角無滿版",
     "SquareCornersWithoutFullWidth": "直角無滿版",
-    "FullWidthWithLargeImage": "滿版大圖"
+    "FullWidthWithLargeImage": "滿版大圖",
+    "available": "可用",
+    "New": "新增",
+
   }
 }

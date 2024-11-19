@@ -992,9 +992,12 @@
 
 
 
-   
+
     "RoundedCornersWithoutFullWidth": "Rounded Corners Without Full Width",
     "SquareCornersWithoutFullWidth": "Square Corners Without Full Width",
-    "FullWidthWithLargeImage": "Full Width With Large Image"
+    "FullWidthWithLargeImage": "Full Width With Large Image",
+    "available": "available",
+    "New": "New",
+   
   }
 }
