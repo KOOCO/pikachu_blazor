@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.EnumValues;
+﻿using Kooco.Pikachu.ElectronicInvoiceSettings;
+using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Localization;
@@ -15,6 +16,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
+using Volo.Abp.BackgroundJobs;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
 using Volo.Abp.SettingManagement;
@@ -31,9 +33,13 @@ namespace Kooco.Pikachu.OrderDeliveries
         private readonly IEmailSender _emailSender;
         private readonly IOrderRepository _orderRepository;
         private readonly ISettingManager _settingManager;
+        private readonly IElectronicInvoiceAppService _electronicInvoiceAppService;
+        private readonly IElectronicInvoiceSettingRepository _electronicInvoiceSettingRepository;
+        private readonly IBackgroundJobManager _backgroundJobManager;
         public OrderDeliveryAppService(IOrderDeliveryRepository orderDeliveryRepository, IStringLocalizer<PikachuResource> l, IOrderRepository orderRepository,
             IEmailSender emailSender, IGroupBuyRepository groupBuyRepositor, IRepository<TenantEmailSettings, Guid> tenantEmailSettingsRepository,
-              ISettingManager settingManager)
+              ISettingManager settingManager, IElectronicInvoiceAppService electronicInvoiceAppService, IElectronicInvoiceSettingRepository electronicInvoiceSettingRepository,
+              IBackgroundJobManager backgroundJobManager)
         {
             _orderDeliveryRepository = orderDeliveryRepository;
             _l = l;
@@ -42,6 +48,9 @@ namespace Kooco.Pikachu.OrderDeliveries
             _groupBuyRepository= groupBuyRepositor;
             _settingManager= settingManager;
             _tenantEmailSettingsRepository = tenantEmailSettingsRepository;
+            _backgroundJobManager= backgroundJobManager;
+            _electronicInvoiceAppService= electronicInvoiceAppService;
+            _electronicInvoiceSettingRepository= electronicInvoiceSettingRepository;
         }
         public async Task<List<OrderDeliveryDto>> GetListByOrderAsync(Guid Id)
         {
@@ -216,7 +225,26 @@ namespace Kooco.Pikachu.OrderDeliveries
                 await _orderRepository.UpdateAsync(order);
                 
                 await UnitOfWorkManager.Current.SaveChangesAsync();
-                
+                var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.Shipped)
+                {
+                    if (order.GroupBuy.IssueInvoice)
+                    {
+                        order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
+                        //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                        var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
+                        if (invoiceDely == 0)
+                        {
+                            await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+                        }
+                        else
+                        {
+                            var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
+                            GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
+                            var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                        }
+                    }
+                }
                 await SendEmailAsync(order.Id, delivery.DeliveryNo);
             }
 
