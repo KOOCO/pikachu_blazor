@@ -958,7 +958,38 @@
     "UpdateDiscountCode": "Update Discount Code",
     "StagedSettings": "Staged Settings",
     "Members": "Members List",
-    "Export": "Export"
+    "Export": "Export",
+    "CustomerId": "Customer Id",
+    "SenderZipCode": "Sender Zip Code",
+    "CustomerToken": "Customer Token",
+    "ShippingLabelForm": "Shipping Label Form",
+    "PickingListForm": "Picking List Form",
+    "ShippingLabelFrom711": "Shipping Label From 7-11",
+    "DeclaredValue": "Declared Value",
+    "ReverseLogisticShippingFee": "Reverse Logistic Shipping Fee",
+    "t-CatNormal": "T-Cat Normal",
+    "t-CatFreeze": "T-Cat Freeze",
+    "t-CatFrozen": "T-Cat Frozen",
+    "7-11Normal": "7-11 Normal",
+    "7-11Freeze": "7-11 Freeze",
+    "7-11Frozen": "7-11 Frozen",
+    "SelectShippingLabelForm": "Select Shipping Label Form",
+    "A4DualModeHomeDelivery": "A4 Dual Mode Home Delivery",
+    "A4TripleModeHomeDelivery": "A4 Triple Mode Home Delivery",
+    "ThermalTransferHomeDelivery": "Thermal Transfer Home Delivery",
+    "SelectPickingListForm": "Select Picking List Form",
+    "A4DualModePickingList": "A4 Dual Mode Picking List",
+    "A4TripleModePickingList": "A4 Triple Mode Picking List",
+    "A4TripleModeB2S": "A4 Triple Mode B2S",
+    "ThermalTransferB2S": "Thermal Transfer B2S",
+    "BorneByStore": "Borne By Store",
+    "BorneByCustomer": "Borne By Customer",
+    "SelectReverseLogisticShippingFee": "Select Reverse Logistic Shipping Fee",
+    "SelectShippingLabelFormSevenEleven": "Select Shipping Label Form Seven Eleven"
+
+
+
+
 
 
   }
