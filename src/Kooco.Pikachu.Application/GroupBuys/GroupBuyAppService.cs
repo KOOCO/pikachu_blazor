@@ -268,6 +268,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                     group.ProductGroupModuleImageSize
                 );
 
+                itemGroup.ModuleNumber = group.ModuleNumber;
+
                 if (group.ItemGroupDetails != null && group.ItemGroupDetails.Any())
                 {
                     foreach (var item in group.ItemGroupDetails)
@@ -284,6 +286,21 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                     }
                 }
             }
+        }
+
+        List<ImageDto> images = await _ImageAppService.GetGroupBuyImagesAsync(input.Id);
+
+        foreach (ImageDto image in images)
+        {
+            CreateImageDto newImage = new();
+
+            newImage = ObjectMapper.Map<ImageDto, CreateImageDto>(image);
+
+            newImage.Id = Guid.Empty;
+
+            newImage.TargetId = result.Id;
+
+            await _ImageAppService.CreateAsync(newImage);
         }
 
         await _groupBuyRepository.InsertAsync(result);

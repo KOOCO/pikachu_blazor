@@ -717,7 +717,7 @@ public partial class EditGroupBuy
 
                             CarouselFilePickers.Add(new());
 
-                            CarouselModules.Add(imageList);
+                            CarouselModules.Add(imageList is { Count: > 0 } ? imageList : [new() { ModuleNumber = collapseItem.ModuleNumber }]);
                         }
 
                         else if (itemGroup.GroupBuyModuleType is GroupBuyModuleType.BannerImages)
@@ -726,7 +726,7 @@ public partial class EditGroupBuy
 
                             BannerFilePickers.Add(new());
 
-                            BannerModules.Add(imageList);
+                            BannerModules.Add(imageList is { Count: > 0 } ? imageList : [new() { ModuleNumber = collapseItem.ModuleNumber }]);
                         }
                     }
 

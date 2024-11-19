@@ -1736,7 +1736,7 @@ public partial class CreateGroupBuy
 
             List<List<List<CreateImageDto>>> imageModules = [CarouselModules, BannerModules];
 
-            IEnumerable<CreateImageDto> allImages = imageModules.SelectMany(module => module.SelectMany(images => images));
+            IEnumerable<CreateImageDto> allImages = imageModules.SelectMany(module => module.SelectMany(images => images.Where(w => !w.ImageUrl.IsNullOrEmpty() && !w.BlobImageName.IsNullOrEmpty())));
 
             foreach (CreateImageDto image in allImages)
             {

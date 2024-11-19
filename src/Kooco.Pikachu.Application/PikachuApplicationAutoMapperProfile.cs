@@ -77,6 +77,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
         //Image EntityMapping
         CreateMap<Image, ImageDto>().ReverseMap();
         CreateMap<CreateImageDto, Image>().ReverseMap();
+        CreateMap<ImageDto, CreateImageDto>().ReverseMap();
         CreateMap<UpdateImageDto, Image>();
         CreateMap<CreateImageDto, UpdateImageDto>().ReverseMap();
 
