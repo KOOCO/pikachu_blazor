@@ -4,6 +4,7 @@ using Kooco.Pikachu.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    partial class PikachuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241118090303_AddedReceivingTimes_in_Orders")]
+    partial class AddedReceivingTimes_in_Orders
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2440,14 +2443,14 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<int?>("ReceivingTime")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ReceivingTimeFreeze")
-                        .HasColumnType("int");
+                    b.Property<DateTime?>("ReceivingTimeFreeze")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("ReceivingTimeFrozen")
-                        .HasColumnType("int");
+                    b.Property<DateTime?>("ReceivingTimeFrozen")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("ReceivingTimeNormal")
-                        .HasColumnType("int");
+                    b.Property<DateTime?>("ReceivingTimeNormal")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("RecipientEmail")
                         .HasColumnType("nvarchar(max)");

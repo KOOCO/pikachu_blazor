@@ -71,6 +71,9 @@ public class CreateUpdateOrderDto
     public decimal? DeliveryCostForNormal { get; set; }
     public decimal? DeliveryCostForFreeze { get; set; }
     public decimal? DeliveryCostForFrozen { get; set; }
+    public ReceivingTime? ReceivingTimeNormal { get; set; }
+    public ReceivingTime? ReceivingTimeFreeze { get; set; }
+    public ReceivingTime? ReceivingTimeFrozen { get; set; }
     public decimal? DeliveryCost { get; set; }
     public List<CreateUpdateOrderItemDto> OrderItems { get; set; }
 }

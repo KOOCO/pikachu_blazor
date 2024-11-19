@@ -190,7 +190,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 storeIdFrozen: input.StoreIdFrozen,
                 cVSStoreOutSideNormal: input.CVSStoreOutSideNormal,
                 cVSStoreOutSideFreeze: input.CVSStoreOutSideFreeze,
-                cVSStoreOutSideFrozen: input.CVSStoreOutSideFrozen
+                cVSStoreOutSideFrozen: input.CVSStoreOutSideFrozen,
+                receivingTimeNormal: input.ReceivingTimeNormal,
+                receivingTimeFreeze: input.ReceivingTimeFreeze,
+                receivingTimeFrozen: input.ReceivingTimeFrozen
             );
 
             order.StoreId = input.StoreId;
@@ -200,7 +203,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             order.DeliveryCostForFreeze = input.DeliveryCostForFreeze;
             order.DeliveryCostForFrozen = input.DeliveryCostForFrozen;
             order.DeliveryCost = input.DeliveryCost;
-            
+
             if (input.OrderItems is { Count: > 0 })
             {
                 foreach (CreateUpdateOrderItemDto item in input.OrderItems)

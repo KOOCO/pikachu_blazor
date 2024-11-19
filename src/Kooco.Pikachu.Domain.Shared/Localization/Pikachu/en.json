@@ -992,5 +992,9 @@
 
 
 
+    "Export": "Export",
+    "RoundedCornersWithoutFullWidth": "Rounded Corners Without Full Width",
+    "SquareCornersWithoutFullWidth": "Square Corners Without Full Width",
+    "FullWidthWithLargeImage": "Full Width With Large Image"
   }
 }

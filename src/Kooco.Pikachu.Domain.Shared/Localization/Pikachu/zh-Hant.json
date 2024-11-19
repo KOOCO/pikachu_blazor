@@ -1039,5 +1039,9 @@
 
 
 
+    "GtmContainerIdIsRequired": "Container ID 欄位不可為空",
+    "RoundedCornersWithoutFullWidth": "圓角無滿版",
+    "SquareCornersWithoutFullWidth": "直角無滿版",
+    "FullWidthWithLargeImage": "滿版大圖"
   }
 }
