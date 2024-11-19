@@ -1183,9 +1183,7 @@
                                                 <div class="col-10 ">
                                                     <Field>
                                                         <FilePicker @ref="BannerFilePickers[bannerImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1]"
-                                                                    Disabled="bannerImages.Count >= 5"
-                                                                    Multiple
-                                                                    Changed="@(async (e) => await OnImageModuleUploadAsync(e,
+                                                                    Changed="@(async (e) => await OnBannerImageModuleUploadAsync(e,
                                                                                                                            bannerImages,
                                                                                                                            bannerImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value,
                                                                                                                            BannerFilePickers[bannerImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1],
