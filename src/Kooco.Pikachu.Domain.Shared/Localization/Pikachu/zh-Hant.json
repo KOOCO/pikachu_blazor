@@ -149,7 +149,7 @@
     "FamilyMart": "全家",
     "FamilyMart1": "Family Mart",
     "FamilyMartC2c": "全家C2C",
-    "FamilyMartC2C": "Family Mart C2C",
+    "FamilyMartC2C": "全家C2C",
     "Filter": "篩選",
     "First": "前置",
     "Footer": "結尾訊息",
@@ -1003,8 +1003,48 @@
     "GoogleTagManager": "Google 標籤管理",
     "GtmEnabled": "啟用 GTM",
     "GtmContainerIdIsRequired": "Container ID 欄位不可為空",
+
+    "CustomerId": "客戶編號",
+    "SenderZipCode": "寄件人郵遞區號",
+    "CustomerToken": "Customer Token",
+    "ShippingLabelForm": "託運單類別",
+    "PickingListForm": "揀貨單類別",
+    "ShippingLabelFrom711": "7-11 託運單",
+    "DeclaredValue": "申報價值",
+    "ReverseLogisticShippingFee": "逆物流運費",
+    "t-CatNormal": "黑貓常溫",
+    "t-CatFreeze": "黑貓冷藏",
+    "t-CatFrozen": "黑貓冷凍",
+    "7-11Normal": "7-11 常溫",
+    "7-11Freeze": "7-11 冷藏",
+    "7-11Frozen": "7-11 冷凍",
+    "SelectShippingLabelForm": "選擇託運單",
+    "A4DualModeHomeDelivery": "A4 二模宅配",
+    "A4TripleModeHomeDelivery": "A4 三模宅配",
+    "ThermalTransferHomeDelivery": "熱轉印宅配",
+    "SelectPickingListForm": "選擇揀貨單",
+    "A4DualModePickingList": "A4 二模揀貨單",
+    "A4TripleModePickingList": "A4 三模揀貨單",
+    "A4TripleModeB2S": "A4 三模 B2S",
+    "ThermalTransferB2S": "熱轉印 B2C",
+    "BorneByStore": "由商家承擔",
+    "BorneByCustomer": "由顧客承擔",
+    "SelectReverseLogisticShippingFee": "選擇逆物流運費",
+    "SelectShippingLabelFormSevenEleven": "選擇託運單7-11",
+    "T-Cat": "黑貓",
+    "CashOnly": "只收現金",
+    "CardAndMobilePaymentsAccepted": "接受刷卡和行動支付",
+
+
+
+
+
+
     "RoundedCornersWithoutFullWidth": "圓角無滿版",
     "SquareCornersWithoutFullWidth": "直角無滿版",
-    "FullWidthWithLargeImage": "滿版大圖"
+    "FullWidthWithLargeImage": "滿版大圖",
+    "available": "可用",
+    "New": "新增",
+
   }
 }

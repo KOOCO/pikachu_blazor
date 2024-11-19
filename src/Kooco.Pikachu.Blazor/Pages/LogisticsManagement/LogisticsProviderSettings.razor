@@ -40,7 +40,7 @@
                 <Tab Name="HomeDelivery">@L["HomeDelivery"]</Tab>
                     <Tab Name="GreenWorldLogistics">@L["GreenWorldLogistics"]</Tab>
                     <Tab Name="GreenWorldLogisticsC2C">@L["GreenWorldLogisticsC2C"]</Tab>
-                    <Tab Name="TCat">@L["t-cat"]</Tab>
+                    <Tab Name="TCat">@L["T-Cat"]</Tab>
                 </Items>
                 <Content>
                     <TabPanel Name="HomeDelivery">
@@ -916,7 +916,7 @@
                                         <TabPanel Name="familymartC2C">
                                             <Card>
                                                 <CardHeader>
-                                                    <h4>@L["FamilyMartC2c"]</h4>
+                                                    <h4>@L["FamilyMartC2C"]</h4>
                                             </CardHeader>
                                             <CardBody>
                                                 <EditForm Model="@FamilyMartC2C" OnValidSubmit="UpdateFamilyMartC2CAsync">
@@ -1020,7 +1020,7 @@
                 <TabPanel Name="TCat">
                     <Card>
                         <CardHeader>
-                            <h4>@L["t-cat"]</h4>
+                            <h4>@L["T-Cat"]</h4>
                         </CardHeader>
                         <CardBody>
                             <EditForm Model="@TCatLogistics" OnValidSubmit="UpdateTCatAsync">
@@ -1104,7 +1104,7 @@
                                         <Select TValue="TCatShippingLabelForm"
                                                 Class="form-select"
                                                 @bind-SelectedValue=TCatLogistics.TCatShippingLabelForm>
-                                            <SelectItem Value="0">Select Shipping Label Form</SelectItem>
+                                            <SelectItem Value="0">@L["SelectShippingLabelForm"]</SelectItem>
                                             @foreach (object enumValue in Enum.GetValues(typeof(TCatShippingLabelForm)))
                                             {
                                                 <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
@@ -1121,7 +1121,7 @@
                                         <Select TValue="TCatPickingListForm"
                                                 Class="form-select"
                                                 @bind-SelectedValue=TCatLogistics.TCatPickingListForm>
-                                            <SelectItem Value="0">Select Picking List Form</SelectItem>
+                                            <SelectItem Value="0">@L["SelectPickingListForm"]</SelectItem>
                                             @foreach (object enumValue in Enum.GetValues(typeof(TCatPickingListForm)))
                                             {
                                                 <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
@@ -1138,7 +1138,7 @@
                                         <Select TValue="TCatShippingLabelForm711"
                                                 Class="form-select"
                                                 @bind-SelectedValue=TCatLogistics.TCatShippingLabelForm711>
-                                            <SelectItem Value="0">Select Shipping Label Form Seven Eleven</SelectItem>
+                                            <SelectItem Value="0">@L["SelectShippingLabelFormSevenEleven"]</SelectItem>
                                             @foreach (object enumValue in Enum.GetValues(typeof(TCatShippingLabelForm711)))
                                             {
                                                 <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
@@ -1164,7 +1164,7 @@
                                         <Select TValue="ReverseLogisticShippingFee"
                                                 Class="form-select"
                                                 @bind-SelectedValue=TCatLogistics.ReverseLogisticShippingFee>
-                                            <SelectItem Value="0">Select Reverse Logistic Shipping Fee</SelectItem>
+                                            <SelectItem Value="0">@L["SelectReverseLogisticShippingFee"]</SelectItem>
                                             @foreach (object enumValue in Enum.GetValues(typeof(ReverseLogisticShippingFee)))
                                             {
                                                 <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
@@ -1196,18 +1196,18 @@
                         <CardBody>
                             <Tabs SelectedTab="@selectedTCatTab" SelectedTabChanged="@OnSelectedTCatTabChanged">
                                 <Items>
-                                    <Tab Name="tCatNormal">@L["t-Cat Normal"]</Tab>
-                                        <Tab Name="tCatFreeze">@L["t-Cat Freeze"]</Tab>
-                                        <Tab Name="tCatFrozen">@L["t-Cat Frozen"]</Tab>
-                                        <Tab Name="711Normal">@L["7-11 Normal"]</Tab>
-                                        <Tab Name="711Freeze">@L["7-11 Freeze"]</Tab>
-                                        <Tab Name="711Frozen">@L["7-11 Frozen"]</Tab>
+                                    <Tab Name="tCatNormal">@L["t-CatNormal"]</Tab>
+                                        <Tab Name="tCatFreeze">@L["t-CatFreeze"]</Tab>
+                                        <Tab Name="tCatFrozen">@L["t-CatFrozen"]</Tab>
+                                        <Tab Name="711Normal">@L["7-11Normal"]</Tab>
+                                        <Tab Name="711Freeze">@L["7-11Freeze"]</Tab>
+                                        <Tab Name="711Frozen">@L["7-11Frozen"]</Tab>
                                     </Items>
                                     <Content>
                                         <TabPanel Name="tCatNormal">
                                             <Card>
                                                 <CardHeader>
-                                                    <h4>@L["t-Cat Normal"]</h4>
+                                                    <h4>@L["t-CatNormal"]</h4>
                                             </CardHeader>
                                             <CardBody>
                                                 <EditForm Model="@TCatNormal" OnValidSubmit="UpdateTCatNormalAsync">
@@ -1258,7 +1258,7 @@
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-3">
-                                                            <label for="h-freight" class="form-label">@L["Payment Method"]<span class="text-danger"> *</span></label>
+                                                            <label for="h-freight" class="form-label">@L["PaymentMethod"]<span class="text-danger"> *</span></label>
                                                         </div>
                                                         <div class="col-8">
                                                             <Select @bind-SelectedValue="TCatNormal.TCatPaymentMethod">
@@ -1293,7 +1293,7 @@
                                     <TabPanel Name="tCatFreeze">
                                         <Card>
                                             <CardHeader>
-                                                <h4>@L["t-Cat Freeze"]</h4>
+                                                <h4>@L["t-CatFreeze"]</h4>
                                             </CardHeader>
                                             <CardBody>
                                                 <EditForm Model="@TCatFreeze" OnValidSubmit="UpdateTCatFreezeAsync">
@@ -1344,7 +1344,7 @@
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-3">
-                                                            <label for="h-freight" class="form-label">@L["Payment Method"]<span class="text-danger"> *</span></label>
+                                                            <label for="h-freight" class="form-label">@L["PaymentMethod"]<span class="text-danger"> *</span></label>
                                                         </div>
                                                         <div class="col-8">
                                                             <Select @bind-SelectedValue="TCatFreeze.TCatPaymentMethod">
@@ -1379,7 +1379,7 @@
                                     <TabPanel Name="tCatFrozen">
                                         <Card>
                                             <CardHeader>
-                                                <h4>@L["t-Cat Frozen"]</h4>
+                                                <h4>@L["t-CatFrozen"]</h4>
                                             </CardHeader>
                                             <CardBody>
                                                 <EditForm Model="@TCatFrozen" OnValidSubmit="UpdateTCatFrozenAsync">
@@ -1430,7 +1430,7 @@
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-3">
-                                                            <label for="h-freight" class="form-label">@L["Payment Method"]<span class="text-danger"> *</span></label>
+                                                            <label for="h-freight" class="form-label">@L["PaymentMethod"]<span class="text-danger"> *</span></label>
                                                         </div>
                                                         <div class="col-8">
                                                             <Select @bind-SelectedValue="TCatFrozen.TCatPaymentMethod">
@@ -1465,7 +1465,7 @@
                                     <TabPanel Name="711Normal">
                                         <Card>
                                             <CardHeader>
-                                                <h4>@L["7-11 Normal"]</h4>
+                                                <h4>@L["7-11Normal"]</h4>
                                             </CardHeader>
                                             <CardBody>
                                                 <EditForm Model="@TCat711Normal" OnValidSubmit="UpdateTCat711NormalAsync">
@@ -1514,7 +1514,7 @@
                                     <TabPanel Name="711Freeze">
                                         <Card>
                                             <CardHeader>
-                                                <h4>@L["7-11 Freeze"]</h4>
+                                                <h4>@L["7-11Freeze"]</h4>
                                             </CardHeader>
                                             <CardBody>
                                                 <EditForm Model="@TCat711Freeze" OnValidSubmit="UpdateTCat711FreezeAsync">
@@ -1563,7 +1563,7 @@
                                     <TabPanel Name="711Frozen">
                                         <Card>
                                             <CardHeader>
-                                                <h4>@L["7-11 Frozen"]</h4>
+                                                <h4>@L["7-11Frozen"]</h4>
                                             </CardHeader>
                                             <CardBody>
                                                 <EditForm Model="@TCat711Frozen" OnValidSubmit="UpdateTCat711FrozenAsync">
