@@ -696,45 +696,49 @@ public class OrderAppService : ApplicationService, IOrderAppService
                                    );
                     await _orderRepository.InsertAsync(order1);
                     await UnitOfWorkManager.Current.SaveChangesAsync();
+
                     newOrder = order1;
+
+                    OrderItem? orderItem1 = newOrder.OrderItems.FirstOrDefault();
+
                     if (order1.ShippingStatus == ShippingStatus.PrepareShipment)
                     {
-                        if (orderItem.Item?.IsFreeShipping == true)
+                        if (orderItem1?.Item?.IsFreeShipping == true)
                         {
-                            if (orderItem.DeliveryTemperature == ItemStorageTemperature.Normal && orderItem.Item != null || orderItem.Item?.IsFreeShipping == true)
+                            if (orderItem1.DeliveryTemperature == ItemStorageTemperature.Normal && orderItem1.Item != null || orderItem1.Item?.IsFreeShipping == true)
                             {
                                 var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order1.Id);
                                 OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
                                 order1.UpdateOrderItem(order1.OrderItems.Where(x => (x.DeliveryTemperature == ItemStorageTemperature.Normal && x.Item?.IsFreeShipping == true)).ToList(), OrderDelivery.Id);
                             }
-                            if (orderItem.DeliveryTemperature == ItemStorageTemperature.Freeze && orderItem.Item?.IsFreeShipping == true)
+                            if (orderItem1.DeliveryTemperature == ItemStorageTemperature.Freeze && orderItem1.Item?.IsFreeShipping == true)
                             {
                                 var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order1.Id);
                                 OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
                                 order1.UpdateOrderItem(order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze && x.Item?.IsFreeShipping == true).ToList(), OrderDelivery.Id);
                             }
-                            if (orderItem.DeliveryTemperature == ItemStorageTemperature.Frozen && orderItem.Item?.IsFreeShipping == true)
+                            if (orderItem1.DeliveryTemperature == ItemStorageTemperature.Frozen && orderItem1.Item?.IsFreeShipping == true)
                             {
                                 var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order1.Id);
                                 OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
                                 order1.UpdateOrderItem(order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen && x?.Item.IsFreeShipping == true).ToList(), OrderDelivery.Id);
                             }
                         }
-                        if (orderItem.Item?.IsFreeShipping == false)
+                        if (orderItem1?.Item?.IsFreeShipping == false)
                         {
-                            if (orderItem.DeliveryTemperature == ItemStorageTemperature.Normal && orderItem.Item?.IsFreeShipping == false)
+                            if (orderItem1.DeliveryTemperature == ItemStorageTemperature.Normal && orderItem1.Item?.IsFreeShipping == false)
                             {
                                 var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order1.Id);
                                 OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
                                 order1.UpdateOrderItem(order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Normal && x.Item?.IsFreeShipping == false).ToList(), OrderDelivery.Id);
                             }
-                            if (orderItem.DeliveryTemperature == ItemStorageTemperature.Freeze && orderItem.Item?.IsFreeShipping == false)
+                            if (orderItem1.DeliveryTemperature == ItemStorageTemperature.Freeze && orderItem1.Item?.IsFreeShipping == false)
                             {
                                 var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order1.Id);
                                 OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
                                 order1.UpdateOrderItem(order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze && x.Item?.IsFreeShipping == false).ToList(), OrderDelivery.Id);
                             }
-                            if (orderItem.DeliveryTemperature == ItemStorageTemperature.Frozen && orderItem.Item?.IsFreeShipping == false)
+                            if (orderItem1.DeliveryTemperature == ItemStorageTemperature.Frozen && orderItem1.Item?.IsFreeShipping == false)
                             {
                                 var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order1.Id);
                                 OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
