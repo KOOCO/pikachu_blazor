@@ -108,6 +108,27 @@
                                                 <td>@L[Order.ReceivingTime?.ToString()]  </td>
                                             </tr>
                                         }
+                                        else if (Order.ReceivingTimeNormal != null)
+                                        {
+                                            <tr>
+                                                <td>@L["DeliveryTime"]</td>
+                                                <td>@L[Order.ReceivingTimeNormal?.ToString()]  </td>
+                                            </tr>
+                                        }
+                                        else if (Order.ReceivingTimeFreeze != null)
+                                        {
+                                            <tr>
+                                                <td>@L["DeliveryTime"]</td>
+                                                <td>@L[Order.ReceivingTimeFreeze?.ToString()]  </td>
+                                            </tr>
+                                        }
+                                        else if (Order.ReceivingTimeFrozen != null)
+                                        {
+                                            <tr>
+                                                <td>@L["DeliveryTime"]</td>
+                                                <td>@L[Order.ReceivingTimeFrozen?.ToString()]  </td>
+                                            </tr>
+                                        }
                                     </tbody>
                                 </table>
                             </div>
