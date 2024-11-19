@@ -1436,6 +1436,7 @@ public partial class OrderDetails
                deliveryMethod is DeliveryMethod.FamilyMart1 ||
                deliveryMethod is DeliveryMethod.SevenToElevenC2C ||
                deliveryMethod is DeliveryMethod.SevenToEleven1 ||
+               deliveryMethod is DeliveryMethod.SevenToElevenFrozen ||
                deliveryMethod is DeliveryMethod.PostOffice ||
                deliveryMethod is DeliveryMethod.BlackCat1 ||
                deliveryMethod is DeliveryMethod.BlackCatFreeze ||
