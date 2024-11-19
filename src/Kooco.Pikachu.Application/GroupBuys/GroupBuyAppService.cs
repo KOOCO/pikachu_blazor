@@ -495,7 +495,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
             // Map Convenience Store Shipping Methods
             foreach (string method in shippingMethods ?? [])
             {
-                if (method.Contains("SevenToEleven1") || method.Contains("SevenToEleven1Freeze") || method.Contains("SevenToEleven1Frozen")
+                if (method.Contains("SevenToEleven1") || method.Contains("SevenToEleven1Freeze") || method.Contains("SevenToElevenFrozen")
                     || method.Contains("SevenToElevenC2C")
                     || method.Contains("FamilyMart1") || method.Contains("FamilyMartC2C")
                     || method.Contains("TCatDeliverySevenElevenNormal") || method.Contains("TCatDeliverySevenElevenFreeze")

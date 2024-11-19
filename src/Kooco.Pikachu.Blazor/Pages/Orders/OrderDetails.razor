@@ -101,34 +101,6 @@
                                             <td>@L["ShippingMethod"]</td>
                                             <td>@L[Order.DeliveryMethod.ToString()] @Order.ShippingNumber </td>
                                         </tr>
-                                        @if (Order.ReceivingTime != null)
-                                        {
-                                            <tr>
-                                                <td>@L["DeliveryTime"]</td>
-                                                <td>@L[Order.ReceivingTime?.ToString()]  </td>
-                                            </tr>
-                                        }
-                                        else if (Order.ReceivingTimeNormal != null)
-                                        {
-                                            <tr>
-                                                <td>@L["DeliveryTime"]</td>
-                                                <td>@L[Order.ReceivingTimeNormal?.ToString()]  </td>
-                                            </tr>
-                                        }
-                                        else if (Order.ReceivingTimeFreeze != null)
-                                        {
-                                            <tr>
-                                                <td>@L["DeliveryTime"]</td>
-                                                <td>@L[Order.ReceivingTimeFreeze?.ToString()]  </td>
-                                            </tr>
-                                        }
-                                        else if (Order.ReceivingTimeFrozen != null)
-                                        {
-                                            <tr>
-                                                <td>@L["DeliveryTime"]</td>
-                                                <td>@L[Order.ReceivingTimeFrozen?.ToString()]  </td>
-                                            </tr>
-                                        }
                                     </tbody>
                                 </table>
                             </div>
@@ -241,6 +213,17 @@
                                                         }
                                                     </td>
                                                 }
+                                            </tr>
+                                            <br />
+                                            <tr>
+                                                <td>@L["DeliveryTime"]</td>
+                                                <td>
+                                                    <div class="input-group">
+                                                        @if (Order.ReceivingTime is not null) {
+                                                            <span>@Order.ReceivingTime?.ToString()</span>
+                                                        }
+                                                    </div>
+                                                </td>
                                             </tr>
 
                                             @if (IsShowConvenienceStoreDetails)
@@ -777,6 +760,42 @@
                                                             }
                                                         </td>
                                                     }
+                                                }
+                                            </tr>
+
+                                            <tr>
+                                                <td>@L["DeliveryTime"]</td>
+                                                @if (SelectedTemperatureControl is ItemStorageTemperature.Normal)
+                                                {
+                                                    <td>
+                                                        <div class="input-group">
+                                                            @if (Order.ReceivingTimeNormal is not null) {
+                                                                <span>@Order.ReceivingTimeNormal?.ToString()</span>
+                                                            }
+                                                        </div>
+                                                    </td>
+                                                }
+
+                                                else if (SelectedTemperatureControl is ItemStorageTemperature.Freeze)
+                                                {
+                                                    <td>
+                                                        <div class="input-group">
+                                                            @if (Order.ReceivingTimeFreeze is not null) {
+                                                                <span>@Order.ReceivingTimeFreeze?.ToString()</span>
+                                                            }
+                                                        </div>
+                                                    </td>
+                                                }
+
+                                                else if (SelectedTemperatureControl is ItemStorageTemperature.Frozen) {
+                                                    <td>
+                                                        <div class="input-group">
+                                                            @if (Order.ReceivingTimeFrozen is not null)
+                                                            {
+                                                                <span>@Order.ReceivingTimeFrozen?.ToString()</span>
+                                                            }
+                                                        </div>
+                                                    </td>
                                                 }
                                             </tr>
 

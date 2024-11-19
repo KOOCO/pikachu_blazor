@@ -883,7 +883,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             await _orderRepository.UpdateAsync(order);
             var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
-            if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
+            if (invoiceSetting is not null && invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
             {
                 if (order.GroupBuy.IssueInvoice)
                 {
