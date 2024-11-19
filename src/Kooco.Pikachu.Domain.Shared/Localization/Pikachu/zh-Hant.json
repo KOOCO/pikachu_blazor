@@ -184,6 +184,7 @@
     "HashKey": "Hash Key",
     "HideCredention": "團購報表隱藏部分個資",
     "HomeDelivery": "親送",
+    "OrderDetailsHomeDelivery": "送貨上門",
     "Hsinchu": "新竹市",
     "Hualien": "花蓮縣",
     "Inapplicable": "不指定",
@@ -1044,7 +1045,7 @@
     "SquareCornersWithoutFullWidth": "直角無滿版",
     "FullWidthWithLargeImage": "滿版大圖",
     "available": "可用",
-    "New": "新增",
+    "New": "新增"
 
   }
 }
