@@ -46,8 +46,14 @@ public class GroupBuy : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public string? ShortName { get; set; }
 
     /// <summary>
+    /// 通知欄 NotificationBar
+    /// </summary>
+    public string? NotificationBar { get; set; }
+
+    /// <summary>
     /// Logo圖片網址 LogoURL
     /// </summary>
+
     public string? LogoURL { get; set; }
 
     /// <summary>
@@ -286,7 +292,8 @@ public class GroupBuy : FullAuditedAggregateRoot<Guid>, IMultiTenant
         string? backgroundColor,
         string? secondaryBackgroundColor,
         string? alertColor,
-        ProductDetailsDisplayMethod? productDetailsDisplayMethod
+        ProductDetailsDisplayMethod? productDetailsDisplayMethod,
+        string? notificationBar
         )
     {
         Id = id;
@@ -348,6 +355,7 @@ public class GroupBuy : FullAuditedAggregateRoot<Guid>, IMultiTenant
         SecondaryBackgroundColor = secondaryBackgroundColor;
         AlertColor = alertColor;
         ProductDetailsDisplayMethod = productDetailsDisplayMethod;
+        NotificationBar = notificationBar;
     }
 
     public GroupBuyItemGroup AddItemGroup(

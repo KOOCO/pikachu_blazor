@@ -172,7 +172,7 @@
     "GroupBuyShortName": "Short Name",
     "GroupBuyLogo": "Logo",
     "GroupBuyBanner": "Banner Image",
-
+    "NotificationBar": "Motification Bar",
     "GroupBuyTime": "Group Buy Time",
     "Logistic": "Logistic",
     "ExcludeShippingMethod": "Exclude Shipping Method",
@@ -998,7 +998,7 @@
     "SquareCornersWithoutFullWidth": "Square Corners Without Full Width",
     "FullWidthWithLargeImage": "Full Width With Large Image",
     "available": "available",
-    "New": "New",
-   
+    "New": "New"
+
   }
 }

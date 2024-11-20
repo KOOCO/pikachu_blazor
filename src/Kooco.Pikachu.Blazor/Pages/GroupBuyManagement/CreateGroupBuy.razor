@@ -141,6 +141,18 @@
                 <DatePicker TValue="DateTime?" @bind-Date="CreateGroupBuyDto.EndTime" InputMode="DateInputMode.DateTime" Placeholder="@L["EndTime"]" />
             </div>
         </div>
+
+        <div class="row">
+            <div class="col-2">
+                <label>
+                    @L["NotificationBar"]
+                </label>
+            </div>
+            <div class="col-10">
+                <TextEdit @bind-Text="@CreateGroupBuyDto.NotificationBar" />
+            </div>
+        </div>
+
         @* <div class="row">
         <div class="col-2">
         <label>@L["GroupBuyShortName"]</label>

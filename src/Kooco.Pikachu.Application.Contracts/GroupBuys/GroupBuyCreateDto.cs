@@ -44,6 +44,11 @@ namespace Kooco.Pikachu.GroupBuys
         public string? ShortName { get; set; }
 
         /// <summary>
+        /// 通知欄 NotificationBar
+        /// </summary>
+        public string? NotificationBar { get; set; }
+
+        /// <summary>
         /// Logo圖片網址 LogoURL
         /// </summary>
         public string? LogoURL { get; set; }
