@@ -558,7 +558,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                                  deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.TCatDeliveryFreeze ||
                                  deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.TCatDeliveryFrozen))
                             {
-                                List<string> matchingTimes = blackCatTCatPickupTimes.Where(time => !string.IsNullOrEmpty(time)).ToList();
+                                List<string> matchingTimes = convenienceStoreTimes.Where(time => !string.IsNullOrEmpty(time)).ToList();
 
                                 response.DeliveredByStoreType[deliveryTemperatureCost.Temperature.ToString()].DeliveryTime = matchingTimes.Count > 0 ? matchingTimes : ["No time preference"];
                                 response.DeliveredByStoreType[deliveryTemperatureCost.Temperature.ToString()].DeliveryType = 0;
