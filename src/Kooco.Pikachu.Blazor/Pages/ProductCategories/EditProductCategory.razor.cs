@@ -43,7 +43,7 @@ public partial class EditProductCategory
         {
             Selected = await ProductCategoryAppService.GetAsync(Id, true);
             EditingEntity = ObjectMapper.Map<ProductCategoryDto, UpdateProductCategoryDto>(Selected);
-            if (!EditingEntity.Description.IsNullOrWhiteSpace())
+            if (DescriptionHtml != null && !EditingEntity.Description.IsNullOrWhiteSpace())
             {
                 await DescriptionHtml.LoadHTMLContent(EditingEntity.Description);
             }
@@ -62,6 +62,10 @@ public partial class EditProductCategory
             try
             {
                 ItemsLookup = await ItemAppService.GetItemsLookupAsync();
+                if (DescriptionHtml != null && !EditingEntity.Description.IsNullOrWhiteSpace())
+                {
+                    await DescriptionHtml.LoadHTMLContent(EditingEntity.Description);
+                }
                 StateHasChanged();
             }
             catch (Exception ex)
@@ -92,7 +96,10 @@ public partial class EditProductCategory
     {
         NavigationManager.NavigateTo("Product-Categories");
     }
-
+    private string LocalizeFilePicker(string key, object[] args)
+    {
+        return L[key];
+    }
     async Task OnFileUploadAsync(FileChangedEventArgs e)
     {
         if (e?.Files == null)

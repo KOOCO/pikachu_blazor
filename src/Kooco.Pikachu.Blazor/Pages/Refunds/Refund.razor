@@ -21,7 +21,7 @@
 
  <div class="row">
      <div class="col-6">
-         <h3>@L["Refunds"]</h3>
+         <h3>@L["RefundsList"]</h3>
      </div>
      <div class="col-6 text-lg-end">
          <div class="input-group">
@@ -142,12 +142,12 @@
                                 <Button Type="ButtonType.Button" 
                                         Clicked="@(e => RefundApproved(context))" 
                                         Class="btn btn-sm btn-primary">
-                                    Approve
+                                    @L["Approve"]
                                 </Button>
                                 <Button Type="ButtonType.Button" 
                                         Clicked="@(e => RefundReject(context))" 
                                         Class="btn btn-sm btn-danger">
-                                    Reject
+                                    @L["Reject"]
                                 </Button>
                             </Div>
                         }

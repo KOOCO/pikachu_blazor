@@ -115,10 +115,16 @@ public class OrderAppService : ApplicationService, IOrderAppService
     #endregion
 
     #region Methods
+    /// <summary>
+    /// Create Order
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
     [AllowAnonymous]
-    public async Task<OrderDto> CreateAsync(CreateOrderDto input)
+    public async Task<OrderDto> CreateAsync(CreateUpdateOrderDto input)
     {
         GroupBuy groupBuy = new();
+
         using (_dataFilter.Disable<IMultiTenant>())
         {
             groupBuy = await _groupBuyRepository.GetAsync(input.GroupBuyId);
@@ -126,67 +132,70 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         using (CurrentTenant.Change(groupBuy?.TenantId))
         {
-            var order = await _orderManager.CreateAsync(
-                    input.GroupBuyId,
-                    input.IsIndividual,
-                    input.CustomerName,
-                    input.CustomerPhone,
-                    input.CustomerEmail,
-                    input.PaymentMethod,
-                    input.InvoiceType,
-                    input.InvoiceNumber,
-                    input.UniformNumber,
-                    input.CarrierId,
-                    input.TaxTitle,
-                    input.IsAsSameBuyer,
-                    input.RecipientName,
-                    input.RecipientPhone,
-                    input.RecipientEmail,
-                    input.DeliveryMethod,
-                    input.PostalCode,
-                    input.City,
-
-                    input.District,
-                    input.Road,
-                    input.AddressDetails,
-                    input.Remarks,
-                    input.ReceivingTime,
-                    input.TotalQuantity,
-                    input.TotalAmount,
-                    input.ReturnStatus,
-                    input.OrderType,
-                    userId: input.UserId,
-                    creditDeductionAmount: input.CreditDeductionAmount,
-                    creditDeductionRecordId: input.CreditDeductionRecordId,
-                    creditRefundAmount: input.RefundAmount,
-                    creditRefundRecordId: input.RefundRecordId,
-                    discountAmountId: input.DiscountCodeId,
-                    discountCodeAmount: input.DiscountCodeAmount,
-                    recipientNameDbsNormal: input.RecipientNameDbsNormal,
-                    recipientNameDbsFreeze: input.RecipientNameDbsFreeze,
-                    recipientNameDbsFrozen: input.RecipientNameDbsFrozen,
-                    recipientPhoneDbsNormal: input.RecipientPhoneDbsNormal,
-                    recipientPhoneDbsFreeze: input.RecipientPhoneDbsFreeze,
-                    recipientPhoneDbsFrozen: input.RecipientPhoneDbsFrozen,
-                    postalCodeDbsNormal: input.PostalCodeDbsNormal,
-                    postalCodeDbsFreeze: input.PostalCodeDbsFreeze,
-                    postalCodeDbsFrozen: input.PostalCodeDbsFrozen,
-                    cityDbsNormal: input.CityDbsNormal,
-                    cityDbsFreeze: input.CityDbsFreeze,
-                    cityDbsFrozen: input.CityDbsFrozen,
-                    addressDetailsDbsNormal: input.AddressDetailsDbsNormal,
-                    addressDetailsDbsFreeze: input.AddressDetailsDbsFreeze,
-                    addressDetailsDbsFrozen: input.AddressDetailsDbsFrozen,
-                    remarksDbsNormal: input.RemarksDbsNormal,
-                    remarksDbsFreeze: input.RemarksDbsFreeze,
-                    remarksDbsFrozen: input.RemarksDbsFrozen,
-                    storeIdNormal: input.StoreIdNormal,
-                    storeIdFreeze: input.StoreIdFreeze,
-                    storeIdFrozen: input.StoreIdFrozen,
-                    cVSStoreOutSideNormal: input.CVSStoreOutSideNormal,
-                    cVSStoreOutSideFreeze: input.CVSStoreOutSideFreeze,
-                    cVSStoreOutSideFrozen: input.CVSStoreOutSideFrozen
+            Order order = await _orderManager.CreateAsync(
+                input.GroupBuyId,
+                input.IsIndividual,
+                input.CustomerName,
+                input.CustomerPhone,
+                input.CustomerEmail,
+                input.PaymentMethod,
+                input.InvoiceType,
+                string.Empty,
+                input.UniformNumber,
+                input.CarrierId,
+                input.TaxTitle,
+                input.IsAsSameBuyer,
+                input.RecipientName,
+                input.RecipientPhone,
+                input.RecipientEmail,
+                input.DeliveryMethod,
+                input.PostalCode,
+                input.City,
+                string.Empty,
+                string.Empty,
+                input.AddressDetails,
+                input.Remarks,
+                input.ReceivingTime,
+                input.TotalQuantity,
+                input.TotalAmount,
+                input.ReturnStatus,
+                input.OrderType,
+                userId: input.UserId,
+                creditDeductionAmount: input.CreditDeductionAmount,
+                creditDeductionRecordId: input.CreditDeductionRecordId,
+                creditRefundAmount: input.cashback_amount,
+                creditRefundRecordId: input.cashback_record_id,
+                discountAmountId: input.DiscountCodeId,
+                discountCodeAmount: input.DiscountCodeAmount,
+                recipientNameDbsNormal: input.RecipientNameDbsNormal,
+                recipientNameDbsFreeze: input.RecipientNameDbsFreeze,
+                recipientNameDbsFrozen: input.RecipientNameDbsFrozen,
+                recipientPhoneDbsNormal: input.RecipientPhoneDbsNormal,
+                recipientPhoneDbsFreeze: input.RecipientPhoneDbsFreeze,
+                recipientPhoneDbsFrozen: input.RecipientPhoneDbsFrozen,
+                postalCodeDbsNormal: input.PostalCodeDbsNormal,
+                postalCodeDbsFreeze: input.PostalCodeDbsFreeze,
+                postalCodeDbsFrozen: input.PostalCodeDbsFrozen,
+                cityDbsNormal: input.CityDbsNormal,
+                cityDbsFreeze: input.CityDbsFreeze,
+                cityDbsFrozen: input.CityDbsFrozen,
+                addressDetailsDbsNormal: input.AddressDetailsDbsNormal,
+                addressDetailsDbsFreeze: input.AddressDetailsDbsFreeze,
+                addressDetailsDbsFrozen: input.AddressDetailsDbsFrozen,
+                remarksDbsNormal: input.RemarksDbsNormal,
+                remarksDbsFreeze: input.RemarksDbsFreeze,
+                remarksDbsFrozen: input.RemarksDbsFrozen,
+                storeIdNormal: input.StoreIdNormal,
+                storeIdFreeze: input.StoreIdFreeze,
+                storeIdFrozen: input.StoreIdFrozen,
+                cVSStoreOutSideNormal: input.CVSStoreOutSideNormal,
+                cVSStoreOutSideFreeze: input.CVSStoreOutSideFreeze,
+                cVSStoreOutSideFrozen: input.CVSStoreOutSideFrozen,
+                receivingTimeNormal: input.ReceivingTimeNormal,
+                receivingTimeFreeze: input.ReceivingTimeFreeze,
+                receivingTimeFrozen: input.ReceivingTimeFrozen
             );
+
             order.StoreId = input.StoreId;
             order.CVSStoreOutSide = input.CVSStoreOutSide;
             order.ShippingStatus = input.ShippingStatus;
@@ -194,9 +203,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
             order.DeliveryCostForFreeze = input.DeliveryCostForFreeze;
             order.DeliveryCostForFrozen = input.DeliveryCostForFrozen;
             order.DeliveryCost = input.DeliveryCost;
-            if (input.OrderItems != null)
+
+            if (input.OrderItems is { Count: > 0 })
             {
-                foreach (var item in input.OrderItems)
+                foreach (CreateUpdateOrderItemDto item in input.OrderItems)
                 {
                     _orderManager.AddOrderItem(
                         order,
@@ -211,22 +221,26 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         item.Quantity,
                         item.SKU,
                         item.DeliveryTemperature,
-                        item.DeliveryTemperatureCost
-                        );
+                        0
+                    );
+
                     using (_dataFilter.Disable<IMultiTenant>())
                     {
-                        //var orderItem = await _orderItemRepository.GetAsync(item.ItemId.Value);
-                        var details = await _itemDetailsRepository.FirstOrDefaultAsync(x => x.ItemId == item.ItemId && x.ItemName == item.Spec);
-                        if (details != null)
+                        ItemDetails? details = await _itemDetailsRepository.FirstOrDefaultAsync(x => x.ItemId == item.ItemId && x.ItemName == item.Spec);
+
+                        if (details is not null)
                         {
                             details.SaleableQuantity = details.SaleableQuantity - item.Quantity;
+
                             await _itemDetailsRepository.UpdateAsync(details);
                         }
 
-                        if (item.FreebieId != null)
+                        if (item.FreebieId is not null)
                         {
-                            var freebie = await _freebieRepository.FirstOrDefaultAsync(x => x.Id == item.FreebieId);
+                            Freebie? freebie = await _freebieRepository.FirstOrDefaultAsync(x => x.Id == item.FreebieId);
+
                             freebie.FreebieAmount -= item.Quantity;
+                            
                             await _freebieRepository.UpdateAsync(freebie);
                         }
                     }
@@ -234,6 +248,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
 
             await _orderRepository.InsertAsync(order);
+
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
             if (order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment)
@@ -299,31 +314,27 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         newOrder.UpdateOrderItem([.. newOrder.OrderItems.Where(w => w.SetItemId is not null && w.SetItemId != Guid.Empty)], orderDelivery.Id);
                 }
             }
+
             if (order.DiscountCodeId != null)
             {
                 var discountCode = await _discountCodeRepository.GetAsync(order.DiscountCodeId.Value);
                 discountCode.AvailableQuantity = discountCode.AvailableQuantity - 1;
                 await _discountCodeRepository.EnsureCollectionLoadedAsync(discountCode, x => x.DiscountCodeUsages);
+                
                 if (discountCode.DiscountCodeUsages != null && discountCode.DiscountCodeUsages.Count > 0)
                 {
                     var usage = discountCode.DiscountCodeUsages.FirstOrDefault();
                     usage.TotalOrders = usage.TotalOrders + 1;
                     usage.TotalDiscountAmount = usage.TotalDiscountAmount + (int)(order.DiscountAmount.HasValue ? order?.DiscountAmount.Value : 0);
                 }
-                else {
-
+                else 
+                {
                     var newusage = new DiscountCodeUsage(GuidGenerator.Create(), 1, 0, order.DiscountAmount ?? 0);
                     discountCode.DiscountCodeUsages.Add(newusage);
-
-                
-                
                 }
 
                 await _discountCodeRepository.UpdateAsync(discountCode);
                 await  CurrentUnitOfWork.SaveChangesAsync();
-              
-
-
             }
 
             if (groupBuy?.IsEnterprise is true) await SendEmailAsync(order.Id);
@@ -332,6 +343,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
     }
 
+/// <summary>
+/// get order by Order No
+/// </summary>
+/// <param name="groupBuyId"></param>
+/// <param name="orderNo"></param>
+/// <param name="extraInfo"></param>
+/// <returns></returns>
     public async Task<OrderDto> GetOrderAsync(Guid groupBuyId, string orderNo, string extraInfo)
     {
         return ObjectMapper.Map<Order, OrderDto>(
@@ -678,45 +696,49 @@ public class OrderAppService : ApplicationService, IOrderAppService
                                    );
                     await _orderRepository.InsertAsync(order1);
                     await UnitOfWorkManager.Current.SaveChangesAsync();
+
                     newOrder = order1;
+
+                    OrderItem? orderItem1 = newOrder.OrderItems.FirstOrDefault();
+
                     if (order1.ShippingStatus == ShippingStatus.PrepareShipment)
                     {
-                        if (orderItem.Item?.IsFreeShipping == true)
+                        if (orderItem1?.Item?.IsFreeShipping == true)
                         {
-                            if (orderItem.DeliveryTemperature == ItemStorageTemperature.Normal && orderItem.Item != null || orderItem.Item?.IsFreeShipping == true)
+                            if (orderItem1.DeliveryTemperature == ItemStorageTemperature.Normal && orderItem1.Item != null || orderItem1.Item?.IsFreeShipping == true)
                             {
                                 var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order1.Id);
                                 OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
                                 order1.UpdateOrderItem(order1.OrderItems.Where(x => (x.DeliveryTemperature == ItemStorageTemperature.Normal && x.Item?.IsFreeShipping == true)).ToList(), OrderDelivery.Id);
                             }
-                            if (orderItem.DeliveryTemperature == ItemStorageTemperature.Freeze && orderItem.Item?.IsFreeShipping == true)
+                            if (orderItem1.DeliveryTemperature == ItemStorageTemperature.Freeze && orderItem1.Item?.IsFreeShipping == true)
                             {
                                 var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order1.Id);
                                 OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
                                 order1.UpdateOrderItem(order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze && x.Item?.IsFreeShipping == true).ToList(), OrderDelivery.Id);
                             }
-                            if (orderItem.DeliveryTemperature == ItemStorageTemperature.Frozen && orderItem.Item?.IsFreeShipping == true)
+                            if (orderItem1.DeliveryTemperature == ItemStorageTemperature.Frozen && orderItem1.Item?.IsFreeShipping == true)
                             {
                                 var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order1.Id);
                                 OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
                                 order1.UpdateOrderItem(order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen && x?.Item.IsFreeShipping == true).ToList(), OrderDelivery.Id);
                             }
                         }
-                        if (orderItem.Item?.IsFreeShipping == false)
+                        if (orderItem1?.Item?.IsFreeShipping == false)
                         {
-                            if (orderItem.DeliveryTemperature == ItemStorageTemperature.Normal && orderItem.Item?.IsFreeShipping == false)
+                            if (orderItem1.DeliveryTemperature == ItemStorageTemperature.Normal && orderItem1.Item?.IsFreeShipping == false)
                             {
                                 var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order1.Id);
                                 OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
                                 order1.UpdateOrderItem(order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Normal && x.Item?.IsFreeShipping == false).ToList(), OrderDelivery.Id);
                             }
-                            if (orderItem.DeliveryTemperature == ItemStorageTemperature.Freeze && orderItem.Item?.IsFreeShipping == false)
+                            if (orderItem1.DeliveryTemperature == ItemStorageTemperature.Freeze && orderItem1.Item?.IsFreeShipping == false)
                             {
                                 var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order1.Id);
                                 OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
                                 order1.UpdateOrderItem(order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze && x.Item?.IsFreeShipping == false).ToList(), OrderDelivery.Id);
                             }
-                            if (orderItem.DeliveryTemperature == ItemStorageTemperature.Frozen && orderItem.Item?.IsFreeShipping == false)
+                            if (orderItem1.DeliveryTemperature == ItemStorageTemperature.Frozen && orderItem1.Item?.IsFreeShipping == false)
                             {
                                 var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order1.Id);
                                 OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);

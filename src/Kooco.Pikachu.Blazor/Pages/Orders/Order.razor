@@ -28,8 +28,8 @@
 
 <LoadingIndicator @ref="loading" FullScreen FadeIn>
     <div class="row">
-        <div class="col-1">
-            <h3>@L["Order"]</h3>
+        <div class="col-12">
+            <h3>@L["OrdersList"]</h3>
         </div>
         <br />
         <div class="col-12 text-lg-end"
@@ -74,7 +74,7 @@
             
             @if (SelectedTabName is PikachuResource.ToBeShipped) 
             {
-                @if ((Orders.Where(x => x.IsSelected).Count() < 1) || (Orders.Where(x => x.InvoiceNumber != null && x.IsSelected).Any()))
+                @if ((Orders.Where(x => x.IsSelected).Count() < 1))
                 {
                     <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
                         <i class="fa fa-print"></i>
@@ -176,7 +176,7 @@
                  SelectedTabName is PikachuResource.Delivered || 
                  SelectedTabName is PikachuResource.Completed)
             {
-                @if ((Orders.Where(x => x.IsSelected).Count() < 1) || (Orders.Where(x => x.InvoiceNumber is not null && x.IsSelected).Any()))
+                @if ((Orders.Where(x => x.IsSelected).Count() < 1) || (Orders.Where(x => !x.InvoiceNumber.IsNullOrEmpty() && x.IsSelected).Any()))
                 {
                     <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
                         <i class="fa fa-print"></i>
@@ -347,7 +347,21 @@
                                                 <tbody>
                                                     <tr>
                                                         <td>@L["RecipientInformation"]</td>
-                                                        <td>@context.CustomerName / @context.CustomerPhone</td>
+                                                        @if (context.DeliveryMethod is not EnumValues.DeliveryMethod.DeliveredByStore) 
+                                                        {
+                                                            <td>@context.RecipientName / @context.RecipientPhone</td>
+                                                        }
+
+                                                        else
+                                                        {
+                                                            <td>
+                                                                <span>@L["Normal"] :- @context.RecipientNameDbsNormal / @context.RecipientPhoneDbsNormal</span>
+                                                                <hr />
+                                                                <span>@L["Freeze"] :- @context.RecipientNameDbsFreeze / @context.RecipientPhoneDbsFreeze</span>
+                                                                <hr />
+                                                                <span>@L["Frozen"] :- @context.RecipientNameDbsFrozen / @context.RecipientPhoneDbsFrozen</span>
+                                                            </td>
+                                                        }
                                                     </tr>
                                                     <tr>
                                                         <td>@L["ShippingMethod"]</td>

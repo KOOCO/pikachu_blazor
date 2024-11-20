@@ -341,7 +341,7 @@
                 @L["ShippingMethod"] <span class="text-danger"> *</span>
             </div>
             <div class="col-8">
-                <label class="form-label">Home Delivery Type</label><br />
+                <label class="form-label">@L["HomeDeliveryType"]</label><br />
                 @if (EditGroupBuyDto.AllowShipToOuterTaiwan && !EditGroupBuyDto.AllowShipOversea)
                 {
                     @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
@@ -400,7 +400,7 @@
                     }
                 }
                 <br />
-                <label class="form-label">Convenience Store Type</label><br />
+                <label class="form-label">@L["ConvenienceStoreType"]</label><br />
                 @if (EditGroupBuyDto.AllowShipToOuterTaiwan && !EditGroupBuyDto.AllowShipOversea)
                 {
                     @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
@@ -455,7 +455,7 @@
                     }
                 }
                 <br />
-                <label class="form-label">Self-Pickup Type</label><br />
+                <label class="form-label">@L["Self-PickupType"]</label><br />
                 @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
                 {
                     if (item == Enum.GetName(DeliveryMethod.SelfPickup))
@@ -475,7 +475,7 @@
                     }
                 }
                 <br />
-                <label class="form-label">Delivered By Store Type</label><br />
+                <label class="form-label">@L["DeliveredByStoreType"]</label><br />
                 @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
                 {
                     if (item == Enum.GetName(DeliveryMethod.DeliveredByStore))
@@ -860,12 +860,12 @@
 
         <Divider></Divider>
         <Div Class="row">
-            <Div Class="col-2">@L["Color Schemes"]</Div>
-            <Div Class="col-2">@L["Select Color Theme"]</Div>
+            <Div Class="col-2">@L["ColorSchemes"]</Div>
+            <Div Class="col-2">@L["SelectColorTheme"]</Div>
             <Div Class="col-8">
                 <select class="form-select"
                         @onchange=OnColorSchemeChange>
-                    <option>@L["Choose Color Theme"]</option>
+                    <option>@L["ChooseColorTheme"]</option>
                     @foreach (ColorScheme value in Enum.GetValues<ColorScheme>())
                     {
                         if (value == EditGroupBuyDto.ColorSchemeType)
@@ -1041,7 +1041,9 @@
 
                                     @if (module.GroupBuyModuleType is GroupBuyModuleType.CarouselImages)
                                     {
-                                        foreach (List<CreateImageDto> carouselImages in CarouselModules)
+                                        List<List<CreateImageDto>> carouselModules = CarouselModules.Select(s => s.Where(w => w.ModuleNumber == module.ModuleNumber).ToList()).Where(w => w.Count > 0).ToList();
+
+                                        foreach (List<CreateImageDto> carouselImages in carouselModules)
                                         {
                                             <div class="row">
                                                 <div class="col-2">
@@ -1055,13 +1057,13 @@
                                                 </div>
                                                 <div class="col-10 ">
                                                     <Field>
-                                                        <FilePicker @ref="CarouselFilePickers[CarouselModules.IndexOf(carouselImages)]"
+                                                        <FilePicker @ref="CarouselFilePickers[carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1]"
                                                                     Disabled="carouselImages.Count >= 5"
                                                                     Multiple
                                                                     Changed="@(async (e) => await OnImageModuleUploadAsync(e,
                                                                                                                            carouselImages,
-                                                                                                                           CarouselModules.IndexOf(carouselImages) + 1,
-                                                                                                                           CarouselFilePickers[CarouselModules.IndexOf(carouselImages)],
+                                                                                                                           carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value,
+                                                                                                                           CarouselFilePickers[carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1],
                                                                                                                            ImageType.GroupBuyCarouselImage))"
                                                                     ShowMode="FilePickerShowMode.List"
                                                                     Accept=".jpg, .png, .svg, .jpeg, .webp">
@@ -1097,19 +1099,19 @@
                                                                 </Div>
                                                             </FileTemplate>
                                                             <ButtonsTemplate>
-                                                                <Progress Value="@CarouselFilePickers[CarouselModules.IndexOf(carouselImages)].GetProgressPercentage()" />
+                                                                <Progress Value="@CarouselFilePickers[carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1].GetProgressPercentage()" />
                                                             </ButtonsTemplate>
                                                         </FilePicker>
                                                     </Field>
                                                 </div>
-                                                @if (carouselImages.Count > 0)
+                                                @if (carouselImages.Count > 0 && carouselImages.Any(a => !a.ImageUrl.IsNullOrEmpty()))
                                                 {
                                                     <Div Class="row">
                                                         <Div Class="col-2"></Div>
                                                         <Div Class="col-10">
                                                             <Div Class="image-list-container d-block flex-nowrap">
                                                                 <Div Class="d-flex flex-wrap">
-                                                                    @foreach (CreateImageDto image in carouselImages)
+                                                                    @foreach (CreateImageDto image in carouselImages.Where(w => !w.ImageUrl.IsNullOrEmpty()).ToList())
                                                                     {
                                                                         <Div Class="image-container">
                                                                             <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image" Fluid />
@@ -1122,25 +1124,51 @@
                                                                     }
                                                                 </Div>
 
-                                                                @foreach (CreateImageDto createImageDto in carouselImages)
+                                                                @foreach (CreateImageDto createImageDto in carouselImages.Where(w => !w.ImageUrl.IsNullOrEmpty()).ToList())
                                                                 {
                                                                     <button type="button"
                                                                             class="btn btn-primary @(carouselImages.IndexOf(createImageDto) > 0 ? "mx-1" : "")"
                                                                             @onclick="() => OpenAddLinkModal(createImageDto)">
-                                                                        @L["Add Link"]
+                                                                        @L["AddLink"]
                                                                     </button>
                                                                 }
                                                             </Div>
                                                         </Div>
                                                     </Div>
                                                 }
+                                                <Div class="row">
+                                                    <Div class="col-2 pt-2 pb-4">
+                                                        <label>@L["Style"]</label>
+                                                    </Div>
+                                                    <Div class="col-10 pt-2 pb-4">
+                                                        <select class="form-select form-select"
+                                                                @onchange=@((e) => OnStyleCarouselChange(e, carouselImages, carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value))>
+                                                            <option>Select Style</option>
+                                                            @foreach (object? enumValue in Enum.GetValues(typeof(StyleForCarouselImages)))
+                                                            {
+                                                                if (enumValue is not null && carouselImages.Any(a => a.CarouselStyle == (StyleForCarouselImages)enumValue)) 
+                                                                {
+                                                                    <option value="@enumValue" selected>@L[enumValue.ToString()]</option>
+                                                                }
+
+                                                                else
+                                                                {
+                                                                    <option value="@enumValue">@L[enumValue.ToString()]</option>
+                                                                }
+                                                            }
+                                                        </select>
+                                                    </Div>
+                                                </Div>
                                             </div>
+                                            <Divider />
                                         }
                                     }
 
                                     @if (module.GroupBuyModuleType is GroupBuyModuleType.BannerImages)
                                     {
-                                        foreach (List<CreateImageDto> bannerImages in BannerModules)
+                                        List<List<CreateImageDto>> bannerModules = BannerModules.Select(s => s.Where(w => w.ModuleNumber == module.ModuleNumber).ToList()).Where(w => w.Count > 0).ToList();
+
+                                        foreach (List<CreateImageDto> bannerImages in bannerModules)
                                         {
                                             <div class="row">
                                                 <div class="col-2">
@@ -1154,13 +1182,11 @@
                                                 </div>
                                                 <div class="col-10 ">
                                                     <Field>
-                                                        <FilePicker @ref="BannerFilePickers[BannerModules.IndexOf(bannerImages)]"
-                                                                    Disabled="bannerImages.Count >= 5"
-                                                                    Multiple
-                                                                    Changed="@(async (e) => await OnImageModuleUploadAsync(e,
+                                                        <FilePicker @ref="BannerFilePickers[bannerImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1]"
+                                                                    Changed="@(async (e) => await OnBannerImageModuleUploadAsync(e,
                                                                                                                            bannerImages,
-                                                                                                                           BannerModules.IndexOf(bannerImages) + 1,
-                                                                                                                           BannerFilePickers[BannerModules.IndexOf(bannerImages)],
+                                                                                                                           bannerImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value,
+                                                                                                                           BannerFilePickers[bannerImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1],
                                                                                                                            ImageType.GroupBuyBannerImage))"
                                                                     ShowMode="FilePickerShowMode.List"
                                                                     Accept=".jpg, .png, .svg, .jpeg, .webp">
@@ -1196,19 +1222,19 @@
                                                                 </Div>
                                                             </FileTemplate>
                                                             <ButtonsTemplate>
-                                                                <Progress Value="@BannerFilePickers[BannerModules.IndexOf(bannerImages)].GetProgressPercentage()" />
+                                                                <Progress Value="@BannerFilePickers[bannerImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1].GetProgressPercentage()" />
                                                             </ButtonsTemplate>
                                                         </FilePicker>
                                                     </Field>
                                                 </div>
-                                                @if (bannerImages.Count > 0)
+                                                @if (bannerImages.Count > 0 && bannerImages.Any(a => !a.ImageUrl.IsNullOrEmpty()))
                                                 {
                                                     <Div Class="row">
                                                         <Div Class="col-2"></Div>
                                                         <Div Class="col-10">
                                                             <Div Class="image-list-container d-block flex-nowrap">
                                                                 <Div Class="d-flex flex-wrap">
-                                                                    @foreach (CreateImageDto image in bannerImages)
+                                                                    @foreach (CreateImageDto image in bannerImages.Where(w => !w.ImageUrl.IsNullOrEmpty()).ToList())
                                                                     {
                                                                         <Div Class="image-container">
                                                                             <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image" Fluid />
@@ -1221,12 +1247,12 @@
                                                                     }
                                                                 </Div>
 
-                                                                @foreach (CreateImageDto createImageDto in bannerImages)
+                                                                @foreach (CreateImageDto createImageDto in bannerImages.Where(w => !w.ImageUrl.IsNullOrEmpty()).ToList())
                                                                 {
                                                                     <button type="button"
                                                                             class="btn btn-primary @(bannerImages.IndexOf(createImageDto) > 0 ? "mx-1" : "")"
                                                                             @onclick="() => OpenAddLinkModal(createImageDto)">
-                                                                        @L["Add Link"]
+                                                                        @L["AddLink"]
                                                                     </button>
                                                                 }
                                                             </Div>
@@ -1470,7 +1496,7 @@
                                                                               Data="@ItemsList"
                                                                               TextField="@(( item ) => item.Name)"
                                                                               ValueField="@(( item ) => item.Id)"
-                                                                              Placeholder="Search..."
+                                                                              Placeholder="@L["Search..."]"
                                                                               Filter="AutocompleteFilter.StartsWith"
                                                                               CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
                                                                               HighlightSearch
@@ -1672,7 +1698,7 @@
                                                 </Div>
                                                 <Div Class="col-md-6 text-right mb-3">
                                                     <select class="form-select form-select" @onchange=@((e) => module.ProductGroupModuleImageSize = e.Value.ToString())>
-                                                        <option value="">-- Select Style --</option>
+                                                        <option value="">@L["SelectStyle"]</option>
                                                         @foreach (string size in ImageSizes)
                                                         {
                                                             @if (module.ProductGroupModuleImageSize == size)
@@ -1705,7 +1731,7 @@
                                                                       Data="@ItemsList"
                                                                       TextField="@(( item ) => item.Name)"
                                                                       ValueField="@(( item ) => item.Id)"
-                                                                      Placeholder="Search..."
+                                                                      Placeholder="@L["Search..."]"
                                                                       Filter="AutocompleteFilter.StartsWith"
                                                                       CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
                                                                       HighlightSearch

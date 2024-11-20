@@ -80,7 +80,8 @@ public class CreateOrderDto
 
     public decimal RefundAmount { get; set; }
 
-    public Guid? RefundRecordId { get; set; }
+    public decimal cashback_amount { get; set; }
+    public Guid? cashback_record_id { get; set; }
     public int CreditDeductionAmount { get; set; }
 
     public Guid? CreditDeductionRecordId { get; set; }

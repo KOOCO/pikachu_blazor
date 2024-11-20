@@ -1096,6 +1096,9 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<int>("GroupBuyModuleType")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ModuleNumber")
+                        .HasColumnType("int");
+
                     b.Property<string>("ProductGroupModuleImageSize")
                         .HasColumnType("nvarchar(max)");
 
@@ -1206,6 +1209,9 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<string>("BlobImageName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("CarouselStyle")
+                        .HasColumnType("int");
 
                     b.Property<Guid?>("FreebieId")
                         .HasColumnType("uniqueidentifier");
@@ -2434,6 +2440,15 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<int?>("ReceivingTime")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ReceivingTimeFreeze")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ReceivingTimeFrozen")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ReceivingTimeNormal")
+                        .HasColumnType("int");
+
                     b.Property<string>("RecipientEmail")
                         .HasColumnType("nvarchar(max)");
 
@@ -2463,9 +2478,6 @@ namespace Kooco.Pikachu.Migrations
 
                     b.Property<decimal>("RefundAmount")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<Guid?>("RefundRecordId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
@@ -2544,6 +2556,12 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<string>("VoidUser")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<decimal>("cashback_amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid?>("cashback_record_id")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CreditDeductionRecordId");
@@ -2552,9 +2570,9 @@ namespace Kooco.Pikachu.Migrations
 
                     b.HasIndex("GroupBuyId");
 
-                    b.HasIndex("RefundRecordId");
-
                     b.HasIndex("UserId");
+
+                    b.HasIndex("cashback_record_id");
 
                     b.ToTable("AppOrders", null, t =>
                         {
@@ -5928,13 +5946,13 @@ namespace Kooco.Pikachu.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Kooco.Pikachu.UserShoppingCredits.UserShoppingCredit", "RefundRecord")
-                        .WithMany()
-                        .HasForeignKey("RefundRecordId");
-
                     b.HasOne("Volo.Abp.Identity.IdentityUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
+
+                    b.HasOne("Kooco.Pikachu.UserShoppingCredits.UserShoppingCredit", "RefundRecord")
+                        .WithMany()
+                        .HasForeignKey("cashback_record_id");
 
                     b.Navigation("CreditDeductionRecord");
 

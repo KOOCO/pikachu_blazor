@@ -218,7 +218,7 @@ public partial class CashFlowReconciliationStatement
     }
     private void OpenCreditReasonModal()
     {
-
+        CreditReason.Reason = null;
         CreateCreditNoteReasonModal.Show();
     }
     #endregion

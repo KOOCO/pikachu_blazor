@@ -105,4 +105,7 @@ public class OrderDto : FullAuditedEntityDto<Guid>
     public string? CVSStoreOutSideFreeze { get; set; }
     public string? CVSStoreOutSideFrozen { get; set; }
     public ItemStorageTemperature? TemperatureControlDbs { get; set; }
+    public ReceivingTime? ReceivingTimeNormal { get; set; }
+    public ReceivingTime? ReceivingTimeFreeze { get; set; }
+    public ReceivingTime? ReceivingTimeFrozen { get; set; }
 }

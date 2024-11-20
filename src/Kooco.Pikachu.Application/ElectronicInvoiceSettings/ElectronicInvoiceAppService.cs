@@ -66,7 +66,7 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
 
             order = await _orderRepository.GetWithDetailsAsync(orderId);
 
-            if (order.InvoiceNumber is not null) return;
+            if (!order.InvoiceNumber.IsNullOrEmpty()) return;
 
             GroupBuy groupBuy = await _groupBuyRepository.GetAsync(order.GroupBuyId);
 
@@ -191,7 +191,7 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
         {
             myItem orderitem = new myItem();
             orderitem.ItemSeq = 1;
-            orderitem.ItemName = item.Item?.ItemName ?? item.Freebie.ItemName;
+            orderitem.ItemName = (item.Item?.ItemName ?? item.Freebie?.ItemName)??"";
             orderitem.ItemCount = 1;
             orderitem.ItemWord = "1";
             orderitem.ItemPrice = item.ItemPrice;

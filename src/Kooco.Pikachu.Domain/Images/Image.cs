@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.Items;
+﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Items;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Volo.Abp.Domain.Entities;
@@ -38,6 +39,8 @@ namespace Kooco.Pikachu.Images
         public int SortNo { get; set; }
 
         public string? Link { get; set; }
+
+        public StyleForCarouselImages? CarouselStyle { get; set; }
 
         public int? ModuleNumber { get; set; }
 

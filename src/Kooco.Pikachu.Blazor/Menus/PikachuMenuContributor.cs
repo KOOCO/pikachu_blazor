@@ -151,7 +151,7 @@ public class PikachuMenuContributor : IMenuContributor
         orderMangment.AddItem(new ApplicationMenuItem(
         name: "Refund",
         icon: "fas fa-stamp",
-        displayName: l["Refund"],
+        displayName: l["RefundsList"],
         url: "/Refund",
         requiredPermissionName: PikachuPermissions.Orders.Default)
         );

@@ -1,4 +1,5 @@
 ﻿@page "/Orders/OrderDetails/{id}"
+@using Kooco.Pikachu.Blazor.Pages.LogisticsManagement
 @using Kooco.Pikachu.EnumValues;
 @using Kooco.Pikachu.Localization;
 @using Kooco.Pikachu.OrderItems;
@@ -11,6 +12,7 @@
 @using Volo.Abp.AspNetCore.Components.Messages;
 @using Volo.Abp.Users;
 @using Blazorise.LoadingIndicator;
+@using Kooco.Pikachu.LogisticsProviders;
 
 @inject IJSRuntime JSRuntime;
 @inject IStringLocalizer<PikachuResource> L;
@@ -99,13 +101,6 @@
                                             <td>@L["ShippingMethod"]</td>
                                             <td>@L[Order.DeliveryMethod.ToString()] @Order.ShippingNumber </td>
                                         </tr>
-                                        @if (Order.ReceivingTime != null)
-                                        {
-                                            <tr>
-                                                <td>@L["DeliveryTime"]</td>
-                                                <td>@L[Order.ReceivingTime?.ToString()]  </td>
-                                            </tr>
-                                        }
                                     </tbody>
                                 </table>
                             </div>
@@ -139,8 +134,8 @@
                                         <tbody>
                                             <Div Width="Width.Max100">
                                                 <select class="form-select form-select" @onchange=ChangeStore>
-                                                    <option value="homeDelivery">Home Delivery</option>
-                                                    <option value="convenienceStore">Convenience Store</option>
+                                                    <option value="homeDelivery">@L["OrderDetailsHomeDelivery"]</option>
+                                                    <option value="convenienceStore">@L["ConvenienceStore"]</option>
                                                 </select>
                                             </Div>
                                             <br />
@@ -223,7 +218,7 @@
                                             @if (IsShowConvenienceStoreDetails)
                                             {
                                                 <tr>
-                                                    <td>@L["CVS Store Id"]</td>
+                                                    <td>@L["CVSStoreId"]</td>
                                                     @if (ModificationTrack.IsCVSStoreIdInputVisible)
                                                     {
                                                         <td>
@@ -262,7 +257,7 @@
                                                     }
                                                 </tr>
                                                 <tr>
-                                                    <td>@L["CVS Store OutSide"]</td>
+                                                    <td>@L["CVSStoreOutSide"]</td>
                                                     @if (ModificationTrack.IsCVSStoreOutsideInputVisible)
                                                     {
                                                         <td>
@@ -364,7 +359,7 @@
 
                                                                         <select class="form-select form-select-sm @errorClass" @onchange=@((e) => ModificationTrack.NewCity = Convert.ToString(e.Value))>
                                                                             <option value=""> Select City </option>
-                                                                            @foreach (string city in Enum.GetNames<RecipientCities>())
+                                                                            @foreach (var city in LogisticsConsts.MainIslands)
                                                                             {
                                                                                 <option value="@city">@city</option>
                                                                             }
@@ -469,6 +464,18 @@
                                                     }
                                                 </tr>
                                             }
+
+                                             <tr>
+                                                <td>@L["DeliveryTime"]</td>
+                                                <td>
+                                                    <div class="input-group">
+                                                        @if (Order.ReceivingTime is not null) {
+                                                            <span>@L[Order.ReceivingTime?.ToString()]</span>
+                                                        }
+                                                    </div>
+                                                </td>
+                                            </tr>
+
                                             <tr>
                                                 <td>@L["RecipientComments"]</td>
                                                 <td>@Order.Remarks</td>
@@ -501,14 +508,14 @@
                                         <tbody>
                                             <Div Width="Width.Max100">
                                                 <select class="form-select form-select" @onchange=ChangeStore>
-                                                    <option value="homeDelivery">Home Delivery</option>
-                                                    <option value="convenienceStore">Convenience Store</option>
+                                                    <option value="homeDelivery">@L["OrderDetailsHomeDelivery"]</option>
+                                                    <option value="convenienceStore">@L["ConvenienceStore"]</option>
                                                 </select>
                                             </Div>
 
                                             <Div Width="Width.Max100">
                                                 <select class="form-select form-select my-1" @onchange=TemperatureControlChange>
-                                                    <option value="">Select Temperature Control</option>
+                                                    <option value="">@L["SelectTemperatureControl"]</option>
                                                     @foreach (string temperature in Enum.GetNames<ItemStorageTemperature>()) 
                                                     {
                                                         if (temperature == ItemStorageTemperature.Normal.ToString())
@@ -527,7 +534,7 @@
                                             <tr>
                                                 <td>@L["Recipient"]</td>
                                                 @if (SelectedTemperatureControl is ItemStorageTemperature.Normal)
-                                                {
+                                                { 
                                                     @if (ModificationTrack.IsRecipientNameDbsNormalInputVisible)
                                                     {
                                                         <td>
@@ -760,7 +767,7 @@
                                             @if (IsShowConvenienceStoreDetails)
                                             {
                                                 <tr>
-                                                    <td>@L["CVS Store Id"]</td>
+                                                    <td>@L["CVSStoreId"]</td>
                                                     @if (SelectedTemperatureControl is ItemStorageTemperature.Normal)
                                                     {
                                                         @if (ModificationTrack.IsStoreIdNormalInputVisible)
@@ -876,7 +883,7 @@
                                                     }
                                                 </tr>
                                                 <tr>
-                                                    <td>@L["CVS Store OutSide"]</td>
+                                                    <td>@L["CVSStoreOutSide"]</td>
                                                     @if (SelectedTemperatureControl is ItemStorageTemperature.Normal)
                                                     {
                                                         @if (ModificationTrack.IsCVSStoreOutSideNormalInputVisible)
@@ -1344,6 +1351,46 @@
                                                     }
                                                 </tr>
                                             }
+
+                                            <tr>
+                                                <td>@L["DeliveryTime"]</td>
+                                                @if (SelectedTemperatureControl is ItemStorageTemperature.Normal)
+                                                {
+                                                    <td>
+                                                        <div class="input-group">
+                                                            @if (Order.ReceivingTimeNormal is not null)
+                                                            {
+                                                                <span>@L[Order.ReceivingTimeNormal?.ToString()]</span>
+                                                            }
+                                                        </div>
+                                                    </td>
+                                                }
+
+                                                else if (SelectedTemperatureControl is ItemStorageTemperature.Freeze)
+                                                {
+                                                    <td>
+                                                        <div class="input-group">
+                                                            @if (Order.ReceivingTimeFreeze is not null)
+                                                            {
+                                                                <span>@L[Order.ReceivingTimeFreeze?.ToString()]</span>
+                                                            }
+                                                        </div>
+                                                    </td>
+                                                }
+
+                                                else if (SelectedTemperatureControl is ItemStorageTemperature.Frozen)
+                                                {
+                                                    <td>
+                                                        <div class="input-group">
+                                                            @if (Order.ReceivingTimeFrozen is not null)
+                                                            {
+                                                                <span>@L[Order.ReceivingTimeFrozen?.ToString()]</span>
+                                                            }
+                                                        </div>
+                                                    </td>
+                                                }
+                                            </tr>
+
                                             <tr>
                                                 <td>@L["RecipientComments"]</td>
                                                 @if (SelectedTemperatureControl is ItemStorageTemperature.Normal) 

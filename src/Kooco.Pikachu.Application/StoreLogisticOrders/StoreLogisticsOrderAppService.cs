@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Azure;
 using Azure.Core;
+using Kooco.Pikachu.ElectronicInvoiceSettings;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
@@ -31,6 +32,8 @@ using System.Threading.Tasks;
 using System.Web;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
+using Volo.Abp.BackgroundJobs;
+using Volo.Abp.Domain.Repositories;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Kooco.Pikachu.StoreLogisticOrders;
@@ -58,7 +61,9 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
     TCat711NormalCreateUpdate TCat711Normal { get; set; }
     TCat711FreezeCreateUpdateDto TCat711Freeze { get; set; }
     TCat711FrozenCreateUpdateDto TCat711Frozen { get; set; }
-
+    private readonly IElectronicInvoiceAppService _electronicInvoiceAppService;
+    private readonly IElectronicInvoiceSettingRepository _electronicInvoiceSettingRepository;
+    private readonly IBackgroundJobManager _backgroundJobManager;
     private IStringLocalizer<PikachuResource> _L;
 
     private readonly IConfiguration _configuration;
@@ -73,7 +78,9 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         ILogisticsProvidersAppService logisticsProvidersAppService, 
         IConfiguration configuration,
         IStringLocalizer<PikachuResource> L,
-        IGroupBuyAppService GroupBuyAppService
+        IGroupBuyAppService GroupBuyAppService,
+          IBackgroundJobManager backgroundJobManager,
+        IElectronicInvoiceSettingRepository electronicInvoiceSettingRepository
     ) 
     {   
         _orderRepository = orderRepository;
@@ -91,6 +98,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         BFrozen = new();
         _L = L;
         _GroupBuyAppService = GroupBuyAppService;
+        _backgroundJobManager = backgroundJobManager;
+        _electronicInvoiceSettingRepository = electronicInvoiceSettingRepository;
     }
     #endregion
 
@@ -205,6 +214,26 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             order.ShippingStatus = ShippingStatus.ToBeShipped;
 
             await _orderRepository.UpdateAsync(order);
+            var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+            if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
+            {
+                if (order.GroupBuy.IssueInvoice)
+                {
+                    order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
+                    //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                    var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
+                    if (invoiceDely == 0)
+                    {
+                        await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+                    }
+                    else
+                    {
+                        var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
+                        GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
+                        var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                    }
+                }
+            }
         }
         return result;
     }
@@ -278,7 +307,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         string thermosphere = string.Empty; string spec = string.Empty; string isSwipe = string.Empty;
 
-        string isCollection = string.Empty; int collectionAmount = 0;
+        string isCollection = string.Empty; int collectionAmount = 0; string deliveryTime = string.Empty;
 
         if (orderDelivery.Items is { Count: > 0 } &&
             orderDelivery.Items.First().DeliveryTemperature is ItemStorageTemperature.Normal)
@@ -294,6 +323,13 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                                 0;
 
             isSwipe = TCatNormal.Payment && TCatNormal.TCatPaymentMethod is TCatPaymentMethod.CardAndMobilePaymentsAccepted ? "Y" : "N";
+
+            deliveryTime = order.ReceivingTimeNormal switch
+            {
+                ReceivingTime.Before13PM => "01",
+                ReceivingTime.Between14To18PM => "02",
+                _ => "04"
+            };
         }
 
         else if (orderDelivery.Items is { Count: > 0 } &&
@@ -310,6 +346,13 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                                 0;
 
             isSwipe = TCatFreeze.Payment && TCatFreeze.TCatPaymentMethod is TCatPaymentMethod.CardAndMobilePaymentsAccepted ? "Y" : "N";
+
+            deliveryTime = order.ReceivingTimeFreeze switch
+            {
+                ReceivingTime.Before13PM => "01",
+                ReceivingTime.Between14To18PM => "02",
+                _ => "04"
+            };
         }
 
         else if (orderDelivery.Items is { Count: > 0 } &&
@@ -326,14 +369,14 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                                 0;
 
             isSwipe = TCatFrozen.Payment && TCatFrozen.TCatPaymentMethod is TCatPaymentMethod.CardAndMobilePaymentsAccepted ? "Y" : "N";
-        }
 
-        string deliveryTime = order.ReceivingTime switch 
-        { 
-            ReceivingTime.Before13PM => "01",
-            ReceivingTime.Between14To18PM => "02",
-            _ => "04"
-        };
+            deliveryTime = order.ReceivingTimeFrozen switch
+            {
+                ReceivingTime.Before13PM => "01",
+                ReceivingTime.Between14To18PM => "02",
+                _ => "04"
+            };
+        }
 
         if(order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment)
             isCollection = "Y";
@@ -415,7 +458,26 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         order.ShippingStatus = ShippingStatus.ToBeShipped;
 
         await _orderRepository.UpdateAsync(order);
-
+        var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+        if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
+        {
+            if (order.GroupBuy.IssueInvoice)
+            {
+                order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
+                //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
+                if (invoiceDely == 0)
+                {
+                    await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+                }
+                else
+                {
+                    var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
+                    GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
+                    var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                }
+            }
+        }
         return printObtResponse;
     }
 
@@ -525,7 +587,26 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         order.ShippingStatus = ShippingStatus.ToBeShipped;
 
         await _orderRepository.UpdateAsync(order);
-
+        var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+        if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
+        {
+            if (order.GroupBuy.IssueInvoice)
+            {
+                order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
+                //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
+                if (invoiceDely == 0)
+                {
+                    await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+                }
+                else
+                {
+                    var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
+                    GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
+                    var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                }
+            }
+        }
         return printObtB2SResponse;
     }
 
@@ -801,6 +882,26 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             order.ShippingStatus = ShippingStatus.ToBeShipped;
 
             await _orderRepository.UpdateAsync(order);
+            var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+            if (invoiceSetting is not null && invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
+            {
+                if (order.GroupBuy.IssueInvoice)
+                {
+                    order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
+                    //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                    var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
+                    if (invoiceDely == 0)
+                    {
+                        await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+                    }
+                    else
+                    {
+                        var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
+                        GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
+                        var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                    }
+                }
+            }
         }
 
         return result;

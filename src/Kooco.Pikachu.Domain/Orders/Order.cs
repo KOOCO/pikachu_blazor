@@ -101,9 +101,11 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
 
     public decimal RefundAmount { get; set; }
 
-    public Guid? RefundRecordId { get; set; }
+    public decimal cashback_amount { get; set; }
 
-    [ForeignKey(nameof(RefundRecordId))]
+    public Guid? cashback_record_id { get; set; }
+
+    [ForeignKey(nameof(cashback_record_id))]
     public UserShoppingCredit? RefundRecord { get; set; }
 
     public Guid? UserId { get; set; }
@@ -139,6 +141,9 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public string? CVSStoreOutSideNormal { get; set; }
     public string? CVSStoreOutSideFreeze { get; set; }
     public string? CVSStoreOutSideFrozen { get; set; }
+    public ReceivingTime? ReceivingTimeNormal { get; set; }
+    public ReceivingTime? ReceivingTimeFreeze { get; set; }
+    public ReceivingTime? ReceivingTimeFrozen { get; set; }
 
     public Order() { }
 
@@ -203,7 +208,10 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
         string? storeIdFrozen = null,
         string? cVSStoreOutSideNormal = null,
         string? cVSStoreOutSideFreeze = null,
-        string? cVSStoreOutSideFrozen = null
+        string? cVSStoreOutSideFrozen = null,
+        ReceivingTime? receivingTimeNormal = null,
+        ReceivingTime? receivingTimeFreeze = null,
+        ReceivingTime? receivingTimeFrozen = null
     )
     {
         Id = id;
@@ -248,8 +256,8 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
         UserId = userId;
         CreditDeductionAmount = creditDeductionAmount;
         CreditDeductionRecordId = creditDeductionRecordId;
-        RefundAmount = creditRefundAmount;
-        RefundRecordId = creditRefundRecordId;
+        cashback_amount = creditRefundAmount;
+        cashback_record_id = creditRefundRecordId;
         DiscountAmount = discountCodeAmount;
         DiscountCodeId = discountCodeId;
         RecipientNameDbsNormal = recipientNameDbsNormal;
@@ -276,6 +284,9 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
         CVSStoreOutSideNormal = cVSStoreOutSideNormal;
         CVSStoreOutSideFreeze = cVSStoreOutSideFreeze;
         CVSStoreOutSideFrozen = cVSStoreOutSideFrozen;
+        ReceivingTimeNormal = receivingTimeNormal;
+        ReceivingTimeFreeze = receivingTimeFreeze;
+        ReceivingTimeFrozen = receivingTimeFrozen;
     }
 
     public void AddOrderItem(

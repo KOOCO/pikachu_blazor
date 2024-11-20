@@ -2,11 +2,45 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 
 namespace Kooco.Pikachu.Response;
 
 public class Response
 {
+}
+
+public static class RecordEcPay
+{
+    public static Dictionary<Guid, EcPayStoreData> UniqueEcPayData { get; set; }
+    public static Dictionary<Guid, TCatStoreData> UniqueTCatStoreData { get; set; }
+}
+
+public class EcPayStoreData
+{
+    public string CVSStoreID { get; set; }
+    public string CVSAddress { get; set; }
+    public string CVSOutSide { get; set; }
+    public string LogisticsSubType { get; set; }
+    public string CVSStoreName { get; set; }
+    public string CVSTelephone { get; set; }
+    public string MerchantID { get; set; }
+    public string MerchantTradeNo { get; set; }
+    public string UniqueId { get; set; }
+    public string GroupBuyId { get; set; }
+    public string ExtraData { get; set; }
+}
+
+public class TCatStoreData
+{
+    public string outside { get; set; }
+    public string ship { get; set; }
+    public string storeaddress { get; set; }
+    public string storeid { get; set; }
+    public string storename { get; set; }
+    public string ExtraData { get; set; }
+    public string UniqueId { get; set; }
+    public string GroupBuyId { get; set; }
 }
 
 public class AttributeNameOption

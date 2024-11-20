@@ -124,7 +124,8 @@ public partial class Order
                 else if (orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.SevenToEleven1 ||
                          orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.SevenToElevenC2C ||
                          orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.FamilyMart1 ||
-                         orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.FamilyMartC2C)
+                         orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.FamilyMartC2C ||
+                         orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.SevenToElevenFrozen)
                 {
                     ResponseResultDto result = await _StoreLogisticsOrderAppService.CreateStoreLogisticsOrderAsync(orderId, orderDelivery.Id);
 
