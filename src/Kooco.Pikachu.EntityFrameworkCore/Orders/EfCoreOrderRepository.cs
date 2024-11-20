@@ -91,7 +91,7 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
             IssueStatus = o.IssueStatus,       // Invoice Issue Status
             InvoiceNumber = o.InvoiceNumber,                // Invoice Number
             TotalAmount = o.TotalAmount, // Checkout Amount
-            CreationTime =o.CreationTime,                        // Editor (depends on your model)
+            CreationTime = o.CreationTime,                        // Editor (depends on your model)
             CustomerName = o.CustomerName,
             CustomerEmail = o.CustomerEmail,
             CustomerPhone = o.CustomerPhone,
@@ -106,6 +106,14 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
             VoidUser = o.VoidUser,                                       // Merchant Remarks
             StoreComments = o.StoreComments.ToList(),
             OrderType = o.OrderType,
+            RecipientName = o.RecipientName,
+            RecipientPhone = o.RecipientPhone,
+            RecipientNameDbsNormal = o.RecipientNameDbsNormal,
+            RecipientPhoneDbsNormal = o.RecipientPhoneDbsNormal,
+            RecipientNameDbsFreeze = o.RecipientNameDbsFreeze,
+            RecipientPhoneDbsFreeze = o.RecipientPhoneDbsFreeze,
+            RecipientNameDbsFrozen = o.RecipientNameDbsFrozen,
+            RecipientPhoneDbsFrozen = o.RecipientPhoneDbsFrozen,
             OrderItems = o.OrderItems.Select(oi => new OrderItem
             {
                 OrderId = oi.OrderId,
@@ -117,8 +125,6 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
                 Freebie = oi.Freebie != null ? new Freebie { ItemName = oi.Freebie.ItemName } : new Freebie(),
             }).ToList()
         }).ToListAsync();
-
-     
     }
     public async Task<List<Order>> GetAllListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId, List<Guid> orderId, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null)
     {
