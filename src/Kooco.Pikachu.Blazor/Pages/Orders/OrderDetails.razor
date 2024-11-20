@@ -1749,28 +1749,33 @@
                                             @if (item.ItemType is ItemType.Item)
                                             {
                                                 string? firstImage = item.Item?.Images?.FirstOrDefault()?.ImageUrl;
-
-                                                @if (!string.IsNullOrEmpty(firstImage))
-                                                {
-                                                    <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
-                                                }
-                                                @item.Item?.ItemName
-                                                <br />
-                                                @item.Spec
+                                                <Div Display="Display.Flex">
+                                                    @if (!string.IsNullOrEmpty(firstImage))
+                                                    {
+                                                        <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                    }
+                                                    <Span>
+                                                        @item.Item?.ItemName
+                                                        <br />
+                                                        @item.Spec
+                                                    </Span>
+                                                </Div>
                                             }
 
                                             @if (item.ItemType is ItemType.SetItem)
                                             {
                                                 string? firstImage = item.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
 
-                                                <Div>
+                                                <Div Display="Display.Flex">
                                                     @if (!string.IsNullOrEmpty(firstImage))
                                                     {
                                                         <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
                                                     }
-                                                    @item.SetItem?.SetItemName
-                                                    <br />
-                                                    @item.Spec
+                                                    <Span>
+                                                        @item.SetItem?.SetItemName
+                                                        <br />
+                                                        @item.Spec
+                                                    </Span>
                                                 </Div>
                                             }
 
@@ -1778,13 +1783,17 @@
                                             {
                                                 string? firstImage = item.Freebie?.Images?.FirstOrDefault()?.ImageUrl;
 
-                                                @if (!string.IsNullOrEmpty(firstImage))
-                                                {
-                                                    <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
-                                                }
-                                                @item.Freebie?.ItemName
-                                                <br />
-                                                @item.Spec
+                                                <Div Display="Display.Flex">
+                                                    @if (!string.IsNullOrEmpty(firstImage))
+                                                    {
+                                                        <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                    }
+                                                    <Span>
+                                                        @item.Freebie?.ItemName
+                                                        <br />
+                                                        @item.Spec
+                                                    </Span>
+                                                </Div>
                                             }
                                         </td>
                                         @if (item.IsSelected && IsItemsEditMode)
@@ -2077,23 +2086,30 @@
                                                     {
                                                         string? firstImage = item.Item?.Images?.FirstOrDefault()?.ImageUrl;
 
-                                                        @if (!string.IsNullOrEmpty(firstImage))
-                                                        {
-                                                            <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
-                                                        }
-                                                        @item.Item?.ItemName
+                                                        <Div Display="Display.Flex">
+                                                            @if (!string.IsNullOrEmpty(firstImage))
+                                                            {
+                                                                <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                            }
+                                                            @item.Item?.ItemName
+                                                            <br />
+                                                            @item.Spec  
+                                                        </Div>
+                                                       
                                                     }
 
                                                     @if (item.ItemType is ItemType.SetItem)
                                                     {
                                                         string? firstImage = item.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
 
-                                                        <Div>
+                                                        <Div Display="Display.Flex">
                                                             @if (!string.IsNullOrEmpty(firstImage))
                                                             {
                                                                 <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
                                                             }
                                                             @item.SetItem?.SetItemName
+                                                             <br />
+                                                            @item.Spec
                                                         </Div>
                                                     }
 
@@ -2101,11 +2117,15 @@
                                                     {
                                                         string? firstImage = item.Freebie?.Images?.FirstOrDefault()?.ImageUrl;
 
-                                                        @if (!string.IsNullOrEmpty(firstImage))
-                                                        {
-                                                            <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
-                                                        }
-                                                        @item.Freebie?.ItemName
+                                                        <Div Display="Display.Flex">
+                                                            @if (!string.IsNullOrEmpty(firstImage))
+                                                            {
+                                                                <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                            }
+                                                            @item.Freebie?.ItemName
+                                                             <br />
+                                                            @item.Spec
+                                                        </Div>
                                                     }
                                                 </td>
                                                 @if (item.IsSelected && IsItemsEditMode)
