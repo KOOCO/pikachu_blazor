@@ -1485,7 +1485,7 @@
                     {
                         @if (Order.OrderType is not OrderType.MargeToNew && Order.OrderStatus is not OrderStatus.Refund)
                         {
-                            @if (Order.ShippingStatus is ShippingStatus.PrepareShipment && Order.OrderItems.Any(x => x.IsSelected == true) && Order.OrderType is null)
+                            @if (Order.ShippingStatus is ShippingStatus.PrepareShipment && Order.OrderItems.Any(x => x.IsSelected == true) && (Order.OrderType is null || Order.OrderType is 0))
                             {
                                 <Button Clicked="SplitOrder" 
                                         Type="ButtonType.Button" 
@@ -1493,7 +1493,7 @@
                                     @L["SplitOrder"]
                                 </Button>
                             }
-                            else if (Order.ShippingStatus is ShippingStatus.WaitingForPayment && Order.OrderItems.Any(x => x.IsSelected == true) && Order.OrderType is null)
+                            else if (Order.ShippingStatus is ShippingStatus.WaitingForPayment && Order.OrderItems.Any(x => x.IsSelected == true) && (Order.OrderType is null || Order.OrderType is 0))
                             {
                                 <Button Clicked="SplitOrder" 
                                         Type="ButtonType.Button" 
