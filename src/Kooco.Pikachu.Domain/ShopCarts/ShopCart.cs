@@ -13,6 +13,7 @@ namespace Kooco.Pikachu.ShopCarts;
 public class ShopCart(Guid id, Guid userId) : FullAuditedAggregateRoot<Guid>(id), IMultiTenant
 {
     public Guid UserId { get; set; } = userId;
+    public Guid GroupBuyId { get; set; }
     public Guid? TenantId { get; set; }
 
     [ForeignKey(nameof(UserId))]

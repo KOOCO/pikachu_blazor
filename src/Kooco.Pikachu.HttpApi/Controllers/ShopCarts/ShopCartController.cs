@@ -32,16 +32,28 @@ public class ShopCartController(IShopCartAppService shopCartAppService) : Pikach
         return shopCartAppService.DeleteByUserIdAsync(userId);
     }
 
+    [HttpDelete("{userId}/{groupBuyId}")]
+    public Task DeleteByUserIdAndGroupBuyIdAsync(Guid userId, Guid groupBuyId)
+    {
+        return shopCartAppService.DeleteByUserIdAndGroupBuyIdAsync(userId, groupBuyId);
+    }
+
     [HttpGet("{userId}")]
     public Task<ShopCartDto?> FindByUserIdAsync(Guid userId)
     {
         return shopCartAppService.FindByUserIdAsync(userId);
     }
 
-    [HttpPost("{userId}/cart-items")]
-    public Task<ShopCartDto> AddCartItemAsync(Guid userId, CreateCartItemDto input)
+    [HttpGet("{userId}/{groupBuyId}")]
+    public Task<ShopCartDto?> FindByUserIdAndGroupBuyIdAsync(Guid userId, Guid groupBuyId)
     {
-        return shopCartAppService.AddCartItemAsync(userId, input);
+        return shopCartAppService.FindByUserIdAndGroupBuyIdAsync(userId, groupBuyId);
+    }
+
+    [HttpPost("{userId}/{groupBuyId}/cart-items")]
+    public Task<ShopCartDto> AddCartItemAsync(Guid userId, Guid groupBuyId, CreateCartItemDto input)
+    {
+        return shopCartAppService.AddCartItemAsync(userId, groupBuyId, input);
     }
 
     [HttpPut("cart-items/{cartItemId}")]
