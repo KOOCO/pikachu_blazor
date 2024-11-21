@@ -704,28 +704,16 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
                     if (order1.ShippingStatus is ShippingStatus.PrepareShipment)
                     {
-                        if (orderItem1?.Item?.IsFreeShipping == true)
-                        {
-                            OrderDelivery oD = new(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, string.Empty, order1.Id);
+                        OrderDelivery oD = new(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, string.Empty, order1.Id);
 
-                            oD = await _orderDeliveryRepository.InsertAsync(oD);
+                        oD = await _orderDeliveryRepository.InsertAsync(oD);
 
-                            order1.UpdateOrderItem(
-                                [.. order1.OrderItems.Where(w => w.DeliveryTemperature == orderItem1.DeliveryTemperature && w.Item?.IsFreeShipping == true)],
-                                oD.Id
-                            );
-                        }
-                        if (orderItem1?.Item?.IsFreeShipping == false)
-                        {
-                            OrderDelivery oD = new(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, string.Empty, order1.Id);
+                        order1.UpdateOrderItem(
+                            [.. order1.OrderItems.Where(w => w.DeliveryTemperature == orderItem1?.DeliveryTemperature && 
+                                                             w.Item?.IsFreeShipping == orderItem1?.Item?.IsFreeShipping)],
+                            oD.Id
+                        );
 
-                            oD = await _orderDeliveryRepository.InsertAsync(oD);
-
-                            order1.UpdateOrderItem(
-                                [.. order1.OrderItems.Where(w => w.DeliveryTemperature == orderItem1.DeliveryTemperature && w.Item?.IsFreeShipping == false)],
-                                oD.Id
-                            );
-                        }
                         await _orderRepository.UpdateAsync(order1);
                     }
                 }
