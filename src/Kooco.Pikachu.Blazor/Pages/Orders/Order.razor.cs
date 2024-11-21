@@ -574,7 +574,8 @@ public partial class Order
                     await _OrderDeliveryAppService.UpdateOrderDeliveryStatus(orderDelivery.Id);
             }
         }
-        await UpdateItemList();
+
+        await LoadTabAsPerNameAsync("ToBeShipped");
         await InvokeAsync(StateHasChanged);
         await loading.Hide();
     }
