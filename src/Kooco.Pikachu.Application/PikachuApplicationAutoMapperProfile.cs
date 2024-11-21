@@ -109,6 +109,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<Order, OrderDto>();
         CreateMap<OrderItem, OrderItemDto>();
         CreateMap<StoreComment, StoreCommentDto>();
+        CreateMap<OrderItem, OrderItemsCreateDto>().ReverseMap();
 
         CreateMap<OrderDto, CreateOrderDto>().ReverseMap();
         CreateMap<Refund, RefundDto>();
