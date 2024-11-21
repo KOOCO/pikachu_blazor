@@ -28,8 +28,7 @@ public class EfCoreShopCartRepository(IDbContextProvider<PikachuDbContext> dbCon
     {
         IQueryable<ShopCart> queryable = (await GetQueryableAsync()).Where(w => w.UserId == userId && w.GroupBuyId == groupBuyId);
 
-        ShopCart? shopCart = await IncludeDetails(queryable, includeDetails).FirstOrDefaultAsync() ?? 
-                             throw new EntityNotFoundException(typeof(ShopCart), groupBuyId);
+        ShopCart? shopCart = await IncludeDetails(queryable, includeDetails).FirstOrDefaultAsync();
 
         return shopCart;
     }
