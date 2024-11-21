@@ -105,7 +105,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
     public async Task<ResponseResultDto> CreateHomeDeliveryShipmentOrderAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null)
     {
-        Order order = await _orderRepository.GetAsync(orderId);
+        Order order = await _orderRepository.GetWithDetailsAsync(orderId);
         var orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
         var orderDelivery = orderDeliverys.Where(x => x.Id == orderDeliveryId).FirstOrDefault();
         var providers = await _logisticsProvidersAppService.GetAllAsync();
@@ -279,7 +279,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
     public async Task<PrintObtResponse?> GenerateDeliveryNumberForTCatDeliveryAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null)
     {
-        Order order = await _orderRepository.GetAsync(orderId);
+        Order order = await _orderRepository.GetWithDetailsAsync(orderId);
 
         List<OrderDelivery> orderDeliveries = await _deliveryRepository.GetWithDetailsAsync(orderId);
 
@@ -483,7 +483,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
     public async Task<PrintOBTB2SResponse?> GenerateDeliveryNumberForTCat711DeliveryAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null)
     {
-        Order order = await _orderRepository.GetAsync(orderId);
+        Order order = await _orderRepository.GetWithDetailsAsync(orderId);
 
         List<OrderDelivery> orderDeliveries = await _deliveryRepository.GetWithDetailsAsync(orderId);
 
