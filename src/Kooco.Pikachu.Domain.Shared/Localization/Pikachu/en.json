@@ -888,7 +888,6 @@
     "ContainerId": "Container ID",
     "GtmContainerIdIsRequired": "The Container ID field is required.",
     "ProductCategory": "Product Category",
-
     "Primary": "Primary",
     "Secondary": "Secondary",
     "Background": "Background",
@@ -987,18 +986,12 @@
     "BorneByCustomer": "Borne By Customer",
     "SelectReverseLogisticShippingFee": "Select Reverse Logistic Shipping Fee",
     "SelectShippingLabelFormSevenEleven": "Select Shipping Label Form Seven Eleven",
-
-
-
-
-
-
-
     "RoundedCornersWithoutFullWidth": "Rounded Corners Without Full Width",
     "SquareCornersWithoutFullWidth": "Square Corners Without Full Width",
     "FullWidthWithLargeImage": "Full Width With Large Image",
     "available": "available",
     "New": "New",
-   
+    "TenantInformationUpdated": "Tenant Information Updated!",
+    "CustomerServiceUpdated": "Customer Service Updated!"
   }
 }

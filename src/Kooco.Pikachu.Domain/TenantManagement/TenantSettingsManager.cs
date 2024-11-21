@@ -175,4 +175,33 @@ public class TenantSettingsManager(IRepository<TenantSettings, Guid> tenantSetti
         await tenantRepository.UpdateAsync(tenant);
         return tenantSettings;
     }
+
+    public async Task<TenantSettings> UpdateCustomerServiceAsync(string? shortCode, string? companyName, string? businessRegistrationNumber,
+        string? customerServiceEmail, DateTime? serviceHoursFrom, DateTime? serviceHoursTo)
+    {
+        Check.NotNullOrWhiteSpace(shortCode, nameof(shortCode), maxLength: TenantSettingsConsts.MaxShortCodeLength, minLength: TenantSettingsConsts.MinShortCodeLength);
+        Check.NotNullOrWhiteSpace(companyName, nameof(companyName), maxLength: TenantSettingsConsts.MaxCompanyNameLength);
+        Check.NotNullOrWhiteSpace(businessRegistrationNumber, nameof(businessRegistrationNumber), maxLength: TenantSettingsConsts.MaxBusinessRegistrationNumberLength);
+        Check.NotNullOrWhiteSpace(customerServiceEmail, nameof(customerServiceEmail), maxLength: TenantSettingsConsts.MaxCustomerServiceEmailLength);
+        if (serviceHoursFrom > serviceHoursTo)
+        {
+            throw new InvalidServiceHoursException();
+        }
+
+        var tenantSettings = await GetAsync();
+
+        tenantSettings.SetCompanyName(companyName);
+        tenantSettings.SetBusinessRegistrationNumber(businessRegistrationNumber);
+        tenantSettings.SetCustomerServiceEmail(customerServiceEmail);
+        tenantSettings.SetServiceHours(serviceHoursFrom, serviceHoursTo);
+
+        var tenant = await tenantRepository.FirstOrDefaultAsync(x => CurrentTenant != null && x.Id == CurrentTenant.Id)
+            ?? throw new EntityNotFoundException(typeof(Tenant));
+
+        tenant.RemoveProperty(Constant.ShortCode);
+        tenant.SetProperty(Constant.ShortCode, shortCode);
+        await tenantRepository.UpdateAsync(tenant);
+        await tenantSettingsRepository.UpdateAsync(tenantSettings);
+        return tenantSettings;
+    }
 }

@@ -253,7 +253,11 @@ public class PikachuApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.TenantContactPerson, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.TenantContactPerson)))
             .ForMember(dest => dest.TenantContactEmail, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.TenantContactEmail)))
             .ForMember(dest => dest.Domain, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.Domain)));
-        CreateMap<TenantInformationDto, UpdateTenantSettingsDto>();
+        CreateMap<TenantInformationDto, UpdateTenantInformationDto>();
+
+        CreateMap<TenantSettings, CustomerServiceDto>()
+            .ForMember(dest => dest.ShortCode, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.ShortCode)));
+        CreateMap<CustomerServiceDto, UpdateCustomerServiceDto>();
 
         CreateMap<OrderMessage, OrderMessageDto>();
 

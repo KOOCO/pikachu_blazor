@@ -46,91 +46,7 @@
                         <TenantInformation AppService="TenantSettingsAppService"></TenantInformation>
                     </TabPanel>
                     <TabPanel Name="CustomerServiceInformation">
-                        <Card>
-                            <CardBody>
-                                <Row>
-                                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
-                                        <h4>@L["CustomerServiceInformation"]</h4>
-                                    </Column>
-                                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                                        <Validation MessageLocalizer="@LH.Localize">
-                                            <Field>
-                                                <FieldLabel>@L["ShortCode"]<Span> *</Span></FieldLabel>
-                                                <TextEdit MaxLength="8" @bind-Text="Entity.ShortCode">
-                                                    <Feedback>
-                                                        <ValidationError />
-                                                    </Feedback>
-                                                </TextEdit>
-                                            </Field>
-                                        </Validation>
-                                        <Validation MessageLocalizer="@LH.Localize">
-                                            <Field>
-                                                <FieldLabel>@L["CompanyName"]<Span> *</Span></FieldLabel>
-                                                <TextEdit @bind-Text="Entity.CompanyName">
-                                                    <Feedback>
-                                                        <ValidationError />
-                                                    </Feedback>
-                                                </TextEdit>
-                                            </Field>
-                                        </Validation>
-                                        <Validation MessageLocalizer="@LH.Localize">
-                                            <Field>
-                                                <FieldLabel>@L["BusinessRegistrationNumber"]<Span> *</Span></FieldLabel>
-                                                <TextEdit @bind-Text="Entity.BusinessRegistrationNumber">
-                                                    <Feedback>
-                                                        <ValidationError />
-                                                    </Feedback>
-                                                </TextEdit>
-                                            </Field>
-                                        </Validation>
-                                        <Validation MessageLocalizer="@LH.Localize">
-                                            <Field>
-                                                <FieldLabel>@L["CustomerServiceEmail"]<Span> *</Span></FieldLabel>
-                                                <TextEdit @bind-Text="Entity.CustomerServiceEmail">
-                                                    <Feedback>
-                                                        <ValidationError />
-                                                    </Feedback>
-                                                </TextEdit>
-                                            </Field>
-                                        </Validation>
-                                    </Column>
-                                </Row>
-                                <Divider></Divider>
-                                <Row>
-                                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
-                                        <h4>@L["ServiceHours"]</h4>
-                                    </Column>
-                                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                                        <Row>
-                                            <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                                                <Validation MessageLocalizer="@LH.Localize">
-                                                    <Field>
-                                                        <FieldLabel>@L["From"]<Span> *</Span></FieldLabel>
-                                                        <TimeEdit TValue="DateTime?" @bind-Time="Entity.ServiceHoursFrom">
-                                                            <Feedback>
-                                                                <ValidationError />
-                                                            </Feedback>
-                                                        </TimeEdit>
-                                                    </Field>
-                                                </Validation>
-                                            </Column>
-                                            <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
-                                                <Validation MessageLocalizer="@LH.Localize">
-                                                    <Field>
-                                                        <FieldLabel>@L["To"]<Span> *</Span></FieldLabel>
-                                                        <TimeEdit TValue="DateTime?" @bind-Time="Entity.ServiceHoursTo">
-                                                            <Feedback>
-                                                                <ValidationError />
-                                                            </Feedback>
-                                                        </TimeEdit>
-                                                    </Field>
-                                                </Validation>
-                                            </Column>
-                                        </Row>
-                                    </Column>
-                                </Row>
-                            </CardBody>
-                        </Card>
+                        <CustomerService AppService="TenantSettingsAppService"></CustomerService>
                     </TabPanel>
                     <TabPanel Name="PrivacyPolicy">
                         <Card>
@@ -379,12 +295,12 @@
             </Tabs>
         </Validations>
     </Form>
-    <Div Class="text-end">
+    @* <Div Class="text-end">
         <PikachuButton Class="pk-btn-transparent" Disabled="IsLoading" Loading="IsCancelling" Clicked="CancelAsync">
             @L["Cancel"]
         </PikachuButton>
         <PikachuButton Class="pk-btn-primary" Disabled="IsCancelling" Loading="IsLoading" Clicked="UpdateAsync">
             @L["Update"]
         </PikachuButton>
-    </Div>
+    </Div> *@
 </Div>

@@ -1,24 +1,24 @@
 using Blazorise;
 using Kooco.Pikachu.TenantManagement;
 using Microsoft.AspNetCore.Components;
-using System;
 using System.Threading.Tasks;
+using System;
 
 namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantSettings;
 
-public partial class TenantInformation
+public partial class CustomerService
 {
     [Parameter]
     public ITenantSettingsAppService AppService { get; set; }
 
-    private TenantInformationDto TenantInformationDto { get; set; }
-    private UpdateTenantInformationDto Entity { get; set; }
+    private CustomerServiceDto CustomerServiceDto { get; set; }
+    private UpdateCustomerServiceDto Entity { get; set; }
     private Validations ValidationsRef { get; set; }
 
     private bool IsLoading { get; set; } = false;
     private bool IsCancelling { get; set; } = false;
 
-    public TenantInformation()
+    public CustomerService()
     {
         Entity = new();
     }
@@ -37,9 +37,9 @@ public partial class TenantInformation
         {
             if (await ValidationsRef.ValidateAll())
             {
-                await AppService.UpdateTenantInformationAsync(Entity);
+                await AppService.UpdateCustomerServiceAsync(Entity);
 
-                await Message.Success(L["TenantInformationUpdated"]);
+                await Message.Success(L["CustomerServiceUpdated"]);
 
                 await ResetAsync();
 
@@ -71,8 +71,8 @@ public partial class TenantInformation
     {
         try
         {
-            TenantInformationDto = await AppService.GetTenantInformationAsync();
-            Entity = ObjectMapper.Map<TenantInformationDto, UpdateTenantInformationDto>(TenantInformationDto);
+            CustomerServiceDto = await AppService.GetCustomerServiceAsync();
+            Entity = ObjectMapper.Map<CustomerServiceDto, UpdateCustomerServiceDto>(CustomerServiceDto);
             ValidationsRef?.ClearAll();
             await InvokeAsync(StateHasChanged);
         }

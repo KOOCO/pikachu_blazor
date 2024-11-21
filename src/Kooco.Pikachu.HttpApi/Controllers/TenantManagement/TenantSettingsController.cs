@@ -24,6 +24,12 @@ public class TenantSettingsController(ITenantSettingsAppService tenantSettingsAp
         return tenantSettingsAppService.FirstOrDefaultAsync();
     }
 
+    [HttpGet("customer-service")]
+    public Task<CustomerServiceDto> GetCustomerServiceAsync()
+    {
+        return tenantSettingsAppService.GetCustomerServiceAsync();
+    }
+
     [HttpGet("tenant-information")]
     public Task<TenantInformationDto> GetTenantInformationAsync()
     {
@@ -34,6 +40,12 @@ public class TenantSettingsController(ITenantSettingsAppService tenantSettingsAp
     public Task<TenantSettingsDto> UpdateAsync(UpdateTenantSettingsDto input)
     {
         return tenantSettingsAppService.UpdateAsync(input);
+    }
+
+    [HttpPost("customer-service")]
+    public Task<CustomerServiceDto> UpdateCustomerServiceAsync(UpdateCustomerServiceDto input)
+    {
+        return tenantSettingsAppService.UpdateCustomerServiceAsync(input);
     }
 
     [HttpPost("tenant-information")]
