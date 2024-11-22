@@ -80,7 +80,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         IStringLocalizer<PikachuResource> L,
         IGroupBuyAppService GroupBuyAppService,
           IBackgroundJobManager backgroundJobManager,
-        IElectronicInvoiceSettingRepository electronicInvoiceSettingRepository
+        IElectronicInvoiceSettingRepository electronicInvoiceSettingRepository,
+        IElectronicInvoiceAppService electronicInvoiceAppService
     ) 
     {   
         _orderRepository = orderRepository;
@@ -100,6 +101,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         _GroupBuyAppService = GroupBuyAppService;
         _backgroundJobManager = backgroundJobManager;
         _electronicInvoiceSettingRepository = electronicInvoiceSettingRepository;
+        _electronicInvoiceAppService = electronicInvoiceAppService;
     }
     #endregion
 
