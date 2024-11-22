@@ -231,6 +231,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         if (details is not null)
                         {
                             details.SaleableQuantity = details.SaleableQuantity - item.Quantity;
+                            details.StockOnHand = details.StockOnHand - item.Quantity;
 
                             await _itemDetailsRepository.UpdateAsync(details);
                         }

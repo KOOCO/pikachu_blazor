@@ -55,6 +55,7 @@ public partial class CreateItem
     private bool RowLoading { get; set; } = false;
     private Autocomplete<KeyValueDto, Guid?> AutocompleteField { get; set; }
     private string SelectedAutoCompleteText { get; set; }
+    private Dictionary<CreateItemDetailsDto, string> ValidationErrors = new();
     #endregion
 
     #region Constructor
@@ -337,7 +338,9 @@ public partial class CreateItem
             ItemDetailsList.Add(new CreateItemDetailsDto
             {
                 ItemName = string.Join("/", permutation).TrimEnd('/'),
-                Status = true
+                Status = true,
+                StockOnHand=0
+                
             });
 
             ItemDetailsQuillHtml.Add(new());
@@ -610,6 +613,10 @@ public partial class CreateItem
                 foreach (var item in ItemDetailsList)
                 {
                     typeof(CreateItemDetailsDto).GetProperty(propertyName).SetValue(item, firstItemValue, null);
+                    if (propertyName == "StockOnHand" || propertyName == "SaleableQuantity")
+                    {
+                        ValidateQuantity(item);
+                    }
                 }
             }
         }
@@ -915,6 +922,41 @@ public partial class CreateItem
             StateHasChanged();
         }
     }
+
+
+    private void OnStockOnHandChanged(ChangeEventArgs e, CreateItemDetailsDto item)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var value))
+        {
+            item.StockOnHand = value; // Update the model
+            ValidateQuantity(item);  // Validate the row
+        }
+    }
+
+    private void OnSaleableQuantityChanged(ChangeEventArgs e, CreateItemDetailsDto item)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var value))
+        {
+            item.SaleableQuantity = value; // Update the model
+            ValidateQuantity(item);       // Validate the row
+        }
+    }
+
+    private void ValidateQuantity(CreateItemDetailsDto item)
+    {
+        if (item.SaleableQuantity > item.StockOnHand)
+        {
+            ValidationErrors[item] = "Saleable Quantity cannot be greater than Current Stock.";
+        }
+        else
+        {
+            ValidationErrors.Remove(item);
+        }
+
+        StateHasChanged(); // Refresh UI
+    }
+
+
     #endregion
 }
 
