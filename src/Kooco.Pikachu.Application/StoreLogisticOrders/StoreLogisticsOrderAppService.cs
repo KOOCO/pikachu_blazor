@@ -386,6 +386,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         string isDeclare = TCatLogistics.DeclaredValue &&
                            IsOrderAmountValid(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost) ? "Y" : "N";
 
+        DayOfWeek TodaysDay = DateTime.Today.DayOfWeek;
+
         PrintOBTRequest request = new ()
         {
             CustomerId = TCatLogistics.CustomerId,
@@ -411,8 +413,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                     SenderMobile = TCatLogistics.SenderPhoneNumber,
                     SenderZipCode = TCatLogistics.SenderPostalCode,
                     SenderAddress = TCatLogistics.SenderAddress,
-                    ShipmentDate = DateTime.Now.AddDays(1).ToString("yyyyMMdd"),
-                    DeliveryDate = DateTime.Now.AddDays(2).ToString("yyyyMMdd"),
+                    ShipmentDate = TodaysDay is DayOfWeek.Saturday ? DateTime.Now.AddDays(2).ToString("yyyyMMdd") : DateTime.Now.AddDays(1).ToString("yyyyMMdd"),
+                    DeliveryDate = TodaysDay is DayOfWeek.Friday || TodaysDay is DayOfWeek.Saturday ? DateTime.Now.AddDays(3).ToString("yyyyMMdd") : DateTime.Now.AddDays(2).ToString("yyyyMMdd"),
                     DeliveryTime = deliveryTime,
                     IsFreight = "N",
                     IsCollection = isCollection,

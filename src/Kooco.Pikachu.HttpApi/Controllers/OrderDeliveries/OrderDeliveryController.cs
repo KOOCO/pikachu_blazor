@@ -41,16 +41,20 @@ public class OrderDeliveryController(
     {
         return _orderDeliveryAppService.UpdateShippingDetails(id, input);
     }
+
+    [HttpPost("change-shipping-status/{orderId}")]
     public Task ChangeShippingStatus(Guid orderId)
     {
         return _orderDeliveryAppService.ChangeShippingStatus(orderId);
     }
 
+    [HttpPost("update-delivered-status/{orderId}")]
     public Task UpdateDeliveredStatus(Guid orderId)
     {
         throw new NotImplementedException();
     }
 
+    [HttpPost("update-pickedup-status/{orderId}")]
     public Task UpdatePickedUpStatus(Guid orderId)
     {
         throw new NotImplementedException();
