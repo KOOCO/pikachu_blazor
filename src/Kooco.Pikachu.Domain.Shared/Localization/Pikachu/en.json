@@ -992,6 +992,7 @@
     "available": "available",
     "New": "New",
     "TenantInformationUpdated": "Tenant Information Updated!",
-    "CustomerServiceUpdated": "Customer Service Updated!"
+    "CustomerServiceUpdated": "Customer Service Updated!",
+    "PrivacyPolicyUpdated": "Privacy Policy Updated!"
   }
 }

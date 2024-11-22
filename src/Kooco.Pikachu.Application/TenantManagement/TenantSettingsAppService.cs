@@ -2,6 +2,7 @@
 using Kooco.Pikachu.Permissions;
 using Microsoft.AspNetCore.Authorization;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -65,7 +66,6 @@ public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManage
 
         var tenantSettings = await tenantSettingsManager.UpdateTenantInformationAsync(input.Domain, input.TenantContactTitle, input.TenantContactPerson,
             input.ContactPhone, input.TenantContactEmail);
-        await tenantSettingsRepository.UpdateAsync(tenantSettings);
 
         return ObjectMapper.Map<TenantSettings, TenantInformationDto>(tenantSettings);
     }
@@ -84,7 +84,6 @@ public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManage
 
         var tenantSettings = await tenantSettingsManager.UpdateCustomerServiceAsync(input.ShortCode, input.CompanyName, input.BusinessRegistrationNumber,
             input.CustomerServiceEmail, input.ServiceHoursFrom, input.ServiceHoursTo);
-        await tenantSettingsRepository.UpdateAsync(tenantSettings);
 
         return ObjectMapper.Map<TenantSettings, CustomerServiceDto>(tenantSettings);
     }
@@ -112,5 +111,33 @@ public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManage
     public async Task DeleteImageAsync(string blobName)
     {
         await imageContainerManager.DeleteAsync(blobName);
+    }
+
+    public async Task<string?> UpdateTenantPrivacyPolicyAsync([Required] string privacyPolicy)
+    {
+        var tenantSettings = await tenantSettingsManager.UpdatePrivacyPolicyAsync(privacyPolicy);
+
+        return tenantSettings.PrivacyPolicy;
+    }
+
+    public async Task<string?> GetTenantPrivacyPolicyAsync()
+    {
+        var tenantSettings = await tenantSettingsManager.GetAsync();
+
+        return tenantSettings.PrivacyPolicy;
+    }
+
+    public async Task<TenantFrontendInformationDto> UpdateTenantFrontendInformationAsync(UpdateTenantFrontendInformationDto input)
+    {
+        var tenantSettings = await tenantSettingsManager.UpdateTenantFrontendInformationAsync(input.WebpageTitle, input.FaviconUrl, input.LogoUrl, input.BannerUrl);
+
+        return ObjectMapper.Map<TenantSettings, TenantFrontendInformationDto>(tenantSettings);
+    }
+
+    public async Task<TenantFrontendInformationDto> GetTenantFrontendInformationAsync()
+    {
+        var tenantSettings = await tenantSettingsManager.GetAsync();
+
+        return ObjectMapper.Map<TenantSettings, TenantFrontendInformationDto>(tenantSettings);
     }
 }

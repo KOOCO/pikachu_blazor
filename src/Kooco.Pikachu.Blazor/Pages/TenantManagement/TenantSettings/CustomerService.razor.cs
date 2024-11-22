@@ -37,6 +37,8 @@ public partial class CustomerService
         {
             if (await ValidationsRef.ValidateAll())
             {
+                IsLoading = true;
+
                 await AppService.UpdateCustomerServiceAsync(Entity);
 
                 await Message.Success(L["CustomerServiceUpdated"]);

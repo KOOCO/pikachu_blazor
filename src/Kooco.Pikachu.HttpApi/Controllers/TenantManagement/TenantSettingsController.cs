@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning;
 using Kooco.Pikachu.TenantManagement;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Volo.Abp;
 
@@ -30,6 +31,12 @@ public class TenantSettingsController(ITenantSettingsAppService tenantSettingsAp
         return tenantSettingsAppService.GetCustomerServiceAsync();
     }
 
+    [HttpGet("privacy-policy")]
+    public Task<string?> GetTenantPrivacyPolicyAsync()
+    {
+        return tenantSettingsAppService.GetTenantPrivacyPolicyAsync();
+    }
+
     [HttpGet("tenant-information")]
     public Task<TenantInformationDto> GetTenantInformationAsync()
     {
@@ -48,6 +55,12 @@ public class TenantSettingsController(ITenantSettingsAppService tenantSettingsAp
         return tenantSettingsAppService.UpdateCustomerServiceAsync(input);
     }
 
+    [HttpPost("privacy-policy")]
+    public Task<string?> UpdateTenantPrivacyPolicyAsync([Required] string privacyPolicy)
+    {
+        return tenantSettingsAppService.UpdateTenantPrivacyPolicyAsync(privacyPolicy);
+    }
+
     [HttpPost("tenant-information")]
     public Task<TenantInformationDto> UpdateTenantInformationAsync(UpdateTenantInformationDto input)
     {
@@ -58,5 +71,17 @@ public class TenantSettingsController(ITenantSettingsAppService tenantSettingsAp
     public Task<string> UploadImageAsync(UploadImageDto input)
     {
         return tenantSettingsAppService.UploadImageAsync(input);
+    }
+
+    [HttpPost("frontend-information")]
+    public Task<TenantFrontendInformationDto> UpdateTenantFrontendInformationAsync(UpdateTenantFrontendInformationDto input)
+    {
+        return tenantSettingsAppService.UpdateTenantFrontendInformationAsync(input);
+    }
+
+    [HttpGet("frontend-information")]
+    public Task<TenantFrontendInformationDto> GetTenantFrontendInformationAsync()
+    {
+        return tenantSettingsAppService.GetTenantFrontendInformationAsync();
     }
 }

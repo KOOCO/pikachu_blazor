@@ -1,46 +1,45 @@
-using Kooco.Pikachu.Items;
-using Kooco.Pikachu.Items.Dtos;
 using AutoMapper;
-using Kooco.Pikachu.EnumValues;
-using Kooco.Pikachu.Images;
-using Kooco.Pikachu.GroupBuys;
-using Kooco.Pikachu.Groupbuys;
-using Kooco.Pikachu.Freebies.Dtos;
-using Kooco.Pikachu.Freebies;
-using Kooco.Pikachu.Orders;
-using Kooco.Pikachu.OrderItems;
-using Kooco.Pikachu.StoreComments;
-using Kooco.Pikachu.Refunds;
-using Kooco.Pikachu.PaymentGateways;
-using Kooco.Pikachu.ElectronicInvoiceSettings;
-using Kooco.Pikachu.TenantEmailing;
+using Kooco.Pikachu.AddOnProducts;
 using Kooco.Pikachu.AutomaticEmails;
-using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.DeliveryTemperatureCosts;
 using Kooco.Pikachu.DeliveryTempratureCosts;
-using Kooco.Pikachu.OrderDeliveries;
-using Kooco.Pikachu.Members;
-using Volo.Abp.Identity;
-using Kooco.Pikachu.UserAddresses;
-using System.Collections.Generic;
-using Kooco.Pikachu.UserShoppingCredits;
-using Kooco.Pikachu.UserCumulativeCredits;
-using Kooco.Pikachu.UserCumulativeOrders;
-using Kooco.Pikachu.UserCumulativeFinancials;
-using Kooco.Pikachu.PikachuAccounts;
-using Kooco.Pikachu.AddOnProducts;
 using Kooco.Pikachu.DiscountCodes;
-using Kooco.Pikachu.ShopCarts;
-using Kooco.Pikachu.TenantManagement;
-using Kooco.Pikachu.ShoppingCredits;
-using Volo.Abp.Data;
-using Kooco.Pikachu.GroupPurchaseOverviews;
-using Kooco.Pikachu.WebsiteManagement;
+using Kooco.Pikachu.ElectronicInvoiceSettings;
+using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Freebies;
+using Kooco.Pikachu.Freebies.Dtos;
 using Kooco.Pikachu.GroupBuyOrderInstructions;
-using Kooco.Pikachu.LoginConfigurations;
 using Kooco.Pikachu.GroupBuyProductRankings;
+using Kooco.Pikachu.Groupbuys;
+using Kooco.Pikachu.GroupBuys;
+using Kooco.Pikachu.GroupPurchaseOverviews;
+using Kooco.Pikachu.Images;
+using Kooco.Pikachu.Items;
+using Kooco.Pikachu.Items.Dtos;
+using Kooco.Pikachu.LoginConfigurations;
+using Kooco.Pikachu.LogisticsProviders;
+using Kooco.Pikachu.Members;
+using Kooco.Pikachu.OrderDeliveries;
+using Kooco.Pikachu.OrderItems;
+using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.PaymentGateways;
+using Kooco.Pikachu.PikachuAccounts;
 using Kooco.Pikachu.ProductCategories;
+using Kooco.Pikachu.Refunds;
+using Kooco.Pikachu.ShopCarts;
+using Kooco.Pikachu.ShoppingCredits;
+using Kooco.Pikachu.StoreComments;
+using Kooco.Pikachu.TenantEmailing;
+using Kooco.Pikachu.TenantManagement;
+using Kooco.Pikachu.UserAddresses;
+using Kooco.Pikachu.UserCumulativeCredits;
+using Kooco.Pikachu.UserCumulativeFinancials;
+using Kooco.Pikachu.UserCumulativeOrders;
+using Kooco.Pikachu.UserShoppingCredits;
+using Kooco.Pikachu.WebsiteManagement;
+using System.Collections.Generic;
 using System.Linq;
+using Volo.Abp.Identity;
 
 namespace Kooco.Pikachu;
 
@@ -258,6 +257,11 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<TenantSettings, CustomerServiceDto>()
             .ForMember(dest => dest.ShortCode, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.ShortCode)));
         CreateMap<CustomerServiceDto, UpdateCustomerServiceDto>();
+
+        CreateMap<TenantSettings, TenantFrontendInformationDto>()
+            .ForMember(dest => dest.LogoUrl, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.Logo)))
+            .ForMember(dest => dest.BannerUrl, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.BannerUrl)));
+        CreateMap<TenantFrontendInformationDto, UpdateTenantFrontendInformationDto>();
 
         CreateMap<OrderMessage, OrderMessageDto>();
 

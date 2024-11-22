@@ -153,7 +153,7 @@ public partial class TenantSettings
             TenantSettingsDto = await TenantSettingsAppService.FirstOrDefaultAsync();
             Entity = ObjectMapper.Map<TenantSettingsDto, UpdateTenantSettingsDto>(TenantSettingsDto) ?? new();
             ValidationsRef?.ClearAll();
-            await PrivacyPolicyHtml.LoadHTMLContent(Entity.PrivacyPolicy);
+            //await PrivacyPolicyHtml.LoadHTMLContent(Entity.PrivacyPolicy);
         }
         catch (Exception ex)
         {

@@ -1,0 +1,125 @@
+﻿@using Kooco.Pikachu.Localization
+@using Volo.Abp.AspNetCore.Components.Notifications
+@using Volo.Abp.AspNetCore.Components.Web
+@inherits PikachuComponentBase
+@inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
+@inject IUiNotificationService UiNotificationService
+
+<Form>
+    <Validations @ref="@ValidationsRef" Model="@Entity" ValidateOnLoad="false">
+        <Card>
+            <CardBody>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                        <h4>@L["FrontendInformation"]</h4>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <FieldLabel>@L["WebpageTitle"]<Span> *</Span></FieldLabel>
+                                <TextEdit @bind-Text="Entity.WebpageTitle">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                    </Column>
+                </Row>
+                <Divider></Divider>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                        <h4>@L["Logo"]</h4>
+                        @if (Entity.LogoBase64 != null)
+                        {
+                            <Div Class="image-thumbnail">
+                                <img src="@("data:image/png;base64," + Entity.LogoBase64)" class="img-fluid" />
+                            </Div>
+                        }
+                        else if (Entity.LogoUrl != null)
+                        {
+                            <Div Class="image-thumbnail">
+                                <img src="@Entity.LogoUrl" class="img-fluid" />
+                            </Div>
+                        }
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                        <Field Class="container-less-filepicker">
+                            <FilePicker Changed="@((e) => OnFileUploadAsync(e, "logo"))"
+                                        ShowMode="FilePickerShowMode.List"
+                                        Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
+                                <FileTemplate></FileTemplate>
+                                <ButtonsTemplate></ButtonsTemplate>
+                            </FilePicker>
+                        </Field>
+                    </Column>
+                </Row>
+                <Divider></Divider>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                        <h4>@L["Banner"]</h4>
+                        @if (Entity.BannerBase64 != null)
+                        {
+                            <Div Class="image-thumbnail">
+                                <img src="@("data:image/png;base64," + Entity.BannerBase64)" class="img-fluid" />
+                            </Div>
+                        }
+                        else if (Entity.BannerUrl != null)
+                        {
+                            <Div Class="image-thumbnail">
+                                <img src="@Entity.BannerUrl" class="img-fluid" />
+                            </Div>
+                        }
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                        <Field Class="container-less-filepicker">
+                            <FilePicker Changed="@((e) => OnFileUploadAsync(e, "banner"))"
+                                        ShowMode="FilePickerShowMode.List"
+                                        Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
+                                <FileTemplate></FileTemplate>
+                                <ButtonsTemplate></ButtonsTemplate>
+                            </FilePicker>
+                        </Field>
+                    </Column>
+                </Row>
+                <Divider></Divider>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                        <h4>@L["Favicon"]</h4>
+                        @if (Entity.FaviconBase64 != null)
+                        {
+                            <Div Class="image-thumbnail">
+                                <img src="@("data:image/png;base64," + Entity.FaviconBase64)" class="img-fluid" />
+                            </Div>
+                        }
+                        else if (Entity.FaviconUrl != null)
+                        {
+                            <Div Class="image-thumbnail">
+                                <img src="@Entity.FaviconUrl" class="img-fluid" />
+                            </Div>
+                        }
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                        <Field Class="container-less-filepicker">
+                            <FilePicker Changed="@((e) => OnFileUploadAsync(e, "favicon"))"
+                                        ShowMode="FilePickerShowMode.List"
+                                        Accept="@(string.Join(", ", Constant.ValidFaviconExtensions))">
+                                <FileTemplate></FileTemplate>
+                                <ButtonsTemplate></ButtonsTemplate>
+                            </FilePicker>
+                        </Field>
+                    </Column>
+                </Row>
+            </CardBody>
+        </Card>
+    </Validations>
+
+    <Div Class="text-end">
+        <PikachuButton Class="pk-btn-transparent" Disabled="IsLoading" Loading="IsCancelling" Clicked="CancelAsync">
+            @L["Cancel"]
+        </PikachuButton>
+        <PikachuButton Class="pk-btn-primary" Disabled="IsCancelling" Loading="IsLoading" Clicked="UpdateAsync">
+            @L["Update"]
+        </PikachuButton>
+    </Div>
+</Form>

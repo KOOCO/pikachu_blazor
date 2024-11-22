@@ -173,6 +173,7 @@ public class TenantSettingsManager(IRepository<TenantSettings, Guid> tenantSetti
         tenant.SetProperty(Constant.Domain, domain);
 
         await tenantRepository.UpdateAsync(tenant);
+        await tenantSettingsRepository.UpdateAsync(tenantSettings);
         return tenantSettings;
     }
 
@@ -200,6 +201,38 @@ public class TenantSettingsManager(IRepository<TenantSettings, Guid> tenantSetti
 
         tenant.RemoveProperty(Constant.ShortCode);
         tenant.SetProperty(Constant.ShortCode, shortCode);
+        await tenantRepository.UpdateAsync(tenant);
+        await tenantSettingsRepository.UpdateAsync(tenantSettings);
+        return tenantSettings;
+    }
+
+    public async Task<TenantSettings> UpdatePrivacyPolicyAsync(string privacyPolicy)
+    {
+        Check.NotNullOrWhiteSpace(privacyPolicy, nameof(privacyPolicy));
+
+        var tenantSettings = await GetAsync();
+        tenantSettings.SetPrivacyPolicy(privacyPolicy);
+        await tenantSettingsRepository.UpdateAsync(tenantSettings);
+        return tenantSettings;
+    }
+
+    public async Task<TenantSettings> UpdateTenantFrontendInformationAsync(string? webpageTitle, string? faviconUrl, string? logoUrl, string? bannerUrl)
+    {
+        Check.NotNullOrWhiteSpace(webpageTitle, nameof(webpageTitle), TenantSettingsConsts.MaxWebpageTitleLength);
+
+        var tenantSettings = await GetAsync();
+        tenantSettings.SetWebpageTitle(webpageTitle);
+        tenantSettings.SetFaviconUrl(faviconUrl);
+
+        var tenant = await tenantRepository.FirstOrDefaultAsync(x => CurrentTenant != null && x.Id == CurrentTenant.Id)
+            ?? throw new EntityNotFoundException(typeof(Tenant));
+
+        tenant.RemoveProperty(Constant.Logo);
+        tenant.SetProperty(Constant.Logo, logoUrl);
+
+        tenant.RemoveProperty(Constant.BannerUrl);
+        tenant.SetProperty(Constant.BannerUrl, bannerUrl);
+
         await tenantRepository.UpdateAsync(tenant);
         await tenantSettingsRepository.UpdateAsync(tenantSettings);
         return tenantSettings;

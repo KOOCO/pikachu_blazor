@@ -1,4 +1,4 @@
-using Blazorise;
+using Blazored.TextEditor;
 using Kooco.Pikachu.TenantManagement;
 using Microsoft.AspNetCore.Components;
 using System;
@@ -6,22 +6,13 @@ using System.Threading.Tasks;
 
 namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantSettings;
 
-public partial class TenantInformation
+public partial class TenantPrivacyPolicy
 {
     [Parameter]
     public ITenantSettingsAppService AppService { get; set; }
-
-    private TenantInformationDto TenantInformationDto { get; set; }
-    private UpdateTenantInformationDto Entity { get; set; }
-    private Validations ValidationsRef { get; set; }
-
     private bool IsLoading { get; set; } = false;
     private bool IsCancelling { get; set; } = false;
-
-    public TenantInformation()
-    {
-        Entity = new();
-    }
+    private BlazoredTextEditor PrivacyPolicyHtml { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -31,22 +22,24 @@ public partial class TenantInformation
         }
     }
 
+    async Task SetDefaultPrivacyPolicy()
+    {
+        await PrivacyPolicyHtml.LoadHTMLContent(TenantSettingsConsts.DefaultPrivacyPolicy);
+    }
+
     private async Task UpdateAsync()
     {
         try
         {
-            if (await ValidationsRef.ValidateAll())
-            {
-                IsLoading = true;
+            IsLoading = true;
 
-                await AppService.UpdateTenantInformationAsync(Entity);
+            await AppService.UpdateTenantPrivacyPolicyAsync(await PrivacyPolicyHtml.GetHTML());
 
-                await Message.Success(L["TenantInformationUpdated"]);
+            await Message.Success(L["PrivacyPolicyUpdated"]);
 
-                await ResetAsync();
+            await ResetAsync();
 
-                IsLoading = false;
-            }
+            IsLoading = false;
         }
         catch (Exception ex)
         {
@@ -73,9 +66,8 @@ public partial class TenantInformation
     {
         try
         {
-            TenantInformationDto = await AppService.GetTenantInformationAsync();
-            Entity = ObjectMapper.Map<TenantInformationDto, UpdateTenantInformationDto>(TenantInformationDto);
-            ValidationsRef?.ClearAll();
+            var privacyPolicy = await AppService.GetTenantPrivacyPolicyAsync();
+            await PrivacyPolicyHtml.LoadHTMLContent(privacyPolicy);
             await InvokeAsync(StateHasChanged);
         }
         catch (Exception ex)
