@@ -15,14 +15,15 @@ public class ShopCartManager(IShopCartRepository shopCartRepository, IItemReposi
         Check.NotDefaultOrNull<Guid>(userId, nameof(userId));
         Check.NotDefaultOrNull<Guid>(groupBuyId, nameof(groupBuyId));
 
-        var existing = await shopCartRepository.FindByUserIdAndGroupBuyIdAsync(userId, groupBuyId);
+        ShopCart? existing = await shopCartRepository.FindByUserIdAndGroupBuyIdAsync(userId, groupBuyId);
 
-        if (existing is not null) throw new ShopCartForUserAlreadyExistsException();
+        if (existing is not null) return existing;
 
-        var shopCart = new ShopCart(GuidGenerator.Create(), userId);
+        ShopCart shopCart = new(GuidGenerator.Create(), userId)
+        {
+            GroupBuyId = groupBuyId
+        };
 
-        shopCart.GroupBuyId = groupBuyId;
-        
         await shopCartRepository.InsertAsync(shopCart);
         
         return shopCart;

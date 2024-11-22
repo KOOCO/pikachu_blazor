@@ -18,14 +18,33 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
     public async Task<ShopCartDto> CreateAsync(CreateShopCartDto input)
     {
         Check.NotNull(input, nameof(input));
-        var shopCart = await shopCartManager.CreateAsync(input.UserId.Value, input.GroupBuyId);
+
+        ShopCart shopCart = await shopCartManager.CreateAsync(input.UserId.Value, input.GroupBuyId);
+
+        await shopCartRepository.EnsurePropertyLoadedAsync(shopCart, x => x.User);
+
+        await shopCartRepository.EnsureCollectionLoadedAsync(shopCart, s => s.CartItems);
+
         input.CartItems ??= [];
-        foreach (var cartItem in input.CartItems)
+        
+        foreach (CreateCartItemDto cartItem in input.CartItems)
         {
             Check.NotNull(cartItem.ItemId, nameof(cartItem.ItemId));
             Check.NotNull(cartItem.ItemDetailId, nameof(cartItem.ItemDetailId));
-            await shopCartManager.AddCartItem(shopCart, cartItem.ItemId.Value, cartItem.Quantity, cartItem.UnitPrice, cartItem.ItemDetailId.Value);
+
+            if (shopCart.CartItems.Any(a => a.ItemId == cartItem.ItemId.Value && a.ItemDetailId == cartItem.ItemDetailId.Value))
+            {
+                foreach (CartItem item in shopCart.CartItems.Where(w => w.ItemId == cartItem.ItemId.Value && w.ItemDetailId == cartItem.ItemDetailId.Value))
+                {
+                    item.Quantity += cartItem.Quantity;
+                }
+
+                await shopCartRepository.UpdateAsync(shopCart);
+            }
+
+            else await shopCartManager.AddCartItem(shopCart, cartItem.ItemId.Value, cartItem.Quantity, cartItem.UnitPrice, cartItem.ItemDetailId.Value);
         }
+
         return ObjectMapper.Map<ShopCart, ShopCartDto>(shopCart);
     }
 
