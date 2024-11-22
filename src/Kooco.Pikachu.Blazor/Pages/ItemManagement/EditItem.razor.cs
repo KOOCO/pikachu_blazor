@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Blazored.TextEditor;
 using Blazorise;
+using Blazorise.AntDesign.Components;
 using Blazorise.Components;
 using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.AzureStorage.Image;
@@ -70,6 +71,7 @@ public partial class EditItem
     private bool RowLoading { get; set; } = false;
     private Autocomplete<KeyValueDto, Guid?> AutocompleteField { get; set; }
     private string SelectedAutoCompleteText { get; set; }
+    private Dictionary<CreateItemDetailsDto, string> ValidationErrors = new();
     #endregion
 
     #region Constructor
@@ -111,6 +113,10 @@ public partial class EditItem
                 UpdateItemDto = mapper.Map<UpdateItemDto>(ExistingItem);
                 UpdateItemDto.Images = UpdateItemDto.Images.OrderBy(x => x.SortNo).ToList();
                 ItemDetailsList = mapper.Map<List<CreateItemDetailsDto>>(ExistingItem.ItemDetails);
+                foreach (var item in ItemDetailsList.Where(x=>x.StockOnHand<x.SaleableQuantity))
+                {
+                    ValidateQuantity(item);
+                }
                 ItemTags = ExistingItem.ItemTags?.Split(',').ToList() ?? [];
                 if (!ExistingItem.Attribute1Name.IsNullOrWhiteSpace())
                 {
@@ -599,7 +605,12 @@ public partial class EditItem
                     var firstItemValue = prop.GetValue(ItemDetailsList[0]);
                     foreach (var item in ItemDetailsList)
                     {
+                       
                         typeof(CreateItemDetailsDto).GetProperty(propertyName).SetValue(item, firstItemValue, null);
+                        if (propertyName == "StockOnHand" || propertyName == "SaleableQuantity")
+                        {
+                            ValidateQuantity(item);
+                        }
                     }
                 }
             }
@@ -984,6 +995,37 @@ public partial class EditItem
 
             StateHasChanged();
         }
+    }
+    private void OnStockOnHandChanged(ChangeEventArgs e, CreateItemDetailsDto item)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var value))
+        {
+            item.StockOnHand = value; // Update the model
+            ValidateQuantity(item);  // Validate the row
+        }
+    }
+
+    private void OnSaleableQuantityChanged(ChangeEventArgs e, CreateItemDetailsDto item)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var value))
+        {
+            item.SaleableQuantity = value; // Update the model
+            ValidateQuantity(item);       // Validate the row
+        }
+    }
+
+    private void ValidateQuantity(CreateItemDetailsDto item)
+    {
+        if (item.SaleableQuantity > item.StockOnHand)
+        {
+            ValidationErrors[item] = "Saleable Quantity cannot be greater than Current Stock.";
+        }
+        else
+        {
+            ValidationErrors.Remove(item);
+        }
+
+        StateHasChanged(); // Refresh UI
     }
     #endregion
 }
