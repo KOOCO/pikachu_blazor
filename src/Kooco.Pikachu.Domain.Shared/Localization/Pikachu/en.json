@@ -331,6 +331,12 @@
     "CurrentStock": "Current Stock",
     "AvailableStock": "Available Stock",
     "AvailablePreorderQuantity": "Available Preorder Quantity",
+    "PrintShippedLabel": "Print Shipped Label",
+    "GenerateDeliveryNumber": "Generate Delivery Number",
+    "SelfPickupShipping": "Self Pickup Shipping",
+    "PersonalDeliveryShipping": "Personal Delivery Shipping",
+    "PickedUp": "Picked Up",
+    "CloseOrder": "Close Order",
 
     //Refund
     "Pikachu:RefundForSameOrderAlreadyExists": "Refund For Same Order Already Exists",

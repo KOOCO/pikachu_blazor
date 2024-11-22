@@ -20,6 +20,7 @@ using Volo.Abp.BackgroundJobs;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
 using Volo.Abp.SettingManagement;
+using static Kooco.Pikachu.Permissions.PikachuPermissions;
 
 namespace Kooco.Pikachu.OrderDeliveries
 {
@@ -204,6 +205,79 @@ namespace Kooco.Pikachu.OrderDeliveries
 
             await _emailSender.SendAsync(mailMessage);
         }
+
+        public async Task ChangeShippingStatus(Guid orderId)
+        {
+            Order order = await _orderRepository.GetWithDetailsAsync(orderId);
+
+            List<OrderDelivery> orderDeliveries = await _orderDeliveryRepository.GetWithDetailsAsync(orderId);
+
+            foreach (OrderDelivery orderDelivery in orderDeliveries)
+            {
+                orderDelivery.DeliveryNo = order.OrderNo;
+
+                if (order.DeliveryMethod is DeliveryMethod.HomeDelivery)
+                    orderDelivery.DeliveryStatus = DeliveryStatus.Shipped;
+
+                else if(order.DeliveryMethod is DeliveryMethod.SelfPickup)
+                    orderDelivery.DeliveryStatus = DeliveryStatus.Delivered;
+                
+                await _orderDeliveryRepository.UpdateAsync(orderDelivery);
+            }
+
+            if (order.DeliveryMethod is DeliveryMethod.HomeDelivery && 
+                                        orderDeliveries.All(a => a.DeliveryStatus == DeliveryStatus.Shipped))
+                order.ShippingStatus = ShippingStatus.Shipped;
+
+            else if(order.DeliveryMethod is DeliveryMethod.SelfPickup &&
+                                        orderDeliveries.All(a => a.DeliveryStatus == DeliveryStatus.Delivered))
+                order.ShippingStatus = ShippingStatus.Delivered;
+          
+            await _orderRepository.UpdateAsync(order);
+        }
+
+        public async Task UpdateDeliveredStatus(Guid orderId)
+        {
+            Order order = await _orderRepository.GetWithDetailsAsync(orderId);
+
+            List<OrderDelivery> orderDeliveries = await _orderDeliveryRepository.GetWithDetailsAsync(orderId);
+
+            foreach (OrderDelivery orderDelivery in orderDeliveries)
+            {
+                orderDelivery.DeliveryStatus = DeliveryStatus.Delivered;
+
+                await _orderDeliveryRepository.UpdateAsync(orderDelivery);
+            }
+
+            if(orderDeliveries.All(a => a.DeliveryStatus == DeliveryStatus.Delivered))
+            {
+                order.ShippingStatus = ShippingStatus.Delivered;
+
+                await _orderRepository.UpdateAsync(order);
+            }
+        }
+
+        public async Task UpdatePickedUpStatus(Guid orderId)
+        {
+            Order order = await _orderRepository.GetWithDetailsAsync(orderId);
+
+            List<OrderDelivery> orderDeliveries = await _orderDeliveryRepository.GetWithDetailsAsync(orderId);
+
+            foreach (OrderDelivery orderDelivery in orderDeliveries)
+            {
+                orderDelivery.DeliveryStatus = DeliveryStatus.Completed;
+
+                await _orderDeliveryRepository.UpdateAsync(orderDelivery);
+            }
+
+            if (orderDeliveries.All(a => a.DeliveryStatus == DeliveryStatus.Completed))
+            {
+                order.ShippingStatus = ShippingStatus.Completed;
+
+                await _orderRepository.UpdateAsync(order);
+            }
+        }
+
         public async Task UpdateOrderDeliveryStatus(Guid Id)
         {
             OrderDelivery delivery = await _orderDeliveryRepository.GetAsync(Id);

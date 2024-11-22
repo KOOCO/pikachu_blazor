@@ -94,7 +94,7 @@ public partial class Order
 
         StateHasChanged();
     }
-
+    
     public async Task OnGenerateDeliveryNumber(MouseEventArgs e)
     {
         await loading.Show();
@@ -443,7 +443,9 @@ public partial class Order
 
         PageIndex = 0;
 
-        await UpdateItemList();
+        if (SelectedTabName is "All") await UpdateItemList();
+
+        else await LoadTabAsPerNameAsync(SelectedTabName);
     }
 
     void HandleSelectAllChange(ChangeEventArgs e)
@@ -561,6 +563,25 @@ public partial class Order
 
         await JSRuntime.InvokeVoidAsync("openInNewTab", $"Orders/OrderShippingDetails/{selectedIdsStr}");
     }
+
+    public async Task ShippingStatusChange()
+    {
+        await loading.Show();
+
+        List<Guid> orderIds = [.. Orders.Where(w => w.IsSelected).Select(s => s.OrderId)];
+
+        foreach (Guid orderId in orderIds)
+        {
+            await _OrderDeliveryAppService.ChangeShippingStatus(orderId);
+        }
+
+        await loading.Hide();
+
+        if (SelectedTabName is "All") await UpdateItemList();
+
+        else await LoadTabAsPerNameAsync(SelectedTabName);
+    }
+
     private async void OrderItemShipped()
     {
         await loading.Show();
@@ -575,10 +596,51 @@ public partial class Order
             }
         }
 
-        await LoadTabAsPerNameAsync("ToBeShipped");
+        if (SelectedTabName is "All") await UpdateItemList();
+
+        else await LoadTabAsPerNameAsync(SelectedTabName);
+
         await InvokeAsync(StateHasChanged);
+
         await loading.Hide();
     }
+
+    private async void OrderItemDelivered()
+    {
+        await loading.Show();
+
+        List<Guid> orderIds = [.. Orders.Where(w => w.IsSelected).Select(s => s.OrderId)];
+
+        foreach (Guid orderId in orderIds)
+        {
+            await _OrderDeliveryAppService.UpdateDeliveredStatus(orderId);
+        }
+
+        await loading.Hide();
+
+        if (SelectedTabName is "All") await UpdateItemList();
+
+        else await LoadTabAsPerNameAsync(SelectedTabName);
+    }
+
+    private async void OrderItemPickedUp()
+    {
+        await loading.Show();
+
+        List<Guid> orderIds = [.. Orders.Where(w => w.IsSelected).Select(s => s.OrderId)];
+
+        foreach (Guid orderId in orderIds)
+        {
+            await _OrderDeliveryAppService.UpdatePickedUpStatus(orderId);
+        }
+
+        await loading.Hide();
+
+        if (SelectedTabName is "All") await UpdateItemList();
+
+        else await LoadTabAsPerNameAsync(SelectedTabName);
+    }
+
     public async void IssueInvoice()
     {
         try
