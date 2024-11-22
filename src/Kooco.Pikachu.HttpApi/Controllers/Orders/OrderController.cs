@@ -155,7 +155,7 @@ public class OrderController : AbpController, IOrderAppService
                 oPayment.Send.Items.Add(new ECPay.Payment.Integration.Item()
                 {
                     Name = item.Item.ItemName + " NT$ ",
-                    Price = item.ItemPrice,
+                    Price = decimal.TryParse(item.ItemPrice.ToString("G29"), out decimal price) ? price : 0.00M,
                     Currency = string.Empty,
                     Quantity = item.Quantity,
                     URL = string.Empty,
