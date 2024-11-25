@@ -3,7 +3,6 @@ using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -47,7 +46,15 @@ public class PaymentGatewayController(
 
         RecordEcPay.UniqueEcPayData.TryAdd(UniqueId, ecpayStoreData);
 
-        return Redirect("/RedirectionPage");
+        string htmlContent = @"
+            <script>
+                setTimeout(() => {
+                         window.close();
+                    }, 500);
+            </script>
+        ";
+
+        return Content(htmlContent, "text/html");
     }  
 
     [HttpGet("get-ecpayStoreData/{UniqueId}")]
@@ -93,7 +100,15 @@ public class PaymentGatewayController(
 
         RecordEcPay.UniqueTCatStoreData.TryAdd(UniqueId, tcatStoreData);
 
-        return Redirect("/RedirectionPage");
+        string htmlContent = @"
+            <script>
+                setTimeout(() => {
+                         window.close();
+                    }, 500);
+            </script>
+        ";
+
+        return Content(htmlContent, "text/html");
     }
 
     [HttpGet("get-tcatStoreData/{UniqueId}")]
