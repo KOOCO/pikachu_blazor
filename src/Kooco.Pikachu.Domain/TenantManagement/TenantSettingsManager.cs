@@ -19,15 +19,8 @@ public class TenantSettingsManager(IRepository<TenantSettings, Guid> tenantSetti
         {
             tenantSettings = new TenantSettings(GuidGenerator.Create());
             await tenantSettingsRepository.InsertAsync(tenantSettings);
-
-            var tenant = await tenantRepository.FirstOrDefaultAsync(x => x.Id == CurrentTenant.Id);
-            tenantSettings.Tenant = tenant;
         }
-        else
-        {
-            await tenantSettingsRepository.EnsurePropertyLoadedAsync(tenantSettings, t => t.Tenant);
-        }
-
+        await tenantSettingsRepository.EnsurePropertyLoadedAsync(tenantSettings, t => t.Tenant);
         return tenantSettings;
     }
 

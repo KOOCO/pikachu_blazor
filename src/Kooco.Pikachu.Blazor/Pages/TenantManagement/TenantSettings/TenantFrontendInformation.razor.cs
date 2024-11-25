@@ -113,7 +113,7 @@ public partial class TenantFrontendInformation
 
                 await AppService.UpdateTenantFrontendInformationAsync(Entity);
 
-                await Message.Success(L["TenantInformationUpdated"]);
+                await Message.Success(L["FrontendInformationUpdated"]);
 
                 await ResetAsync();
 

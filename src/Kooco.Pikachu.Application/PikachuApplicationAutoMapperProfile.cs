@@ -254,9 +254,9 @@ public class PikachuApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.Domain, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.Domain)));
         CreateMap<TenantInformationDto, UpdateTenantInformationDto>();
 
-        CreateMap<TenantSettings, CustomerServiceDto>()
+        CreateMap<TenantSettings, TenantCustomerServiceDto>()
             .ForMember(dest => dest.ShortCode, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.ShortCode)));
-        CreateMap<CustomerServiceDto, UpdateCustomerServiceDto>();
+        CreateMap<TenantCustomerServiceDto, UpdateTenantCustomerServiceDto>();
 
         CreateMap<TenantSettings, TenantFrontendInformationDto>()
             .ForMember(dest => dest.LogoUrl, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.Logo)))

@@ -993,6 +993,7 @@
     "New": "New",
     "TenantInformationUpdated": "Tenant Information Updated!",
     "CustomerServiceUpdated": "Customer Service Updated!",
-    "PrivacyPolicyUpdated": "Privacy Policy Updated!"
+    "PrivacyPolicyUpdated": "Privacy Policy Updated!",
+    "FrontendInformationUpdated": "Frontend Information Updated!"
   }
 }

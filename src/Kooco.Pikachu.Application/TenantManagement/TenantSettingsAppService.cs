@@ -78,21 +78,21 @@ public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManage
     }
 
     [Authorize(PikachuPermissions.TenantSettings.Edit)]
-    public async Task<CustomerServiceDto> UpdateCustomerServiceAsync(UpdateCustomerServiceDto input)
+    public async Task<TenantCustomerServiceDto> UpdateTenantCustomerServiceAsync(UpdateTenantCustomerServiceDto input)
     {
         Check.NotNull(input, nameof(input));
 
         var tenantSettings = await tenantSettingsManager.UpdateCustomerServiceAsync(input.ShortCode, input.CompanyName, input.BusinessRegistrationNumber,
             input.CustomerServiceEmail, input.ServiceHoursFrom, input.ServiceHoursTo);
 
-        return ObjectMapper.Map<TenantSettings, CustomerServiceDto>(tenantSettings);
+        return ObjectMapper.Map<TenantSettings, TenantCustomerServiceDto>(tenantSettings);
     }
 
-    public async Task<CustomerServiceDto> GetCustomerServiceAsync()
+    public async Task<TenantCustomerServiceDto> GetTenantCustomerServiceAsync()
     {
         var tenantSettings = await tenantSettingsManager.GetAsync();
 
-        return ObjectMapper.Map<TenantSettings, CustomerServiceDto>(tenantSettings);
+        return ObjectMapper.Map<TenantSettings, TenantCustomerServiceDto>(tenantSettings);
     }
 
     public async Task<string> UploadImageAsync(UploadImageDto input)
@@ -116,7 +116,6 @@ public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManage
     public async Task<string?> UpdateTenantPrivacyPolicyAsync([Required] string privacyPolicy)
     {
         var tenantSettings = await tenantSettingsManager.UpdatePrivacyPolicyAsync(privacyPolicy);
-
         return tenantSettings.PrivacyPolicy;
     }
 
@@ -139,5 +138,19 @@ public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManage
         var tenantSettings = await tenantSettingsManager.GetAsync();
 
         return ObjectMapper.Map<TenantSettings, TenantFrontendInformationDto>(tenantSettings);
+    }
+
+    public async Task<TenantSocialMediaDto> UpdateTenantSocialMediaAsync(UpdateTenantSocialMediaDto input)
+    {
+        var tenantSettings = await tenantSettingsManager.UpdateTenantSocialMediaAsync(input.Facebook, input.Instagram, input.Line);
+
+        return ObjectMapper.Map<TenantSettings, TenantSocialMediaDto>(tenantSettings);
+    }
+
+    public async Task<TenantSocialMediaDto> GetTenantSocialMediaAsync()
+    {
+        var tenantSettings = await tenantSettingsManager.GetAsync();
+
+        return ObjectMapper.Map<TenantSettings, TenantSocialMediaDto>(tenantSettings);
     }
 }

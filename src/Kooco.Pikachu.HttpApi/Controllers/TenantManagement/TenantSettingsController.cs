@@ -26,9 +26,9 @@ public class TenantSettingsController(ITenantSettingsAppService tenantSettingsAp
     }
 
     [HttpGet("customer-service")]
-    public Task<CustomerServiceDto> GetCustomerServiceAsync()
+    public Task<TenantCustomerServiceDto> GetTenantCustomerServiceAsync()
     {
-        return tenantSettingsAppService.GetCustomerServiceAsync();
+        return tenantSettingsAppService.GetTenantCustomerServiceAsync();
     }
 
     [HttpGet("privacy-policy")]
@@ -50,9 +50,9 @@ public class TenantSettingsController(ITenantSettingsAppService tenantSettingsAp
     }
 
     [HttpPost("customer-service")]
-    public Task<CustomerServiceDto> UpdateCustomerServiceAsync(UpdateCustomerServiceDto input)
+    public Task<TenantCustomerServiceDto> UpdateTenantCustomerServiceAsync(UpdateTenantCustomerServiceDto input)
     {
-        return tenantSettingsAppService.UpdateCustomerServiceAsync(input);
+        return tenantSettingsAppService.UpdateTenantCustomerServiceAsync(input);
     }
 
     [HttpPost("privacy-policy")]

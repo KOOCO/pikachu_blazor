@@ -6,19 +6,19 @@ using System;
 
 namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantSettings;
 
-public partial class CustomerService
+public partial class TenantCustomerService
 {
     [Parameter]
     public ITenantSettingsAppService AppService { get; set; }
 
-    private CustomerServiceDto CustomerServiceDto { get; set; }
-    private UpdateCustomerServiceDto Entity { get; set; }
+    private TenantCustomerServiceDto CustomerServiceDto { get; set; }
+    private UpdateTenantCustomerServiceDto Entity { get; set; }
     private Validations ValidationsRef { get; set; }
 
     private bool IsLoading { get; set; } = false;
     private bool IsCancelling { get; set; } = false;
 
-    public CustomerService()
+    public TenantCustomerService()
     {
         Entity = new();
     }
@@ -39,7 +39,7 @@ public partial class CustomerService
             {
                 IsLoading = true;
 
-                await AppService.UpdateCustomerServiceAsync(Entity);
+                await AppService.UpdateTenantCustomerServiceAsync(Entity);
 
                 await Message.Success(L["CustomerServiceUpdated"]);
 
@@ -73,8 +73,8 @@ public partial class CustomerService
     {
         try
         {
-            CustomerServiceDto = await AppService.GetCustomerServiceAsync();
-            Entity = ObjectMapper.Map<CustomerServiceDto, UpdateCustomerServiceDto>(CustomerServiceDto);
+            CustomerServiceDto = await AppService.GetTenantCustomerServiceAsync();
+            Entity = ObjectMapper.Map<TenantCustomerServiceDto, UpdateTenantCustomerServiceDto>(CustomerServiceDto);
             ValidationsRef?.ClearAll();
             await InvokeAsync(StateHasChanged);
         }

@@ -13,10 +13,12 @@ public interface ITenantSettingsAppService : IApplicationService
 
     Task<TenantInformationDto> UpdateTenantInformationAsync(UpdateTenantInformationDto input);
     Task<TenantInformationDto> GetTenantInformationAsync();
-    Task<CustomerServiceDto> UpdateCustomerServiceAsync(UpdateCustomerServiceDto input);
-    Task<CustomerServiceDto> GetCustomerServiceAsync();
+    Task<TenantCustomerServiceDto> UpdateTenantCustomerServiceAsync(UpdateTenantCustomerServiceDto input);
+    Task<TenantCustomerServiceDto> GetTenantCustomerServiceAsync();
     Task<string?> UpdateTenantPrivacyPolicyAsync([Required] string privacyPolicy);
     Task<string?> GetTenantPrivacyPolicyAsync();
     Task<TenantFrontendInformationDto> UpdateTenantFrontendInformationAsync(UpdateTenantFrontendInformationDto input);
     Task<TenantFrontendInformationDto> GetTenantFrontendInformationAsync();
+    Task<TenantSocialMediaDto> UpdateTenantSocialMediaAsync(UpdateTenantSocialMediaDto input);
+    Task<TenantSocialMediaDto> GetTenantSocialMediaAsync();
 }

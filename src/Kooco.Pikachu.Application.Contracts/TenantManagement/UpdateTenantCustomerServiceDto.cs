@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Kooco.Pikachu.TenantManagement;
 
-public class UpdateCustomerServiceDto
+public class UpdateTenantCustomerServiceDto
 {
     [Required]
     [RegularExpression("^[A-Za-z0-9]{8}$", ErrorMessage = "ShortCodeValidationMessage")]
@@ -16,10 +16,6 @@ public class UpdateCustomerServiceDto
     [Required]
     [MaxLength(TenantSettingsConsts.MaxBusinessRegistrationNumberLength)]
     public string? BusinessRegistrationNumber { get; set; }
-
-    [Required]
-    [MaxLength(TenantSettingsConsts.MaxContactPhoneLength)]
-    public string? ContactPhone { get; set; }
 
     [Required]
     [EmailAddress]
