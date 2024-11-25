@@ -22,9 +22,9 @@ namespace Kooco.Pikachu.UserShoppingCredits
         [MaxLength(UserShoppingCreditConsts.MaxTransactionDescriptionLength)]
         public string? TransactionDescription { get; set; }
 
-        [DataType(DataType.Date)]
+        //[DataType(DataType.Date)]
         [MustBeGreaterThanToday]
-        [ExpirationDateRequiredIfLimited]
+        //[ExpirationDateRequiredIfLimited]
         public DateTime? ExpirationDate { get; set; }
 
         public bool IsActive { get; set; } = true;
