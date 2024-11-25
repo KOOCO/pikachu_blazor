@@ -6,57 +6,37 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Threading.Tasks;
 using Volo.Abp;
-using Volo.Abp.Domain.Repositories;
-using Volo.Abp.TenantManagement;
 
 namespace Kooco.Pikachu.TenantManagement;
 
 [RemoteService(IsEnabled = false)]
 [Authorize(PikachuPermissions.TenantSettings.Default)]
-public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManager, IRepository<TenantSettings, Guid> tenantSettingsRepository,
-    ImageContainerManager imageContainerManager, IRepository<Tenant, Guid> tenantRepository) : PikachuAppService, ITenantSettingsAppService
+public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManager, ImageContainerManager imageContainerManager) : PikachuAppService, ITenantSettingsAppService
 {
     [AllowAnonymous]
-    public async Task<TenantSettingsDto?> FirstOrDefaultAsync()
+    public async Task<TenantSettingsDto> FirstOrDefaultAsync()
     {
-        var tenantSettings = await tenantSettingsRepository.FirstOrDefaultAsync();
+        var tenantSettings = await tenantSettingsManager.GetAsync();
 
-        if (tenantSettings != null)
-        {
-            await tenantSettingsRepository.EnsurePropertyLoadedAsync(tenantSettings, x => x.Tenant);
-        }
-        else
-        {
-            var tenant = await tenantRepository.FirstOrDefaultAsync(x => x.Id == CurrentTenant.Id);
-            tenantSettings ??= new();
-            tenantSettings.Tenant = tenant;
-        }
         return ObjectMapper.Map<TenantSettings, TenantSettingsDto>(tenantSettings);
     }
 
-    [Authorize(PikachuPermissions.TenantSettings.Edit)]
-    public async Task<TenantSettingsDto> UpdateAsync(UpdateTenantSettingsDto input)
+    public async Task<string> UploadImageAsync(UploadImageDto input)
     {
         Check.NotNull(input, nameof(input));
+        Check.NotNullOrWhiteSpace(input.Base64, nameof(input.Base64));
+        Check.NotNullOrWhiteSpace(input.FileName, nameof(input.FileName));
 
-        var tenantSettings = await tenantSettingsRepository.FirstOrDefaultAsync();
+        string blobName = Guid.NewGuid().ToString().Replace("-", "") + Path.GetExtension(input.FileName);
+        byte[] fileBytes = Convert.FromBase64String(input.Base64);
 
-        if (tenantSettings is null)
-        {
-            tenantSettings = await tenantSettingsManager.CreateAsync(input.WebpageTitle, input.PrivacyPolicy,
-                input.CompanyName, input.BusinessRegistrationNumber, input.ContactPhone, input.CustomerServiceEmail, input.ServiceHoursFrom,
-                input.ServiceHoursTo, input.FaviconUrl, input.LogoUrl, input.BannerUrl, input.TenantContactTitle, input.TenantContactPerson,
-                input.TenantContactEmail, input.Domain, input.ShortCode, input.Facebook, input.Instagram, input.Line, input.GtmEnabled, input.GtmContainerId);
-        }
-        else
-        {
-            await tenantSettingsManager.UpdateAsync(tenantSettings, input.WebpageTitle, input.PrivacyPolicy,
-                input.CompanyName, input.BusinessRegistrationNumber, input.ContactPhone, input.CustomerServiceEmail, input.ServiceHoursFrom,
-                input.ServiceHoursTo, input.FaviconUrl, input.LogoUrl, input.BannerUrl, input.TenantContactTitle, input.TenantContactPerson,
-                input.TenantContactEmail, input.Domain, input.ShortCode, input.Facebook, input.Instagram, input.Line, input.GtmEnabled, input.GtmContainerId);
-        }
+        var url = await imageContainerManager.SaveAsync(blobName, fileBytes, true);
+        return url;
+    }
 
-        return ObjectMapper.Map<TenantSettings, TenantSettingsDto>(tenantSettings);
+    public async Task DeleteImageAsync(string blobName)
+    {
+        await imageContainerManager.DeleteAsync(blobName);
     }
 
     [Authorize(PikachuPermissions.TenantSettings.Edit)]
@@ -95,24 +75,7 @@ public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManage
         return ObjectMapper.Map<TenantSettings, TenantCustomerServiceDto>(tenantSettings);
     }
 
-    public async Task<string> UploadImageAsync(UploadImageDto input)
-    {
-        Check.NotNull(input, nameof(input));
-        Check.NotNullOrWhiteSpace(input.Base64, nameof(input.Base64));
-        Check.NotNullOrWhiteSpace(input.FileName, nameof(input.FileName));
-
-        string blobName = Guid.NewGuid().ToString().Replace("-", "") + Path.GetExtension(input.FileName);
-        byte[] fileBytes = Convert.FromBase64String(input.Base64);
-
-        var url = await imageContainerManager.SaveAsync(blobName, fileBytes, true);
-        return url;
-    }
-
-    public async Task DeleteImageAsync(string blobName)
-    {
-        await imageContainerManager.DeleteAsync(blobName);
-    }
-
+    [Authorize(PikachuPermissions.TenantSettings.Edit)]
     public async Task<string?> UpdateTenantPrivacyPolicyAsync([Required] string privacyPolicy)
     {
         var tenantSettings = await tenantSettingsManager.UpdatePrivacyPolicyAsync(privacyPolicy);
@@ -126,6 +89,7 @@ public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManage
         return tenantSettings.PrivacyPolicy;
     }
 
+    [Authorize(PikachuPermissions.TenantSettings.Edit)]
     public async Task<TenantFrontendInformationDto> UpdateTenantFrontendInformationAsync(UpdateTenantFrontendInformationDto input)
     {
         var tenantSettings = await tenantSettingsManager.UpdateTenantFrontendInformationAsync(input.WebpageTitle, input.FaviconUrl, input.LogoUrl, input.BannerUrl);
@@ -140,6 +104,7 @@ public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManage
         return ObjectMapper.Map<TenantSettings, TenantFrontendInformationDto>(tenantSettings);
     }
 
+    [Authorize(PikachuPermissions.TenantSettings.Edit)]
     public async Task<TenantSocialMediaDto> UpdateTenantSocialMediaAsync(UpdateTenantSocialMediaDto input)
     {
         var tenantSettings = await tenantSettingsManager.UpdateTenantSocialMediaAsync(input.Facebook, input.Instagram, input.Line);
@@ -154,6 +119,7 @@ public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManage
         return ObjectMapper.Map<TenantSettings, TenantSocialMediaDto>(tenantSettings);
     }
 
+    [Authorize(PikachuPermissions.TenantSettings.Edit)]
     public async Task<TenantGoogleTagManagerDto> UpdateTenantGoogleTagManagerAsync(UpdateTenantGoogleTagManagerDto input)
     {
         var tenantSettings = await tenantSettingsManager.UpdateTenantGoogleTagManagerAsync(input.GtmEnabled, input.GtmContainerId);

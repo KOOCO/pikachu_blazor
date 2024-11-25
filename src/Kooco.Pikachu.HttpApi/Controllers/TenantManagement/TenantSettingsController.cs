@@ -43,12 +43,6 @@ public class TenantSettingsController(ITenantSettingsAppService tenantSettingsAp
         return tenantSettingsAppService.GetTenantInformationAsync();
     }
 
-    [HttpPost]
-    public Task<TenantSettingsDto> UpdateAsync(UpdateTenantSettingsDto input)
-    {
-        return tenantSettingsAppService.UpdateAsync(input);
-    }
-
     [HttpPost("customer-service")]
     public Task<TenantCustomerServiceDto> UpdateTenantCustomerServiceAsync(UpdateTenantCustomerServiceDto input)
     {
