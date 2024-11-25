@@ -1,5 +1,59 @@
-﻿<h3>TenantSocialMedia</h3>
+﻿@using Kooco.Pikachu.Localization
+@using Volo.Abp.AspNetCore.Components.Web
+@inherits PikachuComponentBase
+@inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
 
-@code {
+<Form>
+    <Validations @ref="@ValidationsRef" Model="@Entity" ValidateOnLoad="false">
+        <Card>
+            <CardBody>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                        <h4>@L["SocialMedia"]</h4>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <FieldLabel>@L["Facebook"]</FieldLabel>
+                                <TextEdit @bind-Text="Entity.Facebook">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <FieldLabel>@L["Instagram"]</FieldLabel>
+                                <TextEdit @bind-Text="Entity.Instagram">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <FieldLabel>@L["Line"]</FieldLabel>
+                                <TextEdit @bind-Text="Entity.Line">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                    </Column>
+                </Row>
+            </CardBody>
+        </Card>
+    </Validations>
 
-}
+    <Div Class="text-end">
+        <PikachuButton Class="pk-btn-transparent" Disabled="IsLoading" Loading="IsCancelling" Clicked="CancelAsync">
+            @L["Cancel"]
+        </PikachuButton>
+        <PikachuButton Class="pk-btn-primary" Disabled="IsCancelling" Loading="IsLoading" Clicked="UpdateAsync">
+            @L["Update"]
+        </PikachuButton>
+    </Div>
+</Form>

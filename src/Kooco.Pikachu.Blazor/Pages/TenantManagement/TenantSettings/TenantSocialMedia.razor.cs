@@ -6,19 +6,19 @@ using System;
 
 namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantSettings;
 
-public partial class TenantCustomerService
+public partial class TenantSocialMedia
 {
     [Parameter]
     public ITenantSettingsAppService AppService { get; set; }
 
-    private TenantCustomerServiceDto CustomerServiceDto { get; set; }
-    private UpdateTenantCustomerServiceDto Entity { get; set; }
+    private TenantSocialMediaDto TenantSocialMediaDto { get; set; }
+    private UpdateTenantSocialMediaDto Entity { get; set; }
     private Validations ValidationsRef { get; set; }
 
     private bool IsLoading { get; set; } = false;
     private bool IsCancelling { get; set; } = false;
 
-    public TenantCustomerService()
+    public TenantSocialMedia()
     {
         Entity = new();
     }
@@ -37,16 +37,11 @@ public partial class TenantCustomerService
         {
             if (await ValidationsRef.ValidateAll())
             {
-                if (Entity.ServiceHoursFrom?.TimeOfDay >= Entity.ServiceHoursTo?.TimeOfDay)
-                {
-                    throw new InvalidServiceHoursException();
-                }
-
                 IsLoading = true;
 
-                await AppService.UpdateTenantCustomerServiceAsync(Entity);
+                await AppService.UpdateTenantSocialMediaAsync(Entity);
 
-                await Message.Success(L["CustomerServiceUpdated"]);
+                await Message.Success(L["SocialMediaUpdated"]);
 
                 await ResetAsync();
 
@@ -78,8 +73,8 @@ public partial class TenantCustomerService
     {
         try
         {
-            CustomerServiceDto = await AppService.GetTenantCustomerServiceAsync();
-            Entity = ObjectMapper.Map<TenantCustomerServiceDto, UpdateTenantCustomerServiceDto>(CustomerServiceDto);
+            TenantSocialMediaDto = await AppService.GetTenantSocialMediaAsync();
+            Entity = ObjectMapper.Map<TenantSocialMediaDto, UpdateTenantSocialMediaDto>(TenantSocialMediaDto);
             ValidationsRef?.ClearAll();
             await InvokeAsync(StateHasChanged);
         }

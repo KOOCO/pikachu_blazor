@@ -994,6 +994,8 @@
     "TenantInformationUpdated": "Tenant Information Updated!",
     "CustomerServiceUpdated": "Customer Service Updated!",
     "PrivacyPolicyUpdated": "Privacy Policy Updated!",
-    "FrontendInformationUpdated": "Frontend Information Updated!"
+    "FrontendInformationUpdated": "Frontend Information Updated!",
+    "SocialMediaUpdated": "Social Media Updated!",
+    "GoogleTagManagerUpdated": "Google Tag Manager Updated!"
   }
 }

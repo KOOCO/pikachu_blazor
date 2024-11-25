@@ -230,4 +230,20 @@ public class TenantSettingsManager(IRepository<TenantSettings, Guid> tenantSetti
         await tenantSettingsRepository.UpdateAsync(tenantSettings);
         return tenantSettings;
     }
+
+    public async Task<TenantSettings> UpdateTenantSocialMediaAsync(string? facebook, string? instagram, string? line)
+    {
+        var tenantSettings = await GetAsync();
+        tenantSettings.SetSocials(facebook, instagram, line);
+        await tenantSettingsRepository.UpdateAsync(tenantSettings);
+        return tenantSettings;
+    }
+
+    public async Task<TenantSettings> UpdateTenantGoogleTagManagerAsync(bool gtmEnabled, string? gtmContainerId)
+    {
+        var tenantSettings = await GetAsync();
+        tenantSettings.SetGtm(gtmEnabled, gtmContainerId);
+        await tenantSettingsRepository.UpdateAsync(tenantSettings);
+        return tenantSettings;
+    }
 }

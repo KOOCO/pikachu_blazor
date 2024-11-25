@@ -1,0 +1,47 @@
+﻿@using Kooco.Pikachu.Localization
+@using Volo.Abp.AspNetCore.Components.Web
+@inherits PikachuComponentBase
+@inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
+
+<Form>
+    <Validations @ref="@ValidationsRef" Model="@Entity" ValidateOnLoad="false">
+        <Card>
+            <CardBody>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                        <h4>@L["GoogleTagManager"]</h4>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                        <Field>
+                            <FieldLabel>@L["GtmEnabled"]</FieldLabel>
+                            <Switch TValue="bool" @bind-Checked="@Entity.GtmEnabled"></Switch>
+                        </Field>
+                        <Field>
+                            <FieldLabel>
+                                @L["ContainerId"]
+                                @if (Entity.GtmEnabled)
+                                {
+                                    <Span> *</Span>
+                                }
+                            </FieldLabel>
+                            <TextEdit Class="@(Entity.GtmEnabled && Entity.GtmContainerId.IsNullOrWhiteSpace() ? "invalid" : "")" @bind-Text="Entity.GtmContainerId" Placeholder="GTM-XXXXXX"></TextEdit>
+                            @if (Entity.GtmEnabled && Entity.GtmContainerId.IsNullOrWhiteSpace())
+                            {
+                                <Div Class="validation-message">@L["GtmContainerIdIsRequired"]</Div>
+                            }
+                        </Field>
+                    </Column>
+                </Row>
+            </CardBody>
+        </Card>
+    </Validations>
+
+    <Div Class="text-end">
+        <PikachuButton Class="pk-btn-transparent" Disabled="IsLoading" Loading="IsCancelling" Clicked="CancelAsync">
+            @L["Cancel"]
+        </PikachuButton>
+        <PikachuButton Class="pk-btn-primary" Disabled="IsCancelling" Loading="IsLoading" Clicked="UpdateAsync">
+            @L["Update"]
+        </PikachuButton>
+    </Div>
+</Form>

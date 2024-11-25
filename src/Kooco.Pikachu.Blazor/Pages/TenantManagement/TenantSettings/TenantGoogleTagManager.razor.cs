@@ -3,22 +3,23 @@ using Kooco.Pikachu.TenantManagement;
 using Microsoft.AspNetCore.Components;
 using System.Threading.Tasks;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantSettings;
 
-public partial class TenantCustomerService
+public partial class TenantGoogleTagManager
 {
     [Parameter]
     public ITenantSettingsAppService AppService { get; set; }
 
-    private TenantCustomerServiceDto CustomerServiceDto { get; set; }
-    private UpdateTenantCustomerServiceDto Entity { get; set; }
+    private TenantGoogleTagManagerDto TenantGoogleTagManagerDto { get; set; }
+    private UpdateTenantGoogleTagManagerDto Entity { get; set; }
     private Validations ValidationsRef { get; set; }
 
     private bool IsLoading { get; set; } = false;
     private bool IsCancelling { get; set; } = false;
 
-    public TenantCustomerService()
+    public TenantGoogleTagManager()
     {
         Entity = new();
     }
@@ -37,16 +38,16 @@ public partial class TenantCustomerService
         {
             if (await ValidationsRef.ValidateAll())
             {
-                if (Entity.ServiceHoursFrom?.TimeOfDay >= Entity.ServiceHoursTo?.TimeOfDay)
+                if (Entity.GtmEnabled && Entity.GtmContainerId.IsNullOrWhiteSpace())
                 {
-                    throw new InvalidServiceHoursException();
+                    return;
                 }
 
                 IsLoading = true;
 
-                await AppService.UpdateTenantCustomerServiceAsync(Entity);
+                await AppService.UpdateTenantGoogleTagManagerAsync(Entity);
 
-                await Message.Success(L["CustomerServiceUpdated"]);
+                await Message.Success(L["GoogleTagManagerUpdated"]);
 
                 await ResetAsync();
 
@@ -78,8 +79,8 @@ public partial class TenantCustomerService
     {
         try
         {
-            CustomerServiceDto = await AppService.GetTenantCustomerServiceAsync();
-            Entity = ObjectMapper.Map<TenantCustomerServiceDto, UpdateTenantCustomerServiceDto>(CustomerServiceDto);
+            TenantGoogleTagManagerDto = await AppService.GetTenantGoogleTagManagerAsync();
+            Entity = ObjectMapper.Map<TenantGoogleTagManagerDto, UpdateTenantGoogleTagManagerDto>(TenantGoogleTagManagerDto);
             ValidationsRef?.ClearAll();
             await InvokeAsync(StateHasChanged);
         }

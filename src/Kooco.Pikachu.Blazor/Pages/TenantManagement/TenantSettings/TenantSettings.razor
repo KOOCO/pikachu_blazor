@@ -55,78 +55,10 @@
                         <TenantFrontendInformation AppService="TenantSettingsAppService"></TenantFrontendInformation>
                     </TabPanel>
                     <TabPanel Name="SocialMedia">
-                        <Card>
-                            <CardBody>
-                                <Row>
-                                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
-                                        <h4>@L["SocialMedia"]</h4>
-                                    </Column>
-                                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                                        <Validation MessageLocalizer="@LH.Localize">
-                                            <Field>
-                                                <FieldLabel>@L["Facebook"]</FieldLabel>
-                                                <TextEdit @bind-Text="Entity.Facebook">
-                                                    <Feedback>
-                                                        <ValidationError />
-                                                    </Feedback>
-                                                </TextEdit>
-                                            </Field>
-                                        </Validation>
-                                        <Validation MessageLocalizer="@LH.Localize">
-                                            <Field>
-                                                <FieldLabel>@L["Instagram"]</FieldLabel>
-                                                <TextEdit @bind-Text="Entity.Instagram">
-                                                    <Feedback>
-                                                        <ValidationError />
-                                                    </Feedback>
-                                                </TextEdit>
-                                            </Field>
-                                        </Validation>
-                                        <Validation MessageLocalizer="@LH.Localize">
-                                            <Field>
-                                                <FieldLabel>@L["Line"]</FieldLabel>
-                                                <TextEdit @bind-Text="Entity.Line">
-                                                    <Feedback>
-                                                        <ValidationError />
-                                                    </Feedback>
-                                                </TextEdit>
-                                            </Field>
-                                        </Validation>
-                                    </Column>
-                                </Row>
-                            </CardBody>
-                        </Card>
+                        <TenantSocialMedia AppService="TenantSettingsAppService"></TenantSocialMedia>
                     </TabPanel>
                     <TabPanel Name="GoogleTagManager">
-                        <Card>
-                            <CardBody>
-                                <Row>
-                                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
-                                        <h4>@L["GoogleTagManager"]</h4>
-                                    </Column>
-                                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                                        <Field>
-                                            <FieldLabel>@L["GtmEnabled"]</FieldLabel>
-                                            <Switch TValue="bool" @bind-Checked="@Entity.GtmEnabled"></Switch>
-                                        </Field>
-                                        <Field>
-                                            <FieldLabel>
-                                                @L["ContainerId"]
-                                                @if (Entity.GtmEnabled)
-                                                {
-                                                    <Span> *</Span>
-                                                }
-                                            </FieldLabel>
-                                            <TextEdit Class="@(Entity.GtmEnabled && Entity.GtmContainerId.IsNullOrWhiteSpace() ? "invalid" : "")" @bind-Text="Entity.GtmContainerId" Placeholder="GTM-XXXXXX"></TextEdit>
-                                            @if (Entity.GtmEnabled && Entity.GtmContainerId.IsNullOrWhiteSpace())
-                                            {
-                                                <Div Class="validation-message">@L["GtmContainerIdIsRequired"]</Div>
-                                            }
-                                        </Field>
-                                    </Column>
-                                </Row>
-                            </CardBody>
-                        </Card>
+                        <TenantGoogleTagManager AppService="TenantSettingsAppService"></TenantGoogleTagManager>
                     </TabPanel>
                 </Content>
             </Tabs>

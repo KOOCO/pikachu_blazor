@@ -84,4 +84,28 @@ public class TenantSettingsController(ITenantSettingsAppService tenantSettingsAp
     {
         return tenantSettingsAppService.GetTenantFrontendInformationAsync();
     }
+
+    [HttpPost("social-media")]
+    public Task<TenantSocialMediaDto> UpdateTenantSocialMediaAsync(UpdateTenantSocialMediaDto input)
+    {
+        return tenantSettingsAppService.UpdateTenantSocialMediaAsync(input);
+    }
+
+    [HttpGet("social-media")]
+    public Task<TenantSocialMediaDto> GetTenantSocialMediaAsync()
+    {
+        return tenantSettingsAppService.GetTenantSocialMediaAsync();
+    }
+
+    [HttpPost("google-tag-manager")]
+    public Task<TenantGoogleTagManagerDto> UpdateTenantGoogleTagManagerAsync(UpdateTenantGoogleTagManagerDto input)
+    {
+        return tenantSettingsAppService.UpdateTenantGoogleTagManagerAsync(input);
+    }
+
+    [HttpGet("google-tag-manager")]
+    public Task<TenantGoogleTagManagerDto> GetTenantGoogleTagManagerAsync()
+    {
+        return tenantSettingsAppService.GetTenantGoogleTagManagerAsync();
+    }
 }

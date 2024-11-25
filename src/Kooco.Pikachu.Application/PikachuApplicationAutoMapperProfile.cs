@@ -263,6 +263,15 @@ public class PikachuApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.BannerUrl, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.BannerUrl)));
         CreateMap<TenantFrontendInformationDto, UpdateTenantFrontendInformationDto>();
 
+        CreateMap<TenantSettings, TenantSocialMediaDto>();
+        CreateMap<TenantSocialMediaDto, UpdateTenantSocialMediaDto>();
+
+        CreateMap<TenantSettings, TenantSocialMediaDto>();
+        CreateMap<TenantSocialMediaDto, UpdateTenantSocialMediaDto>();
+
+        CreateMap<TenantSettings, TenantGoogleTagManagerDto>();
+        CreateMap<TenantGoogleTagManagerDto, UpdateTenantGoogleTagManagerDto>();
+
         CreateMap<OrderMessage, OrderMessageDto>();
 
         CreateMap<WebsiteSettings, WebsiteSettingsDto>();

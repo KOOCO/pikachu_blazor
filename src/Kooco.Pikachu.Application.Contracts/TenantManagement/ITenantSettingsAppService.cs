@@ -21,4 +21,6 @@ public interface ITenantSettingsAppService : IApplicationService
     Task<TenantFrontendInformationDto> GetTenantFrontendInformationAsync();
     Task<TenantSocialMediaDto> UpdateTenantSocialMediaAsync(UpdateTenantSocialMediaDto input);
     Task<TenantSocialMediaDto> GetTenantSocialMediaAsync();
+    Task<TenantGoogleTagManagerDto> UpdateTenantGoogleTagManagerAsync(UpdateTenantGoogleTagManagerDto input);
+    Task<TenantGoogleTagManagerDto> GetTenantGoogleTagManagerAsync();
 }

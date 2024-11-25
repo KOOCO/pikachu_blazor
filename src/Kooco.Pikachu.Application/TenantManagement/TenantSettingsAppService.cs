@@ -153,4 +153,18 @@ public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManage
 
         return ObjectMapper.Map<TenantSettings, TenantSocialMediaDto>(tenantSettings);
     }
+
+    public async Task<TenantGoogleTagManagerDto> UpdateTenantGoogleTagManagerAsync(UpdateTenantGoogleTagManagerDto input)
+    {
+        var tenantSettings = await tenantSettingsManager.UpdateTenantGoogleTagManagerAsync(input.GtmEnabled, input.GtmContainerId);
+
+        return ObjectMapper.Map<TenantSettings, TenantGoogleTagManagerDto>(tenantSettings);
+    }
+
+    public async Task<TenantGoogleTagManagerDto> GetTenantGoogleTagManagerAsync()
+    {
+        var tenantSettings = await tenantSettingsManager.GetAsync();
+
+        return ObjectMapper.Map<TenantSettings, TenantGoogleTagManagerDto>(tenantSettings);
+    }
 }
