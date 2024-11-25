@@ -10,18 +10,22 @@ namespace Kooco.Pikachu.ShopCarts;
 
 public class ShopCartManager(IShopCartRepository shopCartRepository, IItemRepository itemRepository) : DomainService
 {
-    public async Task<ShopCart> CreateAsync(Guid userId)
+    public async Task<ShopCart> CreateAsync(Guid userId, Guid groupBuyId)
     {
         Check.NotDefaultOrNull<Guid>(userId, nameof(userId));
+        Check.NotDefaultOrNull<Guid>(groupBuyId, nameof(groupBuyId));
 
-        var existing = await shopCartRepository.FindByUserIdAsync(userId);
-        if (existing != null)
+        ShopCart? existing = await shopCartRepository.FindByUserIdAndGroupBuyIdAsync(userId, groupBuyId);
+
+        if (existing is not null) return existing;
+
+        ShopCart shopCart = new(GuidGenerator.Create(), userId)
         {
-            throw new ShopCartForUserAlreadyExistsException();
-        }
+            GroupBuyId = groupBuyId
+        };
 
-        var shopCart = new ShopCart(GuidGenerator.Create(), userId);
         await shopCartRepository.InsertAsync(shopCart);
+        
         return shopCart;
     }
 

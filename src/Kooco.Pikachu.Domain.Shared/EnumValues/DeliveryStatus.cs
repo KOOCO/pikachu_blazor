@@ -8,5 +8,7 @@ public enum DeliveryStatus
 {
     Processing,
     Shipped,
-    ToBeShipped
+    ToBeShipped,
+    Delivered,
+    Completed
 }

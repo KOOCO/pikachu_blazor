@@ -1,9 +1,9 @@
 {
   "culture": "zh-Hant",
   "texts": {
-    "ActivateLogisticProvider": "啟動物流提供商",
-    "AllowOffshoreIslands": "允許離岸島嶼",
-    "SevenToElevenFrozen": "7-11 Frozen",
+    "ActivateLogisticProvider": "啟用物流提供商",
+    "AllowOffshoreIslands": "可寄送台灣離島",
+    "SevenToElevenFrozen": "7-11 冷凍",
     "Paid": "已付款’",
     "PaymentStatus": "款項狀態",
     "RefundChannel": "退款渠道",
@@ -167,6 +167,7 @@
     "GoodPoint": "點點",
     "GreenWorldLogistics": "綠界物流B2C",
     "GreenWorldLogisticsC2C": "綠界物流C2C",
+    "TCat": "黑貓宅急便",
     "Greetings": "開頭訊息",
     "GroupBuyBanner": "團購橫幅",
     "GroupBuyCondition": "團購注意事項",
@@ -253,7 +254,7 @@
     "MaxAvailableTime": "建立時間結束範圍",
     "Mazu": "馬祖",
     "Menu:CashFlowReconciliationStatement": "金流對帳表",
-    "Menu:DeliveryByStoreSettings": "按商店配送設置",
+    "Menu:DeliveryByStoreSettings": "廠商統一出貨設定",
     "Menu:DeliveryTemperatureCost": "溫層運費成本",
     "Menu:ElectronicInvoiceSetting": "電子發票設定",
     "Menu:FreebiesListView": "贈品清單",
@@ -302,6 +303,7 @@
     "Notes": "筆記",
     "NotFound": "查無此物",
     "NotifyEmail": "通知信件文案",
+    "NotificationBar": "通知欄",
     "Open": "開啟",
     //Orders
     "Order": "訂單",

@@ -18,6 +18,8 @@ namespace Kooco.Pikachu.StoreLogisticOrders
 
         Task<PrintOBTB2SResponse?> GenerateDeliveryNumberForTCat711DeliveryAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null);
 
+        Task GenerateDeliveryNumberForSelfPickupAndHomeDeliveryAsync(Guid orderId, Guid orderDeliveryId);
+
         Task<ResponseResultDto> CreateHomeDeliveryShipmentOrderAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null);
 
         Task<EmapApiResponse> GetStoreAsync(string deliveryMethod);

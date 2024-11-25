@@ -99,14 +99,14 @@
                 {
                     <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
                         <i class="fa fa-print"></i>
-                        @L["Print Shipped Label"]
+                        @L["PrintShippedLabel"]
                     </Button>
                 }
                 else
                 {
                     <Button Type="@ButtonType.Button" Class="ms-1 btn btn-sm btn-primary">
                         <i class="fa fa-print"></i>
-                        @L["Print Shipped Label"]
+                        @L["PrintShippedLabel"]
                     </Button>
                 }
             }
@@ -119,23 +119,54 @@
                             Disabled 
                             Class="ms-1 btn btn-sm btn-primary">
                         <i class="fa fa-print" />
-                        @L["Generate Delivery Number"]
+                        @L["GenerateDeliveryNumber"]
                     </Button>
                 }
-                else
+                else if (Orders.Where(w => w.IsSelected && (w.DeliveryMethod is EnumValues.DeliveryMethod.SelfPickup || 
+                                           w.DeliveryMethod is EnumValues.DeliveryMethod.HomeDelivery)).Count() >= 1 && IsDeliveryNoExists)
+                {
+                    <Dropdown Display="Display.Inline">
+                        <DropdownToggle Color="Color.Primary" Size="Size.Small">
+                            @L["GenerateDeliveryNumber"]
+                        </DropdownToggle>
+                        <DropdownMenu>
+                            <DropdownItem Clicked="ShippingStatusChange"
+                                          Disabled="@(Orders.Any(a => a.IsSelected && a.DeliveryMethod is EnumValues.DeliveryMethod.HomeDelivery))">
+                                @L["SelfPickupShipping"]
+                            </DropdownItem>
+
+                            <DropdownItem Clicked="ShippingStatusChange"
+                                          Disabled="@(Orders.Any(a => a.IsSelected && a.DeliveryMethod is EnumValues.DeliveryMethod.SelfPickup))">
+                                @L["PersonalDeliveryShipping"]
+                            </DropdownItem>
+                        </DropdownMenu>
+                    </Dropdown>
+                }
+                else if (Orders.Where(w => w.IsSelected && (w.DeliveryMethod is EnumValues.DeliveryMethod.SelfPickup || 
+                                           w.DeliveryMethod is EnumValues.DeliveryMethod.HomeDelivery)).Count() >= 1 && !IsDeliveryNoExists)
                 { 
                     <Button Type="@ButtonType.Button" 
                             Clicked="OnGenerateDeliveryNumber"
                             Class="ms-1 btn btn-sm btn-primary">
                         <i class="fa fa-print" />
-                        @L["Generate Delivery Number"]
+                        @L["GenerateDeliveryNumber"]
+                    </Button>
+                }
+                else if (Orders.Where(w => w.IsSelected && (w.DeliveryMethod is not EnumValues.DeliveryMethod.SelfPickup ||
+                                           w.DeliveryMethod is not EnumValues.DeliveryMethod.HomeDelivery)).Count() >= 1)
+                {
+                    <Button Type="@ButtonType.Button"
+                            Clicked="OnGenerateDeliveryNumber"
+                            Class="ms-1 btn btn-sm btn-primary">
+                        <i class="fa fa-print" />
+                        @L["GenerateDeliveryNumber"]
                     </Button>
                 }
             }
 
             @if (SelectedTabName is PikachuResource.Shipped)
             {
-                @if ((Orders.Where(x => x.IsSelected).Count() != 1) || (Orders.Where(x => x.InvoiceNumber != null && x.IsSelected).Any()))
+                @if (Orders.Where(x => x.IsSelected).Count() < 1)
                 {
                     <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
                         <i class="fa fa-print"></i>
@@ -144,7 +175,9 @@
                 }
                 else
                 { 
-                    <Button Type="@ButtonType.Button" Class="ms-1 btn btn-sm btn-primary">
+                    <Button Type="@ButtonType.Button"
+                            Clicked="OrderItemDelivered"
+                    Class="ms-1 btn btn-sm btn-primary">
                         <i class="fa fa-print"></i>
                         @L["Delivered"]
                     </Button>
@@ -153,18 +186,20 @@
 
             @if (SelectedTabName is PikachuResource.Delivered)
             {
-                @if ((Orders.Where(x => x.IsSelected).Count() != 1) || (Orders.Where(x => x.InvoiceNumber != null && x.IsSelected).Any()))
+                @if (Orders.Where(x => x.IsSelected).Count() < 1)
                 {
                     <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
                         <i class="fa fa-print"></i>
-                        @L["Picked Up"]
+                        @L["PickedUp"]
                     </Button>
                 }
                 else
                 { 
-                    <Button Type="@ButtonType.Button" Class="ms-1 btn btn-sm btn-primary">
+                    <Button Type="@ButtonType.Button"
+                            Clicked="OrderItemPickedUp"
+                    Class="ms-1 btn btn-sm btn-primary">
                         <i class="fa fa-print"></i>
-                        @L["Picked Up"]
+                        @L["PickedUp"]
                     </Button>
                 }
             }
@@ -229,14 +264,14 @@
                 {
                     <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
                         <i class="fa fa-print"></i>
-                        @L["Close Order"]
+                        @L["CloseOrder"]
                     </Button>
                 }
                 else
                 {
                     <Button Type="@ButtonType.Button" Class="ms-1 btn btn-sm btn-primary">
                         <i class="fa fa-print"></i>
-                        @L["Close Order"]
+                        @L["CloseOrder"]
                     </Button>
                 }
             } 
@@ -289,7 +324,7 @@
                                     <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                         <DisplayTemplate>
                                             @{
-                                                var isExpanded = ExpandedRows.Contains(context.Id);
+                                                var isExpanded = ExpandedRows.Contains(context.OrderId);
                                                 var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
                                             }
                                             <i class="@chevronClass"></i>
@@ -482,7 +517,7 @@
                                     <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                         <DisplayTemplate>
                                             @{
-                                                var isExpanded = ExpandedRows.Contains(context.Id);
+                                                var isExpanded = ExpandedRows.Contains(context.OrderId);
                                                 var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
                                             }
                                             <i class="@chevronClass"></i>
@@ -642,13 +677,16 @@
                                 <DataGridCommandColumn />
                                 <DataGridColumn Caption="@L["Select"]" Width="30px">
                                     <DisplayTemplate>
-                                        <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
+                                         <InputCheckbox class="form-check-input" 
+                                                        Value="@context.IsSelected" 
+                                                        ValueExpression="@(() => context.IsSelected)"
+                                                        ValueChanged="@(async (e) => await PrepareShipmentCheckboxChanged(e, context))" />
                                     </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
                                         @{
-                                            var isExpanded = IsRowExpanded(context);
+                                            var isExpanded = ExpandedRows.Contains(context.OrderId);
                                             var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
                                         }
                                         <i class="@chevronClass"></i>
@@ -877,7 +915,7 @@
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
                                         @{
-                                            bool isExpanded = ExpandedRows.Contains(context.Id);
+                                            bool isExpanded = ExpandedRows.Contains(context.OrderId);
 
                                             string chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
                                         }
@@ -1105,7 +1143,7 @@
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
                                         @{
-                                            var isExpanded = ExpandedRows.Contains(context.Id);
+                                            var isExpanded = ExpandedRows.Contains(context.OrderId);
                                             var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
                                         }
                                         <i class="@chevronClass"></i>
@@ -1333,7 +1371,7 @@
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
                                         @{
-                                            var isExpanded = ExpandedRows.Contains(context.Id);
+                                            var isExpanded = ExpandedRows.Contains(context.OrderId);
                                             var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
                                         }
                                         <i class="@chevronClass"></i>
@@ -1560,7 +1598,7 @@
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
                                         @{
-                                            var isExpanded = ExpandedRows.Contains(context.Id);
+                                            var isExpanded = ExpandedRows.Contains(context.OrderId);
                                             var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
                                         }
                                         <i class="@chevronClass"></i>
@@ -1892,7 +1930,7 @@
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
                                         @{
-                                            var isExpanded = ExpandedRows.Contains(context.Id);
+                                            var isExpanded = ExpandedRows.Contains(context.OrderId);
                                             var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
                                         }
                                         <i class="@chevronClass"></i>
@@ -2119,7 +2157,7 @@
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
                                         @{
-                                            var isExpanded = ExpandedRows.Contains(context.Id);
+                                            var isExpanded = ExpandedRows.Contains(context.OrderId);
                                             var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
                                         }
                                         <i class="@chevronClass"></i>

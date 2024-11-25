@@ -18,6 +18,7 @@ public class OrderDeliveryController(
     IOrderDeliveryAppService _orderDeliveryAppService
     ) : AbpController, IOrderDeliveryAppService
 {
+
     [HttpGet]
     public  Task<OrderDeliveryDto> GetDeliveryOrderAsync(Guid Id)
     {
@@ -39,5 +40,23 @@ public class OrderDeliveryController(
     public Task<OrderDeliveryDto> UpdateShippingDetails(Guid id, CreateOrderDto input)
     {
         return _orderDeliveryAppService.UpdateShippingDetails(id, input);
+    }
+
+    [HttpPost("change-shipping-status/{orderId}")]
+    public Task ChangeShippingStatus(Guid orderId)
+    {
+        return _orderDeliveryAppService.ChangeShippingStatus(orderId);
+    }
+
+    [HttpPost("update-delivered-status/{orderId}")]
+    public Task UpdateDeliveredStatus(Guid orderId)
+    {
+        throw new NotImplementedException();
+    }
+
+    [HttpPost("update-pickedup-status/{orderId}")]
+    public Task UpdatePickedUpStatus(Guid orderId)
+    {
+        throw new NotImplementedException();
     }
 }

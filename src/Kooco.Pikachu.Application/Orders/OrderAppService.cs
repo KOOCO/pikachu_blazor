@@ -231,6 +231,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         if (details is not null)
                         {
                             details.SaleableQuantity = details.SaleableQuantity - item.Quantity;
+                            details.StockOnHand = details.StockOnHand - item.Quantity;
 
                             await _itemDetailsRepository.UpdateAsync(details);
                         }
@@ -616,84 +617,85 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     public async Task<OrderDto> SplitOrderAsync(List<Guid> OrderItemIds, Guid OrderId)
     {
-        Order newOrder = new Order();
-        var ord = await _orderRepository.GetWithDetailsAsync(OrderId);
-        decimal TotalAmount = ord.TotalAmount;
-        int TotalQuantity = ord.TotalQuantity;
+        Order newOrder = new();
+
+        Order ord = await _orderRepository.GetWithDetailsAsync(OrderId);
+        
+        decimal TotalAmount = ord.TotalAmount; int TotalQuantity = ord.TotalQuantity;
+
         GroupBuy groupBuy = new();
+        
         using (_dataFilter.Disable<IMultiTenant>())
         {
             groupBuy = await _groupBuyRepository.GetAsync(ord.GroupBuyId);
         }
-        List<OrderItemsCreateDto> orderItems = new List<OrderItemsCreateDto>();
+
+        List<OrderItemsCreateDto> orderItems = [];
+
         using (CurrentTenant.Change(groupBuy?.TenantId))
         {
-            foreach (var item in ord.OrderItems)
+            foreach (OrderItem item in ord.OrderItems)
             {
-                if (OrderItemIds.Any(x => x == item.Id))
+                if (OrderItemIds.Any(a => a == item.Id))
                 {
-                    OrderItemsCreateDto orderItem = new OrderItemsCreateDto();
-                    orderItem.ItemId = item.ItemId;
-                    orderItem.SetItemId = item.SetItemId;
-                    orderItem.FreebieId = item.FreebieId;
-                    orderItem.ItemType = item.ItemType;
+                    OrderItemsCreateDto orderItem = new();
 
-                    orderItem.Spec = item.Spec;
-                    orderItem.ItemPrice = item.ItemPrice;
-                    orderItem.TotalAmount = item.TotalAmount;
-                    orderItem.Quantity = item.Quantity;
-                    orderItem.SKU = item.SKU;
+                    orderItem = ObjectMapper.Map<OrderItem, OrderItemsCreateDto>(item);
 
                     TotalAmount -= item.TotalAmount;
                     TotalQuantity -= item.Quantity;
+
                     await _orderItemRepository.DeleteAsync(item.Id);
-                    var order1 = await _orderManager.CreateAsync(
-                     ord.GroupBuyId,
-                     ord.IsIndividual,
-                     ord.CustomerName,
-                     ord.CustomerPhone,
-                     ord.CustomerEmail,
-                     ord.PaymentMethod,
-                     ord.InvoiceType,
-                     ord.InvoiceNumber,
-                     ord.CarrierId,
-                     ord.UniformNumber,
-                     ord.TaxTitle,
-                     ord.IsAsSameBuyer,
-                     ord.RecipientName,
-                     ord.RecipientPhone,
-                     ord.RecipientEmail,
-                     ord.DeliveryMethod,
-                     ord.PostalCode,
-                     ord.City,
-                     ord.District,
-                     ord.Road,
-                     ord.AddressDetails,
-                     ord.Remarks,
-                     ord.ReceivingTime,
-                     orderItem.Quantity,
-                     orderItem.TotalAmount,
-                     ord.ReturnStatus,
-                     OrderType.NewSplit,
-                     ord.Id
-                     );
+                    
+                    Order order1 = await _orderManager.CreateAsync(
+                        ord.GroupBuyId,
+                        ord.IsIndividual,
+                        ord.CustomerName,
+                        ord.CustomerPhone,
+                        ord.CustomerEmail,
+                        ord.PaymentMethod,
+                        ord.InvoiceType,
+                        ord.InvoiceNumber,
+                        ord.CarrierId,
+                        ord.UniformNumber,
+                        ord.TaxTitle,
+                        ord.IsAsSameBuyer,
+                        ord.RecipientName,
+                        ord.RecipientPhone,
+                        ord.RecipientEmail,
+                        ord.DeliveryMethod,
+                        ord.PostalCode,
+                        ord.City,
+                        ord.District,
+                        ord.Road,
+                        ord.AddressDetails,
+                        ord.Remarks,
+                        ord.ReceivingTime,
+                        orderItem.Quantity,
+                        orderItem.TotalAmount,
+                        ord.ReturnStatus,
+                        OrderType.NewSplit,
+                        ord.Id
+                    );
+
                     order1.ShippingStatus = ord.ShippingStatus;
 
                     _orderManager.AddOrderItem(
-                                   order1,
-                                   orderItem.ItemId,
-                                   orderItem.SetItemId,
-                                   orderItem.FreebieId,
-                                   orderItem.ItemType,
-                                   order1.Id,
-                                   orderItem.Spec,
-                                   orderItem.ItemPrice,
-                                   orderItem.TotalAmount,
-                                   orderItem.Quantity,
-                                   orderItem.SKU, orderItem.DeliveryTemperature,
-                                   orderItem.DeliveryTemperatureCost
+                        order1,
+                        orderItem.ItemId,
+                        orderItem.SetItemId,
+                        orderItem.FreebieId,
+                        orderItem.ItemType,
+                        order1.Id,
+                        orderItem.Spec,
+                        orderItem.ItemPrice,
+                        orderItem.TotalAmount,
+                        orderItem.Quantity,
+                        orderItem.SKU, 
+                        orderItem.DeliveryTemperature,
+                        orderItem.DeliveryTemperatureCost
+                    );
 
-                                   );
                     await _orderRepository.InsertAsync(order1);
                     await UnitOfWorkManager.Current.SaveChangesAsync();
 
@@ -701,51 +703,18 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
                     OrderItem? orderItem1 = newOrder.OrderItems.FirstOrDefault();
 
-                    if (order1.ShippingStatus == ShippingStatus.PrepareShipment)
+                    if (order1.ShippingStatus is ShippingStatus.PrepareShipment)
                     {
-                        if (orderItem1?.Item?.IsFreeShipping == true)
-                        {
-                            if (orderItem1.DeliveryTemperature == ItemStorageTemperature.Normal && orderItem1.Item != null || orderItem1.Item?.IsFreeShipping == true)
-                            {
-                                var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order1.Id);
-                                OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
-                                order1.UpdateOrderItem(order1.OrderItems.Where(x => (x.DeliveryTemperature == ItemStorageTemperature.Normal && x.Item?.IsFreeShipping == true)).ToList(), OrderDelivery.Id);
-                            }
-                            if (orderItem1.DeliveryTemperature == ItemStorageTemperature.Freeze && orderItem1.Item?.IsFreeShipping == true)
-                            {
-                                var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order1.Id);
-                                OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
-                                order1.UpdateOrderItem(order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze && x.Item?.IsFreeShipping == true).ToList(), OrderDelivery.Id);
-                            }
-                            if (orderItem1.DeliveryTemperature == ItemStorageTemperature.Frozen && orderItem1.Item?.IsFreeShipping == true)
-                            {
-                                var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order1.Id);
-                                OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
-                                order1.UpdateOrderItem(order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen && x?.Item.IsFreeShipping == true).ToList(), OrderDelivery.Id);
-                            }
-                        }
-                        if (orderItem1?.Item?.IsFreeShipping == false)
-                        {
-                            if (orderItem1.DeliveryTemperature == ItemStorageTemperature.Normal && orderItem1.Item?.IsFreeShipping == false)
-                            {
-                                var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order1.Id);
-                                OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
-                                order1.UpdateOrderItem(order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Normal && x.Item?.IsFreeShipping == false).ToList(), OrderDelivery.Id);
-                            }
-                            if (orderItem1.DeliveryTemperature == ItemStorageTemperature.Freeze && orderItem1.Item?.IsFreeShipping == false)
-                            {
-                                var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order1.Id);
-                                OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
-                                order1.UpdateOrderItem(order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze && x.Item?.IsFreeShipping == false).ToList(), OrderDelivery.Id);
-                            }
-                            if (orderItem1.DeliveryTemperature == ItemStorageTemperature.Frozen && orderItem1.Item?.IsFreeShipping == false)
-                            {
-                                var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order1.Id);
-                                OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
-                                order1.UpdateOrderItem(order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen && x.Item?.IsFreeShipping == false).ToList(), OrderDelivery.Id);
-                            }
+                        OrderDelivery oD = new(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, string.Empty, order1.Id);
 
-                        }
+                        oD = await _orderDeliveryRepository.InsertAsync(oD);
+
+                        order1.UpdateOrderItem(
+                            [.. order1.OrderItems.Where(w => w.DeliveryTemperature == orderItem1?.DeliveryTemperature && 
+                                                             w.Item?.IsFreeShipping == orderItem1?.Item?.IsFreeShipping)],
+                            oD.Id
+                        );
+
                         await _orderRepository.UpdateAsync(order1);
                     }
                 }
@@ -753,7 +722,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
             if (ord.OrderItems.Count <= 0)
             {
-                //var newOrder = await _orderRepository.GetAsync(newOrderId);
                 newOrder.TotalAmount += TotalAmount;
                 await _orderRepository.UpdateAsync(newOrder);
                 ord.TotalAmount = 0;
@@ -766,8 +734,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
 
             ord.OrderType = OrderType.SplitToNew;
+
             await _orderRepository.UpdateAsync(ord);
+            
             await UnitOfWorkManager.Current.SaveChangesAsync();
+            
             return ObjectMapper.Map<Order, OrderDto>(ord);
         }
     }

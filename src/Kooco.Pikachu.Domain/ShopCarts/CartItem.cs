@@ -12,7 +12,7 @@ public class CartItem : FullAuditedEntity<Guid>, IMultiTenant
 {
     public Guid ShopCartId { get; private set; }
     public Guid ItemId { get; set; }
-    public int Quantity { get; private set; }
+    public int Quantity { get; set; }
     public int UnitPrice { get; private set; }
     public Guid? TenantId { get; set; }
     public Guid ItemDetailId { get; set; }

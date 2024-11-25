@@ -80,7 +80,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         IStringLocalizer<PikachuResource> L,
         IGroupBuyAppService GroupBuyAppService,
           IBackgroundJobManager backgroundJobManager,
-        IElectronicInvoiceSettingRepository electronicInvoiceSettingRepository
+        IElectronicInvoiceSettingRepository electronicInvoiceSettingRepository,
+        IElectronicInvoiceAppService electronicInvoiceAppService
     ) 
     {   
         _orderRepository = orderRepository;
@@ -100,12 +101,13 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         _GroupBuyAppService = GroupBuyAppService;
         _backgroundJobManager = backgroundJobManager;
         _electronicInvoiceSettingRepository = electronicInvoiceSettingRepository;
+        _electronicInvoiceAppService = electronicInvoiceAppService;
     }
     #endregion
 
     public async Task<ResponseResultDto> CreateHomeDeliveryShipmentOrderAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null)
     {
-        Order order = await _orderRepository.GetAsync(orderId);
+        Order order = await _orderRepository.GetWithDetailsAsync(orderId);
         var orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
         var orderDelivery = orderDeliverys.Where(x => x.Id == orderDeliveryId).FirstOrDefault();
         var providers = await _logisticsProvidersAppService.GetAllAsync();
@@ -279,7 +281,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
     public async Task<PrintObtResponse?> GenerateDeliveryNumberForTCatDeliveryAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null)
     {
-        Order order = await _orderRepository.GetAsync(orderId);
+        Order order = await _orderRepository.GetWithDetailsAsync(orderId);
 
         List<OrderDelivery> orderDeliveries = await _deliveryRepository.GetWithDetailsAsync(orderId);
 
@@ -384,6 +386,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         string isDeclare = TCatLogistics.DeclaredValue &&
                            IsOrderAmountValid(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost) ? "Y" : "N";
 
+        DayOfWeek TodaysDay = DateTime.Today.DayOfWeek;
+
         PrintOBTRequest request = new ()
         {
             CustomerId = TCatLogistics.CustomerId,
@@ -409,8 +413,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                     SenderMobile = TCatLogistics.SenderPhoneNumber,
                     SenderZipCode = TCatLogistics.SenderPostalCode,
                     SenderAddress = TCatLogistics.SenderAddress,
-                    ShipmentDate = DateTime.Now.AddDays(1).ToString("yyyyMMdd"),
-                    DeliveryDate = DateTime.Now.AddDays(2).ToString("yyyyMMdd"),
+                    ShipmentDate = TodaysDay is DayOfWeek.Saturday ? DateTime.Now.AddDays(2).ToString("yyyyMMdd") : DateTime.Now.AddDays(1).ToString("yyyyMMdd"),
+                    DeliveryDate = TodaysDay is DayOfWeek.Friday || TodaysDay is DayOfWeek.Saturday ? DateTime.Now.AddDays(3).ToString("yyyyMMdd") : DateTime.Now.AddDays(2).ToString("yyyyMMdd"),
                     DeliveryTime = deliveryTime,
                     IsFreight = "N",
                     IsCollection = isCollection,
@@ -483,7 +487,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
     public async Task<PrintOBTB2SResponse?> GenerateDeliveryNumberForTCat711DeliveryAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null)
     {
-        Order order = await _orderRepository.GetAsync(orderId);
+        Order order = await _orderRepository.GetWithDetailsAsync(orderId);
 
         List<OrderDelivery> orderDeliveries = await _deliveryRepository.GetWithDetailsAsync(orderId);
 
@@ -608,6 +612,19 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             }
         }
         return printObtB2SResponse;
+    }
+
+    public async Task GenerateDeliveryNumberForSelfPickupAndHomeDeliveryAsync(Guid orderId, Guid orderDeliveryId)
+    {
+        Order order = await _orderRepository.GetWithDetailsAsync(orderId);
+
+        List<OrderDelivery> orderDeliveries = await _deliveryRepository.GetWithDetailsAsync(orderId);
+
+        OrderDelivery orderDelivery = orderDeliveries.First(f => f.Id == orderDeliveryId);
+
+        orderDelivery.DeliveryNo = order.OrderNo;
+
+        await _deliveryRepository.UpdateAsync(orderDelivery);
     }
 
     public bool IsOrderAmountValid(decimal? totalAmount, decimal? deliveryCost)

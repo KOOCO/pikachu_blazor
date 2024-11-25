@@ -24,24 +24,34 @@ public class EfCoreShopCartRepository(IDbContextProvider<PikachuDbContext> dbCon
         return shopCart;
     }
 
-    public async Task<long> GetCountAsync(string? filter, Guid? userId, bool includeDetails = false)
+    public async Task<ShopCart> FindByUserIdAndGroupBuyIdAsync(Guid userId, Guid groupBuyId, bool includeDetails = false)
     {
-        var queryable = await GetFilteredQueryableAsync(filter, userId, includeDetails);
+        IQueryable<ShopCart> queryable = (await GetQueryableAsync()).Where(w => w.UserId == userId && w.GroupBuyId == groupBuyId);
+
+        ShopCart? shopCart = await IncludeDetails(queryable, includeDetails).FirstOrDefaultAsync();
+
+        return shopCart;
+    }
+
+    public async Task<long> GetCountAsync(string? filter, Guid? userId, Guid? groupBuyId, bool includeDetails = false)
+    {
+        var queryable = await GetFilteredQueryableAsync(filter, userId, groupBuyId, includeDetails);
         return await queryable.LongCountAsync();
     }
 
-    public async Task<List<ShopCart>> GetListAsync(int skipCount, int maxResultCount, string sorting, string? filter, Guid? userId, bool includeDetails = false)
+    public async Task<List<ShopCart>> GetListAsync(int skipCount, int maxResultCount, string sorting, string? filter, Guid? userId, Guid? groupBuyId, bool includeDetails = false)
     {
-        var queryable = await GetFilteredQueryableAsync(filter, userId, includeDetails);
+        var queryable = await GetFilteredQueryableAsync(filter, userId, groupBuyId, includeDetails);
         return await queryable.OrderBy(sorting).PageBy(skipCount, maxResultCount).ToListAsync();
     }
 
-    public async Task<IQueryable<ShopCart>> GetFilteredQueryableAsync(string? filter, Guid? userId, bool includeDetails = false)
+    public async Task<IQueryable<ShopCart>> GetFilteredQueryableAsync(string? filter, Guid? userId, Guid? groupBuyId, bool includeDetails = false)
     {
         var queryable = await GetQueryableAsync();
 
         queryable = queryable
             .WhereIf(userId.HasValue, x => x.UserId == userId)
+            .WhereIf(groupBuyId.HasValue, w => w.GroupBuyId == groupBuyId)
             .Include(x => x.User)
             .WhereIf(!string.IsNullOrWhiteSpace(filter), x => x.Id.ToString().Contains(filter)
             || x.UserId.ToString().Contains(filter) || (x.User != null && x.User.Name.Contains(filter)));

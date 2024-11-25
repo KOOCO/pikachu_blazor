@@ -7,5 +7,6 @@ public class GetShopCartListDto : PagedAndSortedResultRequestDto
 {
     public string? Filter { get; set; }
     public Guid? UserId { get; set; }
+    public Guid? GroupBuyId { get; set; }
     public bool IncludeDetails { get; set; } = true;
 }

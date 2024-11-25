@@ -52,4 +52,10 @@ public class StoreLogisticOrderController(
     {
         return _storeLogisticsOrderAppService.GetStoreAsync(deliveryMethod);
     }
+
+    [HttpPost("generate-deliveryNumber-SelfPickup-HomeDelivery")]
+    public Task GenerateDeliveryNumberForSelfPickupAndHomeDeliveryAsync(Guid orderId, Guid orderDeliveryId)
+    {
+        throw new NotImplementedException();
+    }
 }

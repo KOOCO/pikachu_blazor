@@ -4,8 +4,8 @@
 
 
 
-    "AllowOffshoreIslands": "Allow Offshore Islands",
-    "ActivateLogisticProvider": "Activate Logistic Provider",
+    "AllowOffshoreIslands": "Deliverable to Outlying Islands",
+    "ActivateLogisticProvider": "Enable Logistics Provider",
     "SevenToElevenFrozen": "7-11 Frozen",
     "Pikachu:InCompatibleModule": "Cannot save due to incompatible modules.",
     "PikachuOne": "Pikachu 1.0",
@@ -172,7 +172,7 @@
     "GroupBuyShortName": "Short Name",
     "GroupBuyLogo": "Logo",
     "GroupBuyBanner": "Banner Image",
-
+    "NotificationBar": "Motification Bar",
     "GroupBuyTime": "Group Buy Time",
     "Logistic": "Logistic",
     "ExcludeShippingMethod": "Exclude Shipping Method",
@@ -331,6 +331,12 @@
     "CurrentStock": "Current Stock",
     "AvailableStock": "Available Stock",
     "AvailablePreorderQuantity": "Available Preorder Quantity",
+    "PrintShippedLabel": "Print Shipped Label",
+    "GenerateDeliveryNumber": "Generate Delivery Number",
+    "SelfPickupShipping": "Self Pickup Shipping",
+    "PersonalDeliveryShipping": "Personal Delivery Shipping",
+    "PickedUp": "Picked Up",
+    "CloseOrder": "Close Order",
 
     //Refund
     "Pikachu:RefundForSameOrderAlreadyExists": "Refund For Same Order Already Exists",
@@ -416,8 +422,9 @@
 
     //LogisticsManagement
     "LogisticsProviderSettings": "Logistics Provider Settings",
-    "GreenWorldLogistics": "Green World Logistics B2C",
-    "GreenWorldLogisticsC2C": "Green World Logistics C2C",
+    "GreenWorldLogistics": "ECPay Logistics B2C",
+    "GreenWorldLogisticsC2C": "ECPay Logistics C2C",
+    "TCat": "T-Cat",
     "SenderPhoneNumber": "Sender Phone Number",
     "LogisticsType": "Logistics Type",
     "LogisticsSubType": "Logistics Sub Type",

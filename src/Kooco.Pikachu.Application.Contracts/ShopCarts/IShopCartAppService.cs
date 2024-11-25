@@ -12,8 +12,10 @@ public interface IShopCartAppService : IApplicationService
     Task DeleteAsync(Guid id);
     Task<PagedResultDto<ShopCartDto>> GetListAsync(GetShopCartListDto input);
     Task<ShopCartDto?> FindByUserIdAsync(Guid userId);
+    Task<ShopCartDto?> FindByUserIdAndGroupBuyIdAsync(Guid userId, Guid groupBuyId);
     Task DeleteByUserIdAsync(Guid userId);
-    Task<ShopCartDto> AddCartItemAsync(Guid userId, CreateCartItemDto input);
+    Task DeleteByUserIdAndGroupBuyIdAsync(Guid userId, Guid groupBuyId);
+    Task<ShopCartDto> AddCartItemAsync(Guid userId, Guid groupBuyId, CreateCartItemDto input);
     Task<ShopCartDto> UpdateCartItemAsync(Guid cartItemId, CreateCartItemDto input);
     Task<ShopCartDto> DeleteCartItemAsync(Guid cartItemId);
 }

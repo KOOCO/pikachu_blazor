@@ -71,6 +71,8 @@ public partial class Order
     private DeliveryMethod? DeliveryMethod = null;
 
     private Guid? ExpandedOrderId = null;
+
+    private bool IsDeliveryNoExists = false;
     #endregion
 
     #region Methods
@@ -94,7 +96,7 @@ public partial class Order
 
         StateHasChanged();
     }
-
+    
     public async Task OnGenerateDeliveryNumber(MouseEventArgs e)
     {
         await loading.Show();
@@ -258,6 +260,12 @@ public partial class Order
                         }
                     }
                 }
+
+                else if (orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.SelfPickup ||
+                         orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.HomeDelivery)
+                {
+                    await _StoreLogisticsOrderAppService.GenerateDeliveryNumberForSelfPickupAndHomeDeliveryAsync(orderId, orderDelivery.Id);
+                }
             }
         }
 
@@ -387,6 +395,8 @@ public partial class Order
         {
             await loading.Show();
 
+            SelectedOrder = null;
+
             int skipCount = PageIndex * PageSize;
 
             PagedResultDto<OrderDto> result = await _orderAppService.GetListAsync(new GetOrderListDto
@@ -443,7 +453,9 @@ public partial class Order
 
         PageIndex = 0;
 
-        await UpdateItemList();
+        if (SelectedTabName is "All") await UpdateItemList();
+
+        else await LoadTabAsPerNameAsync(SelectedTabName);
     }
 
     void HandleSelectAllChange(ChangeEventArgs e)
@@ -525,23 +537,38 @@ public partial class Order
 
     void ToggleRow(DataGridRowMouseEventArgs<OrderDto> e)
     {
-        if (ExpandedOrderId == e.Item.Id) ExpandedOrderId = null;
+        if (ExpandedOrderId == e.Item.OrderId) ExpandedOrderId = null;
 
-        else ExpandedOrderId = e.Item.Id;
+        else ExpandedOrderId = e.Item.OrderId;
 
-        if (ExpandedRows.Contains(e.Item.Id))
+        if (ExpandedRows.Contains(e.Item.OrderId))
         {
-            ExpandedRows.Remove(e.Item.Id);
+            ExpandedRows.Remove(e.Item.OrderId);
         }
         else
         {
-            ExpandedRows.Add(e.Item.Id);
+            ExpandedRows.Add(e.Item.OrderId);
         }
+    }
+
+    public async Task PrepareShipmentCheckboxChanged(bool e, OrderDto order)
+    {
+        order.IsSelected = e;
+
+        if (order.DeliveryMethod is EnumValues.DeliveryMethod.SelfPickup || 
+            order.DeliveryMethod is EnumValues.DeliveryMethod.HomeDelivery)
+        {
+            List<OrderDeliveryDto> orderDeliveries = await _OrderDeliveryAppService.GetListByOrderAsync(order.OrderId);
+
+            IsDeliveryNoExists = orderDeliveries.Count == orderDeliveries.Count(c => c.DeliveryNo != null);
+        }
+
+        StateHasChanged();
     }
 
     private bool IsRowExpanded(OrderDto order)
     {
-        return ExpandedOrderId == order.Id;
+        return ExpandedOrderId == order.OrderId;
     }
 
     private async void MergeOrders()
@@ -561,6 +588,25 @@ public partial class Order
 
         await JSRuntime.InvokeVoidAsync("openInNewTab", $"Orders/OrderShippingDetails/{selectedIdsStr}");
     }
+
+    public async Task ShippingStatusChange()
+    {
+        await loading.Show();
+
+        List<Guid> orderIds = [.. Orders.Where(w => w.IsSelected).Select(s => s.OrderId)];
+
+        foreach (Guid orderId in orderIds)
+        {
+            await _OrderDeliveryAppService.ChangeShippingStatus(orderId);
+        }
+
+        await loading.Hide();
+
+        if (SelectedTabName is "All") await UpdateItemList();
+
+        else await LoadTabAsPerNameAsync(SelectedTabName);
+    }
+
     private async void OrderItemShipped()
     {
         await loading.Show();
@@ -574,10 +620,52 @@ public partial class Order
                     await _OrderDeliveryAppService.UpdateOrderDeliveryStatus(orderDelivery.Id);
             }
         }
-        await UpdateItemList();
+
+        if (SelectedTabName is "All") await UpdateItemList();
+
+        else await LoadTabAsPerNameAsync(SelectedTabName);
+
         await InvokeAsync(StateHasChanged);
+
         await loading.Hide();
     }
+
+    private async void OrderItemDelivered()
+    {
+        await loading.Show();
+
+        List<Guid> orderIds = [.. Orders.Where(w => w.IsSelected).Select(s => s.OrderId)];
+
+        foreach (Guid orderId in orderIds)
+        {
+            await _OrderDeliveryAppService.UpdateDeliveredStatus(orderId);
+        }
+
+        await loading.Hide();
+
+        if (SelectedTabName is "All") await UpdateItemList();
+
+        else await LoadTabAsPerNameAsync(SelectedTabName);
+    }
+
+    private async void OrderItemPickedUp()
+    {
+        await loading.Show();
+
+        List<Guid> orderIds = [.. Orders.Where(w => w.IsSelected).Select(s => s.OrderId)];
+
+        foreach (Guid orderId in orderIds)
+        {
+            await _OrderDeliveryAppService.UpdatePickedUpStatus(orderId);
+        }
+
+        await loading.Hide();
+
+        if (SelectedTabName is "All") await UpdateItemList();
+
+        else await LoadTabAsPerNameAsync(SelectedTabName);
+    }
+
     public async void IssueInvoice()
     {
         try

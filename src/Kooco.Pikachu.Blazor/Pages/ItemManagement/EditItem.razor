@@ -344,12 +344,20 @@
                                     <TableRowCell>
                                         <input class="form-control form-control-sm" style="min-width: 100px;" @bind-value="@item.InventoryAccount" />
                                     </TableRowCell>
-                                       <TableRowCell>
-                                        <NumericEdit Class="form-control form-control-sm" @bind-Value="@item.StockOnHand"></NumericEdit>
-                                    </TableRowCell>
-                                    <TableRowCell>
-                                        <NumericEdit Class="form-control form-control-sm" @bind-Value="@item.SaleableQuantity"></NumericEdit>
-                                    </TableRowCell>
+                                                                       <TableRowCell>
+    <NumericEdit Class="form-control form-control-sm"
+                 @bind-Value="@item.StockOnHand"
+                 @onchange="(e) => OnStockOnHandChanged(e, item)" />
+</TableRowCell>
+<TableRowCell>
+    <NumericEdit Class="form-control form-control-sm"
+                 @bind-Value="@item.SaleableQuantity"
+                 @onchange="(e) => OnSaleableQuantityChanged(e, item)" />
+    @if (ValidationErrors.ContainsKey(item))
+    {
+        <div class="text-danger">@ValidationErrors[item]</div>
+    }
+</TableRowCell>
                                    
                                     <TableRowCell>
                                         <NumericEdit Class="form-control form-control-sm" @bind-Value="@item.PreOrderableQuantity"></NumericEdit>
@@ -619,7 +627,7 @@
         <Button Color="Color.Danger" Type="ButtonType.Link" To="Items">
             @L["Cancel"]
         </Button>
-        <Button Color="Color.Primary" Type="@ButtonType.Submit" PreventDefaultOnSubmit="true" Clicked="UpdateEntityAsync">
+        <Button Disabled=@(ValidationErrors.Count > 0)  Color="Color.Primary" Type="@ButtonType.Submit" PreventDefaultOnSubmit="true" Clicked="UpdateEntityAsync">
             <i class="fa fa-check"></i>
             @L["Save"]
         </Button>

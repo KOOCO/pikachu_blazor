@@ -349,12 +349,20 @@
                                         <TableRowCell>
                                             <input class="form-control form-control-sm" style="min-width: 100px;" @bind-value="@item.InventoryAccount" />
                                         </TableRowCell>
-                                                                         <TableRowCell>
-                                            <NumericEdit Class="form-control form-control-sm" @bind-Value="@item.StockOnHand"></NumericEdit>
-                                        </TableRowCell>
-                                        <TableRowCell>
-                                            <NumericEdit Class="form-control form-control-sm" @bind-Value="@item.SaleableQuantity"></NumericEdit>
-                                        </TableRowCell>
+                                         <TableRowCell>
+    <NumericEdit Class="form-control form-control-sm"
+                 @bind-Value="@item.StockOnHand"
+                 @onchange="(e) => OnStockOnHandChanged(e, item)" />
+</TableRowCell>
+<TableRowCell>
+    <NumericEdit Class="form-control form-control-sm"
+                 @bind-Value="@item.SaleableQuantity"
+                 @onchange="(e) => OnSaleableQuantityChanged(e, item)" />
+    @if (ValidationErrors.ContainsKey(item))
+    {
+        <div class="text-danger">@ValidationErrors[item]</div>
+    }
+</TableRowCell>
                                                
                                         <TableRowCell>
                                             <NumericEdit Class="form-control form-control-sm" @bind-Value="@item.PreOrderableQuantity"></NumericEdit>
@@ -623,7 +631,7 @@
 <div class="row">
     <div class="col-12 text-lg-end">
         <Button Type="@ButtonType.Button" class="btn btn-danger" Clicked="CancelToItemList">@L["Cancel"]</Button>
-        <Button Type="@ButtonType.Button" class="btn btn-primary" Clicked="CreateEntityAsync">
+        <Button Disabled=@(ValidationErrors.Count > 0) Type="@ButtonType.Button" class="btn btn-primary" Clicked="CreateEntityAsync">
             <i class="fa fa-check"></i>
             @L["Save"]
         </Button>
