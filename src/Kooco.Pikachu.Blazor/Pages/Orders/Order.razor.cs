@@ -387,6 +387,8 @@ public partial class Order
         {
             await loading.Show();
 
+            SelectedOrder = null;
+
             int skipCount = PageIndex * PageSize;
 
             PagedResultDto<OrderDto> result = await _orderAppService.GetListAsync(new GetOrderListDto
