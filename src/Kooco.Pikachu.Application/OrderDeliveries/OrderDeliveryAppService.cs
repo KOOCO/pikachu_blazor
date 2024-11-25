@@ -214,8 +214,6 @@ namespace Kooco.Pikachu.OrderDeliveries
 
             foreach (OrderDelivery orderDelivery in orderDeliveries)
             {
-                orderDelivery.DeliveryNo = order.OrderNo;
-
                 if (order.DeliveryMethod is DeliveryMethod.HomeDelivery)
                     orderDelivery.DeliveryStatus = DeliveryStatus.Shipped;
 

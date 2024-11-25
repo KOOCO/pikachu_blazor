@@ -122,8 +122,8 @@
                         @L["GenerateDeliveryNumber"]
                     </Button>
                 }
-                else if (Orders.Where(x => x.IsSelected && (x.DeliveryMethod is EnumValues.DeliveryMethod.SelfPickup || 
-                                           x.DeliveryMethod is EnumValues.DeliveryMethod.HomeDelivery)).Count() >= 1)
+                else if (Orders.Where(w => w.IsSelected && (w.DeliveryMethod is EnumValues.DeliveryMethod.SelfPickup || 
+                                           w.DeliveryMethod is EnumValues.DeliveryMethod.HomeDelivery)).Count() >= 1 && IsDeliveryNoExists)
                 {
                     <Dropdown Display="Display.Inline">
                         <DropdownToggle Color="Color.Primary" Size="Size.Small">
@@ -131,23 +131,31 @@
                         </DropdownToggle>
                         <DropdownMenu>
                             <DropdownItem Clicked="ShippingStatusChange"
-                                          Disabled="@(Orders.Any(w => w.DeliveryMethod is EnumValues.DeliveryMethod.SelfPickup) is false ||
-                                                      Orders.Any(w => w.DeliveryMethod is EnumValues.DeliveryMethod.HomeDelivery))">
+                                          Disabled="@(Orders.Any(a => a.IsSelected && a.DeliveryMethod is EnumValues.DeliveryMethod.HomeDelivery))">
                                 @L["SelfPickupShipping"]
                             </DropdownItem>
 
                             <DropdownItem Clicked="ShippingStatusChange"
-                                          Disabled="@(Orders.Any(w => w.DeliveryMethod is EnumValues.DeliveryMethod.HomeDelivery) is false ||
-                                                      Orders.Any(w => w.DeliveryMethod is EnumValues.DeliveryMethod.SelfPickup))">
+                                          Disabled="@(Orders.Any(a => a.IsSelected && a.DeliveryMethod is EnumValues.DeliveryMethod.SelfPickup))">
                                 @L["PersonalDeliveryShipping"]
                             </DropdownItem>
                         </DropdownMenu>
                     </Dropdown>
                 }
-                else if (!Orders.Any(a => a.IsSelected && (a.DeliveryMethod == EnumValues.DeliveryMethod.SelfPickup || 
-                                          a.DeliveryMethod == EnumValues.DeliveryMethod.HomeDelivery)))
+                else if (Orders.Where(w => w.IsSelected && (w.DeliveryMethod is EnumValues.DeliveryMethod.SelfPickup || 
+                                           w.DeliveryMethod is EnumValues.DeliveryMethod.HomeDelivery)).Count() >= 1 && !IsDeliveryNoExists)
                 { 
                     <Button Type="@ButtonType.Button" 
+                            Clicked="OnGenerateDeliveryNumber"
+                            Class="ms-1 btn btn-sm btn-primary">
+                        <i class="fa fa-print" />
+                        @L["GenerateDeliveryNumber"]
+                    </Button>
+                }
+                else if (Orders.Where(w => w.IsSelected && (w.DeliveryMethod is not EnumValues.DeliveryMethod.SelfPickup ||
+                                           w.DeliveryMethod is not EnumValues.DeliveryMethod.HomeDelivery)).Count() >= 1)
+                {
+                    <Button Type="@ButtonType.Button"
                             Clicked="OnGenerateDeliveryNumber"
                             Class="ms-1 btn btn-sm btn-primary">
                         <i class="fa fa-print" />
@@ -316,7 +324,7 @@
                                     <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                         <DisplayTemplate>
                                             @{
-                                                var isExpanded = ExpandedRows.Contains(context.Id);
+                                                var isExpanded = ExpandedRows.Contains(context.OrderId);
                                                 var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
                                             }
                                             <i class="@chevronClass"></i>
@@ -509,7 +517,7 @@
                                     <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                         <DisplayTemplate>
                                             @{
-                                                var isExpanded = ExpandedRows.Contains(context.Id);
+                                                var isExpanded = ExpandedRows.Contains(context.OrderId);
                                                 var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
                                             }
                                             <i class="@chevronClass"></i>
@@ -669,13 +677,16 @@
                                 <DataGridCommandColumn />
                                 <DataGridColumn Caption="@L["Select"]" Width="30px">
                                     <DisplayTemplate>
-                                        <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
+                                         <InputCheckbox class="form-check-input" 
+                                                        Value="@context.IsSelected" 
+                                                        ValueExpression="@(() => context.IsSelected)"
+                                                        ValueChanged="@(async (e) => await PrepareShipmentCheckboxChanged(e, context))" />
                                     </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
                                         @{
-                                            var isExpanded = IsRowExpanded(context);
+                                            var isExpanded = ExpandedRows.Contains(context.OrderId);
                                             var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
                                         }
                                         <i class="@chevronClass"></i>
@@ -904,7 +915,7 @@
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
                                         @{
-                                            bool isExpanded = ExpandedRows.Contains(context.Id);
+                                            bool isExpanded = ExpandedRows.Contains(context.OrderId);
 
                                             string chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
                                         }
@@ -1132,7 +1143,7 @@
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
                                         @{
-                                            var isExpanded = ExpandedRows.Contains(context.Id);
+                                            var isExpanded = ExpandedRows.Contains(context.OrderId);
                                             var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
                                         }
                                         <i class="@chevronClass"></i>
@@ -1360,7 +1371,7 @@
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
                                         @{
-                                            var isExpanded = ExpandedRows.Contains(context.Id);
+                                            var isExpanded = ExpandedRows.Contains(context.OrderId);
                                             var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
                                         }
                                         <i class="@chevronClass"></i>
@@ -1587,7 +1598,7 @@
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
                                         @{
-                                            var isExpanded = ExpandedRows.Contains(context.Id);
+                                            var isExpanded = ExpandedRows.Contains(context.OrderId);
                                             var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
                                         }
                                         <i class="@chevronClass"></i>
@@ -1919,7 +1930,7 @@
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
                                         @{
-                                            var isExpanded = ExpandedRows.Contains(context.Id);
+                                            var isExpanded = ExpandedRows.Contains(context.OrderId);
                                             var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
                                         }
                                         <i class="@chevronClass"></i>
@@ -2146,7 +2157,7 @@
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
                                         @{
-                                            var isExpanded = ExpandedRows.Contains(context.Id);
+                                            var isExpanded = ExpandedRows.Contains(context.OrderId);
                                             var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
                                         }
                                         <i class="@chevronClass"></i>

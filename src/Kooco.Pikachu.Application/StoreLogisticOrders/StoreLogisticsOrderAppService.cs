@@ -614,6 +614,19 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         return printObtB2SResponse;
     }
 
+    public async Task GenerateDeliveryNumberForSelfPickupAndHomeDeliveryAsync(Guid orderId, Guid orderDeliveryId)
+    {
+        Order order = await _orderRepository.GetWithDetailsAsync(orderId);
+
+        List<OrderDelivery> orderDeliveries = await _deliveryRepository.GetWithDetailsAsync(orderId);
+
+        OrderDelivery orderDelivery = orderDeliveries.First(f => f.Id == orderDeliveryId);
+
+        orderDelivery.DeliveryNo = order.OrderNo;
+
+        await _deliveryRepository.UpdateAsync(orderDelivery);
+    }
+
     public bool IsOrderAmountValid(decimal? totalAmount, decimal? deliveryCost)
     {
         decimal totalAmountValue = totalAmount is not null ? totalAmount.Value : 0.00m;

@@ -71,6 +71,8 @@ public partial class Order
     private DeliveryMethod? DeliveryMethod = null;
 
     private Guid? ExpandedOrderId = null;
+
+    private bool IsDeliveryNoExists = false;
     #endregion
 
     #region Methods
@@ -257,6 +259,12 @@ public partial class Order
                             if (result.ResponseCode is not "1") AddToDictionary(responseResults, order.OrderNo, result.ResponseMessage);
                         }
                     }
+                }
+
+                else if (orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.SelfPickup ||
+                         orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.HomeDelivery)
+                {
+                    await _StoreLogisticsOrderAppService.GenerateDeliveryNumberForSelfPickupAndHomeDeliveryAsync(orderId, orderDelivery.Id);
                 }
             }
         }
@@ -529,23 +537,38 @@ public partial class Order
 
     void ToggleRow(DataGridRowMouseEventArgs<OrderDto> e)
     {
-        if (ExpandedOrderId == e.Item.Id) ExpandedOrderId = null;
+        if (ExpandedOrderId == e.Item.OrderId) ExpandedOrderId = null;
 
-        else ExpandedOrderId = e.Item.Id;
+        else ExpandedOrderId = e.Item.OrderId;
 
-        if (ExpandedRows.Contains(e.Item.Id))
+        if (ExpandedRows.Contains(e.Item.OrderId))
         {
-            ExpandedRows.Remove(e.Item.Id);
+            ExpandedRows.Remove(e.Item.OrderId);
         }
         else
         {
-            ExpandedRows.Add(e.Item.Id);
+            ExpandedRows.Add(e.Item.OrderId);
         }
+    }
+
+    public async Task PrepareShipmentCheckboxChanged(bool e, OrderDto order)
+    {
+        order.IsSelected = e;
+
+        if (order.DeliveryMethod is EnumValues.DeliveryMethod.SelfPickup || 
+            order.DeliveryMethod is EnumValues.DeliveryMethod.HomeDelivery)
+        {
+            List<OrderDeliveryDto> orderDeliveries = await _OrderDeliveryAppService.GetListByOrderAsync(order.OrderId);
+
+            IsDeliveryNoExists = orderDeliveries.Count == orderDeliveries.Count(c => c.DeliveryNo != null);
+        }
+
+        StateHasChanged();
     }
 
     private bool IsRowExpanded(OrderDto order)
     {
-        return ExpandedOrderId == order.Id;
+        return ExpandedOrderId == order.OrderId;
     }
 
     private async void MergeOrders()
