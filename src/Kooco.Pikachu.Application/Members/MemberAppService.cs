@@ -3,10 +3,12 @@ using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.PikachuAccounts;
+using Kooco.Pikachu.ShoppingCredits;
 using Kooco.Pikachu.UserAddresses;
 using Kooco.Pikachu.UserCumulativeCredits;
 using Kooco.Pikachu.UserCumulativeFinancials;
 using Kooco.Pikachu.UserCumulativeOrders;
+using Kooco.Pikachu.UserShoppingCredits;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -27,6 +29,8 @@ public class MemberAppService(IMemberRepository memberRepository, IdentityUserMa
     UserAddressManager userAddressManager, IOrderRepository orderRepository, IGroupBuyRepository groupBuyRepository,
     UserCumulativeCreditManager userCumulativeCreditManager, UserCumulativeOrderManager userCumulativeOrderManager,
     UserCumulativeFinancialManager userCumulativeFinancialManager,
+    IUserShoppingCreditAppService userShoppingCreditAppService,
+    IShoppingCreditEarnSettingAppService shoppingCreditEarnSettingAppService,
     IPikachuAccountAppService pikachuAccountAppService, IUserAddressRepository userAddressRepository) : PikachuAppService, IMemberAppService
 {
     public async Task<MemberDto> GetAsync(Guid id)
@@ -210,6 +214,21 @@ public class MemberAppService(IMemberRepository memberRepository, IdentityUserMa
 
         input.Role = MemberConsts.Role;
         var identityUser = await pikachuAccountAppService.RegisterAsync(input);
+        var shoppingCredit= await shoppingCreditEarnSettingAppService.GetFirstAsync();
+        if (shoppingCredit.RegistrationBonusEnabled)
+        {
+            await userShoppingCreditAppService.RecordShoppingCreditAsync(new RecordUserShoppingCreditDto
+            {
+                UserId = identityUser.Id,
+                Amount = shoppingCredit.RegistrationEarnedPoints,
+                IsActive = shoppingCredit.RegistrationBonusEnabled,
+                ExpirationDate = shoppingCredit.RegistrationUsagePeriodType == "NoExpiry" ? null : DateTime.Today.AddDays(shoppingCredit.RegistrationValidDays),
+                TransactionDescription= "獲得註冊禮金",
+
+
+
+            });
+                }
         return ObjectMapper.Map<IdentityUserDto, MemberDto>(identityUser);
     }
 }
