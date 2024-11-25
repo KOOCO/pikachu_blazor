@@ -292,7 +292,7 @@ namespace Kooco.Pikachu.OrderDeliveries
 
             if(!orderDeliveries.Any(a => a.DeliveryStatus != DeliveryStatus.Shipped))
             {
-                Order order = await _orderRepository.GetAsync(delivery.OrderId);
+                Order order = await _orderRepository.GetWithDetailsAsync(delivery.OrderId);
 
                 order.ShippingStatus = ShippingStatus.Shipped;
                 
