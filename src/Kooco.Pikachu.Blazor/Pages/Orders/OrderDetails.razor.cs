@@ -32,6 +32,7 @@ using System.Web;
 using Volo.Abp;
 using Volo.Abp.Http.Modeling;
 using Volo.Abp.ObjectMapping;
+using static Kooco.Pikachu.Permissions.PikachuPermissions;
 
 
 namespace Kooco.Pikachu.Blazor.Pages.Orders;
@@ -1414,6 +1415,12 @@ public partial class OrderDetails
             }
         }
 
+        else if (deliveryOrder.DeliveryMethod is EnumValues.DeliveryMethod.SelfPickup ||
+                       deliveryOrder.DeliveryMethod is EnumValues.DeliveryMethod.HomeDelivery)
+        {
+            await _storeLogisticsOrderAppService.GenerateDeliveryNumberForSelfPickupAndHomeDeliveryAsync(Order.Id, deliveryOrder.Id);
+        }
+
         else
         {
             ResponseResultDto result = await _storeLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(Order.Id, OrderDeliveryId);
@@ -1447,7 +1454,9 @@ public partial class OrderDetails
                deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenNormal ||
                deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFreeze || 
                deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFrozen ||
-               deliveryMethod is DeliveryMethod.DeliveredByStore;
+               deliveryMethod is DeliveryMethod.DeliveredByStore ||
+               deliveryMethod is DeliveryMethod.SelfPickup ||
+               deliveryMethod is DeliveryMethod.HomeDelivery;
     }
 
     private async Task<string> GetPaymentStatus()

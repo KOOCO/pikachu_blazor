@@ -624,7 +624,16 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         orderDelivery.DeliveryNo = order.OrderNo;
 
+        orderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
+
         await _deliveryRepository.UpdateAsync(orderDelivery);
+
+        if (orderDeliveries.All(a => a.DeliveryStatus == DeliveryStatus.ToBeShipped))
+        {
+            order.ShippingStatus = ShippingStatus.ToBeShipped;
+
+            await _orderRepository.UpdateAsync(order);
+        }
     }
 
     public bool IsOrderAmountValid(decimal? totalAmount, decimal? deliveryCost)
