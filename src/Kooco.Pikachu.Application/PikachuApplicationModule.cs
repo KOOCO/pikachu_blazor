@@ -35,5 +35,6 @@ public class PikachuApplicationModule : AbpModule
         {
             options.AddMaps<PikachuApplicationModule>();
         });
+
     }
 }

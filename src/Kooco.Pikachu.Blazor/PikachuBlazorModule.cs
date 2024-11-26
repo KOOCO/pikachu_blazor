@@ -2,6 +2,7 @@ using Blazorise.Bootstrap5;
 using Blazorise.Icons.FontAwesome;
 using Blazorise.RichTextEdit;
 using Hangfire;
+using Kooco.Pikachu.BackgroundWorkers;
 using Kooco.Pikachu.Blazor.Helpers;
 using Kooco.Pikachu.Blazor.Menus;
 using Kooco.Pikachu.Blazor.OpenIddict;
@@ -41,6 +42,7 @@ using Volo.Abp.Autofac;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.BackgroundJobs;
 using Volo.Abp.BackgroundJobs.Hangfire;
+using Volo.Abp.BackgroundWorkers;
 using Volo.Abp.Identity.Blazor.Server;
 using Volo.Abp.Modularity;
 using Volo.Abp.MultiTenancy;
@@ -255,6 +257,7 @@ public class PikachuBlazorModule : AbpModule
         {
             options.IsJobExecutionEnabled = true;
         });
+       
     }
     private void ConfigureHangfire(ServiceConfigurationContext context, IConfiguration configuration)
     {
@@ -429,6 +432,13 @@ public class PikachuBlazorModule : AbpModule
         });
 
         app.UseConfiguredEndpoints();
+        context.ServiceProvider
+     .GetRequiredService<IBackgroundWorkerManager>()
+     .AddAsync(
+         context
+             .ServiceProvider
+             .GetRequiredService<PassiveUserBirthdayCheckerWorker>()
+     );
 
     }
 

@@ -1,5 +1,6 @@
 ﻿using Kooco.Pikachu.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Polly;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,9 @@ using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Volo.Abp.Data;
 using Volo.Abp.EntityFrameworkCore;
+using Volo.Abp.Identity;
 using Volo.Abp.Identity.EntityFrameworkCore;
+using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 
 namespace Kooco.Pikachu.Members;
 
@@ -87,7 +90,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
 
         var memberCredits = dbContext.UserShoppingCredits
                             .Where(x => userId != null && x.UserId == userId)
-                            .Join(dbContext.Orders, credits => credits.Id, orders => orders.CreditDeductionRecordId, (credits, orders) => new { credits, orders })
+                            .//Join(dbContext.Orders, credits => credits.Id, orders => orders.CreditDeductionRecordId, (credits, orders) => new { credits, orders })
                             .WhereIf(usageTimeFrom.HasValue, x => x.orders.CreationTime >= usageTimeFrom)
                             .WhereIf(usageTimeTo.HasValue, x => x.orders.CreationTime <= usageTimeTo)
                             .WhereIf(expirationTimeFrom.HasValue, x => x.credits.ExpirationDate >= expirationTimeFrom)
@@ -109,5 +112,23 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                 ExpirationDate = x.credits.ExpirationDate,
                 RemainingCredits = x.credits.CurrentRemainingCredits
             });
+    }
+
+    public async Task<List<IdentityUser>> GetBirthdayMember() {
+        var dbContext = await GetPikachuDbContextAsync();
+
+        var users = await dbContext.Users.IgnoreQueryFilters().ToListAsync(); // Fetch data into memory
+
+        var nextMonth = DateTime.Now.Month == 12 ? 1 : DateTime.Now.Month + 1;
+
+        var filteredUsers = users
+            .Where(x => x.GetProperty(Constant.Birthday, null) != null &&
+                        ((DateTime)x.GetProperty(Constant.Birthday, null)).Month == nextMonth)
+           
+            .ToList();
+
+        return filteredUsers;
+
+
     }
 }

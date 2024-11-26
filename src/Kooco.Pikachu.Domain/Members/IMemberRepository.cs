@@ -22,4 +22,5 @@ public interface IMemberRepository : IIdentityUserRepository, IRepository<Identi
     Task<IQueryable<MemberCreditRecordModel>> GetMemberCreditRecordQueryableAsync(string? filter,
         DateTime? usageTimeFrom, DateTime? usageTimeTo, DateTime? expirationTimeFrom, DateTime? expirationTimeTo,
         int? minRemainingCredits, int? maxRemainingCredits, int? minAmount, int? maxAmount, Guid? userId);
+    Task<List<IdentityUser>> GetBirthdayMember();
 }

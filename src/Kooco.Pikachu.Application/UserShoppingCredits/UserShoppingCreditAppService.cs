@@ -58,7 +58,7 @@ public class UserShoppingCreditAppService(UserShoppingCreditManager userShopping
             Items = ObjectMapper.Map<List<UserShoppingCredit>, List<UserShoppingCreditDto>>(items)
         };
     }
-    [Authorize(PikachuPermissions.UserShoppingCredits.Create)]
+    [AllowAnonymous]
     public async Task<UserShoppingCreditDto> RecordShoppingCreditAsync(RecordUserShoppingCreditDto input)
     {
         Check.NotNull(input, nameof(input));
