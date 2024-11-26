@@ -242,6 +242,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.TenantContactTitle, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.TenantContactTitle)))
             .ForMember(dest => dest.TenantContactPerson, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.TenantContactPerson)))
             .ForMember(dest => dest.TenantContactEmail, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.TenantContactEmail)))
+            .ForMember(dest => dest.TenantUrl, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.TenantUrl)))
             .ForMember(dest => dest.Domain, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.Domain)))
             .ForMember(dest => dest.ShortCode, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.ShortCode)))
             .ForMember(dest => dest.ShareProfitPercent, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.ShareProfitPercent)))
@@ -252,6 +253,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.TenantContactTitle, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.TenantContactTitle)))
             .ForMember(dest => dest.TenantContactPerson, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.TenantContactPerson)))
             .ForMember(dest => dest.TenantContactEmail, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.TenantContactEmail)))
+            .ForMember(dest => dest.TenantUrl, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.TenantUrl)))
             .ForMember(dest => dest.Domain, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.Domain)));
         CreateMap<TenantInformationDto, UpdateTenantInformationDto>();
 

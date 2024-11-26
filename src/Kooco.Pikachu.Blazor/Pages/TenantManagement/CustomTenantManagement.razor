@@ -149,13 +149,9 @@
                         {
                             <div Class="col-12 row">
                                 <div class="col-12">
-
                                     <div class="image-container">
                                         <Image class="blur-image" Source="@LogoUrl" Text="Item Image" Fluid />
-
                                     </div>
-
-
                                 </div>
                             </div>
                         }
@@ -206,17 +202,12 @@
                         {
                             <div Class="col-12 row">
                                 <div class="col-12">
-
                                     <div class="image-container">
                                         <Image class="blur-image" Source="@BannerUrl" Text="Item Image" Fluid />
-
                                     </div>
-
-
                                 </div>
                             </div>
                         }
-
 
                         <Field>
                             <FieldLabel>@_L["TenantAdministrator"]</FieldLabel>
@@ -245,6 +236,10 @@
                         <Field>
                             <FieldLabel>@_L["TenantContactEmail"]</FieldLabel>
                             <TextEdit @bind-Text="@TenantContactEmail"></TextEdit>
+                        </Field>
+                        <Field>
+                            <FieldLabel>@_L["Link"] *</FieldLabel>
+                            <TextEdit @bind-Text="@TenantUrl"></TextEdit>
                         </Field>
                         <Field>
                             <FieldLabel>@_L["Domain"] *</FieldLabel>
@@ -463,6 +458,10 @@
                         <Field>
                             <FieldLabel>@_L["TenantContactEmail"]</FieldLabel>
                             <TextEdit @bind-Text="@TenantContactEmail"></TextEdit>
+                        </Field>
+                        <Field>
+                            <FieldLabel>@_L["Link"] *</FieldLabel>
+                            <TextEdit @bind-Text="@TenantUrl"></TextEdit>
                         </Field>
                         <Field>
                             <FieldLabel>@_L["Domain"] *</FieldLabel>

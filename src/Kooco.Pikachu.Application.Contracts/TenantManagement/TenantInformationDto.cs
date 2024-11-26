@@ -2,6 +2,7 @@
 
 public class TenantInformationDto
 {
+    public string? TenantUrl { get; set; }
     public string? Domain { get; set; }
     public string? TenantContactTitle { get; set; }
     public string? TenantContactPerson { get; set; }

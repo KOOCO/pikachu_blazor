@@ -11,6 +11,7 @@ public class TenantSettingsConsts
     public const int MaxTenantContactTitleLength = 10;
     public const int MaxTenantContactPersonLength = 64;
     public const int MaxTenantContactEmailLength = 64;
+    public const int MaxTenantUrlLength = 256;
     public const int MaxDomainLength = 256;
     public const int MinShortCodeLength = 8;
     public const int MaxShortCodeLength = 8;

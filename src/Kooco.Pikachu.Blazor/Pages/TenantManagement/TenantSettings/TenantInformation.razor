@@ -14,6 +14,16 @@
                     <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
                         <Validation MessageLocalizer="@LH.Localize">
                             <Field>
+                                <FieldLabel>@L["Link"]<Span> *</Span></FieldLabel>
+                                <TextEdit @bind-Text="Entity.TenantUrl">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
                                 <FieldLabel>@L["Domain"]<Span> *</Span></FieldLabel>
                                 <TextEdit @bind-Text="Entity.Domain">
                                     <Feedback>

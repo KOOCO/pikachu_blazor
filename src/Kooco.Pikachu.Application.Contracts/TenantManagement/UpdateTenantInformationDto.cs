@@ -5,6 +5,11 @@ namespace Kooco.Pikachu.TenantManagement;
 public class UpdateTenantInformationDto
 {
     [Required]
+    [Url]
+    public string? TenantUrl { get; set; }
+
+    [Required]
+    [Url]
     public string? Domain { get; set; }
 
     [Required]

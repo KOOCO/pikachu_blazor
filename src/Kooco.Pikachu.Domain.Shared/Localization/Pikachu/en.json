@@ -1023,6 +1023,8 @@
     "Permission:OrderManagement": "Order Management",
     "Permission:LogisticsManagement": "Logistics Management",
     "Permission:SystemManagement": "System Management",
-    "Permission:PaymentManagement": "Payment Management"
+    "Permission:PaymentManagement": "Payment Management",
+    "TenantUrlIsRequired": "Link is required.",
+    "InvalidUrlWithField": "Please provide a fully qualified URL starting with http or https for {0}."
   }
 }

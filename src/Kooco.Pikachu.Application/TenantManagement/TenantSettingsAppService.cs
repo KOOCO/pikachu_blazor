@@ -44,8 +44,8 @@ public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManage
     {
         Check.NotNull(input, nameof(input));
 
-        var tenantSettings = await tenantSettingsManager.UpdateTenantInformationAsync(input.Domain, input.TenantContactTitle, input.TenantContactPerson,
-            input.ContactPhone, input.TenantContactEmail);
+        var tenantSettings = await tenantSettingsManager.UpdateTenantInformationAsync(input.TenantUrl, input.Domain, input.TenantContactTitle,
+            input.TenantContactPerson, input.ContactPhone, input.TenantContactEmail);
 
         return ObjectMapper.Map<TenantSettings, TenantInformationDto>(tenantSettings);
     }
