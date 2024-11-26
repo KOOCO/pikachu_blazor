@@ -329,8 +329,11 @@
     "Pending": "待審核",
     "PendingReview": "待審核",
     "Penghu": "澎湖",
+    "Permission:GroupBuyManagement": "團購管理",
+    "Permission:GroupBuyPageConfig": "Group Buy Page Config",
+    "Permission:WebsiteSettings": "Website Settings",
     "Permission:AddStoreComments": "新增商家備註",
-    "Permission:DeliveryTemperatureCost": "Delivery Temperature Cost",
+    "Permission:DeliveryTemperatureCost": "廠商統一出貨設定",
     "Permission:E-InvoiceSetting": "電子發票設定",
     "Permission:FreebieSetting": "贈品設定",
     "Permission:GoodsGroupingSetting": "商品組管理",
@@ -1047,7 +1050,26 @@
     "SquareCornersWithoutFullWidth": "直角無滿版",
     "FullWidthWithLargeImage": "滿版大圖",
     "available": "可用",
-    "New": "新增"
+    "New": "新增",
+    "Permission:InventoryReport": "商品庫存報表",
+    "Permission:ProductCategories": "商品分類",
+    "Permission:Item": "商品",
+    "Permission:Update": "編輯",
+    "Permission:SetItem": "商品組",
+    "Permission:SetItemDetails": "SetItemDetails",
+    "Permission:ReturnExchangeOrder": "退換貨管理",
+    "Permission:RefundProcess": "Refund Process",
+    "Permission:CashFlowDealerSettings": "金流渠道設定",
+    "Permission:CashFlowReconciliationStatement": "金流對帳表",
+    "Permission:EmailSettings": "郵件設定",
+    "Permission:AutomaticEmailing": "自動發信",
+    "Permission:ShoppingCredits": "購物金",
+    "Permission:ProductManagement": "商品管理",
+    "Permission:OrderManagement": "訂單管理",
+    "Permission:LogisticsManagement": "物流管理",
+    "Permission:SystemManagement": "系統管理",
+    "Permission:PaymentManagement": "金流管理"
+
 
   }
 }
