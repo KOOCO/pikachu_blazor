@@ -47,10 +47,8 @@ public class PaymentGatewayController(
         RecordEcPay.UniqueEcPayData.TryAdd(UniqueId, ecpayStoreData);
 
         string htmlContent = @"
-            <script>
-                setTimeout(() => {
-                         window.close();
-                    }, 500);
+            <script>                
+                window.close();
             </script>
         ";
 
@@ -101,10 +99,8 @@ public class PaymentGatewayController(
         RecordEcPay.UniqueTCatStoreData.TryAdd(UniqueId, tcatStoreData);
 
         string htmlContent = @"
-            <script>
-                setTimeout(() => {
-                         window.close();
-                    }, 500);
+            <script>                
+                window.close();
             </script>
         ";
 

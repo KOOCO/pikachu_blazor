@@ -90,7 +90,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
 
         var memberCredits = dbContext.UserShoppingCredits
                             .Where(x => userId != null && x.UserId == userId)
-                            .//Join(dbContext.Orders, credits => credits.Id, orders => orders.CreditDeductionRecordId, (credits, orders) => new { credits, orders })
+                            .Join(dbContext.Orders, credits => credits.Id, orders => orders.CreditDeductionRecordId, (credits, orders) => new { credits, orders })
                             .WhereIf(usageTimeFrom.HasValue, x => x.orders.CreationTime >= usageTimeFrom)
                             .WhereIf(usageTimeTo.HasValue, x => x.orders.CreationTime <= usageTimeTo)
                             .WhereIf(expirationTimeFrom.HasValue, x => x.credits.ExpirationDate >= expirationTimeFrom)
