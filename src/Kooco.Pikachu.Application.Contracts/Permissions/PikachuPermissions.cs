@@ -36,6 +36,7 @@ public static class PikachuPermissions
     public const string DeliveryTemperatureCost = "DeliveryTemperatureCost";
 
     public const string MembersManagement = "MembersManagement";
+    public const string WebSiteSettings = "WebsiteSettings";
     public const string Promotions = "Promotions";
     /// <summary>
     /// 

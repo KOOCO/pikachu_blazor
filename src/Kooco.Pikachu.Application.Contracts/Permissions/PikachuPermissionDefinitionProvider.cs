@@ -9,15 +9,15 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
 {
     public override void Define(IPermissionDefinitionContext context)
     {
-        var myGroup = context.AddGroup(PikachuPermissions.GroupBuyManagement);
+        var myGroup = context.AddGroup(PikachuPermissions.GroupBuyManagement,L("Permission:GroupBuyManagement"));
         //Define your own permissions here. Example:
         //myGroup.AddPermission(PikachuPermissions.MyPermission1, L("Permission:MyPermission1"));
         myGroup.AddPermission(PikachuPermissions.GroupBuyList, L("Permission:GroupBuyList"));
         myGroup.AddPermission(PikachuPermissions.GroupBuyReport, L("Permission:GroupBuyReport"));
-        myGroup.AddPermission(PikachuPermissions.GroupBuyPageConfig, L("Permission:GroupBuyPageConfig"));
+       // myGroup.AddPermission(PikachuPermissions.GroupBuyPageConfig, L("Permission:GroupBuyPageConfig"));
 
 
-        var myGroup1 = context.AddGroup(PikachuPermissions.ProductManagement);
+        var myGroup1 = context.AddGroup(PikachuPermissions.ProductManagement,L("Permission:ProductManagement"));
         myGroup1.AddPermission(PikachuPermissions.InventoryReport, L("Permission:InventoryReport"));
 
         myGroup1.AddPermission(PikachuPermissions.GoodsList, L("Permission:ProductList"));
@@ -32,7 +32,7 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
 
         myGroup.AddPermission(PikachuPermissions.POList, L("Permission:OrderList"));
         //myGroup.AddPermission(PikachuPermissions.POReturningList, L("Permission:ProductReturningList"));
-        var myGroup2 = context.AddGroup(PikachuPermissions.OrderManagement);
+        var myGroup2 = context.AddGroup(PikachuPermissions.OrderManagement,L("Permission:OrderManagement"));
         var orderPermissions = myGroup2.AddPermission(PikachuPermissions.Orders.Default, L("Permission:Orders"));
         orderPermissions.AddChild(PikachuPermissions.Orders.AddStoreComment, L("Permission:AddStoreComments"));
         myGroup2.AddPermission(PikachuPermissions.ReturnExchangeOrder, L("Permission:ReturnExchangeOrder"));
@@ -42,14 +42,14 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
         var refundPermissions = myGroup2.AddPermission(PikachuPermissions.Refund.Default, L("Permission:Refunds"));
         refundPermissions.AddChild(PikachuPermissions.Refund.Create, L("Permission:Create"));
         refundPermissions.AddChild(PikachuPermissions.Refund.RefundOrderProcess, L("Permission:RefundProcess"));
-        var myGroup3 = context.AddGroup(PikachuPermissions.PaymentManagement);
+        var myGroup3 = context.AddGroup(PikachuPermissions.PaymentManagement,L("Permission:PaymentManagement"));
         myGroup3.AddPermission(PikachuPermissions.CashFlowDealerSettings, L("Permission:CashFlowDealerSettings"));
         myGroup3.AddPermission(PikachuPermissions.CashFlowReconciliationStatement, L("Permission:CashFlowReconciliationStatement"));
         myGroup3.AddPermission(PikachuPermissions.InvoiceSetting, L("Permission:E-InvoiceSetting"));
-        var myGroup4 = context.AddGroup(PikachuPermissions.LogisticsManagement);
+        var myGroup4 = context.AddGroup(PikachuPermissions.LogisticsManagement,L("Permission:LogisticsManagement"));
         myGroup4.AddPermission(PikachuPermissions.LogisticsSetting, L("Permission:LogisticsSetting"));
 
-        var myGroup5 = context.AddGroup(PikachuPermissions.SystemManagement);
+        var myGroup5 = context.AddGroup(PikachuPermissions.SystemManagement,L("Permission:SystemManagement"));
         myGroup.AddPermission(PikachuPermissions.RefundAuditList, L("Permission:RefundReviewingList"));
 
         myGroup5.AddPermission(PikachuPermissions.EmailSettings, L("Permission:EmailSettings"));
@@ -110,8 +110,8 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
 
         var tenantSettingsPermissions = myGroup.AddPermission(PikachuPermissions.TenantSettings.Default, L("Permission:TenantSettings"), MultiTenancySides.Tenant);
         tenantSettingsPermissions.AddChild(PikachuPermissions.TenantSettings.Edit, L("Permission:Edit"), MultiTenancySides.Tenant);
-
-        var websiteSettingsPermissions = myGroup.AddPermission(PikachuPermissions.WebsiteSettings.Default, L("Permission:WebsiteSettings"));
+        var websiteSettings= context.AddGroup(PikachuPermissions.WebSiteSettings, L("Permission:WebsiteSettings"));
+       var websiteSettingsPermissions = websiteSettings.AddPermission(PikachuPermissions.WebsiteSettings.Default, L("Permission:WebsiteSettings"));
         websiteSettingsPermissions.AddChild(PikachuPermissions.WebsiteSettings.Create, L("Permission:Create"));
         websiteSettingsPermissions.AddChild(PikachuPermissions.WebsiteSettings.Edit, L("Permission:Edit"));
         websiteSettingsPermissions.AddChild(PikachuPermissions.WebsiteSettings.Delete, L("Permission:Delete"));
