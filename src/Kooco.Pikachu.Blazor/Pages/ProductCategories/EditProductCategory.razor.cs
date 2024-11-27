@@ -44,10 +44,7 @@ public partial class EditProductCategory
             Selected = await ProductCategoryAppService.GetAsync(Id, true);
             EditingEntity = ObjectMapper.Map<ProductCategoryDto, UpdateProductCategoryDto>(Selected);
             await PopulateItems().ConfigureAwait(false);
-            if (DescriptionHtml != null && !EditingEntity.Description.IsNullOrWhiteSpace())
-            {
-                await DescriptionHtml.LoadHTMLContent(EditingEntity.Description);
-            }
+            await LoadHtmlContent();
         }
         catch (Exception ex)
         {
@@ -62,10 +59,6 @@ public partial class EditProductCategory
             try
             {
                 ItemsLookup = await ItemAppService.GetItemsLookupAsync();
-                //if (DescriptionHtml != null && !EditingEntity.Description.IsNullOrWhiteSpace())
-                //{
-                //    await DescriptionHtml.LoadHTMLContent(EditingEntity.Description);
-                //}
                 StateHasChanged();
             }
             catch (Exception ex)
@@ -90,6 +83,16 @@ public partial class EditProductCategory
 
         ItemsLookup.RemoveAll(item => itemIds.Contains(item.Id));
         await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task LoadHtmlContent()
+    {
+        if (DescriptionHtml != null && !EditingEntity.Description.IsNullOrWhiteSpace())
+        {
+            await Task.Delay(200);
+            await DescriptionHtml?.LoadHTMLContent(EditingEntity.Description);
+            StateHasChanged();
+        }
     }
 
     private void NavigateToProductCategory()
