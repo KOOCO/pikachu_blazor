@@ -45,6 +45,7 @@ public partial class EditProductCategory
             EditingEntity = ObjectMapper.Map<ProductCategoryDto, UpdateProductCategoryDto>(Selected);
             await PopulateItems().ConfigureAwait(false);
             await LoadHtmlContent();
+            await InvokeAsync(StateHasChanged);
         }
         catch (Exception ex)
         {
@@ -85,14 +86,14 @@ public partial class EditProductCategory
         await InvokeAsync(StateHasChanged);
     }
 
-    private async Task LoadHtmlContent()
+    private async Task LoadHtmlContent(int retryCount = 0)
     {
-        if (DescriptionHtml != null && !EditingEntity.Description.IsNullOrWhiteSpace())
+        await Task.Delay(200);
+        if (retryCount <= 5 && EditingEntity.Description.IsNullOrWhiteSpace())
         {
-            await Task.Delay(200);
-            await DescriptionHtml?.LoadHTMLContent(EditingEntity.Description);
-            StateHasChanged();
+            await LoadHtmlContent(retryCount + 1);
         }
+        await DescriptionHtml?.LoadHTMLContent(EditingEntity.Description);
     }
 
     private void NavigateToProductCategory()
