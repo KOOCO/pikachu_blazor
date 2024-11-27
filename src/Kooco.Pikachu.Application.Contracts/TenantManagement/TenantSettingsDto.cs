@@ -21,6 +21,7 @@ public class TenantSettingsDto : FullAuditedEntityDto<Guid>
     public string? TenantContactTitle { get; set; }
     public string? TenantContactPerson { get; set; }
     public string? TenantContactEmail { get; set; }
+    public string? TenantUrl { get; set; }
     public string? Domain { get; set; }
     public string? ShortCode { get; set; }
     public int? ShareProfitPercent { get; set; }

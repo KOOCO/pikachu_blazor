@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning;
 using Kooco.Pikachu.ShoppingCredits;
 using Microsoft.AspNetCore.Mvc;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,7 +47,10 @@ namespace Kooco.Pikachu.Controllers.ShoppingCredits
         {
             return await _shoppingCreditEarnSettingAppService.UpdateAsync(id, input);
         }
-
-     
+        [HttpGet("shopping-credit-settings")]
+        public Task<Dictionary<string, object>> GetShoppingCreditSettingsAsync(Guid groupBuyId)
+        {
+            return _shoppingCreditEarnSettingAppService.GetShoppingCreditSettingsAsync(groupBuyId);
+        }
     }
 }

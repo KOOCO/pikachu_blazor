@@ -238,7 +238,7 @@ public class GroupBuy : FullAuditedAggregateRoot<Guid>, IMultiTenant
 
     public GroupBuy(Guid id, int groupNo, string status,
         string groupBuyName,
-        string entryURL, // Not Saving this on purpose
+        string entryURL,
         string entryURL2,
         string subjectLine,
         string shortName,
@@ -300,6 +300,7 @@ public class GroupBuy : FullAuditedAggregateRoot<Guid>, IMultiTenant
         GroupBuyNo = groupNo;
         Status = status;
         GroupBuyName = groupBuyName;
+        EntryURL = entryURL?.TrimEnd('/') + "/" + Id; 
         EntryURL2 = entryURL2;
         SubjectLine = subjectLine;
         ShortName = shortName;

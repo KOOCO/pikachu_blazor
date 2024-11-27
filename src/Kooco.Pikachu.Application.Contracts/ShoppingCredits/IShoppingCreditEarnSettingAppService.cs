@@ -1,7 +1,9 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Volo.Abp.Application.Services;
 
 namespace Kooco.Pikachu.ShoppingCredits
@@ -35,11 +37,13 @@ namespace Kooco.Pikachu.ShoppingCredits
         /// </summary>
         /// <returns>ShoppingCreditsEarnSettingDto</returns>
         Task<ShoppingCreditEarnSettingDto> GetFirstAsync();
+        Task<Dictionary<string, object>> GetShoppingCreditSettingsAsync(Guid groupBuyId);
 
         /// <summary>
         /// Deletes a ShoppingCreditsEarnSetting by its ID
         /// </summary>
         /// <param name="id">The ID of the ShoppingCreditsEarnSetting to delete</param>
         // Task DeleteAsync(Guid id);
+
     }
 }

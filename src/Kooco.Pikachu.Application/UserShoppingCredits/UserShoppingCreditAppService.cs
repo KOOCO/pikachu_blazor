@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.Domain.Repositories;
 
 namespace Kooco.Pikachu.UserShoppingCredits;
 
@@ -88,5 +90,12 @@ public class UserShoppingCreditAppService(UserShoppingCreditManager userShopping
             input.CurrentRemainingCredits, input.TransactionDescription, input.ExpirationDate, input.IsActive);
 
         return ObjectMapper.Map<UserShoppingCredit, UserShoppingCreditDto>(userShoppingCredit);
+    }
+
+    public async Task<int> GetMemberCurrentShoppingCreditAsync(Guid memberId)
+    {
+        var userCredit = (await userShoppingCreditRepository.GetQueryableAsync()).Where(x => x.UserId == memberId).OrderByDescending(x=>x.CreationTime).LastOrDefault();
+        return userCredit?.CurrentRemainingCredits??0;
+    
     }
 }

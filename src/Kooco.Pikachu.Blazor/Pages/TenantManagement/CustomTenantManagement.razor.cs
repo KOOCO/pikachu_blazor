@@ -43,7 +43,7 @@ public partial class CustomTenantManagement
     public string BannerUrl { get; set; }
     public string ShortCode { get; set; }
     public string EntryUrl { get; set; }
-    public string TenantUrl { get; set; }
+    public string? TenantUrl { get; set; }
     public string TenantContactPerson { get; set; }
     public string TenantContactTitle { get; set; }
     public string TenantContactEmail { get; set; }
@@ -109,15 +109,16 @@ public partial class CustomTenantManagement
         base.NewEntity.SetProperty("TenantContactTitle", TenantContactTitle);
         base.NewEntity.SetProperty("TenantContactEmail", TenantContactEmail);
         base.NewEntity.SetProperty(Constant.Domain, Domain);
+        base.NewEntity.SetProperty(Constant.TenantUrl, TenantUrl);
 
         if (ShortCode == null)
         {
             await _uiMessageService.Warn(_L["TenantShortCodeRequired"]);
             return;
         }
-        if (!ValidateDomain().IsNullOrEmpty())
+        if (!ValidateUrls().IsNullOrEmpty())
         {
-            await _uiMessageService.Warn(_L[ValidateDomain()]);
+            await _uiMessageService.Warn(_L[ValidateUrls()]);
             return;
         }
         var check = await _myTenantAppService.CheckShortCodeForCreateAsync(ShortCode);
@@ -128,8 +129,6 @@ public partial class CustomTenantManagement
         }
 
         base.NewEntity.SetProperty("ShortCode", ShortCode);
-        TenantUrl = EntryUrl + "/ShortCode=" + ShortCode;
-        base.NewEntity.SetProperty("TenantUrl", TenantUrl);
         await base.CreateEntityAsync();
         LogoUrl = null;
         ShareProfitPercentage = 0;
@@ -249,6 +248,7 @@ public partial class CustomTenantManagement
         TenantContactTitle = null;
         TenantContactEmail = null;
         Domain = null;
+        TenantUrl = null;
         return base.OpenCreateModalAsync();
 
     }
@@ -265,9 +265,9 @@ public partial class CustomTenantManagement
             await _uiMessageService.Warn(L["Short Code Already Exsist"]);
             return;
         }
-        if (!ValidateDomain().IsNullOrEmpty())
+        if (!ValidateUrls().IsNullOrEmpty())
         {
-            await _uiMessageService.Warn(_L[ValidateDomain()]);
+            await _uiMessageService.Warn(_L[ValidateUrls()]);
             return;
         }
         base.EditingEntity.ExtraProperties.Remove("LogoUrl");
@@ -280,7 +280,7 @@ public partial class CustomTenantManagement
         base.EditingEntity.ExtraProperties.Remove("TenantContactEmail");
         base.EditingEntity.ExtraProperties.Remove(Constant.Domain);
         base.EditingEntity.ExtraProperties.Remove("ShortCode");
-        base.EditingEntity.ExtraProperties.Remove("TenantUrl");
+        base.EditingEntity.ExtraProperties.Remove(Constant.TenantUrl);
 
         base.EditingEntity.SetProperty("LogoUrl", LogoUrl);
         base.EditingEntity.SetProperty("ShareProfitPercent", ShareProfitPercentage);
@@ -292,16 +292,14 @@ public partial class CustomTenantManagement
         base.EditingEntity.SetProperty("TenantContactTitle", TenantContactTitle);
         base.EditingEntity.SetProperty("TenantContactEmail", TenantContactEmail);
         base.EditingEntity.SetProperty(Constant.Domain, Domain);
-        TenantUrl = EntryUrl + "/ShortCode=" + ShortCode;
-        base.EditingEntity.SetProperty("TenantUrl", TenantUrl);
+        base.EditingEntity.SetProperty(Constant.TenantUrl, TenantUrl);
         LogoUrl = null;
         ShareProfitPercentage = 0;
         TenantOwnerId = null;
         Status = 0;
         await base.UpdateEntityAsync();
-
-
     }
+
     protected override Task OpenEditModalAsync(TenantDto row)
     {
         TenantOwnerId = row.GetProperty<Guid?>("TenantOwner");
@@ -437,7 +435,7 @@ public partial class CustomTenantManagement
         }
     }
 
-    private string ValidateDomain()
+    private string ValidateUrls()
     {
         // Check if the domain is not empty
         if (string.IsNullOrWhiteSpace(Domain))
@@ -445,16 +443,26 @@ public partial class CustomTenantManagement
             return _L["DomainIsRequired"];
         }
 
+        // Check if the domain is not empty
+        if (string.IsNullOrWhiteSpace(TenantUrl))
+        {
+            return _L["TenantUrlIsRequired"];
+        }
+
         // Check if the domain is a valid URL with http or https
-        if (Uri.TryCreate(Domain, UriKind.Absolute, out var uriResult) &&
-            (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps))
+        if (!Uri.TryCreate(Domain, UriKind.Absolute, out var domainUriResult) ||
+            (domainUriResult.Scheme != Uri.UriSchemeHttp && domainUriResult.Scheme != Uri.UriSchemeHttps))
         {
-            return null;
+            return _L["InvalidUrlWithField", nameof(Domain)];
         }
-        else
+
+        if (!Uri.TryCreate(TenantUrl, UriKind.Absolute, out var tenantUriResult) ||
+            (tenantUriResult.Scheme != Uri.UriSchemeHttp && tenantUriResult.Scheme != Uri.UriSchemeHttps))
         {
-            return _L["InvalidUrl"];
+            return _L["InvalidUrlWithField", nameof(TenantUrl)];
         }
+
+        return null;
     }
 }
 

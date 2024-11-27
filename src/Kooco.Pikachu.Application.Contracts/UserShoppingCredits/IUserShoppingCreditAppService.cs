@@ -14,4 +14,6 @@ public interface IUserShoppingCreditAppService : IApplicationService
     Task<PagedResultDto<UserShoppingCreditDto>> GetListAsync(GetUserShoppingCreditListDto input);
     Task<UserShoppingCreditDto> SetIsActiveAsync(Guid id, bool isActive);
     Task<UserShoppingCreditDto> RecordShoppingCreditAsync(RecordUserShoppingCreditDto input);
+    Task<int> GetMemberCurrentShoppingCreditAsync(Guid memberId);
+
 }

@@ -6,6 +6,7 @@ using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Services;
 using Volo.Abp.TenantManagement;
+using Kooco.Pikachu.Extensions;
 
 namespace Kooco.Pikachu.TenantManagement;
 
@@ -138,14 +139,25 @@ public class TenantSettingsManager(IRepository<TenantSettings, Guid> tenantSetti
         }
     }
 
-    public async Task<TenantSettings> UpdateTenantInformationAsync(string? domain, string? tenantContactTitle,
+    public async Task<TenantSettings> UpdateTenantInformationAsync(string? tenantUrl, string? domain, string? tenantContactTitle,
         string? tenantContactPerson, string? contactPhone, string? tenantContactEmail)
     {
+        Check.NotNullOrWhiteSpace(tenantUrl, nameof(tenantUrl), TenantSettingsConsts.MaxTenantUrlLength);
         Check.NotNullOrWhiteSpace(domain, nameof(domain), TenantSettingsConsts.MaxDomainLength);
         Check.NotNullOrWhiteSpace(tenantContactTitle, nameof(tenantContactTitle), TenantSettingsConsts.MaxTenantContactTitleLength);
         Check.NotNullOrWhiteSpace(tenantContactPerson, nameof(tenantContactPerson), TenantSettingsConsts.MaxTenantContactPersonLength);
         Check.NotNullOrWhiteSpace(contactPhone, nameof(contactPhone), TenantSettingsConsts.MaxContactPhoneLength);
         Check.NotNullOrWhiteSpace(tenantContactEmail, nameof(tenantContactEmail), TenantSettingsConsts.MaxTenantContactEmailLength);
+
+        if (tenantUrl?.IsEmptyOrValidUrl() == false)
+        {
+            throw new InvalidUrlException(nameof(tenantUrl));
+        }
+
+        if (domain?.IsEmptyOrValidUrl() == false)
+        {
+            throw new InvalidUrlException(nameof(domain));
+        }
 
         var tenantSettings = await GetAsync();
         tenantSettings.SetContactPhone(contactPhone);
@@ -161,6 +173,9 @@ public class TenantSettingsManager(IRepository<TenantSettings, Guid> tenantSetti
 
         tenant.RemoveProperty(Constant.TenantContactEmail);
         tenant.SetProperty(Constant.TenantContactEmail, tenantContactEmail);
+
+        tenant.RemoveProperty(Constant.TenantUrl);
+        tenant.SetProperty(Constant.TenantUrl, tenantUrl);
 
         tenant.RemoveProperty(Constant.Domain);
         tenant.SetProperty(Constant.Domain, domain);

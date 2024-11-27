@@ -11,11 +11,11 @@ namespace Kooco.Pikachu.Items;
 public class SetItemDetailsAppService : CrudAppService<SetItemDetails, SetItemDetailsDto, Guid, PagedAndSortedResultRequestDto, CreateUpdateSetItemDetailsDto, CreateUpdateSetItemDetailsDto>,
     ISetItemDetailsAppService
 {
-    protected override string GetPolicyName { get; set; } = PikachuPermissions.SetItemDetails.Default;
-    protected override string GetListPolicyName { get; set; } = PikachuPermissions.SetItemDetails.Default;
-    protected override string CreatePolicyName { get; set; } = PikachuPermissions.SetItemDetails.Create;
-    protected override string UpdatePolicyName { get; set; } = PikachuPermissions.SetItemDetails.Update;
-    protected override string DeletePolicyName { get; set; } = PikachuPermissions.SetItemDetails.Delete;
+    //protected override string GetPolicyName { get; set; } = PikachuPermissions.SetItemDetails.Default;
+    //protected override string GetListPolicyName { get; set; } = PikachuPermissions.SetItemDetails.Default;
+    //protected override string CreatePolicyName { get; set; } = PikachuPermissions.SetItemDetails.Create;
+    //protected override string UpdatePolicyName { get; set; } = PikachuPermissions.SetItemDetails.Update;
+    //protected override string DeletePolicyName { get; set; } = PikachuPermissions.SetItemDetails.Delete;
 
     private readonly ISetItemDetailsRepository _repository;
 
