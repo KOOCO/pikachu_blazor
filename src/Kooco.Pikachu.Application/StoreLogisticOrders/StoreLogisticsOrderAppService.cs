@@ -182,16 +182,16 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         request.AddParameter("SenderName", GreenWorld.SenderName);
         request.AddParameter("SenderPhone", GreenWorld.SenderPhoneNumber);
         request.AddParameter("SenderZipCode", GreenWorld.SenderPostalCode);
-        request.AddParameter("SenderAddress", GreenWorld.SenderAddress);
+        request.AddParameter("SenderAddress", GreenWorld.SenderAddress); 
         request.AddParameter("ReceiverName", order.RecipientName);
         request.AddParameter("ReceiverCellPhone", order.RecipientPhone);
         request.AddParameter("ReceiverZipCode", order.PostalCode);
         request.AddParameter("ReceiverAddress", receiverAddress);
-        request.AddParameter("ServerReplyURL", "https://www.ecpay.com.tw/ServerReplyURL");
+        request.AddParameter("ServerReplyURL", "https://eowng60ht1hyw1q.m.pipedream.net");
         //request.AddParameter("ReceiverStoreID", "123");
         request.AddParameter("CheckMacValue", GenerateCheckMac(
             greenWorld.HashKey, greenWorld.HashIV, GreenWorld.StoreCode, order.OrderNo, marchentDate, "HOME", orderDelivery.DeliveryMethod is DeliveryMethod.PostOffice || deliveryMethod is DeliveryMethod.PostOffice ? "POST" : "TCAT", Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)),PostOffice.Weight, GreenWorld.SenderName,GreenWorld.SenderPhoneNumber,
-            GreenWorld.SenderPostalCode,GreenWorld.SenderAddress, order.RecipientName, order.RecipientPhone,order.PostalCode, receiverAddress, "https://www.ecpay.com.tw/ServerReplyURL"));
+            GreenWorld.SenderPostalCode,GreenWorld.SenderAddress, order.RecipientName, order.RecipientPhone,order.PostalCode, receiverAddress, "https://eowng60ht1hyw1q.m.pipedream.net" /*"https://www.ecpay.com.tw/ServerReplyURL"*/));
         //request.AddParameter("IsCollection", "N");
         request.AddParameter("MerchantTradeNo",  order.OrderNo);
 

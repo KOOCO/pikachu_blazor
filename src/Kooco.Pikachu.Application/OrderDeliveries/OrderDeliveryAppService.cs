@@ -217,7 +217,7 @@ namespace Kooco.Pikachu.OrderDeliveries
                 if (order.DeliveryMethod is DeliveryMethod.HomeDelivery)
                     orderDelivery.DeliveryStatus = DeliveryStatus.Shipped;
 
-                else if(order.DeliveryMethod is DeliveryMethod.SelfPickup)
+                else if (order.DeliveryMethod is DeliveryMethod.SelfPickup)
                     orderDelivery.DeliveryStatus = DeliveryStatus.Delivered;
                 
                 await _orderDeliveryRepository.UpdateAsync(orderDelivery);
@@ -227,7 +227,7 @@ namespace Kooco.Pikachu.OrderDeliveries
                                         orderDeliveries.All(a => a.DeliveryStatus == DeliveryStatus.Shipped))
                 order.ShippingStatus = ShippingStatus.Shipped;
 
-            else if(order.DeliveryMethod is DeliveryMethod.SelfPickup &&
+            else if (order.DeliveryMethod is DeliveryMethod.SelfPickup &&
                                         orderDeliveries.All(a => a.DeliveryStatus == DeliveryStatus.Delivered))
                 order.ShippingStatus = ShippingStatus.Delivered;
           

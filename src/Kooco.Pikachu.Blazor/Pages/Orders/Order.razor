@@ -122,36 +122,38 @@
                         @L["GenerateDeliveryNumber"]
                     </Button>
                 }
-                else if (Orders.Where(w => w.IsSelected && (w.DeliveryMethod is EnumValues.DeliveryMethod.SelfPickup || 
-                                           w.DeliveryMethod is EnumValues.DeliveryMethod.HomeDelivery)).Count() >= 1 && IsDeliveryNoExists)
+
+                else if (Orders.Where(w => w.IsSelected && (w.DeliveryMethod is EnumValues.DeliveryMethod.SelfPickup ||
+                                           w.DeliveryMethod is EnumValues.DeliveryMethod.HomeDelivery)).Count() >= 1)
                 {
                     <Dropdown Display="Display.Inline">
-                        <DropdownToggle Color="Color.Primary" Size="Size.Small">
+                        <Button Type="@ButtonType.Button"
+                                Clicked="OnGenerateDeliveryNumber"
+                                Class="btn-sm btn-primary"
+                                Border="Border.Rounded.Is2">
+                            <i class="fa fa-print" />
                             @L["GenerateDeliveryNumber"]
-                        </DropdownToggle>
+                        </Button>
+                        <DropdownToggle Color="Color.Primary" 
+                                        Size="Size.Small" 
+                                        Border="Border.Rounded.Is2"
+                                        Split />
                         <DropdownMenu>
                             <DropdownItem Clicked="ShippingStatusChange"
-                                          Disabled="@(Orders.Any(a => a.IsSelected && a.DeliveryMethod is EnumValues.DeliveryMethod.HomeDelivery))">
+                                          Disabled="@(Orders.Any(a => a.IsSelected && 
+                                                                      a.DeliveryMethod is EnumValues.DeliveryMethod.HomeDelivery))">
                                 @L["SelfPickupShipping"]
                             </DropdownItem>
-
+                            <DropdownDivider />
                             <DropdownItem Clicked="ShippingStatusChange"
-                                          Disabled="@(Orders.Any(a => a.IsSelected && a.DeliveryMethod is EnumValues.DeliveryMethod.SelfPickup))">
+                                          Disabled="@(Orders.Any(a => a.IsSelected && 
+                                                                      a.DeliveryMethod is EnumValues.DeliveryMethod.SelfPickup))">
                                 @L["PersonalDeliveryShipping"]
                             </DropdownItem>
                         </DropdownMenu>
                     </Dropdown>
                 }
-                else if (Orders.Where(w => w.IsSelected && (w.DeliveryMethod is EnumValues.DeliveryMethod.SelfPickup || 
-                                           w.DeliveryMethod is EnumValues.DeliveryMethod.HomeDelivery)).Count() >= 1 && !IsDeliveryNoExists)
-                { 
-                    <Button Type="@ButtonType.Button" 
-                            Clicked="OnGenerateDeliveryNumber"
-                            Class="ms-1 btn btn-sm btn-primary">
-                        <i class="fa fa-print" />
-                        @L["GenerateDeliveryNumber"]
-                    </Button>
-                }
+
                 else if (Orders.Where(w => w.IsSelected && (w.DeliveryMethod is not EnumValues.DeliveryMethod.SelfPickup ||
                                            w.DeliveryMethod is not EnumValues.DeliveryMethod.HomeDelivery)).Count() >= 1)
                 {
