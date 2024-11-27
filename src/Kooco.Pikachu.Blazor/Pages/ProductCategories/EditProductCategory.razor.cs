@@ -62,10 +62,10 @@ public partial class EditProductCategory
             try
             {
                 ItemsLookup = await ItemAppService.GetItemsLookupAsync();
-                if (DescriptionHtml != null && !EditingEntity.Description.IsNullOrWhiteSpace())
-                {
-                    await DescriptionHtml.LoadHTMLContent(EditingEntity.Description);
-                }
+                //if (DescriptionHtml != null && !EditingEntity.Description.IsNullOrWhiteSpace())
+                //{
+                //    await DescriptionHtml.LoadHTMLContent(EditingEntity.Description);
+                //}
                 StateHasChanged();
             }
             catch (Exception ex)
