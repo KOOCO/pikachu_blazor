@@ -72,10 +72,10 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
         setItemPermission.AddChild(PikachuPermissions.SetItem.Update, L("Permission:Update"));
         setItemPermission.AddChild(PikachuPermissions.SetItem.Delete, L("Permission:Delete"));
 
-        var setItemDetailsPermission = myGroup1.AddPermission(PikachuPermissions.SetItemDetails.Default, L("Permission:SetItemDetails"));
-        setItemDetailsPermission.AddChild(PikachuPermissions.SetItemDetails.Create, L("Permission:Create"));
-        setItemDetailsPermission.AddChild(PikachuPermissions.SetItemDetails.Update, L("Permission:Update"));
-        setItemDetailsPermission.AddChild(PikachuPermissions.SetItemDetails.Delete, L("Permission:Delete"));
+        //var setItemDetailsPermission = myGroup1.AddPermission(PikachuPermissions.SetItemDetails.Default, L("Permission:SetItemDetails"));
+        //setItemDetailsPermission.AddChild(PikachuPermissions.SetItemDetails.Create, L("Permission:Create"));
+        //setItemDetailsPermission.AddChild(PikachuPermissions.SetItemDetails.Update, L("Permission:Update"));
+        //setItemDetailsPermission.AddChild(PikachuPermissions.SetItemDetails.Delete, L("Permission:Delete"));
 
         var memberManagementGroup = context.AddGroup(PikachuPermissions.MembersManagement, L(PikachuPermissions.MembersManagement));
         var memberPermissions = memberManagementGroup.AddPermission(PikachuPermissions.Members.Default, L("Permission:Members"));
