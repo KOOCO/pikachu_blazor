@@ -1025,6 +1025,7 @@
     "Permission:SystemManagement": "System Management",
     "Permission:PaymentManagement": "Payment Management",
     "TenantUrlIsRequired": "Link is required.",
-    "InvalidUrlWithField": "Please provide a fully qualified URL starting with http or https for {0}."
+    "InvalidUrlWithField": "Please provide a fully qualified URL starting with http or https for {0}.",
+    "CustomerServiceContactPhone": "Customer Service Contact Phone"
   }
 }

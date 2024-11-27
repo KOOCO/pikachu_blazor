@@ -43,11 +43,11 @@ public partial class EditProductCategory
         {
             Selected = await ProductCategoryAppService.GetAsync(Id, true);
             EditingEntity = ObjectMapper.Map<ProductCategoryDto, UpdateProductCategoryDto>(Selected);
+            await PopulateItems().ConfigureAwait(false);
             if (DescriptionHtml != null && !EditingEntity.Description.IsNullOrWhiteSpace())
             {
                 await DescriptionHtml.LoadHTMLContent(EditingEntity.Description);
             }
-            await PopulateItems().ConfigureAwait(false);
         }
         catch (Exception ex)
         {

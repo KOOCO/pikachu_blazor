@@ -44,8 +44,8 @@ public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManage
     {
         Check.NotNull(input, nameof(input));
 
-        var tenantSettings = await tenantSettingsManager.UpdateTenantInformationAsync(input.TenantUrl, input.Domain, input.TenantContactTitle,
-            input.TenantContactPerson, input.ContactPhone, input.TenantContactEmail);
+        var tenantSettings = await tenantSettingsManager.UpdateTenantInformationAsync(input.ShortCode, input.TenantUrl, input.Domain,
+            input.TenantContactTitle, input.TenantContactPerson, input.ContactPhone, input.TenantContactEmail);
 
         return ObjectMapper.Map<TenantSettings, TenantInformationDto>(tenantSettings);
     }
@@ -62,8 +62,8 @@ public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManage
     {
         Check.NotNull(input, nameof(input));
 
-        var tenantSettings = await tenantSettingsManager.UpdateCustomerServiceAsync(input.ShortCode, input.CompanyName, input.BusinessRegistrationNumber,
-            input.CustomerServiceEmail, input.ServiceHoursFrom, input.ServiceHoursTo);
+        var tenantSettings = await tenantSettingsManager.UpdateCustomerServiceAsync(input.CompanyName, input.BusinessRegistrationNumber,
+            input.CustomerServiceEmail, input.CustomerServiceContactPhone, input.ServiceHoursFrom, input.ServiceHoursTo);
 
         return ObjectMapper.Map<TenantSettings, TenantCustomerServiceDto>(tenantSettings);
     }
