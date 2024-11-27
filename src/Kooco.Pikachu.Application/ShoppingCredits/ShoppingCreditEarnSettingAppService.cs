@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,14 +13,17 @@ namespace Kooco.Pikachu.ShoppingCredits
     public class ShoppingCreditEarnSettingAppService : PikachuAppService, IShoppingCreditEarnSettingAppService
     {
         private readonly IShoppingCreditEarnSettingRepository _shoppingCreditEarnSettingRepository;
+        private readonly IShoppingCreditUsageSettingRepository _shoppingCreditUsageSettingRepository;
         private readonly ShoppingCreditEarnSettingManager _shoppingCreditEarnSettingManager;
 
         public ShoppingCreditEarnSettingAppService(
             IShoppingCreditEarnSettingRepository shoppingCreditEarnSettingRepository,
-            ShoppingCreditEarnSettingManager shoppingCreditEarnSettingManager)
+            ShoppingCreditEarnSettingManager shoppingCreditEarnSettingManager,
+            IShoppingCreditUsageSettingRepository shoppingCreditUsageSettingRepository)
         {
             _shoppingCreditEarnSettingRepository = shoppingCreditEarnSettingRepository;
             _shoppingCreditEarnSettingManager = shoppingCreditEarnSettingManager;
+            _shoppingCreditUsageSettingRepository = shoppingCreditUsageSettingRepository;
         }
 
         /// <summary>
@@ -107,6 +111,89 @@ namespace Kooco.Pikachu.ShoppingCredits
             return ObjectMapper.Map<ShoppingCreditEarnSetting, ShoppingCreditEarnSettingDto>(shoppingCreditsEarnSetting);
         }
 
-        
+        public async Task<Dictionary<string, object>> GetShoppingCreditSettingsAsync(Guid groupBuyId)
+        {
+            // Initialize the JSON response as a dictionary
+            var response = new Dictionary<string, object>
+            {
+                ["Cashback"] = null,
+                ["Use"] = null
+            };
+
+            // Validate GroupBuyId
+            if (groupBuyId == Guid.Empty)
+            {
+                response["Cashback"] = new { Error = "The provided GroupBuyId is invalid." };
+                response["Use"] = new { Error = "The provided GroupBuyId is invalid." };
+                return response;
+            }
+
+            // Fetch settings
+            var earnSetting = await _shoppingCreditEarnSettingRepository.FirstOrDefaultAsync();
+            await _shoppingCreditEarnSettingRepository.EnsureCollectionLoadedAsync(earnSetting, x => x.SpecificGroupbuys);
+
+            var usageSetting = await _shoppingCreditUsageSettingRepository.FirstOrDefaultAsync();
+            await _shoppingCreditUsageSettingRepository.EnsureCollectionLoadedAsync(usageSetting, x => x.SpecificGroupbuys);
+
+            // Populate Cashback section
+            if (earnSetting != null)
+            {
+                if (!earnSetting.CashbackEnabled)
+                {
+                    response["Cashback"] = new { Error = "Shopping credit earn setting is disabled." };
+                }
+                // Validate Group Buy Scope
+                if (!earnSetting.SpecificGroupbuys.Any(x => x.GroupbuyId == groupBuyId) && earnSetting.CashbackApplicableGroupbuys == "SpecificGroupbuys")
+                {
+                    response["Cashback"] = new { Error = "This group buy cannot be used." };
+                    return response;
+                }
+
+                response["Cashback"] = new
+                {
+                    Status = earnSetting.CashbackEnabled,
+                    UsagePeriodType = earnSetting.CashbackUsagePeriodType,
+                    CashbackUnifiedMaxDeductiblePoints = earnSetting.CashbackUnifiedMaxDeductiblePoints,
+                    ValidDays = earnSetting.CashbackValidDays,
+                    CalculationMethod = earnSetting.CashbackCalculationMethod,
+                    StagedSettings = earnSetting.CashbackStagedSettings
+                };
+            }
+            else
+            {
+                response["Cashback"] = new { Error = "Shopping credit earn setting not found." };
+            }
+
+            // Populate Use section
+            if (usageSetting != null)
+            {
+                if (!usageSetting.AllowUsage)
+                {
+                    response["Cashback"] = new { Error = "Shopping credit usage setting is disabled." };
+                }
+                // Validate Group Buy Scope
+                if (!usageSetting.SpecificGroupbuys.Any(x => x.GroupbuyId == groupBuyId) && usageSetting.UsableGroupbuysScope == "SpecificGroupbuys")
+                {
+                    response["Use"] = new { Error = "This group buy cannot be used." };
+                    return response;
+                }
+
+                response["Use"] = new
+                {
+                    Status = usageSetting.AllowUsage,
+                    DeductionMethod = usageSetting.DeductionMethod,
+                    UnifiedMaxDeductiblePoints = usageSetting.UnifiedMaxDeductiblePoints,
+                    StagedSettings = usageSetting.StagedSettings,
+                    ApplicableItems = usageSetting.ApplicableItems
+                };
+            }
+            else
+            {
+                response["Use"] = new { Error = "Shopping credit usage setting not found." };
+            }
+
+            return response;
+        }
+
     }
 }
