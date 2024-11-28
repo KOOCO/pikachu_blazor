@@ -1990,7 +1990,12 @@
                             </DataGridColumn>
                             <DataGridColumn Field="@nameof(OrderDeliveryDto.DeliveryStatus)" Caption="@L["DeliveryStatus"]">
                                 <DisplayTemplate>
-                                    @L[context.DeliveryStatus.ToString()] @Environment.NewLine @Order.EcpayLogisticsStatus
+                                    @L[context.DeliveryStatus.ToString()] 
+
+                                    @if (!Order.EcpayLogisticsStatus.IsNullOrWhiteSpace()) {
+                                        <br />
+                                        <b>[</b>@Order.EcpayLogisticsStatus<b>]</b>
+                                    }
                                 </DisplayTemplate>
 
                             </DataGridColumn>

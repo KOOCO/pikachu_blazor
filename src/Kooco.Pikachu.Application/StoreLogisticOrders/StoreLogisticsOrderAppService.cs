@@ -111,143 +111,150 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
     #region Methods
     public async Task<ResponseResultDto> CreateHomeDeliveryShipmentOrderAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null)
     {
-        Order order = await _orderRepository.GetWithDetailsAsync(orderId);
-        var orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
-        var orderDelivery = orderDeliverys.Where(x => x.Id == orderDeliveryId).FirstOrDefault();
-        var providers = await _logisticsProvidersAppService.GetAllAsync();
-
-        var greenWorld = providers.Where(p => p.LogisticProvider is LogisticProviders.GreenWorldLogistics).FirstOrDefault();
-        if (greenWorld != null)
+        try
         {
-            GreenWorld = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorld);
-        }
+            Order order = await _orderRepository.GetWithDetailsAsync(orderId);
+            var orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
+            var orderDelivery = orderDeliverys.Where(x => x.Id == orderDeliveryId).FirstOrDefault();
+            var providers = await _logisticsProvidersAppService.GetAllAsync();
 
-        var homeDelivery = providers.Where(p => p.LogisticProvider is LogisticProviders.HomeDelivery).FirstOrDefault();
-        if (homeDelivery != null)
-        {
-            HomeDelivery = ObjectMapper.Map<LogisticsProviderSettingsDto, HomeDeliveryCreateUpdateDto>(homeDelivery);
-        }
-        var postOffice = providers.Where(p => p.LogisticProvider is LogisticProviders.PostOffice).FirstOrDefault();
-        if (postOffice != null)
-        {
-            PostOffice = ObjectMapper.Map<LogisticsProviderSettingsDto, PostOfficeCreateUpdateDto>(postOffice);
-        }
-        var sevenToEleven = providers.Where(p => p.LogisticProvider is LogisticProviders.SevenToEleven).FirstOrDefault();
-        if (sevenToEleven != null)
-        {
-            SevenToEleven = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(sevenToEleven);
-        }
-        var familyMart = providers.Where(p => p.LogisticProvider is LogisticProviders.FamilyMart).FirstOrDefault();
-        if (familyMart != null)
-        {
-            FamilyMart = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(familyMart);
-        }
-        var sevenToElevenFrozen = providers.Where(p => p.LogisticProvider is LogisticProviders.SevenToElevenFrozen).FirstOrDefault();
-        if (sevenToElevenFrozen != null)
-        {
-            SevenToElevenFrozen = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(sevenToElevenFrozen);
-        }
-        var bNormal = providers.Where(p => p.LogisticProvider is LogisticProviders.BNormal).FirstOrDefault();
-        if (bNormal != null)
-        {
-            BNormal = ObjectMapper.Map<LogisticsProviderSettingsDto, BNormalCreateUpdateDto>(bNormal);
-        }
-        var bFreeze = providers.Where(p => p.LogisticProvider is LogisticProviders.BFreeze).FirstOrDefault();
-        if (bFreeze != null)
-        {
-            BFreeze = ObjectMapper.Map<LogisticsProviderSettingsDto, BNormalCreateUpdateDto>(bFreeze);
-        }
-        var bFrozen = providers.Where(p => p.LogisticProvider is LogisticProviders.BFrozen).FirstOrDefault();
-        if (bFrozen != null)
-        {
-            BFrozen = ObjectMapper.Map<LogisticsProviderSettingsDto, BNormalCreateUpdateDto>(bFrozen);
-        }
-        var options = new RestClientOptions
-        {
-            MaxTimeout = -1,
-        };
-
-        RestClient client = new (options);
-
-        RestRequest request = new (_configuration["EcPay:LogisticApi"], Method.Post);
-        
-        string marchentDate = DateTime.Now.ToString("yyyy/MM/dd");
-
-        string receiverAddress = string.Concat(_L[order.City].Value, order.AddressDetails);
-
-        HttpRequest? domainRequest = _httpContextAccessor?.HttpContext?.Request;
-
-        string? domainName = $"{domainRequest?.Scheme}://{domainRequest?.Host.Value}";
-
-        string serverReplyURL = $"{domainName}/api/app/orders/ecpay-logisticsStatus-callback";
-
-        request.AddHeader("Accept", "text/html");
-        request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
-        request.AddParameter("MerchantID", GreenWorld.StoreCode);
-        request.AddParameter("MerchantTradeDate",marchentDate);
-        request.AddParameter("LogisticsType", "HOME");
-        request.AddParameter("LogisticsSubType", orderDelivery.DeliveryMethod is DeliveryMethod.PostOffice || deliveryMethod is DeliveryMethod.PostOffice ? "POST" : "TCAT");
-        request.AddParameter("GoodsAmount", Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)));
-        request.AddParameter("GoodsWeight", PostOffice.Weight);
-        request.AddParameter("SenderName", GreenWorld.SenderName);
-        request.AddParameter("SenderPhone", GreenWorld.SenderPhoneNumber);
-        request.AddParameter("SenderZipCode", GreenWorld.SenderPostalCode);
-        request.AddParameter("SenderAddress", GreenWorld.SenderAddress); 
-        request.AddParameter("ReceiverName", order.RecipientName);
-        request.AddParameter("ReceiverCellPhone", order.RecipientPhone);
-        request.AddParameter("ReceiverZipCode", order.PostalCode);
-        request.AddParameter("ReceiverAddress", receiverAddress);
-        request.AddParameter("ServerReplyURL", serverReplyURL);
-        //request.AddParameter("ReceiverStoreID", "123");
-        request.AddParameter("CheckMacValue", GenerateCheckMac(
-            greenWorld.HashKey, greenWorld.HashIV, GreenWorld.StoreCode, order.OrderNo, marchentDate, "HOME", orderDelivery.DeliveryMethod is DeliveryMethod.PostOffice || deliveryMethod is DeliveryMethod.PostOffice ? "POST" : "TCAT", Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)),PostOffice.Weight, GreenWorld.SenderName,GreenWorld.SenderPhoneNumber,
-            GreenWorld.SenderPostalCode,GreenWorld.SenderAddress, order.RecipientName, order.RecipientPhone,order.PostalCode, receiverAddress, serverReplyURL));
-        //request.AddParameter("IsCollection", "N");
-        request.AddParameter("MerchantTradeNo",  order.OrderNo);
-
-        RestResponse response = await client.ExecuteAsync(request);
-
-        ResponseResultDto result = ParseApiResponse(response.Content.ToString());
-        
-        if (result.ResponseCode is "1")
-        {
-            orderDelivery.DeliveryNo = result.ShippingInfo.BookingNote;
-            
-            orderDelivery.AllPayLogisticsID = result.ShippingInfo.AllPayLogisticsID;
-
-            orderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
-
-            if (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore && 
-                deliveryMethod is not null)
-                orderDelivery.ActualDeliveryMethod = deliveryMethod;
-
-            await _deliveryRepository.UpdateAsync(orderDelivery);
-
-            order.ShippingStatus = ShippingStatus.ToBeShipped;
-
-            await _orderRepository.UpdateAsync(order);
-            var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
-            if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
+            var greenWorld = providers.Where(p => p.LogisticProvider is LogisticProviders.GreenWorldLogistics).FirstOrDefault();
+            if (greenWorld != null)
             {
-                if (order.GroupBuy.IssueInvoice)
+                GreenWorld = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorld);
+            }
+
+            var homeDelivery = providers.Where(p => p.LogisticProvider is LogisticProviders.HomeDelivery).FirstOrDefault();
+            if (homeDelivery != null)
+            {
+                HomeDelivery = ObjectMapper.Map<LogisticsProviderSettingsDto, HomeDeliveryCreateUpdateDto>(homeDelivery);
+            }
+            var postOffice = providers.Where(p => p.LogisticProvider is LogisticProviders.PostOffice).FirstOrDefault();
+            if (postOffice != null)
+            {
+                PostOffice = ObjectMapper.Map<LogisticsProviderSettingsDto, PostOfficeCreateUpdateDto>(postOffice);
+            }
+            var sevenToEleven = providers.Where(p => p.LogisticProvider is LogisticProviders.SevenToEleven).FirstOrDefault();
+            if (sevenToEleven != null)
+            {
+                SevenToEleven = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(sevenToEleven);
+            }
+            var familyMart = providers.Where(p => p.LogisticProvider is LogisticProviders.FamilyMart).FirstOrDefault();
+            if (familyMart != null)
+            {
+                FamilyMart = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(familyMart);
+            }
+            var sevenToElevenFrozen = providers.Where(p => p.LogisticProvider is LogisticProviders.SevenToElevenFrozen).FirstOrDefault();
+            if (sevenToElevenFrozen != null)
+            {
+                SevenToElevenFrozen = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(sevenToElevenFrozen);
+            }
+            var bNormal = providers.Where(p => p.LogisticProvider is LogisticProviders.BNormal).FirstOrDefault();
+            if (bNormal != null)
+            {
+                BNormal = ObjectMapper.Map<LogisticsProviderSettingsDto, BNormalCreateUpdateDto>(bNormal);
+            }
+            var bFreeze = providers.Where(p => p.LogisticProvider is LogisticProviders.BFreeze).FirstOrDefault();
+            if (bFreeze != null)
+            {
+                BFreeze = ObjectMapper.Map<LogisticsProviderSettingsDto, BNormalCreateUpdateDto>(bFreeze);
+            }
+            var bFrozen = providers.Where(p => p.LogisticProvider is LogisticProviders.BFrozen).FirstOrDefault();
+            if (bFrozen != null)
+            {
+                BFrozen = ObjectMapper.Map<LogisticsProviderSettingsDto, BNormalCreateUpdateDto>(bFrozen);
+            }
+            var options = new RestClientOptions
+            {
+                MaxTimeout = -1,
+            };
+
+            RestClient client = new(options);
+
+            RestRequest request = new(_configuration["EcPay:LogisticApi"], Method.Post);
+
+            string marchentDate = DateTime.Now.ToString("yyyy/MM/dd");
+
+            string receiverAddress = string.Concat(_L[order.City].Value, order.AddressDetails);
+
+            HttpRequest? domainRequest = _httpContextAccessor?.HttpContext?.Request;
+
+            string? domainName = $"{domainRequest?.Scheme}://{domainRequest?.Host.Value}";
+
+            string serverReplyURL = $"{domainName}/api/app/orders/ecpay-logisticsStatus-callback";
+
+            request.AddHeader("Accept", "text/html");
+            request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+            request.AddParameter("MerchantID", GreenWorld.StoreCode);
+            request.AddParameter("MerchantTradeDate", marchentDate);
+            request.AddParameter("LogisticsType", "HOME");
+            request.AddParameter("LogisticsSubType", orderDelivery.DeliveryMethod is DeliveryMethod.PostOffice || deliveryMethod is DeliveryMethod.PostOffice ? "POST" : "TCAT");
+            request.AddParameter("GoodsAmount", Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)));
+            request.AddParameter("GoodsWeight", PostOffice.Weight);
+            request.AddParameter("SenderName", GreenWorld.SenderName);
+            request.AddParameter("SenderPhone", GreenWorld.SenderPhoneNumber);
+            request.AddParameter("SenderZipCode", GreenWorld.SenderPostalCode);
+            request.AddParameter("SenderAddress", GreenWorld.SenderAddress);
+            request.AddParameter("ReceiverName", order.RecipientName);
+            request.AddParameter("ReceiverCellPhone", order.RecipientPhone);
+            request.AddParameter("ReceiverZipCode", order.PostalCode);
+            request.AddParameter("ReceiverAddress", receiverAddress);
+            request.AddParameter("ServerReplyURL", serverReplyURL);
+            //request.AddParameter("ReceiverStoreID", "123");
+            request.AddParameter("CheckMacValue", GenerateCheckMac(
+                greenWorld.HashKey, greenWorld.HashIV, GreenWorld.StoreCode, order.OrderNo, marchentDate, "HOME", orderDelivery.DeliveryMethod is DeliveryMethod.PostOffice || deliveryMethod is DeliveryMethod.PostOffice ? "POST" : "TCAT", Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)), PostOffice.Weight, GreenWorld.SenderName, GreenWorld.SenderPhoneNumber,
+                GreenWorld.SenderPostalCode, GreenWorld.SenderAddress, order.RecipientName, order.RecipientPhone, order.PostalCode, receiverAddress, serverReplyURL));
+            //request.AddParameter("IsCollection", "N");
+            request.AddParameter("MerchantTradeNo", order.OrderNo);
+
+            RestResponse response = await client.ExecuteAsync(request);
+
+            ResponseResultDto result = ParseApiResponse(response.Content.ToString());
+
+            if (result.ResponseCode is "1")
+            {
+                orderDelivery.DeliveryNo = result.ShippingInfo.BookingNote;
+
+                orderDelivery.AllPayLogisticsID = result.ShippingInfo.AllPayLogisticsID;
+
+                orderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
+
+                if (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore &&
+                    deliveryMethod is not null)
+                    orderDelivery.ActualDeliveryMethod = deliveryMethod;
+
+                await _deliveryRepository.UpdateAsync(orderDelivery);
+
+                order.ShippingStatus = ShippingStatus.ToBeShipped;
+
+                await _orderRepository.UpdateAsync(order);
+                var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
                 {
-                    order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
-                    //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
-                    var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
-                    if (invoiceDely == 0)
+                    if (order.GroupBuy.IssueInvoice)
                     {
-                        await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
-                    }
-                    else
-                    {
-                        var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
-                        GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
-                        var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                        order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
+                        //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                        var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
+                        if (invoiceDely == 0)
+                        {
+                            await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+                        }
+                        else
+                        {
+                            var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
+                            GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
+                            var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                        }
                     }
                 }
             }
+            return result;
         }
-        return result;
+        catch (UserFriendlyException ex)
+        {
+            throw;
+        }
     }
 
     public void MapAllLogistics(List<LogisticsProviderSettingsDto> providers)
