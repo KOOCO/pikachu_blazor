@@ -58,4 +58,10 @@ public class StoreLogisticOrderController(
     {
         throw new NotImplementedException();
     }
+
+    [HttpPost("find-status")]
+    public Task<string> FindStatusAsync()
+    {
+        throw new NotImplementedException();
+    }
 }

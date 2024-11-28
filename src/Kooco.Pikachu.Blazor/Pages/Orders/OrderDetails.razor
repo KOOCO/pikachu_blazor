@@ -1980,7 +1980,7 @@
                             </DataGridColumn>
                             <DataGridColumn Field="@nameof(OrderDeliveryDto.DeliveryStatus)" Caption="@L["DeliveryStatus"]">
                                 <DisplayTemplate>
-                                    @L[context.DeliveryStatus.ToString()]
+                                    @L[context.DeliveryStatus.ToString()] @Environment.NewLine @Order.EcpayLogisticsStatus
                                 </DisplayTemplate>
 
                             </DataGridColumn>

@@ -187,8 +187,11 @@ public partial class OrderDetails
         OrderDeliveries = [.. OrderDeliveries.Where(w => w.Items.Count > 0)];
 
         PaymentStatus = await GetPaymentStatus();
-       var result= await _OrderMessageAppService.GetListAsync(new GetOrderMessageListDto { MaxResultCount = 1000, OrderId = Order.Id });
+
+        var result= await _OrderMessageAppService.GetListAsync(new GetOrderMessageListDto { MaxResultCount = 1000, OrderId = Order.Id });
+        
         CustomerServiceHistory = result.Items;
+        
         await InvokeAsync(StateHasChanged);
     }
 

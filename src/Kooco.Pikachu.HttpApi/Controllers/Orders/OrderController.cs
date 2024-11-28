@@ -7,6 +7,7 @@ using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.Response;
+using Kooco.Pikachu.StoreLogisticOrders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -37,27 +38,41 @@ public class OrderController : AbpController, IOrderAppService
     private readonly IOrderAppService _ordersAppService;
     private readonly IConfiguration _Configuration;
     private readonly IGroupBuyAppService _GroupBuyAppService;
+
+    private readonly IStoreLogisticsOrderAppService _SLOAppservice;
     #endregion
 
     #region Constructor
     public OrderController(
         IOrderAppService ordersAppService,
         IConfiguration Configuration,
-        IGroupBuyAppService GroupBuyAppService
+        IGroupBuyAppService GroupBuyAppService,
+        IStoreLogisticsOrderAppService SLOAppservice
     )
     {
         _ordersAppService = ordersAppService;
         _Configuration = Configuration;
         _GroupBuyAppService = GroupBuyAppService;
+
+        _SLOAppservice = SLOAppservice;
     }
     #endregion
 
+    #region Methods
     [HttpPost]
     public Task<OrderDto> CreateAsync(CreateUpdateOrderDto input)
     {
         if (input.CreationTime == DateTime.MinValue) input.CreationTime = DateTime.Now;
 
         return _ordersAppService.CreateAsync(input);
+    }
+
+    [HttpPost("find-status")]
+    public async Task<IActionResult> FindStatusAsync()
+    {
+        string status = await _SLOAppservice.FindStatusAsync();
+
+        return Ok();
     }
 
     [HttpGet("ecpay-proceed-to-checkout")]
@@ -230,7 +245,7 @@ public class OrderController : AbpController, IOrderAppService
             bool validPaymentTypeChargeFee = int.TryParse(form["PaymentTypeChargeFee"], out int paymentTypeChargeFee);
             bool validSimulatePaid = int.TryParse(form["SimulatePaid"], out int simulatePaid);
 
-            PaymentResult paymentResult = new ()
+            PaymentResult paymentResult = new()
             {
                 MerchantID = form["MerchantID"],
                 MerchantTradeNo = form["MerchantTradeNo"],
@@ -256,6 +271,45 @@ public class OrderController : AbpController, IOrderAppService
         catch
         {
             return BadRequest();
+        }
+    }
+
+    [HttpPost("ecpay-logisticsStatus-callback")]
+    public async Task<IActionResult> EcpayLogisticsStatusCallbackAsync()
+    {
+        try
+        {
+            bool validRtnCode = int.TryParse(Request.Form["RtnCode"], out int rtnCode);
+            bool validGoodsAmount = int.TryParse(Request.Form["GoodsAmount"], out int goodsAmount);
+
+            EcpayRequest ecpayRequest = new()
+            {
+                MerchantID = Request.Form["MerchantID"],
+                MerchantTradeNo = Request.Form["MerchantTradeNo"],
+                RtnCode = validRtnCode ? rtnCode : 0,
+                RtnMsg = Request.Form["RtnMsg"],
+                LogisticsType = Request.Form["LogisticType"],
+                LogisticsSubType = Request.Form["LogisticsSubType"],
+                GoodsAmount = validGoodsAmount ? goodsAmount : 0,
+                UpdateStatusDate = Request.Form["UpdateStatusDate"],
+                ReceiverName = Request.Form["ReceiverName"],
+                ReceiverPhone = Request.Form["ReceiverPhone"],
+                ReceiverCellPhone = Request.Form["ReceiverCellPhone"],
+                ReceiverEmail = Request.Form["ReceiverEmail"],
+                ReceiverAddress = Request.Form["ReceiverAddress"],
+                CVSPaymentNo = Request.Form["CVSPaymentNo"],
+                CVSValidationNo = Request.Form["CVSValidationNo"],
+                BookingNote = Request.Form["BookingNote"],
+                CheckMacValue = Request.Form["CheckMacValue"],
+            };
+
+            await _ordersAppService.UpdateLogisticStatusAsync(ecpayRequest.MerchantTradeNo!, ecpayRequest.RtnMsg!);
+
+            return Ok("1|OK");
+        }
+        catch
+        {
+            return Ok("0| ErrorMessage");
         }
     }
 
@@ -444,7 +498,7 @@ public class OrderController : AbpController, IOrderAppService
     [HttpPost("refund-order-items")]
     public Task<OrderDto> RefundOrderItems(List<Guid> OrderItemIds, Guid OrderId)
     {
-       return _ordersAppService.RefundOrderItems(OrderItemIds, OrderId);
+        return _ordersAppService.RefundOrderItems(OrderItemIds, OrderId);
     }
 
     [HttpPost("refund-amount")]
@@ -491,4 +545,11 @@ public class OrderController : AbpController, IOrderAppService
     {
         return _ordersAppService.GetOrderStatusCountsAsync(userId);
     }
+
+    [HttpPost("update-logisticsStatus")]
+    public Task UpdateLogisticStatusAsync(string merchantTradeNo, string rtnMsg)
+    {
+        return _ordersAppService.UpdateLogisticStatusAsync(merchantTradeNo, rtnMsg);
+    }
+    #endregion
 }

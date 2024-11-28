@@ -45,6 +45,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
     private readonly IOrderRepository _orderRepository;
     private readonly IOrderDeliveryRepository _deliveryRepository;
     private readonly ILogisticsProvidersAppService _logisticsProvidersAppService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     GreenWorldLogisticsCreateUpdateDto GreenWorld { get; set; }
     HomeDeliveryCreateUpdateDto HomeDelivery { get; set; }
     PostOfficeCreateUpdateDto PostOffice { get; set; }
@@ -81,7 +82,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         IGroupBuyAppService GroupBuyAppService,
           IBackgroundJobManager backgroundJobManager,
         IElectronicInvoiceSettingRepository electronicInvoiceSettingRepository,
-        IElectronicInvoiceAppService electronicInvoiceAppService
+        IElectronicInvoiceAppService electronicInvoiceAppService,
+        IHttpContextAccessor httpContextAccessor
     ) 
     {   
         _orderRepository = orderRepository;
@@ -102,9 +104,11 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         _backgroundJobManager = backgroundJobManager;
         _electronicInvoiceSettingRepository = electronicInvoiceSettingRepository;
         _electronicInvoiceAppService = electronicInvoiceAppService;
+        _httpContextAccessor = httpContextAccessor;
     }
     #endregion
 
+    #region Methods
     public async Task<ResponseResultDto> CreateHomeDeliveryShipmentOrderAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null)
     {
         Order order = await _orderRepository.GetWithDetailsAsync(orderId);
@@ -171,6 +175,12 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         string receiverAddress = string.Concat(_L[order.City].Value, order.AddressDetails);
 
+        HttpRequest? domainRequest = _httpContextAccessor?.HttpContext?.Request;
+
+        string? domainName = $"{domainRequest?.Scheme}://{domainRequest?.Host.Value}";
+
+        string serverReplyURL = $"{domainName}/api/app/orders/ordersecpay-logisticsStatus-callback";
+
         request.AddHeader("Accept", "text/html");
         request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
         request.AddParameter("MerchantID", GreenWorld.StoreCode);
@@ -187,11 +197,11 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         request.AddParameter("ReceiverCellPhone", order.RecipientPhone);
         request.AddParameter("ReceiverZipCode", order.PostalCode);
         request.AddParameter("ReceiverAddress", receiverAddress);
-        request.AddParameter("ServerReplyURL", "https://eowng60ht1hyw1q.m.pipedream.net");
+        request.AddParameter("ServerReplyURL", serverReplyURL);
         //request.AddParameter("ReceiverStoreID", "123");
         request.AddParameter("CheckMacValue", GenerateCheckMac(
             greenWorld.HashKey, greenWorld.HashIV, GreenWorld.StoreCode, order.OrderNo, marchentDate, "HOME", orderDelivery.DeliveryMethod is DeliveryMethod.PostOffice || deliveryMethod is DeliveryMethod.PostOffice ? "POST" : "TCAT", Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)),PostOffice.Weight, GreenWorld.SenderName,GreenWorld.SenderPhoneNumber,
-            GreenWorld.SenderPostalCode,GreenWorld.SenderAddress, order.RecipientName, order.RecipientPhone,order.PostalCode, receiverAddress, "https://eowng60ht1hyw1q.m.pipedream.net" /*"https://www.ecpay.com.tw/ServerReplyURL"*/));
+            GreenWorld.SenderPostalCode,GreenWorld.SenderAddress, order.RecipientName, order.RecipientPhone,order.PostalCode, receiverAddress, serverReplyURL));
         //request.AddParameter("IsCollection", "N");
         request.AddParameter("MerchantTradeNo",  order.OrderNo);
 
@@ -791,8 +801,16 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         string marchentDate = DateTime.Now.ToString("yyyy/MM/dd");
 
         string validatePattern = @"[\^'`!@#%&*+\\\""<>|_\[\]]";
+
         string goodsName = order.GroupBuy.GroupBuyName;
+
         goodsName = Regex.Replace(goodsName, validatePattern, "");
+
+        HttpRequest? domainRequest = _httpContextAccessor?.HttpContext?.Request;
+
+        string? domainName = $"{domainRequest?.Scheme}://{domainRequest?.Host.Value}";
+
+        string serverReplyURL = $"{domainName}/api/app/ordersecpay-logisticsStatus-callback";
 
         request.AddHeader("Accept", "text/html");
         request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -841,7 +859,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         request.AddParameter("SenderName", GreenWorld.SenderName);
         request.AddParameter("ReceiverName", order.RecipientName);
         request.AddParameter("ReceiverCellPhone", order.RecipientPhone);
-        request.AddParameter("ServerReplyURL", "https://www.ecpay.com.tw/ServerReplyURL");
+        request.AddParameter("ServerReplyURL", serverReplyURL);
         request.AddParameter("ReceiverStoreID", order.StoreId);
 
         if (order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment)
@@ -856,11 +874,11 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             deliveryMethod is DeliveryMethod.SevenToElevenC2C)
         {
             request.AddParameter("CheckMacValue", GenerateRequestString(GreenWorld.HashKey, GreenWorld.HashIV, GreenWorld.StoreCode, order.OrderNo, marchentDate, "CVS", logisticSubType, Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)), GreenWorld.SenderName, order.RecipientName, order.RecipientPhone,
-                "https://www.ecpay.com.tw/ServerReplyURL", order.StoreId, goodsName, GreenWorld.SenderPhoneNumber, isCollection: isCollection));
+                serverReplyURL, order.StoreId, goodsName, GreenWorld.SenderPhoneNumber, isCollection: isCollection));
         }
         else {
             request.AddParameter("CheckMacValue", GenerateRequestString(GreenWorld.HashKey, GreenWorld.HashIV, GreenWorld.StoreCode, order.OrderNo, marchentDate, "CVS", logisticSubType, Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)), GreenWorld.SenderName, order.RecipientName, order.RecipientPhone,
-                    "https://www.ecpay.com.tw/ServerReplyURL", order.StoreId, isCollection: isCollection));
+                    serverReplyURL, order.StoreId, isCollection: isCollection));
         }
 
         request.AddParameter("MerchantTradeNo", order.OrderNo);
@@ -931,6 +949,58 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         }
 
         return result;
+    }
+
+    public async Task<string> FindStatusAsync()
+    {
+        RestClientOptions options = new() { MaxTimeout = -1 };
+
+        RestClient client = new(options);
+
+        RestRequest request = new("https://logistics-stage.ecpay.com.tw/Helper/QueryLogisticsTradeInfo/V5", Method.Post);
+
+        request.AddHeader("Accept", "text/html");
+        request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        request.AddParameter("MerchantID", "2000132");
+        request.AddParameter("MerchantTradeNo", "87FBF77DDE6");
+        request.AddParameter("TimeStamp", "1732699855");
+
+        var parameters = new Dictionary<string, string>
+        {
+            { "MerchantID", "2000132" },
+            { "MerchantTradeNo", "87FBF77DDE6" },
+            { "TimeStamp", "1732699855" },
+        };
+
+        IOrderedEnumerable<KeyValuePair<string, string>> sortedParameters = parameters.OrderBy(p => p.Key);
+
+        string requestString = string.Join("&", sortedParameters.Select(p => $"{p.Key}={p.Value}"));
+
+        requestString = $"HashKey=5294y06JbISpM5x9&{requestString}&HashIV=v77hoKGq4kWxNNIS";
+
+        string urlEncodedData = HttpUtility.UrlEncode(requestString);
+
+        string lowercaseData = urlEncodedData.ToLower();
+
+        using (MD5 md5 = MD5.Create())
+        {
+            byte[] inputBytes = Encoding.UTF8.GetBytes(lowercaseData);
+            byte[] hashBytes = md5.ComputeHash(inputBytes);
+
+            StringBuilder sb = new();
+
+            for (int i = 0; i < hashBytes.Length; i++)
+            {
+                sb.Append(hashBytes[i].ToString("X2"));
+            }
+
+            request.AddParameter("CheckMacValue", sb.ToString());
+        }
+
+        RestResponse response = await client.ExecuteAsync(request);
+
+        return response.Content.ToString();
     }
 
     public async Task<string> GenerateShipmentForB2C(ResponseResultDto response)
@@ -1209,4 +1279,6 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         return result;
     }
+
+    #endregion
 }

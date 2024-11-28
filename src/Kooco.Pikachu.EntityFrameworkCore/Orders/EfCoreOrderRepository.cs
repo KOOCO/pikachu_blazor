@@ -365,6 +365,13 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
             .FirstOrDefaultAsync();
     }
 
+    public async Task<Order> GetOrderByMerchantTradeNoAsync(string merchantTradeNo)
+    {
+        return await (await GetQueryableAsync())
+                        .FirstOrDefaultAsync(w => w.OrderNo == merchantTradeNo || 
+                                                  w.MerchantTradeNo == merchantTradeNo);
+    }
+
     public async Task<Order> GetOrderAsync(Guid groupBuyId, string orderNo, string extraInfo)
     {
         return await (await GetQueryableAsync())

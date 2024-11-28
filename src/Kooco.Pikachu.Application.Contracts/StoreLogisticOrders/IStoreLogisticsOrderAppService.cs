@@ -23,5 +23,7 @@ namespace Kooco.Pikachu.StoreLogisticOrders
         Task<ResponseResultDto> CreateHomeDeliveryShipmentOrderAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null);
 
         Task<EmapApiResponse> GetStoreAsync(string deliveryMethod);
+
+        Task<string> FindStatusAsync();
     }
 }

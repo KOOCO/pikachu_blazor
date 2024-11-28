@@ -1576,6 +1576,15 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
     }
 
+    public async Task UpdateLogisticStatusAsync(string merchantTradeNo, string rtnMsg)
+    {
+        Order order = await _orderRepository.GetOrderByMerchantTradeNoAsync(merchantTradeNo);
+
+        order.EcpayLogisticsStatus = rtnMsg;
+
+        await _orderRepository.UpdateAsync(order);
+    }
+
     [AllowAnonymous]
     public async Task HandlePaymentAsync(PaymentResult paymentResult)
     {
