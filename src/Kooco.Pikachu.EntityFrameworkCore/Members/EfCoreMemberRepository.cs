@@ -88,33 +88,39 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
     {
         var dbContext = await GetPikachuDbContextAsync();
 
-        var memberCredits = dbContext.UserShoppingCredits
+        var memberCredits = (from credits in dbContext.UserShoppingCredits
                             .Where(x => userId != null && x.UserId == userId)
-                            .Join(dbContext.Orders, credits => credits.Id, orders => orders.CreditDeductionRecordId, (credits, orders) => new { credits, orders })
-                            .WhereIf(usageTimeFrom.HasValue, x => x.orders.CreationTime >= usageTimeFrom)
-                            .WhereIf(usageTimeTo.HasValue, x => x.orders.CreationTime <= usageTimeTo)
-                            .WhereIf(expirationTimeFrom.HasValue, x => x.credits.ExpirationDate >= expirationTimeFrom)
-                            .WhereIf(expirationTimeTo.HasValue, x => x.credits.ExpirationDate <= expirationTimeTo)
-                            .WhereIf(minRemainingCredits.HasValue, x => x.credits.CurrentRemainingCredits >= minRemainingCredits)
-                            .WhereIf(maxRemainingCredits.HasValue, x => x.credits.CurrentRemainingCredits <= maxRemainingCredits)
-                            .WhereIf(minAmount.HasValue, x => x.orders.CreditDeductionAmount >= minAmount)
-                            .WhereIf(maxAmount.HasValue, x => x.orders.CreditDeductionAmount <= maxAmount)
-                            .WhereIf(maxAmount.HasValue, x => x.orders.CreditDeductionAmount <= maxAmount)
-                            .WhereIf(!string.IsNullOrWhiteSpace(filter), x => x.credits.TransactionDescription != null && x.credits.TransactionDescription.Contains(filter));
+                            join orders in dbContext.Orders
+                            on credits.Id equals orders.CreditDeductionRecordId
+                            into creditsWithOrders
+                            from orders in creditsWithOrders.DefaultIfEmpty()
+                            select new { credits, orders })
+                           //.Join(dbContext.Orders, credits => credits.Id, orders => orders.CreditDeductionRecordId, (credits, orders) => new { credits, orders })
+                           .WhereIf(usageTimeFrom.HasValue, x => x.orders.CreationTime >= usageTimeFrom)
+                           .WhereIf(usageTimeTo.HasValue, x => x.orders.CreationTime <= usageTimeTo)
+                           .WhereIf(expirationTimeFrom.HasValue, x => x.credits.ExpirationDate >= expirationTimeFrom)
+                           .WhereIf(expirationTimeTo.HasValue, x => x.credits.ExpirationDate <= expirationTimeTo)
+                           .WhereIf(minRemainingCredits.HasValue, x => x.credits.CurrentRemainingCredits >= minRemainingCredits)
+                           .WhereIf(maxRemainingCredits.HasValue, x => x.credits.CurrentRemainingCredits <= maxRemainingCredits)
+                           .WhereIf(minAmount.HasValue, x => x.orders.CreditDeductionAmount >= minAmount)
+                           .WhereIf(maxAmount.HasValue, x => x.orders.CreditDeductionAmount <= maxAmount)
+                           .WhereIf(maxAmount.HasValue, x => x.orders.CreditDeductionAmount <= maxAmount)
+                           .WhereIf(!string.IsNullOrWhiteSpace(filter), x => x.credits.TransactionDescription != null && x.credits.TransactionDescription.Contains(filter));
 
         return memberCredits
             .Select(x => new MemberCreditRecordModel
             {
                 Id = x.credits.Id,
-                UsageTime = x.orders.CreationTime,
+                UsageTime = x.orders != null ? x.orders.CreationTime : null,
                 TransactionDescription = x.credits.TransactionDescription,
-                Amount = x.orders.CreditDeductionAmount,
+                Amount = x.credits.Amount,// x.orders != null ? x.orders.CreditDeductionAmount : 0,
                 ExpirationDate = x.credits.ExpirationDate,
                 RemainingCredits = x.credits.CurrentRemainingCredits
             });
     }
 
-    public async Task<List<IdentityUser>> GetBirthdayMember() {
+    public async Task<List<IdentityUser>> GetBirthdayMember()
+    {
         var dbContext = await GetPikachuDbContextAsync();
 
         var users = await dbContext.Users.IgnoreQueryFilters().ToListAsync(); // Fetch data into memory
@@ -124,7 +130,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
         var filteredUsers = users
             .Where(x => x.GetProperty(Constant.Birthday, null) != null &&
                         ((DateTime)x.GetProperty(Constant.Birthday, null)).Month == nextMonth)
-           
+
             .ToList();
 
         return filteredUsers;
