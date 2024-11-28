@@ -1638,6 +1638,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         order.EcpayLogisticsStatus = rtnMsg;
 
+        if (order.ShippingStatus < ShippingStatus.ToBeShipped) order.ShippingStatus = ShippingStatus.ToBeShipped;
+
         await _orderRepository.UpdateAsync(order);
     }
 

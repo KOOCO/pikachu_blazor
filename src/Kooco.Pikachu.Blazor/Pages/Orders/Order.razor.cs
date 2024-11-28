@@ -297,6 +297,8 @@ public partial class Order
         }
         catch (Exception ex)
         {
+            await loading.Hide();
+
             await _uiMessageService.Error(ex.Message);
         }
     }

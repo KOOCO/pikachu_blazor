@@ -114,9 +114,12 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         try
         {
             Order order = await _orderRepository.GetWithDetailsAsync(orderId);
-            var orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
-            var orderDelivery = orderDeliverys.Where(x => x.Id == orderDeliveryId).FirstOrDefault();
-            var providers = await _logisticsProvidersAppService.GetAllAsync();
+
+            List<OrderDelivery> orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
+
+            OrderDelivery? orderDelivery = orderDeliverys.FirstOrDefault(f => f.Id == orderDeliveryId);
+            
+            List<LogisticsProviderSettingsDto> providers = await _logisticsProvidersAppService.GetAllAsync();
 
             var greenWorld = providers.Where(p => p.LogisticProvider is LogisticProviders.GreenWorldLogistics).FirstOrDefault();
             if (greenWorld != null)
@@ -225,13 +228,13 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
                 await _deliveryRepository.UpdateAsync(orderDelivery);
 
-                order = await _orderRepository.GetAsync(order.Id);
+                //order = await _orderRepository.GetAsync(order.Id);
 
-                order.ShippingStatus = ShippingStatus.ToBeShipped;
+                //order.ShippingStatus = ShippingStatus.ToBeShipped;
 
-                await _orderRepository.UpdateAsync(order);
+                //await _orderRepository.UpdateAsync(order);
 
-                await UnitOfWorkManager.Current.SaveChangesAsync();
+                //await UnitOfWorkManager.Current.SaveChangesAsync();
 
                 var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
                 if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
@@ -256,7 +259,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             }
             return result;
         }
-        catch (UserFriendlyException ex)
+        catch (Exception ex)
         {
             throw;
         }
