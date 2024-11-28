@@ -8,7 +8,7 @@ public class CreateCartItemDto
     [Required]
     public Guid? ItemId { get; set; }
 
-    [Range(0, int.MaxValue)]
+    [Range(int.MinValue, int.MaxValue)]
     public int Quantity { get; set; }
 
     [Range(0, int.MaxValue)]

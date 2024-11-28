@@ -36,7 +36,9 @@ public class CartItem : FullAuditedEntity<Guid>, IMultiTenant
 
     internal CartItem ChangeQuantity(int quantity)
     {
-        SetQuantity(quantity);
+        Quantity += quantity;
+
+        //SetQuantity(quantity);
         return this;
     }
 

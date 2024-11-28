@@ -126,7 +126,7 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
         {
             foreach (CartItem cartItem in shopCart.CartItems.Where(w => w.ItemId == input.ItemId.Value && w.ItemDetailId == input.ItemDetailId.Value))
             {
-                cartItem.Quantity += input.Quantity;
+                cartItem.Quantity = input.Quantity;
             }
         }
 
