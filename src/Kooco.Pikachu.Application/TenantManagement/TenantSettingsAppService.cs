@@ -44,8 +44,8 @@ public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManage
     {
         Check.NotNull(input, nameof(input));
 
-        var tenantSettings = await tenantSettingsManager.UpdateTenantInformationAsync(input.TenantUrl, input.Domain, input.TenantContactTitle,
-            input.TenantContactPerson, input.ContactPhone, input.TenantContactEmail);
+        var tenantSettings = await tenantSettingsManager.UpdateTenantInformationAsync(input.ShortCode, input.TenantUrl, input.Domain,
+            input.TenantContactTitle, input.TenantContactPerson, input.ContactPhone, input.TenantContactEmail);
 
         return ObjectMapper.Map<TenantSettings, TenantInformationDto>(tenantSettings);
     }
@@ -62,12 +62,13 @@ public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManage
     {
         Check.NotNull(input, nameof(input));
 
-        var tenantSettings = await tenantSettingsManager.UpdateCustomerServiceAsync(input.ShortCode, input.CompanyName, input.BusinessRegistrationNumber,
-            input.CustomerServiceEmail, input.ServiceHoursFrom, input.ServiceHoursTo);
+        var tenantSettings = await tenantSettingsManager.UpdateCustomerServiceAsync(input.CompanyName, input.BusinessRegistrationNumber,
+            input.CustomerServiceEmail, input.CustomerServiceContactPhone, input.ServiceHoursFrom, input.ServiceHoursTo);
 
         return ObjectMapper.Map<TenantSettings, TenantCustomerServiceDto>(tenantSettings);
     }
 
+    [AllowAnonymous]
     public async Task<TenantCustomerServiceDto> GetTenantCustomerServiceAsync()
     {
         var tenantSettings = await tenantSettingsManager.GetAsync();
@@ -82,6 +83,7 @@ public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManage
         return tenantSettings.PrivacyPolicy;
     }
 
+    [AllowAnonymous]
     public async Task<string?> GetTenantPrivacyPolicyAsync()
     {
         var tenantSettings = await tenantSettingsManager.GetAsync();
@@ -97,6 +99,7 @@ public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManage
         return ObjectMapper.Map<TenantSettings, TenantFrontendInformationDto>(tenantSettings);
     }
 
+    [AllowAnonymous]
     public async Task<TenantFrontendInformationDto> GetTenantFrontendInformationAsync()
     {
         var tenantSettings = await tenantSettingsManager.GetAsync();
@@ -112,6 +115,7 @@ public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManage
         return ObjectMapper.Map<TenantSettings, TenantSocialMediaDto>(tenantSettings);
     }
 
+    [AllowAnonymous]
     public async Task<TenantSocialMediaDto> GetTenantSocialMediaAsync()
     {
         var tenantSettings = await tenantSettingsManager.GetAsync();
@@ -127,6 +131,7 @@ public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManage
         return ObjectMapper.Map<TenantSettings, TenantGoogleTagManagerDto>(tenantSettings);
     }
 
+    [AllowAnonymous]
     public async Task<TenantGoogleTagManagerDto> GetTenantGoogleTagManagerAsync()
     {
         var tenantSettings = await tenantSettingsManager.GetAsync();

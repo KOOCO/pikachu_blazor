@@ -17,6 +17,7 @@ public class TenantSettings : FullAuditedEntity<Guid>, IMultiTenant
     public string? BusinessRegistrationNumber { get; private set; }
     public string? ContactPhone { get; private set; }
     public string? CustomerServiceEmail { get; private set; }
+    public string? CustomerServiceContactPhone { get; set; }
     public DateTime? ServiceHoursFrom { get; private set; }
     public DateTime? ServiceHoursTo { get; private set; }
 
@@ -45,6 +46,7 @@ public class TenantSettings : FullAuditedEntity<Guid>, IMultiTenant
         string? businessRegistrationNumber,
         string? contactPhone,
         string? customerServiceEmail,
+        string? customerServiceContactPhone,
         DateTime? serviceHoursFrom,
         DateTime? serviceHoursTo,
         string? facebook,
@@ -61,6 +63,7 @@ public class TenantSettings : FullAuditedEntity<Guid>, IMultiTenant
         SetBusinessRegistrationNumber(businessRegistrationNumber);
         SetContactPhone(contactPhone);
         SetCustomerServiceEmail(customerServiceEmail);
+        SetCustomerServiceContactPhone(customerServiceContactPhone);
         SetServiceHours(serviceHoursFrom, serviceHoursTo);
         SetSocials(facebook, instagram, line);
         SetGtm(gtmEnabled, gtmContainerId);
@@ -105,6 +108,12 @@ public class TenantSettings : FullAuditedEntity<Guid>, IMultiTenant
     public TenantSettings SetCustomerServiceEmail(string? customerServiceEmail)
     {
         CustomerServiceEmail = Check.NotNullOrWhiteSpace(customerServiceEmail, nameof(CustomerServiceEmail), TenantSettingsConsts.MaxCustomerServiceEmailLength);
+        return this;
+    }
+
+    public TenantSettings SetCustomerServiceContactPhone(string? customerServiceContactPhone)
+    {
+        CustomerServiceContactPhone = Check.NotNullOrWhiteSpace(customerServiceContactPhone, nameof(CustomerServiceContactPhone), TenantSettingsConsts.MaxContactPhoneLength);
         return this;
     }
 

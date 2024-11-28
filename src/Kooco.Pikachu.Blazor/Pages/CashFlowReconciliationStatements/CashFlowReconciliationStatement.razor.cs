@@ -88,6 +88,12 @@ public partial class CashFlowReconciliationStatement
         }
     }
 
+    async Task IssueInvoice(Guid orderId) {
+
+        await _electronicInvoiceAppService.CreateInvoiceAsync(orderId);
+        await UpdateItemList();
+
+    }
     async Task OnSearch()
     {
         PageIndex = 0;

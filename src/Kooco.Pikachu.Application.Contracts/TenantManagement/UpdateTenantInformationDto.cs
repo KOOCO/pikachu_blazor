@@ -5,6 +5,10 @@ namespace Kooco.Pikachu.TenantManagement;
 public class UpdateTenantInformationDto
 {
     [Required]
+    [RegularExpression("^[A-Za-z0-9]{8}$", ErrorMessage = "ShortCodeValidationMessage")]
+    public string? ShortCode { get; set; }
+
+    [Required]
     [Url]
     public string? TenantUrl { get; set; }
 

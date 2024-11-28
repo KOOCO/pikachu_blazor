@@ -250,6 +250,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<TenantSettingsDto, UpdateTenantSettingsDto>();
 
         CreateMap<TenantSettings, TenantInformationDto>()
+            .ForMember(dest => dest.ShortCode, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.ShortCode)))
             .ForMember(dest => dest.TenantContactTitle, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.TenantContactTitle)))
             .ForMember(dest => dest.TenantContactPerson, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.TenantContactPerson)))
             .ForMember(dest => dest.TenantContactEmail, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.TenantContactEmail)))
@@ -257,8 +258,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.Domain, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.Domain)));
         CreateMap<TenantInformationDto, UpdateTenantInformationDto>();
 
-        CreateMap<TenantSettings, TenantCustomerServiceDto>()
-            .ForMember(dest => dest.ShortCode, opt => opt.MapFrom(src => src.Tenant!.ExtraProperties.GetValueOrDefault(Constant.ShortCode)));
+        CreateMap<TenantSettings, TenantCustomerServiceDto>();
         CreateMap<TenantCustomerServiceDto, UpdateTenantCustomerServiceDto>();
 
         CreateMap<TenantSettings, TenantFrontendInformationDto>()

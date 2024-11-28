@@ -13,28 +13,28 @@ namespace Kooco.Pikachu.Controllers.TenantManagement;
 [Route("api/app/tenant-settings")]
 public class TenantSettingsController(ITenantSettingsAppService tenantSettingsAppService) : PikachuController, ITenantSettingsAppService
 {
+    [HttpGet("default")]
+    public Task<TenantSettingsDto> FirstOrDefaultAsync()
+    {
+        return tenantSettingsAppService.FirstOrDefaultAsync();
+    }
+
+    [HttpPost("upload-image")]
+    public Task<string> UploadImageAsync(UploadImageDto input)
+    {
+        return tenantSettingsAppService.UploadImageAsync(input);
+    }
+
     [HttpDelete("{blobName}")]
     public Task DeleteImageAsync(string blobName)
     {
         return tenantSettingsAppService.DeleteImageAsync(blobName);
     }
 
-    [HttpGet("default")]
-    public Task<TenantSettingsDto?> FirstOrDefaultAsync()
+    [HttpPost("tenant-information")]
+    public Task<TenantInformationDto> UpdateTenantInformationAsync(UpdateTenantInformationDto input)
     {
-        return tenantSettingsAppService.FirstOrDefaultAsync();
-    }
-
-    [HttpGet("customer-service")]
-    public Task<TenantCustomerServiceDto> GetTenantCustomerServiceAsync()
-    {
-        return tenantSettingsAppService.GetTenantCustomerServiceAsync();
-    }
-
-    [HttpGet("privacy-policy")]
-    public Task<string?> GetTenantPrivacyPolicyAsync()
-    {
-        return tenantSettingsAppService.GetTenantPrivacyPolicyAsync();
+        return tenantSettingsAppService.UpdateTenantInformationAsync(input);
     }
 
     [HttpGet("tenant-information")]
@@ -49,22 +49,22 @@ public class TenantSettingsController(ITenantSettingsAppService tenantSettingsAp
         return tenantSettingsAppService.UpdateTenantCustomerServiceAsync(input);
     }
 
+    [HttpGet("customer-service")]
+    public Task<TenantCustomerServiceDto> GetTenantCustomerServiceAsync()
+    {
+        return tenantSettingsAppService.GetTenantCustomerServiceAsync();
+    }
+
     [HttpPost("privacy-policy")]
     public Task<string?> UpdateTenantPrivacyPolicyAsync([Required] string privacyPolicy)
     {
         return tenantSettingsAppService.UpdateTenantPrivacyPolicyAsync(privacyPolicy);
     }
 
-    [HttpPost("tenant-information")]
-    public Task<TenantInformationDto> UpdateTenantInformationAsync(UpdateTenantInformationDto input)
+    [HttpGet("privacy-policy")]
+    public Task<string?> GetTenantPrivacyPolicyAsync()
     {
-        return tenantSettingsAppService.UpdateTenantInformationAsync(input);
-    }
-
-    [HttpPost("upload-image")]
-    public Task<string> UploadImageAsync(UploadImageDto input)
-    {
-        return tenantSettingsAppService.UploadImageAsync(input);
+        return tenantSettingsAppService.GetTenantPrivacyPolicyAsync();
     }
 
     [HttpPost("frontend-information")]

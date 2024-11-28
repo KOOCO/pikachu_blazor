@@ -14,16 +14,6 @@
                     <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
                         <Validation MessageLocalizer="@LH.Localize">
                             <Field>
-                                <FieldLabel>@L["ShortCode"]<Span> *</Span></FieldLabel>
-                                <TextEdit MaxLength="8" @bind-Text="Entity.ShortCode">
-                                    <Feedback>
-                                        <ValidationError />
-                                    </Feedback>
-                                </TextEdit>
-                            </Field>
-                        </Validation>
-                        <Validation MessageLocalizer="@LH.Localize">
-                            <Field>
                                 <FieldLabel>@L["CompanyName"]<Span> *</Span></FieldLabel>
                                 <TextEdit @bind-Text="Entity.CompanyName">
                                     <Feedback>
@@ -46,6 +36,16 @@
                             <Field>
                                 <FieldLabel>@L["CustomerServiceEmail"]<Span> *</Span></FieldLabel>
                                 <TextEdit @bind-Text="Entity.CustomerServiceEmail">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <FieldLabel>@L["CustomerServiceContactPhone"]<Span> *</Span></FieldLabel>
+                                <TextEdit @bind-Text="Entity.CustomerServiceContactPhone">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
