@@ -59,7 +59,7 @@ public partial class GroupBuyList
             item.IsSelected = IsAllSelected;
         });
         StateHasChanged();
-       
+
     }
 
     private async Task UpdateGroupBuyList()
@@ -73,14 +73,16 @@ public partial class GroupBuyList
                 Sorting = Sorting,
                 MaxResultCount = _pageSize,
                 SkipCount = skipCount,
-                FilterText= SelectedAutoCompleteText
+                FilterText = SelectedAutoCompleteText
             });
 
             GroupBuyListItem = [.. result.Items];
 
+            var tenantUrl = (await MyTenantAppService.FindTenantUrlAsync(CurrentTenant.Id))?.TrimEnd('/');
+
             foreach (GroupBuyDto groupBuyItem in GroupBuyListItem)
             {
-                groupBuyItem.EntryURL = $"{(await MyTenantAppService.FindTenantDomainAsync(CurrentTenant.Id))?.TrimEnd('/')}/{groupBuyItem.Id}";
+                groupBuyItem.EntryURL = $"{tenantUrl}/{groupBuyItem.Id}";
             }
 
             Total = (int)result.TotalCount;
@@ -93,11 +95,12 @@ public partial class GroupBuyList
         }
     }
 
-    private async Task CopyAsync() {
+    private async Task CopyAsync()
+    {
 
         var id = GroupBuyListItem.Where(x => x.IsSelected == true).Select(x => x.Id).FirstOrDefault();
 
-       var copy= await _groupBuyAppService.CopyAsync(id);
+        var copy = await _groupBuyAppService.CopyAsync(id);
         NavigationManager.NavigateTo("/GroupBuyManagement/GroupBuyList/Edit/" + copy.Id);
 
 
