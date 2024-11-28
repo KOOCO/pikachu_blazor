@@ -1981,10 +1981,10 @@ public partial class OrderDetails
         try
         {
             await loading.Show();
-           
+
             if (selectedValue is ShippingStatus.PrepareShipment)
             {
-                PaymentResult paymentResult = new ();
+                PaymentResult paymentResult = new();
                 paymentResult.OrderId = Order.Id;
                 await _orderAppService.HandlePaymentAsync(paymentResult);
                 await GetOrderDetailsAsync();
@@ -1995,7 +1995,7 @@ public partial class OrderDetails
             }
             else if (selectedValue is ShippingStatus.ToBeShipped)
             {
-                
+
                 await _orderAppService.OrderToBeShipped(Order.Id);
                 await GetOrderDetailsAsync();
                 await base.OnInitializedAsync();
@@ -2017,13 +2017,21 @@ public partial class OrderDetails
                 await base.OnInitializedAsync();
                 await loading.Hide();
             }
-            else if (selectedValue is ShippingStatus.Closed )
+            else if (selectedValue is ShippingStatus.Closed)
             {
                 await _orderAppService.OrderClosed(Order.Id);
                 await GetOrderDetailsAsync();
                 await base.OnInitializedAsync();
                 await loading.Hide();
             }
+            else {
+                await _orderAppService.ChangeOrderStatus(Order.Id,selectedValue);
+                await GetOrderDetailsAsync();
+                await base.OnInitializedAsync();
+                await loading.Hide();
+
+            }
+            
             await loading.Hide();
         }
         catch (Exception ex)

@@ -552,5 +552,10 @@ public class OrderController : AbpController, IOrderAppService
     {
         return _ordersAppService.UpdateLogisticStatusAsync(merchantTradeNo, rtnMsg);
     }
+
+    public Task<OrderDto> ChangeOrderStatus(Guid id, ShippingStatus status)
+    {
+        return _ordersAppService.ChangeOrderStatus(id, status);
+    }
     #endregion
 }
