@@ -382,7 +382,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             }
             await _orderRepository.UpdateAsync(order);
-            if (groupBuy?.IsEnterprise is true) await SendEmailAsync(order.Id);
+            await SendEmailAsync(order.Id);
 
             return ObjectMapper.Map<Order, OrderDto>(order);
         }
