@@ -275,6 +275,7 @@ public class OrderController : AbpController, IOrderAppService
     }
 
     [HttpPost("ecpay-logisticsStatus-callback")]
+    [AllowAnonymous]
     public async Task<IActionResult> EcpayLogisticsStatusCallbackAsync()
     {
         try

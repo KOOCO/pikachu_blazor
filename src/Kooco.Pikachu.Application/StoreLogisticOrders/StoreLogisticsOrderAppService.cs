@@ -179,7 +179,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         string? domainName = $"{domainRequest?.Scheme}://{domainRequest?.Host.Value}";
 
-        string serverReplyURL = $"{domainName}/api/app/orders/ordersecpay-logisticsStatus-callback";
+        string serverReplyURL = $"{domainName}/api/app/orders/ecpay-logisticsStatus-callback";
 
         request.AddHeader("Accept", "text/html");
         request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -810,7 +810,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         string? domainName = $"{domainRequest?.Scheme}://{domainRequest?.Host.Value}";
 
-        string serverReplyURL = $"{domainName}/api/app/ordersecpay-logisticsStatus-callback";
+        string serverReplyURL = $"{domainName}/api/app/orders/ecpay-logisticsStatus-callback";
 
         request.AddHeader("Accept", "text/html");
         request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
