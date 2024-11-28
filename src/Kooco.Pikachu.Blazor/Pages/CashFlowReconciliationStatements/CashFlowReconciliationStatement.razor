@@ -4,6 +4,7 @@
 @using Kooco.Pikachu.Localization;
 @using Kooco.Pikachu.OrderItems;
 @using Kooco.Pikachu.Orders;
+@using Kooco.Pikachu.ElectronicInvoiceSettings;
 @using Microsoft.Extensions.Localization;
 @using Blazorise;
 @using Volo.Abp.AspNetCore.Components.Messages;
@@ -13,6 +14,7 @@
 @inject NavigationManager NavigationManager;
 @inject IUiMessageService _uiMessageService;
 @inject IOrderAppService _orderAppService;
+@inject IElectronicInvoiceAppService _electronicInvoiceAppService;
 @inject IItemAppService _ItemAppService;
 @inject IJSRuntime JSRuntime;
 
@@ -108,7 +110,16 @@
 
                             }
                             else{
-                            @L[context.IssueStatus.ToString()]
+                                @L[context.IssueStatus.ToString()]
+                                if (context.IssueStatus == IssueInvoiceStatus.Failed)
+                                {
+
+                                    <Button Class="btn-white"
+                                        Clicked="@((e) => IssueInvoice(context.OrderId))">
+                                    >
+                                        <i class="fas fa-rotate" />
+                                    </Button>
+                                }
                             }
                         </DisplayTemplate>
                     </DataGridColumn>

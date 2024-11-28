@@ -149,10 +149,11 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
                     return;
                 }
                 order.InvoiceNumber = jsonObj.InvoiceNo;
+                order.IssueStatus = IssueInvoiceStatus.Succeeded;
                 order.InvoiceStatus = InvoiceStatus.Issued;
                 order.InvoiceDate = jsonObj.InvoiceDate;
                 order.VoidUser = CurrentUser.Name;
-                order.IssueStatus = IssueInvoiceStatus.Succeeded;
+              
                 await _orderRepository.UpdateAsync(order);
             }
         }
