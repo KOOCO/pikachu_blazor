@@ -963,7 +963,19 @@ public class OrderAppService : ApplicationService, IOrderAppService
             return ObjectMapper.Map<Order, OrderDto>(ord);
         }
     }
+    public async Task<OrderDto> ChangeOrderStatus(Guid id, ShippingStatus status)
+    {
+        var order = await _orderRepository.GetWithDetailsAsync(id);
 
+        order.ShippingStatus = status;
+        //order.ClosedBy = CurrentUser.Name;
+        order.CancellationDate = DateTime.Now;
+
+        await _orderRepository.UpdateAsync(order);
+        await UnitOfWorkManager.Current.SaveChangesAsync();
+        await SendEmailAsync(order.Id);
+        return ObjectMapper.Map<Order, OrderDto>(order);
+    }
     public async Task RefundAmountAsync(double amount, Guid OrderId)
     {
         Order ord = await _orderRepository.GetWithDetailsAsync(OrderId);

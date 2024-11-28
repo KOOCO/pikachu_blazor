@@ -1537,7 +1537,8 @@
                                 <p>@L[ShippingStatus.WaitingForPayment.ToString()]</p>
                             </div>
                         }
-                        @if (Order?.ShippingStatus == ShippingStatus.PrepareShipment)
+
+                        else if (Order?.ShippingStatus == ShippingStatus.PrepareShipment)
                         {
                             <div class="col-12 d-flex justify-content-between">
                                 <p>@Order?.CreationTime.ToShortDateString()</p>
@@ -1550,7 +1551,7 @@
                                 <p>@L[ShippingStatus.PrepareShipment.ToString()]</p>
                             </div>
                         }
-                        @if (Order?.ShippingStatus == ShippingStatus.Shipped)
+                         else if (Order?.ShippingStatus == ShippingStatus.Shipped)
                         {
                             <div class="col-12 d-flex justify-content-between">
                                 <p>@Order?.CreationTime.ToShortDateString()</p>
@@ -1567,7 +1568,7 @@
                                 <p>@L[ShippingStatus.Shipped.ToString()]</p>
                             </div>
                         }
-                        @if (Order?.ShippingStatus == ShippingStatus.Completed)
+                         else if (Order?.ShippingStatus == ShippingStatus.Completed)
                         {
                             <div class="col-12 d-flex justify-content-between">
                                 <p>@Order?.CreationTime.ToShortDateString()</p>
@@ -1589,13 +1590,14 @@
                                     <p>@L[ShippingStatus.Shipped.ToString()]</p>
                                 </div>
                             }
+
                             <div class="col-12 d-flex justify-content-between">
                                 <p>@Order?.CompletionTime?.ToShortDateString()</p>
                                 <p>@Order?.CompletedBy</p>
                                 <p>@L[ShippingStatus.Completed.ToString()]</p>
                             </div>
                         }
-                        @if (Order?.ShippingStatus == ShippingStatus.Exchange)
+                         else if (Order?.ShippingStatus == ShippingStatus.Exchange)
                         {
                             <div class="col-12 d-flex justify-content-between">
                                 <p>@Order?.CreationTime.ToShortDateString()</p>
@@ -1631,7 +1633,7 @@
                                 <p>@L[ShippingStatus.Exchange.ToString()]</p>
                             </div>
                         }
-                        @if (Order?.ShippingStatus == ShippingStatus.Closed)
+                         else if (Order?.ShippingStatus == ShippingStatus.Closed)
                         {
                             <div class="col-12 d-flex justify-content-between">
                                 <p>@Order?.CreationTime.ToShortDateString()</p>
@@ -1659,6 +1661,14 @@
                                 <p>@L[ShippingStatus.Closed.ToString()]</p>
                             </div>
                         }
+                        else
+                        {
+                            <div class="col-12 d-flex justify-content-between">
+                                <p>@Order?.LastModificationTime?.ToShortDateString()</p>
+                                <p>@L[Order.ShippingStatus.ToString()]</p>
+                            </div>
+                        }
+
                     </div>
                 </CardBody>
             </Card>
