@@ -54,5 +54,12 @@ namespace Kooco.Pikachu.Tenants
             domain ??= _configuration["EntryUrl"];
             return domain;
         }
+
+        [AllowAnonymous]
+        public async Task<string?> FindTenantUrlAsync(Guid? id)
+        {
+            var tenantUrl = await _customTenantRepository.FindTenantUrlAsync(id);
+            return tenantUrl;
+        }
     }
 }

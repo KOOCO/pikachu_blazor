@@ -30,7 +30,7 @@ public class MyTenantController(
     }
 
     [HttpGet("find-by-name/{name}")]
-    public Task<TenantDto> FindByNameAsync(string name)
+    public Task<TenantDto?> FindByNameAsync(string name)
     {
         return _myTenantAppService.FindByNameAsync(name);
     }
@@ -39,6 +39,12 @@ public class MyTenantController(
     public Task<string?> FindTenantDomainAsync(Guid? id)
     {
         return _myTenantAppService.FindTenantDomainAsync(id);
+    }
+
+    [HttpGet("find-tenant-url/{id}")]
+    public Task<string?> FindTenantUrlAsync(Guid? id)
+    {
+        return _myTenantAppService.FindTenantUrlAsync(id);
     }
 
     [HttpGet("get-by-shortcode/{shortcode}")]

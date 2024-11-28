@@ -15,5 +15,6 @@ namespace Kooco.Pikachu.TenantManagement
         Task<bool> CheckShortCodeForUpdate(string shortCode, Guid Id, CancellationToken cancellationToken = default);
         Task<Tenant> FindByShortCodeAsync(string shortCode, CancellationToken cancellationToken = default);
         Task<string?> FindTenantDomainAsync(Guid? id);
+        Task<string?> FindTenantUrlAsync(Guid? id);
     }
 }

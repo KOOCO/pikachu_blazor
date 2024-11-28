@@ -51,5 +51,17 @@ namespace Kooco.Pikachu.TenantManagement
             }
             return tenant.GetProperty<string?>(Constant.Domain);
         }
+
+        public async Task<string?> FindTenantUrlAsync(Guid? id)
+        {
+            var context = await GetDbContextAsync();
+            var tenant = await context.Tenants.Where(t => t.Id == id)
+                            .FirstOrDefaultAsync();
+            if (tenant is null)
+            {
+                return default;
+            }
+            return tenant.GetProperty<string?>(Constant.TenantUrl);
+        }
     }
 }
