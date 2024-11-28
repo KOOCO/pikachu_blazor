@@ -13,6 +13,7 @@ using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.Refunds;
 using Kooco.Pikachu.Response;
 using Kooco.Pikachu.TenantManagement;
+using Kooco.Pikachu.UserShoppingCredits;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Localization;
 using MiniExcelLibs;
@@ -64,6 +65,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IRefundRepository _refundRepository;
     private readonly IDiscountCodeRepository _discountCodeRepository;
     private readonly ITenantSettingsAppService _tenantSettingsAppService;
+    private readonly IUserShoppingCreditAppService _userShoppingCreditAppService;
     #endregion
 
     #region Constructor
@@ -87,7 +89,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         IRefundAppService refundAppService,
         IRefundRepository refundRepository,
         ITenantSettingsAppService tenantSettingsAppService,
-        IDiscountCodeRepository discountCodeRepository
+        IDiscountCodeRepository discountCodeRepository,
+        IUserShoppingCreditAppService userShoppingCreditAppService
     )
     {
         _orderRepository = orderRepository;
@@ -111,6 +114,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _refundRepository = refundRepository;
         _tenantSettingsAppService = tenantSettingsAppService;
         _discountCodeRepository = discountCodeRepository;
+        _userShoppingCreditAppService = userShoppingCreditAppService;
     }
     #endregion
 
@@ -337,7 +341,47 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 await _discountCodeRepository.UpdateAsync(discountCode);
                 await  CurrentUnitOfWork.SaveChangesAsync();
             }
+            if (order.UserId!=null && order.UserId != Guid.Empty)
+            {
+                if (order.cashback_amount > 0)
+                {
+                 var cashback=   await _userShoppingCreditAppService.RecordShoppingCreditAsync(new RecordUserShoppingCreditDto
+                    {
+                        Amount = (int)order.cashback_amount,
+                        ExpirationDate = null,
+                        IsActive = true,
+                        TransactionDescription = "購物回饋：訂單 #" + order.OrderNo,
+                        UserId=order.UserId.Value
 
+
+                    });
+                    order.cashback_amount = cashback.Amount;
+                    order.cashback_record_id = cashback.Id;
+                
+                }
+            
+            }
+            if (order.UserId != null && order.UserId != Guid.Empty)
+            {
+                if (order.CreditDeductionAmount > 0)
+                {
+                var deduction=    await _userShoppingCreditAppService.RecordShoppingCreditAsync(new RecordUserShoppingCreditDto
+                    {
+                        Amount = (int)order.CreditDeductionAmount,
+                        ExpirationDate = null,
+                        IsActive = true,
+                        TransactionDescription = "購物折抵：訂單 #" + order.OrderNo,
+                        UserId=order.UserId.Value
+
+
+                    });
+                    order.CreditDeductionAmount = deduction.Amount;
+                    order.CreditDeductionRecordId = deduction.Id;
+
+                }
+
+            }
+            await _orderRepository.UpdateAsync(order);
             if (groupBuy?.IsEnterprise is true) await SendEmailAsync(order.Id);
 
             return ObjectMapper.Map<Order, OrderDto>(order);
