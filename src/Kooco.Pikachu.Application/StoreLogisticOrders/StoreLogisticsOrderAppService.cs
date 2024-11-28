@@ -225,6 +225,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
                 await _deliveryRepository.UpdateAsync(orderDelivery);
 
+                order = await _orderRepository.GetAsync(order.Id);
+
                 order.ShippingStatus = ShippingStatus.ToBeShipped;
 
                 await _orderRepository.UpdateAsync(order);
