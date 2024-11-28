@@ -228,6 +228,9 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 order.ShippingStatus = ShippingStatus.ToBeShipped;
 
                 await _orderRepository.UpdateAsync(order);
+
+                await UnitOfWorkManager.Current.SaveChangesAsync();
+
                 var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
                 if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
                 {
@@ -933,6 +936,9 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             order.ShippingStatus = ShippingStatus.ToBeShipped;
 
             await _orderRepository.UpdateAsync(order);
+
+            await UnitOfWorkManager.Current.SaveChangesAsync();
+
             var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
             if (invoiceSetting is not null && invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
             {
