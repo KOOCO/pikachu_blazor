@@ -126,7 +126,7 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
         {
             foreach (CartItem cartItem in shopCart.CartItems.Where(w => w.ItemId == input.ItemId.Value && w.ItemDetailId == input.ItemDetailId.Value))
             {
-                cartItem.Quantity += input.Quantity;
+                cartItem.Quantity = input.Quantity;
             }
         }
 
@@ -144,11 +144,14 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
         Check.NotDefaultOrNull(input.ItemId, nameof(input.ItemId));
         Check.NotDefaultOrNull(input.ItemDetailId, nameof(input.ItemDetailId));
 
-        var shopCart = await shopCartRepository.FindByCartItemIdAsync(cartItemId, exception: true);
+        ShopCart shopCart = await shopCartRepository.FindByCartItemIdAsync(cartItemId, exception: true);
+
         await shopCartRepository.EnsureCollectionLoadedAsync(shopCart, s => s.CartItems);
-        await shopCartManager.UpdateCartItemAsync(shopCart, cartItemId, input.ItemId.Value,
-            input.Quantity, input.UnitPrice, input.ItemDetailId.Value);
+
+        shopCartManager.UpdateQuantityAsync(shopCart, cartItemId, input.Quantity);
+
         await shopCartRepository.UpdateAsync(shopCart);
+
         return ObjectMapper.Map<ShopCart, ShopCartDto>(shopCart);
     }
 
