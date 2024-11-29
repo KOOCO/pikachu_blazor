@@ -87,6 +87,20 @@ public class ShopCartManager(IShopCartRepository shopCartRepository, IItemReposi
         return cartItem;
     }
 
+    public CartItem UpdateQuantityAsync(ShopCart shopCart, Guid cartItemId, int quantity)
+    {
+        Check.NotNull(shopCart, nameof(shopCart));
+
+        Check.NotDefaultOrNull<Guid>(cartItemId, nameof(cartItemId));
+
+        CartItem cartItem = shopCart.CartItems.FirstOrDefault(x => x.Id == cartItemId)
+                            ?? throw new EntityNotFoundException(typeof(CartItem), cartItemId);
+
+        cartItem.ChangeQuantity(quantity);
+
+        return cartItem;
+    }
+
     public ShopCart RemoveCartItem(ShopCart shopCart, CartItem cartItem)
     {
         Check.NotNull(shopCart, nameof(shopCart));
