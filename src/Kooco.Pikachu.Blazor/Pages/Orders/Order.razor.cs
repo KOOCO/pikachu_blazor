@@ -109,10 +109,14 @@ public partial class Order
 
             List<OrderDeliveryDto> orderDeliveries = await _OrderDeliveryAppService.GetListByOrderAsync(orderId);
 
-            foreach (OrderDeliveryDto orderDelivery in orderDeliveries)
-            {
-                await _StoreLogisticsOrderAppService.OnPrintShippingLabel(order, orderDelivery);
-            }
+            List<string> allPayLogisticsId = [.. orderDeliveries.Where(w => !w.AllPayLogisticsID.IsNullOrWhiteSpace()).Select(s => s.AllPayLogisticsID)];
+
+            string html = await _StoreLogisticsOrderAppService.OnBatchPrintingShippingLabel(order, allPayLogisticsId);
+
+            //foreach (OrderDeliveryDto orderDelivery in orderDeliveries)
+            //{
+            //    await _StoreLogisticsOrderAppService.OnPrintShippingLabel(order, orderDelivery);
+            //}
         }
     }
 

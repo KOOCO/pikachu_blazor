@@ -26,6 +26,8 @@ namespace Kooco.Pikachu.StoreLogisticOrders
 
         Task<string> FindStatusAsync();
 
-        Task OnPrintShippingLabel(OrderDto order, OrderDeliveryDto orderDelivery);
+        Task<string> OnPrintShippingLabel(OrderDto order, OrderDeliveryDto orderDelivery);
+
+        Task<string> OnBatchPrintingShippingLabel(OrderDto order, List<string> allPayLogisticsId);
     }
 }

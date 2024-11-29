@@ -262,15 +262,13 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         }
     }
 
-    public async Task OnPrintShippingLabel(OrderDto order, OrderDeliveryDto orderDelivery)
+    public async Task<string> OnPrintShippingLabel(OrderDto order, OrderDeliveryDto orderDelivery)
     {
-
         RestClientOptions? options = new RestClientOptions { MaxTimeout = -1 };
 
         RestClient client = new(options);
 
         List<LogisticsProviderSettingsDto> providers = await _logisticsProvidersAppService.GetAllAsync();
-
 
         if (orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.PostOffice ||
             orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.BlackCat1 ||
@@ -284,15 +282,24 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             if (greenWorld != null) GreenWorld = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorld);
 
-            RestRequest request = new(_configuration["EcPay:LogisticApi"], Method.Post);
+            RestRequest request = new(_configuration["EcPay:PrintTradeDocument"], Method.Post);
 
             request.AddParameter("MerchantID", GreenWorld.StoreCode);
             request.AddParameter("AllPayLogisticsID", orderDelivery.AllPayLogisticsID);
-            //request.AddParameter("CheckMacValue", GenerateCheckMac(greenWorld.HashKey, greenWorld.HashIV, ));
+
+            Dictionary<string, string> parameters = new() 
+            { 
+                { "MerchantID", GreenWorld.StoreCode }, 
+                { "AllPayLogisticsID", orderDelivery.AllPayLogisticsID }
+            };
+
+            request.AddParameter("CheckMacValue", GenerateCheckMacValue(greenWorld!.HashKey, greenWorld!.HashIV, parameters));
 
             RestResponse response = await client.ExecuteAsync(request);
 
-            ResponseResultDto result = ParseApiResponse(response.Content.ToString());
+            string result = response.Content.ToString();
+
+            return result;
         }
 
         else if (orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.SevenToElevenC2C)
@@ -314,6 +321,42 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         {
 
         }
+
+        return string.Empty;
+    }
+
+    public async Task<string> OnBatchPrintingShippingLabel(OrderDto order, List<string> allPayLogisticsId)
+    {
+        string html = string.Empty;
+
+        RestClientOptions? options = new RestClientOptions { MaxTimeout = -1 };
+
+        RestClient client = new(options);
+
+        List<LogisticsProviderSettingsDto> providers = await _logisticsProvidersAppService.GetAllAsync();
+
+        LogisticsProviderSettingsDto? greenWorld = providers.FirstOrDefault(p => p.LogisticProvider is LogisticProviders.GreenWorldLogistics);
+
+        if (greenWorld is not null) GreenWorld = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorld);
+
+        RestRequest request = new(_configuration["EcPay:PrintTradeDocument"], Method.Post);
+
+        request.AddParameter("MerchantID", GreenWorld.StoreCode);
+        request.AddParameter("AllPayLogisticsID", string.Join(", ", allPayLogisticsId));
+
+        Dictionary<string, string> parameters = new()
+            {
+                { "MerchantID", GreenWorld.StoreCode },
+                { "AllPayLogisticsID", string.Join(", ", allPayLogisticsId) }
+            };
+
+        request.AddParameter("CheckMacValue", GenerateCheckMacValue(greenWorld!.HashKey, greenWorld!.HashIV, parameters));
+
+        RestResponse response = await client.ExecuteAsync(request);
+
+        html = response.Content.ToString();
+
+        return html;
     }
 
     public void MapAllLogistics(List<LogisticsProviderSettingsDto> providers)
@@ -1197,12 +1240,11 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
     public string GenerateCheckMacValue(string HashKey, string HashIV, Dictionary<string, string> parameters)
     {
-        parameters.Add("HashKey", HashKey);
-        parameters.Add("HashIV", HashIV);
-
         IOrderedEnumerable<KeyValuePair<string, string>> sortedParameters = parameters.OrderBy(p => p.Key);
 
         string requestString = string.Join("&", sortedParameters.Select(p => $"{p.Key}={p.Value}"));
+
+        requestString = $"HashKey={HashKey}&{requestString}&HashIV={HashIV}";
 
         string urlEncodedData = HttpUtility.UrlEncode(requestString);
 
