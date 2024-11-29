@@ -962,7 +962,7 @@
                     <Select TValue="GroupBuyTemplateType"
                             @onchange="@((e) => SelectTemplate(e))">
                         <option value="">@L["SelectTemplate"]</option>
-                        @foreach (GroupBuyTemplateType type in TemplateTypes)
+                        @foreach (GroupBuyTemplateType type in TemplateTypes.Where(w => w != GroupBuyTemplateType.PikachuOne))
                         {
                             if (EditGroupBuyDto.TemplateType == type)
                             {
