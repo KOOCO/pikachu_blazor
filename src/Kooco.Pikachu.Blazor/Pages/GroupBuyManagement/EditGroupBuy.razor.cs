@@ -2226,7 +2226,8 @@ public partial class EditGroupBuy
             {
                 foreach (CreateImageDto carouselImage in carouselImages)
                 {
-                    if (!ExistingImages.Any(a => a.BlobImageName == carouselImage.BlobImageName))
+                    if ((!ExistingImages.Any(a => a.BlobImageName == carouselImage.BlobImageName)) ||
+                        (ExistingImages.Any(a => a.CarouselStyle != carouselImage.CarouselStyle)))
                     {
                         if (carouselImage.Id != Guid.Empty)
                         {
