@@ -17,6 +17,7 @@ using Kooco.Pikachu.UserShoppingCredits;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Localization;
 using MiniExcelLibs;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -210,6 +211,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             if (input.OrderItems is { Count: > 0 })
             {
+                List<string> insufficientItems = new List<string>();
+
                 foreach (CreateUpdateOrderItemDto item in input.OrderItems)
                 {
                     _orderManager.AddOrderItem(
@@ -232,23 +235,43 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     {
                         ItemDetails? details = await _itemDetailsRepository.FirstOrDefaultAsync(x => x.ItemId == item.ItemId && x.ItemName == item.Spec);
 
-                        if (details is not null)
+                        if (details != null)
                         {
-                            details.SaleableQuantity = details.SaleableQuantity - item.Quantity;
-                            details.StockOnHand = details.StockOnHand - item.Quantity;
+                            // Check if the available quantity is sufficient
+                            if (details.SaleablePreOrderQuantity < item.Quantity)
+                            {
+                                // Add item to insufficientItems list
+                                insufficientItems.Add($"Item: {details.ItemName}, Requested: {item.Quantity}, Available: {details.SaleablePreOrderQuantity},Details:{JsonConvert.SerializeObject(details)}");
+                            }
+                            else
+                            {
+                                // Proceed with updating the stock if sufficient
+                                details.SaleableQuantity -= item.Quantity;
+                                details.StockOnHand -= item.Quantity;
 
-                            await _itemDetailsRepository.UpdateAsync(details);
+                                await _itemDetailsRepository.UpdateAsync(details);
+                            }
                         }
 
-                        if (item.FreebieId is not null)
+                        // Handle Freebies if applicable
+                        if (item.FreebieId != null)
                         {
                             Freebie? freebie = await _freebieRepository.FirstOrDefaultAsync(x => x.Id == item.FreebieId);
 
-                            freebie.FreebieAmount -= item.Quantity;
-                            
-                            await _freebieRepository.UpdateAsync(freebie);
+                            if (freebie != null)
+                            {
+                                freebie.FreebieAmount -= item.Quantity;
+                                await _freebieRepository.UpdateAsync(freebie);
+                            }
                         }
                     }
+                }
+
+                // If there are items with insufficient stock, throw a BusinessException with the list
+                if (insufficientItems.Count > 0)
+                {
+                    string errorMessage = string.Join("; ", insufficientItems);
+                    throw new BusinessException("409", "Insufficient stock for the following items: " + errorMessage);
                 }
             }
 
