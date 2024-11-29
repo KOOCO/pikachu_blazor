@@ -110,7 +110,7 @@
                                 Field="@nameof(MemberCreditRecordDto.UsageTime)"
                                 Caption="@L["UsageTime"]">
                     <DisplayTemplate>
-                        @context.UsageTime.ToShortDateString() @context.UsageTime.ToShortTimeString()
+                        @context.UsageTime?.ToShortDateString() @context.UsageTime?.ToShortTimeString()
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="MemberCreditRecordDto"
