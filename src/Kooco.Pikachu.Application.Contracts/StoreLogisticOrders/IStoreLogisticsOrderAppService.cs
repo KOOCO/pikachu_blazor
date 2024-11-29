@@ -25,5 +25,7 @@ namespace Kooco.Pikachu.StoreLogisticOrders
         Task<EmapApiResponse> GetStoreAsync(string deliveryMethod);
 
         Task<string> FindStatusAsync();
+
+        Task OnPrintShippingLabel(OrderDto order, OrderDeliveryDto orderDelivery);
     }
 }

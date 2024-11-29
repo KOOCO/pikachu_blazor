@@ -104,7 +104,9 @@
                 }
                 else
                 {
-                    <Button Type="@ButtonType.Button" Class="ms-1 btn btn-sm btn-primary">
+                    <Button Type="@ButtonType.Button"
+                            Clicked="OnPrintShippedLabel"
+                    Class="ms-1 btn btn-sm btn-primary">
                         <i class="fa fa-print"></i>
                         @L["PrintShippedLabel"]
                     </Button>

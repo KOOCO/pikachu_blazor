@@ -18,6 +18,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -59,6 +60,41 @@ public class OrderController : AbpController, IOrderAppService
     #endregion
 
     #region Methods
+    [HttpGet("gen-CM")]
+    public IActionResult GenCheckMac()
+    {
+        Dictionary<string, string> keyValuePairs = [];
+
+        keyValuePairs.Add("MerchantID", "2000132");
+        keyValuePairs.Add("AllPayLogisticsID", "3136268");
+        //keyValuePairs.Add("TimeStamp", timeStamp.ToString());
+
+        IOrderedEnumerable<KeyValuePair<string, string>> sortedParameters = keyValuePairs.OrderBy(p => p.Key);
+
+        string requestString = string.Join("&", sortedParameters.Select(p => $"{p.Key}={p.Value}"));
+
+        requestString = $"HashKey=5294y06JbISpM5x9&{requestString}&HashIV=v77hoKGq4kWxNNIS";
+
+        string urlEncodedData = HttpUtility.UrlEncode(requestString);
+
+        string lowercaseData = urlEncodedData.ToLower();
+
+        using (MD5 md5 = MD5.Create())
+        {
+            byte[] inputBytes = Encoding.UTF8.GetBytes(lowercaseData);
+            byte[] hashBytes = md5.ComputeHash(inputBytes);
+
+            StringBuilder sb = new();
+            for (int i = 0; i < hashBytes.Length; i++)
+            {
+                sb.Append(hashBytes[i].ToString("X2"));
+            }
+            return Ok(sb.ToString());
+        }
+    }
+
+
+
     [HttpPost]
     public Task<OrderDto> CreateAsync(CreateUpdateOrderDto input)
     {

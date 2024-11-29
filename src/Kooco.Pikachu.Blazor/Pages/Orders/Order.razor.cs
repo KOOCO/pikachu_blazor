@@ -97,6 +97,25 @@ public partial class Order
         StateHasChanged();
     }
     
+    public async Task OnPrintShippedLabel(MouseEventArgs e)
+    {
+        await loading.Show();
+
+        List<Guid> orderIds = [.. Orders.Where(w => w.IsSelected).Select(s => s.OrderId)];
+
+        foreach (Guid orderId in orderIds)
+        {
+            OrderDto order = await _orderAppService.GetAsync(orderId);
+
+            List<OrderDeliveryDto> orderDeliveries = await _OrderDeliveryAppService.GetListByOrderAsync(orderId);
+
+            foreach (OrderDeliveryDto orderDelivery in orderDeliveries)
+            {
+                await _StoreLogisticsOrderAppService.OnPrintShippingLabel(order, orderDelivery);
+            }
+        }
+    }
+
     public async Task OnGenerateDeliveryNumber(MouseEventArgs e)
     {
         try

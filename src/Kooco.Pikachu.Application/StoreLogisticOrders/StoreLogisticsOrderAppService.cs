@@ -34,6 +34,7 @@ using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.BackgroundJobs;
 using Volo.Abp.Domain.Repositories;
+using static Kooco.Pikachu.Permissions.PikachuPermissions;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Kooco.Pikachu.StoreLogisticOrders;
@@ -258,6 +259,60 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         catch (Exception ex)
         {
             throw;
+        }
+    }
+
+    public async Task OnPrintShippingLabel(OrderDto order, OrderDeliveryDto orderDelivery)
+    {
+
+        RestClientOptions? options = new RestClientOptions { MaxTimeout = -1 };
+
+        RestClient client = new(options);
+
+        List<LogisticsProviderSettingsDto> providers = await _logisticsProvidersAppService.GetAllAsync();
+
+
+        if (orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.PostOffice ||
+            orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.BlackCat1 ||
+            orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.BlackCatFrozen ||
+            orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.BlackCatFreeze ||
+            orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.SevenToEleven1 ||
+            orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.SevenToElevenFrozen ||
+            orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.FamilyMart1)
+        {
+            LogisticsProviderSettingsDto? greenWorld = providers.Where(p => p.LogisticProvider is LogisticProviders.GreenWorldLogistics).FirstOrDefault();
+
+            if (greenWorld != null) GreenWorld = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorld);
+
+            RestRequest request = new(_configuration["EcPay:LogisticApi"], Method.Post);
+
+            request.AddParameter("MerchantID", GreenWorld.StoreCode);
+            request.AddParameter("AllPayLogisticsID", orderDelivery.AllPayLogisticsID);
+            //request.AddParameter("CheckMacValue", GenerateCheckMac(greenWorld.HashKey, greenWorld.HashIV, ));
+
+            RestResponse response = await client.ExecuteAsync(request);
+
+            ResponseResultDto result = ParseApiResponse(response.Content.ToString());
+        }
+
+        else if (orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.SevenToElevenC2C)
+        {
+
+        }
+
+        else if (orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.FamilyMartC2C)
+        {
+
+        }
+
+        else if (orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryNormal ||
+                 orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryFreeze ||
+                 orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryFrozen ||
+                 orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenNormal ||
+                 orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenFreeze ||
+                 orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenFrozen)
+        {
+
         }
     }
 
@@ -1138,6 +1193,33 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         result.CookieValue = response1.Cookies.Select(x => x.Value).FirstOrDefault();
 
         return result;
+    }
+
+    public string GenerateCheckMacValue(string HashKey, string HashIV, Dictionary<string, string> parameters)
+    {
+        parameters.Add("HashKey", HashKey);
+        parameters.Add("HashIV", HashIV);
+
+        IOrderedEnumerable<KeyValuePair<string, string>> sortedParameters = parameters.OrderBy(p => p.Key);
+
+        string requestString = string.Join("&", sortedParameters.Select(p => $"{p.Key}={p.Value}"));
+
+        string urlEncodedData = HttpUtility.UrlEncode(requestString);
+
+        string lowercaseData = urlEncodedData.ToLower();
+
+        using (MD5 md5 = MD5.Create())
+        {
+            byte[] inputBytes = Encoding.UTF8.GetBytes(lowercaseData);
+            byte[] hashBytes = md5.ComputeHash(inputBytes);
+
+            StringBuilder sb = new StringBuilder();
+            foreach (byte b in hashBytes)
+            {
+                sb.Append(b.ToString("X2"));
+            }
+            return sb.ToString();
+        }
     }
 
     public string GenerateCheckMac(string HashKey, string HashIV, string merchantID, string allPayLogisticsID, long timeStamp)
