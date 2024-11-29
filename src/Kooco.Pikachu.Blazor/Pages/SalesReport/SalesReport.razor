@@ -1,0 +1,93 @@
+﻿@page "/sales-report"
+@using Kooco.Pikachu.SalesReports
+@using Kooco.Pikachu.Extensions
+@attribute [Authorize]
+@inherits PikachuComponentBase
+@inject ISalesReportAppService SalesReportAppService
+
+<Div>
+    <Row>
+        <Column ColumnSize="ColumnSize.Is6">
+            <h3 class="text-dark">@L["SalesReport"]</h3>
+        </Column>
+        <Column ColumnSize="ColumnSize.Is6" TextAlignment="TextAlignment.End">
+            <PikachuButton Class="pk-btn-sm pk-btn-outline-primary" Clicked="() => FilterDateRange(StringExtensions.Today)">
+                @L[StringExtensions.Today]
+            </PikachuButton>
+            <PikachuButton Class="pk-btn-sm pk-btn-outline-primary" Clicked="() => FilterDateRange(StringExtensions.Week)">
+                @L[StringExtensions.Week]
+            </PikachuButton>
+            <PikachuButton Class="pk-btn-sm pk-btn-outline-primary" Clicked="() => FilterDateRange(StringExtensions.Month)">
+                @L[StringExtensions.Month]
+            </PikachuButton>
+            <Span Class="ms-3"></Span>
+            <PikachuButton Class="pk-btn-sm pk-btn-primary" Disabled="true">
+                <Icon Name="IconName.FileDownload"></Icon>
+                @L["Export"]
+            </PikachuButton>
+        </Column>
+    </Row>
+</Div>
+
+<Div Class="rounded-cards">
+    <Card>
+        <CardBody>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is5">
+                    <Div Class="d-flex align-items-center gap-1">
+                        <DateEdit TValue="DateTime?" @bind-Date="Filters.StartDate" Size="Size.Small"></DateEdit>
+                        <Span>~</Span>
+                        <DateEdit TValue="DateTime?" @bind-Date="Filters.EndDate" Size="Size.Small"></DateEdit>
+                    </Div>
+                </Column>
+                <Column ColumnSize="ColumnSize.IsAuto">
+                    <PikachuButton Class="pk-btn-sm pk-btn-outline-primary" Clicked="ResetAsync">
+                        <Icon Name="IconName.Undo"></Icon>
+                        @L["Reset"]
+                    </PikachuButton>
+                    <PikachuButton Class="pk-btn-sm pk-btn-primary" Clicked="() => FilterDateRange(StringExtensions.Today)">
+                        <Icon Name="IconName.Filter"></Icon>
+                        @L["Filter"]
+                    </PikachuButton>
+                </Column>
+            </Row>
+        </CardBody>
+    </Card>
+    <Card>
+        <CardBody>
+            <Table Responsive Striped Narrow>
+                <TableHeader>
+                    <TableRow>
+                        <TableHeaderCell>@L["Date"]</TableHeaderCell>
+                        <TableHeaderCell>@L["GrossSales"]</TableHeaderCell>
+                        <TableHeaderCell>@L["NetSales"]</TableHeaderCell>
+                        <TableHeaderCell>@L["Discount"]</TableHeaderCell>
+                        <TableHeaderCell>@L["NumberOfOrders"]</TableHeaderCell>
+                        <TableHeaderCell>@L["AverageOrderValue"]</TableHeaderCell>
+                        <TableHeaderCell>@L["CostOfGoodsSold"]</TableHeaderCell>
+                        <TableHeaderCell>@L["ShippingCost"]</TableHeaderCell>
+                        <TableHeaderCell>@L["GrossProfit"]</TableHeaderCell>
+                        <TableHeaderCell>@L["GrossProfitMargin"]</TableHeaderCell>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    @foreach (var r in SalesReportList)
+                    {
+                        <TableRow>
+                            <TableRowCell>@r.Date.ToString("yyyy-MM-dd")</TableRowCell>
+                            <TableRowCell>@(r.GrossSales > 0 ? r.GrossSales.ToString("N0") : "-")</TableRowCell>
+                            <TableRowCell>@(r.NetSales > 0 ? r.NetSales.ToString("N0") : "-")</TableRowCell>
+                            <TableRowCell>@(r.Discount > 0 ? r.Discount.ToString("N0") : "-")</TableRowCell>
+                            <TableRowCell>@(r.NumberOfOrders > 0 ? r.NumberOfOrders.ToString("N0") : "-")</TableRowCell>
+                            <TableRowCell>@(r.AverageOrderValue > 0 ? r.AverageOrderValue.ToString("N2") : "-")</TableRowCell>
+                            <TableRowCell>@(r.CostOfGoodsSold > 0 ? r.CostOfGoodsSold.ToString("N0") : "-")</TableRowCell>
+                            <TableRowCell>@(r.ShippingCost > 0 ? r.ShippingCost.ToString("N0") : "-")</TableRowCell>
+                            <TableRowCell>@(r.GrossProfit > 0 ? r.GrossProfit.ToString("N0") : "-")</TableRowCell>
+                            <TableRowCell>@(r.GrossProfitMargin > 0 ? r.GrossProfitMargin.ToString("N3") : "-")</TableRowCell>
+                        </TableRow>
+                    }
+                </TableBody>
+            </Table>
+        </CardBody>
+    </Card>
+</Div>

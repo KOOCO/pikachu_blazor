@@ -257,6 +257,14 @@ requiredPermissionName: PikachuPermissions.ShoppingCredits.Default)
            requiredPermissionName: PikachuPermissions.CashFlowReconciliationStatement)
            );
 
+        paymentManagement.AddItem(new ApplicationMenuItem(
+           name: "SalesReport",
+           icon: "fas fa-file-invoice",
+           displayName: l["Menu:SalesReport"],
+           url: "/sales-report"
+           ).RequireAuthenticated()
+           );
+
         var logisticsManagment =
                 new ApplicationMenuItem(
                 PikachuMenus.LogisticsManagement,
