@@ -80,6 +80,9 @@ public partial class SalesReport
     private async Task OnShowDetails(SalesReportDto input)
     {
         input.ShowDetails = !input.ShowDetails;
-        await Task.CompletedTask;
+        if (input.Details.Count == 0)
+        {
+            input.Details = await SalesReportAppService.GetGroupBuySalesReportAsync(input.Date);
+        }
     }
 }

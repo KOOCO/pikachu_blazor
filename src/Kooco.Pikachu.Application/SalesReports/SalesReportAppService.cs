@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.Orders;
+﻿using Kooco.Pikachu.Groupbuys;
+using Kooco.Pikachu.Orders;
 using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 namespace Kooco.Pikachu.SalesReports;
 
 [Authorize]
-public class SalesReportAppService(IOrderRepository orderRepository) : PikachuAppService, ISalesReportAppService
+public class SalesReportAppService(IOrderRepository orderRepository, IGroupBuyRepository groupBuyRepository) : PikachuAppService, ISalesReportAppService
 {
     public async Task<List<SalesReportDto>> GetSalesReportAsync(GetSalesReportDto input)
     {
@@ -24,7 +25,7 @@ public class SalesReportAppService(IOrderRepository orderRepository) : PikachuAp
             .OrderByDescending(x => x.CreationTime)
             .ToList();
 
-        var groupedOrders = timePeriodOrders.GroupBy(x => x.CreationTime).ToList();
+        var groupedOrders = timePeriodOrders.GroupBy(x => x.CreationTime.Date).ToList();
 
         var totalDays = (endTime - startTime).TotalDays;
 
@@ -53,5 +54,45 @@ public class SalesReportAppService(IOrderRepository orderRepository) : PikachuAp
         }
 
         return results;
+    }
+
+    public async Task<List<SalesReportDto>> GetGroupBuySalesReportAsync(DateTime date)
+    {
+        var queryable = await orderRepository.GetQueryableAsync();
+
+        var timePeriodOrders = queryable
+            .Where(x => x.CreationTime.Date == date.Date)
+            .OrderByDescending(x => x.CreationTime)
+            .ToList();
+
+        var groupedOrders = timePeriodOrders.GroupBy(x => x.GroupBuyId).ToList();
+
+        var groupBuyIds = groupedOrders.Select(g => g.Key).ToList();
+
+        var groupBuys = (await groupBuyRepository.GetQueryableAsync())
+            .Where(g => groupBuyIds.Contains(g.Id))
+            .Select(g => new { g.Id, g.GroupBuyName })
+            .ToList();
+
+        List<SalesReportDto> results = [];
+
+        foreach (var orderGroup in groupedOrders)
+        {
+            results.Add(new SalesReportDto
+            {
+                Date = date,
+                GroupBuyName = groupBuys.Where(g => g.Id == orderGroup.Key).FirstOrDefault()?.GroupBuyName,
+                GrossSales = orderGroup?.Sum(y => y.TotalAmount) ?? 0,
+                NetSales = 0,
+                Discount = 0,
+                NumberOfOrders = orderGroup?.Count() ?? 0,
+                CostOfGoodsSold = 0,
+                ShippingCost = orderGroup?.Sum(y => (y.DeliveryCost ?? 0) + (y.DeliveryCostForNormal ?? 0) + (y.DeliveryCostForFreeze ?? 0) + (y.DeliveryCostForFrozen ?? 0)) ?? 0,
+                GrossProfit = 0,
+                GrossProfitMargin = 0
+            });
+        }
+
+        return results.Where(x => x.GrossSales > 0).ToList();
     }
 }

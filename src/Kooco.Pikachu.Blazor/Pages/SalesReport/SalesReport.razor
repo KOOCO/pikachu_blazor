@@ -73,7 +73,7 @@
     </Card>
     <Card>
         <CardBody>
-            <Table Responsive Striped Narrow>
+            <Table Responsive Narrow>
                 <TableHeader>
                     <TableRow>
                         <TableHeaderCell>@L["Date"]</TableHeaderCell>
@@ -93,11 +93,14 @@
                     {
                         <TableRow Class="@(r.ShowDetails ? "fw-bold" : "")">
                             <TableRowCell Class="text-nowrap">
-                                <Text Style="cursor: pointer;" @onclick="() => OnShowDetails(r)">
-                                    <Icon Class="@(r.ShowDetails ? "fas fa-arrow-alt-circle-up" : "fas fa-arrow-alt-circle-down")"
-                                          TextColor="r.ShowDetails ? TextColor.Danger : TextColor.Info" Margin="Margin.Is2.FromEnd">
-                                    </Icon>
-                                </Text>
+                                @if (!Filters.GroupBuyId.HasValue)
+                                {
+                                    <Span Style="cursor: pointer;" @onclick="() => OnShowDetails(r)">
+                                        <Icon Class="@(r.ShowDetails ? "fas fa-arrow-alt-circle-up" : "fas fa-arrow-alt-circle-down")"
+                                              TextColor="r.ShowDetails ? TextColor.Danger : TextColor.Info" Margin="Margin.Is2.FromEnd">
+                                        </Icon>
+                                    </Span>
+                                }
                                 @r.Date.ToString("yyyy-MM-dd")
                             </TableRowCell>
                             <TableRowCell>@(r.GrossSales > 0 ? r.GrossSales.ToString("N0") : "-")</TableRowCell>
@@ -110,6 +113,29 @@
                             <TableRowCell>@(r.GrossProfit > 0 ? r.GrossProfit.ToString("N0") : "-")</TableRowCell>
                             <TableRowCell>@(r.GrossProfitMargin > 0 ? r.GrossProfitMargin.ToString("N3") : "-")</TableRowCell>
                         </TableRow>
+                        @if (r.ShowDetails)
+                        {
+                            @foreach (var detail in r.Details)
+                            {
+                                <TableRow Class="border-1 bg-light">
+                                    <TableRowCell ColumnSpan="10" Class="text-nowrap">
+                                        @detail.GroupBuyName
+                                    </TableRowCell>
+                                </TableRow>
+                                <TableRow Class="border-1">
+                                    <TableRowCell></TableRowCell>
+                                    <TableRowCell>@(detail.GrossSales > 0 ? detail.GrossSales.ToString("N0") : "-")</TableRowCell>
+                                    <TableRowCell>@(detail.NetSales > 0 ? detail.NetSales.ToString("N0") : "-")</TableRowCell>
+                                    <TableRowCell>@(detail.Discount > 0 ? detail.Discount.ToString("N0") : "-")</TableRowCell>
+                                    <TableRowCell>@(detail.NumberOfOrders > 0 ? detail.NumberOfOrders.ToString("N0") : "-")</TableRowCell>
+                                    <TableRowCell>@(detail.AverageOrderValue > 0 ? detail.AverageOrderValue.ToString("N2") : "-")</TableRowCell>
+                                    <TableRowCell>@(detail.CostOfGoodsSold > 0 ? detail.CostOfGoodsSold.ToString("N0") : "-")</TableRowCell>
+                                    <TableRowCell>@(detail.ShippingCost > 0 ? detail.ShippingCost.ToString("N0") : "-")</TableRowCell>
+                                    <TableRowCell>@(detail.GrossProfit > 0 ? detail.GrossProfit.ToString("N0") : "-")</TableRowCell>
+                                    <TableRowCell>@(detail.GrossProfitMargin > 0 ? detail.GrossProfitMargin.ToString("N3") : "-")</TableRowCell>
+                                </TableRow>
+                            }
+                        }
                     }
                 </TableBody>
             </Table>

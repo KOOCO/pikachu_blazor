@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Kooco.Pikachu.SalesReports;
 
 public class SalesReportDto
 {
     public DateTime Date { get; set; }
+    public string? GroupBuyName { get; set; }
     public decimal GrossSales { get; set; }
     public decimal NetSales { get; set; }
     public decimal Discount { get; set; }
@@ -16,4 +18,5 @@ public class SalesReportDto
     public decimal GrossProfitMargin { get; set; }
 
     public bool ShowDetails { get; set; } = false;
+    public List<SalesReportDto> Details { get; set; } = [];
 }
