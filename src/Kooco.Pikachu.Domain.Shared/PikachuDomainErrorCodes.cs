@@ -45,6 +45,7 @@ public static class PikachuDomainErrorCodes
     public const string AtLeastOnePaymentMethodIsRequired = "Pikachu:AtLeastOnePaymentMethodIsRequired";
     public const string ProductTypeIsRequired = "Pikachu:ProductTypeIsRequired";
     public const string DeliverdByStoreMethodIsRequired = "Pikachu:DeliverdByStoreMethodIsRequired";
+    public const string EnterprisePurchaseCanOnlyUseSelfPickup = "Pikachu:EnterprisePurchaseCanOnlyUseSelfPickup";
     public const string ExpirationDateCannotBePast = "Pikachu:ExpirationDateCannotBePast";
     public const string ShopCartForUserAlreadyExists = "Pikachu:ShopCartForUserAlreadyExists";
     public const string CartItemForUserAlreadyExists = "Pikachu:CartItemForUserAlreadyExists";

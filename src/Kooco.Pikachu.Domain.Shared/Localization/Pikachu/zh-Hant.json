@@ -1,6 +1,7 @@
 {
   "culture": "zh-Hant",
   "texts": {
+    "Pikachu:EnterprisePurchaseCanOnlyUseSelfPickup": "企業採購只能使用自提",
     "ProductRankingCarouselModule": "商品排行模組",
     "OrderInstruction": "流程簡介模組",
     "CountdownTimer": "倒數模組",

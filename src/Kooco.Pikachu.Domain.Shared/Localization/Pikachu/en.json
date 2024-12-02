@@ -1,6 +1,7 @@
 {
   "culture": "en",
   "texts": {
+    "Pikachu:EnterprisePurchaseCanOnlyUseSelfPickup": "Enterprise Purchase can only use Self-Pickup",
     "ProductRankingCarouselModule": "Product Ranking Carousel Module",
     "OrderInstruction": "Order Instruction",
     "CountdownTimer": "Countdown Timer",
