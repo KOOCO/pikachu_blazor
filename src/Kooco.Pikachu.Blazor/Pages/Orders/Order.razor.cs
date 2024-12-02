@@ -101,6 +101,8 @@ public partial class Order
     {
         await loading.Show();
 
+        List<string> allPayLogisticsId = [];
+
         List<Guid> orderIds = [.. Orders.Where(w => w.IsSelected).Select(s => s.OrderId)];
 
         foreach (Guid orderId in orderIds)
@@ -109,15 +111,17 @@ public partial class Order
 
             List<OrderDeliveryDto> orderDeliveries = await _OrderDeliveryAppService.GetListByOrderAsync(orderId);
 
-            List<string> allPayLogisticsId = [.. orderDeliveries.Where(w => !w.AllPayLogisticsID.IsNullOrWhiteSpace()).Select(s => s.AllPayLogisticsID)];
-
-            string html = await _StoreLogisticsOrderAppService.OnBatchPrintingShippingLabel(order, allPayLogisticsId);
+            allPayLogisticsId.AddRange([.. orderDeliveries.Where(w => !w.AllPayLogisticsID.IsNullOrWhiteSpace()).Select(s => s.AllPayLogisticsID)]);
 
             //foreach (OrderDeliveryDto orderDelivery in orderDeliveries)
             //{
             //    await _StoreLogisticsOrderAppService.OnPrintShippingLabel(order, orderDelivery);
             //}
         }
+
+        string html = await _StoreLogisticsOrderAppService.OnBatchPrintingShippingLabel(allPayLogisticsId);
+        
+        await loading.Hide();
     }
 
     public async Task OnGenerateDeliveryNumber(MouseEventArgs e)

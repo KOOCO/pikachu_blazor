@@ -65,14 +65,14 @@ public class StoreLogisticOrderController(
         throw new NotImplementedException();
     }
 
-    [HttpPost("print-shipping-label")]
+    [HttpGet("print-shipping-label")]
     public Task<string> OnPrintShippingLabel(OrderDto order, OrderDeliveryDto orderDelivery)
     {
         throw new NotImplementedException();
     }
 
     [HttpGet("batch-printing-shipping-label")]
-    public Task<string> OnBatchPrintingShippingLabel(OrderDto order, List<string> allPayLogisticsId)
+    public Task<string> OnBatchPrintingShippingLabel(List<string> allPayLogisticsId)
     {
         throw new NotImplementedException();
     }

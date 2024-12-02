@@ -325,7 +325,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         return string.Empty;
     }
 
-    public async Task<string> OnBatchPrintingShippingLabel(OrderDto order, List<string> allPayLogisticsId)
+    public async Task<string> OnBatchPrintingShippingLabel(List<string> allPayLogisticsId)
     {
         string html = string.Empty;
 

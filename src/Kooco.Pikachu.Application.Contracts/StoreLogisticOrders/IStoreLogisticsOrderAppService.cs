@@ -28,6 +28,6 @@ namespace Kooco.Pikachu.StoreLogisticOrders
 
         Task<string> OnPrintShippingLabel(OrderDto order, OrderDeliveryDto orderDelivery);
 
-        Task<string> OnBatchPrintingShippingLabel(OrderDto order, List<string> allPayLogisticsId);
+        Task<string> OnBatchPrintingShippingLabel(List<string> allPayLogisticsId);
     }
 }
