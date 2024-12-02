@@ -20,7 +20,7 @@ public class SalesReportAppService(IOrderRepository orderRepository) : PikachuAp
         var timePeriodOrders = queryable
             .Where(x => x.CreationTime.Date >= startTime.Date)
             .Where(x => x.CreationTime.Date <= endTime.Date)
-            .WhereIf(input.GroupBuyIds?.Count > 0, x => input.GroupBuyIds!.Contains(x.GroupBuyId))
+            .WhereIf(input.GroupBuyId.HasValue, x => x.GroupBuyId == input.GroupBuyId)
             .OrderByDescending(x => x.CreationTime)
             .ToList();
 
@@ -46,7 +46,7 @@ public class SalesReportAppService(IOrderRepository orderRepository) : PikachuAp
                 Discount = 0,
                 NumberOfOrders = orders?.Count() ?? 0,
                 CostOfGoodsSold = 0,
-                ShippingCost = orders?.Sum(y => y.DeliveryCost ?? 0) ?? 0,
+                ShippingCost = orders?.Sum(y => (y.DeliveryCost ?? 0) + (y.DeliveryCostForNormal ?? 0) + (y.DeliveryCostForFreeze ?? 0) + (y.DeliveryCostForFrozen ?? 0)) ?? 0,
                 GrossProfit = 0,
                 GrossProfitMargin = 0
             });

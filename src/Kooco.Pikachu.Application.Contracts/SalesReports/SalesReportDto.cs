@@ -14,4 +14,6 @@ public class SalesReportDto
     public decimal ShippingCost { get; set; }
     public decimal GrossProfit { get; set; }
     public decimal GrossProfitMargin { get; set; }
+
+    public bool ShowDetails { get; set; } = false;
 }

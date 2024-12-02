@@ -1,9 +1,11 @@
 ﻿@page "/sales-report"
+@using Kooco.Pikachu.GroupBuys
 @using Kooco.Pikachu.SalesReports
 @using Kooco.Pikachu.Extensions
 @attribute [Authorize]
 @inherits PikachuComponentBase
 @inject ISalesReportAppService SalesReportAppService
+@inject IGroupBuyAppService GroupBuyAppService
 
 <Div>
     <Row>
@@ -35,17 +37,33 @@
             <Row>
                 <Column ColumnSize="ColumnSize.Is5">
                     <Div Class="d-flex align-items-center gap-1">
-                        <DateEdit TValue="DateTime?" @bind-Date="Filters.StartDate" Size="Size.Small"></DateEdit>
-                        <Span>~</Span>
-                        <DateEdit TValue="DateTime?" @bind-Date="Filters.EndDate" Size="Size.Small"></DateEdit>
+                        <Div Class="w-100">
+                            <Label>@L["From"]</Label>
+                            <DateEdit TValue="DateTime?" @bind-Date="Filters.StartDate" Size="Size.Small"></DateEdit>
+                        </Div>
+                        <Span Class="mt-3">~</Span>
+                        <Div Class="w-100">
+                            <Label>@L["To"]</Label>
+                            <DateEdit TValue="DateTime?" @bind-Date="Filters.EndDate" Size="Size.Small"></DateEdit>
+                        </Div>
                     </Div>
                 </Column>
-                <Column ColumnSize="ColumnSize.IsAuto">
-                    <PikachuButton Class="pk-btn-sm pk-btn-outline-primary" Clicked="ResetAsync">
+                <Column ColumnSize="ColumnSize.Is3">
+                    <Label>@L["GroupBuy"]</Label>
+                    <Select TValue="Guid?" @bind-SelectedValue="Filters.GroupBuyId" Size="Size.Small">
+                        <SelectItem></SelectItem>
+                        @foreach (var groupBuy in GroupBuyLookup)
+                        {
+                            <SelectItem Value="@groupBuy.Id">@groupBuy.Name</SelectItem>
+                        }
+                    </Select>
+                </Column>
+                <Column ColumnSize="ColumnSize.IsAuto" Class="d-flex align-items-end gap-1">
+                    <PikachuButton Class="pk-btn-sm pk-btn-outline-primary" Clicked="ResetAsync" Disabled="IsLoading">
                         <Icon Name="IconName.Undo"></Icon>
                         @L["Reset"]
                     </PikachuButton>
-                    <PikachuButton Class="pk-btn-sm pk-btn-primary" Clicked="() => FilterDateRange(StringExtensions.Today)">
+                    <PikachuButton Class="pk-btn-sm pk-btn-primary" Clicked="FilterAsync" Loading="IsLoading">
                         <Icon Name="IconName.Filter"></Icon>
                         @L["Filter"]
                     </PikachuButton>
@@ -73,8 +91,15 @@
                 <TableBody>
                     @foreach (var r in SalesReportList)
                     {
-                        <TableRow>
-                            <TableRowCell>@r.Date.ToString("yyyy-MM-dd")</TableRowCell>
+                        <TableRow Class="@(r.ShowDetails ? "fw-bold" : "")">
+                            <TableRowCell Class="text-nowrap">
+                                <Text Style="cursor: pointer;" @onclick="() => OnShowDetails(r)">
+                                    <Icon Class="@(r.ShowDetails ? "fas fa-arrow-alt-circle-up" : "fas fa-arrow-alt-circle-down")"
+                                          TextColor="r.ShowDetails ? TextColor.Danger : TextColor.Info" Margin="Margin.Is2.FromEnd">
+                                    </Icon>
+                                </Text>
+                                @r.Date.ToString("yyyy-MM-dd")
+                            </TableRowCell>
                             <TableRowCell>@(r.GrossSales > 0 ? r.GrossSales.ToString("N0") : "-")</TableRowCell>
                             <TableRowCell>@(r.NetSales > 0 ? r.NetSales.ToString("N0") : "-")</TableRowCell>
                             <TableRowCell>@(r.Discount > 0 ? r.Discount.ToString("N0") : "-")</TableRowCell>

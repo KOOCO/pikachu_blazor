@@ -12,5 +12,5 @@ public class GetSalesReportDto
     [Required]
     public DateTime? EndDate { get; set; }
     
-    public List<Guid>? GroupBuyIds { get; set; }
+    public Guid? GroupBuyId { get; set; }
 }
