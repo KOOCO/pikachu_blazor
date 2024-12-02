@@ -1080,7 +1080,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
 
             return keyValuePairs;
         }
-        if (deliveryNameToLogisticName is "TCATFREOZEN")
+        if (deliveryNameToLogisticName is "TCATFROZEN")
         {
             JsonObject keyValuePairs = new JsonObject
         {
