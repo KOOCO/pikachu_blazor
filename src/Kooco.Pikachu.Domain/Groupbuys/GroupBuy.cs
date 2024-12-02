@@ -211,7 +211,7 @@ public class GroupBuy : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public string? HomeDeliveryDeliveryTime { get; set; }
     public string? DeliveredByStoreDeliveryTime { get; set; }
     public TaxType TaxType { get; set; }
-    public decimal? FreeShippingThreshold { get; set; }
+    public int? FreeShippingThreshold { get; set; }
     /// <summary>
     /// 預設使用的發貨倉庫 Default Warehouse used for shipping
     /// </summary>
@@ -279,7 +279,7 @@ public class GroupBuy : FullAuditedAggregateRoot<Guid>, IMultiTenant
         string? exchangePolicyDescription,
         string shortCode,
         bool isEnterprise,
-        decimal? freeShippingThreshold ,
+        int? freeShippingThreshold ,
         string? selfPickupDeliveryTime,
         string? blackCatDeliveryTime,
         string? homeDeliveryDeliveryTime,

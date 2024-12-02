@@ -1156,8 +1156,11 @@ public partial class OrderDetails
     
     public void NavigateToOrderShipmentDetails()
     {
-        var id = Order?.Id;
-        NavigationManager.NavigateTo($"Orders/OrderShippingDetails/{id}");
+        List<Guid?> orderId = new() { {Order?.Id} };
+
+        string serializedId = Newtonsoft.Json.JsonConvert.SerializeObject(orderId);
+
+        NavigationManager.NavigateTo($"Orders/OrderShippingDetails/{serializedId}");
     }
     
     async Task CancelOrder()
