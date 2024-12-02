@@ -611,6 +611,8 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
 
     public async Task<JsonObject> GetAsync(string shippingMethod)
     {
+        if (shippingMethod.ToUpper() is "SELFPICKUP") return new JsonObject { { "Freight", 0 } };
+
         List<LogisticsProviderSettingsDto> providers = ObjectMapper.Map<List<LogisticsProviderSettings>, List<LogisticsProviderSettingsDto>>(
             await _logisticsProviderRepository.GetListAsync()
         );
@@ -904,14 +906,14 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
         if (deliveryNameToLogisticName is "HOMEDELIVERY")
         {
             JsonObject keyValuePairs = new JsonObject
-        {
-            { "Provider", result.LogisticProviderName },
-            { "IsEnable", result.IsEnabled },
-            { "Cost", result.Freight },
-            { "MainIslands", result.MainIslands },
-            { "IsOuterIslands", result.IsOuterIslands },
-            { "OuterIslands", result.OuterIslands }
-        };
+            {
+                { "Provider", result.LogisticProviderName },
+                { "IsEnable", result.IsEnabled },
+                { "Cost", result.Freight },
+                { "MainIslands", result.MainIslands },
+                { "IsOuterIslands", result.IsOuterIslands },
+                { "OuterIslands", result.OuterIslands }
+            };
 
             return keyValuePairs;
         }
