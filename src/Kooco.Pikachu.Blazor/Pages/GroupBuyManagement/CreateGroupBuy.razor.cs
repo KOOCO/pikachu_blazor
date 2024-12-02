@@ -1483,9 +1483,9 @@ public partial class CreateGroupBuy
                 await Loading.Hide();
                 return;
             }
-            if (CreateGroupBuyDto.IsEnterprise && (!CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
+            if (CreateGroupBuyDto.IsEnterprise && (CreateGroupBuyDto.ExcludeShippingMethod is not "SelfPickup"))
             {
-                await _uiMessageService.Warn(L[PikachuDomainErrorCodes.DeliverdByStoreMethodIsRequired]);
+                await _uiMessageService.Warn(L[PikachuDomainErrorCodes.EnterprisePurchaseCanOnlyUseSelfPickup]);
                 await Loading.Hide();
                 return;
             }

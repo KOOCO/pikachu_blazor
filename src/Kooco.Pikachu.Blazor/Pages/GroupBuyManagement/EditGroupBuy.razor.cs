@@ -1964,9 +1964,9 @@ public partial class EditGroupBuy
                 await Loading.Hide();
                 return;
             }
-            if (EditGroupBuyDto.IsEnterprise && (!EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
+            if (EditGroupBuyDto.IsEnterprise && (EditGroupBuyDto.ExcludeShippingMethod is not "SelfPickup"))
             {
-                await _uiMessageService.Warn(L[PikachuDomainErrorCodes.DeliverdByStoreMethodIsRequired]);
+                await _uiMessageService.Warn(L[PikachuDomainErrorCodes.EnterprisePurchaseCanOnlyUseSelfPickup]);
                 await Loading.Hide();
                 return;
             }
