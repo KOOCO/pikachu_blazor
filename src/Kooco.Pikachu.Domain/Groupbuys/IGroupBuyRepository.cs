@@ -46,6 +46,7 @@ public interface IGroupBuyRepository : IRepository<GroupBuy, Guid>
         string? orderContactInfo = null,
         string? exchangePolicy = null,
         string? notifyMessage = null,
+         string? ExcludeShippingMethod = null, string? PaymentMethod = null, bool? IsInviteCode = null, bool? IsEnterprise = null,
         string? sorting = null,
         int maxResultCount = int.MaxValue,
         int skipCount = 0,
@@ -88,6 +89,7 @@ public interface IGroupBuyRepository : IRepository<GroupBuy, Guid>
         string? orderContactInfo = null,
         string? exchangePolicy = null,
         string? notifyMessage = null,
+         string?ExcludeShippingMethod=null, string? PaymentMethod = null, bool? IsInviteCode=null, bool?IsEnterprise = null,
         CancellationToken cancellationToken = default);
 
     Task<GroupBuy> GetWithDetailsAsync(Guid id);

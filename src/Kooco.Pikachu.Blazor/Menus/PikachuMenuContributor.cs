@@ -4,6 +4,7 @@ using Kooco.Pikachu.MultiTenancy;
 using Kooco.Pikachu.Permissions;
 using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Identity.Blazor;
+using Volo.Abp.SettingManagement;
 using Volo.Abp.SettingManagement.Blazor.Menus;
 using Volo.Abp.TenantManagement.Blazor.Navigation;
 using Volo.Abp.UI.Navigation;
@@ -384,6 +385,9 @@ requiredPermissionName: PikachuPermissions.ShoppingCredits.Default)
         //remove administration item from menu
         //context.Menu.Items.Remove( administration );
 
-
+        if (!await context.IsGrantedAsync(SettingManagementPermissions.Emailing))
+        {
+            administration.TryRemoveMenuItem(SettingManagementMenus.GroupName);
+        }
     }
 }
