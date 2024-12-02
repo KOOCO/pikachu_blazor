@@ -385,14 +385,14 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                                                      , input.AllowShipOversea, input.ExpectShippingDateFrom, input.ExpectShippingDateTo, input.MoneyTransferValidDayBy, input.MoneyTransferValidDays,
                                                      input.IssueInvoice, input.AutoIssueTriplicateInvoice, input.InvoiceNote, input.ProtectPrivacyData, input.InviteCode, input.ProfitShare,
                                                      input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy,
-                                                     input.NotifyMessage
+                                                     input.NotifyMessage,input.ExcludeShippingMethod,input.PaymentMethod,input.IsInviteCode,input.IsEnterprise
                                                      );
         var result = await _groupBuyRepository.GetGroupBuyListAsync(input.FilterText, input.GroupBuyNo, input.Status, input.GroupBuyName, input.EntryURL, input.EntryURL2, input.SubjectLine,
                                                     input.ShortName, input.LogoURL, input.BannerURL, input.StartTime, input.EndTime, input.FreeShipping, input.AllowShipToOuterTaiwan,
                                                     input.AllowShipOversea, input.ExpectShippingDateFrom, input.ExpectShippingDateTo, input.MoneyTransferValidDayBy, input.MoneyTransferValidDays,
                                                     input.IssueInvoice, input.AutoIssueTriplicateInvoice, input.InvoiceNote, input.ProtectPrivacyData, input.InviteCode, input.ProfitShare,
                                                     input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy,
-                                                    input.NotifyMessage, sorting, input.MaxResultCount, input.SkipCount);
+                                                    input.NotifyMessage, input.ExcludeShippingMethod, input.PaymentMethod, input.IsInviteCode, input.IsEnterprise, sorting, input.MaxResultCount, input.SkipCount);
         return new PagedResultDto<GroupBuyDto>
         {
             TotalCount = count,

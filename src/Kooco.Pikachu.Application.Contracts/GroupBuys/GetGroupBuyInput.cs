@@ -19,6 +19,7 @@ namespace Kooco.Pikachu.GroupBuys
 
         
         public string? EntryURL2 { get; set; }
+        public string? ExcludeShippingMethod { get; set; }
     
         public string? SubjectLine { get; set; }
 
@@ -38,6 +39,7 @@ namespace Kooco.Pikachu.GroupBuys
         public DateTime? EndTime { get; set; }
 
         public bool? FreeShipping { get; set; }
+        public bool? IsEnterprise { get; set; }
        
 
         public bool? AllowShipToOuterTaiwan { get; set; }
@@ -70,6 +72,7 @@ namespace Kooco.Pikachu.GroupBuys
 
 
         public string? InviteCode { get; set; }
+        public bool? IsInviteCode { get; set; }
 
       
         public int? ProfitShare { get; set; }
@@ -79,6 +82,7 @@ namespace Kooco.Pikachu.GroupBuys
 
    
         public string? FBID { get; set; }
+        public string? PaymentMethod { get; set; }
 
      
         public string? IGID { get; set; }
@@ -101,6 +105,11 @@ namespace Kooco.Pikachu.GroupBuys
         public string? ExchangePolicy { get; set; }
 
         public string? NotifyMessage { get; set; }
+        public List<string>? ShippingMethodList { get; set; }
+        public GetGroupBuyInput() {
+
+            ShippingMethodList = new List<string>();
+        }
 
     }
 }
