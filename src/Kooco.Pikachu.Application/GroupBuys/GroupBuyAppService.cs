@@ -499,14 +499,23 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
             // Map Home Delivery Methods
             foreach (string method in shippingMethods ?? [])
             {
-                if (method.Contains("PostOffice") || method.Contains("HomeDelivery") || method.Contains("TCatDeliveryNormal")
-                    || method.Contains("TCatDeliveryFreeze") || method.Contains("TCatDeliveryFrozen")
-                    || method.Contains("BlackCat") || method.Contains("BlackCatFreeze") || method.Contains("BlackCatFrozen"))
+                if (method.Contains("HomeDelivery"))
                 {
                     // Always add the method to the response, even if there are no times
                     var matchingTimes = homeDeliveryTimes.Where(time => !string.IsNullOrEmpty(time)).ToList();
-                    response.HomeDeliveryType[method] = matchingTimes.Count > 0 ? matchingTimes : new List<string> { "No time preference" };
+                    response.HomeDeliveryType[method] = matchingTimes.Count > 0 ? matchingTimes : ["No time preference"];
                 }
+
+                else if (method.Contains("TCatDeliveryNormal")
+                    || method.Contains("TCatDeliveryFreeze") || method.Contains("TCatDeliveryFrozen")
+                    || method.Contains("BlackCat") || method.Contains("BlackCatFreeze") || method.Contains("BlackCatFrozen"))
+                {
+                    List<string> matchingTimes = [.. blackCatTCatPickupTimes.Where(time => !string.IsNullOrEmpty(time))];
+
+                    response.HomeDeliveryType[method] = matchingTimes.Count > 0 ? matchingTimes : ["No time preference"];
+                }
+
+                else if (method.Contains("PostOffice")) response.HomeDeliveryType[method] = ["Not Specified"];
             }
 
             // Map Convenience Store Shipping Methods
@@ -518,9 +527,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                     || method.Contains("TCatDeliverySevenElevenNormal") || method.Contains("TCatDeliverySevenElevenFreeze")
                     || method.Contains("TCatDeliverySevenElevenFrozen"))
                 {
-                    // Always add the method to the response, even if there are no times
-                    var matchingTimes = convenienceStoreTimes.Where(time => !string.IsNullOrEmpty(time)).ToList();
-                    response.ConvenienceStoreType[method] = matchingTimes.Count > 0 ? matchingTimes : new List<string> { "No time preference" };
+                    response.ConvenienceStoreType[method] = [string.Empty];
                 }
             }
 
