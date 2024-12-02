@@ -203,7 +203,7 @@ public class GroupBuyUpdateDto :  IHasConcurrencyStamp
     public string? CustomerInformationDescription { get; set; }
     public string? ExchangePolicyDescription { get; set; }
     public bool IsEnterprise { get; set; }
-    public decimal? FreeShippingThreshold { get; set; }
+    public int? FreeShippingThreshold { get; set; }
     public string ConcurrencyStamp { get; set; }
     public List<string>? ShippingMethodList { get; set; }
     public string? SelfPickupDeliveryTime { get; set; }

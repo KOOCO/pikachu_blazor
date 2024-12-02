@@ -73,7 +73,7 @@ public class GroupBuyManager : DomainService
         string? exchangePolicyDescription,
         string shortCode,
         bool isEnterprise,
-        decimal? freeShippingThreshold ,
+        int? freeShippingThreshold ,
         string? selfPickupDeliveryTime,
         string? blackCatDeliveryTime,
         string? homeDeliveryDeliveryTime,
