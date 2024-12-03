@@ -47,7 +47,7 @@
                 @L["Copy"]
             </Button>
             <Button Type="@ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="DeleteSelectedAsync">
-                @L["DeleteSelected"]
+                @L["Delete"]
             </Button>
         </div>
     </div>
@@ -61,20 +61,9 @@
                     <Icon Class="fas fa-search"></Icon>
                 </Button>
             </Div>
-            <Button Color="Color.Link" Clicked="AdvanceFiltersVisibleChangedAsync">
-                @L["AdvanceFilters"]
-                @if (AdvanceFiltersVisible)
-                {
-                    <Icon Class="fa-chevron-up ms-1"></Icon>
-                }
-                else
-                {
-                    <Icon Class="fa-chevron-down ms-1"></Icon>
-                }
-            </Button>
-              @if (AdvanceFiltersVisible)
-            {
-                var columnSize = ColumnSize.Is2.OnQuadHD.Is3.OnFullHD.Is4.OnDesktop.Is6.OnTablet.Is12;
+           
+            @{
+                var columnSize = ColumnSize.Is2.OnQuadHD.Is3.OnFullHD.Is4.OnDesktop.Is6.OnTablet.Is12;}
                 <Row VerticalGutter="10">
                
                     <Column ColumnSize="columnSize">
@@ -85,26 +74,43 @@
                         <Label>@L["EndTime"]</Label>
                         <DatePicker TValue="DateTime?" @bind-Date="Filters.EndTime" Size="Size.Small" />
                     </Column>
+                <Column ColumnSize="columnSize">
+                    <Label>@L["Status"]</Label>
+                    <Select TValue="bool?" @bind-SelectedValue="Filters.IsGroupBuyAvaliable" Class="form-select form-select-sm">
+                        <SelectItem TValue="bool?" Value="null"></SelectItem>
+                        <SelectItem TValue="bool?" Value="true">@L["Active"]</SelectItem>
+                        <SelectItem TValue="bool?" Value="false">@L["Inactive"]</SelectItem>
+                    </Select>
+                </Column>
                     <Column ColumnSize="columnSize">
-                         <Label>@L["FreeShipping"]</Label>
-                        <Switch TValue="bool?" @bind-Checked="@Filters.FreeShipping"></Switch>
-              </Column>
-                    <Column ColumnSize="columnSize">
-                        <Label>@L["AllowShipToOuterIslands"]</Label>
-                        <Switch TValue="bool?" @bind-Checked="@Filters.AllowShipToOuterTaiwan"></Switch>
+</Column>
+                    <Column ColumnSize="columnSize" Class="d-flex align-items-end justify-content-end">
+                    <Button Color="Color.Link" Clicked="AdvanceFiltersVisibleChangedAsync">
+                        @L["AdvanceFilters"]
+                        @if (AdvanceFiltersVisible)
+                        {
+                            <Icon Class="fa-chevron-up ms-1"></Icon>
+                        }
+                        else
+                        {
+                            <Icon Class="fa-chevron-down ms-1"></Icon>
+                        }
+                    </Button>
                     </Column>
-                    <Column ColumnSize="columnSize">
-                        <Label>@L["IssueInvoice"]</Label>
-                        <Switch TValue="bool?" @bind-Checked="@Filters.IssueInvoice"></Switch>
+                  
+                    <Column ColumnSize="ColumnSize.Is12.IsAuto.OnTablet" Class="d-flex align-items-end justify-content-end justify-content-sm-start">
+                       
+                        <Button Class="btn-sm btn-outline-primary me-1" Clicked="ResetFilters">
+                            <Icon Class="fa-undo"></Icon>
+                            @L["Reset"]
+                        </Button>
+                        <Button Class="btn-sm btn-primary" Clicked="ApplyFilters">
+                            <Icon Class="fa-filter"></Icon>
+                            @L["Filter"]
+                        </Button>
                     </Column>
-                    <Column ColumnSize="columnSize">
-                        <Label>@L["EnterprisePurchase"]</Label>
-                        <Switch TValue="bool?" @bind-Checked="@Filters.IsEnterprise"></Switch>
-                    </Column>
-                    <Column ColumnSize="columnSize">
-                        <Label>@L["InviteCode"]</Label>
-                        <Switch TValue="bool?" @bind-Checked="@Filters.IsEnterprise"></Switch>
-                    </Column>
+                @if (AdvanceFiltersVisible)
+                {
                     <Column ColumnSize="columnSize">
                        
                      <Label> @L["ShippingMethod"]</Label><br />
@@ -219,18 +225,25 @@
                          
                       
                     </Column>
-                    <Column ColumnSize="ColumnSize.Is12.IsAuto.OnTablet" Class="d-flex align-items-end justify-content-center justify-content-sm-start">
-                        <Button Class="btn-sm btn-outline-primary me-1" Clicked="ResetFilters">
-                            <Icon Class="fa-undo"></Icon>
-                            @L["Reset"]
-                        </Button>
-                        <Button Class="btn-sm btn-primary" Clicked="ApplyFilters">
-                            <Icon Class="fa-filter"></Icon>
-                            @L["Filter"]
-                        </Button>
+                    <Column ColumnSize="columnSize">
+                        <Label> @L[" Others"] </Label>
+                        <Check TValue="bool?" @bind-Checked="@Filters.FreeShipping">@L["FreeShipping"]</Check>
+
+
+                        <Check TValue="bool?" @bind-Checked="@Filters.AllowShipToOuterTaiwan">@L["AllowShipToOuterIslands"]</Check>
+
+
+                        <Check TValue="bool?" @bind-Checked="@Filters.IssueInvoice">@L["IssueInvoice"]</Check>
+
+
+                        <Check TValue="bool?" @bind-Checked="@Filters.IsEnterprise">@L["EnterprisePurchase"]</Check>
+
+                       
+                        <Check TValue="bool?" @bind-Checked="@Filters.IsEnterprise">@L["InviteCode"]</Check>
                     </Column>
+                   }
                 </Row>
-            }
+            
         </CardBody>
         
     </Card>

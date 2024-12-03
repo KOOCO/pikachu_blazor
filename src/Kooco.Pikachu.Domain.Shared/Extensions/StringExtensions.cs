@@ -4,6 +4,44 @@ namespace Kooco.Pikachu.Extensions;
 
 public static class StringExtensions
 {
+    public const string Today = "Today";
+    public const string Week = "Week";
+    public const string Month = "Month";
+
+    public static (DateTime, DateTime) FindFilterDateRange(this string dateRange)
+    {
+        DateTime minTime;
+        DateTime maxTime;
+
+        switch (dateRange)
+        {
+            case Today:
+                minTime = DateTime.Today;
+                maxTime = DateTime.Today.AddDays(1).AddMilliseconds(-1);
+                break;
+
+            case Week:
+                int daysToSubtract = (int)DateTime.Today.DayOfWeek - (int)DayOfWeek.Monday;
+                if (daysToSubtract < 0) daysToSubtract += 7;
+                minTime = DateTime.Today.AddDays(-daysToSubtract);
+
+                int daysToAdd = (int)DayOfWeek.Sunday - (int)DateTime.Today.DayOfWeek;
+                if (daysToAdd < 0) daysToAdd += 7;
+                maxTime = DateTime.Today.AddDays(daysToAdd).AddDays(1).AddMilliseconds(-1);
+                break;
+
+            case Month:
+                minTime = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+                maxTime = minTime.AddMonths(1).AddMilliseconds(-1);
+                break;
+
+            default:
+                return (default, default);
+        }
+
+        return (minTime, maxTime);
+    }
+
     public static bool IsEmptyOrValidUrl(this string? url)
     {
         if (url.IsNullOrWhiteSpace()) return true;

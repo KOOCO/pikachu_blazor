@@ -67,6 +67,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IDiscountCodeRepository _discountCodeRepository;
     private readonly ITenantSettingsAppService _tenantSettingsAppService;
     private readonly IUserShoppingCreditAppService _userShoppingCreditAppService;
+    private readonly IUserShoppingCreditRepository _userShoppingCreditRepository;
     #endregion
 
     #region Constructor
@@ -91,7 +92,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         IRefundRepository refundRepository,
         ITenantSettingsAppService tenantSettingsAppService,
         IDiscountCodeRepository discountCodeRepository,
-        IUserShoppingCreditAppService userShoppingCreditAppService
+        IUserShoppingCreditAppService userShoppingCreditAppService,
+        IUserShoppingCreditRepository userShoppingCreditRepository
     )
     {
         _orderRepository = orderRepository;
@@ -116,6 +118,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _tenantSettingsAppService = tenantSettingsAppService;
         _discountCodeRepository = discountCodeRepository;
         _userShoppingCreditAppService = userShoppingCreditAppService;
+        _userShoppingCreditRepository= userShoppingCreditRepository;
     }
     #endregion
 
@@ -238,7 +241,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         if (details != null)
                         {
                             // Check if the available quantity is sufficient
-                            if (details.SaleablePreOrderQuantity < item.Quantity)
+                            if (details.SaleableQuantity < item.Quantity)
                             {
                                 // Add item to insufficientItems list
                                 insufficientItems.Add($"Item: {details.ItemName}, Requested: {item.Quantity}, Available: {details.SaleablePreOrderQuantity},Details:{JsonConvert.SerializeObject(details)}");
@@ -368,16 +371,29 @@ public class OrderAppService : ApplicationService, IOrderAppService
             {
                 if (order.cashback_amount > 0)
                 {
-                 var cashback=   await _userShoppingCreditAppService.RecordShoppingCreditAsync(new RecordUserShoppingCreditDto
+                    var cashback = (await _userShoppingCreditRepository.GetQueryableAsync()).Where(x => x.TransactionDescription.Contains("購物回饋：訂單 #")&& x.UserId==order.UserId).FirstOrDefault();
+                    if (cashback is null)
                     {
-                        Amount = (int)order.cashback_amount,
-                        ExpirationDate = null,
-                        IsActive = true,
-                        TransactionDescription = "購物回饋：訂單 #" + order.OrderNo,
-                        UserId=order.UserId.Value
+                        var newcashback = await _userShoppingCreditAppService.RecordShoppingCreditAsync(new RecordUserShoppingCreditDto
+                        {
+                            Amount = (int)order.cashback_amount,
+                            ExpirationDate = null,
+                            IsActive = true,
+                            TransactionDescription = "購物回饋：訂單 #" + order.OrderNo,
+                            UserId = order.UserId.Value
 
 
-                    });
+                        });
+                        order.cashback_amount = newcashback.Amount;
+                        order.cashback_record_id = newcashback.Id;
+                    }
+                    else {
+                        cashback.ChangeAmount((int)(cashback.Amount + order.cashback_amount));
+                        cashback.ChangeCurrentRemainingCredits((int)(cashback.CurrentRemainingCredits + order.cashback_amount));
+                        order.cashback_record_id = cashback.Id;
+                        await _userShoppingCreditRepository.UpdateAsync(cashback);
+                    }
+                
                     order.cashback_amount = cashback.Amount;
                     order.cashback_record_id = cashback.Id;
                 
@@ -388,19 +404,29 @@ public class OrderAppService : ApplicationService, IOrderAppService
             {
                 if (order.CreditDeductionAmount > 0)
                 {
-                var deduction=    await _userShoppingCreditAppService.RecordShoppingCreditAsync(new RecordUserShoppingCreditDto
+                    var deduction = (await _userShoppingCreditRepository.GetQueryableAsync()).Where(x => x.TransactionDescription.Contains("購物折抵：訂單 #") && x.UserId == order.UserId).FirstOrDefault();
+                    if (deduction is null)
                     {
-                        Amount = (int)order.CreditDeductionAmount,
-                        ExpirationDate = null,
-                        IsActive = true,
-                        TransactionDescription = "購物折抵：訂單 #" + order.OrderNo,
-                        UserId=order.UserId.Value
+                        var newdeduction = await _userShoppingCreditAppService.RecordShoppingCreditAsync(new RecordUserShoppingCreditDto
+                        {
+                            Amount = (int)order.CreditDeductionAmount,
+                            ExpirationDate = null,
+                            IsActive = true,
+                            TransactionDescription = "購物折抵：訂單 #" + order.OrderNo,
+                            UserId = order.UserId.Value
 
 
-                    });
-                    order.CreditDeductionAmount = deduction.Amount;
-                    order.CreditDeductionRecordId = deduction.Id;
+                        });
+                        order.CreditDeductionAmount = newdeduction.Amount;
+                        order.CreditDeductionRecordId = deduction.Id;
+                    }
+                    else {
+                        deduction.ChangeAmount((int)(deduction.Amount - order.cashback_amount));
+                        deduction.ChangeCurrentRemainingCredits((int)(deduction.CurrentRemainingCredits - order.cashback_amount));
+                        order.cashback_record_id = deduction.Id;
+                        await _userShoppingCreditRepository.UpdateAsync(deduction);
 
+                    }
                 }
 
             }

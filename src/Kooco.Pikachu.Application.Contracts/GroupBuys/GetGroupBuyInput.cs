@@ -31,8 +31,8 @@ namespace Kooco.Pikachu.GroupBuys
 
        
         public string? BannerURL { get; set; }
+        public bool? IsGroupBuyAvaliable { get; set; }
 
-    
         public DateTime? StartTime { get; set; }
 
         

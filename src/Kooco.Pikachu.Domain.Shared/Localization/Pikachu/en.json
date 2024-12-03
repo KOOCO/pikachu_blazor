@@ -1028,6 +1028,17 @@
     "Permission:PaymentManagement": "Payment Management",
     "TenantUrlIsRequired": "Link is required.",
     "InvalidUrlWithField": "Please provide a fully qualified URL starting with http or https for {0}.",
-    "CustomerServiceContactPhone": "Customer Service Contact Phone"
+    "CustomerServiceContactPhone": "Customer Service Contact Phone",
+    "Menu:SalesReport": "Sales Report",
+    "SalesReport": "Sales Report",
+    "GrossSales": "Gross Sales",
+    "NetSales": "Net Sales",
+    "Discount": "Discount",
+    "NumberOfOrders": "Number of Orders",
+    "AverageOrderValue": "Average Order Value",
+    "CostOfGoodsSold": "Cost of Goods Sold",
+    "ShippingCost": "Shipping Cost",
+    "GrossProfit": "Gross Profit",
+    "GrossProfitMargin": "Gross Profit Margin"
   }
 }
