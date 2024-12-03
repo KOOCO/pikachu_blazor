@@ -627,6 +627,7 @@
     "PetSuppliesandFeed": "0013：寵物用品飼料",
     "PrintedMaterials": "0014：印刷品",
     "Others": "0015：其他",
+    "DeliveryTypeOthers": "其他",
     "ProductType": "產品類別",
     "SelectShippingMethod": "請選擇運送方式",
     "StoreName": "商店名稱",

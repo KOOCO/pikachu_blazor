@@ -595,6 +595,7 @@
     "PetSuppliesandFeed": "0013: Pet Supplies and Feed",
     "PrintedMaterials": "0014: Printed Materials",
     "Others": "0015: Others",
+    "DeliveryTypeOthers":  "Others",
     "EditRole": "Edit Role",
     "EditUser": "Edit User",
     "Pikachu:MinimumAmountReachCannotBeEmpty": "Minimum Amount Reach Cannot be Empty.",

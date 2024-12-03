@@ -353,17 +353,15 @@
                 @L["ShippingMethod"] <span class="text-danger"> *</span>
             </div>
             <div class="col-8">
-                <label class="form-label">@L["HomeDeliveryType"]</label><br />
+                <label class="form-label">@L["Normal"]</label><br />
                 @if (EditGroupBuyDto.AllowShipToOuterTaiwan && !EditGroupBuyDto.AllowShipOversea)
                 {
                     @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
                     {
                         if (item == Enum.GetName(DeliveryMethod.BlackCat1) ||
-                        item == Enum.GetName(DeliveryMethod.BlackCatFreeze) ||
-                        item == Enum.GetName(DeliveryMethod.BlackCatFrozen) ||
                         item == Enum.GetName(DeliveryMethod.TCatDeliveryNormal) ||
-                        item == Enum.GetName(DeliveryMethod.TCatDeliveryFreeze) ||
-                        item == Enum.GetName(DeliveryMethod.TCatDeliveryFrozen))
+                        item == Enum.GetName(DeliveryMethod.SevenToElevenC2C) ||
+                        item == Enum.GetName(DeliveryMethod.SevenToEleven1))
                         {
                             if (IsShippingMethodEnabled(item))
                             {
@@ -385,13 +383,13 @@
                     @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
                     {
                         if (item == Enum.GetName(DeliveryMethod.PostOffice) ||
-                        item == Enum.GetName(DeliveryMethod.HomeDelivery) ||
                         item == Enum.GetName(DeliveryMethod.BlackCat1) ||
-                        item == Enum.GetName(DeliveryMethod.BlackCatFreeze) ||
-                        item == Enum.GetName(DeliveryMethod.BlackCatFrozen) ||
                         item == Enum.GetName(DeliveryMethod.TCatDeliveryNormal) ||
-                        item == Enum.GetName(DeliveryMethod.TCatDeliveryFreeze) ||
-                        item == Enum.GetName(DeliveryMethod.TCatDeliveryFrozen))
+                        item == Enum.GetName(DeliveryMethod.SevenToEleven1) ||
+                        item == Enum.GetName(DeliveryMethod.SevenToElevenC2C) ||
+                        item == Enum.GetName(DeliveryMethod.FamilyMart1) ||
+                        item == Enum.GetName(DeliveryMethod.FamilyMartC2C) ||
+                        item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenNormal))
                         {
                             if (IsShippingMethodEnabled(item))
                             {
@@ -412,13 +410,13 @@
                     }
                 }
                 <br />
-                <label class="form-label">@L["ConvenienceStoreType"]</label><br />
+                <label class="form-label">@L["Freeze"]</label><br />
                 @if (EditGroupBuyDto.AllowShipToOuterTaiwan && !EditGroupBuyDto.AllowShipOversea)
                 {
                     @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
                     {
-                        if (item == Enum.GetName(DeliveryMethod.SevenToElevenC2C) ||
-                        item == Enum.GetName(DeliveryMethod.SevenToEleven1))
+                        if (item == Enum.GetName(DeliveryMethod.BlackCatFreeze) ||
+                        item == Enum.GetName(DeliveryMethod.TCatDeliveryFreeze))
                         {
                             if (IsShippingMethodEnabled(item))
                             {
@@ -439,13 +437,59 @@
                 {
                     @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
                     {
-                        if (item == Enum.GetName(DeliveryMethod.FamilyMart1) ||
-                        item == Enum.GetName(DeliveryMethod.FamilyMartC2C) ||
-                        item == Enum.GetName(DeliveryMethod.SevenToElevenC2C) ||
-                        item == Enum.GetName(DeliveryMethod.SevenToEleven1) ||
+                        if (item == Enum.GetName(DeliveryMethod.BlackCatFreeze) ||
+                        item == Enum.GetName(DeliveryMethod.TCatDeliveryFreeze) ||
+                        item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenFreeze))
+                        {
+                            if (IsShippingMethodEnabled(item))
+                            {
+                                <label for="@item" class="form-label">
+                                    <input type="checkbox"
+                                           class="form-check-input me-1"
+                                           id="@item"
+                                           disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) &&
+                                                       item is not "DeliveredByStore")"
+                                           checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                                      (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
+                                           @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                    @L[item]
+                                </label>
+                            }
+                        }
+                    }
+                }
+                <br />
+                <label class="form-label">@L["Frozen"]</label><br />
+                @if (EditGroupBuyDto.AllowShipToOuterTaiwan && !EditGroupBuyDto.AllowShipOversea)
+                {
+                    @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
+                    {
+                        if (item == Enum.GetName(DeliveryMethod.BlackCatFrozen) ||
+                        item == Enum.GetName(DeliveryMethod.TCatDeliveryFrozen))
+                        {
+                            if (IsShippingMethodEnabled(item))
+                            {
+                                <label for="@item" class="form-label ">
+                                    <input type="checkbox"
+                                           class="form-check-input me-1"
+                                           id="@item"
+                                           checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                                  (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
+                                           @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                    @L[item]
+                                </label>
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
+                    {
+                        if (item == Enum.GetName(DeliveryMethod.BlackCatFrozen) ||
+                        item == Enum.GetName(DeliveryMethod.TCatDeliveryFrozen) ||
                         item == Enum.GetName(DeliveryMethod.SevenToElevenFrozen) ||
-                        item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenNormal) ||
-                        item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenFreeze) ||
                         item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenFrozen))
                         {
                             if (IsShippingMethodEnabled(item))
@@ -467,30 +511,26 @@
                     }
                 }
                 <br />
-                <label class="form-label">@L["Self-PickupType"]</label><br />
+                <label class="form-label">@L["DeliveryTypeOthers"]</label><br />
                 @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
                 {
-                    if (item == Enum.GetName(DeliveryMethod.SelfPickup))
+                    if (item == Enum.GetName(DeliveryMethod.HomeDelivery))
                     {
-                        <label for="@item" class="form-label">
-                            <input type="checkbox"
-                                   class="form-check-input me-1"
-                                   id="@item"
-                                   disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
-                                               (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) &&
-                                               item is not "DeliveredByStore")"
-                                   checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
-                                              (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                   @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
-                            @L[item]
-                        </label>
+                        if (IsShippingMethodEnabled(item))
+                        {
+                            <label for="@item" class="form-label ">
+                                <input type="checkbox"
+                                       class="form-check-input me-1"
+                                       id="@item"
+                                       checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                                          (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
+                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                @L[item]
+                            </label>
+                        }
                     }
-                }
-                <br />
-                <label class="form-label">@L["DeliveredByStoreType"]</label><br />
-                @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
-                {
-                    if (item == Enum.GetName(DeliveryMethod.DeliveredByStore))
+                    if (item == Enum.GetName(DeliveryMethod.DeliveredByStore) ||
+                    item == Enum.GetName(DeliveryMethod.SelfPickup))
                     {
                         <label for="@item" class="form-label">
                             <input type="checkbox"
@@ -512,50 +552,6 @@
         <div class="row">
             <div class="col-2"></div>
             <div class="col-2">@L[PikachuResource.DeliveryTimePreference]</div>
-            <div class="col-8">
-                <label class="form-label">@L["SelfPickup"]<span class="text-danger"> </span></label>
-            </div>
-            <div class="col-2"></div>
-            <div class="col-2"></div>
-            <div class="col-8">
-                @if (DeliveryTimeConts.SelfPickUp != null)
-                {
-                    @foreach (string island in DeliveryTimeConts.SelfPickUp)
-                    {
-                        @if ((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
-                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup")))
-                        {
-                            <label for="@(island)_SelfPickUp" class="form-label">
-                                <input type="checkbox"
-                                       class="form-check-input me-1"
-                                       id="@island"
-                                       disabled="@(island is not PikachuResource.UnableToSpecifyDuringPeakPeriods ?
-                                                        IsUnableToSpecifyDuringPeakPeriodsForSelfPickups :
-                                                        false)"
-                                       checked="@(EditGroupBuyDto.SelfPickupDeliveryTime is not null &&
-                                                      EditGroupBuyDto.SelfPickupDeliveryTime.Contains(island))"
-                                       @onchange="(value) => SelfPickupDeliveryTimeCheckedChange(island, value)" />
-                                @L[island]
-                            </label>
-                        }
-                        else
-                        {
-                            <label for="@(island)_SelfPickUp" class="form-label">
-                                <input disabled
-                                       type="checkbox"
-                                       class="form-check-input me-1"
-                                       id="@island"
-                                       checked="@(EditGroupBuyDto.SelfPickupDeliveryTime is not null &&
-                                                      EditGroupBuyDto.SelfPickupDeliveryTime.Contains(island))"
-                                       @onchange="(value) => SelfPickupDeliveryTimeCheckedChange(island, value)" />
-                                @L[island]
-                            </label>
-                        }
-                    }
-                }
-            </div>
-            <div class="col-2"></div>
-            <div class="col-2"></div>
             <div class="col-8">
                 @if (EditGroupBuyDto.ExcludeShippingMethod != null && EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1"))
                 {
@@ -621,7 +617,7 @@
             <div class="col-2"></div>
             <div class="col-2"></div>
             <div class="col-8">
-                <label class="form-label">@L["HomeDelivery"]<span class="text-danger"> </span></label>
+                 <label class="form-label">@L["HomeDelivery"]<span class="text-danger"> </span></label>
             </div>
             <div class="col-2"></div>
             <div class="col-2"></div>
@@ -659,6 +655,50 @@
                                 @L[island]
                             </label>
 
+                        }
+                    }
+                }
+            </div>
+            <div class="col-2"></div>
+            <div class="col-2"></div>
+            <div class="col-8">
+               <label class="form-label">@L["SelfPickup"]<span class="text-danger"> </span></label>
+            </div>
+            <div class="col-2"></div>
+            <div class="col-2"></div>
+            <div class="col-8">
+                @if (DeliveryTimeConts.SelfPickUp != null)
+                {
+                    @foreach (string island in DeliveryTimeConts.SelfPickUp)
+                    {
+                        @if ((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup")))
+                        {
+                            <label for="@(island)_SelfPickUp" class="form-label">
+                                <input type="checkbox"
+                                       class="form-check-input me-1"
+                                       id="@island"
+                                       disabled="@(island is not PikachuResource.UnableToSpecifyDuringPeakPeriods ?
+                                                        IsUnableToSpecifyDuringPeakPeriodsForSelfPickups :
+                                                        false)"
+                                       checked="@(EditGroupBuyDto.SelfPickupDeliveryTime is not null &&
+                                                      EditGroupBuyDto.SelfPickupDeliveryTime.Contains(island))"
+                                       @onchange="(value) => SelfPickupDeliveryTimeCheckedChange(island, value)" />
+                                @L[island]
+                            </label>
+                        }
+                        else
+                        {
+                            <label for="@(island)_SelfPickUp" class="form-label">
+                                <input disabled
+                                       type="checkbox"
+                                       class="form-check-input me-1"
+                                       id="@island"
+                                       checked="@(EditGroupBuyDto.SelfPickupDeliveryTime is not null &&
+                                                      EditGroupBuyDto.SelfPickupDeliveryTime.Contains(island))"
+                                       @onchange="(value) => SelfPickupDeliveryTimeCheckedChange(island, value)" />
+                                @L[island]
+                            </label>
                         }
                     }
                 }
