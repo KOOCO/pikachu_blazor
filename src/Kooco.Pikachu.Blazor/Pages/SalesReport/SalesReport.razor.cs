@@ -1,9 +1,9 @@
-using Kooco.Pikachu.SalesReports;
-using System.Threading.Tasks;
-using Kooco.Pikachu.Extensions;
-using System.Collections.Generic;
-using System;
 using Kooco.Pikachu.Items.Dtos;
+using Kooco.Pikachu.Reports;
+using Kooco.Pikachu.SalesReports;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Kooco.Pikachu.Blazor.Pages.SalesReport;
 
@@ -67,13 +67,12 @@ public partial class SalesReport
     private async Task ResetAsync()
     {
         Filters = new();
-        await FilterDateRange(StringExtensions.Today);
+        await GetSalesReportAsync();
     }
 
-    private async Task FilterDateRange(string dateRange)
+    private async Task UnitChangedAsync(ReportCalculationUnits reportCalculationUnit)
     {
-        (Filters.StartDate, Filters.EndDate) = dateRange.FindFilterDateRange();
-
+        Filters.ReportCalculationUnit = reportCalculationUnit;
         await GetSalesReportAsync();
     }
 
@@ -82,7 +81,7 @@ public partial class SalesReport
         input.ShowDetails = !input.ShowDetails;
         if (input.Details.Count == 0)
         {
-            input.Details = await SalesReportAppService.GetGroupBuySalesReportAsync(input.Date);
+            input.Details = await SalesReportAppService.GetGroupBuySalesReportAsync(input.StartDate, input.EndDate, Filters.GroupBuyId);
         }
     }
 }
