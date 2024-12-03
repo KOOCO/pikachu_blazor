@@ -238,7 +238,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         if (details != null)
                         {
                             // Check if the available quantity is sufficient
-                            if (details.SaleablePreOrderQuantity < item.Quantity)
+                            if (details.SaleableQuantity < item.Quantity)
                             {
                                 // Add item to insufficientItems list
                                 insufficientItems.Add($"Item: {details.ItemName}, Requested: {item.Quantity}, Available: {details.SaleablePreOrderQuantity},Details:{JsonConvert.SerializeObject(details)}");
