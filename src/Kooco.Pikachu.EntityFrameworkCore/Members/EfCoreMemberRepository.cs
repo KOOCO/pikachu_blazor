@@ -96,8 +96,8 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                             from orders in creditsWithOrders.DefaultIfEmpty()
                             select new { credits, orders })
                            //.Join(dbContext.Orders, credits => credits.Id, orders => orders.CreditDeductionRecordId, (credits, orders) => new { credits, orders })
-                           .WhereIf(usageTimeFrom.HasValue, x => x.orders.CreationTime >= usageTimeFrom)
-                           .WhereIf(usageTimeTo.HasValue, x => x.orders.CreationTime <= usageTimeTo)
+                           .WhereIf(usageTimeFrom.HasValue, x => x.credits.CreationTime >= usageTimeFrom)
+                           .WhereIf(usageTimeTo.HasValue, x => x.credits.CreationTime <= usageTimeTo)
                            .WhereIf(expirationTimeFrom.HasValue, x => x.credits.ExpirationDate >= expirationTimeFrom)
                            .WhereIf(expirationTimeTo.HasValue, x => x.credits.ExpirationDate <= expirationTimeTo)
                            .WhereIf(minRemainingCredits.HasValue, x => x.credits.CurrentRemainingCredits >= minRemainingCredits)
@@ -111,7 +111,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
             .Select(x => new MemberCreditRecordModel
             {
                 Id = x.credits.Id,
-                UsageTime = x.orders != null ? x.orders.CreationTime : null,
+                UsageTime = x.credits.CreationTime,
                 TransactionDescription = x.credits.TransactionDescription,
                 Amount = x.credits.Amount,// x.orders != null ? x.orders.CreditDeductionAmount : 0,
                 ExpirationDate = x.credits.ExpirationDate,
