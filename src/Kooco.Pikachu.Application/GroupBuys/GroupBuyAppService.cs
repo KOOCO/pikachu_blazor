@@ -385,14 +385,14 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                                                      , input.AllowShipOversea, input.ExpectShippingDateFrom, input.ExpectShippingDateTo, input.MoneyTransferValidDayBy, input.MoneyTransferValidDays,
                                                      input.IssueInvoice, input.AutoIssueTriplicateInvoice, input.InvoiceNote, input.ProtectPrivacyData, input.InviteCode, input.ProfitShare,
                                                      input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy,
-                                                     input.NotifyMessage,input.ExcludeShippingMethod,input.PaymentMethod,input.IsInviteCode,input.IsEnterprise
+                                                     input.NotifyMessage,input.ExcludeShippingMethod,input.PaymentMethod,input.IsInviteCode,input.IsEnterprise, input.IsGroupBuyAvaliable
                                                      );
         var result = await _groupBuyRepository.GetGroupBuyListAsync(input.FilterText, input.GroupBuyNo, input.Status, input.GroupBuyName, input.EntryURL, input.EntryURL2, input.SubjectLine,
                                                     input.ShortName, input.LogoURL, input.BannerURL, input.StartTime, input.EndTime, input.FreeShipping, input.AllowShipToOuterTaiwan,
                                                     input.AllowShipOversea, input.ExpectShippingDateFrom, input.ExpectShippingDateTo, input.MoneyTransferValidDayBy, input.MoneyTransferValidDays,
                                                     input.IssueInvoice, input.AutoIssueTriplicateInvoice, input.InvoiceNote, input.ProtectPrivacyData, input.InviteCode, input.ProfitShare,
                                                     input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy,
-                                                    input.NotifyMessage, input.ExcludeShippingMethod, input.PaymentMethod, input.IsInviteCode, input.IsEnterprise, sorting, input.MaxResultCount, input.SkipCount);
+                                                    input.NotifyMessage, input.ExcludeShippingMethod, input.PaymentMethod, input.IsInviteCode, input.IsEnterprise, input.IsGroupBuyAvaliable, sorting, input.MaxResultCount, input.SkipCount);
         return new PagedResultDto<GroupBuyDto>
         {
             TotalCount = count,
@@ -499,14 +499,23 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
             // Map Home Delivery Methods
             foreach (string method in shippingMethods ?? [])
             {
-                if (method.Contains("PostOffice") || method.Contains("HomeDelivery") || method.Contains("TCatDeliveryNormal")
-                    || method.Contains("TCatDeliveryFreeze") || method.Contains("TCatDeliveryFrozen")
-                    || method.Contains("BlackCat") || method.Contains("BlackCatFreeze") || method.Contains("BlackCatFrozen"))
+                if (method.Contains("HomeDelivery"))
                 {
                     // Always add the method to the response, even if there are no times
                     var matchingTimes = homeDeliveryTimes.Where(time => !string.IsNullOrEmpty(time)).ToList();
-                    response.HomeDeliveryType[method] = matchingTimes.Count > 0 ? matchingTimes : new List<string> { "No time preference" };
+                    response.HomeDeliveryType[method] = matchingTimes.Count > 0 ? matchingTimes : ["No time preference"];
                 }
+
+                else if (method.Contains("TCatDeliveryNormal")
+                    || method.Contains("TCatDeliveryFreeze") || method.Contains("TCatDeliveryFrozen")
+                    || method.Contains("BlackCat") || method.Contains("BlackCatFreeze") || method.Contains("BlackCatFrozen"))
+                {
+                    List<string> matchingTimes = [.. blackCatTCatPickupTimes.Where(time => !string.IsNullOrEmpty(time))];
+
+                    response.HomeDeliveryType[method] = matchingTimes.Count > 0 ? matchingTimes : ["No time preference"];
+                }
+
+                else if (method.Contains("PostOffice")) response.HomeDeliveryType[method] = ["Not Specified"];
             }
 
             // Map Convenience Store Shipping Methods
@@ -518,9 +527,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                     || method.Contains("TCatDeliverySevenElevenNormal") || method.Contains("TCatDeliverySevenElevenFreeze")
                     || method.Contains("TCatDeliverySevenElevenFrozen"))
                 {
-                    // Always add the method to the response, even if there are no times
-                    var matchingTimes = convenienceStoreTimes.Where(time => !string.IsNullOrEmpty(time)).ToList();
-                    response.ConvenienceStoreType[method] = matchingTimes.Count > 0 ? matchingTimes : new List<string> { "No time preference" };
+                    response.ConvenienceStoreType[method] = [string.Empty];
                 }
             }
 

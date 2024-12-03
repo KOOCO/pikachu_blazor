@@ -179,8 +179,15 @@ public partial class EditGroupBuy
             GroupBuy.ItemGroups = await _groupBuyAppService.GetGroupBuyItemGroupsAsync(Id);
 
             EditGroupBuyDto = _objectMapper.Map<GroupBuyDto, GroupBuyUpdateDto>(GroupBuy);
+
             //await LoadHtmlContent();
+
             EditGroupBuyDto.ShortCode = EditGroupBuyDto?.ShortCode == "" ? null : EditGroupBuyDto?.ShortCode;
+
+            IsUnableToSpecifyDuringPeakPeriodsForSelfPickups = EditGroupBuyDto.SelfPickupDeliveryTime.Contains("UnableToSpecifyDuringPeakPeriods") ? true : false;
+
+            IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery = EditGroupBuyDto.HomeDeliveryDeliveryTime.Contains("UnableToSpecifyDuringPeakPeriods") ? true : false;
+
             if (!string.IsNullOrEmpty(GroupBuy.ExcludeShippingMethod))
                 EditGroupBuyDto.ShippingMethodList = JsonSerializer.Deserialize<List<string>>(GroupBuy.ExcludeShippingMethod);
 
@@ -1532,16 +1539,30 @@ public partial class EditGroupBuy
     {
         if (method is PikachuResource.UnableToSpecifyDuringPeakPeriods)
         {
-            if (IsUnableToSpecifyDuringPeakPeriodsForSelfPickups) IsUnableToSpecifyDuringPeakPeriodsForSelfPickups = false;
+            if (IsUnableToSpecifyDuringPeakPeriodsForSelfPickups)
+            {
+                SelfPickupTimeList.Clear();
 
-            else IsUnableToSpecifyDuringPeakPeriodsForSelfPickups = true;
+                IsUnableToSpecifyDuringPeakPeriodsForSelfPickups = false;
+            }
+            else
+            {
+                IsUnableToSpecifyDuringPeakPeriodsForSelfPickups = true;
+
+                SelfPickupTimeList.Clear();
+
+                SelfPickupTimeList.Add(PikachuResource.UnableToSpecifyDuringPeakPeriods);
+            }
         }
 
         bool value = (bool)(e?.Value ?? false);
 
-        if (value) SelfPickupTimeList.Add(method);
+        if (!IsUnableToSpecifyDuringPeakPeriodsForSelfPickups)
+        {
+            if (value) SelfPickupTimeList.Add(method);
 
-        else SelfPickupTimeList.Remove(method);
+            else SelfPickupTimeList.Remove(method);
+        }
 
         EditGroupBuyDto.SelfPickupDeliveryTime = JsonConvert.SerializeObject(SelfPickupTimeList);
     }
@@ -1563,16 +1584,30 @@ public partial class EditGroupBuy
     {
         if (method is PikachuResource.UnableToSpecifyDuringPeakPeriods)
         {
-            if (IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery) IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery = false;
+            if (IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery)
+            {
+                HomeDeliveryTimeList.Clear();
 
-            else IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery = true;
+                IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery = false;
+            }
+            else
+            {
+                IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery = true;
+                
+                HomeDeliveryTimeList.Clear();
+                
+                HomeDeliveryTimeList.Add(PikachuResource.UnableToSpecifyDuringPeakPeriods);
+            }
         }
 
         bool value = (bool)(e?.Value ?? false);
 
-        if (value) HomeDeliveryTimeList.Add(method);
+        if (!IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery)
+        {
+            if (value) HomeDeliveryTimeList.Add(method);
 
-        else HomeDeliveryTimeList.Remove(method);
+            else HomeDeliveryTimeList.Remove(method);
+        }
 
         EditGroupBuyDto.HomeDeliveryDeliveryTime = JsonConvert.SerializeObject(HomeDeliveryTimeList);
     }
@@ -1964,9 +1999,9 @@ public partial class EditGroupBuy
                 await Loading.Hide();
                 return;
             }
-            if (EditGroupBuyDto.IsEnterprise && (!EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
+            if (EditGroupBuyDto.IsEnterprise && (EditGroupBuyDto.ExcludeShippingMethod is not "[\"SelfPickup\"]"))
             {
-                await _uiMessageService.Warn(L[PikachuDomainErrorCodes.DeliverdByStoreMethodIsRequired]);
+                await _uiMessageService.Warn(L[PikachuDomainErrorCodes.EnterprisePurchaseCanOnlyUseSelfPickup]);
                 await Loading.Hide();
                 return;
             }

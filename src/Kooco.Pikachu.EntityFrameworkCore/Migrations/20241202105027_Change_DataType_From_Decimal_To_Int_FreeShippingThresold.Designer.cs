@@ -4,6 +4,7 @@ using Kooco.Pikachu.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    partial class PikachuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241202105027_Change_DataType_From_Decimal_To_Int_FreeShippingThresold")]
+    partial class Change_DataType_From_Decimal_To_Int_FreeShippingThresold
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

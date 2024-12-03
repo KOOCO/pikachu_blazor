@@ -32,7 +32,7 @@
                     </label>
                 </div>
                 <div class="col-6">
-                    <Switch TValue="bool" id="l-enable-disable-switch" @bind-Checked="LinePay.IsEnabled"></Switch>
+                    <Switch TValue="bool" id="l-enable-disable-switch" @bind-Checked="LinePay.IsEnabled" Disabled=IsLinePayNotExists />
                 </div>
             </div>
             <div class="row justify-content-center mb-2">
@@ -59,6 +59,14 @@
                     <ValidationMessage For="@(() => LinePay.ChannelSecretKey)" />
                 </div>
             </div>
+            @if (IsLinePayNotExists)
+            {
+                <div class="row mt-3">
+                    <div class="col-12 text-center">
+                        <label class="form-label form-label-lg"><span class="text-danger">@L["PleaseFillInTheRequiredInformation"]</span></label>
+                    </div>
+                </div>
+            }
             <div class="row mt-3">
                 <div class="col-12 text-center">
                     <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
@@ -131,6 +139,14 @@
                     <ValidationMessage For="@(() => ChinaTrust.CodeValue)" />
                 </div>
             </div>
+            @if (IsChinaTrustNotExists)
+            {
+                <div class="row mt-3">
+                    <div class="col-12 text-center">
+                        <label class="form-label form-label-lg"><span class="text-danger">@L["PleaseFillInTheRequiredInformation"]</span></label>
+                    </div>
+                </div>
+            }
             <div class="row mt-3">
                 <div class="col-12 text-center">
                     <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
@@ -203,6 +219,14 @@
                     <ValidationMessage For="@(() => EcPay.TradeDescription)" />
                 </div>
             </div>
+            @if (IsEcPayNotExists)
+            {
+                <div class="row mt-3">
+                    <div class="col-12 text-center">
+                        <label class="form-label form-label-lg"><span class="text-danger">@L["PleaseFillInTheRequiredInformation"]</span></label>
+                    </div>
+                </div>
+            }
             <div class="row mt-3">
                 <div class="col-12 text-center">
                     <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">

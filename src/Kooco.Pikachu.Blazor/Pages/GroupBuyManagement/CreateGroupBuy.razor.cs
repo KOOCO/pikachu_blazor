@@ -998,25 +998,38 @@ public partial class CreateGroupBuy
             }
         }
     }
-
     void SelfPickupDeliveryTimeCheckedChange(string method, ChangeEventArgs e)
     {
         if (method is PikachuResource.UnableToSpecifyDuringPeakPeriods)
         {
-            if (IsUnableToSpecifyDuringPeakPeriodsForSelfPickups) IsUnableToSpecifyDuringPeakPeriodsForSelfPickups = false;
+            if (IsUnableToSpecifyDuringPeakPeriodsForSelfPickups)
+            {
+                SelfPickupTimeList.Clear();
 
-            else IsUnableToSpecifyDuringPeakPeriodsForSelfPickups = true;
+                IsUnableToSpecifyDuringPeakPeriodsForSelfPickups = false;
+            }
+            else
+            {
+                IsUnableToSpecifyDuringPeakPeriodsForSelfPickups = true;
+
+                SelfPickupTimeList.Clear();
+
+                SelfPickupTimeList.Add(PikachuResource.UnableToSpecifyDuringPeakPeriods);
+            }
         }
 
         bool value = (bool)(e?.Value ?? false);
 
-        if (value) SelfPickupTimeList.Add(method);
+        if (!IsUnableToSpecifyDuringPeakPeriodsForSelfPickups)
+        {
+            if (value) SelfPickupTimeList.Add(method);
 
-        else SelfPickupTimeList.Remove(method);
+            else SelfPickupTimeList.Remove(method);
+        }
 
         CreateGroupBuyDto.SelfPickupDeliveryTime = JsonConvert.SerializeObject(SelfPickupTimeList);
-
     }
+
     void BlackCatDeliveryTimeCheckedChange(string method, ChangeEventArgs e)
     {
         var value = (bool)(e?.Value ?? false);
@@ -1055,20 +1068,34 @@ public partial class CreateGroupBuy
     {
         if (method is PikachuResource.UnableToSpecifyDuringPeakPeriods)
         {
-            if (IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery) IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery = false;
+            if (IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery)
+            {
+                HomeDeliveryTimeList.Clear();
 
-            else IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery = true;
+                IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery = false;
+            }
+            else
+            {
+                IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery = true;
+                
+                HomeDeliveryTimeList.Clear();
+                
+                HomeDeliveryTimeList.Add(PikachuResource.UnableToSpecifyDuringPeakPeriods);
+            }
         }
 
         bool value = (bool)(e?.Value ?? false);
 
-        if (value) HomeDeliveryTimeList.Add(method);
+        if (!IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery)
+        {
+            if (value) HomeDeliveryTimeList.Add(method);
 
-        else HomeDeliveryTimeList.Remove(method);
+            else HomeDeliveryTimeList.Remove(method);
+        }
 
         CreateGroupBuyDto.HomeDeliveryDeliveryTime = JsonConvert.SerializeObject(HomeDeliveryTimeList);
-
     }
+
     void OnShippingMethodCheckedChange(string method, ChangeEventArgs e)
     {
         var value = (bool)(e?.Value ?? false);
@@ -1483,9 +1510,9 @@ public partial class CreateGroupBuy
                 await Loading.Hide();
                 return;
             }
-            if (CreateGroupBuyDto.IsEnterprise && (!CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
+            if (CreateGroupBuyDto.IsEnterprise && (CreateGroupBuyDto.ExcludeShippingMethod is not "[\"SelfPickup\"]"))
             {
-                await _uiMessageService.Warn(L[PikachuDomainErrorCodes.DeliverdByStoreMethodIsRequired]);
+                await _uiMessageService.Warn(L[PikachuDomainErrorCodes.EnterprisePurchaseCanOnlyUseSelfPickup]);
                 await Loading.Hide();
                 return;
             }

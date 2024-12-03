@@ -1,6 +1,7 @@
 {
   "culture": "en",
   "texts": {
+    "Pikachu:EnterprisePurchaseCanOnlyUseSelfPickup": "Enterprise Purchase can only use Self-Pickup",
     "ProductRankingCarouselModule": "Product Ranking Carousel Module",
     "OrderInstruction": "Order Instruction",
     "CountdownTimer": "Countdown Timer",
@@ -594,6 +595,7 @@
     "PetSuppliesandFeed": "0013: Pet Supplies and Feed",
     "PrintedMaterials": "0014: Printed Materials",
     "Others": "0015: Others",
+    "DeliveryTypeOthers":  "Others",
     "EditRole": "Edit Role",
     "EditUser": "Edit User",
     "Pikachu:MinimumAmountReachCannotBeEmpty": "Minimum Amount Reach Cannot be Empty.",
@@ -1027,6 +1029,17 @@
     "Permission:PaymentManagement": "Payment Management",
     "TenantUrlIsRequired": "Link is required.",
     "InvalidUrlWithField": "Please provide a fully qualified URL starting with http or https for {0}.",
-    "CustomerServiceContactPhone": "Customer Service Contact Phone"
+    "CustomerServiceContactPhone": "Customer Service Contact Phone",
+    "Menu:SalesReport": "Sales Report",
+    "SalesReport": "Sales Report",
+    "GrossSales": "Gross Sales",
+    "NetSales": "Net Sales",
+    "Discount": "Discount",
+    "NumberOfOrders": "Number of Orders",
+    "AverageOrderValue": "Average Order Value",
+    "CostOfGoodsSold": "Cost of Goods Sold",
+    "ShippingCost": "Shipping Cost",
+    "GrossProfit": "Gross Profit",
+    "GrossProfitMargin": "Gross Profit Margin"
   }
 }

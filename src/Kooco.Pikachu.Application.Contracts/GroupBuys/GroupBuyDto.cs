@@ -210,7 +210,7 @@ public class GroupBuyDto: EntityDto<Guid>,IHasConcurrencyStamp
     public bool IsGroupBuyAvaliable { get; set; }
     public DateTime CreationTime { get; set; }
     public bool IsEnterprise { get; set; }
-    public decimal? FreeShippingThreshold { get; set; }
+    public int? FreeShippingThreshold { get; set; }
     public string? SelfPickupDeliveryTime { get; set; }
     public string? BlackCatDeliveryTime { get; set; }
     public string? HomeDeliveryDeliveryTime { get; set; }
