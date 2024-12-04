@@ -11,6 +11,7 @@ using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Response;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -23,6 +24,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -345,10 +347,10 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         request.AddParameter("AllPayLogisticsID", string.Join(", ", allPayLogisticsId));
 
         Dictionary<string, string> parameters = new()
-            {
-                { "MerchantID", GreenWorld.StoreCode },
-                { "AllPayLogisticsID", string.Join(", ", allPayLogisticsId) }
-            };
+        {
+            { "MerchantID", GreenWorld.StoreCode },
+            { "AllPayLogisticsID", string.Join(", ", allPayLogisticsId) }
+        };
 
         request.AddParameter("CheckMacValue", GenerateCheckMacValue(greenWorld!.HashKey, greenWorld!.HashIV, parameters));
 
@@ -356,8 +358,58 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         html = response.Content.ToString();
 
+        html = html.Replace("/Content/Logistics/Helper/PrintTradeDocument.css?v=12", "https://logistics.ecpay.com.tw/Content/Logistics/Helper/PrintTradeDocument.css?v=12");
+        html = html.Replace("/Scripts/jquery-1.4.4.min.js", "https://logistics.ecpay.com.tw/Scripts/jquery-1.4.4.min.js");
+        html = html.Replace("/Scripts/Logistics/Helper/PrintTradeDocument.js?v=9", "https://logistics.ecpay.com.tw/Scripts/Logistics/Helper/PrintTradeDocument.js?v=9");
+
         return html;
     }
+
+    public async Task<List<string>> OnBatchPrintingShippingLabel(Dictionary<string, string> allPayLogisticsIds)
+    {
+        List<string> htmls = [];
+
+        List<LogisticsProviderSettingsDto> providers = await _logisticsProvidersAppService.GetAllAsync();
+
+        LogisticsProviderSettingsDto? greenWorld = providers.FirstOrDefault(p => p.LogisticProvider is LogisticProviders.GreenWorldLogistics);
+
+        if (greenWorld is not null) GreenWorld = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorld);
+
+        foreach (KeyValuePair<string, string> allPayLogisticsId in allPayLogisticsIds)
+        {
+            if (allPayLogisticsId.Value.IsNullOrEmpty()) continue;
+
+            RestClientOptions? options = new() { MaxTimeout = -1 };
+
+            RestClient client = new(options);
+
+            RestRequest request = new(_configuration["EcPay:PrintTradeDocument"], Method.Post);
+
+            request.AddParameter("MerchantID", GreenWorld.StoreCode);
+            request.AddParameter("AllPayLogisticsID", allPayLogisticsId.Value);
+
+            Dictionary<string, string> parameters = new()
+            {
+                { "MerchantID", GreenWorld.StoreCode },
+                { "AllPayLogisticsID", allPayLogisticsId.Value }
+            };
+
+            request.AddParameter("CheckMacValue", GenerateCheckMacValue(greenWorld!.HashKey, greenWorld!.HashIV, parameters));
+
+            RestResponse response = await client.ExecuteAsync(request);
+
+            string html = response.Content!.ToString();
+
+            html = html.Replace("/Content/Logistics/Helper/PrintTradeDocument.css?v=12", "https://logistics.ecpay.com.tw/Content/Logistics/Helper/PrintTradeDocument.css?v=12");
+            html = html.Replace("/Scripts/jquery-1.4.4.min.js", "https://logistics.ecpay.com.tw/Scripts/jquery-1.4.4.min.js");
+            html = html.Replace("/Scripts/Logistics/Helper/PrintTradeDocument.js?v=9", "https://logistics.ecpay.com.tw/Scripts/Logistics/Helper/PrintTradeDocument.js?v=9");
+
+            htmls.Add(html);
+        }
+
+        return htmls;
+    }
+
 
     public void MapAllLogistics(List<LogisticsProviderSettingsDto> providers)
     {

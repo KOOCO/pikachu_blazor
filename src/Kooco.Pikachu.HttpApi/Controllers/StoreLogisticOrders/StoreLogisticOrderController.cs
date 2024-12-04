@@ -76,4 +76,10 @@ public class StoreLogisticOrderController(
     {
         throw new NotImplementedException();
     }
+
+    [HttpGet("batch-printing-shipping")]
+    public Task<List<string>> OnBatchPrintingShippingLabel(Dictionary<string, string> allPayLogisticsIds)
+    {
+        throw new NotImplementedException();
+    }
 }

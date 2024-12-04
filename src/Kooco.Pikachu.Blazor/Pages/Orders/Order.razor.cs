@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore.Update.Internal;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NUglify.Html;
 using OneOf.Types;
 using System;
@@ -96,8 +97,8 @@ public partial class Order
 
         StateHasChanged();
     }
-    
-    public async Task OnPrintShippedLabel(MouseEventArgs e)
+
+    public async Task OnSeparatePrintShippedLabel(MouseEventArgs e)
     {
         await loading.Show();
 
@@ -112,17 +113,68 @@ public partial class Order
             List<OrderDeliveryDto> orderDeliveries = await _OrderDeliveryAppService.GetListByOrderAsync(orderId);
 
             allPayLogisticsId.AddRange([.. orderDeliveries.Where(w => !w.AllPayLogisticsID.IsNullOrWhiteSpace()).Select(s => s.AllPayLogisticsID)]);
-
-            //foreach (OrderDeliveryDto orderDelivery in orderDeliveries)
-            //{
-            //    await _StoreLogisticsOrderAppService.OnPrintShippingLabel(order, orderDelivery);
-            //}
         }
 
         string html = await _StoreLogisticsOrderAppService.OnBatchPrintingShippingLabel(allPayLogisticsId);
-        
+
+        await JSRuntime.InvokeVoidAsync("PrintTradeDocument", html);
+
         await loading.Hide();
     }
+
+    public async Task OnPrintShippedLabel(MouseEventArgs e)
+    {
+        await loading.Show();
+
+        List<Guid> orderIds = Orders.Where(w => w.IsSelected).Select(s => s.OrderId).ToList();
+
+        Dictionary<string, string> keyValuePairs = new() 
+        { 
+            { "BlackCat1", string.Empty },
+            { "SevenToElevenFrozen", string.Empty },
+            { "PostOffice", string.Empty },
+            { "FamilyMart1", string.Empty },
+            { "SevenToEleven1", string.Empty }
+        };
+
+        foreach (Guid orderId in orderIds)
+        {
+            OrderDto order = await _orderAppService.GetAsync(orderId);
+
+            List<OrderDeliveryDto> orderDeliveries = await _OrderDeliveryAppService.GetListByOrderAsync(orderId);
+
+            foreach (OrderDeliveryDto? delivery in orderDeliveries)
+            {
+                if (!string.IsNullOrWhiteSpace(delivery.AllPayLogisticsID) && 
+                    (delivery.DeliveryMethod is EnumValues.DeliveryMethod.SevenToEleven1 ||
+                     delivery.DeliveryMethod is EnumValues.DeliveryMethod.PostOffice ||
+                     delivery.DeliveryMethod is EnumValues.DeliveryMethod.BlackCat1 ||
+                     delivery.DeliveryMethod is EnumValues.DeliveryMethod.FamilyMart1 ||
+                     delivery.DeliveryMethod is EnumValues.DeliveryMethod.SevenToElevenFrozen))
+                {
+                    string? values = keyValuePairs.GetValueOrDefault(delivery.DeliveryMethod.ToString()) ?? string.Empty;
+
+                    List<string> strings = values.IsNullOrEmpty() ? [] : [.. values.Split(',')];
+
+                    strings.Add(delivery.AllPayLogisticsID);
+
+                    keyValuePairs.Remove(delivery.DeliveryMethod.ToString());
+
+                    keyValuePairs.Add(delivery.DeliveryMethod.ToString(), string.Join(",", strings));
+                }
+            }
+        }
+
+        List<string> htmls = await _StoreLogisticsOrderAppService.OnBatchPrintingShippingLabel(keyValuePairs);
+
+        foreach (string html in htmls)
+        {
+            if (!html.IsNullOrEmpty()) await JSRuntime.InvokeVoidAsync("PrintTradeDocument", html);
+        }
+
+        await loading.Hide();
+    }
+
 
     public async Task OnGenerateDeliveryNumber(MouseEventArgs e)
     {

@@ -701,7 +701,13 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                 module.GroupBuyModuleTypeName = module.GroupBuyModuleType.ToString();
 
                 if (module.GroupBuyModuleType is GroupBuyModuleType.CarouselImages)
-                    module.CarouselModulesImages = await GetCarouselImagesModuleWiseAsync(groupBuyId, module.ModuleNumber!.Value);
+                {
+                    Tuple<List<string>, string?> tuple = await GetCarouselImagesModuleWiseAsync(groupBuyId, module.ModuleNumber!.Value);
+
+                    module.CarouselModulesImages = tuple.Item1;
+
+                    module.CarouselModuleStyle = tuple.Item2;
+                }
 
                 if (module.GroupBuyModuleType is GroupBuyModuleType.BannerImages)
                     module.BannerModulesImages = await GetBannerImagesModuleWiseAsync(groupBuyId, module.ModuleNumber!.Value);
@@ -743,13 +749,20 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         }
     }
 
-    public async Task<List<string>> GetCarouselImagesModuleWiseAsync(Guid id, int moduleNumber)
+    public async Task<Tuple<List<string>, string?>> GetCarouselImagesModuleWiseAsync(Guid id, int moduleNumber)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
             List<Image> images = await _imageRepository.GetListAsync(x => x.TargetId == id && x.ImageType == ImageType.GroupBuyCarouselImage && x.ModuleNumber == moduleNumber);
 
-            return [.. images.Select(s => s.ImageUrl)];
+            List<string> imageUrls = [.. images.Select(s => s.ImageUrl)];
+
+            string? carouselStyle = images.GroupBy(g => g.CarouselStyle).Select(s => s.Key).FirstOrDefault().ToString();
+
+            return Tuple.Create(
+                imageUrls, 
+                carouselStyle
+            );
         }
     }
 

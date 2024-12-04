@@ -86,7 +86,7 @@ public class GroupBuyController : AbpController, IGroupBuyAppService
     }
 
     [HttpGet("get-carousel-images-module-wise/{id}/{moduleNumber}")]
-    public Task<List<string>> GetCarouselImagesModuleWiseAsync(Guid id, int moduleNumber)
+    public Task<Tuple<List<string>, string?>> GetCarouselImagesModuleWiseAsync(Guid id, int moduleNumber)
     {
         return _groupBuyAppService.GetCarouselImagesModuleWiseAsync(id, moduleNumber);
     }
