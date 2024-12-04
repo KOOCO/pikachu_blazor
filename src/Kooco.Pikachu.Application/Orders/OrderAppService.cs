@@ -118,7 +118,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _tenantSettingsAppService = tenantSettingsAppService;
         _discountCodeRepository = discountCodeRepository;
         _userShoppingCreditAppService = userShoppingCreditAppService;
-        _userShoppingCreditRepository= userShoppingCreditRepository;
+        _userShoppingCreditRepository = userShoppingCreditRepository;
     }
     #endregion
 
@@ -351,27 +351,27 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 var discountCode = await _discountCodeRepository.GetAsync(order.DiscountCodeId.Value);
                 discountCode.AvailableQuantity = discountCode.AvailableQuantity - 1;
                 await _discountCodeRepository.EnsureCollectionLoadedAsync(discountCode, x => x.DiscountCodeUsages);
-                
+
                 if (discountCode.DiscountCodeUsages != null && discountCode.DiscountCodeUsages.Count > 0)
                 {
                     var usage = discountCode.DiscountCodeUsages.FirstOrDefault();
                     usage.TotalOrders = usage.TotalOrders + 1;
                     usage.TotalDiscountAmount = usage.TotalDiscountAmount + (int)(order.DiscountAmount.HasValue ? order?.DiscountAmount.Value : 0);
                 }
-                else 
+                else
                 {
                     var newusage = new DiscountCodeUsage(GuidGenerator.Create(), 1, 0, order.DiscountAmount ?? 0);
                     discountCode.DiscountCodeUsages.Add(newusage);
                 }
 
                 await _discountCodeRepository.UpdateAsync(discountCode);
-                await  CurrentUnitOfWork.SaveChangesAsync();
+                await CurrentUnitOfWork.SaveChangesAsync();
             }
-            if (order.UserId!=null && order.UserId != Guid.Empty)
+            if (order.UserId != null && order.UserId != Guid.Empty)
             {
                 if (order.cashback_amount > 0)
                 {
-                    var cashback = (await _userShoppingCreditRepository.GetQueryableAsync()).Where(x => x.TransactionDescription.Contains("購物回饋：訂單 #")&& x.UserId==order.UserId).FirstOrDefault();
+                    var cashback = (await _userShoppingCreditRepository.GetQueryableAsync()).Where(x => x.TransactionDescription.Contains("購物回饋：訂單 #") && x.UserId == order.UserId).FirstOrDefault();
                     if (cashback is null)
                     {
                         var newcashback = await _userShoppingCreditAppService.RecordShoppingCreditAsync(new RecordUserShoppingCreditDto
@@ -387,18 +387,19 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         order.cashback_amount = newcashback.Amount;
                         order.cashback_record_id = newcashback.Id;
                     }
-                    else {
+                    else
+                    {
                         cashback.ChangeAmount((int)(cashback.Amount + order.cashback_amount));
                         cashback.ChangeCurrentRemainingCredits((int)(cashback.CurrentRemainingCredits + order.cashback_amount));
                         order.cashback_record_id = cashback.Id;
                         await _userShoppingCreditRepository.UpdateAsync(cashback);
                     }
-                
+
                     order.cashback_amount = cashback.Amount;
                     order.cashback_record_id = cashback.Id;
-                
+
                 }
-            
+
             }
             if (order.UserId != null && order.UserId != Guid.Empty)
             {
@@ -420,7 +421,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         order.CreditDeductionAmount = newdeduction.Amount;
                         order.CreditDeductionRecordId = deduction.Id;
                     }
-                    else {
+                    else
+                    {
                         deduction.ChangeAmount((int)(deduction.Amount - order.cashback_amount));
                         deduction.ChangeCurrentRemainingCredits((int)(deduction.CurrentRemainingCredits - order.cashback_amount));
                         order.cashback_record_id = deduction.Id;
@@ -437,13 +439,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
     }
 
-/// <summary>
-/// get order by Order No
-/// </summary>
-/// <param name="groupBuyId"></param>
-/// <param name="orderNo"></param>
-/// <param name="extraInfo"></param>
-/// <returns></returns>
+    /// <summary>
+    /// get order by Order No
+    /// </summary>
+    /// <param name="groupBuyId"></param>
+    /// <param name="orderNo"></param>
+    /// <param name="extraInfo"></param>
+    /// <returns></returns>
     public async Task<OrderDto> GetOrderAsync(Guid groupBuyId, string orderNo, string extraInfo)
     {
         return ObjectMapper.Map<Order, OrderDto>(
@@ -713,11 +715,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
         Order newOrder = new();
 
         Order ord = await _orderRepository.GetWithDetailsAsync(OrderId);
-        
+
         decimal TotalAmount = ord.TotalAmount; int TotalQuantity = ord.TotalQuantity;
 
         GroupBuy groupBuy = new();
-        
+
         using (_dataFilter.Disable<IMultiTenant>())
         {
             groupBuy = await _groupBuyRepository.GetAsync(ord.GroupBuyId);
@@ -739,7 +741,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     TotalQuantity -= item.Quantity;
 
                     await _orderItemRepository.DeleteAsync(item.Id);
-                    
+
                     Order order1 = await _orderManager.CreateAsync(
                         ord.GroupBuyId,
                         ord.IsIndividual,
@@ -784,7 +786,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         orderItem.ItemPrice,
                         orderItem.TotalAmount,
                         orderItem.Quantity,
-                        orderItem.SKU, 
+                        orderItem.SKU,
                         orderItem.DeliveryTemperature,
                         orderItem.DeliveryTemperatureCost
                     );
@@ -803,7 +805,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         oD = await _orderDeliveryRepository.InsertAsync(oD);
 
                         order1.UpdateOrderItem(
-                            [.. order1.OrderItems.Where(w => w.DeliveryTemperature == orderItem1?.DeliveryTemperature && 
+                            [.. order1.OrderItems.Where(w => w.DeliveryTemperature == orderItem1?.DeliveryTemperature &&
                                                              w.Item?.IsFreeShipping == orderItem1?.Item?.IsFreeShipping)],
                             oD.Id
                         );
@@ -829,9 +831,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
             ord.OrderType = OrderType.SplitToNew;
 
             await _orderRepository.UpdateAsync(ord);
-            
+
             await UnitOfWorkManager.Current.SaveChangesAsync();
-            
+
             return ObjectMapper.Map<Order, OrderDto>(ord);
         }
     }
@@ -1086,7 +1088,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             await _orderRepository.InsertAsync(order1);
 
             await _orderRepository.UpdateAsync(ord);
-           
+
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
             await _refundAppService.CreateAsync(order1.Id);
@@ -1651,6 +1653,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
         body = body.Replace("{{InstagramUrl}}", tenantSettings?.Instagram);
         body = body.Replace("{{LineUrl}}", tenantSettings?.Line);
 
+        body = body.Replace("{{CurrentYear}}", DateTime.Today.ToString("yyyy"));
+        body = body.Replace("{{CompanyName}}", tenantSettings?.CompanyName);
+        body = body.Replace("{{GroupBuyUrl}}", tenantSettings?.Tenant.GetProperty<string>(Constant.TenantUrl)?.TrimEnd('/') + "/" + groupbuy.Id);
+
         await _emailSender.SendAsync(order.CustomerEmail, subject, body);
     }
 
@@ -1967,7 +1973,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     {
         // Sum of Paid orders
         var paidAmount = (await _orderRepository.GetQueryableAsync())
-            .Where(order => order.UserId == userId &&(
+            .Where(order => order.UserId == userId && (
                 (order.PaymentMethod != PaymentMethods.CashOnDelivery &&
                     (order.ShippingStatus == ShippingStatus.PrepareShipment ||
                      order.ShippingStatus == ShippingStatus.ToBeShipped ||
@@ -1975,14 +1981,14 @@ public class OrderAppService : ApplicationService, IOrderAppService
                      order.ShippingStatus == ShippingStatus.Delivered)) ||
                 (order.PaymentMethod == PaymentMethods.CashOnDelivery &&
                     order.ShippingStatus == ShippingStatus.Delivered)
-                   
+
                     ))
-            
+
             .Sum(order => order.TotalAmount);
 
         // Sum of Unpaid/Due orders
         var unpaidAmount = (await _orderRepository.GetQueryableAsync())
-            .Where(order => order.UserId == userId &&(
+            .Where(order => order.UserId == userId && (
                 (order.PaymentMethod == PaymentMethods.CashOnDelivery &&
                     (order.ShippingStatus == ShippingStatus.WaitingForPayment ||
                      order.ShippingStatus == ShippingStatus.PrepareShipment ||
@@ -2006,7 +2012,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         // Sum of Paid orders
         var paidAmount = (await _orderRepository.GetQueryableAsync())
             .Where(order =>
-                (order.OrderStatus==OrderStatus.Open)
+                (order.OrderStatus == OrderStatus.Open)
                     && order.UserId == userId
                     )
 

@@ -26,10 +26,10 @@
             <h3>@L["GroupBuyList"]</h3>
         </div>
         <div class="col-8 text-end">
-          @*   <div class="d-inline-block">
+            @*   <div class="d-inline-block">
                 <div class="input-group">
                     <InputText class="form-control form-control-sm search-bar" @bind-Value="@SelectedAutoCompleteText" placeholder="@L["Search"]"></InputText>
-                   
+
                     <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="OnSearch">
                         <i class="fa fa-search"></i>
                     </Button>
@@ -52,54 +52,31 @@
         </div>
     </div>
     <Card>
-
-       
-            <CardBody>
+        <CardBody>
             <Div Class="input-group">
-                <InputText class="form-control"  @bind-Value="@Filters.FilterText" placeholder="@L["Search"]"></InputText>
+                <InputText class="form-control" @bind-Value="@Filters.FilterText" placeholder="@L["Search"]"></InputText>
                 <Button Color="Color.Primary" Clicked="ApplyFilters">
                     <Icon Class="fas fa-search"></Icon>
                 </Button>
             </Div>
-           
+            <Button Color="Color.Link" Clicked="AdvanceFiltersVisibleChangedAsync">
+                @L["AdvanceFilters"]
+                @if (AdvanceFiltersVisible)
+                {
+                    <Icon Class="fa-chevron-up ms-1"></Icon>
+                }
+                else
+                {
+                    <Icon Class="fa-chevron-down ms-1"></Icon>
+                }
+            </Button>
             @{
-                var columnSize = ColumnSize.Is2.OnQuadHD.Is3.OnFullHD.Is4.OnDesktop.Is6.OnTablet.Is12;}
-                <Row VerticalGutter="10">
-               
-                    <Column ColumnSize="columnSize">
-                        <Label>@L["StartTime"]</Label>
-                        <DatePicker TValue="DateTime?" @bind-Date="Filters.StartTime" Size="Size.Small" />
-                    </Column>
-                    <Column ColumnSize="columnSize">
-                        <Label>@L["EndTime"]</Label>
-                        <DatePicker TValue="DateTime?" @bind-Date="Filters.EndTime" Size="Size.Small" />
-                    </Column>
-                <Column ColumnSize="columnSize">
-                    <Label>@L["Status"]</Label>
-                    <Select TValue="bool?" @bind-SelectedValue="Filters.IsGroupBuyAvaliable" Class="form-select form-select-sm">
-                        <SelectItem TValue="bool?" Value="null"></SelectItem>
-                        <SelectItem TValue="bool?" Value="true">@L["Active"]</SelectItem>
-                        <SelectItem TValue="bool?" Value="false">@L["Inactive"]</SelectItem>
-                    </Select>
-                </Column>
-                    <Column ColumnSize="columnSize">
-</Column>
-                    <Column ColumnSize="columnSize" Class="d-flex align-items-end justify-content-end">
-                    <Button Color="Color.Link" Clicked="AdvanceFiltersVisibleChangedAsync">
-                        @L["AdvanceFilters"]
-                        @if (AdvanceFiltersVisible)
-                        {
-                            <Icon Class="fa-chevron-up ms-1"></Icon>
-                        }
-                        else
-                        {
-                            <Icon Class="fa-chevron-down ms-1"></Icon>
-                        }
-                    </Button>
-                    </Column>
-                  
-                    <Column ColumnSize="ColumnSize.Is12.IsAuto.OnTablet" Class="d-flex align-items-end justify-content-end justify-content-sm-start">
-                       
+                var columnSize = ColumnSize.Is2.OnQuadHD.Is3.OnFullHD.Is4.OnDesktop.Is6.OnTablet.Is12;
+            }
+            <Row VerticalGutter="10">
+                @if (AdvanceFiltersVisible)
+                {
+                    <Column ColumnSize="ColumnSize.Is12" Class="d-flex justify-content-end">
                         <Button Class="btn-sm btn-outline-primary me-1" Clicked="ResetFilters">
                             <Icon Class="fa-undo"></Icon>
                             @L["Reset"]
@@ -109,121 +86,130 @@
                             @L["Filter"]
                         </Button>
                     </Column>
-                @if (AdvanceFiltersVisible)
-                {
                     <Column ColumnSize="columnSize">
-                       
-                     <Label> @L["ShippingMethod"]</Label><br />
-             
-          
-                <Label class="form-label">@L["HomeDeliveryType"]</Label><br />
-               
-                 
-                    @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
-                    {
-                        if (item == Enum.GetName(DeliveryMethod.PostOffice) ||
-                        item == Enum.GetName(DeliveryMethod.HomeDelivery) ||
-                        item == Enum.GetName(DeliveryMethod.BlackCat1) ||
-                        item == Enum.GetName(DeliveryMethod.BlackCatFreeze) ||
-                        item == Enum.GetName(DeliveryMethod.BlackCatFrozen) ||
-                        item == Enum.GetName(DeliveryMethod.TCatDeliveryNormal) ||
-                        item == Enum.GetName(DeliveryMethod.TCatDeliveryFreeze) ||
-                        item == Enum.GetName(DeliveryMethod.TCatDeliveryFrozen))
+                        <Label>@L["StartTime"]</Label>
+                        <DatePicker TValue="DateTime?" @bind-Date="Filters.StartTime" Size="Size.Small" />
+                    </Column>
+                    <Column ColumnSize="columnSize">
+                        <Label>@L["EndTime"]</Label>
+                        <DatePicker TValue="DateTime?" @bind-Date="Filters.EndTime" Size="Size.Small" />
+                    </Column>
+                    <Column ColumnSize="columnSize">
+                        <Label>@L["Status"]</Label>
+                        <Select TValue="bool?" @bind-SelectedValue="Filters.IsGroupBuyAvaliable" Class="form-select form-select-sm">
+                            <SelectItem TValue="bool?" Value="null"></SelectItem>
+                            <SelectItem TValue="bool?" Value="true">@L["Active"]</SelectItem>
+                            <SelectItem TValue="bool?" Value="false">@L["Inactive"]</SelectItem>
+                        </Select>
+                    </Column>
+                    <Column ColumnSize="columnSize">
+                        <Label> @L["ShippingMethod"]</Label><br />
+                        <Label class="form-label">@L["HomeDeliveryType"]</Label><br />
+                        @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
                         {
-                            if (IsShippingMethodEnabled(item))
+                            if (item == Enum.GetName(DeliveryMethod.PostOffice) ||
+                            item == Enum.GetName(DeliveryMethod.HomeDelivery) ||
+                            item == Enum.GetName(DeliveryMethod.BlackCat1) ||
+                            item == Enum.GetName(DeliveryMethod.BlackCatFreeze) ||
+                            item == Enum.GetName(DeliveryMethod.BlackCatFrozen) ||
+                            item == Enum.GetName(DeliveryMethod.TCatDeliveryNormal) ||
+                            item == Enum.GetName(DeliveryMethod.TCatDeliveryFreeze) ||
+                            item == Enum.GetName(DeliveryMethod.TCatDeliveryFrozen))
+                            {
+                                if (IsShippingMethodEnabled(item))
+                                {
+                                    <label for="@item" class="form-label ">
+                                        <input type="checkbox"
+                                               class="form-check-input me-1"
+                                               id="@item"
+                                               disabled="@((Filters.ExcludeShippingMethod != null) && (Filters.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")"
+                                               checked="@((Filters.ExcludeShippingMethod != null) && (Filters.ExcludeShippingMethod.Contains(item)))"
+                                               @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                        @L[item]
+                                    </label>
+                                }
+                            }
+                        }
+
+                        <br />
+                        <Label class="form-label">@L["ConvenienceStoreType"]</Label><br />
+
+
+                        @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
+                        {
+                            if (item == Enum.GetName(DeliveryMethod.FamilyMart1) ||
+                            item == Enum.GetName(DeliveryMethod.FamilyMartC2C) ||
+                            item == Enum.GetName(DeliveryMethod.SevenToElevenC2C) ||
+                            item == Enum.GetName(DeliveryMethod.SevenToEleven1) ||
+                            item == Enum.GetName(DeliveryMethod.SevenToElevenFrozen) ||
+                            item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenNormal) ||
+                            item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenFreeze) ||
+                            item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenFrozen))
+                            {
+                                if (IsShippingMethodEnabled(item))
+                                {
+                                    <label for="@item" class="form-label ">
+                                        <input type="checkbox"
+                                               class="form-check-input me-1"
+                                               id="@item"
+                                               disabled="@((Filters.ExcludeShippingMethod != null) && (Filters.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")"
+                                               checked="@((Filters.ExcludeShippingMethod != null) && (Filters.ExcludeShippingMethod.Contains(item)))"
+                                               @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                        @L[item]
+                                    </label>
+                                }
+                            }
+                        }
+
+                        <br />
+                        <Label class="form-label">@L["Self-PickupType"]</Label><br />
+                        @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
+                        {
+                            if (item == Enum.GetName(DeliveryMethod.SelfPickup))
                             {
                                 <label for="@item" class="form-label ">
                                     <input type="checkbox"
                                            class="form-check-input me-1"
                                            id="@item"
-                                           disabled="@((Filters.ExcludeShippingMethod != null) && (Filters.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")"
+                                           disabled="@((Filters.ExcludeShippingMethod != null) && (Filters.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")"
                                            checked="@((Filters.ExcludeShippingMethod != null) && (Filters.ExcludeShippingMethod.Contains(item)))"
                                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                     @L[item]
                                 </label>
                             }
                         }
-                    }
-                
-                <br />
-                <Label class="form-label">@L["ConvenienceStoreType"]</Label><br />
-             
-                  
-                    @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
-                    {
-                        if (item == Enum.GetName(DeliveryMethod.FamilyMart1) ||
-                        item == Enum.GetName(DeliveryMethod.FamilyMartC2C) ||
-                        item == Enum.GetName(DeliveryMethod.SevenToElevenC2C) ||
-                        item == Enum.GetName(DeliveryMethod.SevenToEleven1) ||
-                        item == Enum.GetName(DeliveryMethod.SevenToElevenFrozen) ||
-                        item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenNormal) ||
-                        item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenFreeze) ||
-                        item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenFrozen))
+                        <br />
+                        <Label class="form-label">@L["DeliveredByStoreType"]</Label><br />
+                        @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
                         {
-                            if (IsShippingMethodEnabled(item))
+                            if (item == Enum.GetName(DeliveryMethod.DeliveredByStore))
                             {
                                 <label for="@item" class="form-label ">
                                     <input type="checkbox"
                                            class="form-check-input me-1"
                                            id="@item"
-                                           disabled="@((Filters.ExcludeShippingMethod != null) && (Filters.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")"
+                                           disabled="@((Filters.ExcludeShippingMethod != null) && (Filters.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")"
                                            checked="@((Filters.ExcludeShippingMethod != null) && (Filters.ExcludeShippingMethod.Contains(item)))"
                                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                     @L[item]
                                 </label>
                             }
                         }
-                    }
-                
-                <br />
-                <Label class="form-label">@L["Self-PickupType"]</Label><br />
-                @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
-                {
-                    if (item == Enum.GetName(DeliveryMethod.SelfPickup))
-                    {
-                        <label for="@item" class="form-label ">
-                            <input type="checkbox"
-                                   class="form-check-input me-1"
-                                   id="@item"
-                                   disabled="@((Filters.ExcludeShippingMethod != null) && (Filters.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")"
-                                   checked="@((Filters.ExcludeShippingMethod != null) && (Filters.ExcludeShippingMethod.Contains(item)))"
-                                   @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
-                            @L[item]
-                        </label>
-                    }
-                }
-                <br />
-                <Label class="form-label">@L["DeliveredByStoreType"]</Label><br />
-                @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
-                {
-                    if (item == Enum.GetName(DeliveryMethod.DeliveredByStore))
-                    {
-                        <label for="@item" class="form-label ">
-                            <input type="checkbox"
-                                   class="form-check-input me-1"
-                                   id="@item"
-                                   disabled="@((Filters.ExcludeShippingMethod != null) && (Filters.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")"
-                                   checked="@((Filters.ExcludeShippingMethod != null) && (Filters.ExcludeShippingMethod.Contains(item)))"
-                                   @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
-                            @L[item]
-                        </label>
-                    }
-                }
-           
+
                     </Column>
                     <Column ColumnSize="columnSize">
                         <Label> @L["PaymentMethod"] </Label>
-                       
 
-                         
-                            <Check TValue="bool" @bind-Checked="@CreditCard">@L["CreditCard"]</Check>
-                            <Check TValue="bool" @bind-Checked="@BankTransfer">@L["BankTransfer"]</Check>
-                            <Check TValue="bool"
-                                   @bind-Checked="@IsCashOnDelivery">
-                                @L[PikachuResource.CashOnDelivery]
-                            </Check>
-                         
-                      
+
+
+                        <Check TValue="bool" @bind-Checked="@CreditCard">@L["CreditCard"]</Check>
+                        <Check TValue="bool" @bind-Checked="@BankTransfer">@L["BankTransfer"]</Check>
+                        <Check TValue="bool"
+                               @bind-Checked="@IsCashOnDelivery">
+                            @L[PikachuResource.CashOnDelivery]
+                        </Check>
+
+
                     </Column>
                     <Column ColumnSize="columnSize">
                         <Label> @L[" Others"] </Label>
@@ -238,14 +224,14 @@
 
                         <Check TValue="bool?" @bind-Checked="@Filters.IsEnterprise">@L["EnterprisePurchase"]</Check>
 
-                       
+
                         <Check TValue="bool?" @bind-Checked="@Filters.IsEnterprise">@L["InviteCode"]</Check>
                     </Column>
-                   }
-                </Row>
-            
+                }
+            </Row>
+
         </CardBody>
-        
+
     </Card>
     <Card>
         <CardBody>
@@ -275,8 +261,8 @@
                             @context.StartTime-@context.EndTime
                         </DisplayTemplate>
                     </DataGridColumn>
-                    <DataGridColumn Caption="@L["FrontPage"]" 
-                                    Sortable="false" 
+                    <DataGridColumn Caption="@L["FrontPage"]"
+                                    Sortable="false"
                                     TextAlignment="TextAlignment.Center">
                         <DisplayTemplate>
                             <a href="@context.EntryURL" id="editLink" target="_blank">
@@ -284,11 +270,11 @@
                             </a>
                         </DisplayTemplate>
                     </DataGridColumn>
-                    <DataGridColumn Caption="@L["CopyPageLink"]" 
-                                    Sortable="false" 
+                    <DataGridColumn Caption="@L["CopyPageLink"]"
+                                    Sortable="false"
                                     TextAlignment="TextAlignment.Center">
                         <DisplayTemplate>
-                            <Button Type="ButtonType.Button" 
+                            <Button Type="ButtonType.Button"
                                     Clicked="@(() => CopyLinkToClipboard(context.EntryURL))">
                                 <i class="fa fa-link" />
                             </Button>

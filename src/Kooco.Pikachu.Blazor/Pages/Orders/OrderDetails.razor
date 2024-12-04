@@ -1736,7 +1736,7 @@
         <div class="col-12">
             <Card>
                 <CardBody>
-                    <table class="table table-responsive table-striped text-center">
+                    <table class="table table-responsive table-striped rm-table-min-height text-center">
                         <thead>
                             <tr>
                                 <th></th>
@@ -1950,11 +1950,11 @@
                               Data="@OrderDeliveries"
                               @bind-SelectedRow="@SelectedOrder"
                               DetailRowTrigger="@((e) => e.Item.Items?.Count > 0 && e.Item.Id == SelectedOrder?.Id)"
-                                    Responsive
-                               RowClicked="ToggleRow">
+                              Responsive
+                              RowClicked="ToggleRow"
+                              Class=" rm-table-min-height">
                          <DataGridColumns>
                              <DataGridCommandColumn />
-
                              <DataGridColumn Field="@nameof(OrderDeliveryDto.DeliveryNo)" Caption="@L["DeliveryNo"]">
                                  <DisplayTemplate>
                                      @{
@@ -2079,7 +2079,7 @@
                                 OrderDeliveries.Count(a => a.Items.Any(af => af.DeliveryTemperature is ItemStorageTemperature.Normal)) is 0 &&
                                 OrderDeliveries.Count(a => a.Items.Any(af => af.DeliveryTemperature is ItemStorageTemperature.Freeze)) is 0;
                             }
-                            <table class="table table-responsive table-striped text-center">
+                            <table class="table table-responsive rm-table-min-height table-striped text-center">
                                 <thead>
                                     <tr>
                                         <th></th>

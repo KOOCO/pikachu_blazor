@@ -1,5 +1,6 @@
 ﻿@page "/sales-report"
 @using Kooco.Pikachu.GroupBuys
+@using Kooco.Pikachu.Reports
 @using Kooco.Pikachu.SalesReports
 @using Kooco.Pikachu.Extensions
 @attribute [Authorize]
@@ -13,19 +14,14 @@
             <h3 class="text-dark">@L["SalesReport"]</h3>
         </Column>
         <Column ColumnSize="ColumnSize.Is6" TextAlignment="TextAlignment.End">
-            <PikachuButton Class="pk-btn-sm pk-btn-outline-primary" Clicked="() => FilterDateRange(StringExtensions.Today)">
-                @L[StringExtensions.Today]
+            <PikachuButton Class="pk-btn-sm pk-btn-outline-primary" Clicked="() => UnitChangedAsync(ReportCalculationUnits.Daily)">
+                @L["Daily"]
             </PikachuButton>
-            <PikachuButton Class="pk-btn-sm pk-btn-outline-primary" Clicked="() => FilterDateRange(StringExtensions.Week)">
-                @L[StringExtensions.Week]
+            <PikachuButton Class="pk-btn-sm pk-btn-outline-primary" Clicked="() => UnitChangedAsync(ReportCalculationUnits.Weekly)">
+                @L["Weekly"]
             </PikachuButton>
-            <PikachuButton Class="pk-btn-sm pk-btn-outline-primary" Clicked="() => FilterDateRange(StringExtensions.Month)">
-                @L[StringExtensions.Month]
-            </PikachuButton>
-            <Span Class="ms-3"></Span>
-            <PikachuButton Class="pk-btn-sm pk-btn-primary" Disabled="true">
-                <Icon Name="IconName.FileDownload"></Icon>
-                @L["Export"]
+            <PikachuButton Class="pk-btn-sm pk-btn-outline-primary" Clicked="() => UnitChangedAsync(ReportCalculationUnits.Monthly)">
+                @L["Monthly"]
             </PikachuButton>
         </Column>
     </Row>
@@ -93,15 +89,12 @@
                     {
                         <TableRow Class="@(r.ShowDetails ? "fw-bold" : "")">
                             <TableRowCell Class="text-nowrap">
-                                @if (!Filters.GroupBuyId.HasValue)
-                                {
-                                    <Span Style="cursor: pointer;" @onclick="() => OnShowDetails(r)">
-                                        <Icon Class="@(r.ShowDetails ? "fas fa-arrow-alt-circle-up" : "fas fa-arrow-alt-circle-down")"
-                                              TextColor="r.ShowDetails ? TextColor.Danger : TextColor.Info" Margin="Margin.Is2.FromEnd">
-                                        </Icon>
-                                    </Span>
-                                }
-                                @r.Date.ToString("yyyy-MM-dd")
+                                <Span Style="cursor: pointer;" @onclick="() => OnShowDetails(r)">
+                                    <Icon Class="@(r.ShowDetails ? "fas fa-arrow-alt-circle-up" : "fas fa-arrow-alt-circle-down")"
+                                          TextColor="r.ShowDetails ? TextColor.Danger : TextColor.Info" Margin="Margin.Is2.FromEnd">
+                                    </Icon>
+                                </Span>
+                                @r.Date
                             </TableRowCell>
                             <TableRowCell>@(r.GrossSales > 0 ? r.GrossSales.ToString("N0") : "-")</TableRowCell>
                             <TableRowCell>@(r.NetSales > 0 ? r.NetSales.ToString("N0") : "-")</TableRowCell>

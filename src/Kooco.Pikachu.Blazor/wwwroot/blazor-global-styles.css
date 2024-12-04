@@ -499,3 +499,11 @@
 .b-is-autocomplete.b-is-autocomplete-multipleselection.focus {
     background-color: unset;
 }
+
+.table-responsive:has(.rm-table-min-height) {
+    min-height: unset;
+}
+
+.rm-table-min-height {
+    min-height: unset !important;
+}
