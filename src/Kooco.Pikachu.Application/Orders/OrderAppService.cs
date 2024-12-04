@@ -19,7 +19,6 @@ using Microsoft.Extensions.Localization;
 using MiniExcelLibs;
 using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -38,7 +37,6 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Security.Encryption;
-using static Kooco.Pikachu.Permissions.PikachuPermissions;
 
 namespace Kooco.Pikachu.Orders;
 
