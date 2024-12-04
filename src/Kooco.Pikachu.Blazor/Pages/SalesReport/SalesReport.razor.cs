@@ -21,17 +21,13 @@ public partial class SalesReport
         GroupBuyLookup = [];
     }
 
-    protected override async Task OnInitializedAsync()
-    {
-        await ResetAsync();
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             try
             {
+                await ResetAsync();
                 GroupBuyLookup = await GroupBuyAppService.GetGroupBuyLookupAsync();
             }
             catch (Exception ex)
@@ -46,7 +42,7 @@ public partial class SalesReport
         try
         {
             IsLoading = true;
-            await InvokeAsync(StateHasChanged);
+            StateHasChanged();
             SalesReportList = await SalesReportAppService.GetSalesReportAsync(Filters);
         }
         catch (Exception ex)
@@ -56,6 +52,7 @@ public partial class SalesReport
         finally
         {
             IsLoading = false;
+            StateHasChanged();
         }
     }
 
