@@ -45,4 +45,22 @@ public class CreateWebsiteSettingsDto
 
     [Required]
     public GroupBuyTemplateType? GroupBuyTemplateType { get; set; }
+
+    [Required]
+    public ColorScheme? ColorScheme { get; set; }
+
+    [Required]
+    public string? PrimaryColor { get; set; }
+
+    [Required]
+    public string? SecondaryColor { get; set; }
+
+    [Required]
+    public string? BackgroundColor { get; set; }
+
+    [Required]
+    public string? SecondaryBackgroundColor { get; set; }
+
+    [Required]
+    public string? AlertColor { get; set; }
 }

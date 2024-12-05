@@ -498,3 +498,7 @@
 .rm-table-min-height {
     min-height: unset !important;
 }
+
+.color-scheme > .b-input-color-picker-preview {
+    height: 9.55rem;
+}

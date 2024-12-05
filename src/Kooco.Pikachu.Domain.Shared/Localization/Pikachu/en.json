@@ -1044,6 +1044,10 @@
     "AdvanceFilters": "Advance Filters",
     "WebsiteBasicSettings": "Website Basic Settings",
     "BasicSettings": "Basic Settings",
-    "WebsiteManagement": "Website Management"
+    "WebsiteManagement": "Website Management",
+    "ColorScheme": "Color Scheme",
+    "GroupBuyTemplateType": "Group Buy Template Type",
+    "Enum:GroupBuyTemplateType.1": "Pikachu 1.0",
+    "Enum:GroupBuyTemplateType.2": "Pikachu 2.0"
   }
 }

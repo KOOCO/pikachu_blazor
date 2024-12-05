@@ -48,11 +48,16 @@
                                     <Field>
                                         <FieldLabel>@L["TitleDisplayOption"] *</FieldLabel>
                                         <Select TValue="WebsiteTitleDisplayOptions?" @bind-SelectedValue="@NewEntity.TitleDisplayOption">
-                                            <SelectItem Value="(WebsiteTitleDisplayOptions?)null"></SelectItem>
-                                            @foreach (WebsiteTitleDisplayOptions option in Enum.GetValues(typeof(WebsiteTitleDisplayOptions)))
-                                            {
-                                                <SelectItem Value="option">@L["Enum:WebsiteTitleDisplayOptions." + (int)option]</SelectItem>
-                                            }
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                            <ChildContent>
+                                                <SelectItem Value="(WebsiteTitleDisplayOptions?)null"></SelectItem>
+                                                @foreach (WebsiteTitleDisplayOptions option in Enum.GetValues(typeof(WebsiteTitleDisplayOptions)))
+                                                {
+                                                    <SelectItem Value="option">@L["Enum:WebsiteTitleDisplayOptions." + (int)option]</SelectItem>
+                                                }
+                                            </ChildContent>
                                         </Select>
                                     </Field>
                                 </Validation>
@@ -116,11 +121,71 @@
                         <Validation MessageLocalizer="@LH.Localize">
                             <Field>
                                 <Select TValue="GroupBuyTemplateType?" @bind-SelectedValue="NewEntity.GroupBuyTemplateType">
-                                    <SelectItem Value="(GroupBuyTemplateType?)null"></SelectItem>
-                                    <SelectItem Value="GroupBuyTemplateType.PikachuOne">@L["PikachuTwo"]</SelectItem>
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                    <ChildContent>
+                                        <SelectItem Value="(GroupBuyTemplateType?)null"></SelectItem>
+                                        @foreach (GroupBuyTemplateType value in Enum.GetValues<GroupBuyTemplateType>().Where(x => x == GroupBuyTemplateType.PikachuTwo))
+                                        {
+                                            <SelectItem Value="value">@L["Enum:GroupBuyTemplateType." + (int)value]</SelectItem>
+                                        }
+                                    </ChildContent>
                                 </Select>
                             </Field>
                         </Validation>
+                    </Column>
+                </Row>
+                <Divider></Divider>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                        <h4>@L["ColorScheme"]</h4>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                        <Field>
+                            <Select TValue="ColorScheme?" SelectedValue="NewEntity.ColorScheme"
+                                    SelectedValueChanged="(e) => OnColorSchemeChange(e)">
+                                <SelectItem Value="(ColorScheme?)null"></SelectItem>
+                                @foreach (ColorScheme value in Enum.GetValues<ColorScheme>())
+                                {
+                                    <SelectItem Value="@value">@L["Enum:ColorScheme." + (int)value]</SelectItem>
+                                }
+                            </Select>
+                        </Field>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12">
+                        @if (NewEntity.ColorScheme.HasValue)
+                        {
+                            <Row Class="d-flex justify-content-center">
+                                <Column ColumnSize="ColumnSize.Is2" Class="text-center">
+                                    <FieldLabel>@L["Primary"]</FieldLabel>
+                                    <ColorPicker Class="color-scheme" @bind-Color="@NewEntity.PrimaryColor" />
+                                    <TextEdit Class="mt-2" Disabled @bind-Text="NewEntity.PrimaryColor" />
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is2" Class="text-center">
+                                    <FieldLabel>@L["Secondary"]</FieldLabel>
+                                    <ColorPicker Class="color-scheme" @bind-Color="@NewEntity.SecondaryColor" />
+                                    <TextEdit Class="mt-2" Disabled @bind-Text="NewEntity.SecondaryColor" />
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is2" Class="text-center">
+                                    <FieldLabel>@L["Background"]</FieldLabel>
+                                    <ColorPicker Class="color-scheme" @bind-Color="@NewEntity.BackgroundColor" />
+                                    <TextEdit Class="mt-2" Disabled @bind-Text="NewEntity.BackgroundColor" />
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is2" Class="text-center">
+                                    <FieldLabel Class="d-none d-xl-block">@L["SecondaryBackground"]</FieldLabel>
+                                    <FieldLabel Class="d-block d-xl-none">@L["SecondaryBg"]</FieldLabel>
+                                    <ColorPicker Class="color-scheme" @bind-Color="@NewEntity.SecondaryBackgroundColor" />
+                                    <TextEdit Class="mt-2" Disabled @bind-Text="NewEntity.SecondaryBackgroundColor" />
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is2" Class="text-center">
+                                    <FieldLabel>@L["Alert"]</FieldLabel>
+                                    <ColorPicker Class="color-scheme" @bind-Color="@NewEntity.AlertColor" />
+                                    <TextEdit Class="mt-2" Disabled @bind-text="NewEntity.AlertColor" />
+                                </Column>
+                            </Row>
+                        }
+
                     </Column>
                 </Row>
             </Validations>
