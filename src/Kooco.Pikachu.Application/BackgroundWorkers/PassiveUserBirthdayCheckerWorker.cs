@@ -101,7 +101,16 @@ namespace Kooco.Pikachu.BackgroundWorkers
             }
 
             // Calculate the interval in milliseconds
-            return (int)(nextRunDate - now).TotalMilliseconds;
+            var time= (nextRunDate - now).TotalMilliseconds;
+            if (time < 0)
+            {
+                return (int)time*-1;
+
+            }
+            else {
+
+                return (int)time;
+            }
         }
     }
 }

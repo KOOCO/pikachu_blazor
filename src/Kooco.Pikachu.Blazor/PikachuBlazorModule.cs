@@ -70,7 +70,8 @@ namespace Kooco.Pikachu.Blazor;
     typeof(AbpIdentityBlazorServerModule),
     typeof(AbpTenantManagementBlazorServerModule),
     typeof(AbpSettingManagementBlazorServerModule),
-    typeof(AbpBackgroundJobsHangfireModule)
+    typeof(AbpBackgroundJobsHangfireModule),
+    typeof(AbpBackgroundWorkersModule)
    )]
 public class PikachuBlazorModule : AbpModule
 {
@@ -257,7 +258,11 @@ public class PikachuBlazorModule : AbpModule
         {
             options.IsJobExecutionEnabled = true;
         });
-       
+        context.Services.AddScoped<OrderStatusCheckerWorker>();
+        context.Services.AddScoped<PassiveUserBirthdayCheckerWorker>();
+
+
+
     }
     private void ConfigureHangfire(ServiceConfigurationContext context, IConfiguration configuration)
     {
@@ -270,6 +275,8 @@ public class PikachuBlazorModule : AbpModule
         {
             options.Queues = new[] { "automatic-emails-job", "automatic-issue-invoice" };
         });
+
+      
     }
 
     private void ConfigureAuthentication(ServiceConfigurationContext context)
@@ -380,7 +387,7 @@ public class PikachuBlazorModule : AbpModule
         });
     }
 
-    public override void OnApplicationInitialization(ApplicationInitializationContext context)
+    public override async void OnApplicationInitialization(ApplicationInitializationContext context)
     {
         var env = context.GetEnvironment();
         var app = context.GetApplicationBuilder();
@@ -432,13 +439,11 @@ public class PikachuBlazorModule : AbpModule
         });
 
         app.UseConfiguredEndpoints();
-        context.ServiceProvider
-     .GetRequiredService<IBackgroundWorkerManager>()
-     .AddAsync(
-         context
-             .ServiceProvider
-             .GetRequiredService<PassiveUserBirthdayCheckerWorker>()
-     );
+        await context.AddBackgroundWorkerAsync<PassiveUserBirthdayCheckerWorker>();
+        await context.AddBackgroundWorkerAsync<OrderStatusCheckerWorker>();
+
+
+
 
     }
 
