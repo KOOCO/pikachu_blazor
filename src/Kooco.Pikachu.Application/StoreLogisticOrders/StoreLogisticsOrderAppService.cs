@@ -483,6 +483,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 html = html.Replace("/Content/Logistics/Helper/PrintTradeDocument.css?v=12", "https://logistics.ecpay.com.tw/Content/Logistics/Helper/PrintTradeDocument.css?v=12");
                 html = html.Replace("/Scripts/jquery-1.4.4.min.js", "https://logistics.ecpay.com.tw/Scripts/jquery-1.4.4.min.js");
                 html = html.Replace("/Scripts/Logistics/Helper/PrintTradeDocument.js?v=9", "https://logistics.ecpay.com.tw/Scripts/Logistics/Helper/PrintTradeDocument.js?v=9");
+                html = html.Replace("<body class=\"PrintBody\">", "<script>\r\n    document.querySelectorAll('img[data-src]').forEach(img => {\r\n        img.src = img.getAttribute('data-src');\r\n    });\r\n</script> \n <body class=\"PrintBody\">");
             }
 
             else if (allPayLogisticsId.Key.Contains("FamilyMartC2C"))
@@ -502,7 +503,6 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         return htmls;
     }
-
 
     public void MapAllLogistics(List<LogisticsProviderSettingsDto> providers)
     {

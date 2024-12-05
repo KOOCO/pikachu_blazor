@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Volo.Abp.Account.Web;
 using Volo.Abp.Application.Dtos;
@@ -198,10 +199,32 @@ public partial class Order
 
         Directory.CreateDirectory(pdf);
 
-        foreach (string html in htmls)
+        File.WriteAllText(string.Concat(pdf, "\\outputHTML.html"), htmls[0]);
+
+        var converter = new SynchronizedConverter(new PdfTools());
+        var doc = new HtmlToPdfDocument
         {
-            if (!html.IsNullOrEmpty()) await JSRuntime.InvokeVoidAsync("PrintTradeDocument", html);
-        }
+            GlobalSettings = new GlobalSettings
+            {
+                ColorMode = ColorMode.Color,
+                Orientation = DinkToPdf.Orientation.Portrait,
+                PaperSize = PaperKind.A4,
+                Out = string.Concat(pdf, "\\output.pdf")
+            }
+        };
+
+        doc.Objects.Add(new ObjectSettings() { Page = string.Concat(pdf, "\\outputHTML.html"), LoadSettings = new() { JSDelay = 5000 }, WebSettings = new WebSettings() {
+            EnableJavascript = true,
+            DefaultEncoding = "UTF-8",
+            LoadImages = true
+        } });
+        
+        converter.Convert(doc);
+
+        //foreach (string html in htmls)
+        //{
+        //    if (!html.IsNullOrEmpty()) await JSRuntime.InvokeVoidAsync("PrintTradeDocument", html);
+        //}
 
         await loading.Hide();
     }

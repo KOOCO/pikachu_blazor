@@ -1,6 +1,8 @@
 using Blazorise.Bootstrap5;
 using Blazorise.Icons.FontAwesome;
 using Blazorise.RichTextEdit;
+using DinkToPdf;
+using DinkToPdf.Contracts;
 using Hangfire;
 using Kooco.Pikachu.BackgroundWorkers;
 using Kooco.Pikachu.Blazor.Helpers;
@@ -257,7 +259,8 @@ public class PikachuBlazorModule : AbpModule
         {
             options.IsJobExecutionEnabled = true;
         });
-       
+
+        context.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
     }
     private void ConfigureHangfire(ServiceConfigurationContext context, IConfiguration configuration)
     {
