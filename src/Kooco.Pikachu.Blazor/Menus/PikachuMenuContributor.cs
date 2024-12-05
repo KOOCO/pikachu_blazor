@@ -65,7 +65,13 @@ public class PikachuMenuContributor : IMenuContributor
                 url: "/GroupBuyManagement/GroupBuyReport"
                 ));
         }
-
+        groupMangment.AddItem(new ApplicationMenuItem(
+      name: "ReportNotification",
+      icon: "fas fa-envelope-open-text",
+      displayName: l["ReportNotification"],
+      url: "/AutomaticEmailing",
+      requiredPermissionName: PikachuPermissions.ReportNotification)
+      );
         var productmangment =
          new ApplicationMenuItem(
              PikachuMenus.ProductManagement,
@@ -330,30 +336,18 @@ requiredPermissionName: PikachuPermissions.ShoppingCredits.Default)
         //)
         //);
 
-        var systemManagment =
-            new ApplicationMenuItem(
-                PikachuMenus.SystemManagement,
-                displayName: l["Menu:SystemManagement"],
-                //"系統管理",
-                icon: "fas fa-user",
-                order: 7
-            );
-        context.Menu.AddItem(systemManagment);
+        //var systemManagment =
+        //    new ApplicationMenuItem(
+        //        PikachuMenus.SystemManagement,
+        //        displayName: l["Menu:SystemManagement"],
+        //        //"系統管理",
+        //        icon: "fas fa-user",
+        //        order: 7
+        //    );
+        //context.Menu.AddItem(systemManagment);
 
-        systemManagment.AddItem(new ApplicationMenuItem(
-        name: "EmailSettings",
-        icon: "fas fa-mail-bulk",
-        displayName: l["EmailSettings"],
-        url: "/EmailSettings",
-        requiredPermissionName: PikachuPermissions.EmailSettings)
-        );
-        systemManagment.AddItem(new ApplicationMenuItem(
-        name: "AutomaticEmailing",
-        icon: "fas fa-envelope-open-text",
-        displayName: l["AutomaticEmailing"],
-        url: "/AutomaticEmailing",
-        requiredPermissionName: PikachuPermissions.AutomaticEmailing)
-        );
+        //systemManagment
+      
 
         if (MultiTenancyConsts.IsEnabled)
         {
@@ -390,6 +384,13 @@ requiredPermissionName: PikachuPermissions.ShoppingCredits.Default)
 
         administration.SetSubItemOrder(IdentityMenuNames.GroupName, 2);
         administration.SetSubItemOrder(SettingManagementMenus.GroupName, 3);
+        administration.AddItem(new ApplicationMenuItem(
+        name: "EmailSettings",
+        icon: "fas fa-mail-bulk",
+        displayName: l["EmailSettings"],
+        url: "/EmailSettings",
+        requiredPermissionName: PikachuPermissions.EmailSettings)
+        );
         //remove administration item from menu
         //context.Menu.Items.Remove( administration );
 
