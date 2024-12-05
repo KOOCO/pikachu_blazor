@@ -14,8 +14,8 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
         //myGroup.AddPermission(PikachuPermissions.MyPermission1, L("Permission:MyPermission1"));
         myGroup.AddPermission(PikachuPermissions.GroupBuyList, L("Permission:GroupBuyList"));
         myGroup.AddPermission(PikachuPermissions.GroupBuyReport, L("Permission:GroupBuyReport"));
-       // myGroup.AddPermission(PikachuPermissions.GroupBuyPageConfig, L("Permission:GroupBuyPageConfig"));
-
+        // myGroup.AddPermission(PikachuPermissions.GroupBuyPageConfig, L("Permission:GroupBuyPageConfig"));
+        myGroup.AddPermission(PikachuPermissions.ReportNotification, L("Permission:ReportNotification"));
 
         var myGroup1 = context.AddGroup(PikachuPermissions.ProductManagement,L("Permission:ProductManagement"));
         myGroup1.AddPermission(PikachuPermissions.InventoryReport, L("Permission:InventoryReport"));
@@ -53,7 +53,7 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
         myGroup.AddPermission(PikachuPermissions.RefundAuditList, L("Permission:RefundReviewingList"));
 
         myGroup5.AddPermission(PikachuPermissions.EmailSettings, L("Permission:EmailSettings"));
-        myGroup5.AddPermission(PikachuPermissions.AutomaticEmailing, L("Permission:AutomaticEmailing"));
+       
         myGroup5.AddPermission(PikachuPermissions.PaymentGatewaySetting, L("Permission:PaymentSetting"));
         myGroup5.AddPermission(PikachuPermissions.DeliveryTemperatureCost, L("Permission:DeliveryTemperatureCost"));
 

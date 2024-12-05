@@ -19,7 +19,6 @@ using Microsoft.Extensions.Localization;
 using MiniExcelLibs;
 using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -38,7 +37,6 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Security.Encryption;
-using static Kooco.Pikachu.Permissions.PikachuPermissions;
 
 namespace Kooco.Pikachu.Orders;
 
@@ -1660,6 +1658,22 @@ public class OrderAppService : ApplicationService, IOrderAppService
         await _emailSender.SendAsync(order.CustomerEmail, subject, body);
     }
 
+    public async Task AddValuesAsync(Guid id, string checkMacValue, string merchantTradeNo, PaymentMethods? paymentMethod = null)
+    {
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            Order order = await _orderRepository.GetAsync(id);
+
+            order.MerchantTradeNo = merchantTradeNo;
+
+            order.CheckMacValue = checkMacValue;
+
+            if (paymentMethod.HasValue) order.PaymentMethod = paymentMethod;
+
+            await _orderRepository.UpdateAsync(order);
+        }
+    }
+
     [AllowAnonymous]
     public async Task AddValuesAsync(Guid id, string checkMacValue, string merchantTradeNo)
     {
@@ -1685,6 +1699,19 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             await _orderRepository.UpdateAsync(order);
         }
+    }
+
+    public string GenerateMerchantTradeNo(string orderNo)
+    {
+        Random random = new();
+
+        int maxLength = 20;
+
+        int availableLength = maxLength - orderNo.Length;
+
+        string randomNumeric = random.Next(0, (int)Math.Pow(10, availableLength)).ToString().PadLeft(availableLength, '0');
+
+        return string.Concat(orderNo, randomNumeric);
     }
 
     public async Task UpdateLogisticStatusAsync(string merchantTradeNo, string rtnMsg)

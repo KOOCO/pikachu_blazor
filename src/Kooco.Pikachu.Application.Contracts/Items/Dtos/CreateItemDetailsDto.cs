@@ -10,6 +10,7 @@ public class CreateItemDetailsDto
     public string Sku { get; set; }
     public float SellingPrice { get; set; }
     public float GroupBuyPrice { get; set; }
+    public float Cost { get; set; }
     public string InventoryAccount { get; set; }
     public float SaleableQuantity { get; set; }
     public float? PreOrderableQuantity { get; set; }

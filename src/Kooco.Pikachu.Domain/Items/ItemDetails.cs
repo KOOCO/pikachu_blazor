@@ -14,6 +14,7 @@ namespace Kooco.Pikachu.Items
         public string SKU { get; set; }
         public float SellingPrice { get; set; } //商品售價/ItemSellingPrice
         public float? GroupBuyPrice { get; set; } //商品團購價/Group Buy Price
+        public float Cost { get; set; }
         public float? SaleableQuantity { get; set; } //可販售數量限制/SaleableQuantity
         public float? PreOrderableQuantity { get; set; } //可預購數量/PreOrderableQuantity
         public float? SaleablePreOrderQuantity { get; set; } //可訂購預購數量/SaleablePreOrderQuantity
@@ -56,6 +57,7 @@ namespace Kooco.Pikachu.Items
             Guid itemId,
             int? limitQuantity,
             float sellingPrice,
+            float cost,
             float saleableQuantity,
             int? openingStock,
             float? groupBuyPrice,
@@ -77,6 +79,7 @@ namespace Kooco.Pikachu.Items
             ItemName = itemName;
             LimitQuantity = limitQuantity;
             SellingPrice = sellingPrice;
+            Cost = cost;
             OpeningStock = openingStock;
             SaleableQuantity = saleableQuantity;
             PreOrderableQuantity = preOrderableQuantity;

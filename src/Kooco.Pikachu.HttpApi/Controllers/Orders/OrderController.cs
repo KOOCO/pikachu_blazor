@@ -112,13 +112,20 @@ public class OrderController : AbpController, IOrderAppService
     }
 
     [HttpGet("ecpay-proceed-to-checkout")]
-    public async Task<IActionResult> ProceedToCheckout(Guid orderId, string clientBackUrl)
+    public async Task<IActionResult> ProceedToCheckout(Guid orderId, string clientBackUrl, PaymentMethods? retryPaymentMethod = null, bool isPaymentRetry = false)
     {
         OrderDto order = await _ordersAppService.GetWithDetailsAsync(orderId);
 
         GroupBuyDto groupBuy = await _GroupBuyAppService.GetAsync(order.GroupBuyId);
 
         PaymentGatewayDto ecPay = await GetPaymentGatewayConfigurationsAsync(order.GroupBuyId);
+
+        if (isPaymentRetry && retryPaymentMethod.HasValue)
+        {
+            order.PaymentMethod = retryPaymentMethod;
+
+            order.MerchantTradeNo = _ordersAppService.GenerateMerchantTradeNo(order.OrderNo);
+        }
 
         bool isDefaultPayment = groupBuy.IsDefaultPaymentGateWay;
 
@@ -181,7 +188,7 @@ public class OrderController : AbpController, IOrderAppService
             oPayment.MerchantID = merchantID;
             oPayment.Send.ReturnURL = $"{Request.Scheme}://{Request.Host}/api/app/orders/callback";
             oPayment.Send.ClientBackURL = string.Empty;
-            oPayment.Send.MerchantTradeNo = order.OrderNo;
+            oPayment.Send.MerchantTradeNo = isPaymentRetry ? order.MerchantTradeNo : order.OrderNo;
             oPayment.Send.MerchantTradeDate = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
             oPayment.Send.TotalAmount = Convert.ToInt32(order.TotalAmount);
             oPayment.Send.TradeDesc = tradeDesc;
@@ -230,7 +237,7 @@ public class OrderController : AbpController, IOrderAppService
             {
                 string? checkMacValue = response.Result.htParameters["CustomField1"]?.ToString();
 
-                await _ordersAppService.AddValuesAsync(orderId, checkMacValue ?? string.Empty, order.OrderNo);
+                await _ordersAppService.AddValuesAsync(orderId, checkMacValue ?? string.Empty, isPaymentRetry ? order.MerchantTradeNo : order.OrderNo, retryPaymentMethod);
             }
 
             StringBuilder htmlForm = new();
@@ -593,6 +600,18 @@ public class OrderController : AbpController, IOrderAppService
     public Task<OrderDto> ChangeOrderStatus(Guid id, ShippingStatus status)
     {
         return _ordersAppService.ChangeOrderStatus(id, status);
+    }
+
+    [HttpGet("generate-merchantTradeNo")]
+    public string GenerateMerchantTradeNo(string orderNo)
+    {
+        throw new NotImplementedException();
+    }
+
+    [HttpPut("add-values/{id}/{checkMacValue}/{merchantTradeNo}/{paymentMethod}")]
+    public Task AddValuesAsync(Guid id, string checkMacValue, string merchantTradeNo, PaymentMethods? paymentMethod = null)
+    {
+        throw new NotImplementedException();
     }
     #endregion
 }
