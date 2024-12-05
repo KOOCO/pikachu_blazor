@@ -439,8 +439,22 @@ public class PikachuBlazorModule : AbpModule
         });
 
         app.UseConfiguredEndpoints();
-        await context.AddBackgroundWorkerAsync<PassiveUserBirthdayCheckerWorker>();
-        await context.AddBackgroundWorkerAsync<OrderStatusCheckerWorker>();
+        
+         context.ServiceProvider
+.GetRequiredService<IBackgroundWorkerManager>()
+.AddAsync(
+  context
+      .ServiceProvider
+      .GetRequiredService<PassiveUserBirthdayCheckerWorker>()
+);
+        context.ServiceProvider
+     .GetRequiredService<IBackgroundWorkerManager>()
+     .AddAsync(
+         context
+             .ServiceProvider
+             .GetRequiredService<OrderStatusCheckerWorker>()
+     );
+       // await context.AddBackgroundWorkerAsync<OrderStatusCheckerWorker>();
 
 
 
