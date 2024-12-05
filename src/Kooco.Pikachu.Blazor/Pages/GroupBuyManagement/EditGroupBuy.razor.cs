@@ -665,7 +665,7 @@ public partial class EditGroupBuy
             await LoadHtmlContent();
         }
         //await GroupBuyHtml.LoadHTMLContent(EditGroupBuyDto.GroupBuyConditionDescription);
-        await CustomerInformationHtml.LoadHTMLContent(EditGroupBuyDto.CustomerInformationDescription);
+        //await CustomerInformationHtml.LoadHTMLContent(EditGroupBuyDto.CustomerInformationDescription);
         await ExchangePolicyHtml.LoadHTMLContent(EditGroupBuyDto.ExchangePolicyDescription);
         await NotifyEmailHtml.LoadHTMLContent(EditGroupBuyDto.NotifyMessage);
     }
@@ -2150,7 +2150,7 @@ public partial class EditGroupBuy
             EditGroupBuyDto.NotifyMessage = await NotifyEmailHtml.GetHTML();
             //EditGroupBuyDto.GroupBuyConditionDescription = await GroupBuyHtml.GetHTML();
             EditGroupBuyDto.ExchangePolicyDescription = await ExchangePolicyHtml.GetHTML();
-            EditGroupBuyDto.CustomerInformationDescription = await CustomerInformationHtml.GetHTML();
+            //EditGroupBuyDto.CustomerInformationDescription = await CustomerInformationHtml.GetHTML();
 
             EditGroupBuyDto.ItemGroups = new List<GroupBuyItemGroupCreateUpdateDto>();
 
