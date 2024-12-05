@@ -1,14 +1,14 @@
 using Blazorise;
-using Kooco.Pikachu.WebsiteManagement;
-using System.IO;
-using System.Threading.Tasks;
-using System;
-using System.Linq;
 using Kooco.Pikachu.Extensions;
+using Kooco.Pikachu.WebsiteManagement;
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Kooco.Pikachu.Blazor.Pages.WebsiteManagement;
 
-public partial class WebsiteSettings
+public partial class WebsiteBasicSettings
 {
     private CreateWebsiteSettingsDto NewEntity { get; set; }
     private Validations ValidationsRef;
@@ -17,14 +17,9 @@ public partial class WebsiteSettings
 
     private string LogoBase64 { get; set; }
 
-    public WebsiteSettings()
+    public WebsiteBasicSettings()
     {
         NewEntity = new();
-    }
-
-    void NavigateToWebsiteSettings()
-    {
-        NavigationManager.NavigateTo("/Website-Settings");
     }
 
     async Task OnFileUploadAsync(FileChangedEventArgs e)
@@ -71,7 +66,6 @@ public partial class WebsiteSettings
             NewEntity.LogoUrl = await ImageAppService.UploadImageAsync(NewEntity.LogoName, bytes);
 
             await WebsiteSettingsAppService.CreateAsync(NewEntity);
-            NavigateToWebsiteSettings();
         }
         catch (Exception ex)
         {

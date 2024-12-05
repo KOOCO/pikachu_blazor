@@ -461,26 +461,17 @@
     display: none;
 }
 
-.tenant-settings .image-thumbnail {
+.tenant-settings .image-thumbnail,
+.rounded-cards .image-thumbnail {
     height: 160px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-    .tenant-settings .image-thumbnail img {
+    .tenant-settings .image-thumbnail img,
+    .rounded-cards .image-thumbnail img {
         height: 160px;
-    }
-
-.website-settings .image-thumbnail {
-    height: 330px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-    .website-settings .image-thumbnail img {
-        max-height: 330px;
     }
 
 .flatpickr-calendar.static {
