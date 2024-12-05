@@ -307,7 +307,7 @@ requiredPermissionName: PikachuPermissions.ShoppingCredits.Default)
         websiteSettings.AddItem(new ApplicationMenuItem(
             name: PikachuMenus.WebsiteSettings,
             displayName: l["Menu:WebsiteSettings"],
-            url: "/Website-Settings",
+            url: "/Website-Basic-Settings",
             icon: "fas fa-window-maximize",
             requiredPermissionName: PikachuPermissions.WebsiteSettings.Default
             ));

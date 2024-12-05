@@ -1,124 +1,82 @@
 using Blazorise;
-using Blazorise.DataGrid;
-using Kooco.Pikachu.Members;
-using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.WebsiteManagement;
-using Microsoft.AspNetCore.Authorization;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Threading.Tasks;
-using Volo.Abp.Application.Dtos;
+using System;
+using System.Linq;
+using Kooco.Pikachu.Extensions;
 
 namespace Kooco.Pikachu.Blazor.Pages.WebsiteManagement;
 
 public partial class WebsiteSettings
 {
-    private IReadOnlyList<WebsiteSettingsDto> WebsiteSettingsList { get; set; }
-    private int PageSize { get; } = LimitedResultRequestDto.DefaultMaxResultCount;
-    private int CurrentPage { get; set; } = 1;
-    private string CurrentSorting { get; set; }
-    private int TotalCount { get; set; }
+    private CreateWebsiteSettingsDto NewEntity { get; set; }
+    private Validations ValidationsRef;
 
-    private GetWebsiteSettingsListDto Filters { get; set; }
+    private bool IsLoading { get; set; }
 
-    private bool CanCreateWebsiteSettings { get; set; }
-    private bool CanEditWebsiteSettings { get; set; }
-    private bool CanDeleteWebsiteSettings { get; set; }
+    private string LogoBase64 { get; set; }
 
     public WebsiteSettings()
     {
-        WebsiteSettingsList = [];
-        Filters = new();
+        NewEntity = new();
     }
 
-    protected override async Task OnInitializedAsync()
+    void NavigateToWebsiteSettings()
     {
-        await GetWebsiteSettingsAsync();
-        await SetPermissionsAsync();
+        NavigationManager.NavigateTo("/Website-Settings");
     }
 
-    private async Task SetPermissionsAsync()
+    async Task OnFileUploadAsync(FileChangedEventArgs e)
     {
-        CanCreateWebsiteSettings = await AuthorizationService.IsGrantedAsync(PikachuPermissions.WebsiteSettings.Create);
-        CanEditWebsiteSettings = await AuthorizationService.IsGrantedAsync(PikachuPermissions.WebsiteSettings.Edit);
-        CanDeleteWebsiteSettings = await AuthorizationService.IsGrantedAsync(PikachuPermissions.WebsiteSettings.Delete);
+        var file = e.Files.FirstOrDefault();
+
+        if (file != null)
+        {
+            string extension = Path.GetExtension(file.Name);
+
+            if (file.Size > Constant.MaxImageSizeInBytes)
+            {
+                await UiNotificationService.Error(L["Pikachu:ImageSizeExceeds", Constant.MaxImageSizeInBytes.FromBytesToMB()]);
+                return;
+            }
+
+            if (!Constant.ValidImageExtensions.Contains(extension))
+            {
+                await UiNotificationService.Error(L["Pikachu:InvalidImageExtension", string.Join(", ", Constant.ValidImageExtensions)]);
+                return;
+            }
+
+            using var memoryStream = new MemoryStream();
+            await file.OpenReadStream().CopyToAsync(memoryStream);
+            var fileBytes = memoryStream.ToArray();
+
+            LogoBase64 = Convert.ToBase64String(fileBytes);
+            NewEntity.LogoName = file.Name;
+
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
-    private async Task GetWebsiteSettingsAsync()
+    async Task CreateAsync()
     {
+        var validate = await ValidationsRef.ValidateAll();
+        if (!validate) return;
+        return;
         try
         {
-            var result = await WebsiteSettingsAppService.GetListAsync(
-                new GetWebsiteSettingsListDto
-                {
-                    MaxResultCount = PageSize,
-                    SkipCount = (CurrentPage - 1) * PageSize,
-                    Sorting = CurrentSorting,
-                    Filter = Filters.Filter
-                }
-            );
+            IsLoading = true;
 
-            WebsiteSettingsList = result.Items;
-            TotalCount = (int)result.TotalCount;
+            var bytes = Convert.FromBase64String(LogoBase64);
+            NewEntity.LogoUrl = await ImageAppService.UploadImageAsync(NewEntity.LogoName, bytes);
+
+            await WebsiteSettingsAppService.CreateAsync(NewEntity);
+            NavigateToWebsiteSettings();
         }
         catch (Exception ex)
         {
-
+            IsLoading = false;
             await HandleErrorAsync(ex);
         }
-    }
-
-    private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<WebsiteSettingsDto> e)
-    {
-        CurrentSorting = e.Columns
-            .Where(c => c.SortDirection != SortDirection.Default)
-            .Select(c => c.Field + (c.SortDirection == SortDirection.Descending ? " DESC" : ""))
-            .JoinAsString(",");
-        CurrentPage = e.Page;
-
-        await GetWebsiteSettingsAsync();
-
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private void Edit(WebsiteSettingsDto websiteSettings)
-    {
-        NavigationManager.NavigateTo("/Website-Settings/Edit/" + websiteSettings.Id);
-    }
-
-    private async Task DeleteAsync(WebsiteSettingsDto websiteSettings)
-    {
-        try
-        {
-            var confirmation = await Message.Confirm(L["AreYouSureToDeleteThisRecord"], L["AreYouSure"]);
-            if (!confirmation) return;
-            await WebsiteSettingsAppService.DeleteAsync(websiteSettings.Id);
-            await GetWebsiteSettingsAsync();
-        }
-        catch (Exception ex)
-        {
-            await HandleErrorAsync(ex);
-        }
-    }
-
-    private async Task ApplyFilters()
-    {
-        CurrentPage = 1;
-
-        await GetWebsiteSettingsAsync();
-
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private async Task ResetFilters()
-    {
-        CurrentPage = 1;
-
-        Filters = new();
-
-        await GetWebsiteSettingsAsync();
-
-        await InvokeAsync(StateHasChanged);
     }
 }
