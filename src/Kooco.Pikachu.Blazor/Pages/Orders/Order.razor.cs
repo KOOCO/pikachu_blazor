@@ -1,6 +1,8 @@
 ﻿using Blazorise;
 using Blazorise.DataGrid;
 using Blazorise.LoadingIndicator;
+using Blazorise.Utilities;
+using DinkToPdf;
 using Hangfire.Server;
 using Kooco.Pikachu.Blazor.Pages.ItemManagement;
 using Kooco.Pikachu.DeliveryTemperatureCosts;
@@ -15,6 +17,7 @@ using Kooco.Pikachu.Response;
 using Kooco.Pikachu.StoreLogisticOrders;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore.Update.Internal;
 using Microsoft.JSInterop;
@@ -128,13 +131,21 @@ public partial class Order
 
         List<Guid> orderIds = Orders.Where(w => w.IsSelected).Select(s => s.OrderId).ToList();
 
-        Dictionary<string, string> keyValuePairs = new() 
+        Dictionary<string, string> AllPayLogisticsIds = new() 
         { 
             { "BlackCat1", string.Empty },
             { "SevenToElevenFrozen", string.Empty },
             { "PostOffice", string.Empty },
             { "FamilyMart1", string.Empty },
-            { "SevenToEleven1", string.Empty }
+            { "SevenToEleven1", string.Empty },
+            { "SevenToElevenC2C", string.Empty },
+            { "FamilyMartC2C", string.Empty }
+        };
+
+        Dictionary<string, string> DeliveryNumbers = new()
+        {
+            { "SevenToElevenC2C", string.Empty },
+            { "FamilyMartC2C", string.Empty }
         };
 
         foreach (Guid orderId in orderIds)
@@ -150,22 +161,42 @@ public partial class Order
                      delivery.DeliveryMethod is EnumValues.DeliveryMethod.PostOffice ||
                      delivery.DeliveryMethod is EnumValues.DeliveryMethod.BlackCat1 ||
                      delivery.DeliveryMethod is EnumValues.DeliveryMethod.FamilyMart1 ||
-                     delivery.DeliveryMethod is EnumValues.DeliveryMethod.SevenToElevenFrozen))
+                     delivery.DeliveryMethod is EnumValues.DeliveryMethod.SevenToElevenFrozen ||
+                     delivery.DeliveryMethod is EnumValues.DeliveryMethod.FamilyMartC2C ||
+                     delivery.DeliveryMethod is EnumValues.DeliveryMethod.SevenToElevenC2C))
                 {
-                    string? values = keyValuePairs.GetValueOrDefault(delivery.DeliveryMethod.ToString()) ?? string.Empty;
+                    string? AllPayLogisticsIdsValue = AllPayLogisticsIds.GetValueOrDefault(delivery.DeliveryMethod.ToString()) ?? string.Empty;
 
-                    List<string> strings = values.IsNullOrEmpty() ? [] : [.. values.Split(',')];
+                    List<string> AllPayLogisticId = AllPayLogisticsIdsValue.IsNullOrEmpty() ? [] : [.. AllPayLogisticsIdsValue.Split(',')];
 
-                    strings.Add(delivery.AllPayLogisticsID);
+                    AllPayLogisticId.Add(delivery.AllPayLogisticsID);
 
-                    keyValuePairs.Remove(delivery.DeliveryMethod.ToString());
+                    AllPayLogisticsIds.Remove(delivery.DeliveryMethod.ToString());
 
-                    keyValuePairs.Add(delivery.DeliveryMethod.ToString(), string.Join(",", strings));
+                    AllPayLogisticsIds.Add(delivery.DeliveryMethod.ToString(), string.Join(",", AllPayLogisticId));
+
+                    if (delivery.DeliveryMethod is EnumValues.DeliveryMethod.FamilyMartC2C || 
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.SevenToElevenC2C)
+                    {
+                        string? DeliveryNumberValue = DeliveryNumbers.GetValueOrDefault(delivery.DeliveryMethod.ToString()) ?? string.Empty;
+
+                        List<string> DeliveryNumber = DeliveryNumberValue.IsNullOrEmpty() ? [] : [.. DeliveryNumberValue.Split(',')];
+
+                        DeliveryNumber.Add(delivery.DeliveryNo);
+
+                        DeliveryNumbers.Remove(delivery.DeliveryMethod.ToString());
+
+                        DeliveryNumbers.Add(delivery.DeliveryMethod.ToString(), string.Join(",", DeliveryNumber));
+                    }
                 }
             }
         }
 
-        List<string> htmls = await _StoreLogisticsOrderAppService.OnBatchPrintingShippingLabel(keyValuePairs);
+        List<string> htmls = await _StoreLogisticsOrderAppService.OnBatchPrintingShippingLabel(AllPayLogisticsIds, DeliveryNumbers);
+
+        string pdf = Path.Combine(Path.GetTempPath(), "MergeTemp");
+
+        Directory.CreateDirectory(pdf);
 
         foreach (string html in htmls)
         {

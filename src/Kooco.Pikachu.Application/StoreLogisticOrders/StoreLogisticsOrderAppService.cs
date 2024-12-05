@@ -50,6 +50,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
     private readonly ILogisticsProvidersAppService _logisticsProvidersAppService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     GreenWorldLogisticsCreateUpdateDto GreenWorld { get; set; }
+    GreenWorldLogisticsCreateUpdateDto GreenWorldC2C { get; set; }
     HomeDeliveryCreateUpdateDto HomeDelivery { get; set; }
     PostOfficeCreateUpdateDto PostOffice { get; set; }
     SevenToElevenCreateUpdateDto SevenToEleven { get; set; }
@@ -365,7 +366,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         return html;
     }
 
-    public async Task<List<string>> OnBatchPrintingShippingLabel(Dictionary<string, string> allPayLogisticsIds)
+    public async Task<List<string>> OnBatchPrintingShippingLabel(Dictionary<string, string> allPayLogisticsIds, Dictionary<string, string>? DeliveryNumbers)
     {
         List<string> htmls = [];
 
@@ -375,6 +376,10 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         if (greenWorld is not null) GreenWorld = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorld);
 
+        LogisticsProviderSettingsDto? greenWorldC2C = providers.Where(p => p.LogisticProvider == LogisticProviders.GreenWorldLogisticsC2C).FirstOrDefault();
+
+        if (greenWorld is not null) GreenWorldC2C = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorldC2C);
+
         foreach (KeyValuePair<string, string> allPayLogisticsId in allPayLogisticsIds)
         {
             if (allPayLogisticsId.Value.IsNullOrEmpty()) continue;
@@ -383,26 +388,103 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             RestClient client = new(options);
 
-            RestRequest request = new(_configuration["EcPay:PrintTradeDocument"], Method.Post);
+            RestRequest request = new();
+            
+            Dictionary<string, string> parameters = [];
 
-            request.AddParameter("MerchantID", GreenWorld.StoreCode);
-            request.AddParameter("AllPayLogisticsID", allPayLogisticsId.Value);
-
-            Dictionary<string, string> parameters = new()
+            if (allPayLogisticsId.Key.Contains("SevenToEleven1") ||
+                allPayLogisticsId.Key.Contains("PostOffice") ||
+                allPayLogisticsId.Key.Contains("BlackCat1") ||
+                allPayLogisticsId.Key.Contains("FamilyMart1") ||
+                allPayLogisticsId.Key.Contains("SevenToElevenFrozen"))
             {
-                { "MerchantID", GreenWorld.StoreCode },
-                { "AllPayLogisticsID", allPayLogisticsId.Value }
-            };
+                request = new(_configuration["EcPay:PrintTradeDocument"], Method.Post);
 
-            request.AddParameter("CheckMacValue", GenerateCheckMacValue(greenWorld!.HashKey, greenWorld!.HashIV, parameters));
+                request.AddParameter("MerchantID", GreenWorld.StoreCode);
+                request.AddParameter("AllPayLogisticsID", allPayLogisticsId.Value);
+
+                parameters = new()
+                {
+                    { "MerchantID", GreenWorld.StoreCode },
+                    { "AllPayLogisticsID", allPayLogisticsId.Value }
+                };
+                
+                request.AddParameter("CheckMacValue", GenerateCheckMacValue(greenWorld!.HashKey, greenWorld!.HashIV, parameters));
+            }
+
+            else if (allPayLogisticsId.Key.Contains("FamilyMartC2C"))
+            {
+                request = new(_configuration["EcPay:PrintFAMIC2COrderInfo"], Method.Post);
+
+                request.AddParameter("MerchantID", GreenWorldC2C.StoreCode);
+                request.AddParameter("AllPayLogisticsID", allPayLogisticsId.Value);
+                request.AddParameter("CVSPaymentNo", DeliveryNumbers.GetValueOrDefault("FamilyMartC2C"));
+
+
+                parameters = new()
+                {
+                    { "MerchantID", GreenWorldC2C.StoreCode },
+                    { "AllPayLogisticsID", allPayLogisticsId.Value},
+                    { "CVSPaymentNo", DeliveryNumbers.GetValueOrDefault("FamilyMartC2C") }
+                };
+
+                request.AddParameter("CheckMacValue", GenerateCheckMacValue(greenWorldC2C!.HashKey, greenWorldC2C!.HashIV, parameters));
+            }
+
+            else if (allPayLogisticsId.Key.Contains("SevenToElevenC2C"))
+            {
+                request = new(_configuration["EcPay:PrintUniMartC2COrderInfo"], Method.Post);
+
+                request.AddParameter("MerchantID", GreenWorldC2C.StoreCode);
+                request.AddParameter("AllPayLogisticsID", allPayLogisticsId.Value);
+                request.AddParameter("CVSPaymentNo", string.Join(",", DeliveryNumbers?.GetValueOrDefault("SevenToElevenC2C")?
+                                                                    .Split(',')
+                                                                    .Select(number => number.Remove(number.Length - 4))));
+                request.AddParameter("CVSValidationNo", string.Join(",", DeliveryNumbers?.GetValueOrDefault("SevenToElevenC2C")?
+                                                                       .Split(',')
+                                                                       .Select(number => number.Substring(number.Length - 4))));
+
+                parameters = new()
+                {
+                    { "MerchantID", GreenWorldC2C.StoreCode },
+                    { "AllPayLogisticsID", allPayLogisticsId.Value},
+                    { "CVSPaymentNo", string.Join(",", DeliveryNumbers?.GetValueOrDefault("SevenToElevenC2C")?
+                                                                       .Split(',')
+                                                                       .Select(number => number.Remove(number.Length - 4))) },
+                    { "CVSValidationNo", string.Join(",", DeliveryNumbers?.GetValueOrDefault("SevenToElevenC2C")?
+                                                                          .Split(',')
+                                                                          .Select(number => number.Substring(number.Length - 4))) }
+                };
+
+                request.AddParameter("CheckMacValue", GenerateCheckMacValue(greenWorldC2C!.HashKey, greenWorldC2C!.HashIV, parameters));
+            }
 
             RestResponse response = await client.ExecuteAsync(request);
 
             string html = response.Content!.ToString();
 
-            html = html.Replace("/Content/Logistics/Helper/PrintTradeDocument.css?v=12", "https://logistics.ecpay.com.tw/Content/Logistics/Helper/PrintTradeDocument.css?v=12");
-            html = html.Replace("/Scripts/jquery-1.4.4.min.js", "https://logistics.ecpay.com.tw/Scripts/jquery-1.4.4.min.js");
-            html = html.Replace("/Scripts/Logistics/Helper/PrintTradeDocument.js?v=9", "https://logistics.ecpay.com.tw/Scripts/Logistics/Helper/PrintTradeDocument.js?v=9");
+            if (allPayLogisticsId.Key.Contains("SevenToEleven1") ||
+                allPayLogisticsId.Key.Contains("PostOffice") ||
+                allPayLogisticsId.Key.Contains("BlackCat1") ||
+                allPayLogisticsId.Key.Contains("FamilyMart1") ||
+                allPayLogisticsId.Key.Contains("SevenToElevenFrozen"))
+            {
+                html = html.Replace("/Content/Logistics/Helper/PrintTradeDocument.css?v=12", "https://logistics.ecpay.com.tw/Content/Logistics/Helper/PrintTradeDocument.css?v=12");
+                html = html.Replace("/Scripts/jquery-1.4.4.min.js", "https://logistics.ecpay.com.tw/Scripts/jquery-1.4.4.min.js");
+                html = html.Replace("/Scripts/Logistics/Helper/PrintTradeDocument.js?v=9", "https://logistics.ecpay.com.tw/Scripts/Logistics/Helper/PrintTradeDocument.js?v=9");
+            }
+
+            else if (allPayLogisticsId.Key.Contains("FamilyMartC2C"))
+            {
+                html = html.Replace("/Scripts/jquery-1.4.4.min.js", "https://logistics.ecpay.com.tw/Scripts/jquery-1.4.4.min.js");
+                html = html.Replace("/Scripts/jquery-ui.min.js", "https://logistics.ecpay.com.tw/Scripts/jquery-ui.min.js");
+                html = html.Replace("/Scripts/jquery.blockUI.js", "https://logistics.ecpay.com.tw/Scripts/jquery.blockUI.js");
+            }
+            
+            else if (allPayLogisticsId.Key.Contains("SevenToElevenC2C"))
+            {
+
+            }
 
             htmls.Add(html);
         }
@@ -1084,9 +1166,9 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             await _deliveryRepository.UpdateAsync(orderDelivery);
 
-            //order.ShippingStatus = ShippingStatus.ToBeShipped;
+            order.ShippingStatus = ShippingStatus.ToBeShipped;
 
-            //await _orderRepository.UpdateAsync(order);
+            await _orderRepository.UpdateAsync(order);
 
             var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
             if (invoiceSetting is not null && invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
