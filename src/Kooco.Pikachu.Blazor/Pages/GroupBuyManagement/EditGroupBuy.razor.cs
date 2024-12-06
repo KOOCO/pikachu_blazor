@@ -184,9 +184,11 @@ public partial class EditGroupBuy
 
             EditGroupBuyDto.ShortCode = EditGroupBuyDto?.ShortCode == "" ? null : EditGroupBuyDto?.ShortCode;
 
-            IsUnableToSpecifyDuringPeakPeriodsForSelfPickups = EditGroupBuyDto.SelfPickupDeliveryTime.Contains("UnableToSpecifyDuringPeakPeriods") ? true : false;
+            IsUnableToSpecifyDuringPeakPeriodsForSelfPickups = !EditGroupBuyDto.SelfPickupDeliveryTime.IsNullOrEmpty() && 
+                                                                EditGroupBuyDto.SelfPickupDeliveryTime.Contains("UnableToSpecifyDuringPeakPeriods") ? true : false;
 
-            IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery = EditGroupBuyDto.HomeDeliveryDeliveryTime.Contains("UnableToSpecifyDuringPeakPeriods") ? true : false;
+            IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery = !EditGroupBuyDto.HomeDeliveryDeliveryTime.IsNullOrEmpty() &&
+                                                                 EditGroupBuyDto.HomeDeliveryDeliveryTime.Contains("UnableToSpecifyDuringPeakPeriods") ? true : false;
 
             if (!string.IsNullOrEmpty(GroupBuy.ExcludeShippingMethod))
                 EditGroupBuyDto.ShippingMethodList = JsonSerializer.Deserialize<List<string>>(GroupBuy.ExcludeShippingMethod);
