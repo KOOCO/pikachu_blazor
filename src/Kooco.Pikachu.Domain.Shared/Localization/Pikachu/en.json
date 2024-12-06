@@ -178,7 +178,7 @@
     "GroupBuyShortName": "Short Name",
     "GroupBuyLogo": "Logo",
     "GroupBuyBanner": "Banner Image",
-    "NotificationBar": "Motification Bar",
+    "NotificationBar": "Notification Bar",
     "GroupBuyTime": "Group Buy Time",
     "Logistic": "Logistic",
     "ExcludeShippingMethod": "Exclude Shipping Method",
@@ -1041,6 +1041,15 @@
     "ShippingCost": "Shipping Cost",
     "GrossProfit": "Gross Profit",
     "GrossProfitMargin": "Gross Profit Margin",
-    "AdvanceFilters": "Advance Filters"
+    "AdvanceFilters": "Advance Filters",
+    "WebsiteBasicSettings": "Website Basic Settings",
+    "BasicSettings": "Basic Settings",
+    "WebsiteManagement": "Website Management",
+    "ColorScheme": "Color Scheme",
+    "GroupBuyTemplateType": "Group Buy Template Type",
+    "Enum:GroupBuyTemplateType.1": "Pikachu 1.0",
+    "Enum:GroupBuyTemplateType.2": "Pikachu 2.0",
+    "ItemCost": "Cost",
+    "ExportAll": "Export All"
   }
 }

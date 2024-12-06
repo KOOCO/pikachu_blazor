@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using Kooco.Pikachu.EnumValues;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Kooco.Pikachu.WebsiteManagement;
@@ -21,6 +22,8 @@ public class CreateWebsiteSettingsDto
     [MaxLength(WebsiteSettingsConsts.MaxStoreTitleLength)]
     public string StoreTitle { get; set; }
 
+    public string? Description { get; set; }
+
     [Required]
     public WebsiteTitleDisplayOptions? TitleDisplayOption { get; set; }
 
@@ -39,4 +42,25 @@ public class CreateWebsiteSettingsDto
     [Required]
     [MaxLength(WebsiteSettingsConsts.MaxReturnExchangePolicyLength)]
     public string ReturnExchangePolicy { get; set; }
+
+    [Required]
+    public GroupBuyTemplateType? GroupBuyTemplateType { get; set; }
+
+    [Required]
+    public ColorScheme? ColorScheme { get; set; }
+
+    [Required]
+    public string? PrimaryColor { get; set; }
+
+    [Required]
+    public string? SecondaryColor { get; set; }
+
+    [Required]
+    public string? BackgroundColor { get; set; }
+
+    [Required]
+    public string? SecondaryBackgroundColor { get; set; }
+
+    [Required]
+    public string? AlertColor { get; set; }
 }

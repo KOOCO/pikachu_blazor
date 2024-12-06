@@ -10,6 +10,7 @@ using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Response;
+using Kooco.Pikachu.TenantManagement;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Configuration;
@@ -35,6 +36,7 @@ using System.Web;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.BackgroundJobs;
+using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
 using static Kooco.Pikachu.Permissions.PikachuPermissions;
@@ -78,6 +80,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
     private readonly IGroupBuyRepository _GroupBuyRepository;
 
+    private readonly ITenantSettingsAppService _tenantSettingsAppService;
+
     private readonly IEmailSender _emailSender;
     #endregion
 
@@ -94,7 +98,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         IElectronicInvoiceAppService electronicInvoiceAppService,
         IHttpContextAccessor httpContextAccessor,
         IGroupBuyRepository GroupBuyRepository,
-        IEmailSender emailSender
+        IEmailSender emailSender,
+        ITenantSettingsAppService tenantSettingsAppService
     ) 
     {   
         _orderRepository = orderRepository;
@@ -118,6 +123,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         _httpContextAccessor = httpContextAccessor;
         _GroupBuyRepository = GroupBuyRepository;
         _emailSender = emailSender;
+        _tenantSettingsAppService = tenantSettingsAppService;
     }
     #endregion
 
@@ -1209,7 +1215,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 }
             }
 
-            await SendEmailAsync(orderId, orderDelivery.DeliveryNo);
+            await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
         }
 
         return result;
@@ -1573,6 +1579,105 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
     #endregion
 
     #region Private Functions
+    private async Task SendEmailAsync(Guid id, ShippingStatus? orderStatus = null)
+    {
+        var order = await _orderRepository.GetWithDetailsAsync(id);
+        var groupbuy = await _GroupBuyRepository.GetAsync(g => g.Id == order.GroupBuyId);
+
+        string status = orderStatus == null ? _L[order.ShippingStatus.ToString()] : _L[orderStatus.ToString()];
+
+        string subject = $"{groupbuy.GroupBuyName} 訂單#{order.OrderNo} {status}";
+
+        string body = File.ReadAllText("wwwroot/EmailTemplates/order_status.html");
+        DateTime creationTime = order.CreationTime;
+        TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById("China Standard Time"); // UTC+8
+        DateTimeOffset creationTimeInTimeZone = TimeZoneInfo.ConvertTime(creationTime, tz);
+        string formattedTime = creationTimeInTimeZone.ToString("yyyy-MM-dd HH:mm:ss");
+
+        if (order.ShippingStatus == ShippingStatus.WaitingForPayment)
+        {
+            body = body.Replace("{{NotifyMessage}}", groupbuy.NotifyMessage);
+        }
+        else
+        {
+            body = body.Replace("{{NotifyMessage}}", "");
+        }
+
+        body = body.Replace("{{GroupBuyName}}", groupbuy.GroupBuyName);
+        body = body.Replace("{{GroupBuyUrl}}", groupbuy.EntryURL);
+        body = body.Replace("{{OrderNo}}", order.OrderNo);
+        body = body.Replace("{{OrderDate}}", formattedTime);
+        body = body.Replace("{{CustomerName}}", order.CustomerName);
+        body = body.Replace("{{CustomerEmail}}", order.CustomerEmail);
+        body = body.Replace("{{CustomerPhone}}", order.CustomerPhone);
+        body = body.Replace("{{RecipientName}}", order.RecipientName);
+        body = body.Replace("{{RecipientPhone}}", order.RecipientPhone);
+        if (!groupbuy.IsEnterprise)
+        {
+            body = body.Replace("{{PaymentMethod}}", _L[order.PaymentMethod.ToString()]);
+        }
+        body = body.Replace("{{PaymentStatus}}", _L[order.OrderStatus.ToString()]);
+        body = body.Replace("{{ShippingMethod}}", $"{_L[order.DeliveryMethod.ToString()]} {order.ShippingNumber}");
+        body = body.Replace("{{DeliveryFee}}", "0");
+        body = body.Replace("{{RecipientAddress}}", order.AddressDetails);
+        body = body.Replace("{{ShippingStatus}}", _L[status]);
+        body = body.Replace("{{RecipientComments}}", order.Remarks);
+        body = body.Replace("{{OrderStatus}}", _L[order.ShippingStatus.ToString()]);
+
+        if (order.OrderItems != null)
+        {
+            StringBuilder sb = new();
+            string orderItemsHtml = File.ReadAllText("wwwroot/EmailTemplates/order_items.html");
+            foreach (var item in order.OrderItems)
+            {
+                string? itemName = "";
+                string? imageUrl = "";
+                if (item.ItemType == ItemType.Item)
+                {
+                    itemName = item.Item?.ItemName;
+                    imageUrl = item.Item?.Images?.FirstOrDefault()?.ImageUrl;
+                }
+                else if (item.ItemType == ItemType.SetItem)
+                {
+                    itemName = item.SetItem?.SetItemName;
+                    imageUrl = item.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
+                }
+                else
+                {
+                    itemName = item.Freebie?.ItemName;
+                    imageUrl = item.Freebie?.Images?.FirstOrDefault()?.ImageUrl;
+                }
+
+                var itemHtml = orderItemsHtml
+                    .Replace("{{ImageUrl}}", imageUrl)
+                    .Replace("{{ItemName}}", itemName)
+                    .Replace("{{ItemDetails}}", item.SKU)
+                    .Replace("{{UnitPrice}}", $"${item.ItemPrice:N0}")
+                    .Replace("{{ItemQuantity}}", item.Quantity.ToString("N0"))
+                    .Replace("{{ItemTotal}}", $"${item.TotalAmount:N0}");
+
+                sb.Append(itemHtml);
+            }
+
+            body = body.Replace("{{OrderItems}}", sb.ToString());
+        }
+
+        body = body.Replace("{{DeliveryFee}}", "$0");
+        body = body.Replace("{{TotalAmount}}", $"${order.TotalAmount:N0}");
+
+        var tenantSettings = await _tenantSettingsAppService.FirstOrDefaultAsync();
+        body = body.Replace("{{LogoUrl}}", tenantSettings?.LogoUrl);
+        body = body.Replace("{{FacebookUrl}}", tenantSettings?.Facebook);
+        body = body.Replace("{{InstagramUrl}}", tenantSettings?.Instagram);
+        body = body.Replace("{{LineUrl}}", tenantSettings?.Line);
+
+        body = body.Replace("{{CurrentYear}}", DateTime.Today.ToString("yyyy"));
+        body = body.Replace("{{CompanyName}}", tenantSettings?.CompanyName);
+        body = body.Replace("{{GroupBuyUrl}}", tenantSettings?.Tenant.GetProperty<string>(Constant.TenantUrl)?.TrimEnd('/') + "/" + groupbuy.Id);
+
+        await _emailSender.SendAsync(order.CustomerEmail, subject, body);
+    }
+
     private async Task SendEmailAsync(Guid id, string deliveryNo, OrderStatus? orderStatus = null)
     {
         Order order = await _orderRepository.GetWithDetailsAsync(id);

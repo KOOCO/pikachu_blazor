@@ -17,5 +17,8 @@ namespace Kooco.Pikachu.PaymentGateways
 
         [Required(ErrorMessage = "This Field Is Required")]
         public string TradeDescription { get; set; }
+
+        [Required(ErrorMessage = "This Field Is Required")]
+        public string CreditCheckCode { get; set; }
     }
 }

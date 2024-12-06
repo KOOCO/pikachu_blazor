@@ -778,10 +778,12 @@
             <Div Class="col-8">
                 <Div Class="row">
                     <Check TValue="bool"
+                           Disabled=@EditGroupBuyDto.IsEnterprise
                            @bind-Checked="@CreditCard">
                         @L["CreditCard"]
                     </Check>
                     <Check TValue="bool"
+                           Disabled=@EditGroupBuyDto.IsEnterprise
                            @bind-Checked="@BankTransfer">
                         @L["BankTransfer"]
                     </Check>
@@ -834,7 +836,12 @@
         <div class="row">
             <div class="col-2"></div>
             <div class="col-2 form-label">@L["EnterprisePurchase"]</div>
-            <div class="col-4"> <Switch TValue="bool" @bind-Checked="@EditGroupBuyDto.IsEnterprise"></Switch></div>
+            <div class="col-4"> 
+                <Switch TValue="bool" 
+                        Checked="@EditGroupBuyDto.IsEnterprise"
+                        CheckedChanged="OnEnterPriseChange"
+                        CheckedExpression="@(() => EditGroupBuyDto.IsEnterprise)"/>
+            </div>
         </div>
         <div class="row">
             <div class="col-2"></div>
@@ -1948,7 +1955,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        @* <div class="row">
             <div class="col-2">
             </div>
             <div class="col-10">
@@ -1993,7 +2000,7 @@
                     </Blazored.TextEditor.BlazoredTextEditor>
                 </div>
             </div>
-        </div>
+        </div> *@
         <div class="row">
             <div class="col-2">
             </div>

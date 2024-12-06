@@ -1228,6 +1228,17 @@ public partial class CreateGroupBuy
     //{
     //    ItemTags.Remove(item);
     //}
+
+    public void OnEnterPriseChange(bool e)
+    {
+        CreateGroupBuyDto.IsEnterprise = e;
+
+        if (CreateGroupBuyDto.IsEnterprise)
+        {
+            IsCashOnDelivery = true; CreditCard = false; BankTransfer = false;
+        }
+    }
+
     private void HandlePaymentTagInputKeyUp(KeyboardEventArgs e)
     {
         PaymentMethodError = null;
@@ -1661,7 +1672,7 @@ public partial class CreateGroupBuy
             CreateGroupBuyDto.NotifyMessage = await NotifyEmailHtml.GetHTML();
             //CreateGroupBuyDto.GroupBuyConditionDescription = await GroupBuyHtml.GetHTML();
             CreateGroupBuyDto.ExchangePolicyDescription = await ExchangePolicyHtml.GetHTML();
-            CreateGroupBuyDto.CustomerInformationDescription = await CustomerInformationHtml.GetHTML();
+            //CreateGroupBuyDto.CustomerInformationDescription = await CustomerInformationHtml.GetHTML();
 
             CreateGroupBuyDto.ItemGroups = new List<GroupBuyItemGroupCreateUpdateDto>();
 

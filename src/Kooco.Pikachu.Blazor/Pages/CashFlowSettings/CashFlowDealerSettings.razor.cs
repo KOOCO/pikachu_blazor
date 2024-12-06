@@ -19,18 +19,18 @@ public partial class CashFlowDealerSettings
     private bool IsChinaTrustNotExists = false;
 
     private bool IsEcPayNotExists = false;
-
+    private UpdateOrderValidityDto OrderValidity { get; set; }
     private UpdateChinaTrustDto ChinaTrust { get; set; }
     private UpdateEcPayDto EcPay { get; set; }
     private LoadingIndicator Loading { get; set; }
     #endregion
-
     #region Constructor
     public CashFlowDealerSettings()
     {
         LinePay = new UpdateLinePayDto();
         ChinaTrust = new UpdateChinaTrustDto();
         EcPay = new UpdateEcPayDto();
+        OrderValidity = new UpdateOrderValidityDto();
     }
     #endregion
 
@@ -57,16 +57,20 @@ public partial class CashFlowDealerSettings
             
             if (ecPay is not null) EcPay = ObjectMapper.Map<PaymentGatewayDto, UpdateEcPayDto>(ecPay);
 
-            IsEcPayNotExists = !paymentGateways.Any(a => a.PaymentIntegrationType is PaymentIntegrationType.EcPay);
-
-            StateHasChanged();
+              
+                var orderValidity = paymentGateways.Where(x => x.PaymentIntegrationType == PaymentIntegrationType.OrderValidatePeriod).FirstOrDefault();
+                if (orderValidity != null)
+                {
+                    OrderValidity = ObjectMapper.Map<PaymentGatewayDto, UpdateOrderValidityDto>(orderValidity);
+                }
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
         }
-        catch (Exception ex)
-        {
-            await _uiMessageService.Error(ex.GetType().ToString());
-            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
-        }
-    }
 
     async Task UpdateEcPayAsync()
     {
@@ -142,27 +146,59 @@ public partial class CashFlowDealerSettings
             return;
         }
 
-        try
-        {
-            await Loading.Show();
-            await _paymentGatewayAppService.UpdateLinePayAsync(LinePay);
-            var paymentGateways = await _paymentGatewayAppService.GetAllAsync();
-            var linePay = paymentGateways.Where(x => x.PaymentIntegrationType == PaymentIntegrationType.LinePay).FirstOrDefault();
-            if (linePay != null)
+            try
             {
-                LinePay = ObjectMapper.Map<PaymentGatewayDto, UpdateLinePayDto>(linePay);
+                await Loading.Show();
+                await _paymentGatewayAppService.UpdateLinePayAsync(LinePay);
+                var paymentGateways = await _paymentGatewayAppService.GetAllAsync();
+                var linePay = paymentGateways.Where(x => x.PaymentIntegrationType == PaymentIntegrationType.LinePay).FirstOrDefault();
+                if (linePay != null)
+                {
+                    LinePay = ObjectMapper.Map<PaymentGatewayDto, UpdateLinePayDto>(linePay);
+                }
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+                await Loading.Hide();
+                StateHasChanged();
             }
         }
-        catch (Exception ex)
-        {
-            await _uiMessageService.Error(ex.GetType().ToString());
-            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+
+        async Task UpdateOrderValidityAsync() {
+            if (OrderValidity.Unit.IsNullOrWhiteSpace()
+               || OrderValidity.Period==null)
+            {
+                return;
+            }
+
+            try
+            {
+                await Loading.Show();
+                await _paymentGatewayAppService.UpdateOrderValidityAsync(OrderValidity);
+                var paymentGateways = await _paymentGatewayAppService.GetAllAsync();
+                var orderValidity = paymentGateways.Where(x => x.PaymentIntegrationType == PaymentIntegrationType.OrderValidatePeriod).FirstOrDefault();
+                if (orderValidity != null)
+                {
+                    OrderValidity = ObjectMapper.Map<PaymentGatewayDto, UpdateOrderValidityDto>(orderValidity);
+                }
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
+                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            }
+            finally
+            {
+                await Loading.Hide();
+                StateHasChanged();
+            }
         }
-        finally
-        {
-            await Loading.Hide();
-            StateHasChanged();
-        }
-    }
     #endregion
 }
+
+

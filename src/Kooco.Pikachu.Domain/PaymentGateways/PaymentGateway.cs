@@ -10,6 +10,9 @@ namespace Kooco.Pikachu.PaymentGateways
         public Guid? TenantId { get; set; }
         public PaymentIntegrationType PaymentIntegrationType { get; set; }
         public bool IsEnabled { get; set; }
+        //OrderVAlidatePeriod
+        public int? Period { get; set; } // Input value (e.g., 5 for 5 days, 5 hours, etc.)
+        public string? Unit { get; set; }
 
         //LinePay
         public string? ChannelId { get; set; }
@@ -27,5 +30,6 @@ namespace Kooco.Pikachu.PaymentGateways
         public string? HashKey { get; set; }
         public string? HashIV { get; set; }
         public string? TradeDescription { get; set; }
+        public string? CreditCheckCode { get; set; }
     }
 }

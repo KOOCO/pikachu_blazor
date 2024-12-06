@@ -187,7 +187,7 @@ public partial class EditGroupBuy
             IsUnableToSpecifyDuringPeakPeriodsForSelfPickups = !EditGroupBuyDto.SelfPickupDeliveryTime.IsNullOrEmpty() && 
                                                                 EditGroupBuyDto.SelfPickupDeliveryTime.Contains("UnableToSpecifyDuringPeakPeriods") ? true : false;
 
-            IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery = !EditGroupBuyDto.HomeDeliveryDeliveryTime.IsNullOrEmpty() && 
+            IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery = !EditGroupBuyDto.HomeDeliveryDeliveryTime.IsNullOrEmpty() &&
                                                                  EditGroupBuyDto.HomeDeliveryDeliveryTime.Contains("UnableToSpecifyDuringPeakPeriods") ? true : false;
 
             if (!string.IsNullOrEmpty(GroupBuy.ExcludeShippingMethod))
@@ -245,6 +245,16 @@ public partial class EditGroupBuy
         finally
         {
             //await Loading.Hide();
+        }
+    }
+
+    public void OnEnterPriseChange(bool e)
+    {
+        EditGroupBuyDto.IsEnterprise = e;
+
+        if (EditGroupBuyDto.IsEnterprise)
+        {
+            IsCashOnDelivery = true; CreditCard = false; BankTransfer = false;
         }
     }
 
@@ -667,7 +677,7 @@ public partial class EditGroupBuy
             await LoadHtmlContent();
         }
         //await GroupBuyHtml.LoadHTMLContent(EditGroupBuyDto.GroupBuyConditionDescription);
-        await CustomerInformationHtml.LoadHTMLContent(EditGroupBuyDto.CustomerInformationDescription);
+        //await CustomerInformationHtml.LoadHTMLContent(EditGroupBuyDto.CustomerInformationDescription);
         await ExchangePolicyHtml.LoadHTMLContent(EditGroupBuyDto.ExchangePolicyDescription);
         await NotifyEmailHtml.LoadHTMLContent(EditGroupBuyDto.NotifyMessage);
     }
@@ -2152,7 +2162,7 @@ public partial class EditGroupBuy
             EditGroupBuyDto.NotifyMessage = await NotifyEmailHtml.GetHTML();
             //EditGroupBuyDto.GroupBuyConditionDescription = await GroupBuyHtml.GetHTML();
             EditGroupBuyDto.ExchangePolicyDescription = await ExchangePolicyHtml.GetHTML();
-            EditGroupBuyDto.CustomerInformationDescription = await CustomerInformationHtml.GetHTML();
+            //EditGroupBuyDto.CustomerInformationDescription = await CustomerInformationHtml.GetHTML();
 
             EditGroupBuyDto.ItemGroups = new List<GroupBuyItemGroupCreateUpdateDto>();
 

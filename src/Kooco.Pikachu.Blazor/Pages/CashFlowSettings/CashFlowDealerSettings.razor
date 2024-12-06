@@ -17,7 +17,54 @@
 </LoadingIndicator>
 
 <h3>@L["CashFlowDealerSettings"]</h3>
-
+<Card>
+    <CardHeader>
+        <h4>@L["PaymentDeadline"]</h4>
+    </CardHeader>
+    <CardBody>
+        <EditForm Model="@OrderValidity" OnValidSubmit="UpdateOrderValidityAsync">
+            <DataAnnotationsValidator />
+           
+            <div class="row justify-content-center mb-2">
+                <div class="col-2 pt-2 text-end">
+                    <label class="form-label" for="channel-id">
+                        @L["OrderValidityUnit"]
+                        <span class="text-danger"> *</span>
+                    </label>
+                </div>
+                <div class="col-6">
+                  <Select TValue="string" @bind-SelectedValue="@OrderValidity.Unit"  >
+                     
+                      <SelectItem Value="@("Days")">@L["Days"]</SelectItem>
+                        <SelectItem Value="@("Hours")">@L["Hours"]</SelectItem>
+                        <SelectItem Value="@("Miniutes")">@L["Miniutes"]</SelectItem>
+                  </Select>
+                    @* <ValidationMessage For="@(() => OrderValidity.Period)" /> *@
+                </div>
+            </div>
+            <div class="row justify-content-center mb-2">
+                <div class="col-2 pt-2 text-end">
+                    <label class="form-label" for="channel-secret-key">
+                        @L["ValidatePeriod"]
+                        <span class="text-danger"> *</span>
+                    </label>
+                </div>
+                <div class="col-6">
+                    <InputNumber min="1" class="form-control" @bind-Value="OrderValidity.Period" TValue="int" ></InputNumber>
+                    <ValidationMessage For="@(() => OrderValidity.Period)" />
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
+                        <i class="fa fa-check me-1"></i>
+                        @L["SaveChanges"]
+                    </Button>
+                </div>
+            </div>
+        </EditForm>
+    </CardBody>
+</Card>
 <Card>
     <CardHeader>
         <h4>@L["LinePay"]</h4>
@@ -217,6 +264,17 @@
                 <div class="col-6">
                     <InputText id="trade-description" class="form-control" @bind-Value="EcPay.TradeDescription"></InputText>
                     <ValidationMessage For="@(() => EcPay.TradeDescription)" />
+                </div>
+            </div>
+            <div class="row justify-content-center mb-2">
+                <div class="col-2 pt-2 text-end">
+                    <label class="form-label" for="trade-description"></label>
+                    @L["CreditCheckCode"]
+                    <span class="text-danger"> *</span>
+                </div>
+                <div class="col-6">
+                    <InputText id="credit-check-code" class="form-control" @bind-Value="EcPay.CreditCheckCode"></InputText>
+                    <ValidationMessage For="@(() => EcPay.CreditCheckCode)" />
                 </div>
             </div>
             @if (IsEcPayNotExists)

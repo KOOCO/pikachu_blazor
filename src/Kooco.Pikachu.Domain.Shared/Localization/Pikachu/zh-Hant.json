@@ -1075,7 +1075,8 @@
     "Permission:OrderManagement": "訂單管理",
     "Permission:LogisticsManagement": "物流管理",
     "Permission:SystemManagement": "系統管理",
-    "Permission:PaymentManagement": "金流管理"
+    "Permission:PaymentManagement": "金流管理",
+    "ItemCost": "成本"
 
 
   }

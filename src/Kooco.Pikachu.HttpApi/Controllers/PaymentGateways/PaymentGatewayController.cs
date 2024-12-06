@@ -147,6 +147,17 @@ public class PaymentGatewayController(
     {
         return _paymentGatewayAppService.UpdateLinePayAsync(input);
     }
+    [HttpPut("payment-deadline")]
+    public Task UpdateOrderValidityAsync(UpdateOrderValidityDto input)
+    {
+        return _paymentGatewayAppService.UpdateOrderValidityAsync(input);
+    }
+
+    [HttpGet("get-creditCheckCode")]
+    public Task<string?> GetCreditCheckCodeAsync()
+    {
+        throw new NotImplementedException();
+    }
 
     #region Private Functions
     private string CloseWindowsScript()

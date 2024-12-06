@@ -4,6 +4,7 @@ using Kooco.Pikachu.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    partial class PikachuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241203065840_Add column in PaymentGate")]
+    partial class AddcolumninPaymentGate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1533,9 +1536,6 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<string>("Attribute3Value")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<float>("Cost")
-                        .HasColumnType("real");
-
                     b.Property<float?>("GroupBuyPrice")
                         .HasColumnType("real");
 
@@ -2665,9 +2665,6 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<Guid?>("CreatorId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("CreatorId");
-
-                    b.Property<string>("CreditCheckCode")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("DeleterId")
                         .HasColumnType("uniqueidentifier")

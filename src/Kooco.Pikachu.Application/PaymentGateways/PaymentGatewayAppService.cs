@@ -1,6 +1,7 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -19,7 +20,7 @@ namespace Kooco.Pikachu.PaymentGateways
         public PaymentGatewayAppService(
             IRepository<PaymentGateway, Guid> paymentGatewayRepository,
             IStringEncryptionService stringEncryptionService
-            )
+        )
         {
             _paymentGatewayRepository = paymentGatewayRepository;
             _stringEncryptionService = stringEncryptionService;
@@ -65,6 +66,7 @@ namespace Kooco.Pikachu.PaymentGateways
                 ecPay.HashKey = _stringEncryptionService.Encrypt(input.HashKey);
                 ecPay.HashIV = _stringEncryptionService.Encrypt(input.HashIV);
                 ecPay.TradeDescription = _stringEncryptionService.Encrypt(input.TradeDescription);
+                ecPay.CreditCheckCode = _stringEncryptionService.Encrypt(input.CreditCheckCode);
                 await _paymentGatewayRepository.UpdateAsync(ecPay);
             }
             else
@@ -77,6 +79,7 @@ namespace Kooco.Pikachu.PaymentGateways
                     HashKey = _stringEncryptionService.Encrypt(input.HashKey),
                     HashIV = _stringEncryptionService.Encrypt(input.HashIV),
                     TradeDescription = _stringEncryptionService.Encrypt(input.TradeDescription),
+                    CreditCheckCode = _stringEncryptionService.Encrypt(input.CreditCheckCode)
                 };
 
                 await _paymentGatewayRepository.InsertAsync(newEcPay);
@@ -106,7 +109,27 @@ namespace Kooco.Pikachu.PaymentGateways
                 await _paymentGatewayRepository.InsertAsync(linePay);
             }
         }
+        public async Task UpdateOrderValidityAsync(UpdateOrderValidityDto input)
+        {
+            var validity = await _paymentGatewayRepository.FirstOrDefaultAsync(x => x.PaymentIntegrationType == PaymentIntegrationType.OrderValidatePeriod);
+            if (validity != null)
+            {
+                validity.Period = input.Period;
+                validity.Unit = input.Unit;
+                await _paymentGatewayRepository.UpdateAsync(validity);
+            }
+            else
+            {
+                validity = new PaymentGateway
+                {
+                    PaymentIntegrationType= PaymentIntegrationType.OrderValidatePeriod,
+                    Period = input.Period,
+                Unit = input.Unit
+            };
 
+                await _paymentGatewayRepository.InsertAsync(validity);
+            }
+        }
         public async Task<List<PaymentGatewayDto>> GetAllAsync()
         {
             List<PaymentGateway> paymentGateways = await _paymentGatewayRepository.GetListAsync();
@@ -119,7 +142,7 @@ namespace Kooco.Pikachu.PaymentGateways
 
                 foreach (PropertyInfo property in properties)
                 {
-                    if (property.PropertyType == typeof(string))
+                    if (property.PropertyType == typeof(string) && property.Name!="Unit")
                     {
                         string? value = (string?)property.GetValue(paymentGatewayDto);
 
@@ -134,6 +157,15 @@ namespace Kooco.Pikachu.PaymentGateways
             }
 
             return paymentGatewayDtos;
+        }
+
+        public async Task<string?> GetCreditCheckCodeAsync()
+        {
+            string? creditCheckCode = (await _paymentGatewayRepository.GetQueryableAsync()).Where(w => w.PaymentIntegrationType == PaymentIntegrationType.EcPay)
+                                                                                           .Select(s => s.CreditCheckCode)
+                                                                                           .FirstOrDefault();
+
+            return _stringEncryptionService.Decrypt(creditCheckCode);
         }
     }
 }

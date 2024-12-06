@@ -9,7 +9,9 @@ namespace Kooco.Pikachu.PaymentGateways
     {
         public PaymentIntegrationType PaymentIntegrationType { get; set; }
         public bool IsEnabled { get; set; }
-
+        //OrderVAlidatePeriod
+        public int? Period { get; set; } // Input value (e.g., 5 for 5 days, 5 hours, etc.)
+        public string? Unit { get; set; }
         //LinePay
         public string ChannelId { get; set; }
         public string ChannelSecretKey { get; set; }

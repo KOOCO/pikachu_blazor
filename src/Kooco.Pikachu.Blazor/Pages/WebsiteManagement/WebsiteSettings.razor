@@ -1,133 +1,160 @@
 ﻿@page "/Website-Settings"
+@using Kooco.Pikachu.Images
+@using Kooco.Pikachu.Localization
 @using Kooco.Pikachu.Permissions
 @using Kooco.Pikachu.WebsiteManagement
+@using Volo.Abp.AspNetCore.Components.Notifications
+@using Volo.Abp.AspNetCore.Components.Web
 @attribute [Authorize(PikachuPermissions.WebsiteSettings.Default)]
 @inherits PikachuComponentBase
 @inject IWebsiteSettingsAppService WebsiteSettingsAppService
 @inject NavigationManager NavigationManager
+@inject IUiNotificationService UiNotificationService
+@inject IImageAppService ImageAppService
+@inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
 
-<Div>
-    <Row>
-        <Column ColumnSize="ColumnSize.Is6">
-            <h3 class="text-dark">@L["WebsiteSettings"]</h3>
-        </Column>
-        @if (CanCreateWebsiteSettings)
-        {
-            <Column ColumnSize="ColumnSize.Is6" Class="text-end">
-                <PikachuButton Class="pk-btn-sm pk-btn-primary" Clicked="@(() => NavigationManager.NavigateTo("Website-Settings/Create"))">
-                    <Icon Name="IconName.Add"></Icon>
-                    @L["AddNew"]
-                </PikachuButton>
-            </Column>
-        }
-    </Row>
-</Div>
-<Card>
-    <CardBody>
-        <Div Class="input-group">
-            <TextEdit @bind-Text="Filters.Filter" />
-            <Button Color="Color.Primary" Clicked="ApplyFilters">
-                <Icon Class="fas fa-search"></Icon>
-            </Button>
-        </Div>
-    </CardBody>
-</Card>
-<Card>
-    <CardBody>
-        <DataGrid TItem="WebsiteSettingsDto"
-                  Data="WebsiteSettingsList"
-                  ReadData="OnDataGridReadAsync"
-                  TotalItems="TotalCount"
-                  ShowPager="true"
-                  PageSize="PageSize"
-                  CurrentPage="CurrentPage"
-                  Hoverable
-                  Narrow
-                  Responsive
-                  Striped>
-            <DataGridColumns>
-                <DataGridColumn Width="150px"
-                                TItem="WebsiteSettingsDto"
-                                Field="@nameof(WebsiteSettingsDto.Id)"
-                                Sortable="false"
-                                Caption="@L["Actions"]">
-                    <DisplayTemplate>
-                        <Dropdown>
-                            <DropdownToggle Color="Color.Primary">
-                                @L["Actions"]
-                            </DropdownToggle>
-                            <DropdownMenu>
-                                @if (CanEditWebsiteSettings)
-                                {
-                                    <DropdownItem Clicked="() => Edit(context)">
-                                        @L["Edit"]
-                                    </DropdownItem>
-                                }
-                                @if (CanDeleteWebsiteSettings)
-                                {
-                                    <DropdownItem Clicked="() => DeleteAsync(context)">
-                                        @L["Delete"]
-                                    </DropdownItem>
-                                }
-                            </DropdownMenu>
-                        </Dropdown>
-                    </DisplayTemplate>
-                </DataGridColumn>
-                <DataGridColumn TItem="WebsiteSettingsDto"
-                                Field="@nameof(WebsiteSettingsDto.StoreTitle)"
-                                Caption="@L["StoreTitle"]">
-                </DataGridColumn>
-                <DataGridColumn TItem="WebsiteSettingsDto"
-                                Field="@nameof(WebsiteSettingsDto.StoreTitle)"
-                                Caption="@L["TitleDisplayOptions"]">
-                    <DisplayTemplate>
-                        @L["Enum:WebsiteTitleDisplayOptions." + (int)context.TitleDisplayOption]
-                    </DisplayTemplate>
-                </DataGridColumn>
-                <DataGridColumn TItem="WebsiteSettingsDto"
-                                Field="@nameof(WebsiteSettingsDto.NotificationBar)"
-                                Caption="@L["NotificationBar"]">
-                </DataGridColumn>
-                <DataGridColumn TItem="WebsiteSettingsDto"
-                                Field="@nameof(WebsiteSettingsDto.Facebook)"
-                                Caption="@L["Facebook"]">
-                    <DisplayTemplate>
-                        <Copy Text="@context.Facebook" ShouldDisplayText="false" IsLink></Copy>
-                    </DisplayTemplate>
-                </DataGridColumn>
-                <DataGridColumn TItem="WebsiteSettingsDto"
-                                Field="@nameof(WebsiteSettingsDto.Instagram)"
-                                Caption="@L["Instagram"]">
-                    <DisplayTemplate>
-                        <Copy Text="@context.Instagram" ShouldDisplayText="false" IsLink></Copy>
-                    </DisplayTemplate>
-                </DataGridColumn>
-                <DataGridColumn TItem="WebsiteSettingsDto"
-                                Field="@nameof(WebsiteSettingsDto.Line)"
-                                Caption="@L["Line"]">
-                    <DisplayTemplate>
-                        <Copy Text="@context.Line" ShouldDisplayText="false" IsLink></Copy>
-                    </DisplayTemplate>
-                </DataGridColumn>
-                <DataGridColumn TItem="WebsiteSettingsDto"
-                                Field="@nameof(WebsiteSettingsDto.ReturnExchangePolicy)"
-                                Caption="@L["ReturnExchangePolicy"]">
-                </DataGridColumn>
-                <DataGridColumn TItem="WebsiteSettingsDto"
-                                Field="@nameof(WebsiteSettingsDto.ReturnExchangePolicy)"
-                                Caption="@L["Logo"]"
-                                HeaderTextAlignment="TextAlignment.Center"
-                                TextAlignment="TextAlignment.Center">
-                    <DisplayTemplate>
-                        @{
-                            var url = !context.LogoUrl.IsNullOrWhiteSpace() ? context.LogoUrl : "https://e7.pngegg.com/pngimages/799/987/png-clipart-computer-icons-avatar-icon-design-avatar-heroes-computer-wallpaper-thumbnail.png";
+<Div Class="rounded-cards website-settings">
+    <Card>
+        <CardBody>
+            <Validations @ref="@ValidationsRef" Model="@NewEntity" ValidateOnLoad="false">
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                        <h4>@L["WebsiteSettings"]</h4>
+                        @if (LogoBase64 != null)
+                        {
+                            <Div Class="image-thumbnail">
+                                <img src="@("data:image/png;base64," + LogoBase64)" class="img-fluid" />
+                            </Div>
                         }
-                        <Div Class="text-center">
-                            <img class="img-fluid" style="height: 40px;" src="@url" alt="Alternate Text" />
+                        else if (NewEntity.LogoUrl != null)
+                        {
+                            <Div Class="image-thumbnail">
+                                <img src="@NewEntity.LogoUrl" class="img-fluid" />
+                            </Div>
+                        }
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <FieldLabel>@L["NotificationBar"]</FieldLabel>
+                                <TextEdit @bind-Text="@NewEntity.NotificationBar">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                                <Validation MessageLocalizer="@LH.Localize">
+                                    <Field>
+                                        <FieldLabel>@L["StoreTitle"]</FieldLabel>
+                                        <TextEdit @bind-Text="@NewEntity.StoreTitle">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </TextEdit>
+                                    </Field>
+                                </Validation>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                                <Validation MessageLocalizer="@LH.Localize">
+                                    <Field>
+                                        <FieldLabel>@L["TitleDisplayOption"]</FieldLabel>
+                                        <Select TValue="WebsiteTitleDisplayOptions?" @bind-SelectedValue="@NewEntity.TitleDisplayOption">
+                                            <SelectItem Value="(WebsiteTitleDisplayOptions?)null"></SelectItem>
+                                            @foreach (WebsiteTitleDisplayOptions option in Enum.GetValues(typeof(WebsiteTitleDisplayOptions)))
+                                            {
+                                                <SelectItem Value="option">@L["Enum:WebsiteTitleDisplayOptions." + (int)option]</SelectItem>
+                                            }
+                                        </Select>
+                                    </Field>
+                                </Validation>
+                            </Column>
+                        </Row>
+                        <Div Class="container-less-filepicker">
+                            <Field>
+                                <FilePicker Changed="@OnFileUploadAsync"
+                                            ShowMode="FilePickerShowMode.List"
+                                            Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
+                                    <FileTemplate></FileTemplate>
+                                    <ButtonsTemplate></ButtonsTemplate>
+                                </FilePicker>
+                                <Validation MessageLocalizer="@LH.Localize">
+                                    <TextEdit @bind-Text="@NewEntity.LogoName" Style="margin: 0; padding: 0; height: 0px;" Visibility="Visibility.Invisible">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </TextEdit>
+                                </Validation>
+                            </Field>
                         </Div>
-                    </DisplayTemplate>
-                </DataGridColumn>
-            </DataGridColumns>
-        </DataGrid>
-    </CardBody>
-</Card>
+                    </Column>
+                </Row>
+                <Divider></Divider>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                        <h4>@L["Socials"]</h4>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <FieldLabel>@L["Facebook"]</FieldLabel>
+                                <TextEdit @bind-Text="@NewEntity.Facebook">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <FieldLabel>@L["Instagram"]</FieldLabel>
+                                <TextEdit @bind-Text="@NewEntity.Instagram">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <FieldLabel>@L["Line"]</FieldLabel>
+                                <TextEdit @bind-Text="@NewEntity.Line">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                    </Column>
+                </Row>
+                <Divider></Divider>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                        <h4>@L["ReturnExchangePolicy"]</h4>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <MemoEdit Rows="5" @bind-Text="@NewEntity.ReturnExchangePolicy">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </MemoEdit>
+                            </Field>
+                        </Validation>
+                    </Column>
+                </Row>
+            </Validations>
+        </CardBody>
+    </Card>
+    <Div Class="text-end">
+        <PikachuButton Class="pk-btn-transparent" Disabled="IsLoading" Clicked="NavigateToWebsiteSettings">
+            @L["Cancel"]
+        </PikachuButton>
+        <PikachuButton Class="pk-btn-primary" Loading="IsLoading" Clicked="CreateAsync">
+            @L["Create"]
+        </PikachuButton>
+    </Div>
+</Div>
