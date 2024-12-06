@@ -1228,6 +1228,17 @@ public partial class CreateGroupBuy
     //{
     //    ItemTags.Remove(item);
     //}
+
+    public void OnEnterPriseChange(bool e)
+    {
+        CreateGroupBuyDto.IsEnterprise = e;
+
+        if (CreateGroupBuyDto.IsEnterprise)
+        {
+            IsCashOnDelivery = true; CreditCard = false; BankTransfer = false;
+        }
+    }
+
     private void HandlePaymentTagInputKeyUp(KeyboardEventArgs e)
     {
         PaymentMethodError = null;

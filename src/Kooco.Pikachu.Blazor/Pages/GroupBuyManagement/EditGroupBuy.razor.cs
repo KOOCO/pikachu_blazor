@@ -248,6 +248,16 @@ public partial class EditGroupBuy
         }
     }
 
+    public void OnEnterPriseChange(bool e)
+    {
+        EditGroupBuyDto.IsEnterprise = e;
+
+        if (EditGroupBuyDto.IsEnterprise)
+        {
+            IsCashOnDelivery = true; CreditCard = false; BankTransfer = false;
+        }
+    }
+
     private void OnColorSchemeChange(ChangeEventArgs e)
     {
         string? selectedTheme = e.Value.ToString();

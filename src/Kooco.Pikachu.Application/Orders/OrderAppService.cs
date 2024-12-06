@@ -210,7 +210,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             order.StoreId = input.StoreId;
             order.CVSStoreOutSide = input.CVSStoreOutSide;
-            order.ShippingStatus = input.ShippingStatus;
+            order.ShippingStatus = groupBuy!.IsEnterprise ? ShippingStatus.EnterpricePurchase : input.ShippingStatus;
             order.DeliveryCostForNormal = input.DeliveryCostForNormal;
             order.DeliveryCostForFreeze = input.DeliveryCostForFreeze;
             order.DeliveryCostForFrozen = input.DeliveryCostForFrozen;
