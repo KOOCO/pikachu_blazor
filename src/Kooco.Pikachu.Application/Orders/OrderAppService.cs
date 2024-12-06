@@ -21,6 +21,7 @@ using MiniExcelLibs;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Linq.Dynamic.Core;
@@ -36,6 +37,7 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
+using Volo.Abp.Localization;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Security.Encryption;
 
@@ -1506,7 +1508,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             ActualDeliveryMethod = 0,
             DeliveryStatus = 0,
             AllPayLogisticsID = "",
-            Editor ="",
+            Editor = "",
             DeliveryNo = "",
             OrderId = order.Id
 
@@ -1577,101 +1579,104 @@ public class OrderAppService : ApplicationService, IOrderAppService
     }
     private async Task SendEmailAsync(Guid id, OrderStatus? orderStatus = null)
     {
-        var order = await _orderRepository.GetWithDetailsAsync(id);
-        var groupbuy = await _groupBuyRepository.GetAsync(g => g.Id == order.GroupBuyId);
-
-        string status = orderStatus == null ? _l[order.ShippingStatus.ToString()] : _l[orderStatus.ToString()];
-
-        string subject = $"{groupbuy.GroupBuyName} 訂單#{order.OrderNo} {status}";
-
-        string body = File.ReadAllText("wwwroot/EmailTemplates/order_status.html");
-        DateTime creationTime = order.CreationTime;
-        TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById("China Standard Time"); // UTC+8
-        DateTimeOffset creationTimeInTimeZone = TimeZoneInfo.ConvertTime(creationTime, tz);
-        string formattedTime = creationTimeInTimeZone.ToString("yyyy-MM-dd HH:mm:ss");
-
-        if (order.ShippingStatus == ShippingStatus.WaitingForPayment)
+        using (CultureHelper.Use(CultureInfo.GetCultureInfo("zh-Hant")))
         {
-            body = body.Replace("{{NotifyMessage}}", groupbuy.NotifyMessage);
-        }
-        else
-        {
-            body = body.Replace("{{NotifyMessage}}", "");
-        }
+            var order = await _orderRepository.GetWithDetailsAsync(id);
+            var groupbuy = await _groupBuyRepository.GetAsync(g => g.Id == order.GroupBuyId);
 
-        body = body.Replace("{{GroupBuyName}}", groupbuy.GroupBuyName);
-        body = body.Replace("{{GroupBuyUrl}}", groupbuy.EntryURL);
-        body = body.Replace("{{OrderNo}}", order.OrderNo);
-        body = body.Replace("{{OrderDate}}", formattedTime);
-        body = body.Replace("{{CustomerName}}", order.CustomerName);
-        body = body.Replace("{{CustomerEmail}}", order.CustomerEmail);
-        body = body.Replace("{{CustomerPhone}}", order.CustomerPhone);
-        body = body.Replace("{{RecipientName}}", order.RecipientName);
-        body = body.Replace("{{RecipientPhone}}", order.RecipientPhone);
-        if (!groupbuy.IsEnterprise)
-        {
-            body = body.Replace("{{PaymentMethod}}", _l[order.PaymentMethod.ToString()]);
-        }
-        body = body.Replace("{{PaymentStatus}}", _l[order.OrderStatus.ToString()]);
-        body = body.Replace("{{ShippingMethod}}", $"{_l[order.DeliveryMethod.ToString()]} {order.ShippingNumber}");
-        body = body.Replace("{{DeliveryFee}}", "0");
-        body = body.Replace("{{RecipientAddress}}", order.AddressDetails);
-        body = body.Replace("{{ShippingStatus}}", _l[order.ShippingStatus.ToString()]);
-        body = body.Replace("{{RecipientComments}}", order.Remarks);
-        body = body.Replace("{{OrderStatus}}", status);
+            string status = orderStatus == null ? _l[order.ShippingStatus.ToString()] : _l[orderStatus.ToString()];
 
-        if (order.OrderItems != null)
-        {
-            StringBuilder sb = new();
-            string orderItemsHtml = File.ReadAllText("wwwroot/EmailTemplates/order_items.html");
-            foreach (var item in order.OrderItems)
+            string subject = $"{groupbuy.GroupBuyName} 訂單#{order.OrderNo} {status}";
+
+            string body = File.ReadAllText("wwwroot/EmailTemplates/order_status.html");
+            DateTime creationTime = order.CreationTime;
+            TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById("China Standard Time"); // UTC+8
+            DateTimeOffset creationTimeInTimeZone = TimeZoneInfo.ConvertTime(creationTime, tz);
+            string formattedTime = creationTimeInTimeZone.ToString("yyyy-MM-dd HH:mm:ss");
+
+            if (order.ShippingStatus == ShippingStatus.WaitingForPayment)
             {
-                string? itemName = "";
-                string? imageUrl = "";
-                if (item.ItemType == ItemType.Item)
-                {
-                    itemName = item.Item?.ItemName;
-                    imageUrl = item.Item?.Images?.FirstOrDefault()?.ImageUrl;
-                }
-                else if (item.ItemType == ItemType.SetItem)
-                {
-                    itemName = item.SetItem?.SetItemName;
-                    imageUrl = item.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
-                }
-                else
-                {
-                    itemName = item.Freebie?.ItemName;
-                    imageUrl = item.Freebie?.Images?.FirstOrDefault()?.ImageUrl;
-                }
-
-                var itemHtml = orderItemsHtml
-                    .Replace("{{ImageUrl}}", imageUrl)
-                    .Replace("{{ItemName}}", itemName)
-                    .Replace("{{ItemDetails}}", item.SKU)
-                    .Replace("{{UnitPrice}}", $"${item.ItemPrice:N0}")
-                    .Replace("{{ItemQuantity}}", item.Quantity.ToString("N0"))
-                    .Replace("{{ItemTotal}}", $"${item.TotalAmount:N0}");
-
-                sb.Append(itemHtml);
+                body = body.Replace("{{NotifyMessage}}", groupbuy.NotifyMessage);
+            }
+            else
+            {
+                body = body.Replace("{{NotifyMessage}}", "");
             }
 
-            body = body.Replace("{{OrderItems}}", sb.ToString());
+            body = body.Replace("{{GroupBuyName}}", groupbuy.GroupBuyName);
+            body = body.Replace("{{GroupBuyUrl}}", groupbuy.EntryURL);
+            body = body.Replace("{{OrderNo}}", order.OrderNo);
+            body = body.Replace("{{OrderDate}}", formattedTime);
+            body = body.Replace("{{CustomerName}}", order.CustomerName);
+            body = body.Replace("{{CustomerEmail}}", order.CustomerEmail);
+            body = body.Replace("{{CustomerPhone}}", order.CustomerPhone);
+            body = body.Replace("{{RecipientName}}", order.RecipientName);
+            body = body.Replace("{{RecipientPhone}}", order.RecipientPhone);
+            if (!groupbuy.IsEnterprise)
+            {
+                body = body.Replace("{{PaymentMethod}}", _l[order.PaymentMethod.ToString()]);
+            }
+            body = body.Replace("{{PaymentStatus}}", _l[order.OrderStatus.ToString()]);
+            body = body.Replace("{{ShippingMethod}}", $"{_l[order.DeliveryMethod.ToString()]} {order.ShippingNumber}");
+            body = body.Replace("{{DeliveryFee}}", "0");
+            body = body.Replace("{{RecipientAddress}}", order.AddressDetails);
+            body = body.Replace("{{ShippingStatus}}", _l[order.ShippingStatus.ToString()]);
+            body = body.Replace("{{RecipientComments}}", order.Remarks);
+            body = body.Replace("{{OrderStatus}}", status);
+
+            if (order.OrderItems != null)
+            {
+                StringBuilder sb = new();
+                string orderItemsHtml = File.ReadAllText("wwwroot/EmailTemplates/order_items.html");
+                foreach (var item in order.OrderItems)
+                {
+                    string? itemName = "";
+                    string? imageUrl = "";
+                    if (item.ItemType == ItemType.Item)
+                    {
+                        itemName = item.Item?.ItemName;
+                        imageUrl = item.Item?.Images?.FirstOrDefault()?.ImageUrl;
+                    }
+                    else if (item.ItemType == ItemType.SetItem)
+                    {
+                        itemName = item.SetItem?.SetItemName;
+                        imageUrl = item.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
+                    }
+                    else
+                    {
+                        itemName = item.Freebie?.ItemName;
+                        imageUrl = item.Freebie?.Images?.FirstOrDefault()?.ImageUrl;
+                    }
+
+                    var itemHtml = orderItemsHtml
+                        .Replace("{{ImageUrl}}", imageUrl)
+                        .Replace("{{ItemName}}", itemName)
+                        .Replace("{{ItemDetails}}", item.SKU)
+                        .Replace("{{UnitPrice}}", $"${item.ItemPrice:N0}")
+                        .Replace("{{ItemQuantity}}", item.Quantity.ToString("N0"))
+                        .Replace("{{ItemTotal}}", $"${item.TotalAmount:N0}");
+
+                    sb.Append(itemHtml);
+                }
+
+                body = body.Replace("{{OrderItems}}", sb.ToString());
+            }
+
+            body = body.Replace("{{DeliveryFee}}", "$0");
+            body = body.Replace("{{TotalAmount}}", $"${order.TotalAmount:N0}");
+
+            var tenantSettings = await _tenantSettingsAppService.FirstOrDefaultAsync();
+            body = body.Replace("{{LogoUrl}}", tenantSettings?.LogoUrl);
+            body = body.Replace("{{FacebookUrl}}", tenantSettings?.Facebook);
+            body = body.Replace("{{InstagramUrl}}", tenantSettings?.Instagram);
+            body = body.Replace("{{LineUrl}}", tenantSettings?.Line);
+
+            body = body.Replace("{{CurrentYear}}", DateTime.Today.ToString("yyyy"));
+            body = body.Replace("{{CompanyName}}", tenantSettings?.CompanyName);
+            body = body.Replace("{{GroupBuyUrl}}", tenantSettings?.Tenant.GetProperty<string>(Constant.TenantUrl)?.TrimEnd('/') + "/" + groupbuy.Id);
+
+            await _emailSender.SendAsync(order.CustomerEmail, subject, body);
         }
-
-        body = body.Replace("{{DeliveryFee}}", "$0");
-        body = body.Replace("{{TotalAmount}}", $"${order.TotalAmount:N0}");
-
-        var tenantSettings = await _tenantSettingsAppService.FirstOrDefaultAsync();
-        body = body.Replace("{{LogoUrl}}", tenantSettings?.LogoUrl);
-        body = body.Replace("{{FacebookUrl}}", tenantSettings?.Facebook);
-        body = body.Replace("{{InstagramUrl}}", tenantSettings?.Instagram);
-        body = body.Replace("{{LineUrl}}", tenantSettings?.Line);
-
-        body = body.Replace("{{CurrentYear}}", DateTime.Today.ToString("yyyy"));
-        body = body.Replace("{{CompanyName}}", tenantSettings?.CompanyName);
-        body = body.Replace("{{GroupBuyUrl}}", tenantSettings?.Tenant.GetProperty<string>(Constant.TenantUrl)?.TrimEnd('/') + "/" + groupbuy.Id);
-
-        await _emailSender.SendAsync(order.CustomerEmail, subject, body);
     }
 
     public async Task AddValuesAsync(Guid id, string checkMacValue, string merchantTradeNo, PaymentMethods? paymentMethod = null)
