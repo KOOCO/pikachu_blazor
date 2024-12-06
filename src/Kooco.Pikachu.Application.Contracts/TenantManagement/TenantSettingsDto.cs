@@ -1,6 +1,5 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using System;
-using System.ComponentModel.DataAnnotations;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.TenantManagement;
 
@@ -9,6 +8,7 @@ namespace Kooco.Pikachu.TenantManagement;
 public class TenantSettingsDto : FullAuditedEntityDto<Guid>
 {
     public string? WebpageTitle { get; set; }
+    public string? Description { get; set; }
     public string? PrivacyPolicy { get; set; }
     public string? CompanyName { get; set; }
     public string? BusinessRegistrationNumber { get; set; }

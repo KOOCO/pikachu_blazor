@@ -14,6 +14,7 @@ public class TenantSettings : FullAuditedEntity<Guid>, IMultiTenant
     public string? WebpageTitle { get; private set; }
     public string? PrivacyPolicy { get; private set; }
     public string? CompanyName { get; private set; }
+    public string? Description { get; private set; }
     public string? BusinessRegistrationNumber { get; private set; }
     public string? ContactPhone { get; private set; }
     public string? CustomerServiceEmail { get; private set; }
@@ -53,7 +54,8 @@ public class TenantSettings : FullAuditedEntity<Guid>, IMultiTenant
         string? instagram,
         string? line,
         bool gtmEnabled,
-        string? gtmContainerId
+        string? gtmContainerId,
+        string? description
         ) : base(id)
     {
         SetFaviconUrl(faviconUrl);
@@ -67,6 +69,7 @@ public class TenantSettings : FullAuditedEntity<Guid>, IMultiTenant
         SetServiceHours(serviceHoursFrom, serviceHoursTo);
         SetSocials(facebook, instagram, line);
         SetGtm(gtmEnabled, gtmContainerId);
+        SetDescription(description);
     }
 
     public TenantSettings SetFaviconUrl(string? faviconUrl)
@@ -90,6 +93,12 @@ public class TenantSettings : FullAuditedEntity<Guid>, IMultiTenant
     public TenantSettings SetCompanyName(string? companyName)
     {
         CompanyName = Check.NotNullOrWhiteSpace(companyName, nameof(CompanyName), TenantSettingsConsts.MaxCompanyNameLength);
+        return this;
+    }
+
+    public TenantSettings SetDescription(string? description)
+    {
+        Description = Check.Length(description, nameof(Description), TenantSettingsConsts.MaxDescriptionLength);
         return this;
     }
 

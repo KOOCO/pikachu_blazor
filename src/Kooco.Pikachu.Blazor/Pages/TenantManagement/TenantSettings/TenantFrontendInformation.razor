@@ -24,6 +24,16 @@
                                 </TextEdit>
                             </Field>
                         </Validation>
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <FieldLabel>@L["Description"]</FieldLabel>
+                                <MemoEdit @bind-Text="Entity.Description" Rows="6">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </MemoEdit>
+                            </Field>
+                        </Validation>
                     </Column>
                 </Row>
                 <Divider></Divider>

@@ -8,6 +8,8 @@ public class UpdateTenantFrontendInformationDto
     [MaxLength(TenantSettingsConsts.MaxWebpageTitleLength)]
     public string? WebpageTitle { get; set; }
 
+    [MaxLength(TenantSettingsConsts.MaxDescriptionLength)]
+    public string? Description { get; set; }
     public string? FaviconBase64 { get; set; }
     public string? FaviconUrl { get; set; }
     public string? FaviconName { get; set; }
