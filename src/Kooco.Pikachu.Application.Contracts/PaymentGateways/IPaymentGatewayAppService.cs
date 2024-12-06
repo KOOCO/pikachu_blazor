@@ -11,5 +11,7 @@ namespace Kooco.Pikachu.PaymentGateways
         Task UpdateEcPayAsync(UpdateEcPayDto input);
         Task<List<PaymentGatewayDto>> GetAllAsync();
         Task UpdateOrderValidityAsync(UpdateOrderValidityDto input);
+
+        Task<string?> GetCreditCheckCodeAsync();
     }
 }

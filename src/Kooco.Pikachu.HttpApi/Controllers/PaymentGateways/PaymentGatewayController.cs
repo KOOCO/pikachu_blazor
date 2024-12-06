@@ -152,6 +152,13 @@ public class PaymentGatewayController(
     {
         return _paymentGatewayAppService.UpdateOrderValidityAsync(input);
     }
+
+    [HttpGet("get-creditCheckCode")]
+    public Task<string?> GetCreditCheckCodeAsync()
+    {
+        throw new NotImplementedException();
+    }
+
     #region Private Functions
     private string CloseWindowsScript()
     {
@@ -175,7 +182,5 @@ public class PaymentGatewayController(
             </script>
         ";
     }
-
-    
     #endregion
 }

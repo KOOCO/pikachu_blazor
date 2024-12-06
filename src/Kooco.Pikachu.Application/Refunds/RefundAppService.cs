@@ -240,18 +240,20 @@ public class RefundAppService : ApplicationService, IRefundAppService
 
             string totalAmount = order.TotalAmount.ToString(order.TotalAmount % 1 is 0 ? "0" : string.Empty);
 
+            string creditCheckCode = await _PaymentGatewayAppService.GetCreditCheckCodeAsync() ?? string.Empty;
+
             request.AddHeader("Accept", "text/html");
             request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
             request.AddParameter("MerchantID", MerchantId);
             request.AddParameter("CreditRefundId", (order.GWSR ?? 0).ToString());
             request.AddParameter("CreditAmount", totalAmount);
-            request.AddParameter("CreditCheckCode", "52482296");
+            request.AddParameter("CreditCheckCode", creditCheckCode);
             request.AddParameter("CheckMacValue", GenerateCheckMac(HashKey,
                                                                    HashIV,
                                                                    MerchantId,
                                                                    order.GWSR ?? 0,
                                                                    totalAmount,
-                                                                   "52482296"));
+                                                                   creditCheckCode));
 
             RestResponse response = await client.ExecuteAsync(request);
 
