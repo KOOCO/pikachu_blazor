@@ -112,7 +112,7 @@ public class OrderController : AbpController, IOrderAppService
     }
 
     [HttpGet("ecpay-proceed-to-checkout")]
-    public async Task<IActionResult> ProceedToCheckout(Guid orderId, string clientBackUrl, PaymentMethods? retryPaymentMethod = null, bool isPaymentRetry = false)
+    public async Task<IActionResult> ProceedToCheckout(Guid orderId, string clientBackUrl, PaymentMethods paymentMethodsValue)
     {
         OrderDto order = await _ordersAppService.GetWithDetailsAsync(orderId);
 
@@ -120,12 +120,9 @@ public class OrderController : AbpController, IOrderAppService
 
         PaymentGatewayDto ecPay = await GetPaymentGatewayConfigurationsAsync(order.GroupBuyId);
 
-        if (isPaymentRetry && retryPaymentMethod.HasValue)
-        {
-            order.PaymentMethod = retryPaymentMethod;
+        order.PaymentMethod = paymentMethodsValue;
 
-            order.MerchantTradeNo = _ordersAppService.GenerateMerchantTradeNo(order.OrderNo);
-        }
+        order.MerchantTradeNo = _ordersAppService.GenerateMerchantTradeNo(order.OrderNo);
 
         bool isDefaultPayment = groupBuy.IsDefaultPaymentGateWay;
 
@@ -188,7 +185,7 @@ public class OrderController : AbpController, IOrderAppService
             oPayment.MerchantID = merchantID;
             oPayment.Send.ReturnURL = $"{Request.Scheme}://{Request.Host}/api/app/orders/callback";
             oPayment.Send.ClientBackURL = string.Empty;
-            oPayment.Send.MerchantTradeNo = isPaymentRetry ? order.MerchantTradeNo : order.OrderNo;
+            oPayment.Send.MerchantTradeNo = order.MerchantTradeNo;
             oPayment.Send.MerchantTradeDate = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
             oPayment.Send.TotalAmount = Convert.ToInt32(order.TotalAmount);
             oPayment.Send.TradeDesc = tradeDesc;
@@ -237,7 +234,7 @@ public class OrderController : AbpController, IOrderAppService
             {
                 string? checkMacValue = response.Result.htParameters["CustomField1"]?.ToString();
 
-                await _ordersAppService.AddValuesAsync(orderId, checkMacValue ?? string.Empty, isPaymentRetry ? order.MerchantTradeNo : order.OrderNo, retryPaymentMethod);
+                await _ordersAppService.AddValuesAsync(orderId, checkMacValue ?? string.Empty, order.MerchantTradeNo, paymentMethodsValue);
             }
 
             StringBuilder htmlForm = new();
