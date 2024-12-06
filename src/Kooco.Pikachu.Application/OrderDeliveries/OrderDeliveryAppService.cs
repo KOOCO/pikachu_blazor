@@ -1,8 +1,10 @@
 ﻿using Kooco.Pikachu.ElectronicInvoiceSettings;
+using Kooco.Pikachu.Emails;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Localization;
+using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.TenantEmailing;
 using Microsoft.Extensions.Localization;
@@ -34,13 +36,14 @@ namespace Kooco.Pikachu.OrderDeliveries
         private readonly IEmailSender _emailSender;
         private readonly IOrderRepository _orderRepository;
         private readonly ISettingManager _settingManager;
+        private readonly IEmailAppService _emailAppService;
         private readonly IElectronicInvoiceAppService _electronicInvoiceAppService;
         private readonly IElectronicInvoiceSettingRepository _electronicInvoiceSettingRepository;
         private readonly IBackgroundJobManager _backgroundJobManager;
         public OrderDeliveryAppService(IOrderDeliveryRepository orderDeliveryRepository, IStringLocalizer<PikachuResource> l, IOrderRepository orderRepository,
             IEmailSender emailSender, IGroupBuyRepository groupBuyRepositor, IRepository<TenantEmailSettings, Guid> tenantEmailSettingsRepository,
               ISettingManager settingManager, IElectronicInvoiceAppService electronicInvoiceAppService, IElectronicInvoiceSettingRepository electronicInvoiceSettingRepository,
-              IBackgroundJobManager backgroundJobManager)
+              IBackgroundJobManager backgroundJobManager, IEmailAppService emailAppService)
         {
             _orderDeliveryRepository = orderDeliveryRepository;
             _l = l;
@@ -52,6 +55,7 @@ namespace Kooco.Pikachu.OrderDeliveries
             _backgroundJobManager= backgroundJobManager;
             _electronicInvoiceAppService= electronicInvoiceAppService;
             _electronicInvoiceSettingRepository= electronicInvoiceSettingRepository;
+            _emailAppService= emailAppService;
         }
         public async Task<List<OrderDeliveryDto>> GetListByOrderAsync(Guid Id)
         {
@@ -295,7 +299,18 @@ namespace Kooco.Pikachu.OrderDeliveries
                 order.ShippingStatus = ShippingStatus.Shipped;
                 
                 await _orderRepository.UpdateAsync(order);
-                
+                await _emailAppService.SendLogisticsEmailAsync(new OrderDeliveryDto
+                {
+                    DeliveryMethod = delivery.DeliveryMethod,
+                    ActualDeliveryMethod = delivery.ActualDeliveryMethod,
+                    DeliveryStatus = delivery.DeliveryStatus,
+                    AllPayLogisticsID = delivery.AllPayLogisticsID,
+                    Editor = delivery.Editor,
+                    DeliveryNo = delivery.DeliveryNo,
+                    OrderId = delivery.OrderId
+                  
+                  
+                });
                 await UnitOfWorkManager.Current.SaveChangesAsync();
                 var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
                 if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.Shipped)
