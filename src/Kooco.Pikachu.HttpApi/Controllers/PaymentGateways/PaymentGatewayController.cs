@@ -147,7 +147,11 @@ public class PaymentGatewayController(
     {
         return _paymentGatewayAppService.UpdateLinePayAsync(input);
     }
-
+    [HttpPut("payment-deadline")]
+    public Task UpdateOrderValidityAsync(UpdateOrderValidityDto input)
+    {
+        return _paymentGatewayAppService.UpdateOrderValidityAsync(input);
+    }
     #region Private Functions
     private string CloseWindowsScript()
     {
@@ -171,5 +175,7 @@ public class PaymentGatewayController(
             </script>
         ";
     }
+
+    
     #endregion
 }

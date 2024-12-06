@@ -106,7 +106,27 @@ namespace Kooco.Pikachu.PaymentGateways
                 await _paymentGatewayRepository.InsertAsync(linePay);
             }
         }
+        public async Task UpdateOrderValidityAsync(UpdateOrderValidityDto input)
+        {
+            var validity = await _paymentGatewayRepository.FirstOrDefaultAsync(x => x.PaymentIntegrationType == PaymentIntegrationType.OrderValidatePeriod);
+            if (validity != null)
+            {
+                validity.Period = input.Period;
+                validity.Unit = input.Unit;
+                await _paymentGatewayRepository.UpdateAsync(validity);
+            }
+            else
+            {
+                validity = new PaymentGateway
+                {
+                    PaymentIntegrationType= PaymentIntegrationType.OrderValidatePeriod,
+                    Period = input.Period,
+                Unit = input.Unit
+            };
 
+                await _paymentGatewayRepository.InsertAsync(validity);
+            }
+        }
         public async Task<List<PaymentGatewayDto>> GetAllAsync()
         {
             List<PaymentGateway> paymentGateways = await _paymentGatewayRepository.GetListAsync();
@@ -119,7 +139,7 @@ namespace Kooco.Pikachu.PaymentGateways
 
                 foreach (PropertyInfo property in properties)
                 {
-                    if (property.PropertyType == typeof(string))
+                    if (property.PropertyType == typeof(string) && property.Name!="Unit")
                     {
                         string? value = (string?)property.GetValue(paymentGatewayDto);
 
