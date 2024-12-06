@@ -1048,6 +1048,7 @@
     "ColorScheme": "Color Scheme",
     "GroupBuyTemplateType": "Group Buy Template Type",
     "Enum:GroupBuyTemplateType.1": "Pikachu 1.0",
-    "Enum:GroupBuyTemplateType.2": "Pikachu 2.0"
+    "Enum:GroupBuyTemplateType.2": "Pikachu 2.0",
+    "ItemCost": "Cost"
   }
 }
