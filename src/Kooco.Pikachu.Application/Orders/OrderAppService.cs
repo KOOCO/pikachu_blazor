@@ -1,5 +1,6 @@
 ﻿using Kooco.Pikachu.DiscountCodes;
 using Kooco.Pikachu.ElectronicInvoiceSettings;
+using Kooco.Pikachu.Emails;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Groupbuys;
@@ -66,6 +67,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly ITenantSettingsAppService _tenantSettingsAppService;
     private readonly IUserShoppingCreditAppService _userShoppingCreditAppService;
     private readonly IUserShoppingCreditRepository _userShoppingCreditRepository;
+    private readonly IEmailAppService _emailAppService;
     #endregion
 
     #region Constructor
@@ -91,7 +93,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         ITenantSettingsAppService tenantSettingsAppService,
         IDiscountCodeRepository discountCodeRepository,
         IUserShoppingCreditAppService userShoppingCreditAppService,
-        IUserShoppingCreditRepository userShoppingCreditRepository
+        IUserShoppingCreditRepository userShoppingCreditRepository,
+        IEmailAppService emailAppService
     )
     {
         _orderRepository = orderRepository;
@@ -117,6 +120,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _discountCodeRepository = discountCodeRepository;
         _userShoppingCreditAppService = userShoppingCreditAppService;
         _userShoppingCreditRepository = userShoppingCreditRepository;
+        _emailAppService = emailAppService;
     }
     #endregion
 
@@ -1496,6 +1500,18 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
         }
         // await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+        await _emailAppService.SendLogisticsEmailAsync(new OrderDeliveryDto
+        {
+            DeliveryMethod = 0,
+            ActualDeliveryMethod = 0,
+            DeliveryStatus = 0,
+            AllPayLogisticsID = "",
+            Editor ="",
+            DeliveryNo = "",
+            OrderId = order.Id
+
+
+        });
         await SendEmailAsync(order.Id);
         return ObjectMapper.Map<Order, OrderDto>(order);
     }
