@@ -263,9 +263,6 @@ public class PikachuBlazorModule : AbpModule
         context.Services.AddScoped<OrderStatusCheckerWorker>();
         context.Services.AddScoped<PassiveUserBirthdayCheckerWorker>();
 
-
-
-
         context.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
     }
     private void ConfigureHangfire(ServiceConfigurationContext context, IConfiguration configuration)

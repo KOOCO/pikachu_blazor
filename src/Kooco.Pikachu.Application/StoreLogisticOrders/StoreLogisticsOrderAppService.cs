@@ -480,6 +480,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             string html = response.Content!.ToString();
 
+            html = html.Replace("div class=\"PrintToolsBlock\"", "div class=\"PrintToolsBlock\" hidden");
+
             if (allPayLogisticsId.Key.Contains("SevenToEleven1") ||
                 allPayLogisticsId.Key.Contains("PostOffice") ||
                 allPayLogisticsId.Key.Contains("BlackCat1") ||

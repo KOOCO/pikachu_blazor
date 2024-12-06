@@ -25,6 +25,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUglify.Html;
 using OneOf.Types;
+using PdfSharp.Pdf;
+using PdfSharp.Pdf.IO;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -32,6 +34,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Volo.Abp.Account.Web;
 using Volo.Abp.Application.Dtos;
@@ -44,7 +47,7 @@ public partial class Order
 {
     #region Inject
     private Dictionary<Guid, List<OrderDeliveryDto>> OrderDeliveriesByOrderId { get; set; } = [];
-
+    private static readonly SynchronizedConverter Converter = new SynchronizedConverter(new PdfTools());
     private bool IsAllSelected { get; set; } = false;
     private List<OrderDeliveryDto> OrderDeliveries { get; set; }
     private List<OrderDto> Orders { get; set; } = new();
@@ -195,40 +198,114 @@ public partial class Order
 
         List<string> htmls = await _StoreLogisticsOrderAppService.OnBatchPrintingShippingLabel(AllPayLogisticsIds, DeliveryNumbers);
 
-        string pdf = Path.Combine(Path.GetTempPath(), "MergeTemp");
+        MemoryStream combinedPdfStream = CombinePdf(GeneratePdf(htmls));
 
-        Directory.CreateDirectory(pdf);
-
-        File.WriteAllText(string.Concat(pdf, "\\outputHTML.html"), htmls[0]);
-
-        var converter = new SynchronizedConverter(new PdfTools());
-        var doc = new HtmlToPdfDocument
+        await JSRuntime.InvokeVoidAsync("downloadFile", new
         {
-            GlobalSettings = new GlobalSettings
-            {
-                ColorMode = ColorMode.Color,
-                Orientation = DinkToPdf.Orientation.Portrait,
-                PaperSize = PaperKind.A4,
-                Out = string.Concat(pdf, "\\output.pdf")
-            }
-        };
+            ByteArray = combinedPdfStream.ToArray(),
+            FileName = "Invoices.pdf",
+            ContentType = "application/pdf"
+        });
 
-        doc.Objects.Add(new ObjectSettings() { Page = string.Concat(pdf, "\\outputHTML.html"), LoadSettings = new() { JSDelay = 5000 }, WebSettings = new WebSettings() {
-            EnableJavascript = true,
-            DefaultEncoding = "UTF-8",
-            LoadImages = true
-        } });
-        
-        converter.Convert(doc);
-
-        //foreach (string html in htmls)
-        //{
-        //    if (!html.IsNullOrEmpty()) await JSRuntime.InvokeVoidAsync("PrintTradeDocument", html);
-        //}
+        Directory.Delete(Path.Combine(Path.GetTempPath(), "MergeTemp"), true);
 
         await loading.Hide();
     }
 
+    public List<string> GeneratePdf(List<string> htmls)
+    {
+        List<string> pdfFilePaths = [];
+
+        var thread = new Thread(() =>
+        {
+            for (int i = 0; i < htmls.Count; i++)
+            {
+                try
+                {
+                    string tempPath = Path.Combine(Path.GetTempPath(), "MergeTemp");
+
+                    Directory.CreateDirectory(tempPath);
+
+                    string htmlFilePath = Path.Combine(tempPath, $"outputHTML{i}.html");
+
+                    string pdfFilePath = Path.Combine(tempPath, $"output{i}.pdf");
+
+                    pdfFilePaths.Add(pdfFilePath);
+
+                    File.WriteAllText(htmlFilePath, htmls[i]);
+
+                    if (File.Exists(pdfFilePath)) File.Delete(pdfFilePath);
+
+                    var doc = new HtmlToPdfDocument
+                    {
+                        GlobalSettings = new GlobalSettings
+                        {
+                            ColorMode = ColorMode.Color,
+                            Orientation = DinkToPdf.Orientation.Portrait,
+                            PaperSize = PaperKind.A4,
+                            Out = pdfFilePath
+                        },
+                        Objects = 
+                        {
+                            new ObjectSettings
+                            {
+                                Page = htmlFilePath,
+                                LoadSettings = new LoadSettings { JSDelay = 5000 },
+                                WebSettings = new WebSettings
+                                {
+                                    EnableJavascript = true,
+                                    DefaultEncoding = "UTF-8",
+                                    LoadImages = true
+                                }
+                            }
+                        }
+                    };
+
+                    Converter.Convert(doc);
+                    Console.WriteLine($"PDF generated successfully: {pdfFilePath}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error during PDF generation: {ex.Message}");
+                }
+            }
+        });
+
+        thread.SetApartmentState(ApartmentState.STA);
+        thread.Start();
+        thread.Join();
+
+        return pdfFilePaths;
+    }
+
+    public MemoryStream CombinePdf(List<string> inputPdfPaths)
+    {
+        var memoryStream = new MemoryStream();
+
+        string tempPath = Path.Combine(Path.GetTempPath(), "MergeTemp");
+
+        string outputPdfPath = Path.Combine(tempPath, "combinedPdf.pdf");
+
+        using (var outputDocument = new PdfDocument())
+        {
+            foreach (var path in inputPdfPaths)
+            {
+                var inputDocument = PdfReader.Open(path, PdfDocumentOpenMode.Import);
+                foreach (var page in inputDocument.Pages)
+                {
+                    outputDocument.AddPage(page);
+                }
+            }
+
+            outputDocument.Save(memoryStream);
+
+            Console.WriteLine($"Combined PDF created successfully at: {outputPdfPath}");
+        }
+
+        memoryStream.Position = 0;
+
+        return memoryStream;
+    }
 
     public async Task OnGenerateDeliveryNumber(MouseEventArgs e)
     {
