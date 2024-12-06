@@ -127,6 +127,26 @@ public class PrintOBTB2SRequest
     public OrderOBTB2S[] Orders { get; set; }
 }
 
+public class DownloadOBTRequest
+{
+    public string CustomerId { get; set; }
+    public string CustomerToken { get; set; }
+    public string FileNo { get; set; }
+    public List<DownloadOBTOrders> Orders { get; set; }
+}
+
+public class DownloadOBTOrders
+{
+    public string OBTNumber { get; set; }
+}
+
+public class DownloadOBTResponse
+{
+    public string SrvTranId { get; set; }
+    public string IsOK { get; set; }
+    public string Message { get; set; }
+}
+
 public class OrderOBTB2S
 {
     public string OBTNumber { get; set; }

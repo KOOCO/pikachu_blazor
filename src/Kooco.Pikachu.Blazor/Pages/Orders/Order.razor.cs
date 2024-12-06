@@ -138,18 +138,29 @@ public partial class Order
         Dictionary<string, string> AllPayLogisticsIds = new() 
         { 
             { "BlackCat1", string.Empty },
+            { "BlackCatFrozen", string.Empty },
+            { "BlackCatFreeze", string.Empty },
             { "SevenToElevenFrozen", string.Empty },
             { "PostOffice", string.Empty },
             { "FamilyMart1", string.Empty },
             { "SevenToEleven1", string.Empty },
             { "SevenToElevenC2C", string.Empty },
-            { "FamilyMartC2C", string.Empty }
+            { "FamilyMartC2C", string.Empty },
+            { "TCatDeliveryNormal", string.Empty },
+            { "TCatDeliveryFreeze", string.Empty },
+            { "TCatDeliveryFrozen", string.Empty },
+            { "TCatDeliverySevenElevenNormal", string.Empty },
+            { "TCatDeliverySevenElevenFreeze", string.Empty },
+            { "TCatDeliverySevenElevenFrozen", string.Empty },
         };
 
         Dictionary<string, string> DeliveryNumbers = new()
         {
             { "SevenToElevenC2C", string.Empty },
-            { "FamilyMartC2C", string.Empty }
+            { "FamilyMartC2C", string.Empty },
+            { "TCatDeliveryNormal", string.Empty },
+            { "TCatDeliveryFreeze", string.Empty },
+            { "TCatDeliveryFrozen", string.Empty },
         };
 
         foreach (Guid orderId in orderIds)
@@ -161,13 +172,9 @@ public partial class Order
             foreach (OrderDeliveryDto? delivery in orderDeliveries)
             {
                 if (!string.IsNullOrWhiteSpace(delivery.AllPayLogisticsID) && 
-                    (delivery.DeliveryMethod is EnumValues.DeliveryMethod.SevenToEleven1 ||
-                     delivery.DeliveryMethod is EnumValues.DeliveryMethod.PostOffice ||
-                     delivery.DeliveryMethod is EnumValues.DeliveryMethod.BlackCat1 ||
-                     delivery.DeliveryMethod is EnumValues.DeliveryMethod.FamilyMart1 ||
-                     delivery.DeliveryMethod is EnumValues.DeliveryMethod.SevenToElevenFrozen ||
-                     delivery.DeliveryMethod is EnumValues.DeliveryMethod.FamilyMartC2C ||
-                     delivery.DeliveryMethod is EnumValues.DeliveryMethod.SevenToElevenC2C))
+                    (!(delivery.DeliveryMethod is EnumValues.DeliveryMethod.SelfPickup ||
+                     delivery.DeliveryMethod is EnumValues.DeliveryMethod.HomeDelivery ||
+                     delivery.DeliveryMethod is EnumValues.DeliveryMethod.DeliveredByStore)))
                 {
                     string? AllPayLogisticsIdsValue = AllPayLogisticsIds.GetValueOrDefault(delivery.DeliveryMethod.ToString()) ?? string.Empty;
 
@@ -180,7 +187,10 @@ public partial class Order
                     AllPayLogisticsIds.Add(delivery.DeliveryMethod.ToString(), string.Join(",", AllPayLogisticId));
 
                     if (delivery.DeliveryMethod is EnumValues.DeliveryMethod.FamilyMartC2C || 
-                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.SevenToElevenC2C)
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.SevenToElevenC2C ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryNormal ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryFreeze ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryFrozen)
                     {
                         string? DeliveryNumberValue = DeliveryNumbers.GetValueOrDefault(delivery.DeliveryMethod.ToString()) ?? string.Empty;
 

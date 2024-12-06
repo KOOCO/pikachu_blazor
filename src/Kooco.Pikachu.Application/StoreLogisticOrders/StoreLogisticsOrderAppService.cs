@@ -383,6 +383,77 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         return html;
     }
 
+    private async Task HandleTCatRequest(KeyValuePair<string, string> allPayLogisticsId, Dictionary<string, string>? DeliveryNumbers)
+    {
+            string[]? logisticsIdsArray = [];
+
+            List<DownloadOBTOrders> orders = [];
+
+            if (allPayLogisticsId.Key.Contains("TCatDeliveryNormal"))
+                logisticsIdsArray = DeliveryNumbers?.GetValueOrDefault("TCatDeliveryNormal")?.Split(',');
+
+            else if (allPayLogisticsId.Key.Contains("TCatDeliveryFreeze"))
+                logisticsIdsArray = DeliveryNumbers?.GetValueOrDefault("TCatDeliveryFreeze")?.Split(',');
+
+            else if (allPayLogisticsId.Key.Contains("TCatDeliveryFrozen"))
+                logisticsIdsArray = DeliveryNumbers?.GetValueOrDefault("TCatDeliveryFrozen")?.Split(',');
+
+            else if (allPayLogisticsId.Key.Contains("TCatDeliverySevenElevenNormal") ||
+                     allPayLogisticsId.Key.Contains("TCatDeliverySevenElevenFreeze") ||
+                     allPayLogisticsId.Key.Contains("TCatDeliverySevenElevenFrozen"))
+            {
+                logisticsIdsArray = allPayLogisticsId.Value.Split(',');
+            }
+
+            if (logisticsIdsArray != null)
+            {
+                foreach (string id in logisticsIdsArray)
+                {
+                    orders.Add(new DownloadOBTOrders { OBTNumber = id.Trim() });
+                }
+            }
+
+            DownloadOBTRequest requestBody = new()
+            {
+                CustomerId = TCatLogistics.CustomerId,
+                CustomerToken = TCatLogistics.CustomerToken,
+                FileNo = allPayLogisticsId.Value,
+                Orders = orders
+            };
+
+            string jsonContent = JsonConvert.SerializeObject(requestBody);
+
+            StringContent content = new(jsonContent, Encoding.UTF8, "application/json");
+
+            using HttpClient httpClient = new();
+
+            HttpResponseMessage tCatResponse = await httpClient.PostAsync(_configuration["T-Cat:DownloadOBT"], content);
+
+            if (tCatResponse.IsSuccessStatusCode)
+            {
+                var contentType = tCatResponse.Content.Headers.ContentType?.MediaType;
+
+                if (contentType == "application/octet-stream")
+                {
+                    using Stream responseStream = await tCatResponse.Content.ReadAsStreamAsync();
+
+                    string filePath = Path.Combine(Path.GetTempPath(), "MergeTemp");
+
+                    using FileStream fileStream = new(filePath, FileMode.Create, FileAccess.Write);
+
+                    await responseStream.CopyToAsync(fileStream);
+                }
+
+                else if (contentType == "application/json")
+                {
+                    string responseContent = await tCatResponse.Content.ReadAsStringAsync();
+
+                    DownloadOBTResponse? downloadObtResponse = JsonConvert.DeserializeObject<DownloadOBTResponse>(responseContent);
+                }
+            }
+
+    }
+
     public async Task<List<string>> OnBatchPrintingShippingLabel(Dictionary<string, string> allPayLogisticsIds, Dictionary<string, string>? DeliveryNumbers)
     {
         List<string> htmls = [];
@@ -397,6 +468,10 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         if (greenWorld is not null) GreenWorldC2C = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorldC2C);
 
+        LogisticsProviderSettingsDto? tCat = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCat);
+
+        if (tCat is not null) TCatLogistics = ObjectMapper.Map<LogisticsProviderSettingsDto, TCatLogisticsCreateUpdateDto>(tCat);
+
         foreach (KeyValuePair<string, string> allPayLogisticsId in allPayLogisticsIds)
         {
             if (allPayLogisticsId.Value.IsNullOrEmpty()) continue;
@@ -409,11 +484,23 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             
             Dictionary<string, string> parameters = [];
 
-            if (allPayLogisticsId.Key.Contains("SevenToEleven1") ||
-                allPayLogisticsId.Key.Contains("PostOffice") ||
-                allPayLogisticsId.Key.Contains("BlackCat1") ||
-                allPayLogisticsId.Key.Contains("FamilyMart1") ||
-                allPayLogisticsId.Key.Contains("SevenToElevenFrozen"))
+
+            if (allPayLogisticsId.Key.Contains("TCatDeliveryNormal") ||
+                allPayLogisticsId.Key.Contains("TCatDeliveryFreeze") ||
+                allPayLogisticsId.Key.Contains("TCatDeliveryFrozen") ||
+                allPayLogisticsId.Key.Contains("TCatDeliverySevenElevenNormal") ||
+                allPayLogisticsId.Key.Contains("TCatDeliverySevenElevenFreeze") ||
+                allPayLogisticsId.Key.Contains("TCatDeliverySevenElevenFrozen"))
+            {
+                await HandleTCatRequest(allPayLogisticsId, DeliveryNumbers);
+            }
+            else if (allPayLogisticsId.Key.Contains("SevenToEleven1") ||
+                     allPayLogisticsId.Key.Contains("PostOffice") ||
+                     allPayLogisticsId.Key.Contains("BlackCat1") ||
+                     allPayLogisticsId.Key.Contains("BlackCatFreeze") ||
+                     allPayLogisticsId.Key.Contains("BlackCatFrozen") ||
+                     allPayLogisticsId.Key.Contains("FamilyMart1") ||
+                     allPayLogisticsId.Key.Contains("SevenToElevenFrozen"))
             {
                 request = new(_configuration["EcPay:PrintTradeDocument"], Method.Post);
 
@@ -425,7 +512,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                     { "MerchantID", GreenWorld.StoreCode },
                     { "AllPayLogisticsID", allPayLogisticsId.Value }
                 };
-                
+
                 request.AddParameter("CheckMacValue", GenerateCheckMacValue(greenWorld!.HashKey, greenWorld!.HashIV, parameters));
             }
 
@@ -467,10 +554,12 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                     { "AllPayLogisticsID", allPayLogisticsId.Value},
                     { "CVSPaymentNo", string.Join(",", DeliveryNumbers?.GetValueOrDefault("SevenToElevenC2C")?
                                                                        .Split(',')
-                                                                       .Select(number => number.Remove(number.Length - 4))) },
+                                                                       .Select(number => number.Remove(number.Length - 4))) 
+                    },
                     { "CVSValidationNo", string.Join(",", DeliveryNumbers?.GetValueOrDefault("SevenToElevenC2C")?
                                                                           .Split(',')
-                                                                          .Select(number => number.Substring(number.Length - 4))) }
+                                                                          .Select(number => number.Substring(number.Length - 4))) 
+                    }
                 };
 
                 request.AddParameter("CheckMacValue", GenerateCheckMacValue(greenWorldC2C!.HashKey, greenWorldC2C!.HashIV, parameters));
@@ -485,6 +574,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             if (allPayLogisticsId.Key.Contains("SevenToEleven1") ||
                 allPayLogisticsId.Key.Contains("PostOffice") ||
                 allPayLogisticsId.Key.Contains("BlackCat1") ||
+                allPayLogisticsId.Key.Contains("BlackCatFreeze") ||
+                allPayLogisticsId.Key.Contains("BlackCatFrozen") ||
                 allPayLogisticsId.Key.Contains("FamilyMart1") ||
                 allPayLogisticsId.Key.Contains("SevenToElevenFrozen"))
             {
@@ -499,11 +590,6 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 html = html.Replace("/Scripts/jquery-1.4.4.min.js", "https://logistics.ecpay.com.tw/Scripts/jquery-1.4.4.min.js");
                 html = html.Replace("/Scripts/jquery-ui.min.js", "https://logistics.ecpay.com.tw/Scripts/jquery-ui.min.js");
                 html = html.Replace("/Scripts/jquery.blockUI.js", "https://logistics.ecpay.com.tw/Scripts/jquery.blockUI.js");
-            }
-            
-            else if (allPayLogisticsId.Key.Contains("SevenToElevenC2C"))
-            {
-
             }
 
             htmls.Add(html);
