@@ -137,7 +137,11 @@ public class RefundAppService : ApplicationService, IRefundAppService
 
         Order order = await _orderRepository.GetWithDetailsAsync(refund.OrderId);
 
-        Order OriginalOrder = await _orderRepository.GetWithDetailsAsync((Guid)order.SplitFromId);
+        Order OriginalOrder = new();
+
+        if (order.SplitFromId is null || order.SplitFromId == Guid.Empty) OriginalOrder = order;
+
+        else OriginalOrder = await _orderRepository.GetWithDetailsAsync((Guid)order.SplitFromId);
 
         OriginalOrder.TotalAmount -= order.TotalAmount;
 
@@ -170,6 +174,7 @@ public class RefundAppService : ApplicationService, IRefundAppService
         }
 
         await _orderRepository.UpdateAsync(order);
+
         await _orderRepository.UpdateAsync(OriginalOrder);
 
         PaymentGatewayDto? ecpay = (await _PaymentGatewayAppService.GetAllAsync()).FirstOrDefault(f => f.PaymentIntegrationType is PaymentIntegrationType.EcPay) ??
