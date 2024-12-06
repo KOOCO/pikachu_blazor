@@ -216,64 +216,66 @@ public partial class Order
     {
         List<string> pdfFilePaths = [];
 
-        var thread = new Thread(() =>
+        for (int i = 0; i < htmls.Count; i++)
         {
-            for (int i = 0; i < htmls.Count; i++)
+            try
             {
-                try
+                string tempPath = Path.Combine(Path.GetTempPath(), "MergeTemp");
+
+                Directory.CreateDirectory(tempPath);
+
+                string htmlFilePath = Path.Combine(tempPath, $"outputHTML{i}.html");
+
+                string pdfFilePath = Path.Combine(tempPath, $"output{i}.pdf");
+
+                pdfFilePaths.Add(pdfFilePath);
+
+                File.WriteAllText(htmlFilePath, htmls[i]);
+
+                if (File.Exists(pdfFilePath)) File.Delete(pdfFilePath);
+
+                var doc = new HtmlToPdfDocument
                 {
-                    string tempPath = Path.Combine(Path.GetTempPath(), "MergeTemp");
-
-                    Directory.CreateDirectory(tempPath);
-
-                    string htmlFilePath = Path.Combine(tempPath, $"outputHTML{i}.html");
-
-                    string pdfFilePath = Path.Combine(tempPath, $"output{i}.pdf");
-
-                    pdfFilePaths.Add(pdfFilePath);
-
-                    File.WriteAllText(htmlFilePath, htmls[i]);
-
-                    if (File.Exists(pdfFilePath)) File.Delete(pdfFilePath);
-
-                    var doc = new HtmlToPdfDocument
+                    GlobalSettings = new GlobalSettings
                     {
-                        GlobalSettings = new GlobalSettings
+                        ColorMode = ColorMode.Color,
+                        Orientation = DinkToPdf.Orientation.Portrait,
+                        PaperSize = PaperKind.A4,
+                        Out = pdfFilePath
+                    },
+                    Objects =
+                    {
+                        new ObjectSettings
                         {
-                            ColorMode = ColorMode.Color,
-                            Orientation = DinkToPdf.Orientation.Portrait,
-                            PaperSize = PaperKind.A4,
-                            Out = pdfFilePath
-                        },
-                        Objects = 
-                        {
-                            new ObjectSettings
+                            Page = htmlFilePath,
+                            LoadSettings = new LoadSettings { JSDelay = 5000 },
+                            WebSettings = new WebSettings
                             {
-                                Page = htmlFilePath,
-                                LoadSettings = new LoadSettings { JSDelay = 5000 },
-                                WebSettings = new WebSettings
-                                {
-                                    EnableJavascript = true,
-                                    DefaultEncoding = "UTF-8",
-                                    LoadImages = true
-                                }
+                                EnableJavascript = true,
+                                DefaultEncoding = "UTF-8",
+                                LoadImages = true
                             }
                         }
-                    };
+                    }
+                };
 
-                    Converter.Convert(doc);
-                    Console.WriteLine($"PDF generated successfully: {pdfFilePath}");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error during PDF generation: {ex.Message}");
-                }
+                Converter.Convert(doc);
+                Console.WriteLine($"PDF generated successfully: {pdfFilePath}");
             }
-        });
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error during PDF generation: {ex.Message}");
+            }
+        }
 
-        thread.SetApartmentState(ApartmentState.STA);
-        thread.Start();
-        thread.Join();
+        //var thread = new Thread(() =>
+        //{
+
+        //});
+
+        //thread.SetApartmentState(ApartmentState.STA);
+        //thread.Start();
+        //thread.Join();
 
         return pdfFilePaths;
     }
