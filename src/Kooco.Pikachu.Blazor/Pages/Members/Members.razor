@@ -21,6 +21,10 @@
                 <Icon Name="IconName.FileDownload"></Icon>
                 @L["Export"]
             </PikachuButton>
+            <PikachuButton Class="pk-btn-sm pk-btn-primary" Clicked="ExportAllAsync" Loading="IsExporting">
+                <Icon Name="IconName.FileDownload" Display="IsExporting ? Display.None : Display.InlineBlock"></Icon>
+                @L["ExportAll"]
+            </PikachuButton>
         </Column>
     </Row>
 </Div>

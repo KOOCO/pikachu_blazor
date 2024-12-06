@@ -55,6 +55,13 @@ public class MemberAppService(IMemberRepository memberRepository, IdentityUserMa
         };
     }
 
+    public async Task<List<MemberDto>> GetAllAsync()
+    {
+        var sorting = nameof(IdentityUser.UserName);
+        var items = await memberRepository.GetListAsync(0, int.MaxValue, sorting, null);
+        return ObjectMapper.Map<List<MemberModel>, List<MemberDto>>(items);
+    }
+
     [Authorize(PikachuPermissions.Members.Delete)]
     public async Task DeleteAsync(Guid id)
     {
@@ -214,7 +221,7 @@ public class MemberAppService(IMemberRepository memberRepository, IdentityUserMa
 
         input.Role = MemberConsts.Role;
         var identityUser = await pikachuAccountAppService.RegisterAsync(input);
-        var shoppingCredit= await shoppingCreditEarnSettingAppService.GetFirstAsync();
+        var shoppingCredit = await shoppingCreditEarnSettingAppService.GetFirstAsync();
         if (shoppingCredit.RegistrationBonusEnabled)
         {
             await userShoppingCreditAppService.RecordShoppingCreditAsync(new RecordUserShoppingCreditDto
@@ -223,12 +230,12 @@ public class MemberAppService(IMemberRepository memberRepository, IdentityUserMa
                 Amount = shoppingCredit.RegistrationEarnedPoints,
                 IsActive = shoppingCredit.RegistrationBonusEnabled,
                 ExpirationDate = shoppingCredit.RegistrationUsagePeriodType == "NoExpiry" ? null : DateTime.Today.AddDays(shoppingCredit.RegistrationValidDays),
-                TransactionDescription= "獲得註冊禮金",
+                TransactionDescription = "獲得註冊禮金",
 
 
 
             });
-                }
+        }
         return ObjectMapper.Map<IdentityUserDto, MemberDto>(identityUser);
     }
 }

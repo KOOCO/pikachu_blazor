@@ -30,4 +30,5 @@ public interface IMemberAppService : IApplicationService
     Task<List<UserAddressDto>> GetMemberAddressListAsync(Guid id);
     Task<MemberLoginResponseDto> LoginAsync(MemberLoginInputDto input);
     Task<MemberDto> RegisterAsync(CreateMemberDto input);
+    Task<List<MemberDto>> GetAllAsync();
 }

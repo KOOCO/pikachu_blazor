@@ -154,4 +154,10 @@ public class MemberController(IMemberAppService memberAppService, IPikachuAccoun
     {
         return pikachuAccountAppService.FindByTokenAsync(method, thirdPartyToken);
     }
+
+    [HttpGet("get-all")]
+    public Task<List<MemberDto>> GetAllAsync()
+    {
+        return memberAppService.GetAllAsync();
+    }
 }

@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
-using Volo.Abp.Content;
 
 namespace Kooco.Pikachu.Blazor.Pages.Members;
 
@@ -22,6 +21,8 @@ public partial class Members
 
     private MemberDto SelectedMember { get; set; }
     private List<MemberDto> SelectedMembers { get; set; }
+
+    private bool IsExporting { get; set; }
 
     public Members()
     {
@@ -81,7 +82,23 @@ public partial class Members
     {
         if (SelectedMembers?.Count > 0)
         {
-            await ExcelDownloadHelper.DownloadExcelAsync(SelectedMembers, "Members.xlsx");
+            await ExcelDownloadHelper.DownloadExcelAsync(SelectedMembers, L["Members"] + ".xlsx");
+        }
+    }
+
+    private async Task ExportAllAsync()
+    {
+        try
+        {
+            IsExporting = true;
+            var allMembers = await MemberAppService.GetAllAsync();
+            await ExcelDownloadHelper.DownloadExcelAsync(allMembers, L["Members"] + ".xlsx");
+            IsExporting = false;
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+            IsExporting = false;
         }
     }
 
