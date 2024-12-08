@@ -15,22 +15,13 @@ public class CustomAssemblyContext : AssemblyLoadContext
         string dllFolder = string.Empty;
 
         if (AppContext.BaseDirectory.Contains("home\\site\\wwwroot"))
-        {
             dllFolder = string.Concat(AppContext.BaseDirectory.Split("wwwroot\\")[0], "wwwroot\\wwwroot\\libs\\DinkToPdf");
-        }
 
         else
-        {
             dllFolder = string.Concat(AppContext.BaseDirectory.Split("pikachu_blazor\\")[0], "pikachu_blazor\\src\\Kooco.Pikachu.Blazor\\wwwroot\\libs\\DinkToPdf");
-        }
 
         string dllPath = Path.Combine(dllFolder, "libwkhtmltox.dll");
 
-        if (File.Exists(dllPath))
-        {
-            return LoadUnmanagedDllFromPath(dllPath);
-        }
-
-        return IntPtr.Zero;
+        return File.Exists(dllPath) ? LoadUnmanagedDllFromPath(dllPath) : IntPtr.Zero;
     }
 }
