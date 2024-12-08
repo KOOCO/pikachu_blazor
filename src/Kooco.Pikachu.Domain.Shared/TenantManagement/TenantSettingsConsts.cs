@@ -3,6 +3,7 @@
 public class TenantSettingsConsts
 {
     public const int MaxWebpageTitleLength = 20;
+    public const int MaxDescriptionLength = 512;
     public const int MaxCompanyNameLength = 64;
     public const int MaxBusinessRegistrationNumberLength = 20;
     public const int MaxContactPhoneLength = 15;
