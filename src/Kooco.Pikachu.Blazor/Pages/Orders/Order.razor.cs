@@ -4,6 +4,7 @@ using Blazorise.LoadingIndicator;
 using Blazorise.Utilities;
 using DinkToPdf;
 using Hangfire.Server;
+using Kooco.Pikachu.Assembly;
 using Kooco.Pikachu.Blazor.Pages.ItemManagement;
 using Kooco.Pikachu.DeliveryTemperatureCosts;
 using Kooco.Pikachu.ElectronicInvoiceSettings;
@@ -215,6 +216,10 @@ public partial class Order
     public List<string> GeneratePdf(List<string> htmls)
     {
         List<string> pdfFilePaths = [];
+
+        CustomAssemblyContext customAssembly = new();
+
+        customAssembly.LoadDinkToPdfDll();
 
         for (int i = 0; i < htmls.Count; i++)
         {
