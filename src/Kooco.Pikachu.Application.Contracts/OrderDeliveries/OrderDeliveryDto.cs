@@ -14,7 +14,7 @@ namespace Kooco.Pikachu.OrderDeliveries
         public string AllPayLogisticsID { get; set; }
         public string Editor { get; set; }
         public string? DeliveryNo { get; set; }
-      
+        public string? FileNo { get; set; }
         public Guid OrderId { get; set; }
         public List<OrderItemDto> Items { get; set; }
 

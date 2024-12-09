@@ -18,6 +18,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using RestSharp;
+using Scriban;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -383,65 +384,84 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         return html;
     }
 
-    private async Task HandleTCatRequest(KeyValuePair<string, string> allPayLogisticsId, Dictionary<string, string>? DeliveryNumbers)
+    private async Task<Tuple<List<string>, List<string>>> HandleTCatRequest(KeyValuePair<string, string> allPayLogisticsId, Dictionary<string, string>? DeliveryNumbers, string? valueOfTCat711)
     {
-            string[]? logisticsIdsArray = [];
+        List<string> pdfFilePath = []; List<string> messages = [];
 
-            List<DownloadOBTOrders> orders = [];
+        string[]? logisticsIdsArray = [];
 
-            if (allPayLogisticsId.Key.Contains("TCatDeliveryNormal"))
-                logisticsIdsArray = DeliveryNumbers?.GetValueOrDefault("TCatDeliveryNormal")?.Split(',');
+        List<string> listOfTCat711Value = valueOfTCat711.IsNullOrEmpty() ? [] : [.. valueOfTCat711.Split(',')];
 
-            else if (allPayLogisticsId.Key.Contains("TCatDeliveryFreeze"))
-                logisticsIdsArray = DeliveryNumbers?.GetValueOrDefault("TCatDeliveryFreeze")?.Split(',');
+        List<string> deliveryNumbers = [];
 
-            else if (allPayLogisticsId.Key.Contains("TCatDeliveryFrozen"))
-                logisticsIdsArray = DeliveryNumbers?.GetValueOrDefault("TCatDeliveryFrozen")?.Split(',');
+        logisticsIdsArray = allPayLogisticsId.Value.Split(',');
 
-            else if (allPayLogisticsId.Key.Contains("TCatDeliverySevenElevenNormal") ||
-                     allPayLogisticsId.Key.Contains("TCatDeliverySevenElevenFreeze") ||
-                     allPayLogisticsId.Key.Contains("TCatDeliverySevenElevenFrozen"))
+        if (allPayLogisticsId.Key.Contains("TCatDeliveryNormal"))
+        {
+            deliveryNumbers.AddRange(DeliveryNumbers?.GetValueOrDefault("TCatDeliveryNormal")?.Split(','));
+        }
+
+        else if (allPayLogisticsId.Key.Contains("TCatDeliveryFreeze"))
+        {
+            deliveryNumbers.AddRange(DeliveryNumbers?.GetValueOrDefault("TCatDeliveryFreeze")?.Split(','));
+        }
+
+        else if (allPayLogisticsId.Key.Contains("TCatDeliveryFrozen"))
+        {
+            deliveryNumbers.AddRange(DeliveryNumbers?.GetValueOrDefault("TCatDeliveryFrozen")?.Split(','));
+        }
+
+        if (logisticsIdsArray != null)
+        {
+            foreach (string id in logisticsIdsArray)
             {
-                logisticsIdsArray = allPayLogisticsId.Value.Split(',');
-            }
+                List<DownloadOBTOrders> orders = [];
 
-            if (logisticsIdsArray != null)
-            {
-                foreach (string id in logisticsIdsArray)
+                if (allPayLogisticsId.Key.Contains("TCatDeliverySevenElevenNormal") ||
+                    allPayLogisticsId.Key.Contains("TCatDeliverySevenElevenFreeze") ||
+                    allPayLogisticsId.Key.Contains("TCatDeliverySevenElevenFrozen"))
                 {
-                    orders.Add(new DownloadOBTOrders { OBTNumber = id.Trim() });
+                    orders.Add(new DownloadOBTOrders { OBTNumber = listOfTCat711Value[logisticsIdsArray.ToList().IndexOf(id)].Trim() });
                 }
-            }
 
-            DownloadOBTRequest requestBody = new()
-            {
-                CustomerId = TCatLogistics.CustomerId,
-                CustomerToken = TCatLogistics.CustomerToken,
-                FileNo = allPayLogisticsId.Value,
-                Orders = orders
-            };
-
-            string jsonContent = JsonConvert.SerializeObject(requestBody);
-
-            StringContent content = new(jsonContent, Encoding.UTF8, "application/json");
-
-            using HttpClient httpClient = new();
-
-            HttpResponseMessage tCatResponse = await httpClient.PostAsync(_configuration["T-Cat:DownloadOBT"], content);
-
-            if (tCatResponse.IsSuccessStatusCode)
-            {
-                var contentType = tCatResponse.Content.Headers.ContentType?.MediaType;
-
-                if (contentType == "application/octet-stream")
+                else
                 {
-                    using Stream responseStream = await tCatResponse.Content.ReadAsStreamAsync();
+                    orders.Add(new DownloadOBTOrders { OBTNumber = deliveryNumbers[logisticsIdsArray.ToList().IndexOf(id)].Trim() });
+                }
 
-                    string filePath = Path.Combine(Path.GetTempPath(), "MergeTemp");
+                DownloadOBTRequest requestBody = new()
+                {
+                    CustomerId = TCatLogistics.CustomerId,
+                    CustomerToken = TCatLogistics.CustomerToken,
+                    FileNo = id,
+                    Orders = orders
+                };
 
-                    using FileStream fileStream = new(filePath, FileMode.Create, FileAccess.Write);
+                string jsonContent = JsonConvert.SerializeObject(requestBody);
 
-                    await responseStream.CopyToAsync(fileStream);
+                StringContent content = new(jsonContent, Encoding.UTF8, "application/json");
+
+                using HttpClient httpClient = new();
+
+                HttpResponseMessage tCatResponse = await httpClient.PostAsync(_configuration["T-Cat:DownloadOBT"], content);
+
+                string? contentType = tCatResponse.Content.Headers.ContentType?.MediaType;
+
+                if (tCatResponse.IsSuccessStatusCode && contentType == "application/pdf")
+                {
+                    string tempFolder = Path.Combine(Path.GetTempPath(), "MergeTemp");
+
+                    string fileName = $"TCatInvoice_{Guid.NewGuid().ToString().Split('-')[0]}.pdf";
+
+                    string filePath = Path.Combine(tempFolder, fileName);
+
+                    using (Stream responseStream = await tCatResponse.Content.ReadAsStreamAsync())
+                    using (FileStream fileStream = new(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
+                    {
+                        await responseStream.CopyToAsync(fileStream);
+                    }
+
+                    pdfFilePath.Add(filePath);
                 }
 
                 else if (contentType == "application/json")
@@ -449,14 +469,21 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                     string responseContent = await tCatResponse.Content.ReadAsStringAsync();
 
                     DownloadOBTResponse? downloadObtResponse = JsonConvert.DeserializeObject<DownloadOBTResponse>(responseContent);
+
+                    messages.Add(downloadObtResponse?.Message ?? string.Empty);
                 }
             }
+        }
 
+        return Tuple.Create(pdfFilePath, messages);
     }
 
-    public async Task<List<string>> OnBatchPrintingShippingLabel(Dictionary<string, string> allPayLogisticsIds, Dictionary<string, string>? DeliveryNumbers)
+    public async Task<Tuple<List<string>, List<string>, List<string>>> OnBatchPrintingShippingLabel(
+        Dictionary<string, string> allPayLogisticsIds, 
+        Dictionary<string, string>? DeliveryNumbers,
+        Dictionary<string, string>? allPayLogisticsForTCat711) 
     {
-        List<string> htmls = [];
+        List<string> htmls = []; List<string> errors = []; List<string> preDefinedPdfPaths = [];
 
         List<LogisticsProviderSettingsDto> providers = await _logisticsProvidersAppService.GetAllAsync();
 
@@ -484,7 +511,6 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             
             Dictionary<string, string> parameters = [];
 
-
             if (allPayLogisticsId.Key.Contains("TCatDeliveryNormal") ||
                 allPayLogisticsId.Key.Contains("TCatDeliveryFreeze") ||
                 allPayLogisticsId.Key.Contains("TCatDeliveryFrozen") ||
@@ -492,8 +518,19 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 allPayLogisticsId.Key.Contains("TCatDeliverySevenElevenFreeze") ||
                 allPayLogisticsId.Key.Contains("TCatDeliverySevenElevenFrozen"))
             {
-                await HandleTCatRequest(allPayLogisticsId, DeliveryNumbers);
+                Tuple<List<string>, List<string>> tCatTuple = await HandleTCatRequest(
+                    allPayLogisticsId, 
+                    DeliveryNumbers, 
+                    allPayLogisticsForTCat711.GetValueOrDefault(allPayLogisticsId.Key)
+                );
+
+                if (tCatTuple.Item1 is { Count: > 0 }) preDefinedPdfPaths.AddRange(tCatTuple.Item1);
+
+                if (tCatTuple.Item2 is { Count: > 0 }) errors.AddRange(tCatTuple.Item2);
+
+                continue;
             }
+
             else if (allPayLogisticsId.Key.Contains("SevenToEleven1") ||
                      allPayLogisticsId.Key.Contains("PostOffice") ||
                      allPayLogisticsId.Key.Contains("BlackCat1") ||
@@ -595,7 +632,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             htmls.Add(html);
         }
 
-        return htmls;
+        return Tuple.Create(htmls, preDefinedPdfPaths, errors);
     }
 
     public void MapAllLogistics(List<LogisticsProviderSettingsDto> providers)

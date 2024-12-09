@@ -30,6 +30,10 @@ namespace Kooco.Pikachu.StoreLogisticOrders
 
         Task<string> OnBatchPrintingShippingLabel(List<string> allPayLogisticsId);
 
-        Task<List<string>> OnBatchPrintingShippingLabel(Dictionary<string, string> allPayLogisticsIds, Dictionary<string, string>? DeliveryNumbers);
+        Task<Tuple<List<string>, List<string>, List<string>>> OnBatchPrintingShippingLabel(
+            Dictionary<string, string> allPayLogisticsIds, 
+            Dictionary<string, string>? DeliveryNumbers,
+            Dictionary<string, string>? allPayLogisticsForTCat711
+        );
     }
 }

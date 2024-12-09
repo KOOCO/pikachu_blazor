@@ -78,7 +78,8 @@ public class StoreLogisticOrderController(
     }
 
     [HttpGet("batch-printing-shipping")]
-    public Task<List<string>> OnBatchPrintingShippingLabel(Dictionary<string, string> allPayLogisticsIds, Dictionary<string, string>? DeliveryNumbers)
+    public Task<Tuple<List<string>, List<string>, List<string>>> OnBatchPrintingShippingLabel(Dictionary<string, string> allPayLogisticsIds, Dictionary<string, string>? DeliveryNumbers,
+        Dictionary<string, string>? allPayLogisticsForTCat711)
     {
         throw new NotImplementedException();
     }

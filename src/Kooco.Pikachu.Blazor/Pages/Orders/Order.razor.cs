@@ -155,6 +155,13 @@ public partial class Order
             { "TCatDeliverySevenElevenFrozen", string.Empty },
         };
 
+        Dictionary<string, string> allPayLogistic = new()
+        {
+            { "TCatDeliverySevenElevenNormal", string.Empty },
+            { "TCatDeliverySevenElevenFreeze", string.Empty },
+            { "TCatDeliverySevenElevenFrozen", string.Empty }
+        };
+
         Dictionary<string, string> DeliveryNumbers = new()
         {
             { "SevenToElevenC2C", string.Empty },
@@ -181,11 +188,43 @@ public partial class Order
 
                     List<string> AllPayLogisticId = AllPayLogisticsIdsValue.IsNullOrEmpty() ? [] : [.. AllPayLogisticsIdsValue.Split(',')];
 
-                    AllPayLogisticId.Add(delivery.AllPayLogisticsID);
+                    if (delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryNormal ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryFreeze ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryFrozen ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenNormal ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenFreeze ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenFrozen)
+                    {
+                        AllPayLogisticId.Add(delivery.FileNo);
 
-                    AllPayLogisticsIds.Remove(delivery.DeliveryMethod.ToString());
+                        AllPayLogisticsIds.Remove(delivery.DeliveryMethod.ToString());
 
-                    AllPayLogisticsIds.Add(delivery.DeliveryMethod.ToString(), string.Join(",", AllPayLogisticId));
+                        AllPayLogisticsIds.Add(delivery.DeliveryMethod.ToString(), string.Join(",", AllPayLogisticId));
+
+                        if (delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenNormal ||
+                            delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenFreeze ||
+                            delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenFrozen)
+                        {
+                            string? aplValues = allPayLogistic.GetValueOrDefault(delivery.DeliveryMethod.ToString()) ?? string.Empty;
+
+                            List<string> aPL = aplValues.IsNullOrEmpty() ? [] : [.. aplValues.Split(',')];
+
+                            aPL.Add(delivery.AllPayLogisticsID);
+
+                            allPayLogistic.Remove(delivery.DeliveryMethod.ToString());
+
+                            allPayLogistic.Add(delivery.DeliveryMethod.ToString(), string.Join(",", aPL));
+                        }
+                    }
+
+                    else
+                    {
+                        AllPayLogisticId.Add(delivery.AllPayLogisticsID);
+
+                        AllPayLogisticsIds.Remove(delivery.DeliveryMethod.ToString());
+
+                        AllPayLogisticsIds.Add(delivery.DeliveryMethod.ToString(), string.Join(",", AllPayLogisticId));
+                    }
 
                     if (delivery.DeliveryMethod is EnumValues.DeliveryMethod.FamilyMartC2C || 
                         delivery.DeliveryMethod is EnumValues.DeliveryMethod.SevenToElevenC2C ||
@@ -207,9 +246,21 @@ public partial class Order
             }
         }
 
-        List<string> htmls = await _StoreLogisticsOrderAppService.OnBatchPrintingShippingLabel(AllPayLogisticsIds, DeliveryNumbers);
+        string MergeTempFolder = Path.Combine(Path.GetTempPath(), "MergeTemp");
 
-        MemoryStream combinedPdfStream = CombinePdf(GeneratePdf(htmls));
+        Directory.CreateDirectory(MergeTempFolder);
+
+        Tuple<List<string>, List<string>, List<string>> tuple = await _StoreLogisticsOrderAppService.OnBatchPrintingShippingLabel(AllPayLogisticsIds, DeliveryNumbers, allPayLogistic);
+
+        string errors = string.Join('\n', tuple.Item3);
+
+        if (!errors.IsNullOrWhiteSpace()) await _uiMessageService.Warn(errors);
+
+        List<string> outputPdfPaths = GeneratePdf(tuple.Item1);
+
+        if (tuple.Item2 is { Count: > 0 }) outputPdfPaths.AddRange(tuple.Item2);
+
+        MemoryStream combinedPdfStream = CombinePdf(outputPdfPaths);
 
         await JSRuntime.InvokeVoidAsync("downloadFile", new
         {
@@ -236,8 +287,6 @@ public partial class Order
             try
             {
                 string tempPath = Path.Combine(Path.GetTempPath(), "MergeTemp");
-
-                Directory.CreateDirectory(tempPath);
 
                 string htmlFilePath = Path.Combine(tempPath, $"outputHTML{i}.html");
 
