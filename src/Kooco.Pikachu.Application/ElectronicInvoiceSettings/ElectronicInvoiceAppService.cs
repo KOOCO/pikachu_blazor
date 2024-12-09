@@ -85,13 +85,14 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
             {
                 MerchantID = setting?.StoreCode ?? string.Empty,
                 RelateNumber = order.OrderNo,
-                CustomerName = order.CustomerName,
+                CustomerName = order.InvoiceType == InvoiceType.BusinessInvoice?order.TaxTitle: order.CustomerName,
                 CustomerAddr = order.AddressDetails,
                 CustomerPhone = order.RecipientPhone,
                 CustomerEmail = order.CustomerEmail,
                 ClearanceMark = "1",
                 InvoiceRemark = setting?.DisplayInvoiceName ?? string.Empty,
-                //CustomerIdentifier=order.UniformNumber,
+                
+                
                 CarrierNum = CarrierNumber,
                 CarrierType = CarrierType,
 
@@ -103,6 +104,11 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
                 vat = "1",
                 Items = new List<myItem>()
             };
+            if (order.InvoiceType == InvoiceType.BusinessInvoice)
+            {
+                parameters.CustomerIdentifier = order.CarrierId;
+            
+            }    
             foreach (var item in order?.OrderItems)
             {
                 myItem orderitem = new();
