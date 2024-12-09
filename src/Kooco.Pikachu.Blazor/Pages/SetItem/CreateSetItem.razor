@@ -36,19 +36,19 @@
             <div class="col-10 row">
                 <Field>
                     <FilePicker @ref="FilePicker"
-                                        Multiple
-                                 Changed="OnFileUploadAsync"
-                                 ShowMode="FilePickerShowMode.List"
-                                 Accept=".jpg, .png, .svg, ,.jpeg,.webp">
-                         <FileTemplate>
-                             <Div Flex="Flex.JustifyContent.Between">
-                                 <Div>
-                                     <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
-                                     <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
-                                 </Div>
-                                 <Div Class="ps-2">
-                                     <Div>
-                                         @if (context.File.Status == FileEntryStatus.Ready)
+                                Multiple
+                                Changed="OnFileUploadAsync"
+                                ShowMode="FilePickerShowMode.List"
+                                Accept=".jpg, .png, .svg, ,.jpeg,.webp">
+                        <FileTemplate>
+                            <Div Flex="Flex.JustifyContent.Between">
+                                <Div>
+                                    <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
+                                    <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                </Div>
+                                <Div Class="ps-2">
+                                    <Div>
+                                        @if (context.File.Status == FileEntryStatus.Ready)
                                         {
                                             <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
                                         }
@@ -85,10 +85,10 @@
                         {
                             <div class="image-container">
                                 <Image class="blur-image" Source="@image.ImageUrl" Text="Item Image" Fluid />
-                                 <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName)">
-                                     <i class="fa fa-trash"></i>
-                                 </button>
-                             </div>
+                                <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName)">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </div>
                         }
                     </div>
                 </div>
@@ -155,59 +155,59 @@
         </div>
 
         <div class="row mt-2">
-                <div class="col-2">
-                    @L["AddItem"]
-                </div>
-                <div class="col-9">
-                    <Autocomplete TItem="ItemWithItemTypeDto"
-                                  TValue="Guid?"
-                                  Data="@ItemsList"
-                                  TextField="@(( item ) => item.Name)"
-                                  ValueField="@(( item ) => item.Id)"
-                                  @bind-SelectedText="SelectedAutoCompleteText"
-                                  Placeholder="Search..."
-                                  Filter="AutocompleteFilter.StartsWith"
-                                  CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
-                                  HighlightSearch
-                                  Immediate="true"
-                                  SelectedValueChanged="OnSelectedValueChanged"
-                                  @ref="AutocompleteField">
-                        <NotFoundContent> @L["NotFound"] </NotFoundContent>
-                    </Autocomplete>
-                </div>
-                <div class="col-1">
-                    <Button Color="Color.Danger" Clicked="RemoveSelectedItems">
-                        <i class="fa fa-trash"></i>
-                    </Button>
-                </div>
+            <div class="col-2">
+                @L["AddItem"]
+            </div>
+            <div class="col-9">
+                <Autocomplete TItem="ItemWithItemTypeDto"
+                              TValue="Guid?"
+                              Data="@ItemsList"
+                              TextField="@(( item ) => item.Name)"
+                              ValueField="@(( item ) => item.Id)"
+                              @bind-SelectedText="SelectedAutoCompleteText"
+                              Placeholder="Search..."
+                              Filter="AutocompleteFilter.StartsWith"
+                              CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                              HighlightSearch
+                              Immediate="true"
+                              SelectedValueChanged="OnSelectedValueChanged"
+                              @ref="AutocompleteField">
+                    <NotFoundContent> @L["NotFound"] </NotFoundContent>
+                </Autocomplete>
+            </div>
+            <div class="col-1">
+                <Button Color="Color.Danger" Clicked="RemoveSelectedItems">
+                    <i class="fa fa-trash"></i>
+                </Button>
+            </div>
         </div>
 
         <div class="row mt-1">
-                <div class="col-2">
-                </div>
-                <div class="col-10">
-                    <Table Narrow>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHeaderCell Class="text-center" Style="width: 20px;">
-                                    <input type="checkbox" class="form-check-input" checked="@IsAllSelected" @onchange="HandleSelectAllChange"></input>
-                                </TableHeaderCell>
-                                <TableHeaderCell>
-                                    @L["ItemList"]
-                                </TableHeaderCell>
-                                <TableHeaderCell Class="text-center"  Style="width: 150px;">
-                                    @L["Quantity"]
-                                </TableHeaderCell>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            @foreach (var item in ItemDetails)
-                            {
-                                <TableRow Class="text-center align-items-center">
-                                    <TableRowCell>
-                                        <InputCheckbox class="form-check-input" @bind-Value="@item.IsSelected"></InputCheckbox>
-                                    </TableRowCell>
-                                    <TableRowCell Class="text-start">
+            <div class="col-2">
+            </div>
+            <div class="col-10">
+                <Table Narrow>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHeaderCell Class="text-center" Style="width: 20px;">
+                                <input type="checkbox" class="form-check-input" checked="@IsAllSelected" @onchange="HandleSelectAllChange"></input>
+                            </TableHeaderCell>
+                            <TableHeaderCell>
+                                @L["ItemList"]
+                            </TableHeaderCell>
+                            <TableHeaderCell Class="text-center" Style="width: 150px;">
+                                @L["Quantity"]
+                            </TableHeaderCell>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        @foreach (var item in ItemDetails)
+                        {
+                            <TableRow Class="text-center align-items-center">
+                                <TableRowCell>
+                                    <InputCheckbox class="form-check-input" @bind-Value="@item.IsSelected"></InputCheckbox>
+                                </TableRowCell>
+                                <TableRowCell Class="text-start">
                                     <Div Class="d-flex flex-row">
                                         @if (!item.ImageUrl.IsNullOrWhiteSpace())
                                         {
@@ -217,18 +217,61 @@
                                         }
                                         <Div Class="p-2">
                                             <h4>@item.ItemName</h4>
-                                            <p>@item.ItemDescriptionTitle</p>
+                                            @{
+                                                var itemDetails = item.ItemDetails;
+                                            }
+                                            <Div Class="d-flex gap-1">
+                                                @if (itemDetails.Where(x => x.Attribute1Value != null).Count() > 0)
+                                                {
+                                                    <Div class="mt-2">
+                                                        <Select TValue="string" Size="Size.Small">
+                                                            @foreach (var item in itemDetails.DistinctBy(i => i.Attribute1Value))
+                                                            {
+                                                                <SelectItem>
+                                                                    @item.Attribute1Value
+                                                                </SelectItem>
+                                                            }
+                                                        </Select>
+                                                    </Div>
+                                                }
+                                                @if (itemDetails.Where(x => x.Attribute2Value != null).Count() > 0)
+                                                {
+                                                    <Div class="mt-2">
+                                                        <Select TValue="string" Size="Size.Small">
+                                                            @foreach (var item in itemDetails.DistinctBy(i => i.Attribute2Value))
+                                                            {
+                                                                <SelectItem>
+                                                                    @item.Attribute2Value
+                                                                </SelectItem>
+                                                            }
+                                                        </Select>
+                                                    </Div>
+                                                }
+                                                @if (itemDetails.Where(x => x.Attribute3Value != null).Count() > 0)
+                                                {
+                                                    <Div Class="mt-2">
+                                                        <Select TValue="string" Size="Size.Small" Class="dropdown">
+                                                            @foreach (var item in itemDetails.DistinctBy(i => i.Attribute3Value))
+                                                            {
+                                                                <SelectItem>
+                                                                    @item.Attribute3Value
+                                                                </SelectItem>
+                                                            }
+                                                        </Select>
+                                                    </Div>
+                                                }
+                                            </Div>
                                         </Div>
                                     </Div>
-                                    </TableRowCell>
-                                    <TableRowCell>
-                                        <NumericEdit Class="form-control form-control-sm" @bind-Value="item.Quantity" Min="1"></NumericEdit>
-                                    </TableRowCell>
-                                </TableRow>
-                            }
-                        </TableBody>
-                    </Table>
-                </div>
+                                </TableRowCell>
+                                <TableRowCell>
+                                    <NumericEdit @bind-Value="item.Quantity" Min="1"></NumericEdit>
+                                </TableRowCell>
+                            </TableRow>
+                        }
+                    </TableBody>
+                </Table>
+            </div>
         </div>
 
         <div class="row mt-2">
@@ -239,7 +282,7 @@
                 <InputNumber class="form-control no-spinners" TValue="float" @bind-Value="@CreateUpdateSetItemDto.SetItemPrice" />
             </div>
         </div>
-         <div class="row mt-2">
+        <div class="row mt-2">
             <div class="col-2">
                 <label>@L["SetGroupBuyPrice"]</label>
             </div>
@@ -253,7 +296,7 @@
                 <label>@L["CommodityAttributes"]</label>
             </div>
             <div class="col-10">
-               @*  <div class="row">
+                @*  <div class="row">
                     <div class="col-3">
                         <label>@L["TimeLimitPeriod"]</label>
                     </div>
@@ -290,7 +333,7 @@
                 </div>
             </div>
         </div>
-    </CardBody> 
+    </CardBody>
 </Card>
 <div class="row">
     <div class="col-12 text-lg-end">
