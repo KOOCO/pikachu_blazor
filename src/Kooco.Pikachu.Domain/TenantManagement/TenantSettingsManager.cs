@@ -109,13 +109,15 @@ public class TenantSettingsManager(IRepository<TenantSettings, Guid> tenantSetti
         return tenantSettings;
     }
 
-    public async Task<TenantSettings> UpdateTenantFrontendInformationAsync(string? webpageTitle, string? faviconUrl, string? logoUrl, string? bannerUrl)
+    public async Task<TenantSettings> UpdateTenantFrontendInformationAsync(string? webpageTitle, string? faviconUrl, string? logoUrl, string? bannerUrl, string? description)
     {
         Check.NotNullOrWhiteSpace(webpageTitle, nameof(webpageTitle), TenantSettingsConsts.MaxWebpageTitleLength);
+        Check.Length(description, nameof(description), TenantSettingsConsts.MaxDescriptionLength);
 
         var tenantSettings = await GetAsync();
         tenantSettings.SetWebpageTitle(webpageTitle);
         tenantSettings.SetFaviconUrl(faviconUrl);
+        tenantSettings.SetDescription(description);
 
         var tenant = await tenantRepository.FirstOrDefaultAsync(x => CurrentTenant != null && x.Id == CurrentTenant.Id)
             ?? throw new EntityNotFoundException(typeof(Tenant));

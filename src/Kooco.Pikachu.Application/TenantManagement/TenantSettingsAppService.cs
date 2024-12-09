@@ -94,7 +94,7 @@ public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManage
     [Authorize(PikachuPermissions.TenantSettings.Edit)]
     public async Task<TenantFrontendInformationDto> UpdateTenantFrontendInformationAsync(UpdateTenantFrontendInformationDto input)
     {
-        var tenantSettings = await tenantSettingsManager.UpdateTenantFrontendInformationAsync(input.WebpageTitle, input.FaviconUrl, input.LogoUrl, input.BannerUrl);
+        var tenantSettings = await tenantSettingsManager.UpdateTenantFrontendInformationAsync(input.WebpageTitle, input.FaviconUrl, input.LogoUrl, input.BannerUrl, input.Description);
 
         return ObjectMapper.Map<TenantSettings, TenantFrontendInformationDto>(tenantSettings);
     }

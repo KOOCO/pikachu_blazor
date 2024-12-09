@@ -128,9 +128,16 @@
                     <div class="col-9">
                         <Validation>
                         <Select TValue="DeliveryStatus"  class="form-control"  @bind-SelectedValue="@CreateUpdateElectronicInvoiceDto.StatusOnInvoiceIssue"  >
-                                   @foreach (var enumValue in Enum.GetValues(typeof(DeliveryStatus)))
+                                    @foreach (var enumValue in new DeliveryStatus[]
                                     {
-                                         <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                    DeliveryStatus.Processing,
+                                    DeliveryStatus.ToBeShipped,
+                                    DeliveryStatus.Shipped,
+                                    DeliveryStatus.Delivered,
+                                    DeliveryStatus.Completed
+                                    })
+                                    {
+                                        <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
                                     }
           
                                 </Select>
