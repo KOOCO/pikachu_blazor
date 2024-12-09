@@ -260,14 +260,17 @@ public partial class Order
 
         if (tuple.Item2 is { Count: > 0 }) outputPdfPaths.AddRange(tuple.Item2);
 
-        MemoryStream combinedPdfStream = CombinePdf(outputPdfPaths);
-
-        await JSRuntime.InvokeVoidAsync("downloadFile", new
+        if (outputPdfPaths is { Count: > 0 })
         {
-            ByteArray = combinedPdfStream.ToArray(),
-            FileName = "Invoices.pdf",
-            ContentType = "application/pdf"
-        });
+            MemoryStream combinedPdfStream = CombinePdf(outputPdfPaths);
+
+            await JSRuntime.InvokeVoidAsync("downloadFile", new
+            {
+                ByteArray = combinedPdfStream.ToArray(),
+                FileName = "Invoices.pdf",
+                ContentType = "application/pdf"
+            });
+        }
 
         Directory.Delete(Path.Combine(Path.GetTempPath(), "MergeTemp"), true);
 
@@ -331,15 +334,6 @@ public partial class Order
                 Console.WriteLine($"Error during PDF generation: {ex.Message}");
             }
         }
-
-        //var thread = new Thread(() =>
-        //{
-
-        //});
-
-        //thread.SetApartmentState(ApartmentState.STA);
-        //thread.Start();
-        //thread.Join();
 
         return pdfFilePaths;
     }

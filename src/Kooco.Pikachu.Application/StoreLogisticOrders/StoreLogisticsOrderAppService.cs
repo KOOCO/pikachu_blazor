@@ -604,32 +604,40 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             RestResponse response = await client.ExecuteAsync(request);
 
-            string html = response.Content!.ToString();
-
-            html = html.Replace("div class=\"PrintToolsBlock\"", "div class=\"PrintToolsBlock\" hidden");
-
-            if (allPayLogisticsId.Key.Contains("SevenToEleven1") ||
-                allPayLogisticsId.Key.Contains("PostOffice") ||
-                allPayLogisticsId.Key.Contains("BlackCat1") ||
-                allPayLogisticsId.Key.Contains("BlackCatFreeze") ||
-                allPayLogisticsId.Key.Contains("BlackCatFrozen") ||
-                allPayLogisticsId.Key.Contains("FamilyMart1") ||
-                allPayLogisticsId.Key.Contains("SevenToElevenFrozen"))
+            if (response.Content!.ToString().Contains("alert("))
             {
-                html = html.Replace("/Content/Logistics/Helper/PrintTradeDocument.css?v=12", "https://logistics.ecpay.com.tw/Content/Logistics/Helper/PrintTradeDocument.css?v=12");
-                html = html.Replace("/Scripts/jquery-1.4.4.min.js", "https://logistics.ecpay.com.tw/Scripts/jquery-1.4.4.min.js");
-                html = html.Replace("/Scripts/Logistics/Helper/PrintTradeDocument.js?v=9", "https://logistics.ecpay.com.tw/Scripts/Logistics/Helper/PrintTradeDocument.js?v=9");
-                html = html.Replace("<body class=\"PrintBody\">", "<script>\r\n    document.querySelectorAll('img[data-src]').forEach(img => {\r\n        img.src = img.getAttribute('data-src');\r\n    });\r\n</script> \n <body class=\"PrintBody\">");
+                errors.Add("Cannot Generate Pdf, Please contact site owner.");
             }
 
-            else if (allPayLogisticsId.Key.Contains("FamilyMartC2C"))
+            else
             {
-                html = html.Replace("/Scripts/jquery-1.4.4.min.js", "https://logistics.ecpay.com.tw/Scripts/jquery-1.4.4.min.js");
-                html = html.Replace("/Scripts/jquery-ui.min.js", "https://logistics.ecpay.com.tw/Scripts/jquery-ui.min.js");
-                html = html.Replace("/Scripts/jquery.blockUI.js", "https://logistics.ecpay.com.tw/Scripts/jquery.blockUI.js");
-            }
+                string html = response.Content!.ToString();
 
-            htmls.Add(html);
+                html = html.Replace("div class=\"PrintToolsBlock\"", "div class=\"PrintToolsBlock\" hidden");
+
+                if (allPayLogisticsId.Key.Contains("SevenToEleven1") ||
+                    allPayLogisticsId.Key.Contains("PostOffice") ||
+                    allPayLogisticsId.Key.Contains("BlackCat1") ||
+                    allPayLogisticsId.Key.Contains("BlackCatFreeze") ||
+                    allPayLogisticsId.Key.Contains("BlackCatFrozen") ||
+                    allPayLogisticsId.Key.Contains("FamilyMart1") ||
+                    allPayLogisticsId.Key.Contains("SevenToElevenFrozen"))
+                {
+                    html = html.Replace("/Content/Logistics/Helper/PrintTradeDocument.css?v=12", "https://logistics.ecpay.com.tw/Content/Logistics/Helper/PrintTradeDocument.css?v=12");
+                    html = html.Replace("/Scripts/jquery-1.4.4.min.js", "https://logistics.ecpay.com.tw/Scripts/jquery-1.4.4.min.js");
+                    html = html.Replace("/Scripts/Logistics/Helper/PrintTradeDocument.js?v=9", "https://logistics.ecpay.com.tw/Scripts/Logistics/Helper/PrintTradeDocument.js?v=9");
+                    html = html.Replace("<body class=\"PrintBody\">", "<script>\r\n    document.querySelectorAll('img[data-src]').forEach(img => {\r\n        img.src = img.getAttribute('data-src');\r\n    });\r\n</script> \n <body class=\"PrintBody\">");
+                }
+
+                else if (allPayLogisticsId.Key.Contains("FamilyMartC2C"))
+                {
+                    html = html.Replace("/Scripts/jquery-1.4.4.min.js", "https://logistics.ecpay.com.tw/Scripts/jquery-1.4.4.min.js");
+                    html = html.Replace("/Scripts/jquery-ui.min.js", "https://logistics.ecpay.com.tw/Scripts/jquery-ui.min.js");
+                    html = html.Replace("/Scripts/jquery.blockUI.js", "https://logistics.ecpay.com.tw/Scripts/jquery.blockUI.js");
+                }
+
+                htmls.Add(html);
+            }
         }
 
         return Tuple.Create(htmls, preDefinedPdfPaths, errors);
