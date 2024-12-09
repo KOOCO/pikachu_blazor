@@ -46,134 +46,150 @@
     </div>
     <Card>
         <CardBody>
-            <div>
-                  <Validations @ref="@CreateValidationsRef" Model="@CreateUpdateElectronicInvoiceDto" ValidateOnLoad="false">
-                    <div class=" col-12 row mb-3">
-                    <div class="col-3 text-lg-end ">
+            <Validations @ref="@CreateValidationsRef" Model="@CreateUpdateElectronicInvoiceDto" ValidateOnLoad="false">
+                <!-- Use ECPay electronic receipt -->
+                <div class="col-12 row mb-3">
+                    <div class="col-3 text-lg-end">
                         <FieldLabel>@L["UseECPayelectronicreceipt"]</FieldLabel>
                     </div>
                     <div class="col-9">
-                        <Switch TValue="bool" @bind-Checked="@CreateUpdateElectronicInvoiceDto.IsEnable"  ></Switch>
+                        <Switch TValue="bool" Disabled="@(!CanSave)" @bind-Checked="@CreateUpdateElectronicInvoiceDto.IsEnable"></Switch>
+                        @if (!CanSave)
+                        {
+                               <AntDesign.Alert Type="@AntDesign.AlertType.Error"
+                                         Message="@L["Error"]"
+                                         Description="@L["PleaseFillInTheRequiredInformation."]"
+                                         ShowIcon="true" /> 
+                        }
+                        else{
                         <AntDesign.Alert Type="@AntDesign.AlertType.Info"
-                        Message="@L["Info"]"
-       Description="@L["Ifthissettingisturnedoff,pleaseprinttheinvoiceforthecustomer"]"
-       ShowIcon="true" />
+                                         Message="@L["Info"]"
+                                         Description="@L["Ifthissettingisturnedoff,pleaseprinttheinvoiceforthecustomer"]"
+                                         ShowIcon="true" />
+                        }
                     </div>
-                    
                 </div>
-                 <div class=" col-12 row mb-3 ">
+
+                <!-- Store Code -->
+                <div class="col-12 row mb-3">
                     <div class="col-3 text-lg-end pt-2">
                         <label>@L["StoreName"]</label>
                     </div>
                     <div class="col-9">
-                        <Validation >
-                        <TextEdit class="form-control"  @bind-Text="@CreateUpdateElectronicInvoiceDto.StoreCode"  >
-                            <Feedback>
-            <ValidationError></ValidationError>
-        </Feedback>
-    </TextEdit>
-</Validation>
+                        <Validation>
+                            <TextEdit class="form-control"
+                                      @bind-Text="@CreateUpdateElectronicInvoiceDto.StoreCode">
+                                <Feedback>
+                                    <ValidationError></ValidationError>
+                                </Feedback>
+                            </TextEdit>
+                        </Validation>
                     </div>
-                    
                 </div>
-                   <div class=" col-12 row mb-3">
+
+                <!-- Hash Key -->
+                <div class="col-12 row mb-3">
                     <div class="col-3 text-lg-end pt-2">
                         <label>@L["HashKey"]</label>
                     </div>
                     <div class="col-9">
                         <Validation>
-                        <TextEdit class="form-control"  @bind-Text="@CreateUpdateElectronicInvoiceDto.HashKey"  >
-                                        <Feedback>
-            <ValidationError></ValidationError>
-        </Feedback>
-    </TextEdit>
-</Validation>
+                            <TextEdit class="form-control"
+                                      @bind-Text="@CreateUpdateElectronicInvoiceDto.HashKey">
+                                <Feedback>
+                                    <ValidationError></ValidationError>
+                                </Feedback>
+                            </TextEdit>
+                        </Validation>
                     </div>
-                    
                 </div>
-                  <div class=" col-12 row mb-3">
+
+                <!-- Hash IV -->
+                <div class="col-12 row mb-3">
                     <div class="col-3 text-lg-end pt-2">
                         <label>@L["HashIV"]</label>
                     </div>
                     <div class="col-9">
                         <Validation>
-                        <TextEdit class="form-control"  @bind-Text="@CreateUpdateElectronicInvoiceDto.HashIV"  >
-                                        <Feedback>
-            <ValidationError></ValidationError>
-        </Feedback>
-    </TextEdit>
-</Validation>
+                            <TextEdit class="form-control"
+                                      @bind-Text="@CreateUpdateElectronicInvoiceDto.HashIV">
+                                <Feedback>
+                                    <ValidationError></ValidationError>
+                                </Feedback>
+                            </TextEdit>
+                        </Validation>
                     </div>
-                    
                 </div>
-                  <div class=" col-12 row mb-3">
+
+                <!-- Display Invoice Name -->
+                <div class="col-12 row mb-3">
                     <div class="col-3 text-lg-end pt-2">
                         <label>@L["InvoiceNameDisplay"]</label>
                     </div>
                     <div class="col-9">
                         <Validation>
-                        <TextEdit class="form-control"  @bind-Text="@CreateUpdateElectronicInvoiceDto.DisplayInvoiceName"  >
-                                            <Feedback>
-            <ValidationError></ValidationError>
-        </Feedback>
-    </TextEdit>
-</Validation>
+                            <TextEdit class="form-control"
+                                      @bind-Text="@CreateUpdateElectronicInvoiceDto.DisplayInvoiceName">
+                                <Feedback>
+                                    <ValidationError></ValidationError>
+                                </Feedback>
+                            </TextEdit>
+                        </Validation>
                     </div>
-                    
                 </div>
-                 <div class=" col-12 row mb-3">
-                    <div class="col-3 text-lg-end pt-2">
-                        <label>@L["StatusOnInvoiceIssue"]</label>
-                    </div>
-                    <div class="col-9">
-                        <Validation>
-                        <Select TValue="DeliveryStatus"  class="form-control"  @bind-SelectedValue="@CreateUpdateElectronicInvoiceDto.StatusOnInvoiceIssue"  >
-                                    @foreach (var enumValue in new DeliveryStatus[]
-                                    {
-                                    DeliveryStatus.Processing,
-                                    DeliveryStatus.ToBeShipped,
-                                    DeliveryStatus.Shipped,
-                                    DeliveryStatus.Delivered,
-                                    DeliveryStatus.Completed
-                                    })
-                                    {
-                                        <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
-                                    }
-          
-                                </Select>
-                                                    
-            <ValidationError></ValidationError>
-       
-    
-</Validation>
-                    </div>
-                    
-                </div>
-                <div class=" col-12 row mb-3">
+
+                <!-- Days After Shipment -->
+                <div class="col-12 row mb-3">
                     <div class="col-3 text-lg-end pt-2">
                         <label>@L["DaysAfterShipmentToGenerateInvoice"]</label>
                     </div>
                     <div class="col-9">
                         <Validation>
-                        <NumericEdit TValue="int" Min="0" Max="90" class="form-control"  @bind-Value="@CreateUpdateElectronicInvoiceDto.DaysAfterShipmentGenerateInvoice"  >
-                                        <Feedback>
-            <ValidationError></ValidationError>
-        </Feedback>
-    </NumericEdit>
-</Validation>
+                            <NumericEdit TValue="int"
+                                         Min="0"
+                                         Max="90"
+                                         class="form-control"
+                                         @bind-Value="@CreateUpdateElectronicInvoiceDto.DaysAfterShipmentGenerateInvoice">
+                                <Feedback>
+                                    <ValidationError></ValidationError>
+                                </Feedback>
+                            </NumericEdit>
+                        </Validation>
                     </div>
-                    
                 </div>
-                  </Validations>
+
+                <!-- Status On Invoice Issue -->
+                <div class="col-12 row mb-3">
+                    <div class="col-3 text-lg-end pt-2">
+                        <label>@L["StatusOnInvoiceIssue"]</label>
+                    </div>
+                    <div class="col-9">
+                        <Validation>
+                            <Select TValue="DeliveryStatus"
+                                    class="form-control"
+                                    @bind-SelectedValue="@CreateUpdateElectronicInvoiceDto.StatusOnInvoiceIssue">
+                                @foreach (var status in Enum.GetValues<DeliveryStatus>())
+                                {
+                                    <SelectItem Value="@status">@L[status.ToString()]</SelectItem>
+                                }
+                            </Select>
+                            <Feedback>
+                                <ValidationError></ValidationError>
+                            </Feedback>
+                        </Validation>
+                    </div>
                 </div>
-            
+            </Validations>
         </CardBody>
     </Card>
 </div>
+
 <div class="row">
     <div class="col-12 text-lg-end">
-       
-        <Button Type="@ButtonType.Button" class="btn btn-primary" Clicked="CreateEntityAsync">
+        <Button Type="@ButtonType.Button"
+                class="btn btn-primary"
+                Clicked="CreateEntityAsync"
+                Disabled="@(!CanSave)">
             <i class="fa fa-check"></i>
             @L["Save"]
         </Button>
@@ -181,5 +197,18 @@
 </div>
 
 @code {
+    private bool CanSave => CreateUpdateElectronicInvoiceDto.IsEnable && IsValid();
 
+    private bool IsValid()
+    {
+        // Ensure all required fields are not null or empty and match validation rules.
+        return !string.IsNullOrWhiteSpace(CreateUpdateElectronicInvoiceDto.StoreCode)
+            && !string.IsNullOrWhiteSpace(CreateUpdateElectronicInvoiceDto.HashKey)
+            && !string.IsNullOrWhiteSpace(CreateUpdateElectronicInvoiceDto.HashIV)
+            && !string.IsNullOrWhiteSpace(CreateUpdateElectronicInvoiceDto.DisplayInvoiceName)
+            && CreateUpdateElectronicInvoiceDto.DaysAfterShipmentGenerateInvoice > -1
+            && Enum.IsDefined(typeof(DeliveryStatus), CreateUpdateElectronicInvoiceDto.StatusOnInvoiceIssue);
+    }
 }
+
+
