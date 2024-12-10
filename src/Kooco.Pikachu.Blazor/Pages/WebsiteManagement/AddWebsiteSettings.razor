@@ -25,23 +25,11 @@
                 <Row>
                     <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
                         <h4>@L["AddWebsiteSettings"]</h4>
-                        @if (LogoBase64 != null)
-                        {
-                            <Div Class="image-thumbnail">
-                                <img src="@("data:image/png;base64," + LogoBase64)" class="img-fluid" />
-                            </Div>
-                        }
-                        else if (NewEntity.LogoUrl != null)
-                        {
-                            <Div Class="image-thumbnail">
-                                <img src="@NewEntity.LogoUrl" class="img-fluid" />
-                            </Div>
-                        }
                     </Column>
                     <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
                         <Validation MessageLocalizer="@LH.Localize">
                             <Field>
-                                <FieldLabel>@L["NotificationBar"]</FieldLabel>
+                                <FieldLabel>@L["PageTitle"] *</FieldLabel>
                                 <TextEdit @bind-Text="@NewEntity.NotificationBar">
                                     <Feedback>
                                         <ValidationError />
@@ -49,87 +37,52 @@
                                 </TextEdit>
                             </Field>
                         </Validation>
-                        <Row>
-                            <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                                <Validation MessageLocalizer="@LH.Localize">
-                                    <Field>
-                                        <FieldLabel>@L["StoreTitle"]</FieldLabel>
-                                        <TextEdit @bind-Text="@NewEntity.StoreTitle">
-                                            <Feedback>
-                                                <ValidationError />
-                                            </Feedback>
-                                        </TextEdit>
-                                    </Field>
-                                </Validation>
-                            </Column>
-                            <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
-                                <Validation MessageLocalizer="@LH.Localize">
-                                    <Field>
-                                        <FieldLabel>@L["TitleDisplayOption"]</FieldLabel>
-                                        <Select TValue="WebsiteTitleDisplayOptions?" @bind-SelectedValue="@NewEntity.TitleDisplayOption">
-                                            <SelectItem Value="(WebsiteTitleDisplayOptions?)null"></SelectItem>
-                                            @foreach (WebsiteTitleDisplayOptions option in Enum.GetValues(typeof(WebsiteTitleDisplayOptions)))
-                                            {
-                                                <SelectItem Value="option">@L["Enum:WebsiteTitleDisplayOptions." + (int)option]</SelectItem>
-                                            }
-                                        </Select>
-                                    </Field>
-                                </Validation>
-                            </Column>
-                        </Row>
-                        <Div Class="container-less-filepicker">
+                        <Validation MessageLocalizer="@LH.Localize">
                             <Field>
-                                <FilePicker Changed="@OnFileUploadAsync"
-                                            ShowMode="FilePickerShowMode.List"
-                                            Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
-                                    <FileTemplate></FileTemplate>
-                                    <ButtonsTemplate></ButtonsTemplate>
-                                </FilePicker>
-                                <Validation MessageLocalizer="@LH.Localize">
-                                    <TextEdit @bind-Text="@NewEntity.LogoName" Style="margin: 0; padding: 0; height: 0px;" Visibility="Visibility.Invisible">
-                                        <Feedback>
-                                            <ValidationError />
-                                        </Feedback>
-                                    </TextEdit>
-                                </Validation>
+                                <FieldLabel>@L["Description"]</FieldLabel>
+                                <MemoEdit @bind-Text="@NewEntity.StoreTitle" Rows="6">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </MemoEdit>
                             </Field>
-                        </Div>
+                        </Validation>
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <FieldLabel>@L["PageLink"] *</FieldLabel>
+                                <TextEdit @bind-Text="@NewEntity.NotificationBar">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                        <Field>
+                            <FieldLabel>@L["SetAsHomePage"] *</FieldLabel>
+                            <Switch TValue="bool"></Switch>
+                        </Field>
                     </Column>
                 </Row>
                 <Divider></Divider>
                 <Row>
                     <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
-                        <h4>@L["Socials"]</h4>
+                        <h4>@L["PageType"]</h4>
                     </Column>
                     <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
                         <Validation MessageLocalizer="@LH.Localize">
                             <Field>
-                                <FieldLabel>@L["Facebook"]</FieldLabel>
-                                <TextEdit @bind-Text="@NewEntity.Facebook">
+                                <Select TValue="WebsitePageType?">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
-                                </TextEdit>
-                            </Field>
-                        </Validation>
-                        <Validation MessageLocalizer="@LH.Localize">
-                            <Field>
-                                <FieldLabel>@L["Instagram"]</FieldLabel>
-                                <TextEdit @bind-Text="@NewEntity.Instagram">
-                                    <Feedback>
-                                        <ValidationError />
-                                    </Feedback>
-                                </TextEdit>
-                            </Field>
-                        </Validation>
-                        <Validation MessageLocalizer="@LH.Localize">
-                            <Field>
-                                <FieldLabel>@L["Line"]</FieldLabel>
-                                <TextEdit @bind-Text="@NewEntity.Line">
-                                    <Feedback>
-                                        <ValidationError />
-                                    </Feedback>
-                                </TextEdit>
+                                    <ChildContent>
+                                        <SelectItem Value="(WebsitePageType?)null" @bind-SelectedValue="NewEntity.WebsitePageType"></SelectItem>
+                                        @foreach (WebsitePageType type in Enum.GetValues(typeof(WebsitePageType)))
+                                        {
+                                            <SelectItem Value="type">@L["Enum:WebsitePageType." + (int)type]</SelectItem>
+                                        }
+                                    </ChildContent>
+                                </Select>
                             </Field>
                         </Validation>
                     </Column>
