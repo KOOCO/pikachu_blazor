@@ -29,7 +29,7 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
         private const int MaxAllowedFilesPerUpload = 10;
         private const int TotalMaxAllowedFiles = 50;
         private const int MaxAllowedFileSize = 1024 * 1024 * 10;
-        private readonly List<string> ValidFileExtensions = new() { ".jpg", ".png", ".svg",".jpeg",".webp" };
+        private readonly List<string> ValidFileExtensions = new() { ".jpg", ".png", ".svg", ".jpeg", ".webp" };
         private BlazoredTextEditor QuillHtml;
         private Autocomplete<ItemWithItemTypeDto, Guid?> AutocompleteField { get; set; }
         private string? SelectedAutoCompleteText { get; set; }
@@ -81,7 +81,7 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
 
                         itemDetails.ForEach(item =>
                         {
-                            ItemDetails.Add(
+                            var itemDetail =
                                 new ItemDetailsModel(
                                     item.ItemId,
                                     item.Item?.ItemName,
@@ -90,11 +90,17 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
                                     item.Quantity,
                                     false,
                                     item.Item?.Images?.FirstOrDefault()?.ImageUrl
-                                    )
-                                );
+                                    );
+
+                            itemDetail.Attribute1Value = item.Attribute1Value;
+                            itemDetail.Attribute2Value = item.Attribute2Value;
+                            itemDetail.Attribute3Value = item.Attribute3Value;
+
+                            ItemDetails.Add(itemDetail);
                         });
 
                         ItemsList = await _itemAppService.GetItemsLookupAsync();
+                        await GetAttributesForSelectedItems();
                         await LoadHtmlContent();
                         StateHasChanged();
                     }
@@ -107,8 +113,24 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
                 {
                     Console.WriteLine(ex.ToString());
                     await _uiMessageService.Error(ex.GetType()?.ToString());
-                } 
+                }
             }
+        }
+
+        private async Task GetAttributesForSelectedItems()
+        {
+            var ids = ItemDetails.Select(i => i.ItemId).ToList();
+            var items = await ItemAppService.GetItemsWithAttributesAsync(ids);
+            ItemDetails.ForEach(itemDetail =>
+            {
+                var item = items.FirstOrDefault(x => x.Id == itemDetail.ItemId);
+                if (item != null)
+                {
+                    itemDetail.Attribute1Values = item.ItemDetails.Where(x => x.Attribute1Value != null).Select(x => x.Attribute1Value).Distinct().ToList();
+                    itemDetail.Attribute2Values = item.ItemDetails.Where(x => x.Attribute2Value != null).Select(x => x.Attribute2Value).Distinct().ToList();
+                    itemDetail.Attribute3Values = item.ItemDetails.Where(x => x.Attribute3Value != null).Select(x => x.Attribute3Value).Distinct().ToList();
+                }
+            });
         }
 
         private async Task LoadHtmlContent()
@@ -225,14 +247,26 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
                 {
                     await AutocompleteField.Clear();
 
-                    var item = await _itemAppService.GetAsync(id.Value);
-                    ItemDetails.Add(new ItemDetailsModel
-                        (
+                    var item = await _itemAppService.GetAsync(id.Value, true);
+
+                    var itemDetail = new ItemDetailsModel(
                             item.Id,
                             item.ItemName,
                             item.ItemDescription,
-                            item.ItemDescriptionTitle
-                        ));
+                            item.ItemDescriptionTitle,
+                            itemDetails: item.ItemDetails.ToList()
+                        );
+
+                    itemDetail.Attribute1Values = item.ItemDetails.Where(x => x.Attribute1Value != null).Select(x => x.Attribute1Value).Distinct().ToList();
+                    itemDetail.Attribute2Values = item.ItemDetails.Where(x => x.Attribute2Value != null).Select(x => x.Attribute2Value).Distinct().ToList();
+                    itemDetail.Attribute3Values = item.ItemDetails.Where(x => x.Attribute3Value != null).Select(x => x.Attribute3Value).Distinct().ToList();
+
+                    itemDetail.Attribute1Value = itemDetail.Attribute1Values.FirstOrDefault();
+                    itemDetail.Attribute2Value = itemDetail.Attribute2Values.FirstOrDefault();
+                    itemDetail.Attribute3Value = itemDetail.Attribute3Values.FirstOrDefault();
+
+                    ItemDetails.Add(itemDetail);
+
                     ItemsList = ItemsList.Where(x => x.Id != id).ToList();
                     IsAllSelected = false;
                     ItemDetails.Where(x => x.ItemId == id).FirstOrDefault().ImageUrl = await _itemAppService.GetFirstImageUrlAsync(id.Value);
@@ -258,7 +292,10 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
                         new CreateUpdateSetItemDetailsDto
                         {
                             ItemId = item.ItemId,
-                            Quantity = item.Quantity
+                            Quantity = item.Quantity,
+                            Attribute1Value = item.Attribute1Value,
+                            Attribute2Value = item.Attribute2Value,
+                            Attribute3Value = item.Attribute3Value
                         });
                 });
                 CreateUpdateSetItemDto.Description = await QuillHtml.GetHTML();
@@ -297,7 +334,7 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
             selected.ForEach(item =>
             {
                 ItemDetails.Remove(item);
-                ItemsList.Add(new ItemWithItemTypeDto(item.ItemId, item.ItemName,ItemType.Item));
+                ItemsList.Add(new ItemWithItemTypeDto(item.ItemId, item.ItemName, ItemType.Item));
             });
             IsAllSelected = false;
         }

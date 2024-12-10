@@ -30,4 +30,8 @@ public class CreateUpdateSetItemDetailsDto
     public Guid ItemId { get; set; }
 
     public int Quantity { get; set; }
+
+    public string? Attribute1Value { get; set; }
+    public string? Attribute2Value { get; set; }
+    public string? Attribute3Value { get; set; }
 }

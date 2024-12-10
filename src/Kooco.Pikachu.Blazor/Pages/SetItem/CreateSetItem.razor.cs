@@ -54,7 +54,6 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
         protected override async Task OnInitializedAsync()
         {
             ItemsList = await _itemAppService.GetItemsLookupAsync();
-
         }
 
         async Task OnFileUploadAsync(FileChangedEventArgs e)
@@ -167,14 +166,25 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
                 {
                     await AutocompleteField.Clear();
                     var item = await _itemAppService.GetAsync(id.Value, true);
-                    ItemDetails.Add(new ItemDetailsModel
-                        (
+
+                    var itemDetail = new ItemDetailsModel(
                             item.Id,
                             item.ItemName,
                             item.ItemDescription,
                             item.ItemDescriptionTitle,
                             itemDetails: item.ItemDetails.ToList()
-                        ));
+                        );
+
+                    itemDetail.Attribute1Values = item.ItemDetails.Where(x => x.Attribute1Value != null).Select(x => x.Attribute1Value).Distinct().ToList();
+                    itemDetail.Attribute2Values = item.ItemDetails.Where(x => x.Attribute2Value != null).Select(x => x.Attribute2Value).Distinct().ToList();
+                    itemDetail.Attribute3Values = item.ItemDetails.Where(x => x.Attribute3Value != null).Select(x => x.Attribute3Value).Distinct().ToList();
+
+                    itemDetail.Attribute1Value = itemDetail.Attribute1Values.FirstOrDefault();
+                    itemDetail.Attribute2Value = itemDetail.Attribute2Values.FirstOrDefault();
+                    itemDetail.Attribute3Value = itemDetail.Attribute3Values.FirstOrDefault();
+
+                    ItemDetails.Add(itemDetail);
+
                     ItemsList = ItemsList.Where(x => x.Id != id).ToList();
                     IsAllSelected = false;
                     ItemDetails.Where(x => x.ItemId == id).FirstOrDefault().ImageUrl = await _itemAppService.GetFirstImageUrlAsync(id.Value);
@@ -199,7 +209,10 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
                         new CreateUpdateSetItemDetailsDto
                         {
                             ItemId = item.ItemId,
-                            Quantity = item.Quantity
+                            Quantity = item.Quantity,
+                            Attribute1Value = item.Attribute1Value,
+                            Attribute2Value = item.Attribute2Value,
+                            Attribute3Value = item.Attribute3Value
                         });
                 });
 
@@ -264,6 +277,12 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
         public bool IsSelected { get; set; } = false;
         public string ImageUrl { get; set; }
         public List<ItemDetailsDto> ItemDetails { get; set; }
+        public List<string> Attribute1Values { get; set; }
+        public List<string> Attribute2Values { get; set; }
+        public List<string> Attribute3Values { get; set; }
+        public string? Attribute1Value { get; set; }
+        public string? Attribute2Value { get; set; }
+        public string? Attribute3Value { get; set; }
         public ItemDetailsModel()
         {
             ItemDetails = [];

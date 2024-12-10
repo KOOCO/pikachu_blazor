@@ -14,9 +14,11 @@ namespace Kooco.Pikachu.Items
         public Guid SetItemId { get; set; }
         public SetItem SetItem { get; set; }
         public Item Item { get; set; }
-        public Guid ItemId { get; set; }    
+        public Guid ItemId { get; set; }
         public int Quantity { get; set; }
-
+        public string? Attribute1Value { get; set; }
+        public string? Attribute2Value { get; set; }
+        public string? Attribute3Value { get; set; }
         protected SetItemDetails()
         {
         }
@@ -26,13 +28,19 @@ namespace Kooco.Pikachu.Items
             Guid? tenantId,
             Guid setItemId,
             Guid itemId,
-            int quantity
+            int quantity,
+            string? attribute1Value,
+            string? attribute2Value,
+            string? attribute3Value
         ) : base(id)
         {
             TenantId = tenantId;
             SetItemId = setItemId;
             ItemId = itemId;
             Quantity = quantity;
+            Attribute1Value = attribute1Value;
+            Attribute2Value = attribute2Value;
+            Attribute3Value = attribute3Value;
         }
     }
 }

@@ -52,7 +52,10 @@ public class SetItemAppService : CrudAppService<SetItem, SetItemDto, Guid, Paged
                     CurrentTenant?.Id,
                     setItem.Id,
                     item.ItemId,
-                    item.Quantity
+                    item.Quantity,
+                    item.Attribute1Value,
+                    item.Attribute2Value,
+                    item.Attribute3Value
                     );
             });
         }
@@ -107,10 +110,22 @@ public class SetItemAppService : CrudAppService<SetItem, SetItemDto, Guid, Paged
                 var existing = setItem.SetItemDetails.First(x => x.Id == itemDetail.Id);
                 existing.ItemId = itemDetail.ItemId;
                 existing.Quantity = itemDetail.Quantity;
+                existing.Attribute1Value = itemDetail.Attribute1Value;
+                existing.Attribute2Value = itemDetail.Attribute2Value;
+                existing.Attribute3Value = itemDetail.Attribute3Value;
             }
             else
             {
-                setItem.AddSetItemDetails(GuidGenerator.Create(), CurrentTenant?.Id, setItem.Id, itemDetail.ItemId, itemDetail.Quantity);
+                setItem.AddSetItemDetails(
+                    GuidGenerator.Create(),
+                    CurrentTenant?.Id,
+                    setItem.Id,
+                    itemDetail.ItemId,
+                    itemDetail.Quantity,
+                    itemDetail.Attribute1Value,
+                    itemDetail.Attribute2Value,
+                    itemDetail.Attribute3Value
+                    );
             }
         }
 
@@ -161,5 +176,5 @@ public class SetItemAppService : CrudAppService<SetItem, SetItemDto, Guid, Paged
         var setItems = await _setItemRepository.GetItemsLookupAsync();
         return ObjectMapper.Map<List<ItemWithItemType>, List<ItemWithItemTypeDto>>(setItems);
     }
-   
+
 }

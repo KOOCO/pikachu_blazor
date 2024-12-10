@@ -22,4 +22,7 @@ public class SetItemDetailsDto : FullAuditedEntityDto<Guid>
     public int Quantity { get; set; }
 
     public bool IsSelected { get; set; }
+    public string? Attribute1Value { get; set; }
+    public string? Attribute2Value { get; set; }
+    public string? Attribute3Value { get; set; }
 }

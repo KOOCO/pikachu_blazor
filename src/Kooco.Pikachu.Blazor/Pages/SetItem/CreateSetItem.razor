@@ -217,50 +217,48 @@
                                         }
                                         <Div Class="p-2">
                                             <h4>@item.ItemName</h4>
-                                            @{
-                                                var itemDetails = item.ItemDetails;
+                                            @if (item.Attribute1Values?.Count > 0)
+                                            {
+                                                <Div class="mt-2">
+                                                    <Select TValue="string" Size="Size.Small" @bind-SelectedValue="item.Attribute1Value">
+                                                        <SelectItem Value="(string?)null" Disabled></SelectItem>
+                                                        @foreach (var attribute1Value in item.Attribute1Values)
+                                                        {
+                                                            <SelectItem Value="attribute1Value">
+                                                                @attribute1Value
+                                                            </SelectItem>
+                                                        }
+                                                    </Select>
+                                                </Div>
                                             }
-                                            <Div Class="d-flex gap-1">
-                                                @if (itemDetails.Where(x => x.Attribute1Value != null).Count() > 0)
-                                                {
-                                                    <Div class="mt-2">
-                                                        <Select TValue="string" Size="Size.Small">
-                                                            @foreach (var item in itemDetails.DistinctBy(i => i.Attribute1Value))
-                                                            {
-                                                                <SelectItem>
-                                                                    @item.Attribute1Value
-                                                                </SelectItem>
-                                                            }
-                                                        </Select>
-                                                    </Div>
-                                                }
-                                                @if (itemDetails.Where(x => x.Attribute2Value != null).Count() > 0)
-                                                {
-                                                    <Div class="mt-2">
-                                                        <Select TValue="string" Size="Size.Small">
-                                                            @foreach (var item in itemDetails.DistinctBy(i => i.Attribute2Value))
-                                                            {
-                                                                <SelectItem>
-                                                                    @item.Attribute2Value
-                                                                </SelectItem>
-                                                            }
-                                                        </Select>
-                                                    </Div>
-                                                }
-                                                @if (itemDetails.Where(x => x.Attribute3Value != null).Count() > 0)
-                                                {
-                                                    <Div Class="mt-2">
-                                                        <Select TValue="string" Size="Size.Small" Class="dropdown">
-                                                            @foreach (var item in itemDetails.DistinctBy(i => i.Attribute3Value))
-                                                            {
-                                                                <SelectItem>
-                                                                    @item.Attribute3Value
-                                                                </SelectItem>
-                                                            }
-                                                        </Select>
-                                                    </Div>
-                                                }
-                                            </Div>
+                                            @if (item.Attribute2Values?.Count > 0)
+                                            {
+                                                <Div class="mt-2">
+                                                    <Select TValue="string" Size="Size.Small" @bind-SelectedValue="item.Attribute2Value">
+                                                        <SelectItem Value="(string?)null" Disabled></SelectItem>
+                                                        @foreach (var attribute2Value in item.Attribute2Values)
+                                                        {
+                                                            <SelectItem Value="attribute2Value">
+                                                                @attribute2Value
+                                                            </SelectItem>
+                                                        }
+                                                    </Select>
+                                                </Div>
+                                            }
+                                            @if (item.Attribute3Values?.Count > 0)
+                                            {
+                                                <Div class="mt-2">
+                                                    <Select TValue="string" Size="Size.Small" @bind-SelectedValue="item.Attribute3Value">
+                                                        <SelectItem Value="(string?)null" Disabled></SelectItem>
+                                                        @foreach (var attribute3Value in item.Attribute3Values)
+                                                        {
+                                                            <SelectItem Value="attribute3Value">
+                                                                @attribute3Value
+                                                            </SelectItem>
+                                                        }
+                                                    </Select>
+                                                </Div>
+                                            }
                                         </Div>
                                     </Div>
                                 </TableRowCell>
