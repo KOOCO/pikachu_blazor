@@ -1,20 +1,19 @@
-﻿using Blazorise;
+﻿using Blazored.TextEditor;
+using Blazorise;
+using Blazorise.Components;
 using Kooco.Pikachu.AzureStorage.Image;
+using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Images;
+using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
+using Microsoft.AspNetCore.Components;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System;
-using Volo.Abp.AspNetCore.Components.Messages;
 using Volo.Abp;
-using System.Collections.Generic;
-using Blazored.TextEditor;
-using Microsoft.AspNetCore.Components;
-using Kooco.Pikachu.Items;
-using Blazorise.Components;
-using Kooco.Pikachu.EnumValues;
-using static Kooco.Pikachu.Permissions.PikachuPermissions;
+using Volo.Abp.AspNetCore.Components.Messages;
 
 namespace Kooco.Pikachu.Blazor.Pages.SetItem
 {
@@ -24,7 +23,7 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
         private const int MaxAllowedFilesPerUpload = 10;
         private const int TotalMaxAllowedFiles = 50;
         private const int MaxAllowedFileSize = 1024 * 1024 * 10;
-        private readonly List<string> ValidFileExtensions = new() { ".jpg", ".png", ".svg",".jpeg",".webp" };
+        private readonly List<string> ValidFileExtensions = new() { ".jpg", ".png", ".svg", ".jpeg", ".webp" };
         private BlazoredTextEditor QuillHtml;
         private Autocomplete<ItemWithItemTypeDto, Guid?> AutocompleteField { get; set; }
         private string? SelectedAutoCompleteText { get; set; }
@@ -55,7 +54,6 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
         protected override async Task OnInitializedAsync()
         {
             ItemsList = await _itemAppService.GetItemsLookupAsync();
-            
         }
 
         async Task OnFileUploadAsync(FileChangedEventArgs e)
@@ -167,14 +165,26 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
                 if (id != null)
                 {
                     await AutocompleteField.Clear();
-                    var item = await _itemAppService.GetAsync(id.Value);
-                    ItemDetails.Add(new ItemDetailsModel
-                        (
+                    var item = await _itemAppService.GetAsync(id.Value, true);
+
+                    var itemDetail = new ItemDetailsModel(
                             item.Id,
                             item.ItemName,
                             item.ItemDescription,
-                            item.ItemDescriptionTitle
-                        ));
+                            item.ItemDescriptionTitle,
+                            itemDetails: item.ItemDetails.ToList()
+                        );
+
+                    itemDetail.Attribute1Values = item.ItemDetails.Where(x => x.Attribute1Value != null).Select(x => x.Attribute1Value).Distinct().ToList();
+                    itemDetail.Attribute2Values = item.ItemDetails.Where(x => x.Attribute2Value != null).Select(x => x.Attribute2Value).Distinct().ToList();
+                    itemDetail.Attribute3Values = item.ItemDetails.Where(x => x.Attribute3Value != null).Select(x => x.Attribute3Value).Distinct().ToList();
+
+                    itemDetail.Attribute1Value = itemDetail.Attribute1Values.FirstOrDefault();
+                    itemDetail.Attribute2Value = itemDetail.Attribute2Values.FirstOrDefault();
+                    itemDetail.Attribute3Value = itemDetail.Attribute3Values.FirstOrDefault();
+
+                    ItemDetails.Add(itemDetail);
+
                     ItemsList = ItemsList.Where(x => x.Id != id).ToList();
                     IsAllSelected = false;
                     ItemDetails.Where(x => x.ItemId == id).FirstOrDefault().ImageUrl = await _itemAppService.GetFirstImageUrlAsync(id.Value);
@@ -199,7 +209,10 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
                         new CreateUpdateSetItemDetailsDto
                         {
                             ItemId = item.ItemId,
-                            Quantity = item.Quantity
+                            Quantity = item.Quantity,
+                            Attribute1Value = item.Attribute1Value,
+                            Attribute2Value = item.Attribute2Value,
+                            Attribute3Value = item.Attribute3Value
                         });
                 });
 
@@ -237,7 +250,7 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
             selected.ForEach(item =>
             {
                 ItemDetails.Remove(item);
-                ItemsList.Add(new ItemWithItemTypeDto(item.ItemId, item.ItemName,ItemType.Item));
+                ItemsList.Add(new ItemWithItemTypeDto(item.ItemId, item.ItemName, ItemType.Item));
             });
             IsAllSelected = false;
         }
@@ -263,9 +276,16 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
         public string? ItemDescriptionTitle { get; set; }
         public bool IsSelected { get; set; } = false;
         public string ImageUrl { get; set; }
+        public List<ItemDetailsDto> ItemDetails { get; set; }
+        public List<string> Attribute1Values { get; set; }
+        public List<string> Attribute2Values { get; set; }
+        public List<string> Attribute3Values { get; set; }
+        public string? Attribute1Value { get; set; }
+        public string? Attribute2Value { get; set; }
+        public string? Attribute3Value { get; set; }
         public ItemDetailsModel()
         {
-
+            ItemDetails = [];
         }
 
         public ItemDetailsModel(
@@ -275,7 +295,8 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
             string? itemDescriptionTitle = null,
             int quantity = 1,
             bool isSelected = false,
-            string? imageUrl = null
+            string? imageUrl = null,
+            List<ItemDetailsDto>? itemDetails = null
             )
         {
             ItemId = id;
@@ -285,6 +306,7 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
             Quantity = quantity;
             IsSelected = isSelected;
             ImageUrl = imageUrl;
+            ItemDetails = itemDetails ?? [];
         }
     }
 }

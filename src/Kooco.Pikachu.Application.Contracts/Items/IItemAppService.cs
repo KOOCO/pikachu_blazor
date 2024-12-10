@@ -28,4 +28,5 @@ public interface IItemAppService :
     Task<ItemDto> GetSKUAndItemAsync(Guid itemId, Guid itemDetailId);
     Task<List<ItemDto>> GetManyAsync(List<Guid> itemIds);
     Task<List<CategoryProductDto>> GetItemCategoriesAsync(Guid id);
+    Task<List<ItemDto>> GetItemsWithAttributesAsync(List<Guid> ids);
 }

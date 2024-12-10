@@ -132,4 +132,10 @@ public class ItemController(
     {
         return _itemAppService.GetItemCategoriesAsync(id);
     }
+
+    [HttpGet("items-with-attributes")]
+    public Task<List<ItemDto>> GetItemsWithAttributesAsync(List<Guid> ids)
+    {
+        return _itemAppService.GetItemsWithAttributesAsync(ids);
+    }
 }

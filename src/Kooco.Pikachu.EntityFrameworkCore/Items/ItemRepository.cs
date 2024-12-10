@@ -172,4 +172,13 @@ public class ItemRepository : EfCoreRepository<PikachuDbContext, Item, Guid>, II
             .SelectMany(x => x.CategoryProducts)
             .ToListAsync();
     }
+
+    public async Task<List<Item>> GetItemsWithAttributesAsync(List<Guid> ids)
+    {
+        var queryable = await GetQueryableAsync();
+        return await queryable
+            .Where(x => ids.Contains(x.Id))
+            .Include(x => x.ItemDetails)
+            .ToListAsync();
+    }
 }

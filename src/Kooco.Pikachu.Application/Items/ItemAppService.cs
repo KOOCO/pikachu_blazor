@@ -513,5 +513,12 @@ public class ItemAppService :
         var itemProducts = await _itemRepository.GetItemCategoriesAsync(id);
         return ObjectMapper.Map<List<CategoryProduct>, List<CategoryProductDto>>(itemProducts);
     }
+
+    public async Task<List<ItemDto>> GetItemsWithAttributesAsync(List<Guid> ids)
+    {
+        var items = await _itemRepository.GetItemsWithAttributesAsync(ids);
+        return ObjectMapper.Map<List<Item>, List<ItemDto>>(items);
+    }
+
     #endregion
 }

@@ -138,7 +138,10 @@ namespace Kooco.Pikachu.Items
         Guid? tenantId,
         Guid setItemId,
         Guid itemId,
-        int quantity
+        int quantity,
+        string? attribute1Value,
+        string? attribute2Value,
+        string? attribute3Value
         )
         {
             SetItemDetails.Add(
@@ -147,7 +150,10 @@ namespace Kooco.Pikachu.Items
                     tenantId,
                     setItemId,
                     itemId,
-                    quantity
+                    quantity,
+                    attribute1Value,
+                    attribute2Value,
+                    attribute3Value
                     )
                 );
         }
