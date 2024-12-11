@@ -66,4 +66,6 @@ public class CreateWebsiteSettingsDto
 
     [Required]
     public WebsitePageType? WebsitePageType { get; set; }
+
+    public GroupBuyModuleType? SelectedGroupBuyModuleType { get; set; }
 }

@@ -2,7 +2,7 @@
 
 public enum WebsitePageType
 {
-    CustomPage,
-    ProductListPage,
-    ArticlePage
+    CustomPage = 1,
+    ProductListPage = 2,
+    ArticlePage = 3
 }

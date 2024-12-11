@@ -5,6 +5,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using System;
 using Kooco.Pikachu.Extensions;
+using Kooco.Pikachu.Items.Dtos;
+using System.Collections.Generic;
+using Blazorise.Components;
+using Kooco.Pikachu.Items;
+using Kooco.Pikachu.ProductCategories;
+using Blazored.TextEditor;
 
 namespace Kooco.Pikachu.Blazor.Pages.WebsiteManagement;
 
@@ -16,7 +22,10 @@ public partial class AddWebsiteSettings
     private bool IsLoading { get; set; }
 
     private string LogoBase64 { get; set; }
-
+    private List<KeyValueDto> ProductCategoryLookup { get; set; } = [];
+    private string SelectedAutoCompleteText { get; set; }
+    private Autocomplete<KeyValueDto, Guid?> AutocompleteField { get; set; }
+    private BlazoredTextEditor ArticlePageHtml;
     public AddWebsiteSettings()
     {
         NewEntity = new();
@@ -77,5 +86,44 @@ public partial class AddWebsiteSettings
             IsLoading = false;
             await HandleErrorAsync(ex);
         }
+    }
+
+    async Task WebsitePageTypeChanged(WebsitePageType? websitePageType)
+    {
+        NewEntity.WebsitePageType = websitePageType;
+    }
+
+    async Task OnSelectedValueChanged(Guid? id)
+    {
+        //try
+        //{
+        //    if (id != null)
+        //    {
+        //        RowLoading = true;
+        //        StateHasChanged();
+        //        await AutocompleteField.Clear();
+        //        var productCategory = ProductCategoryLookup.Where(x => x.Id == id).FirstOrDefault();
+
+        //        if (productCategory == null) return;
+
+        //        var itemCategory = new CreateUpdateItemCategoryDto
+        //        {
+        //            ProductCategoryId = productCategory.Id,
+        //            ProductCategoryName = productCategory.Name,
+        //            ImageUrl = await ProductCategoryAppService.GetDefaultImageUrlAsync(productCategory.Id)
+        //        };
+
+        //        CreateItemDto.ItemCategories.Add(itemCategory);
+        //        RowLoading = false;
+
+        //        ProductCategoryLookup = ProductCategoryLookup.Where(x => x.Id != id).ToList();
+        //        StateHasChanged();
+        //    }
+        //}
+        //catch (Exception ex)
+        //{
+        //    RowLoading = false;
+        //    await HandleErrorAsync(ex);
+        //}
     }
 }

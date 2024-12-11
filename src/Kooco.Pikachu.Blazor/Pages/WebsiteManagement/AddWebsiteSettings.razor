@@ -1,5 +1,10 @@
 ﻿@page "/Website-Settings/Create"
+@using Blazored.TextEditor
+@using Blazorise.Components
+@using Kooco.Pikachu.EnumValues
+@using Kooco.Pikachu.GroupBuys
 @using Kooco.Pikachu.Images
+@using Kooco.Pikachu.Items.Dtos
 @using Kooco.Pikachu.Localization
 @using Kooco.Pikachu.Permissions
 @using Kooco.Pikachu.WebsiteManagement
@@ -39,7 +44,7 @@
                         </Validation>
                         <Validation MessageLocalizer="@LH.Localize">
                             <Field>
-                                <FieldLabel>@L["Description"]</FieldLabel>
+                                <FieldLabel>@L["PageDescription"] *</FieldLabel>
                                 <MemoEdit @bind-Text="@NewEntity.StoreTitle" Rows="6">
                                     <Feedback>
                                         <ValidationError />
@@ -58,7 +63,7 @@
                             </Field>
                         </Validation>
                         <Field>
-                            <FieldLabel>@L["SetAsHomePage"] *</FieldLabel>
+                            <FieldLabel>@L["SetAsHomePage"]</FieldLabel>
                             <Switch TValue="bool"></Switch>
                         </Field>
                     </Column>
@@ -69,42 +74,171 @@
                         <h4>@L["PageType"]</h4>
                     </Column>
                     <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                        <Validation MessageLocalizer="@LH.Localize">
-                            <Field>
-                                <Select TValue="WebsitePageType?">
-                                    <Feedback>
-                                        <ValidationError />
-                                    </Feedback>
-                                    <ChildContent>
-                                        <SelectItem Value="(WebsitePageType?)null" @bind-SelectedValue="NewEntity.WebsitePageType"></SelectItem>
-                                        @foreach (WebsitePageType type in Enum.GetValues(typeof(WebsitePageType)))
-                                        {
-                                            <SelectItem Value="type">@L["Enum:WebsitePageType." + (int)type]</SelectItem>
-                                        }
-                                    </ChildContent>
-                                </Select>
-                            </Field>
-                        </Validation>
-                    </Column>
-                </Row>
-                <Divider></Divider>
-                <Row>
-                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
-                        <h4>@L["ReturnExchangePolicy"]</h4>
-                    </Column>
-                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                        <Validation MessageLocalizer="@LH.Localize">
-                            <Field>
-                                <MemoEdit Rows="5" @bind-Text="@NewEntity.ReturnExchangePolicy">
-                                    <Feedback>
-                                        <ValidationError />
-                                    </Feedback>
-                                </MemoEdit>
-                            </Field>
-                        </Validation>
+                        <Field>
+                            <Select TValue="WebsitePageType?" SelectedValue="NewEntity.WebsitePageType" SelectedValueChanged="WebsitePageTypeChanged">
+                                <SelectItem Value="(WebsitePageType?)null"></SelectItem>
+                                @foreach (WebsitePageType type in Enum.GetValues(typeof(WebsitePageType)))
+                                {
+                                    <SelectItem Value="type">@L["Enum:WebsitePageType." + (int)type]</SelectItem>
+                                }
+                            </Select>
+                        </Field>
                     </Column>
                 </Row>
             </Validations>
+            @if (NewEntity.WebsitePageType.HasValue)
+            {
+                <Divider Class="border-0"></Divider>
+            }
+            @if (NewEntity.WebsitePageType == WebsitePageType.CustomPage)
+            {
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is3">
+                        <Field>
+                            <Select TValue="GroupBuyTemplateType?" Disabled>
+                                @foreach (GroupBuyTemplateType value in Enum.GetValues<GroupBuyTemplateType>().Where(x => x == GroupBuyTemplateType.PikachuTwo))
+                                {
+                                    <SelectItem Value="value">@L["Enum:GroupBuyTemplateType." + (int)value]</SelectItem>
+                                }
+                            </Select>
+                        </Field>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is9">
+                        <Select TValue="GroupBuyModuleType?" @bind-SelectedValue="NewEntity.SelectedGroupBuyModuleType">
+                            <SelectItem Value="(GroupBuyModuleType?)null">
+                                @L["SelectModule"]
+                            </SelectItem>
+                            @foreach (GroupBuyModuleType module in GroupBuyExtensions.GetPikachuTwoList())
+                            {
+                                <SelectItem Value="module">
+                                    @L[module.ToString()]
+                                </SelectItem>
+                            }
+                        </Select>
+                    </Column>
+                </Row>
+            }
+            @if (NewEntity.WebsitePageType == WebsitePageType.ProductListPage)
+            {
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                        <FieldLabel>@L["ProductCategory"] *</FieldLabel>
+                        <Autocomplete TItem="KeyValueDto"
+                                      TValue="Guid?"
+                                      Data="@ProductCategoryLookup"
+                                      TextField="@(( item ) => item.Name)"
+                                      ValueField="@(( item ) => item.Id)"
+                                      @bind-SelectedText="SelectedAutoCompleteText"
+                                      Placeholder="Search..."
+                                      Filter="AutocompleteFilter.StartsWith"
+                                      CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                                      HighlightSearch
+                                      Immediate="true"
+                                      SelectedValueChanged="OnSelectedValueChanged"
+                                      @ref="AutocompleteField">
+                            <NotFoundContent> @L["NotFound"] </NotFoundContent>
+                        </Autocomplete>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12">
+                        @* @if (CreateItemDto.ItemCategories.Count > 0 || RowLoading)
+                    {
+                        <Div Class="mt-2">
+                            <Table Striped>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHeaderCell>@L["ProductCategory"]</TableHeaderCell>
+                                        <TableHeaderCell TextAlignment="TextAlignment.Center">@L["Image"]</TableHeaderCell>
+                                        <TableHeaderCell TextAlignment="TextAlignment.Center"></TableHeaderCell>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    @foreach (var itemCategory in CreateItemDto.ItemCategories)
+                                    {
+                                        <TableRow>
+                                            <TableRowCell>
+                                                <h5 class="m-0">@itemCategory.ProductCategoryName</h5>
+                                                <Span Class="bg-lightgrey rounded-3" Style="padding: 1px 10px;">
+                                                    <Copy Text="@itemCategory.ProductCategoryId" ShouldDisplayIcon="false"></Copy>
+                                                </Span>
+                                            </TableRowCell>
+                                            <TableRowCell TextAlignment="TextAlignment.Center">
+                                                @if (!itemCategory.ImageUrl.IsNullOrWhiteSpace())
+                                                {
+                                                    <Image Fluid Source="@itemCategory.ImageUrl" Style="height: 150px;"></Image>
+                                                }
+                                            </TableRowCell>
+                                            <TableRowCell TextAlignment="TextAlignment.Center" Style="width: 150px"
+                                                          Clicked="@(() => RemoveItemCategory(itemCategory))">
+                                                <PikachuButton Class="pk-btn-sm pk-btn-outline-danger">
+                                                    <i class="fas fa-trash"></i>
+                                                    @L["Remove"]
+                                                </PikachuButton>
+                                            </TableRowCell>
+                                        </TableRow>
+                                    }
+                                    @if (RowLoading)
+                                    {
+                                        <TableRow>
+                                            <TableRowCell ColumnSpan="3">
+                                                <Div TextAlignment="TextAlignment.Center" Class="py-2">
+                                                    <Span Class="spinner-border"></Span>
+                                                </Div>
+                                            </TableRowCell>
+                                        </TableRow>
+                                    }
+                                </TableBody>
+                            </Table>
+                        </Div>
+                    } *@
+                    </Column>
+                </Row>
+            }
+            @if (NewEntity.WebsitePageType == WebsitePageType.ArticlePage)
+            {
+                <Row Class="mb-5">
+                    <Column ColumnSize="ColumnSize.Is3">
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is9">
+                        <BlazoredTextEditor @ref="@ArticlePageHtml">
+                            <ToolbarContent>
+                                <select class="ql-header">
+                                    <option selected=""></option>
+                                    <option value="1"></option>
+                                    <option value="2"></option>
+                                    <option value="3"></option>
+                                    <option value="4"></option>
+                                    <option value="5"></option>
+                                </select>
+                                <span class="ql-formats">
+                                    <button class="ql-bold"></button>
+                                    <button class="ql-italic"></button>
+                                    <button class="ql-underline"></button>
+                                    <button class="ql-strike"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <select class="ql-color"></select>
+                                    <select class="ql-background"></select>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-list" value="ordered"></button>
+                                    <button class="ql-list" value="bullet"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-link"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-image"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-video"></button>
+                                </span>
+                            </ToolbarContent>
+                        </BlazoredTextEditor>
+                    </Column>
+                </Row>
+            }
         </CardBody>
     </Card>
     <Div Class="text-end">
