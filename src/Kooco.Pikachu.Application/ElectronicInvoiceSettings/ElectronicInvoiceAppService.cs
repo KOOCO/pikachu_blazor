@@ -72,7 +72,7 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
 
             string print = setting.IsEnable ? "0" : "1";
             string? CarrierType = setting.IsEnable ? "1" : null;
-            CarrierType = order.InvoiceType == InvoiceType.CellphoneInvoice ? "3" : null;
+            CarrierType = (order.InvoiceType == InvoiceType.CellphoneInvoice) ? "3" : (order.InvoiceType == InvoiceType.BusinessInvoice ? "1" : null); 
             string? CarrierNumber = CarrierType == "3" ? order.UniformNumber : null;
             string CustomerAddress = order.AddressDetails.IsNullOrEmpty() ? order.CustomerEmail : order.AddressDetails;
             RestClientOptions options = new() { MaxTimeout = -1 };
@@ -152,7 +152,7 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
                     order.IssueStatus = IssueInvoiceStatus.Failed;
                     await _orderRepository.UpdateAsync(order);
                     throw new UserFriendlyException(jsonObj.RtnMsg.ToString());
-                    return;
+                   
                 }
                 order.InvoiceNumber = jsonObj.InvoiceNo;
                 order.IssueStatus = IssueInvoiceStatus.Succeeded;

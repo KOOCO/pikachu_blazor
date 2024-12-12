@@ -2039,7 +2039,7 @@ public partial class OrderDetails
         }
         catch (Exception ex)
         {
-            await _uiMessageService.Error(ex.GetType().ToString());
+            await _uiMessageService.Error(ex.Message.ToString());
         }
         finally
         {
