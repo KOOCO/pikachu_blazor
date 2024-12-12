@@ -1,7 +1,18 @@
 ﻿@page "/Website-Settings/Create"
+@using Blazored.TextEditor
+@using Blazorise.Components
+@using Kooco.Pikachu.AzureStorage.Image
+@using Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
+@using Kooco.Pikachu.EnumValues
+@using Kooco.Pikachu.GroupBuyOrderInstructions
+@using Kooco.Pikachu.GroupBuys
+@using Kooco.Pikachu.GroupPurchaseOverviews
 @using Kooco.Pikachu.Images
+@using Kooco.Pikachu.Items
+@using Kooco.Pikachu.Items.Dtos
 @using Kooco.Pikachu.Localization
 @using Kooco.Pikachu.Permissions
+@using Kooco.Pikachu.ProductCategories
 @using Kooco.Pikachu.WebsiteManagement
 @using Volo.Abp.AspNetCore.Components.Notifications
 @using Volo.Abp.AspNetCore.Components.Web
@@ -12,6 +23,10 @@
 @inject IUiNotificationService UiNotificationService
 @inject IImageAppService ImageAppService
 @inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
+@inject IItemAppService _itemAppService
+@inject ISetItemAppService _setItemAppService
+@inject ImageContainerManager _imageContainerManager
+@inject IProductCategoryAppService ProductCategoryAppService
 
 <PikachuButton Clicked="NavigateToWebsiteSettings">
     <Icon Name="IconName.ArrowLeft" Class="me-1"></Icon>
@@ -25,23 +40,11 @@
                 <Row>
                     <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
                         <h4>@L["AddWebsiteSettings"]</h4>
-                        @if (LogoBase64 != null)
-                        {
-                            <Div Class="image-thumbnail">
-                                <img src="@("data:image/png;base64," + LogoBase64)" class="img-fluid" />
-                            </Div>
-                        }
-                        else if (NewEntity.LogoUrl != null)
-                        {
-                            <Div Class="image-thumbnail">
-                                <img src="@NewEntity.LogoUrl" class="img-fluid" />
-                            </Div>
-                        }
                     </Column>
                     <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
                         <Validation MessageLocalizer="@LH.Localize">
                             <Field>
-                                <FieldLabel>@L["NotificationBar"]</FieldLabel>
+                                <FieldLabel>@L["PageTitle"] *</FieldLabel>
                                 <TextEdit @bind-Text="@NewEntity.NotificationBar">
                                     <Feedback>
                                         <ValidationError />
@@ -49,109 +52,993 @@
                                 </TextEdit>
                             </Field>
                         </Validation>
-                        <Row>
-                            <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                                <Validation MessageLocalizer="@LH.Localize">
-                                    <Field>
-                                        <FieldLabel>@L["StoreTitle"]</FieldLabel>
-                                        <TextEdit @bind-Text="@NewEntity.StoreTitle">
-                                            <Feedback>
-                                                <ValidationError />
-                                            </Feedback>
-                                        </TextEdit>
-                                    </Field>
-                                </Validation>
-                            </Column>
-                            <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
-                                <Validation MessageLocalizer="@LH.Localize">
-                                    <Field>
-                                        <FieldLabel>@L["TitleDisplayOption"]</FieldLabel>
-                                        <Select TValue="WebsiteTitleDisplayOptions?" @bind-SelectedValue="@NewEntity.TitleDisplayOption">
-                                            <SelectItem Value="(WebsiteTitleDisplayOptions?)null"></SelectItem>
-                                            @foreach (WebsiteTitleDisplayOptions option in Enum.GetValues(typeof(WebsiteTitleDisplayOptions)))
-                                            {
-                                                <SelectItem Value="option">@L["Enum:WebsiteTitleDisplayOptions." + (int)option]</SelectItem>
-                                            }
-                                        </Select>
-                                    </Field>
-                                </Validation>
-                            </Column>
-                        </Row>
-                        <Div Class="container-less-filepicker">
-                            <Field>
-                                <FilePicker Changed="@OnFileUploadAsync"
-                                            ShowMode="FilePickerShowMode.List"
-                                            Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
-                                    <FileTemplate></FileTemplate>
-                                    <ButtonsTemplate></ButtonsTemplate>
-                                </FilePicker>
-                                <Validation MessageLocalizer="@LH.Localize">
-                                    <TextEdit @bind-Text="@NewEntity.LogoName" Style="margin: 0; padding: 0; height: 0px;" Visibility="Visibility.Invisible">
-                                        <Feedback>
-                                            <ValidationError />
-                                        </Feedback>
-                                    </TextEdit>
-                                </Validation>
-                            </Field>
-                        </Div>
-                    </Column>
-                </Row>
-                <Divider></Divider>
-                <Row>
-                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
-                        <h4>@L["Socials"]</h4>
-                    </Column>
-                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
                         <Validation MessageLocalizer="@LH.Localize">
                             <Field>
-                                <FieldLabel>@L["Facebook"]</FieldLabel>
-                                <TextEdit @bind-Text="@NewEntity.Facebook">
-                                    <Feedback>
-                                        <ValidationError />
-                                    </Feedback>
-                                </TextEdit>
-                            </Field>
-                        </Validation>
-                        <Validation MessageLocalizer="@LH.Localize">
-                            <Field>
-                                <FieldLabel>@L["Instagram"]</FieldLabel>
-                                <TextEdit @bind-Text="@NewEntity.Instagram">
-                                    <Feedback>
-                                        <ValidationError />
-                                    </Feedback>
-                                </TextEdit>
-                            </Field>
-                        </Validation>
-                        <Validation MessageLocalizer="@LH.Localize">
-                            <Field>
-                                <FieldLabel>@L["Line"]</FieldLabel>
-                                <TextEdit @bind-Text="@NewEntity.Line">
-                                    <Feedback>
-                                        <ValidationError />
-                                    </Feedback>
-                                </TextEdit>
-                            </Field>
-                        </Validation>
-                    </Column>
-                </Row>
-                <Divider></Divider>
-                <Row>
-                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
-                        <h4>@L["ReturnExchangePolicy"]</h4>
-                    </Column>
-                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                        <Validation MessageLocalizer="@LH.Localize">
-                            <Field>
-                                <MemoEdit Rows="5" @bind-Text="@NewEntity.ReturnExchangePolicy">
+                                <FieldLabel>@L["PageDescription"] *</FieldLabel>
+                                <MemoEdit @bind-Text="@NewEntity.StoreTitle" Rows="6">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
                                 </MemoEdit>
                             </Field>
                         </Validation>
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <FieldLabel>@L["PageLink"] *</FieldLabel>
+                                <TextEdit @bind-Text="@NewEntity.NotificationBar">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                        <Field>
+                            <FieldLabel>@L["SetAsHomePage"]</FieldLabel>
+                            <Switch TValue="bool"></Switch>
+                        </Field>
+                    </Column>
+                </Row>
+                <Divider></Divider>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                        <h4>@L["PageType"]</h4>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                        <Field>
+                            <Select TValue="WebsitePageType?" SelectedValue="NewEntity.WebsitePageType" SelectedValueChanged="WebsitePageTypeChanged">
+                                <SelectItem Value="(WebsitePageType?)null"></SelectItem>
+                                @foreach (WebsitePageType type in Enum.GetValues(typeof(WebsitePageType)))
+                                {
+                                    <SelectItem Value="type">@L["Enum:WebsitePageType." + (int)type]</SelectItem>
+                                }
+                            </Select>
+                        </Field>
                     </Column>
                 </Row>
             </Validations>
+            @if (NewEntity.WebsitePageType.HasValue)
+            {
+                <Divider Class="border-0"></Divider>
+            }
+            @if (NewEntity.WebsitePageType == WebsitePageType.CustomPage)
+            {
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is3">
+                        <Field>
+                            <Select TValue="GroupBuyTemplateType?" Disabled>
+                                @foreach (GroupBuyTemplateType value in Enum.GetValues<GroupBuyTemplateType>().Where(x => x == GroupBuyTemplateType.PikachuTwo))
+                                {
+                                    <SelectItem Value="value">@L["Enum:GroupBuyTemplateType." + (int)value]</SelectItem>
+                                }
+                            </Select>
+                        </Field>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is9">
+                        <Select TValue="GroupBuyModuleType?" SelectedValue="NewEntity.SelectedGroupBuyModuleType" SelectedValueChanged="(e) => AddProductItem(e)">
+                            <SelectItem Value="(GroupBuyModuleType?)null">
+                                @L["SelectModule"]
+                            </SelectItem>
+                            @if (NewEntity.GroupBuyTemplateType == GroupBuyTemplateType.PikachuOne)
+                            {
+                                @foreach (GroupBuyModuleType module in GroupBuyExtensions.GetPikachuOneList())
+                                {
+                                    <SelectItem Value="module">
+                                        @L[module.ToString()]
+                                    </SelectItem>
+                                }
+                            }
+                            @* @if (NewEntity.GroupBuyTemplateType == GroupBuyTemplateType.PikachuTwo) *@
+                            @* { *@
+                            @foreach (GroupBuyModuleType module in GroupBuyExtensions.GetPikachuTwoList())
+                            {
+                                <SelectItem Value="module">
+                                    @L[module.ToString()]
+                                </SelectItem>
+                            }
+                            @* } *@
+                        </Select>
+                    </Column>
+                </Row>
+                <div ondragover="event.preventDefault();">
+                    @foreach (var module in CollapseItem)
+                    {
+                        <div class="d-flex">
+                            <div class="p-2 flex-grow-1">
+                                <Accordion>
+                                    <Collapse>
+                                        <CollapseHeader>
+                                            <AccordionToggle>
+                                                <i class="fa fa-trash text-danger me-2" @onclick="@(() => RemoveCollapseItem(@module.Index))"></i>
+                                                @L[module.GroupBuyModuleType.ToString()]
+
+                                                @if (module.IsWarnedForInCompatible)
+                                                {
+                                                    <Tooltip Text="@($"Incompatible Module for {L[NewEntity.GroupBuyTemplateType.ToString()]}")"
+                                                             TriggerTargetId="tooltip-custom-target"
+                                                             Inline
+                                                             Style="margin-left: 5px;">
+                                                        <Badge Color="Color.Warning">
+                                                            <i class="fas fa-circle-info" />
+                                                        </Badge>
+                                                    </Tooltip>
+                                                }
+
+                                            </AccordionToggle>
+                                        </CollapseHeader>
+                                        <CollapseBody>
+                                            @if (module.GroupBuyModuleType is GroupBuyModuleType.ProductGroupModule)
+                                            {
+                                                <div class="d-flex justify-content-end">
+                                                    <div style="width: 60px;">
+                                                        <select class="form-control form-control-sm" @onchange="(e) => OnProductGroupValueChange(e, module)">
+                                                            <option value="3">3</option>
+                                                            <option value="4">4</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            }
+
+                                            @if (module.GroupBuyModuleType is GroupBuyModuleType.CarouselImages)
+                                            {
+                                                List<List<CreateImageDto>> carouselModules = CarouselModules.Select(s => s.Where(w => w.ModuleNumber == module.ModuleNumber).ToList()).Where(w => w.Count > 0).ToList();
+
+                                                @foreach (List<CreateImageDto> carouselImages in carouselModules)
+                                                {
+                                                    <div class="row">
+                                                        <div class="col-2">
+                                                            <label>
+                                                                @L["CarouselImages"]<Span>
+                                                                    <Tooltip Text="@L["uploadUpto5Images"]">
+                                                                        <Icon class="fa-question-circle" />
+                                                                    </Tooltip>
+                                                                </Span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="col-10 ">
+                                                            <Field>
+                                                                <FilePicker @ref="CarouselFilePickers[carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1]"
+                                                                            Disabled="carouselImages.Count >= 5"
+                                                                            Multiple
+                                                                            Changed="@(async (e) => await OnImageModuleUploadAsync(e,
+                                                                                                                           carouselImages,
+                                                                                                                           carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value,
+                                                                                                                           CarouselFilePickers[carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1],
+                                                                                                                           ImageType.GroupBuyCarouselImage))"
+                                                                            ShowMode="FilePickerShowMode.List"
+                                                                            Accept=".jpg, .png, .svg, .jpeg, .webp">
+                                                                    <FileTemplate>
+                                                                        <Div Flex="Flex.JustifyContent.Between">
+                                                                            <Div>
+                                                                                <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
+                                                                                <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                                                            </Div>
+                                                                            <Div Class="ps-2">
+                                                                                <Div>
+                                                                                    @if (context.File.Status is FileEntryStatus.Ready)
+                                                                                    {
+                                                                                        <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
+                                                                                    }
+                                                                                    else if (context.File.Status is FileEntryStatus.Uploading)
+                                                                                    {
+                                                                                        <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
+                                                                                    }
+                                                                                    else if (context.File.Status is FileEntryStatus.Uploaded)
+                                                                                    {
+                                                                                        <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
+                                                                                    }
+                                                                                    else if (context.File.Status is FileEntryStatus.Error)
+                                                                                    {
+                                                                                        <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
+                                                                                    }
+                                                                                </Div>
+                                                                                <Div>
+                                                                                    <Icon TextColor="TextColor.Danger" Name="IconName.Delete" class="cursor-pointer" Clicked="context.RemoveFile" />
+                                                                                </Div>
+                                                                            </Div>
+                                                                        </Div>
+                                                                    </FileTemplate>
+                                                                    <ButtonsTemplate>
+                                                                        <Progress Value="@CarouselFilePickers[carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1].GetProgressPercentage()" />
+                                                                    </ButtonsTemplate>
+                                                                </FilePicker>
+                                                            </Field>
+                                                        </div>
+                                                        @if (carouselImages.Count > 0 && carouselImages.Any(a => !a.ImageUrl.IsNullOrEmpty()))
+                                                        {
+                                                            <Div Class="row">
+                                                                <Div Class="col-2"></Div>
+                                                                <Div Class="col-10">
+                                                                    <Div Class="image-list-container d-block flex-nowrap">
+                                                                        <Div Class="d-flex flex-wrap">
+                                                                            @foreach (CreateImageDto image in carouselImages.Where(w => !w.ImageUrl.IsNullOrEmpty()).ToList())
+                                                                            {
+                                                                                <Div Class="image-container">
+                                                                                    <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image"
+                                                                                           Fluid />
+                                                                                    <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName,
+                                                                                                                                           carouselImages,
+                                                                                                                                           ImageType.GroupBuyCarouselImage)">
+                                                                                        <i class="fa fa-trash"></i>
+                                                                                    </button>
+                                                                                </Div>
+                                                                            }
+                                                                        </Div>
+                                                                        <Div Class="d-flex">
+                                                                            @foreach (CreateImageDto createImageDto in carouselImages.Where(w => !w.ImageUrl.IsNullOrEmpty()).ToList())
+                                                                            {
+                                                                                <button type="button"
+                                                                                        class="btn btn-primary @(carouselImages.IndexOf(createImageDto) > 0 ? "mx-1" : "")"
+                                                                                        @onclick="() => OpenAddLinkModal(createImageDto)">
+                                                                                    @L["AddLink"]
+                                                                                </button>
+                                                                            }
+                                                                        </Div>
+                                                                    </Div>
+                                                                </Div>
+                                                            </Div>
+                                                        }
+                                                        <Div class="row">
+                                                            <Div class="col-2 pt-2 pb-4">
+                                                                <label>@L["Style"]</label>
+                                                            </Div>
+                                                            <Div class="col-10 pt-2 pb-4">
+                                                                <select class="form-select form-select"
+                                                                        @onchange=@((e) => OnStyleCarouselChange(e, carouselImages, carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value))>
+                                                                    <option>Select Style</option>
+                                                                    @foreach (object? enumValue in Enum.GetValues(typeof(StyleForCarouselImages)))
+                                                                    {
+                                                                        if (enumValue is not null && carouselImages.Any(a => a.CarouselStyle == (StyleForCarouselImages)enumValue))
+                                                                        {
+                                                                            <option value="@enumValue" selected>@L[enumValue.ToString()]</option>
+                                                                        }
+
+                                                                        else
+                                                                        {
+                                                                            <option value="@enumValue">@L[enumValue.ToString()]</option>
+                                                                        }
+                                                                    }
+                                                                </select>
+                                                            </Div>
+                                                        </Div>
+                                                    </div>
+                                                }
+                                            }
+
+                                            @if (module.GroupBuyModuleType is GroupBuyModuleType.BannerImages)
+                                            {
+                                                List<List<CreateImageDto>> bannerModules = BannerModules.Select(s => s.Where(w => w.ModuleNumber == module.ModuleNumber).ToList()).Where(w => w.Count > 0).ToList();
+
+                                                foreach (List<CreateImageDto> bannerImages in bannerModules)
+                                                {
+                                                    <div class="row">
+                                                        <div class="col-2">
+                                                            <label>
+                                                                @L["BannerImages"]<Span>
+                                                                    <Tooltip Text="@L["uploadUpto5Images"]">
+                                                                        <Icon class="fa-question-circle" />
+                                                                    </Tooltip>
+                                                                </Span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="col-10 ">
+                                                            <Field>
+                                                                <FilePicker @ref="BannerFilePickers[bannerImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1]"
+                                                                            Changed="@(async (e) => await OnBannerImageModuleUploadAsync(e,
+                                                                                                                           bannerImages,
+                                                                                                                           bannerImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value,
+                                                                                                                           BannerFilePickers[bannerImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1],
+                                                                                                                           ImageType.GroupBuyBannerImage))"
+                                                                            ShowMode="FilePickerShowMode.List"
+                                                                            Accept=".jpg, .png, .svg, .jpeg, .webp">
+                                                                    <FileTemplate>
+                                                                        <Div Flex="Flex.JustifyContent.Between">
+                                                                            <Div>
+                                                                                <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
+                                                                                <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                                                            </Div>
+                                                                            <Div Class="ps-2">
+                                                                                <Div>
+                                                                                    @if (context.File.Status is FileEntryStatus.Ready)
+                                                                                    {
+                                                                                        <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
+                                                                                    }
+                                                                                    else if (context.File.Status is FileEntryStatus.Uploading)
+                                                                                    {
+                                                                                        <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
+                                                                                    }
+                                                                                    else if (context.File.Status is FileEntryStatus.Uploaded)
+                                                                                    {
+                                                                                        <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
+                                                                                    }
+                                                                                    else if (context.File.Status is FileEntryStatus.Error)
+                                                                                    {
+                                                                                        <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
+                                                                                    }
+                                                                                </Div>
+                                                                                <Div>
+                                                                                    <Icon TextColor="TextColor.Danger" Name="IconName.Delete" class="cursor-pointer" Clicked="context.RemoveFile" />
+                                                                                </Div>
+                                                                            </Div>
+                                                                        </Div>
+                                                                    </FileTemplate>
+                                                                    <ButtonsTemplate>
+                                                                        <Progress Value="@BannerFilePickers[bannerImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1].GetProgressPercentage()" />
+                                                                    </ButtonsTemplate>
+                                                                </FilePicker>
+                                                            </Field>
+                                                        </div>
+                                                        @if (bannerImages.Count > 0 && bannerImages.Any(a => !a.ImageUrl.IsNullOrEmpty()))
+                                                        {
+                                                            <Div Class="row">
+                                                                <Div Class="col-2"></Div>
+                                                                <Div Class="col-10">
+                                                                    <Div Class="image-list-container d-block flex-nowrap">
+                                                                        <Div Class="d-flex flex-wrap">
+                                                                            @foreach (CreateImageDto image in bannerImages.Where(w => !w.ImageUrl.IsNullOrEmpty()).ToList())
+                                                                            {
+                                                                                <Div Class="image-container">
+                                                                                    <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image" Fluid />
+                                                                                    <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName,
+                                                                                                                                            bannerImages,
+                                                                                                                                            ImageType.GroupBuyBannerImage)">
+                                                                                        <i class="fa fa-trash"></i>
+                                                                                    </button>
+                                                                                </Div>
+                                                                            }
+                                                                        </Div>
+                                                                        <Div Class="d-flex">
+                                                                            @foreach (CreateImageDto createImageDto in bannerImages.Where(w => !w.ImageUrl.IsNullOrEmpty()).ToList())
+                                                                            {
+                                                                                <button type="button"
+                                                                                        class="btn btn-primary @(bannerImages.IndexOf(createImageDto) > 0 ? "mx-1" : "")"
+                                                                                        @onclick="() => OpenAddLinkModal(createImageDto)">
+                                                                                    @L["Add Link"]
+                                                                                </button>
+                                                                            }
+                                                                        </Div>
+                                                                    </Div>
+                                                                </Div>
+                                                            </Div>
+                                                        }
+                                                    </div>
+                                                }
+                                            }
+
+                                            @if (module.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview)
+                                            {
+                                                foreach (GroupPurchaseOverviewDto module in GroupPurchaseOverviewModules)
+                                                {
+                                                    <Div Class="row d-flex">
+                                                        <Div Class="col-6 pb-1">
+                                                            <Div Class="col-2 pb-1">
+                                                                <Label>@L["Image"] <Span Class="text-danger">*</Span></Label>
+                                                            </Div>
+                                                            <Field>
+                                                                <FilePicker @ref="GroupPurchaseOverviewFilePickers[GroupPurchaseOverviewModules.IndexOf(module)]"
+                                                                            FilePickerLocalizer="(key, args) => LocalizeFilePicker(key, args)"
+                                                                            Changed="@(async (e) => await OnImageUploadAsync(e, module, GroupPurchaseOverviewFilePickers[GroupPurchaseOverviewModules.IndexOf(module)]))"
+                                                                            ShowMode="FilePickerShowMode.List"
+                                                                            Accept=".jpg, .png, .svg, .jpeg, .webp">
+                                                                    <FileTemplate>
+                                                                        <Div Flex="Flex.JustifyContent.Between">
+                                                                            <Div>
+                                                                                <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
+                                                                                <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                                                            </Div>
+                                                                            <Div Class="ps-2">
+                                                                                <Div>
+                                                                                    @if (context.File.Status is FileEntryStatus.Ready)
+                                                                                    {
+                                                                                        <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
+                                                                                    }
+                                                                                    else if (context.File.Status is FileEntryStatus.Uploading)
+                                                                                    {
+                                                                                        <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
+                                                                                    }
+                                                                                    else if (context.File.Status is FileEntryStatus.Uploaded)
+                                                                                    {
+                                                                                        <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
+                                                                                    }
+                                                                                    else if (context.File.Status is FileEntryStatus.Error)
+                                                                                    {
+                                                                                        <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
+                                                                                    }
+                                                                                </Div>
+                                                                                <Div>
+                                                                                    <Icon TextColor="TextColor.Danger"
+                                                                                          Name="IconName.Delete"
+                                                                                          Class="cursor-pointer"
+                                                                                          Clicked="context.RemoveFile" />
+                                                                                </Div>
+                                                                            </Div>
+                                                                        </Div>
+                                                                    </FileTemplate>
+                                                                    <ButtonsTemplate>
+                                                                        <Progress Value="@GroupPurchaseOverviewFilePickers[GroupPurchaseOverviewModules.IndexOf(module)].GetProgressPercentage()" />
+                                                                    </ButtonsTemplate>
+                                                                </FilePicker>
+                                                            </Field>
+                                                            @if (!module.Image.IsNullOrEmpty())
+                                                            {
+                                                                <Div Class="row">
+                                                                    <Div Class="col-2"></Div>
+                                                                    <Div Class="col-12">
+                                                                        <Div Class="image-list-container">
+                                                                            <Div Class="image-container">
+                                                                                <Image Class="blur-image" Source="@module.Image" Text="Logo Image" Fluid />
+                                                                                <Button Class="delete-button"
+                                                                                        Clicked="@(async (e) => await DeleteImageAsync(e, module))">
+                                                                                    <i class="fa fa-trash" />
+                                                                                </Button>
+                                                                            </Div>
+                                                                        </Div>
+                                                                    </Div>
+                                                                </Div>
+                                                            }
+                                                        </Div>
+                                                        <Div Class="col-6">
+                                                            <Div Class="col-2 pb-1">
+                                                                <Label>@L["Title"] <Span Class="text-danger">*</Span></Label>
+                                                            </Div>
+                                                            <Div Class="col-12 pb-1">
+                                                                <TextEdit @bind-Text="module.Title" />
+                                                            </Div>
+                                                            <Div Class="col-2 pb-1">
+                                                                <Label>@L["SubTitle"]</Label>
+                                                            </Div>
+                                                            <Div Class="col-12 pb-1">
+                                                                <TextEdit @bind-Text="@module.SubTitle" />
+                                                            </Div>
+                                                            <Div Class="col-2 pb-1">
+                                                                <Label>@L["BodyText"]</Label>
+                                                            </Div>
+                                                            <Div Class="col-12 pb-1">
+                                                                <TextEdit @bind-Text="@module.BodyText" />
+                                                            </Div>
+                                                            <Div Class="col-12 pb-1"></Div>
+                                                            <Div Class="col-12 pb-1">
+                                                                <Switch TValue="bool"
+                                                                        @bind-Checked="@module.IsButtonEnable" />
+                                                            </Div>
+
+                                                            @if (module.IsButtonEnable)
+                                                            {
+                                                                <Div Class="col-2 pb-1">
+                                                                    <Label>@L["ButtonText"] <Span Class="text-danger">*</Span></Label>
+                                                                </Div>
+                                                                <Div Class="col-12 pb-1">
+                                                                    <TextEdit @bind-Text="@module.ButtonText" />
+                                                                </Div>
+                                                                <Div Class="col-2 pb-1">
+                                                                    <Label>@L["ButtonLink"] <Span Class="text-danger">*</Span></Label>
+                                                                </Div>
+                                                                <Div Class="col-12 pb-1">
+                                                                    <TextEdit @bind-Text="@module.ButtonLink" />
+                                                                </Div>
+                                                            }
+                                                        </Div>
+                                                    </Div>
+                                                }
+                                            }
+
+                                            @if (module.GroupBuyModuleType is GroupBuyModuleType.OrderInstruction)
+                                            {
+                                                foreach (GroupBuyOrderInstructionDto module in GroupBuyOrderInstructionModules)
+                                                {
+                                                    <Div Class="row d-flex">
+                                                        <Div Class="col-6 pb-1">
+                                                            <Div Class="col-2 pb-1">
+                                                                <Label>@L["Image"] <Span Class="text-danger">*</Span></Label>
+                                                            </Div>
+                                                            <Field>
+                                                                <FilePicker @ref="GroupBuyOrderInstructionPickers[GroupBuyOrderInstructionModules.IndexOf(module)]"
+                                                                            Changed="@(async (e) => await OnImageUploadAsync(e,
+                                                                                                                     module,
+                                                                                                                     GroupBuyOrderInstructionPickers[GroupBuyOrderInstructionModules.IndexOf(module)]))"
+                                                                            ShowMode="FilePickerShowMode.List"
+                                                                            Accept=".jpg, .png, .svg ,.jpeg,.webp">
+                                                                    <FileTemplate>
+                                                                        <Div Flex="Flex.JustifyContent.Between">
+                                                                            <Div>
+                                                                                <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
+                                                                                <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                                                            </Div>
+                                                                            <Div Class="ps-2">
+                                                                                <Div>
+                                                                                    @if (context.File.Status is FileEntryStatus.Ready)
+                                                                                    {
+                                                                                        <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
+                                                                                    }
+                                                                                    else if (context.File.Status is FileEntryStatus.Uploading)
+                                                                                    {
+                                                                                        <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
+                                                                                    }
+                                                                                    else if (context.File.Status is FileEntryStatus.Uploaded)
+                                                                                    {
+                                                                                        <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
+                                                                                    }
+                                                                                    else if (context.File.Status is FileEntryStatus.Error)
+                                                                                    {
+                                                                                        <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
+                                                                                    }
+                                                                                </Div>
+                                                                                <Div>
+                                                                                    <Icon TextColor="TextColor.Danger"
+                                                                                          Name="IconName.Delete"
+                                                                                          Class="cursor-pointer"
+                                                                                          Clicked="context.RemoveFile" />
+                                                                                </Div>
+                                                                            </Div>
+                                                                        </Div>
+                                                                    </FileTemplate>
+                                                                    <ButtonsTemplate>
+                                                                        <Progress Value="@GroupBuyOrderInstructionPickers[GroupBuyOrderInstructionModules.IndexOf(module)].GetProgressPercentage()" />
+                                                                    </ButtonsTemplate>
+                                                                </FilePicker>
+                                                            </Field>
+                                                            @if (!module.Image.IsNullOrEmpty())
+                                                            {
+                                                                <Div Class="row">
+                                                                    <Div Class="col-2"></Div>
+                                                                    <Div Class="col-12">
+                                                                        <Div Class="image-list-container">
+                                                                            <Div Class="image-container">
+                                                                                <Image Class="blur-image" Source="@module.Image" Text="Logo Image" Fluid />
+                                                                                <Button Class="delete-button"
+                                                                                        Clicked="@(async (e) => await DeleteImageAsync(e, module))">
+                                                                                    <i class="fa fa-trash" />
+                                                                                </Button>
+                                                                            </Div>
+                                                                        </Div>
+                                                                    </Div>
+                                                                </Div>
+                                                            }
+                                                        </Div>
+                                                        <Div Class="col-6">
+                                                            <Div Class="col-2 pb-1">
+                                                                <Label>@L["Title"] <Span Class="text-danger">*</Span></Label>
+                                                            </Div>
+                                                            <Div Class="col-12 pb-1">
+                                                                <TextEdit @bind-Text="module.Title" />
+                                                            </Div>
+                                                            <Div Class="col-2 pb-1">
+                                                                <Label>@L["BodyText"]</Label>
+                                                            </Div>
+                                                            <Div Class="col-12 pb-1">
+                                                                <TextEdit @bind-Text="@module.BodyText" />
+                                                            </Div>
+                                                        </Div>
+                                                    </Div>
+                                                }
+                                            }
+
+                                            @if (module.GroupBuyModuleType is GroupBuyModuleType.CountdownTimer)
+                                            {
+                                                <Div Class="col-12 mb-2">
+                                                    <InputText class="form-control" @bind-Value="module.AdditionalInfo" />
+                                                </Div>
+                                            }
+
+                                            @if (module.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
+                                            {
+                                                foreach (ProductRankingCarouselModule productModule in ProductRankingCarouselModules)
+                                                {
+                                                    <Div Class="col-12 d-flex">
+                                                        <Div Class="col-5">
+                                                            <Div Class="row mt-2">
+                                                                @foreach (ItemWithItemTypeDto selectedItem in productModule.Selected)
+                                                                {
+                                                                    <div class="row-cols-12 mt-@(productModule.Selected.IndexOf(selectedItem) > 0 ? "5" : "2")"
+                                                                         style="@(productModule.Selected.IndexOf(selectedItem) > 0 ? "margin-top: 75px !important" : "")">
+                                                                        <label>Products</label>
+                                                                        <Autocomplete TItem="ItemWithItemTypeDto"
+                                                                                      TValue="Guid?"
+                                                                                      Data="@ItemsList"
+                                                                                      TextField="@(( item ) => item.Name)"
+                                                                                      ValueField="@(( item ) => item.Id)"
+                                                                                      Placeholder="Search..."
+                                                                                      Filter="AutocompleteFilter.StartsWith"
+                                                                                      CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                                                                                      HighlightSearch
+                                                                                      Immediate="true"
+                                                                                      SelectedValue="selectedItem.Id"
+                                                                                      SelectedValueChanged="(id) => OnSelectedValueChanged(id, productModule, selectedItem)">
+                                                                            <NotFoundContent> @L["NotFound"] </NotFoundContent>
+                                                                        </Autocomplete>
+                                                                    </div>
+
+                                                                    @if (selectedItem.Id != Guid.Empty)
+                                                                    {
+                                                                        string? firstImage;
+                                                                        if (selectedItem.ItemType == ItemType.Item)
+                                                                        {
+                                                                            firstImage = selectedItem.Item?.Images?.FirstOrDefault()?.ImageUrl;
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            firstImage = selectedItem.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
+                                                                        }
+                                                                        <div class="d-flex mt-3">
+                                                                            @if (firstImage != null)
+                                                                            {
+                                                                                <div class="w-100 text-center">
+                                                                                    <img src="@firstImage" class="img-fluid" />
+                                                                                    @if (module.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
+                                                                                    {
+                                                                                        <div class="row mt-2">
+                                                                                            <h4 class="text-center mt-2">
+                                                                                                <strong>@selectedItem.Name</strong>
+                                                                                            </h4>
+                                                                                            @if (selectedItem.Item != null)
+                                                                                            {
+                                                                                                var itemDetails = selectedItem.Item?.ItemDetails;
+                                                                                                @if (itemDetails != null && itemDetails.Where(x => x.Attribute1Value != null).Count() > 0)
+                                                                                                {
+                                                                                                    <div class="mt-2">
+                                                                                                        <select class="form-control dropdown">
+                                                                                                            @foreach (var item in itemDetails.DistinctBy(i => i.Attribute1Value))
+                                                                                                            {
+                                                                                                                <option>
+                                                                                                                    @item.Attribute1Value
+                                                                                                                </option>
+                                                                                                            }
+                                                                                                        </select>
+                                                                                                    </div>
+                                                                                                }
+                                                                                                @if (itemDetails != null && itemDetails.Where(x => x.Attribute2Value != null).Count() > 0)
+                                                                                                {
+                                                                                                    <div class="mt-2">
+                                                                                                        <select class="form-control dropdown">
+                                                                                                            @foreach (var item in itemDetails.DistinctBy(i => i.Attribute2Value))
+                                                                                                            {
+                                                                                                                <option>
+                                                                                                                    @item.Attribute2Value
+                                                                                                                </option>
+                                                                                                            }
+                                                                                                        </select>
+                                                                                                    </div>
+                                                                                                }
+                                                                                                @if (itemDetails != null && itemDetails.Where(x => x.Attribute3Value != null).Count() > 0)
+                                                                                                {
+                                                                                                    <div class="mt-2">
+                                                                                                        <select class="form-control dropdown">
+                                                                                                            @foreach (var item in itemDetails.DistinctBy(i => i.Attribute3Value))
+                                                                                                            {
+                                                                                                                <option>
+                                                                                                                    @item.Attribute3Value
+                                                                                                                </option>
+                                                                                                            }
+                                                                                                        </select>
+                                                                                                    </div>
+                                                                                                }
+                                                                                            }
+                                                                                        </div>
+                                                                                    }
+                                                                                </div>
+                                                                            }
+                                                                        </div>
+                                                                    }
+                                                                }
+                                                            </Div>
+                                                        </Div>
+                                                        <Div Class="col-1" />
+                                                        <Div Class="col-6">
+                                                            <Div Class="row">
+                                                                <Div Class="col-12">
+                                                                    <Div Class="col-2 pb-1">
+                                                                        <Label>@L["Carousel"] <Span Class="text-danger">*</Span></Label>
+                                                                    </Div>
+                                                                    <Field>
+                                                                        <FilePicker @ref="ProductRankingCarouselPickers[ProductRankingCarouselModules.IndexOf(productModule)]"
+                                                                                    Disabled="productModule.Images.Count >= 5"
+                                                                                    Multiple
+                                                                                    Changed="@(async (e) => await OnImageModuleUploadAsync(e,
+                                                                                                                           productModule.Images,
+                                                                                                                           ProductRankingCarouselModules.IndexOf(productModule) + 1,
+                                                                                                                           ProductRankingCarouselPickers[ProductRankingCarouselModules.IndexOf(productModule)],
+                                                                                                                           ImageType.GroupBuyProductRankingCarousel))"
+                                                                                    ShowMode="FilePickerShowMode.List"
+                                                                                    Accept=".jpg, .png, .svg, .jpeg, .webp">
+                                                                            <FileTemplate>
+                                                                                <Div Flex="Flex.JustifyContent.Between">
+                                                                                    <Div>
+                                                                                        <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
+                                                                                        <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                                                                    </Div>
+                                                                                    <Div Class="ps-2">
+                                                                                        <Div>
+                                                                                            @if (context.File.Status is FileEntryStatus.Ready)
+                                                                                            {
+                                                                                                <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
+                                                                                            }
+                                                                                            else if (context.File.Status is FileEntryStatus.Uploading)
+                                                                                            {
+                                                                                                <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
+                                                                                            }
+                                                                                            else if (context.File.Status is FileEntryStatus.Uploaded)
+                                                                                            {
+                                                                                                <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
+                                                                                            }
+                                                                                            else if (context.File.Status is FileEntryStatus.Error)
+                                                                                            {
+                                                                                                <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
+                                                                                            }
+                                                                                        </Div>
+                                                                                        <Div>
+                                                                                            <Icon TextColor="TextColor.Danger" Name="IconName.Delete" class="cursor-pointer" Clicked="context.RemoveFile" />
+                                                                                        </Div>
+                                                                                    </Div>
+                                                                                </Div>
+                                                                            </FileTemplate>
+                                                                            <ButtonsTemplate>
+                                                                                <Progress Value="@ProductRankingCarouselPickers[ProductRankingCarouselModules.IndexOf(productModule)].GetProgressPercentage()" />
+                                                                            </ButtonsTemplate>
+                                                                        </FilePicker>
+                                                                    </Field>
+                                                                    @if (productModule.Images.Count > 0)
+                                                                    {
+                                                                        <Div Class="row">
+                                                                            <Div Class="col-12">
+                                                                                <Div Class="image-list-container d-block flex-nowrap">
+                                                                                    <Div Class="d-flex flex-wrap">
+                                                                                        @foreach (CreateImageDto image in productModule.Images)
+                                                                                        {
+                                                                                            <Div Class="image-container">
+                                                                                                <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image" Fluid />
+                                                                                                <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName,
+                                                                                                                                                   productModule.Images,
+                                                                                                                                                   ImageType.GroupBuyProductRankingCarousel)">
+                                                                                                    <i class="fa fa-trash"></i>
+                                                                                                </button>
+                                                                                            </Div>
+                                                                                        }
+                                                                                    </Div>
+                                                                                </Div>
+                                                                            </Div>
+                                                                        </Div>
+                                                                    }
+                                                                </Div>
+                                                                <Div Class="col-12">
+                                                                    <Div Class="col-2 pb-1">
+                                                                        <Label>@L["Title"] <Span Class="text-danger">*</Span></Label>
+                                                                    </Div>
+                                                                    <Div Class="col-12 pb-1">
+                                                                        <TextEdit @bind-Text="productModule.Title" />
+                                                                    </Div>
+                                                                    <Div Class="col-2 pb-1">
+                                                                        <Label>@L["SubTitle"] <Span Class="text-danger">*</Span></Label>
+                                                                    </Div>
+                                                                    <Div Class="col-12 pb-1">
+                                                                        <TextEdit @bind-Text="@productModule.SubTitle" />
+                                                                    </Div>
+                                                                    <Div Class="col-2 pb-1">
+                                                                        <Label>@L["BodyText"]</Label>
+                                                                    </Div>
+                                                                    <Div Class="col-12 pb-1">
+                                                                        <TextEdit @bind-Text="@productModule.Content" />
+                                                                    </Div>
+                                                                </Div>
+                                                            </Div>
+                                                        </Div>
+                                                    </Div>
+                                                }
+                                            }
+
+                                            <div class="row mt-2">
+                                                @if (module.GroupBuyModuleType is GroupBuyModuleType.ProductGroupModule)
+                                                {
+                                                    <Div Class="col-md-6 text-left mb-3">
+                                                        <InputText class="form-control" @bind-Value="module.ProductGroupModuleTitle" />
+                                                    </Div>
+                                                    <Div Class="col-md-6 text-right mb-3">
+                                                        <Select TValue="string" @onchange=@((e) => module.ProductGroupModuleImageSize = e.Value.ToString())>
+                                                            <option value="">@L["SelectStyle"] </option>
+                                                            <option value="SmallImage">@L["SmallImage"]</option>
+                                                            <option value="LargeImage">@L["LargeImage"]</option>
+                                                        </Select>
+                                                    </Div>
+                                                }
+                                                @foreach (var selectedItem in module.Selected)
+                                                {
+                                                    <div class="col-@(12 / module.Selected.Count)">
+                                                        @if (module.GroupBuyModuleType is GroupBuyModuleType.IndexAnchor)
+                                                        {
+                                                            <Div Class="col-12 mb-2">
+                                                                <InputText class="form-control" @bind-Value="selectedItem.Name"
+                                                                           @oninput="(e) => OnSelectedValueChanged(null, module, selectedItem)" />
+                                                            </Div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <Autocomplete TItem="ItemWithItemTypeDto"
+                                                                          TValue="Guid?"
+                                                                          Data="@ItemsList"
+                                                                          TextField="@(( item ) => item.Name)"
+                                                                          ValueField="@(( item ) => item.Id)"
+                                                                          Placeholder="@L["Search..."]"
+                                                                          Filter="AutocompleteFilter.StartsWith"
+                                                                          CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                                                                          HighlightSearch
+                                                                          Immediate="true"
+                                                                          SelectedValue="selectedItem.Id"
+                                                                          SelectedValueChanged="(id) => OnSelectedValueChanged(id, module, selectedItem)">
+                                                                <NotFoundContent> @L["NotFound"] </NotFoundContent>
+                                                            </Autocomplete>
+                                                        }
+                                                        @if (selectedItem.Id != Guid.Empty)
+                                                        {
+                                                            string? firstImage;
+                                                            if (selectedItem.ItemType == ItemType.Item)
+                                                            {
+                                                                firstImage = selectedItem.Item?.Images?.FirstOrDefault()?.ImageUrl;
+                                                            }
+                                                            else
+                                                            {
+                                                                firstImage = selectedItem.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
+                                                            }
+                                                            <div class="d-flex mt-3">
+                                                                @if (firstImage != null)
+                                                                {
+                                                                    <div class="w-100 text-center">
+                                                                        <img src="@firstImage" class="img-fluid" />
+                                                                        @if (module.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule)
+                                                                        {
+                                                                            <div class="row mt-2">
+                                                                                <h4 class="text-center mt-2">
+                                                                                    <strong>@selectedItem.Name</strong>
+                                                                                </h4>
+                                                                                @if (selectedItem.Item != null)
+                                                                                {
+                                                                                    var itemDetails = selectedItem.Item?.ItemDetails;
+                                                                                    @if (itemDetails != null && itemDetails.Where(x => x.Attribute1Value != null).Count() > 0)
+                                                                                    {
+                                                                                        <div class="mt-2">
+                                                                                            <select class="form-control dropdown">
+                                                                                                @foreach (var item in itemDetails.DistinctBy(i => i.Attribute1Value))
+                                                                                                {
+                                                                                                    <option>
+                                                                                                        @item.Attribute1Value
+                                                                                                    </option>
+                                                                                                }
+                                                                                            </select>
+                                                                                        </div>
+                                                                                    }
+                                                                                    @if (itemDetails != null && itemDetails.Where(x => x.Attribute2Value != null).Count() > 0)
+                                                                                    {
+                                                                                        <div class="mt-2">
+                                                                                            <select class="form-control dropdown">
+                                                                                                @foreach (var item in itemDetails.DistinctBy(i => i.Attribute2Value))
+                                                                                                {
+                                                                                                    <option>
+                                                                                                        @item.Attribute2Value
+                                                                                                    </option>
+                                                                                                }
+                                                                                            </select>
+                                                                                        </div>
+                                                                                    }
+                                                                                    @if (itemDetails != null && itemDetails.Where(x => x.Attribute3Value != null).Count() > 0)
+                                                                                    {
+                                                                                        <div class="mt-2">
+                                                                                            <select class="form-control dropdown">
+                                                                                                @foreach (var item in itemDetails.DistinctBy(i => i.Attribute3Value))
+                                                                                                {
+                                                                                                    <option>
+                                                                                                        @item.Attribute3Value
+                                                                                                    </option>
+                                                                                                }
+                                                                                            </select>
+                                                                                        </div>
+                                                                                    }
+                                                                                }
+                                                                            </div>
+                                                                        }
+                                                                    </div>
+                                                                }
+                                                                @if (module.GroupBuyModuleType == GroupBuyModuleType.ProductDescriptionModule)
+                                                                {
+                                                                    string? ItemDescription;
+                                                                    if (selectedItem.ItemType == ItemType.Item)
+                                                                    {
+                                                                        ItemDescription = selectedItem.Item?.ItemDescription;
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        ItemDescription = selectedItem.SetItem?.Description;
+                                                                    }
+                                                                    <div class="ps-3">
+                                                                        <p> @((MarkupString)ItemDescription) </p>
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                }
+                                            </div>
+                                        </CollapseBody>
+                                    </Collapse>
+                                </Accordion>
+                            </div>
+                            <div class="py-2"
+                                 draggable="true"
+                                 @ondrop="@(()=> Drop(module))"
+                                 @ondrag="@(()=> StartDrag(module))">
+                                <span class="drag-drop-span">
+                                    <i class="fa-solid fa-bars fa-2xl"></i>
+                                </span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            @if (NewEntity.WebsitePageType == WebsitePageType.ProductListPage)
+            {
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                        <FieldLabel>@L["ProductCategory"] *</FieldLabel>
+                        <Autocomplete TItem="KeyValueDto"
+                                      TValue="Guid?"
+                                      Data="@ProductCategoryLookup"
+                                      TextField="@(( item ) => item.Name)"
+                                      ValueField="@(( item ) => item.Id)"
+                                      @bind-SelectedText="SelectedAutoCompleteText"
+                                      Placeholder="Search..."
+                                      Filter="AutocompleteFilter.StartsWith"
+                                      CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                                      HighlightSearch
+                                      Immediate="true"
+                                      SelectedValueChanged="OnSelectedValueChanged"
+                                      @ref="AutocompleteField">
+                            <NotFoundContent> @L["NotFound"] </NotFoundContent>
+                        </Autocomplete>
+                    </Column>
+                </Row>
+            }
+            @if (NewEntity.WebsitePageType == WebsitePageType.ArticlePage)
+            {
+                <Row Class="mb-5">
+                    <Column ColumnSize="ColumnSize.Is3">
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is9">
+                        <BlazoredTextEditor @ref="@ArticlePageHtml">
+                            <ToolbarContent>
+                                <select class="ql-header">
+                                    <option selected=""></option>
+                                    <option value="1"></option>
+                                    <option value="2"></option>
+                                    <option value="3"></option>
+                                    <option value="4"></option>
+                                    <option value="5"></option>
+                                </select>
+                                <span class="ql-formats">
+                                    <button class="ql-bold"></button>
+                                    <button class="ql-italic"></button>
+                                    <button class="ql-underline"></button>
+                                    <button class="ql-strike"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <select class="ql-color"></select>
+                                    <select class="ql-background"></select>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-list" value="ordered"></button>
+                                    <button class="ql-list" value="bullet"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-link"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-image"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-video"></button>
+                                </span>
+                            </ToolbarContent>
+                        </BlazoredTextEditor>
+                    </Column>
+                </Row>
+            }
         </CardBody>
     </Card>
     <Div Class="text-end">
@@ -163,3 +1050,28 @@
         </PikachuButton>
     </Div>
 </Div>
+<Modal @ref="AddLinkModal" Closing="@OnModalClosing">
+    <ModalContent IsCentered="true">
+        <EditForm Model="@SelectedImageDto" OnValidSubmit="ApplyAddLinkAsync">
+            <ModalHeader>
+                <ModalTitle>@L["AddLink"]</ModalTitle>
+                <CloseButton Clicked="CloseAddLinkModal" />
+            </ModalHeader>
+            <ModalBody>
+                <DataAnnotationsValidator />
+                <div class="row my-2">
+                    <label class="form-label">@L["AddLink"]</label>
+                    <div class="col-12 mb-2">
+                        <InputText class="form-control" @bind-Value="@SelectedImageDto.Link" />
+                    </div>
+                </div>
+            </ModalBody>
+            <ModalFooter>
+                <Button Type="ButtonType.Submit" Class="btn btn-primary">
+                    <i class="fa fa-check"></i>
+                    @L["Save"]
+                </Button>
+            </ModalFooter>
+        </EditForm>
+    </ModalContent>
+</Modal>

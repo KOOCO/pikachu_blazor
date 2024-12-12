@@ -63,4 +63,9 @@ public class CreateWebsiteSettingsDto
 
     [Required]
     public string? AlertColor { get; set; }
+
+    [Required]
+    public WebsitePageType? WebsitePageType { get; set; }
+
+    public GroupBuyModuleType? SelectedGroupBuyModuleType { get; set; }
 }

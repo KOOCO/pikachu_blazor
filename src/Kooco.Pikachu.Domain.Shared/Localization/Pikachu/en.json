@@ -1042,6 +1042,7 @@
     "GrossProfit": "Gross Profit",
     "GrossProfitMargin": "Gross Profit Margin",
     "AdvanceFilters": "Advance Filters",
+    "Menu:WebsiteBasicSettings": "Website Basic Settings",
     "WebsiteBasicSettings": "Website Basic Settings",
     "BasicSettings": "Basic Settings",
     "WebsiteManagement": "Website Management",
@@ -1051,6 +1052,15 @@
     "Enum:GroupBuyTemplateType.2": "Pikachu 2.0",
     "ItemCost": "Cost",
     "ExportAll": "Export All",
-    "PleaseFillInTheRequiredInformation.": "Please Fill In The Required Information."
+    "PleaseFillInTheRequiredInformation.": "Please Fill In The Required Information.",
+    "Enum:WebsitePageType.1": "Custom Page",
+    "Enum:WebsitePageType.2": "Product List Page",
+    "Enum:WebsitePageType.3": "Article Page",
+    "PageTitle": "Page Title",
+    "PageDescription": "Page Description",
+    "PageLink": "Page Link",
+    "SetAsHomePage": "Set as Home Page",
+    "PageType": "Page Type",
+    "WebsitePageType": "Page Type"
   }
 }

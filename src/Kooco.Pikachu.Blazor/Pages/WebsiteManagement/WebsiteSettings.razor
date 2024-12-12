@@ -13,7 +13,18 @@
 @inject IImageAppService ImageAppService
 @inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
 
-<Div Class="rounded-cards website-settings">
+<Row>
+    <Column ColumnSize="ColumnSize.Is6">
+        <h3>@L["WebsiteSettings"]</h3>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is6" Class="text-end">
+        <PikachuButton Class="pk-btn-sm pk-btn-primary" Clicked="@(() => NavigationManager.NavigateTo("/Website-Settings/Create"))">
+            <Icon Name="IconName.Add"></Icon>
+            @L["AddNew"]
+        </PikachuButton>
+    </Column>
+</Row>
+@* <Div Class="rounded-cards website-settings">
     <Card>
         <CardBody>
             <Validations @ref="@ValidationsRef" Model="@NewEntity" ValidateOnLoad="false">
@@ -157,4 +168,4 @@
             @L["Create"]
         </PikachuButton>
     </Div>
-</Div>
+</Div> *@
