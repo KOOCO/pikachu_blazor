@@ -310,7 +310,7 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
             .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate.Value.Date)
             .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
             //.Where(x => x.ShippingStatus == ShippingStatus.Shipped)
-            .Where(x=>x.IsVoidInvoice==false && x.InvoiceStatus==InvoiceStatus.Issued);
+            .Where(x=>x.IsVoidInvoice==false && x.IssueStatus!=null);
             //.Where(x => x.OrderType != OrderType.MargeToNew);
     }
     private static IQueryable<Order> ApplyVoidFilters(IQueryable<Order> queryable,
