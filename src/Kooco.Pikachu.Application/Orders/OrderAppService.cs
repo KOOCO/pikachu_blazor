@@ -70,6 +70,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IUserShoppingCreditAppService _userShoppingCreditAppService;
     private readonly IUserShoppingCreditRepository _userShoppingCreditRepository;
     private readonly IEmailAppService _emailAppService;
+    private readonly IOrderMessageAppService _OrderMessageAppService;
     #endregion
 
     #region Constructor
@@ -96,7 +97,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         IDiscountCodeRepository discountCodeRepository,
         IUserShoppingCreditAppService userShoppingCreditAppService,
         IUserShoppingCreditRepository userShoppingCreditRepository,
-        IEmailAppService emailAppService
+        IEmailAppService emailAppService,
+        IOrderMessageAppService OrderMessageAppService
     )
     {
         _orderRepository = orderRepository;
@@ -123,6 +125,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _userShoppingCreditAppService = userShoppingCreditAppService;
         _userShoppingCreditRepository = userShoppingCreditRepository;
         _emailAppService = emailAppService;
+        _OrderMessageAppService = OrderMessageAppService;
     }
     #endregion
 
@@ -452,9 +455,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
     /// <returns></returns>
     public async Task<OrderDto> GetOrderAsync(Guid groupBuyId, string orderNo, string extraInfo)
     {
-        return ObjectMapper.Map<Order, OrderDto>(
+        OrderDto order = ObjectMapper.Map<Order, OrderDto>(
             await _orderRepository.GetOrderAsync(groupBuyId, orderNo, extraInfo)
         );
+
+        order.StoreCustomerServiceMessages = await _OrderMessageAppService.GetOrderMessagesAsync(order.Id);
+
+        return order;
     }
 
     public async Task<OrderDto> UpdateOrderPaymentMethodAsync(OrderPaymentMethodRequest request)

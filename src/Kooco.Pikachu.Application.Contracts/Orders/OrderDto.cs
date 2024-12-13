@@ -43,6 +43,7 @@ public class OrderDto : FullAuditedEntityDto<Guid>
     public OrderStatus OrderStatus { get; set; }
     public List<OrderItemDto> OrderItems { get; set; }
     public List<StoreCommentDto> StoreComments { get; set; }
+    public List<OrderMessageDto> StoreCustomerServiceMessages { get; set; }
     public bool IsSelected { get; set; } = false;
     public ShippingStatus ShippingStatus { get; set; }
     public DateTime? ShippingDate { get; set; }

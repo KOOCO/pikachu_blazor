@@ -11,6 +11,7 @@ namespace Kooco.Pikachu.Orders
     {
         Task<OrderMessageDto> GetAsync(Guid id);
         Task<PagedResultDto<OrderMessageDto>> GetListAsync(GetOrderMessageListDto input);
+        Task<List<OrderMessageDto>> GetOrderMessagesAsync(Guid orderId);
         Task<OrderMessageDto> CreateAsync(CreateUpdateOrderMessageDto input);
         Task<OrderMessageDto> UpdateAsync(Guid id, CreateUpdateOrderMessageDto input);
         Task DeleteAsync(Guid id);

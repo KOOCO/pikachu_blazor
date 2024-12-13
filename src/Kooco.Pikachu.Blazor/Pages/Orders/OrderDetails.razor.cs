@@ -265,7 +265,7 @@ public partial class OrderDetails
             //}
 
             StoreCustomerService = new();
-           var result= await _OrderMessageAppService.GetListAsync(new GetOrderMessageListDto { MaxResultCount = int.MaxValue,OrderId = Order?.Id });
+           var result= await _OrderMessageAppService.GetListAsync(new GetOrderMessageListDto { MaxResultCount = 1000, OrderId = Order.Id });
             CustomerServiceHistory = result.Items;
 
             await loading.Hide();

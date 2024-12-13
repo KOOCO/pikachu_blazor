@@ -75,6 +75,11 @@ namespace Kooco.Pikachu.Orders
             return orderMessageDtos;
         }
 
+        public async Task<List<OrderMessage>> GetOrderMessagesAsync(Guid orderId)
+        {
+            return [.. (await GetQueryableAsync()).Where(w => w.OrderId == orderId)];
+        }
+
         private async Task<IQueryable<OrderMessage>> ApplyFilterAsync(
             string? filter,
             Guid? orderId,

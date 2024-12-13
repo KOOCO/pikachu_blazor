@@ -380,7 +380,7 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
             .Where(w => w.CustomerEmail == extraInfo || 
                         w.CustomerName == extraInfo || 
                         w.CustomerPhone == extraInfo)
-            .Include(o => o.GroupBuy)
+            //.Include(o => o.GroupBuy)
             .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Item)
                 .ThenInclude(i => i.Images)
