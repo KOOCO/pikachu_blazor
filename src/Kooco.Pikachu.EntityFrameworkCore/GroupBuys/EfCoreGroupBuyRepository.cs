@@ -100,6 +100,7 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
                 .ThenInclude(igd => igd.SetItem)
                 .ThenInclude(s => s.SetItemDetails)
                 .ThenInclude(sid => sid.Item)
+                .ThenInclude(i => i.ItemDetails)
             .Include(ig => ig.ItemGroupDetails.OrderBy(i => i.SortOrder))
                 .ThenInclude(igd => igd.Item)
                 .ThenInclude(i => i.Images)

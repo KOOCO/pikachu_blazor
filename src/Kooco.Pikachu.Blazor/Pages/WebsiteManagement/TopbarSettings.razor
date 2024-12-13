@@ -1,0 +1,53 @@
+﻿@page "/Topbar-Settings"
+@using Kooco.Pikachu.Localization
+@using Kooco.Pikachu.Permissions
+@using Kooco.Pikachu.WebsiteManagement
+@using Volo.Abp.AspNetCore.Components.Web
+@attribute [Authorize(PikachuPermissions.WebsiteSettings.Default)]
+@inherits PikachuComponentBase
+@inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
+
+<h3 class="text-dark text-center">@L["WebsiteManagement"]</h3>
+
+<Div Class="rounded-cards">
+    <Card>
+        <CardBody>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                    <h4>@L["StyleSettings"]</h4>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                    <Field>
+                        <Select TValue="TopbarStyleSettings?">
+                            <SelectItem Value="(TopbarStyleSettings?)null"></SelectItem>
+                            @foreach (TopbarStyleSettings styleSettings in Enum.GetValues(typeof(TopbarStyleSettings)))
+                            {
+                                <SelectItem Value="styleSettings">@L["Enum:TopbarStyleSettings." + (int)styleSettings]</SelectItem>
+                            }
+                        </Select>
+                    </Field>
+                </Column>
+            </Row>
+        </CardBody>
+    </Card>
+    <Card>
+        <CardBody>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                    <h4>@L["LinkSettings"]</h4>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                    <Field>
+                        <Select TValue="TopbarLinkSettings?">
+                            <SelectItem Value="(TopbarLinkSettings?)null"></SelectItem>
+                            @foreach (TopbarLinkSettings linkSettings in Enum.GetValues(typeof(TopbarLinkSettings)))
+                            {
+                                <SelectItem Value="linkSettings">@L["Enum:TopbarLinkSettings." + (int)linkSettings]</SelectItem>
+                            }
+                        </Select>
+                    </Field>
+                </Column>
+            </Row>
+        </CardBody>
+    </Card>
+</Div>

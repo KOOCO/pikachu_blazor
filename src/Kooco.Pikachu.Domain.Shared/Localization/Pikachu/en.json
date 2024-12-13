@@ -1061,6 +1061,12 @@
     "PageLink": "Page Link",
     "SetAsHomePage": "Set as Home Page",
     "PageType": "Page Type",
-    "WebsitePageType": "Page Type"
+    "WebsitePageType": "Page Type",
+    "Menu:TopbarSettings": "Topbar Settings",
+    "StyleSettings": "Style Settings",
+    "LinkSettings": "Link Settings",
+    "Enum:TopbarStyleSettings.1": "Default",
+    "Enum:TopbarLinkSettings.1": "Category",
+    "Enum:TopbarLinkSettings.2": "Link"
   }
 }
