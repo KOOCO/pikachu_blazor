@@ -11,5 +11,6 @@ namespace Kooco.Pikachu.OrderDeliveries
     public interface IOrderDeliveryRepository : IRepository<OrderDelivery, Guid>
     {
         Task<List<OrderDelivery>> GetWithDetailsAsync(Guid id);
+        Task<Guid> GetOrderIdByAllPayLogisticsId(string AllPayLogisticsId);
     }
 }

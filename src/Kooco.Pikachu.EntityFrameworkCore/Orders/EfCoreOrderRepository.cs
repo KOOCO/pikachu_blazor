@@ -431,4 +431,12 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
 
         await UpdateManyAsync(orders);
     }
+
+    public async Task<string> GetOrderNoByOrderId(Guid OrderId)
+    {
+      return (await GetQueryableAsync())
+                     .Where(w => w.Id == OrderId)
+                     .Select(s => s.OrderNo)
+                     .FirstOrDefault();
+    }
 }

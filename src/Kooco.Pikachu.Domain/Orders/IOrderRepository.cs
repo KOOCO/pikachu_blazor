@@ -61,5 +61,6 @@ namespace Kooco.Pikachu.Orders
         Task<(int normalCount, int freezeCount, int frozenCount)> GetTotalDeliveryTemperatureCountsAsync();
 
         Task<Order> GetOrderByMerchantTradeNoAsync(string merchantTradeNo);
+        Task<string> GetOrderNoByOrderId(Guid OrderId);
     }
 }

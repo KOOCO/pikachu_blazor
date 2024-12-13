@@ -470,7 +470,11 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
                     DownloadOBTResponse? downloadObtResponse = JsonConvert.DeserializeObject<DownloadOBTResponse>(responseContent);
 
-                    messages.Add(downloadObtResponse?.Message ?? string.Empty);
+                    Guid OrderId = await _deliveryRepository.GetOrderIdByAllPayLogisticsId(id);
+
+                    string OrderNo = await _orderRepository.GetOrderNoByOrderId(OrderId);
+
+                    messages.Add(string.Concat($"({OrderNo}) ", downloadObtResponse?.Message) ?? string.Empty);
                 }
             }
         }
@@ -606,7 +610,11 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             if (response.Content!.ToString().Contains("alert("))
             {
-                errors.Add("Cannot Generate Pdf, Please contact site owner.");
+                Guid OrderId = await _deliveryRepository.GetOrderIdByAllPayLogisticsId(allPayLogisticsId.Value);
+
+                string OrderNo = await _orderRepository.GetOrderNoByOrderId(OrderId);
+
+                errors.Add($"({OrderNo}) Cannot Generate Pdf, Please contact site owner.\n");
             }
 
             else
