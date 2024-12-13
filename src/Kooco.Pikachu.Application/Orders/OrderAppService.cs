@@ -852,6 +852,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
     {
         Order newOrder = new();
 
+        string? returnedOrderItemIds = null;
+
         Order ord = await _orderRepository.GetWithDetailsAsync(OrderId);
 
         decimal TotalAmount = ord.TotalAmount;
@@ -915,6 +917,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
             {
                 if (OrderItemIds.Any(x => x == item.Id))
                 {
+                    returnedOrderItemIds = returnedOrderItemIds.IsNullOrEmpty() ? 
+                                            item.Id.ToString() : 
+                                            string.Join(',', returnedOrderItemIds, item.Id.ToString());
+
                     OrderItemsCreateDto orderItem = new();
                     orderItem.ItemId = item.ItemId;
                     orderItem.SetItemId = item.SetItemId;
@@ -1015,6 +1021,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
 
             ord.RefundAmount += newOrder.TotalAmount;
+
+            ord.ReturnedOrderItemIds = returnedOrderItemIds;
 
             await _orderRepository.UpdateAsync(ord);
 

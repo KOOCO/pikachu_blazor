@@ -28,5 +28,6 @@ namespace Kooco.Pikachu.PaymentGateways
         public string? HashKey { get; set; }
         public string? HashIV { get; set; }
         public string? TradeDescription { get; set; }
+        public string? CreditCheckCode { get; set; }
     }
 }
