@@ -348,7 +348,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     public async Task GroupBuyItemModuleNoReindexingAsync(Guid groupBuyId, GroupBuyModuleType groupBuyModuleType)
     {
         GroupBuy groupbuy = await _groupBuyRepository.GetAsync(groupBuyId);
-        
+
         await _groupBuyRepository.EnsureCollectionLoadedAsync(groupbuy, i => i.ItemGroups);
 
         int moduleNumber = 0;
@@ -385,7 +385,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                                                      , input.AllowShipOversea, input.ExpectShippingDateFrom, input.ExpectShippingDateTo, input.MoneyTransferValidDayBy, input.MoneyTransferValidDays,
                                                      input.IssueInvoice, input.AutoIssueTriplicateInvoice, input.InvoiceNote, input.ProtectPrivacyData, input.InviteCode, input.ProfitShare,
                                                      input.MetaPixelNo, input.FBID, input.IGID, input.LineID, input.GAID, input.GTM, input.WarningMessage, input.OrderContactInfo, input.ExchangePolicy,
-                                                     input.NotifyMessage,input.ExcludeShippingMethod,input.PaymentMethod,input.IsInviteCode,input.IsEnterprise, input.IsGroupBuyAvaliable
+                                                     input.NotifyMessage, input.ExcludeShippingMethod, input.PaymentMethod, input.IsInviteCode, input.IsEnterprise, input.IsGroupBuyAvaliable
                                                      );
         var result = await _groupBuyRepository.GetGroupBuyListAsync(input.FilterText, input.GroupBuyNo, input.Status, input.GroupBuyName, input.EntryURL, input.EntryURL2, input.SubjectLine,
                                                     input.ShortName, input.LogoURL, input.BannerURL, input.StartTime, input.EndTime, input.FreeShipping, input.AllowShipToOuterTaiwan,
@@ -660,40 +660,84 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                 {
                     foreach (GroupBuyItemGroupDetailsDto itemDetail in module.ItemGroupDetails)
                     {
-                        if (!itemDetail.Item.Attribute1Name.IsNullOrEmpty())
+                        if (itemDetail.ItemType == ItemType.Item)
                         {
-                            itemDetail.Item.AttributeNameOptions ??= [];
-
-                            itemDetail.Item.AttributeNameOptions.Add(new()
+                            if (!itemDetail.Item.Attribute1Name.IsNullOrEmpty())
                             {
-                                AttributeName = itemDetail.Item.Attribute1Name,
-                                AttributeOptions = [.. itemDetail.Item.ItemDetails.Where(w => !w.Attribute1Value.IsNullOrEmpty())
+                                itemDetail.Item.AttributeNameOptions ??= [];
+
+                                itemDetail.Item.AttributeNameOptions.Add(new()
+                                {
+                                    AttributeName = itemDetail.Item.Attribute1Name,
+                                    AttributeOptions = [.. itemDetail.Item.ItemDetails.Where(w => !w.Attribute1Value.IsNullOrEmpty())
                                                                                   .Select(s => s.Attribute1Value)]
-                            });
-                        }
+                                });
+                            }
 
-                        if (!itemDetail.Item.Attribute2Name.IsNullOrEmpty())
-                        {
-                            itemDetail.Item.AttributeNameOptions ??= [];
-
-                            itemDetail.Item.AttributeNameOptions.Add(new()
+                            if (!itemDetail.Item.Attribute2Name.IsNullOrEmpty())
                             {
-                                AttributeName = itemDetail.Item.Attribute2Name,
-                                AttributeOptions = [.. itemDetail.Item.ItemDetails.Where(w => !w.Attribute2Value.IsNullOrEmpty())
+                                itemDetail.Item.AttributeNameOptions ??= [];
+
+                                itemDetail.Item.AttributeNameOptions.Add(new()
+                                {
+                                    AttributeName = itemDetail.Item.Attribute2Name,
+                                    AttributeOptions = [.. itemDetail.Item.ItemDetails.Where(w => !w.Attribute2Value.IsNullOrEmpty())
                                                                                   .Select(w => w.Attribute2Value)]
-                            });
-                        }
+                                });
+                            }
 
-                        if (!itemDetail.Item.Attribute3Name.IsNullOrEmpty())
-                        {
-                            itemDetail.Item.AttributeNameOptions ??= [];
-
-                            itemDetail.Item.AttributeNameOptions.Add(new()
+                            if (!itemDetail.Item.Attribute3Name.IsNullOrEmpty())
                             {
-                                AttributeName = itemDetail.Item.Attribute3Name,
-                                AttributeOptions = [.. itemDetail.Item.ItemDetails.Where(w => !w.Attribute3Value.IsNullOrEmpty())
+                                itemDetail.Item.AttributeNameOptions ??= [];
+
+                                itemDetail.Item.AttributeNameOptions.Add(new()
+                                {
+                                    AttributeName = itemDetail.Item.Attribute3Name,
+                                    AttributeOptions = [.. itemDetail.Item.ItemDetails.Where(w => !w.Attribute3Value.IsNullOrEmpty())
                                                                                   .Select(w => w.Attribute3Value)]
-                            });
+                                });
+                            }
+                        }
+                        if(itemDetail.ItemType == ItemType.SetItem)
+                        {
+                            foreach(var setItemDetail in itemDetail.SetItem.SetItemDetails)
+                            {
+                                if (!setItemDetail.Item.Attribute1Name.IsNullOrEmpty())
+                                {
+                                    setItemDetail.Item.AttributeNameOptions ??= [];
+
+                                    setItemDetail.Item.AttributeNameOptions.Add(new()
+                                    {
+                                        AttributeName = setItemDetail.Item.Attribute1Name,
+                                        AttributeOptions = [.. setItemDetail.Item.ItemDetails.Where(w => !w.Attribute1Value.IsNullOrEmpty())
+                                                                                  .Select(s => s.Attribute1Value)]
+                                    });
+                                }
+
+                                if (!setItemDetail.Item.Attribute2Name.IsNullOrEmpty())
+                                {
+                                    setItemDetail.Item.AttributeNameOptions ??= [];
+
+                                    setItemDetail.Item.AttributeNameOptions.Add(new()
+                                    {
+                                        AttributeName = setItemDetail.Item.Attribute2Name,
+                                        AttributeOptions = [.. setItemDetail.Item.ItemDetails.Where(w => !w.Attribute2Value.IsNullOrEmpty())
+                                                                                  .Select(s => s.Attribute2Value)]
+                                    });
+                                }
+
+                                if (!setItemDetail.Item.Attribute3Name.IsNullOrEmpty())
+                                {
+                                    setItemDetail.Item.AttributeNameOptions ??= [];
+
+                                    setItemDetail.Item.AttributeNameOptions.Add(new()
+                                    {
+                                        AttributeName = setItemDetail.Item.Attribute3Name,
+                                        AttributeOptions = [.. setItemDetail.Item.ItemDetails.Where(w => !w.Attribute3Value.IsNullOrEmpty())
+                                                                                  .Select(s => s.Attribute3Value)]
+                                    });
+                                }
+                            }
                         }
                     }
                 }
@@ -760,7 +804,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
             string? carouselStyle = images.GroupBy(g => g.CarouselStyle).Select(s => s.Key).FirstOrDefault().ToString();
 
             return Tuple.Create(
-                imageUrls, 
+                imageUrls,
                 carouselStyle
             );
         }
