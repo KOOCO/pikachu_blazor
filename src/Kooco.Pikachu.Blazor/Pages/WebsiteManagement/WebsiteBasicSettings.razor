@@ -6,7 +6,7 @@
 @using Kooco.Pikachu.WebsiteManagement
 @using Volo.Abp.AspNetCore.Components.Notifications
 @using Volo.Abp.AspNetCore.Components.Web
-@attribute [Authorize(PikachuPermissions.WebsiteSettings.Default)]
+@attribute [Authorize(PikachuPermissions.WebsiteManagement.WebsiteBasicSettings)]
 @inherits PikachuComponentBase
 @inject IWebsiteSettingsAppService WebsiteSettingsAppService
 @inject NavigationManager NavigationManager
@@ -14,7 +14,7 @@
 @inject IImageAppService ImageAppService
 @inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
 
-<h3 class="text-dark text-center">@L["WebsiteManagement"]</h3>
+<h3 class="text-dark text-center">@L["WebsiteBasicSettings"]</h3>
 
 <Div Class="rounded-cards">
     <Card>

@@ -301,7 +301,8 @@ public class PikachuMenuContributor : IMenuContributor
             PikachuMenus.WebsiteManagement,
             displayName: l["Menu:WebsiteManagement"],
             icon: "fas fa-computer",
-            order: 6
+            order: 6,
+            requiredPermissionName: PikachuPermissions.WebsiteManagement.Default
             );
 
         websiteManagement.AddItem(new ApplicationMenuItem(
@@ -309,15 +310,7 @@ public class PikachuMenuContributor : IMenuContributor
             displayName: l["Menu:WebsiteBasicSettings"],
             url: "/Website-Basic-Settings",
             icon: "fas fa-window-maximize",
-            requiredPermissionName: PikachuPermissions.WebsiteSettings.Default
-            ));
-
-        websiteManagement.AddItem(new ApplicationMenuItem(
-            name: PikachuMenus.WebsiteSettings,
-            displayName: l["Menu:WebsiteSettings"],
-            url: "/Website-Settings",
-            icon: "fas fa-window-maximize",
-            requiredPermissionName: PikachuPermissions.WebsiteSettings.Default
+            requiredPermissionName: PikachuPermissions.WebsiteManagement.WebsiteBasicSettings
             ));
 
         websiteManagement.AddItem(new ApplicationMenuItem(
@@ -325,7 +318,15 @@ public class PikachuMenuContributor : IMenuContributor
             displayName: l["Menu:TopbarSettings"],
             url: "/Topbar-Settings",
             icon: "fas fa-window-maximize",
-            requiredPermissionName: PikachuPermissions.WebsiteSettings.Default
+            requiredPermissionName: PikachuPermissions.WebsiteManagement.TopbarSettings
+            ));
+
+        websiteManagement.AddItem(new ApplicationMenuItem(
+            name: PikachuMenus.WebsiteSettings,
+            displayName: l["Menu:WebsiteSettings"],
+            url: "/Website-Settings",
+            icon: "fas fa-window-maximize",
+            requiredPermissionName: PikachuPermissions.WebsiteManagement.WebsiteSettings.Default
             ));
 
         context.Menu.AddItem(websiteManagement);

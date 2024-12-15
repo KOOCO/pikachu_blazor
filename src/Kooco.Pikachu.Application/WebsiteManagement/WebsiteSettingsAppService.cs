@@ -9,10 +9,10 @@ using Volo.Abp.Application.Dtos;
 namespace Kooco.Pikachu.WebsiteManagement;
 
 [RemoteService(IsEnabled = false)]
-[Authorize(PikachuPermissions.WebsiteSettings.Default)]
+[Authorize(PikachuPermissions.WebsiteManagement.WebsiteSettings.Default)]
 public class WebsiteSettingsAppService(IWebsiteSettingsRepository websiteSettingsRepository, WebsiteSettingsManager websiteSettingsManager) : PikachuAppService, IWebsiteSettingsAppService
 {
-    [Authorize(PikachuPermissions.WebsiteSettings.Create)]
+    [Authorize(PikachuPermissions.WebsiteManagement.WebsiteSettings.Create)]
     public async Task<WebsiteSettingsDto> CreateAsync(CreateWebsiteSettingsDto input)
     {
         Check.NotNull(input, nameof(input));
@@ -27,7 +27,7 @@ public class WebsiteSettingsAppService(IWebsiteSettingsRepository websiteSetting
         return ObjectMapper.Map<WebsiteSettings, WebsiteSettingsDto>(websiteSettings);
     }
 
-    [Authorize(PikachuPermissions.WebsiteSettings.Delete)]
+    [Authorize(PikachuPermissions.WebsiteManagement.WebsiteSettings.Delete)]
     public async Task DeleteAsync(Guid id)
     {
         var websiteSettings = await websiteSettingsRepository.GetAsync(id);
@@ -58,7 +58,7 @@ public class WebsiteSettingsAppService(IWebsiteSettingsRepository websiteSetting
         };
     }
 
-    [Authorize(PikachuPermissions.WebsiteSettings.Edit)]
+    [Authorize(PikachuPermissions.WebsiteManagement.WebsiteSettings.Edit)]
     public async Task<WebsiteSettingsDto> UpdateAsync(Guid id, UpdateWebsiteSettingsDto input)
     {
         Check.NotNull(input, nameof(input));

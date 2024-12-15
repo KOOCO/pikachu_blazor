@@ -1066,7 +1066,26 @@
     "StyleSettings": "Style Settings",
     "LinkSettings": "Link Settings",
     "Enum:TopbarStyleSettings.1": "Default",
-    "Enum:TopbarLinkSettings.1": "Category",
-    "Enum:TopbarLinkSettings.2": "Link"
+    "Enum:TopbarLinkSettings.1": "Category | Title",
+    "Enum:TopbarLinkSettings.2": "Link | Title",
+    "CategoryTitle": "Category Title",
+    "EnterCategoryTitle": "Enter Category Title",
+    "LinkTitle": "Link Title",
+    "EnterLinkTitle": "Enter Link Title",
+    "LinkUrl": "Link URL",
+    "EnterLinkUrl": "Enter Link URL",
+    "Enum:TopbarCategoryLinkOption.1": "Subpage | Option Title",
+    "Enum:TopbarCategoryLinkOption.2": "Sub-link | Option Title",
+    "OptionTitle": "Option Title",
+    "EnterOptionTitle": "Enter Option Title",
+    "LinkedPage": "Linked Page",
+    "SearchPage": "Search Page",
+    "Link": "Link",
+    "EnterLink": "Enter Link",
+    "TopbarSettings": "Topbar Settings",
+    "Permission:WebsiteManagement": "Website Management",
+    "Permission:WebsiteBasicSettings": "Website Basic Settings", 
+    "Permission:TopbarSettings": "Topbar Settings",
+    "Permission:FooterSettings": "Footer Settings" 
   }
 }

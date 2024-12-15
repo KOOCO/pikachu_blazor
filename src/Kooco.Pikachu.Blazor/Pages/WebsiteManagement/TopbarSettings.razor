@@ -1,22 +1,23 @@
 ﻿@page "/Topbar-Settings"
+@using Kooco.Pikachu.Blazor.Pages.Components.Icons
 @using Kooco.Pikachu.Localization
 @using Kooco.Pikachu.Permissions
 @using Kooco.Pikachu.WebsiteManagement
 @using Volo.Abp.AspNetCore.Components.Web
-@attribute [Authorize(PikachuPermissions.WebsiteSettings.Default)]
+@attribute [Authorize(PikachuPermissions.WebsiteManagement.TopbarSettings)]
 @inherits PikachuComponentBase
 @inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
 
-<h3 class="text-dark text-center">@L["WebsiteManagement"]</h3>
+<h3 class="text-dark text-center">@L["TopbarSettings"]</h3>
 
 <Div Class="rounded-cards">
     <Card>
         <CardBody>
             <Row>
                 <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
-                    <h4>@L["StyleSettings"]</h4>
+                    <h4 class="pt-1">@L["StyleSettings"]</h4>
                 </Column>
-                <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                <Column ColumnSize="ColumnSize.Is12.Is8.OnDesktop">
                     <Field>
                         <Select TValue="TopbarStyleSettings?">
                             <SelectItem Value="(TopbarStyleSettings?)null"></SelectItem>
@@ -34,11 +35,12 @@
         <CardBody>
             <Row>
                 <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
-                    <h4>@L["LinkSettings"]</h4>
+                    <h4 class="pt-1">@L["LinkSettings"]</h4>
                 </Column>
-                <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                <Column ColumnSize="ColumnSize.Is12.Is8.OnDesktop">
                     <Field>
-                        <Select TValue="TopbarLinkSettings?">
+                        <Select TValue="TopbarLinkSettings?" SelectedValue="SelectedLinkSettings"
+                                SelectedValueChanged="OnLinkSettingsSelected">
                             <SelectItem Value="(TopbarLinkSettings?)null"></SelectItem>
                             @foreach (TopbarLinkSettings linkSettings in Enum.GetValues(typeof(TopbarLinkSettings)))
                             {
@@ -48,6 +50,182 @@
                     </Field>
                 </Column>
             </Row>
+
+            @if (Models.Count > 0)
+            {
+                <Div ondragover="event.preventDefault();">
+                    <Row VerticalGutter="15">
+                        @foreach (var model in Models.OrderBy(x => x.Index))
+                        {
+                            <Column ColumnSize="ColumnSize.Is12">
+                                <Div Class="d-flex">
+                                    <Div Class="p-2 flex-grow-1">
+                                        <Accordion>
+                                            <Collapse>
+                                                <CollapseHeader>
+                                                    <AccordionToggle>
+                                                        <Div Class="d-flex justify-content-between w-100">
+                                                            <Div>
+                                                                <i class="fa fa-trash text-danger me-2" @onclick="@(() => RemoveModel(model))"></i>
+                                                                @L["Enum:TopbarLinkSettings." + (int)model.TopbarLinkSettings]
+                                                            </Div>
+                                                            @if (model.TopbarLinkSettings == TopbarLinkSettings.Category)
+                                                            {
+                                                                <Div>
+                                                                    <AntDesign.Dropdown>
+                                                                        <Overlay>
+                                                                            <AntDesign.Menu>
+                                                                                @foreach (TopbarCategoryLinkOption topbarCategoryLink in Enum.GetValues(typeof(TopbarCategoryLinkOption)))
+                                                                                {
+                                                                                    <AntDesign.MenuItem OnClick="() => OnTopbarCategoryLinkOptionSelected(model, topbarCategoryLink)">
+                                                                                        @L["Enum:TopbarCategoryLinkOption." + (int)topbarCategoryLink]
+                                                                                    </AntDesign.MenuItem>
+                                                                                }
+                                                                            </AntDesign.Menu>
+                                                                        </Overlay>
+                                                                        <ChildContent>
+                                                                            <a class="ant-dropdown-link" @onclick:preventDefault>
+                                                                                <i class="fa fa-plus me-3"></i>
+                                                                            </a>
+                                                                        </ChildContent>
+                                                                    </AntDesign.Dropdown>
+                                                                </Div>
+                                                            }
+                                                        </Div>
+                                                    </AccordionToggle>
+                                                </CollapseHeader>
+                                                <CollapseBody>
+                                                    @if (model.TopbarLinkSettings == TopbarLinkSettings.Category)
+                                                    {
+                                                        <Field>
+                                                            <Row>
+                                                                <Column ColumnSize="ColumnSize.Is12.Is2.OnDesktop">
+                                                                    <FieldLabel Padding="Padding.Is2.FromTop">@L["CategoryTitle"]</FieldLabel>
+                                                                </Column>
+                                                                <Column ColumnSize="ColumnSize.Is12.Is10.OnDesktop">
+                                                                    <TextEdit Placeholder="@L["EnterCategoryTitle"]" @bind-Text="model.Title"></TextEdit>
+                                                                </Column>
+                                                            </Row>
+                                                        </Field>
+                                                    }
+                                                    @if (model.TopbarLinkSettings == TopbarLinkSettings.Link)
+                                                    {
+                                                        <Field>
+                                                            <Row>
+                                                                <Column ColumnSize="ColumnSize.Is12.Is2.OnDesktop">
+                                                                    <FieldLabel Padding="Padding.Is2.FromTop">@L["LinkTitle"]</FieldLabel>
+                                                                </Column>
+                                                                <Column ColumnSize="ColumnSize.Is12.Is10.OnDesktop">
+                                                                    <TextEdit Placeholder="@L["EnterLinkTitle"]" @bind-Text="model.Title"></TextEdit>
+                                                                </Column>
+                                                            </Row>
+                                                        </Field>
+                                                        <Field>
+                                                            <Row>
+                                                                <Column ColumnSize="ColumnSize.Is12.Is2.OnDesktop">
+                                                                    <FieldLabel Padding="Padding.Is2.FromTop">@L["LinkUrl"]</FieldLabel>
+                                                                </Column>
+                                                                <Column ColumnSize="ColumnSize.Is12.Is10.OnDesktop">
+                                                                    <TextEdit Placeholder="@L["EnterLinkUrl"]" @bind-Text="model.Url"></TextEdit>
+                                                                </Column>
+                                                            </Row>
+                                                        </Field>
+                                                    }
+                                                </CollapseBody>
+                                            </Collapse>
+                                        </Accordion>
+                                    </Div>
+                                    <Div Class="py-2 mt-2" draggable="true"
+                                         @ondrop="@(()=> ModelDrop(model))" @ondrag="@(()=> StartModelDrag(model))">
+                                        <Span Class="drag-drop-span">
+                                            <i class="fa-solid fa-bars fa-2xl"></i>
+                                        </Span>
+                                    </Div>
+                                </Div>
+                            </Column>
+
+                            <Div ondragover="event.preventDefault();">
+                                @foreach (var child in model.Children)
+                                {
+                                    <Column ColumnSize="ColumnSize.Is12">
+                                        <Div Class="d-flex">
+                                            <Div Class="ps-2 align-self-center">
+                                                <ArrowDownRightSvg></ArrowDownRightSvg>
+                                            </Div>
+                                            <Div Class="p-2 flex-grow-1">
+                                                <Accordion>
+                                                    <Collapse>
+                                                        <CollapseHeader>
+                                                            <AccordionToggle>
+                                                                <Div>
+                                                                    <i class="fa fa-trash text-danger me-2" @onclick="@(() => RemoveChild(model, child))"></i>
+                                                                    @L["Enum:TopbarCategoryLinkOption." + (int)child.TopbarCategoryLinkOption]
+                                                                </Div>
+                                                            </AccordionToggle>
+                                                        </CollapseHeader>
+                                                        <CollapseBody>
+                                                            <Field>
+                                                                <Row>
+                                                                    <Column ColumnSize="ColumnSize.Is12.Is2.OnDesktop">
+                                                                        <FieldLabel Padding="Padding.Is2.FromTop">@L["OptionTitle"]</FieldLabel>
+                                                                    </Column>
+                                                                    <Column ColumnSize="ColumnSize.Is12.Is10.OnDesktop">
+                                                                        <TextEdit Placeholder="@L["EnterOptionTitle"]" @bind-Text="child.Title"></TextEdit>
+                                                                    </Column>
+                                                                </Row>
+                                                            </Field>
+                                                            @if (child.TopbarCategoryLinkOption == TopbarCategoryLinkOption.SubPage)
+                                                            {
+                                                                <Field>
+                                                                    <Row>
+                                                                        <Column ColumnSize="ColumnSize.Is12.Is2.OnDesktop">
+                                                                            <FieldLabel Padding="Padding.Is2.FromTop">@L["LinkedPage"]</FieldLabel>
+                                                                        </Column>
+                                                                        <Column ColumnSize="ColumnSize.Is12.Is10.OnDesktop">
+                                                                            <TextEdit Placeholder="@L["SearchPage"]" @bind-Text="child.Link"></TextEdit>
+                                                                        </Column>
+                                                                    </Row>
+                                                                </Field>
+                                                            }
+                                                            @if (child.TopbarCategoryLinkOption == TopbarCategoryLinkOption.SubLink)
+                                                            {
+                                                                <Field>
+                                                                    <Row>
+                                                                        <Column ColumnSize="ColumnSize.Is12.Is2.OnDesktop">
+                                                                            <FieldLabel Padding="Padding.Is2.FromTop">@L["Link"]</FieldLabel>
+                                                                        </Column>
+                                                                        <Column ColumnSize="ColumnSize.Is12.Is10.OnDesktop">
+                                                                            <TextEdit Placeholder="@L["EnterLink"]" @bind-Text="child.Link"></TextEdit>
+                                                                        </Column>
+                                                                    </Row>
+                                                                </Field>
+                                                            }
+                                                        </CollapseBody>
+                                                    </Collapse>
+                                                </Accordion>
+                                            </Div>
+                                            <Div Class="py-2 mt-2" draggable="true"
+                                                 @ondrop="@(()=> ChildDrop(model, child))" @ondrag="@(()=> StartChildDrag(model, child))">
+                                                <Span Class="drag-drop-span">
+                                                    <i class="fa-solid fa-bars fa-2xl"></i>
+                                                </Span>
+                                            </Div>
+                                        </Div>
+                                    </Column>
+                                }
+                            </Div>
+                        }
+                    </Row>
+                </Div>
+            }
         </CardBody>
     </Card>
+    <Div Class="text-end">
+        <PikachuButton Class="pk-btn-transparent" Disabled="IsLoading">
+            @L["Cancel"]
+        </PikachuButton>
+        <PikachuButton Class="pk-btn-primary" Loading="IsLoading" Clicked="UpdateAsync">
+            @L["Update"]
+        </PikachuButton>
+    </Div>
 </Div>
