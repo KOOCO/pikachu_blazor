@@ -41,7 +41,7 @@
                     <Field>
                         <Select TValue="TopbarLinkSettings?" SelectedValue="SelectedLinkSettings"
                                 SelectedValueChanged="OnLinkSettingsSelected">
-                            <SelectItem Value="(TopbarLinkSettings?)null"></SelectItem>
+                            <SelectItem Value="(TopbarLinkSettings?)null">@L["SelectModule"]</SelectItem>
                             @foreach (TopbarLinkSettings linkSettings in Enum.GetValues(typeof(TopbarLinkSettings)))
                             {
                                 <SelectItem Value="linkSettings">@L["Enum:TopbarLinkSettings." + (int)linkSettings]</SelectItem>
