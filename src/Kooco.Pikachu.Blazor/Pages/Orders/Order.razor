@@ -29,45 +29,12 @@
 
 <LoadingIndicator @ref="loading" FullScreen FadeIn>
     <div class="row">
-        <div class="col-12">
+        <div class="col-3">
             <h3>@L["OrdersList"]</h3>
         </div>
         <br />
-        <div class="col-12 text-lg-end"
-             style="margin-top: 3px;">
-            <Select TValue="Guid?"
-                    SelectedValue="@SelectedGroupBuy"
-                    Size="Size.Small"
-                    id="mySelectElement"
-                    SelectedValueChanged="@(e=>OnSearch(e))">
-                <SelectItem Value="@Guid.Empty">
-                    @L["SelectGroupBuy"]
-                </SelectItem>
-                @foreach (var item in GroupBuyList)
-                {
-                    <SelectItem Value="@item.Id">@item.Name</SelectItem>
-                }
-            </Select>
-            <Select TValue="string"
-                    Size="Size.Small"
-                    id="shippingMethodSelectElem"
-                    SelectedValueChanged="OnShippingMethodSelectChangeAsync">
-                <SelectItem Value="@string.Empty"> @L["SelectShippingMethod"] </SelectItem>
-                @foreach (string value in Enum.GetNames(typeof(DeliveryMethod)))
-                {
-                    <SelectItem Value="@value">@L[value]</SelectItem>
-                }
-            </Select>
-            <DateEdit id="startDate" KeyDown="@(e=>OnSearch())" @bind-Date="@StartDate" TValue="DateTime?" Size="Size.Small" />-<DateEdit KeyDown="(e=>OnSearch())" id="endDate" @bind-Date="@EndDate" TValue="DateTime?" Size="Size.Small" />
-            <div class="d-inline-block me-1">
+        <div class="col-9 text-lg-end">
 
-                <div class="input-group">
-                    <InputText class="form-control form-control-sm search-bar" @bind-Value="@Filter" placeholder="@L["Search"]"></InputText>
-                    <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="(e=>OnSearch())">
-                        <i class="fa fa-search"></i>
-                    </Button>
-                </div>
-            </div>
             <div class="custom-check-group me-1">
                 <input type="checkbox" class="form-check-input" checked="@IsAllSelected" @onchange="HandleSelectAllChange"></input>
                 <Label Class="form-label">@L["SelectAll"]</Label>
@@ -107,7 +74,7 @@
                 {
                     <Button Type="@ButtonType.Button"
                             Clicked="OnPrintShippedLabel"
-                    Class="ms-1 btn btn-sm btn-primary">
+                            Class="ms-1 btn btn-sm btn-primary">
                         <i class="fa fa-print"></i>
                         @L["PrintShippedLabel"]
                     </Button>
@@ -292,6 +259,66 @@
         }
     </div>
     <br />
+    <Card>
+        <CardBody>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is10">
+                    <Addons>
+                        <Addon AddonType="AddonType.Body">
+                            <TextEdit @bind-Text="@Filter" Style="border-radius: 0.5rem 0 0 0.5rem;" />
+                        </Addon>
+                        <Addon AddonType="AddonType.End">
+                            <Button Type="ButtonType.Button" Color="Color.Primary" Clicked="(e) => OnSearch()"
+                                    Style="border-radius: 0 0.5rem 0.5rem 0;">
+                                <Icon Name="IconName.Search"></Icon>
+                            </Button>
+                        </Addon>
+                    </Addons>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is2">
+                    <Button Class="btn-outline-primary w-100" Clicked="(() => FiltersVisible = !FiltersVisible)">
+                        @L["Filters"]
+                        <i class="fas @(FiltersVisible ? "fa-angles-up" : "fa-angles-down") ms-1"></i>
+                    </Button>
+                </Column>
+            </Row>
+            @if (FiltersVisible)
+            {
+                <Row Class="mt-2">
+                    <Column ColumnSize="ColumnSize.Is3">
+                        <Select TValue="Guid?"
+                                SelectedValue="@SelectedGroupBuy"
+                                SelectedValueChanged="@(e=>OnSearch(e))">
+                            <SelectItem Value="@Guid.Empty">
+                                @L["SelectGroupBuy"]
+                            </SelectItem>
+                            @foreach (var item in GroupBuyList)
+                            {
+                                <SelectItem Value="@item.Id">@item.Name</SelectItem>
+                            }
+                        </Select>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is3">
+                        <Select TValue="string"
+                                SelectedValueChanged="OnShippingMethodSelectChangeAsync">
+                            <SelectItem Value="@string.Empty"> @L["SelectShippingMethod"] </SelectItem>
+                            @foreach (string value in Enum.GetNames(typeof(DeliveryMethod)))
+                            {
+                                <SelectItem Value="@value">@L[value]</SelectItem>
+                            }
+                        </Select>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is6">
+                        <Div Class="d-flex w-100 align-items-center gap-1">
+                            <DateEdit id="startDate" KeyDown="@(e=>OnSearch())" @bind-Date="@StartDate" TValue="DateTime?" />
+                            <Span>~</Span>
+                            <DateEdit KeyDown="(e=>OnSearch())" id="endDate" @bind-Date="@EndDate" TValue="DateTime?" />
+                        </Div>
+                    </Column>
+                </Row>
+            }
+        </CardBody>
+    </Card>
     <Tabs RenderMode="TabsRenderMode.LazyReload"
           SelectedTab="@SelectedTabName"
           SelectedTabChanged="SelectedTabChanged"

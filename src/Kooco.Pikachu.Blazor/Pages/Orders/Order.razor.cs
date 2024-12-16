@@ -82,6 +82,7 @@ public partial class Order
     private Guid? ExpandedOrderId = null;
 
     private bool IsDeliveryNoExists = false;
+    private bool FiltersVisible { get; set; } = false;
     #endregion
 
     #region Methods
