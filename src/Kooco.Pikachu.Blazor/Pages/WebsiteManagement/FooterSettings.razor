@@ -1,0 +1,151 @@
+﻿@page "/Footer-Settings"
+@using Kooco.Pikachu.Blazor.Pages.Components.Icons
+@using Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantSettings
+@using Kooco.Pikachu.Localization
+@using Kooco.Pikachu.Permissions
+@using Kooco.Pikachu.TenantManagement
+@using Kooco.Pikachu.WebsiteManagement
+@using Volo.Abp.AspNetCore.Components.Web
+@attribute [Authorize(PikachuPermissions.WebsiteManagement.FooterSettings)]
+@inherits PikachuComponentBase
+@inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
+@inject ITenantSettingsAppService TenantSettingsAppService
+
+<h3 class="text-dark text-center">@L["FooterSettings"]</h3>
+
+<Div Class="rounded-cards">
+    <Card>
+        <CardBody>
+            <Row>
+                @foreach (var model in Models)
+                {
+                    <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop"
+                            Class="@(Models.IndexOf(model) == 1 ? "border-start-1 border-end-1 border-light" : "")">
+                        <h4>@L[model.Heading]</h4>
+                        <Field>
+                            <TextEdit Placeholder="@L["EnterTitle"]"></TextEdit>
+                        </Field>
+                        <Field>
+                            <FieldLabel>@L["SelectType"] *</FieldLabel>
+                            <Select TValue="FooterSettingsType?" @bind-SelectedValue="model.FooterSettingsType">
+                                <SelectItem Value="(FooterSettingsType?)null"></SelectItem>
+                                @foreach (FooterSettingsType type in Enum.GetValues(typeof(FooterSettingsType)))
+                                {
+                                    <SelectItem Value="type">@L["Enum:FooterSettingsType." + (int)type]</SelectItem>
+                                }
+                            </Select>
+                        </Field>
+
+                        @if (model.FooterSettingsType == FooterSettingsType.Text)
+                        {
+                            <MemoEdit Style="min-height: 205px"></MemoEdit>
+                        }
+                        @if (model.FooterSettingsType == FooterSettingsType.Link)
+                        {
+                            <Div>
+                                <PikachuButton Class="pk-btn-sm pk-btn-outline-primary w-100"
+                                               Disabled="model.Links.Count >= 5"
+                                               Clicked="() => AddLink(model)">
+                                    <Icon Name="IconName.Add"></Icon>
+                                    @L["AddLink"] (@model.Links.Count/5)
+                                </PikachuButton>
+                            </Div>
+                            @if (model.Links.Count > 0)
+                            {
+                                <Div ondragover="event.preventDefault();">
+                                    <Row VerticalGutter="15">
+                                        @foreach (var link in model.Links.OrderBy(x => x.Index))
+                                        {
+                                            <Column ColumnSize="ColumnSize.Is12">
+                                                <Div Class="d-flex">
+                                                    <Div Class="p-2 flex-grow-1">
+                                                        <Accordion>
+                                                            <Collapse>
+                                                                <CollapseHeader>
+                                                                    <AccordionToggle>
+                                                                        <Div Class="d-flex justify-content-between w-100">
+                                                                            <Div>
+                                                                                <i class="fa fa-trash text-danger me-2" @onclick="@(() => RemoveLink(model, link))"></i>
+                                                                                @L["Link|Title"]
+                                                                            </Div>
+                                                                        </Div>
+                                                                    </AccordionToggle>
+                                                                </CollapseHeader>
+                                                                <CollapseBody>
+                                                                    <Field>
+                                                                        <FieldLabel>@L["LinkTitle"]</FieldLabel>
+                                                                        <TextEdit Placeholder="@L["EnterLinkTitle"]" @bind-Text="link.Title"></TextEdit>
+                                                                    </Field>
+                                                                    <Field>
+                                                                        <FieldLabel>@L["LinkUrl"]</FieldLabel>
+                                                                        <TextEdit Placeholder="@L["EnterLinkUrl"]" @bind-Text="link.Url"></TextEdit>
+                                                                    </Field>
+                                                                </CollapseBody>
+                                                            </Collapse>
+                                                        </Accordion>
+                                                    </Div>
+                                                    <Div Class="py-2 mt-2" draggable="true"
+                                                         @ondrop="@(()=> LinkDrop(model, link))" @ondrag="@(()=> StartLinkDrag(model, link))">
+                                                        <Span Class="drag-drop-span">
+                                                            <i class="fa-solid fa-bars fa-2xl"></i>
+                                                        </Span>
+                                                    </Div>
+                                                </Div>
+                                            </Column>
+                                        }
+                                    </Row>
+                                </Div>
+                            }
+                        }
+                        @if (model.FooterSettingsType == FooterSettingsType.Image)
+                        {
+                            <Div Class="container-less-filepicker">
+                                <Field>
+                                    <FilePicker Changed="@((e) => OnFileUploadAsync(e, model))"
+                                                ShowMode="FilePickerShowMode.List"
+                                                Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
+                                        <FileTemplate></FileTemplate>
+                                        <ButtonsTemplate></ButtonsTemplate>
+                                    </FilePicker>
+                                    @* <Validation MessageLocalizer="@LH.Localize">
+                                        <TextEdit @bind-Text="@model.ImageBase64" Style="margin: 0; padding: 0; height: 0px;" Visibility="Visibility.Invisible">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </TextEdit>
+                                    </Validation> *@
+                                </Field>
+                            </Div>
+                            <Div Class="text-center">
+                                @if (model.ImageBase64 != null)
+                                {
+                                    <img class="img-fluid" src="@("data:image/png;base64," + model.ImageBase64)" style="max-height: 300px;" />
+                                }
+                            </Div>
+                        }
+                        @if (model.FooterSettingsType == FooterSettingsType.CompanyAndCustomerServiceInformation)
+                        {
+                            <Label Class="fs-small">** @L["IfYouWantToModifyVisitTenantSettings"]</Label>
+                            <TenantCustomerService AppService="TenantSettingsAppService" ViewMode="true"></TenantCustomerService>
+                        }
+                        @if (model.FooterSettingsType == FooterSettingsType.SocialMedia)
+                        {
+                            <Label Class="fs-small">** @L["IfYouWantToModifyVisitTenantSettings"]</Label>
+                            <TenantSocialMedia AppService="TenantSettingsAppService" ViewMode="true"></TenantSocialMedia>
+                        }
+                    </Column>
+                }
+            </Row>
+        </CardBody>
+    </Card>
+    <Div Class="text-end">
+        <PikachuButton Class="pk-btn-transparent" Disabled="IsLoading">
+            @L["Cancel"]
+        </PikachuButton>
+        <PikachuButton Class="pk-btn-primary" Loading="IsLoading" Clicked="UpdateAsync">
+            @L["Update"]
+        </PikachuButton>
+    </Div>
+</Div>
+
+

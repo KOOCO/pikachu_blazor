@@ -309,14 +309,22 @@ public class PikachuMenuContributor : IMenuContributor
             name: PikachuMenus.WebsiteBasicSettings,
             displayName: l["Menu:WebsiteBasicSettings"],
             url: "/Website-Basic-Settings",
-            icon: "fas fa-window-maximize",
+            icon: "fas fa-sliders",
             requiredPermissionName: PikachuPermissions.WebsiteManagement.WebsiteBasicSettings
             ));
 
         websiteManagement.AddItem(new ApplicationMenuItem(
-            name: PikachuMenus.WebsiteSettings,
+            name: PikachuMenus.TopbarSettings,
             displayName: l["Menu:TopbarSettings"],
             url: "/Topbar-Settings",
+            icon: "fas fa-window-maximize",
+            requiredPermissionName: PikachuPermissions.WebsiteManagement.TopbarSettings
+            ));
+
+        websiteManagement.AddItem(new ApplicationMenuItem(
+            name: PikachuMenus.FooterSettings,
+            displayName: l["Menu:FooterSettings"],
+            url: "/Footer-Settings",
             icon: "fas fa-window-maximize",
             requiredPermissionName: PikachuPermissions.WebsiteManagement.TopbarSettings
             ));
@@ -325,7 +333,7 @@ public class PikachuMenuContributor : IMenuContributor
             name: PikachuMenus.WebsiteSettings,
             displayName: l["Menu:WebsiteSettings"],
             url: "/Website-Settings",
-            icon: "fas fa-window-maximize",
+            icon: "fas fa-laptop-code",
             requiredPermissionName: PikachuPermissions.WebsiteManagement.WebsiteSettings.Default
             ));
 

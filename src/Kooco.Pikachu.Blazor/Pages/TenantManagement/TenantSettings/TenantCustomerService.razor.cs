@@ -11,6 +11,9 @@ public partial class TenantCustomerService
     [Parameter]
     public ITenantSettingsAppService AppService { get; set; }
 
+    [Parameter]
+    public bool ViewMode { get; set; } = false;
+
     private TenantCustomerServiceDto CustomerServiceDto { get; set; }
     private UpdateTenantCustomerServiceDto Entity { get; set; }
     private Validations ValidationsRef { get; set; }

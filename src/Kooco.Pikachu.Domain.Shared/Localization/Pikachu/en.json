@@ -1084,8 +1084,19 @@
     "EnterLink": "Enter Link",
     "TopbarSettings": "Topbar Settings",
     "Permission:WebsiteManagement": "Website Management",
-    "Permission:WebsiteBasicSettings": "Website Basic Settings", 
+    "Permission:WebsiteBasicSettings": "Website Basic Settings",
     "Permission:TopbarSettings": "Topbar Settings",
-    "Permission:FooterSettings": "Footer Settings" 
+    "Permission:FooterSettings": "Footer Settings",
+    "Menu:FooterSettings": "Footer Settings",
+    "FooterSettings": "Footer Settings",
+    "EnterTitle": "Enter Title",
+    "SelectType": "Select Type",
+    "Enum:FooterSettingsType.1": "Text",
+    "Enum:FooterSettingsType.2": "Link",
+    "Enum:FooterSettingsType.3": "Image",
+    "Enum:FooterSettingsType.4": "Company and Customer Service Information",
+    "Enum:FooterSettingsType.5": "Social Media",
+    "IfYouWantToModifyVisitTenantSettings": "Please go to tenant settings to modify the information.",
+    "Link|Title": "Link | Title"
   }
 }
