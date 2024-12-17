@@ -1904,6 +1904,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         order.UpdateOrderItem([.. order.OrderItems.Where(w => w.SetItemId is not null && w.SetItemId != Guid.Empty)], orderDelivery.Id);
                 }
 
+                await _orderRepository.UpdateAsync(order);
+                await UnitOfWorkManager.Current.SaveChangesAsync();
 
                 if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.Processing)
                 {
