@@ -1097,6 +1097,8 @@
     "Enum:FooterSettingsType.4": "Company and Customer Service Information",
     "Enum:FooterSettingsType.5": "Social Media",
     "IfYouWantToModifyVisitTenantSettings": "Please go to tenant settings to modify the information.",
-    "Link|Title": "Link | Title"
+    "Link|Title": "Link | Title",
+    "TemplateType": "Template Type",
+    "WebsiteBasicSettingsUpdated": "Website Basic Settings Updated!"
   }
 }

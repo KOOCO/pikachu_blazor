@@ -541,3 +541,10 @@
     .drag-drop-span i {
         cursor: pointer;
     }
+
+.invisible-input {
+    margin: 0px;
+    padding: 0px;
+    height: 0px;
+    border: none;
+}

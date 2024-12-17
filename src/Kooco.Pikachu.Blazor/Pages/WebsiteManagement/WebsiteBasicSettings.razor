@@ -4,13 +4,12 @@
 @using Kooco.Pikachu.Localization
 @using Kooco.Pikachu.Permissions
 @using Kooco.Pikachu.WebsiteManagement
+@using Kooco.Pikachu.WebsiteManagement.WebsiteBasicSettings
 @using Volo.Abp.AspNetCore.Components.Notifications
 @using Volo.Abp.AspNetCore.Components.Web
 @attribute [Authorize(PikachuPermissions.WebsiteManagement.WebsiteBasicSettings)]
 @inherits PikachuComponentBase
-@inject IWebsiteSettingsAppService WebsiteSettingsAppService
-@inject NavigationManager NavigationManager
-@inject IUiNotificationService UiNotificationService
+@inject IWebsiteBasicSettingAppService WebsiteBasicSettingAppService
 @inject IImageAppService ImageAppService
 @inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
 
@@ -19,7 +18,7 @@
 <Div Class="rounded-cards">
     <Card>
         <CardBody>
-            <Validations @ref="@ValidationsRef" Model="@NewEntity" ValidateOnLoad="false">
+            <Validations @ref="@ValidationsRef" Model="@Entity" ValidateOnLoad="false">
                 <Row>
                     <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
                         <h4>
@@ -28,14 +27,14 @@
                     </Column>
                     <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
                         <Field>
-                            <Switch TValue="bool"><FieldLabel Class="text-dark">@L["Enable/Disable"]</FieldLabel></Switch>
+                            <Switch TValue="bool" @bind-Checked="Entity.IsEnabled"><FieldLabel Class="text-dark">@L["Enable/Disable"]</FieldLabel></Switch>
                         </Field>
                         <Row>
-                            <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                            <Column ColumnSize="ColumnSize.Is12">
                                 <Validation MessageLocalizer="@LH.Localize">
                                     <Field>
                                         <FieldLabel>@L["StoreTitle"] *</FieldLabel>
-                                        <TextEdit @bind-Text="@NewEntity.StoreTitle">
+                                        <TextEdit @bind-Text="@Entity.StoreTitle">
                                             <Feedback>
                                                 <ValidationError />
                                             </Feedback>
@@ -43,11 +42,11 @@
                                     </Field>
                                 </Validation>
                             </Column>
-                            <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                            <Column ColumnSize="ColumnSize.Is12">
                                 <Validation MessageLocalizer="@LH.Localize">
                                     <Field>
                                         <FieldLabel>@L["TitleDisplayOption"] *</FieldLabel>
-                                        <Select TValue="WebsiteTitleDisplayOptions?" @bind-SelectedValue="@NewEntity.TitleDisplayOption">
+                                        <Select TValue="WebsiteTitleDisplayOptions?" @bind-SelectedValue="@Entity.TitleDisplayOption">
                                             <Feedback>
                                                 <ValidationError />
                                             </Feedback>
@@ -65,8 +64,8 @@
                         </Row>
                         <Validation MessageLocalizer="@LH.Localize">
                             <Field>
-                                <FieldLabel>@L["Description"]</FieldLabel>
-                                <MemoEdit @bind-Text="@NewEntity.Description" Rows="6">
+                                <FieldLabel>@L["Description"] *</FieldLabel>
+                                <MemoEdit @bind-Text="@Entity.Description" Rows="6">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
@@ -85,10 +84,10 @@
                                 <img src="@("data:image/png;base64," + LogoBase64)" class="img-fluid" />
                             </Div>
                         }
-                        else if (NewEntity.LogoUrl != null)
+                        else if (Entity.LogoUrl != null)
                         {
                             <Div Class="image-thumbnail">
-                                <img src="@NewEntity.LogoUrl" class="img-fluid" />
+                                <img src="@Entity.LogoUrl" class="img-fluid" />
                             </Div>
                         }
                     </Column>
@@ -102,7 +101,7 @@
                                     <ButtonsTemplate></ButtonsTemplate>
                                 </FilePicker>
                                 <Validation MessageLocalizer="@LH.Localize">
-                                    <TextEdit @bind-Text="@NewEntity.LogoName" Style="margin: 0; padding: 0; height: 0px;" Visibility="Visibility.Invisible">
+                                    <TextEdit @bind-Text="@Entity.LogoName" Class="invisible-input">
                                         <Feedback>
                                             <ValidationError />
                                         </Feedback>
@@ -120,7 +119,7 @@
                     <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
                         <Validation MessageLocalizer="@LH.Localize">
                             <Field>
-                                <Select TValue="GroupBuyTemplateType?" @bind-SelectedValue="NewEntity.GroupBuyTemplateType">
+                                <Select TValue="GroupBuyTemplateType?" @bind-SelectedValue="Entity.TemplateType">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
@@ -143,7 +142,7 @@
                     </Column>
                     <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
                         <Field>
-                            <Select TValue="ColorScheme?" SelectedValue="NewEntity.ColorScheme"
+                            <Select TValue="ColorScheme?" SelectedValue="Entity.ColorScheme"
                                     SelectedValueChanged="(e) => OnColorSchemeChange(e)">
                                 <SelectItem Value="(ColorScheme?)null"></SelectItem>
                                 @foreach (ColorScheme value in Enum.GetValues<ColorScheme>())
@@ -151,37 +150,51 @@
                                     <SelectItem Value="@value">@L["Enum:ColorScheme." + (int)value]</SelectItem>
                                 }
                             </Select>
+                            <Validation MessageLocalizer="@LH.Localize">
+                                <Select TValue="ColorScheme?" @bind-SelectedValue="Entity.ColorScheme" Class="invisible-input">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                    <ChildContent>
+                                        <SelectItem Value="(ColorScheme?)null"></SelectItem>
+                                        @foreach (ColorScheme value in Enum.GetValues<ColorScheme>())
+                                        {
+                                            <SelectItem Value="@value">@L["Enum:ColorScheme." + (int)value]</SelectItem>
+                                        }
+                                    </ChildContent>
+                                </Select>
+                            </Validation>
                         </Field>
                     </Column>
                     <Column ColumnSize="ColumnSize.Is12">
-                        @if (NewEntity.ColorScheme.HasValue)
+                        @if (Entity.ColorScheme.HasValue)
                         {
                             <Row Class="d-flex justify-content-center">
                                 <Column ColumnSize="ColumnSize.Is2" Class="text-center">
                                     <FieldLabel>@L["Primary"]</FieldLabel>
-                                    <ColorPicker Class="color-scheme" @bind-Color="@NewEntity.PrimaryColor" />
-                                    <TextEdit Class="mt-2" Disabled @bind-Text="NewEntity.PrimaryColor" />
+                                    <ColorPicker Class="color-scheme" @bind-Color="@Entity.PrimaryColor" />
+                                    <TextEdit Class="mt-2" Disabled @bind-Text="Entity.PrimaryColor" />
                                 </Column>
                                 <Column ColumnSize="ColumnSize.Is2" Class="text-center">
                                     <FieldLabel>@L["Secondary"]</FieldLabel>
-                                    <ColorPicker Class="color-scheme" @bind-Color="@NewEntity.SecondaryColor" />
-                                    <TextEdit Class="mt-2" Disabled @bind-Text="NewEntity.SecondaryColor" />
+                                    <ColorPicker Class="color-scheme" @bind-Color="@Entity.SecondaryColor" />
+                                    <TextEdit Class="mt-2" Disabled @bind-Text="Entity.SecondaryColor" />
                                 </Column>
                                 <Column ColumnSize="ColumnSize.Is2" Class="text-center">
                                     <FieldLabel>@L["Background"]</FieldLabel>
-                                    <ColorPicker Class="color-scheme" @bind-Color="@NewEntity.BackgroundColor" />
-                                    <TextEdit Class="mt-2" Disabled @bind-Text="NewEntity.BackgroundColor" />
+                                    <ColorPicker Class="color-scheme" @bind-Color="@Entity.BackgroundColor" />
+                                    <TextEdit Class="mt-2" Disabled @bind-Text="Entity.BackgroundColor" />
                                 </Column>
                                 <Column ColumnSize="ColumnSize.Is2" Class="text-center">
                                     <FieldLabel Class="d-none d-xl-block">@L["SecondaryBackground"]</FieldLabel>
                                     <FieldLabel Class="d-block d-xl-none">@L["SecondaryBg"]</FieldLabel>
-                                    <ColorPicker Class="color-scheme" @bind-Color="@NewEntity.SecondaryBackgroundColor" />
-                                    <TextEdit Class="mt-2" Disabled @bind-Text="NewEntity.SecondaryBackgroundColor" />
+                                    <ColorPicker Class="color-scheme" @bind-Color="@Entity.SecondaryBackgroundColor" />
+                                    <TextEdit Class="mt-2" Disabled @bind-Text="Entity.SecondaryBackgroundColor" />
                                 </Column>
                                 <Column ColumnSize="ColumnSize.Is2" Class="text-center">
                                     <FieldLabel>@L["Alert"]</FieldLabel>
-                                    <ColorPicker Class="color-scheme" @bind-Color="@NewEntity.AlertColor" />
-                                    <TextEdit Class="mt-2" Disabled @bind-text="NewEntity.AlertColor" />
+                                    <ColorPicker Class="color-scheme" @bind-Color="@Entity.AlertColor" />
+                                    <TextEdit Class="mt-2" Disabled @bind-text="Entity.AlertColor" />
                                 </Column>
                             </Row>
                         }
@@ -192,11 +205,11 @@
         </CardBody>
     </Card>
     <Div Class="text-end">
-        <PikachuButton Class="pk-btn-transparent" Disabled="IsLoading">
+        <PikachuButton Class="pk-btn-transparent" Disabled="IsLoading" Loading="IsCancelling" Clicked="ResetAsync">
             @L["Cancel"]
         </PikachuButton>
-        <PikachuButton Class="pk-btn-primary" Loading="IsLoading" Clicked="CreateAsync">
-            @L["Create"]
+        <PikachuButton Class="pk-btn-primary" Loading="IsLoading" Disabled="IsCancelling" Clicked="UpdateAsync">
+            @L["Update"]
         </PikachuButton>
     </Div>
 </Div>
