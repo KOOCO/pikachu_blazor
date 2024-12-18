@@ -43,13 +43,13 @@ public class WebsiteSettingsManager(IWebsiteSettingsRepository websiteSettingsRe
     private static void ValidateInputs(string notificationBar, string logoName, string logoUrl, string storeTitle,
         WebsiteTitleDisplayOptions titleDisplayOption, string facebook, string instagram, string line, string returnExchangePolicy)
     {
-        Check.NotNullOrWhiteSpace(notificationBar, nameof(notificationBar), maxLength: WebsiteSettingsConsts.MaxNotificationBarLength);
-        Check.NotNullOrWhiteSpace(logoName, nameof(logoName), maxLength: WebsiteSettingsConsts.MaxLogoNameLength);
-        Check.NotNullOrWhiteSpace(logoUrl, nameof(logoUrl), maxLength: WebsiteSettingsConsts.MaxLogoUrlLength);
-        Check.NotNullOrWhiteSpace(storeTitle, nameof(storeTitle), maxLength: WebsiteSettingsConsts.MaxStoreTitleLength);
-        Check.NotNullOrWhiteSpace(facebook, nameof(facebook), maxLength: WebsiteSettingsConsts.MaxFacebookLength);
-        Check.NotNullOrWhiteSpace(instagram, nameof(instagram), maxLength: WebsiteSettingsConsts.MaxInstagramLength);
-        Check.NotNullOrWhiteSpace(line, nameof(line), maxLength: WebsiteSettingsConsts.MaxLineLength);
-        Check.NotNullOrWhiteSpace(returnExchangePolicy, nameof(returnExchangePolicy), maxLength: WebsiteSettingsConsts.MaxReturnExchangePolicyLength);
+        Check.NotNullOrWhiteSpace(notificationBar, nameof(notificationBar), maxLength: WebsiteSettingsConsts.MaxPageTitleLength);
+        //Check.NotNullOrWhiteSpace(logoName, nameof(logoName), maxLength: WebsiteSettingsConsts.MaxLogoNameLength);
+        //Check.NotNullOrWhiteSpace(logoUrl, nameof(logoUrl), maxLength: WebsiteSettingsConsts.MaxLogoUrlLength);
+        //Check.NotNullOrWhiteSpace(storeTitle, nameof(storeTitle), maxLength: WebsiteSettingsConsts.MaxStoreTitleLength);
+        //Check.NotNullOrWhiteSpace(facebook, nameof(facebook), maxLength: WebsiteSettingsConsts.MaxFacebookLength);
+        //Check.NotNullOrWhiteSpace(instagram, nameof(instagram), maxLength: WebsiteSettingsConsts.MaxInstagramLength);
+        //Check.NotNullOrWhiteSpace(line, nameof(line), maxLength: WebsiteSettingsConsts.MaxLineLength);
+        //Check.NotNullOrWhiteSpace(returnExchangePolicy, nameof(returnExchangePolicy), maxLength: WebsiteSettingsConsts.MaxReturnExchangePolicyLength);
     }
 }

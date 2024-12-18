@@ -16,15 +16,16 @@ public class WebsiteSettingsAppService(IWebsiteSettingsRepository websiteSetting
     public async Task<WebsiteSettingsDto> CreateAsync(CreateWebsiteSettingsDto input)
     {
         Check.NotNull(input, nameof(input));
-        if (!Enum.IsDefined(typeof(WebsiteTitleDisplayOptions), input.TitleDisplayOption))
-        {
-            throw new InvalidEnumValueException(nameof(input.TitleDisplayOption));
-        }
+        //if (!Enum.IsDefined(typeof(WebsiteTitleDisplayOptions), input.TitleDisplayOption))
+        //{
+        //    throw new InvalidEnumValueException(nameof(input.TitleDisplayOption));
+        //}
 
-        var websiteSettings = await websiteSettingsManager.CreateAsync(input.NotificationBar, input.LogoName, input.LogoUrl, input.StoreTitle,
-            input.TitleDisplayOption!.Value, input.Facebook, input.Instagram, input.Line, input.ReturnExchangePolicy);
+        //var websiteSettings = await websiteSettingsManager.CreateAsync(input.PageTitle, input.LogoName, input.LogoUrl, input.PageDescription,
+        //    input.TitleDisplayOption!.Value, input.Facebook, input.Instagram, input.Line, input.ReturnExchangePolicy);
 
-        return ObjectMapper.Map<WebsiteSettings, WebsiteSettingsDto>(websiteSettings);
+        //return ObjectMapper.Map<WebsiteSettings, WebsiteSettingsDto>(websiteSettings);
+        return ObjectMapper.Map<WebsiteSettings, WebsiteSettingsDto>(new WebsiteSettings());
     }
 
     [Authorize(PikachuPermissions.WebsiteManagement.WebsiteSettings.Delete)]

@@ -52,7 +52,7 @@ public partial class WebsiteSettings
             var fileBytes = memoryStream.ToArray();
 
             LogoBase64 = Convert.ToBase64String(fileBytes);
-            NewEntity.LogoName = file.Name;
+            //NewEntity.LogoName = file.Name;
 
             await InvokeAsync(StateHasChanged);
         }
@@ -68,7 +68,7 @@ public partial class WebsiteSettings
             IsLoading = true;
 
             var bytes = Convert.FromBase64String(LogoBase64);
-            NewEntity.LogoUrl = await ImageAppService.UploadImageAsync(NewEntity.LogoName, bytes);
+            //NewEntity.LogoUrl = await ImageAppService.UploadImageAsync(NewEntity.LogoName, bytes);
 
             await WebsiteSettingsAppService.CreateAsync(NewEntity);
             NavigateToWebsiteSettings();

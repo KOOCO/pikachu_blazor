@@ -18,6 +18,11 @@ public class WebsiteSettings : FullAuditedEntity<Guid>, IMultiTenant
     public string ReturnExchangePolicy { get; private set; }
     public Guid? TenantId { get; set; }
 
+    public WebsiteSettings()
+    {
+        
+    }
+
     public WebsiteSettings(
         Guid id,
         string notificationBar,
@@ -44,49 +49,49 @@ public class WebsiteSettings : FullAuditedEntity<Guid>, IMultiTenant
 
     public WebsiteSettings SetNotificationBar(string notificationBar)
     {
-        NotificationBar = Check.NotNullOrWhiteSpace(notificationBar, nameof(NotificationBar), maxLength: WebsiteSettingsConsts.MaxNotificationBarLength);
+        NotificationBar = Check.NotNullOrWhiteSpace(notificationBar, nameof(NotificationBar), maxLength: WebsiteSettingsConsts.MaxPageTitleLength);
         return this;
     }
 
     public WebsiteSettings SetLogoName(string logoName)
     {
-        LogoName = Check.NotNullOrWhiteSpace(logoName, nameof(LogoName), maxLength: WebsiteSettingsConsts.MaxLogoNameLength);
+        //LogoName = Check.NotNullOrWhiteSpace(logoName, nameof(LogoName), maxLength: WebsiteSettingsConsts.MaxLogoNameLength);
         return this;
     }
 
     public WebsiteSettings SetLogoUrl(string logoUrl)
     {
-        LogoUrl = Check.NotNullOrWhiteSpace(logoUrl, nameof(LogoUrl), maxLength: WebsiteSettingsConsts.MaxLogoUrlLength);
+        //LogoUrl = Check.NotNullOrWhiteSpace(logoUrl, nameof(LogoUrl), maxLength: WebsiteSettingsConsts.MaxLogoUrlLength);
         return this;
     }
 
     public WebsiteSettings SetStoreTitle(string storeTitle)
     {
-        StoreTitle = Check.NotNullOrWhiteSpace(storeTitle, nameof(StoreTitle), maxLength: WebsiteSettingsConsts.MaxStoreTitleLength);
+        //StoreTitle = Check.NotNullOrWhiteSpace(storeTitle, nameof(StoreTitle), maxLength: WebsiteSettingsConsts.MaxStoreTitleLength);
         return this;
     }
 
     public WebsiteSettings SetFacebook(string facebook)
     {
-        Facebook = Check.NotNullOrWhiteSpace(facebook, nameof(Facebook), maxLength: WebsiteSettingsConsts.MaxFacebookLength);
+        //Facebook = Check.NotNullOrWhiteSpace(facebook, nameof(Facebook), maxLength: WebsiteSettingsConsts.MaxFacebookLength);
         return this;
     }
 
     public WebsiteSettings SetInstagram(string instagram)
     {
-        Instagram = Check.NotNullOrWhiteSpace(instagram, nameof(Instagram), maxLength: WebsiteSettingsConsts.MaxInstagramLength);
+        //Instagram = Check.NotNullOrWhiteSpace(instagram, nameof(Instagram), maxLength: WebsiteSettingsConsts.MaxInstagramLength);
         return this;
     }
 
     public WebsiteSettings SetLine(string line)
     {
-        Line = Check.NotNullOrWhiteSpace(line, nameof(Line), maxLength: WebsiteSettingsConsts.MaxLineLength);
+        //Line = Check.NotNullOrWhiteSpace(line, nameof(Line), maxLength: WebsiteSettingsConsts.MaxLineLength);
         return this;
     }
 
     public WebsiteSettings SetReturnExchangePolicy(string returnExchangePolicy)
     {
-        ReturnExchangePolicy = Check.NotNullOrWhiteSpace(returnExchangePolicy, nameof(ReturnExchangePolicy), maxLength: WebsiteSettingsConsts.MaxReturnExchangePolicyLength);
+        //ReturnExchangePolicy = Check.NotNullOrWhiteSpace(returnExchangePolicy, nameof(ReturnExchangePolicy), maxLength: WebsiteSettingsConsts.MaxReturnExchangePolicyLength);
         return this;
     }
 

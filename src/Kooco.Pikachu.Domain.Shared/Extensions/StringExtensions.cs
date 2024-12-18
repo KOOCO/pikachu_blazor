@@ -8,6 +8,8 @@ public static class StringExtensions
     public const string Week = "Week";
     public const string Month = "Month";
 
+    public const string DefaultQuillHtml = "<p><br></p>";
+
     public static (DateTime, DateTime) FindFilterDateRange(this string dateRange)
     {
         DateTime minTime;
@@ -47,5 +49,14 @@ public static class StringExtensions
         if (url.IsNullOrWhiteSpace()) return true;
         return Uri.TryCreate(url, UriKind.Absolute, out Uri? uriResult)
             && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+    }
+
+    public static bool IsEmptyOrDefaultQuillHtml(this string html)
+    {
+        if (html.IsNullOrWhiteSpace() || html.ToLower() == DefaultQuillHtml)
+        {
+            return true;
+        }
+        return false;
     }
 }

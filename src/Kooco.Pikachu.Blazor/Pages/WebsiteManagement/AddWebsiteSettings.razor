@@ -14,6 +14,7 @@
 @using Kooco.Pikachu.Permissions
 @using Kooco.Pikachu.ProductCategories
 @using Kooco.Pikachu.WebsiteManagement
+@using Kooco.Pikachu.WebsiteManagement.WebsiteBasicSettings
 @using Volo.Abp.AspNetCore.Components.Notifications
 @using Volo.Abp.AspNetCore.Components.Web
 @attribute [Authorize(PikachuPermissions.WebsiteManagement.WebsiteSettings.Create)]
@@ -27,6 +28,7 @@
 @inject ISetItemAppService _setItemAppService
 @inject ImageContainerManager _imageContainerManager
 @inject IProductCategoryAppService ProductCategoryAppService
+@inject IWebsiteBasicSettingAppService WebsiteBasicSettingAppService
 
 <PikachuButton Clicked="NavigateToWebsiteSettings">
     <Icon Name="IconName.ArrowLeft" Class="me-1"></Icon>
@@ -45,7 +47,7 @@
                         <Validation MessageLocalizer="@LH.Localize">
                             <Field>
                                 <FieldLabel>@L["PageTitle"] *</FieldLabel>
-                                <TextEdit @bind-Text="@NewEntity.NotificationBar">
+                                <TextEdit @bind-Text="@NewEntity.PageTitle">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
@@ -55,7 +57,7 @@
                         <Validation MessageLocalizer="@LH.Localize">
                             <Field>
                                 <FieldLabel>@L["PageDescription"] *</FieldLabel>
-                                <MemoEdit @bind-Text="@NewEntity.StoreTitle" Rows="6">
+                                <MemoEdit @bind-Text="@NewEntity.PageDescription" Rows="6">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
@@ -65,7 +67,7 @@
                         <Validation MessageLocalizer="@LH.Localize">
                             <Field>
                                 <FieldLabel>@L["PageLink"] *</FieldLabel>
-                                <TextEdit @bind-Text="@NewEntity.NotificationBar">
+                                <TextEdit @bind-Text="@NewEntity.PageLink">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
@@ -92,6 +94,22 @@
                                     <SelectItem Value="type">@L["Enum:WebsitePageType." + (int)type]</SelectItem>
                                 }
                             </Select>
+                            <Validation MessageLocalizer="@LH.Localize">
+                                <Field>
+                                    <Select TValue="WebsitePageType?" @bind-SelectedValue="NewEntity.WebsitePageType" Class="invisible-input">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                        <ChildContent>
+                                            <SelectItem Value="(WebsitePageType?)null"></SelectItem>
+                                            @foreach (WebsitePageType type in Enum.GetValues(typeof(WebsitePageType)))
+                                            {
+                                                <SelectItem Value="type">@L["Enum:WebsitePageType." + (int)type]</SelectItem>
+                                            }
+                                        </ChildContent>
+                                    </Select>
+                                </Field>
+                            </Validation>
                         </Field>
                     </Column>
                 </Row>
@@ -100,13 +118,83 @@
             {
                 <Divider Class="border-0"></Divider>
             }
+            @if (NewEntity.WebsitePageType == WebsitePageType.ProductListPage)
+            {
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                        <FieldLabel>@L["ProductCategory"] *</FieldLabel>
+                        <Autocomplete TItem="KeyValueDto"
+                                      TValue="Guid?"
+                                      Data="@ProductCategoryLookup"
+                                      TextField="@(( item ) => item.Name)"
+                                      ValueField="@(( item ) => item.Id)"
+                                      @bind-SelectedText="SelectedAutoCompleteText"
+                                      @bind-SelectedValue="NewEntity.ProductCategoryId"
+                                      Placeholder="Search..."
+                                      Filter="AutocompleteFilter.StartsWith"
+                                      CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                                      HighlightSearch
+                                      Immediate="true"
+                                      @ref="AutocompleteField">
+                            <NotFoundContent> @L["NotFound"] </NotFoundContent>
+                        </Autocomplete>
+                    </Column>
+                </Row>
+            }
+            @if (NewEntity.WebsitePageType == WebsitePageType.ArticlePage)
+            {
+                <Row Class="mb-5">
+                    <Column ColumnSize="ColumnSize.Is3">
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is9">
+                        <BlazoredTextEditor @ref="@ArticlePageHtml">
+                            <ToolbarContent>
+                                <select class="ql-header">
+                                    <option selected=""></option>
+                                    <option value="1"></option>
+                                    <option value="2"></option>
+                                    <option value="3"></option>
+                                    <option value="4"></option>
+                                    <option value="5"></option>
+                                </select>
+                                <span class="ql-formats">
+                                    <button class="ql-bold"></button>
+                                    <button class="ql-italic"></button>
+                                    <button class="ql-underline"></button>
+                                    <button class="ql-strike"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <select class="ql-color"></select>
+                                    <select class="ql-background"></select>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-list" value="ordered"></button>
+                                    <button class="ql-list" value="bullet"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-link"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-image"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-video"></button>
+                                </span>
+                            </ToolbarContent>
+                        </BlazoredTextEditor>
+                    </Column>
+                </Row>
+            }
             @if (NewEntity.WebsitePageType == WebsitePageType.CustomPage)
             {
                 <Row>
                     <Column ColumnSize="ColumnSize.Is3">
                         <Field>
-                            <Select TValue="GroupBuyTemplateType?" Disabled>
-                                @foreach (GroupBuyTemplateType value in Enum.GetValues<GroupBuyTemplateType>().Where(x => x == GroupBuyTemplateType.PikachuTwo))
+                            <Select TValue="GroupBuyTemplateType?" @bind-SelectedValue="NewEntity.GroupBuyTemplateType" Disabled>
+                                <SelectItem Value="(GroupBuyTemplateType?)null"></SelectItem>
+                                @foreach (GroupBuyTemplateType value in Enum.GetValues<GroupBuyTemplateType>())
                                 {
                                     <SelectItem Value="value">@L["Enum:GroupBuyTemplateType." + (int)value]</SelectItem>
                                 }
@@ -127,15 +215,15 @@
                                     </SelectItem>
                                 }
                             }
-                            @* @if (NewEntity.GroupBuyTemplateType == GroupBuyTemplateType.PikachuTwo) *@
-                            @* { *@
-                            @foreach (GroupBuyModuleType module in GroupBuyExtensions.GetPikachuTwoList())
+                            @if (NewEntity.GroupBuyTemplateType == GroupBuyTemplateType.PikachuTwo)
                             {
-                                <SelectItem Value="module">
-                                    @L[module.ToString()]
-                                </SelectItem>
+                                @foreach (GroupBuyModuleType module in GroupBuyExtensions.GetPikachuTwoList())
+                                {
+                                    <SelectItem Value="module">
+                                        @L[module.ToString()]
+                                    </SelectItem>
+                                }
                             }
-                            @* } *@
                         </Select>
                     </Column>
                 </Row>
@@ -205,7 +293,7 @@
                                                                                                                            CarouselFilePickers[carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1],
                                                                                                                            ImageType.GroupBuyCarouselImage))"
                                                                             ShowMode="FilePickerShowMode.List"
-                                                                            Accept=".jpg, .png, .svg, .jpeg, .webp">
+                                                                            Accept="@(string.Join(",", Constant.ValidImageExtensions))">
                                                                     <FileTemplate>
                                                                         <Div Flex="Flex.JustifyContent.Between">
                                                                             <Div>
@@ -329,7 +417,7 @@
                                                                                                                            BannerFilePickers[bannerImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1],
                                                                                                                            ImageType.GroupBuyBannerImage))"
                                                                             ShowMode="FilePickerShowMode.List"
-                                                                            Accept=".jpg, .png, .svg, .jpeg, .webp">
+                                                                            Accept="@(string.Join(",", Constant.ValidImageExtensions))">
                                                                     <FileTemplate>
                                                                         <Div Flex="Flex.JustifyContent.Between">
                                                                             <Div>
@@ -418,7 +506,7 @@
                                                                             FilePickerLocalizer="(key, args) => LocalizeFilePicker(key, args)"
                                                                             Changed="@(async (e) => await OnImageUploadAsync(e, module, GroupPurchaseOverviewFilePickers[GroupPurchaseOverviewModules.IndexOf(module)]))"
                                                                             ShowMode="FilePickerShowMode.List"
-                                                                            Accept=".jpg, .png, .svg, .jpeg, .webp">
+                                                                            Accept="@(string.Join(",", Constant.ValidImageExtensions))">
                                                                     <FileTemplate>
                                                                         <Div Flex="Flex.JustifyContent.Between">
                                                                             <Div>
@@ -536,7 +624,7 @@
                                                                                                                      module,
                                                                                                                      GroupBuyOrderInstructionPickers[GroupBuyOrderInstructionModules.IndexOf(module)]))"
                                                                             ShowMode="FilePickerShowMode.List"
-                                                                            Accept=".jpg, .png, .svg ,.jpeg,.webp">
+                                                                            Accept="@(string.Join(",", Constant.ValidImageExtensions))">
                                                                     <FileTemplate>
                                                                         <Div Flex="Flex.JustifyContent.Between">
                                                                             <Div>
@@ -738,7 +826,7 @@
                                                                                                                            ProductRankingCarouselPickers[ProductRankingCarouselModules.IndexOf(productModule)],
                                                                                                                            ImageType.GroupBuyProductRankingCarousel))"
                                                                                     ShowMode="FilePickerShowMode.List"
-                                                                                    Accept=".jpg, .png, .svg, .jpeg, .webp">
+                                                                                    Accept="@(string.Join(",", Constant.ValidImageExtensions))">
                                                                             <FileTemplate>
                                                                                 <Div Flex="Flex.JustifyContent.Between">
                                                                                     <Div>
@@ -969,75 +1057,6 @@
                         </div>
                     }
                 </div>
-            }
-            @if (NewEntity.WebsitePageType == WebsitePageType.ProductListPage)
-            {
-                <Row>
-                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
-                    </Column>
-                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                        <FieldLabel>@L["ProductCategory"] *</FieldLabel>
-                        <Autocomplete TItem="KeyValueDto"
-                                      TValue="Guid?"
-                                      Data="@ProductCategoryLookup"
-                                      TextField="@(( item ) => item.Name)"
-                                      ValueField="@(( item ) => item.Id)"
-                                      @bind-SelectedText="SelectedAutoCompleteText"
-                                      Placeholder="Search..."
-                                      Filter="AutocompleteFilter.StartsWith"
-                                      CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
-                                      HighlightSearch
-                                      Immediate="true"
-                                      SelectedValueChanged="OnSelectedValueChanged"
-                                      @ref="AutocompleteField">
-                            <NotFoundContent> @L["NotFound"] </NotFoundContent>
-                        </Autocomplete>
-                    </Column>
-                </Row>
-            }
-            @if (NewEntity.WebsitePageType == WebsitePageType.ArticlePage)
-            {
-                <Row Class="mb-5">
-                    <Column ColumnSize="ColumnSize.Is3">
-                    </Column>
-                    <Column ColumnSize="ColumnSize.Is9">
-                        <BlazoredTextEditor @ref="@ArticlePageHtml">
-                            <ToolbarContent>
-                                <select class="ql-header">
-                                    <option selected=""></option>
-                                    <option value="1"></option>
-                                    <option value="2"></option>
-                                    <option value="3"></option>
-                                    <option value="4"></option>
-                                    <option value="5"></option>
-                                </select>
-                                <span class="ql-formats">
-                                    <button class="ql-bold"></button>
-                                    <button class="ql-italic"></button>
-                                    <button class="ql-underline"></button>
-                                    <button class="ql-strike"></button>
-                                </span>
-                                <span class="ql-formats">
-                                    <select class="ql-color"></select>
-                                    <select class="ql-background"></select>
-                                </span>
-                                <span class="ql-formats">
-                                    <button class="ql-list" value="ordered"></button>
-                                    <button class="ql-list" value="bullet"></button>
-                                </span>
-                                <span class="ql-formats">
-                                    <button class="ql-link"></button>
-                                </span>
-                                <span class="ql-formats">
-                                    <button class="ql-image"></button>
-                                </span>
-                                <span class="ql-formats">
-                                    <button class="ql-video"></button>
-                                </span>
-                            </ToolbarContent>
-                        </BlazoredTextEditor>
-                    </Column>
-                </Row>
             }
         </CardBody>
     </Card>

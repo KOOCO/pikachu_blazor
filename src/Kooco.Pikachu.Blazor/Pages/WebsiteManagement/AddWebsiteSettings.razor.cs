@@ -1,36 +1,33 @@
-using Blazorise;
-using Kooco.Pikachu.WebsiteManagement;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System;
-using Kooco.Pikachu.Extensions;
-using Kooco.Pikachu.Items.Dtos;
-using System.Collections.Generic;
-using Blazorise.Components;
-using Kooco.Pikachu.Items;
-using Kooco.Pikachu.ProductCategories;
 using Blazored.TextEditor;
+using Blazorise;
+using Blazorise.Components;
 using Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.GroupBuyOrderInstructions;
+using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.GroupPurchaseOverviews;
 using Kooco.Pikachu.Images;
-using Kooco.Pikachu.GroupBuys;
+using Kooco.Pikachu.Items.Dtos;
+using Kooco.Pikachu.WebsiteManagement;
+using Kooco.Pikachu.WebsiteManagement.WebsiteBasicSettings;
 using Microsoft.AspNetCore.Components;
-using Kooco.Pikachu.AzureStorage.Image;
 using Microsoft.AspNetCore.Components.Web;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Kooco.Pikachu.Extensions;
 
 namespace Kooco.Pikachu.Blazor.Pages.WebsiteManagement;
 
 public partial class AddWebsiteSettings
 {
     private CreateWebsiteSettingsDto NewEntity { get; set; }
+    private WebsiteBasicSettingDto WebsiteBasicSettings { get; set; }
+
     private Validations ValidationsRef;
-
     private bool IsLoading { get; set; }
-
-    private string LogoBase64 { get; set; }
     private List<KeyValueDto> ProductCategoryLookup { get; set; } = [];
     private string SelectedAutoCompleteText { get; set; }
     private Autocomplete<KeyValueDto, Guid?> AutocompleteField { get; set; }
@@ -50,7 +47,6 @@ public partial class AddWebsiteSettings
     public List<ProductRankingCarouselModule> ProductRankingCarouselModules = [];
 
     private CreateImageDto SelectedImageDto = new();
-    private readonly List<string> ValidFileExtensions = [".jpg", ".png", ".svg", ".jpeg", ".webp"];
     private FilePicker LogoPickerCustom { get; set; }
     private const int MaxAllowedFileSize = 1024 * 1024 * 10;
 
@@ -68,10 +64,19 @@ public partial class AddWebsiteSettings
     {
         if (firstRender)
         {
-            SetItemList = await _setItemAppService.GetItemsLookupAsync();
-            ItemsList = await _itemAppService.GetItemsLookupAsync();
-            ItemsList.AddRange(SetItemList);
-            ProductCategoryLookup = await ProductCategoryAppService.GetProductCategoryLookupAsync();
+            try
+            {
+                SetItemList = await _setItemAppService.GetItemsLookupAsync();
+                ItemsList = await _itemAppService.GetItemsLookupAsync();
+                ItemsList.AddRange(SetItemList);
+                ProductCategoryLookup = await ProductCategoryAppService.GetProductCategoryLookupAsync();
+                WebsiteBasicSettings = await WebsiteBasicSettingAppService.FirstOrDefaultAsync();
+                NewEntity.GroupBuyTemplateType = WebsiteBasicSettings?.TemplateType;
+            }
+            catch (Exception ex)
+            {
+                await HandleErrorAsync(ex);
+            }
         }
     }
 
@@ -80,50 +85,28 @@ public partial class AddWebsiteSettings
         NavigationManager.NavigateTo("/Website-Settings");
     }
 
-    async Task OnFileUploadAsync(FileChangedEventArgs e)
-    {
-        var file = e.Files.FirstOrDefault();
-
-        if (file != null)
-        {
-            string extension = Path.GetExtension(file.Name);
-
-            if (file.Size > Constant.MaxImageSizeInBytes)
-            {
-                await UiNotificationService.Error(L["Pikachu:ImageSizeExceeds", Constant.MaxImageSizeInBytes.FromBytesToMB()]);
-                return;
-            }
-
-            if (!Constant.ValidImageExtensions.Contains(extension))
-            {
-                await UiNotificationService.Error(L["Pikachu:InvalidImageExtension", string.Join(", ", Constant.ValidImageExtensions)]);
-                return;
-            }
-
-            using var memoryStream = new MemoryStream();
-            await file.OpenReadStream().CopyToAsync(memoryStream);
-            var fileBytes = memoryStream.ToArray();
-
-            LogoBase64 = Convert.ToBase64String(fileBytes);
-            NewEntity.LogoName = file.Name;
-
-            await InvokeAsync(StateHasChanged);
-        }
-    }
-
     async Task CreateAsync()
     {
         var validate = await ValidationsRef.ValidateAll();
-        if (!validate) return;
+        if (!validate)
+        {
+            return;
+        }
+
+        validate = await ValidatePageType();
+        if (!validate)
+        {
+            return;
+        }
+
         try
         {
             IsLoading = true;
 
-            var bytes = Convert.FromBase64String(LogoBase64);
-            NewEntity.LogoUrl = await ImageAppService.UploadImageAsync(NewEntity.LogoName, bytes);
+            //await WebsiteSettingsAppService.CreateAsync(NewEntity);
+            //NavigateToWebsiteSettings();
 
-            await WebsiteSettingsAppService.CreateAsync(NewEntity);
-            NavigateToWebsiteSettings();
+            IsLoading = false;
         }
         catch (Exception ex)
         {
@@ -132,43 +115,80 @@ public partial class AddWebsiteSettings
         }
     }
 
+    async Task<bool> ValidatePageType()
+    {
+        if (NewEntity.WebsitePageType == WebsitePageType.ProductListPage)
+        {
+            if (!NewEntity.ProductCategoryId.HasValue)
+            {
+                await Message.Error("The field Product Category is required.");
+                return false;
+            }
+        }
+        if (NewEntity.WebsitePageType == WebsitePageType.ArticlePage)
+        {
+            var articleHtml = await ArticlePageHtml?.GetHTML();
+            if (articleHtml.IsEmptyOrDefaultQuillHtml())
+            {
+                await Message.Error("The field Article Page Html is required.");
+                return false;
+            }
+            NewEntity.ArticleHtml = articleHtml;
+        }
+        if (NewEntity.WebsitePageType == WebsitePageType.CustomPage)
+        {
+            if (!NewEntity.SelectedGroupBuyModuleType.HasValue)
+            {
+                await Message.Error("The field Page Type Module is required.");
+                return false;
+            }
+            if (CollapseItem.Any(a => a.IsWarnedForInCompatible))
+            {
+                await Message.Error(L[PikachuDomainErrorCodes.InCompatibleModule]);
+                return false;
+            }
+            if (GroupBuyOrderInstructionModules is { Count: > 0 })
+            {
+                foreach (GroupBuyOrderInstructionDto groupBuyOrderInstruction in GroupBuyOrderInstructionModules)
+                {
+                    if (groupBuyOrderInstruction.Title.IsNullOrEmpty())
+                    {
+                        await Message.Error("Title Cannot be empty in Group Purchase Overview Module");
+                        return false;
+                    }
+
+                    if (groupBuyOrderInstruction.Image.IsNullOrEmpty())
+                    {
+                        await Message.Error("Please Add Image in Group Purchase Overview Module");
+                        return false;
+                    }
+                }
+            }
+            if (ProductRankingCarouselModules is { Count: > 0 })
+            {
+                foreach (ProductRankingCarouselModule productRankingCarouselModule in ProductRankingCarouselModules)
+                {
+                    if (productRankingCarouselModule.Title.IsNullOrEmpty())
+                    {
+                        await Message.Error("Title Cannot be empty in Group Purchase Overview Module");
+                        return false;
+                    }
+
+                    if (productRankingCarouselModule.SubTitle.IsNullOrEmpty())
+                    {
+                        await Message.Error("SubTitle Cannot be empty in Group Purchase Overview Module");
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
     async Task WebsitePageTypeChanged(WebsitePageType? websitePageType)
     {
         NewEntity.WebsitePageType = websitePageType;
-    }
-
-    async Task OnSelectedValueChanged(Guid? id)
-    {
-        //try
-        //{
-        //    if (id != null)
-        //    {
-        //        RowLoading = true;
-        //        StateHasChanged();
-        //        await AutocompleteField.Clear();
-        //        var productCategory = ProductCategoryLookup.Where(x => x.Id == id).FirstOrDefault();
-
-        //        if (productCategory == null) return;
-
-        //        var itemCategory = new CreateUpdateItemCategoryDto
-        //        {
-        //            ProductCategoryId = productCategory.Id,
-        //            ProductCategoryName = productCategory.Name,
-        //            ImageUrl = await ProductCategoryAppService.GetDefaultImageUrlAsync(productCategory.Id)
-        //        };
-
-        //        CreateItemDto.ItemCategories.Add(itemCategory);
-        //        RowLoading = false;
-
-        //        ProductCategoryLookup = ProductCategoryLookup.Where(x => x.Id != id).ToList();
-        //        StateHasChanged();
-        //    }
-        //}
-        //catch (Exception ex)
-        //{
-        //    RowLoading = false;
-        //    await HandleErrorAsync(ex);
-        //}
     }
 
     void AddProductItem(GroupBuyModuleType? moduleType)
@@ -370,7 +390,7 @@ public partial class AddWebsiteSettings
     {
         CollapseItem? collapseItem = CollapseItem.FirstOrDefault(f => f.Index == index);
 
-        int moduleNumber = collapseItem.ModuleNumber.HasValue ? collapseItem.ModuleNumber.Value : 0;
+        int moduleNumber = collapseItem.ModuleNumber ?? 0;
 
         if (collapseItem.GroupBuyModuleType is GroupBuyModuleType.CarouselImages)
         {
@@ -458,7 +478,7 @@ public partial class AddWebsiteSettings
         {
             foreach (var file in e.Files.Take(5))
             {
-                if (!ValidFileExtensions.Contains(Path.GetExtension(file.Name)))
+                if (!Constant.ValidImageExtensions.Contains(Path.GetExtension(file.Name)))
                 {
                     await carouselPicker.RemoveFile(file);
                     await UiNotificationService.Error(L["InvalidFileType"]);
@@ -587,7 +607,7 @@ public partial class AddWebsiteSettings
         int count = 0;
         try
         {
-            if (!ValidFileExtensions.Contains(Path.GetExtension(e.Files[0].Name)))
+            if (!Constant.ValidImageExtensions.Contains(Path.GetExtension(e.Files[0].Name)))
             {
                 await UiNotificationService.Error(L["InvalidFileType"]);
                 await LogoPickerCustom.Clear();
@@ -790,7 +810,7 @@ public partial class AddWebsiteSettings
                 return;
             }
 
-            if (!ValidFileExtensions.Contains(Path.GetExtension(e.Files[0].Name)))
+            if (!Constant.ValidImageExtensions.Contains(Path.GetExtension(e.Files[0].Name)))
             {
                 await Message.Error(L["InvalidFileType"]);
 
@@ -928,7 +948,7 @@ public partial class AddWebsiteSettings
                 return;
             }
 
-            if (!ValidFileExtensions.Contains(Path.GetExtension(e.Files[0].Name)))
+            if (!Constant.ValidImageExtensions.Contains(Path.GetExtension(e.Files[0].Name)))
             {
                 await Message.Error(L["InvalidFileType"]);
 
