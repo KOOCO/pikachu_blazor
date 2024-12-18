@@ -93,8 +93,9 @@ public class PikachuBlazorModule : AbpModule
 
         context.Services.AddBlazoriseRichTextEdit();
         context.Services.AddAntDesign();
+		context.Services.AddTransient<OrderDeliveryBackgroundJob>();
 
-        PreConfigure<OpenIddictBuilder>(builder =>
+		PreConfigure<OpenIddictBuilder>(builder =>
         {
             builder.AddValidation(options =>
             {
@@ -455,12 +456,19 @@ public class PikachuBlazorModule : AbpModule
              .ServiceProvider
              .GetRequiredService<OrderStatusCheckerWorker>()
      );
-       // await context.AddBackgroundWorkerAsync<OrderStatusCheckerWorker>();
+		var backgroundJobManager = context.ServiceProvider.GetRequiredService<IBackgroundJobManager>();
+
+		RecurringJob.AddOrUpdate<OrderDeliveryBackgroundJob>(
+			"DailyOrderStatusUpdate",         // Job identifier
+			job => job.ExecuteAsync(0),      // Method to call
+			"0 1 * * *"                     // Cron expression for 1 AM daily
+		);
+		
 
 
 
 
-    }
+	}
 
     // This method is required for the Image Upload in blazor
     // To avoid Did not receive data in allotted time

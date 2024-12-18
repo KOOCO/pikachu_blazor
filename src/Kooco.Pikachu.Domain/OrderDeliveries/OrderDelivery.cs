@@ -17,7 +17,8 @@ namespace Kooco.Pikachu.OrderDeliveries
         public  DeliveryMethod DeliveryMethod { get; set; }
         public  DeliveryStatus DeliveryStatus { get; set; }
         public string? DeliveryNo { get; set; }
-        
+        public string? StatusName { get; set; }
+        public string? StatusId { get; set; }
         public string? SrvTranId { get; set; }
         public string? FileNo { get; set; }
         public Guid OrderId { get; set; }

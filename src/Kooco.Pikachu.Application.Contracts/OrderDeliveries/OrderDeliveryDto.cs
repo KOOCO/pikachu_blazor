@@ -12,7 +12,9 @@ namespace Kooco.Pikachu.OrderDeliveries
         public DeliveryMethod? ActualDeliveryMethod { get; set; }
         public DeliveryStatus DeliveryStatus { get; set; }
         public string AllPayLogisticsID { get; set; }
-        public string Editor { get; set; }
+		public string? StatusName { get; set; }
+		public string? StatusId { get; set; }
+		public string Editor { get; set; }
         public string? DeliveryNo { get; set; }
         public string? FileNo { get; set; }
         public Guid OrderId { get; set; }
