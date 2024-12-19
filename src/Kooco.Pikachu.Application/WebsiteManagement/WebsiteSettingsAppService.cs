@@ -1,6 +1,8 @@
 ﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.Validators;
+using Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
 using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
@@ -12,20 +14,60 @@ namespace Kooco.Pikachu.WebsiteManagement;
 
 [RemoteService(IsEnabled = false)]
 [Authorize(PikachuPermissions.WebsiteManagement.WebsiteSettings.Default)]
-public class WebsiteSettingsAppService(IWebsiteSettingsRepository websiteSettingsRepository, WebsiteSettingsManager websiteSettingsManager) : PikachuAppService, IWebsiteSettingsAppService
+public class WebsiteSettingsAppService(IWebsiteSettingsRepository websiteSettingsRepository, WebsiteSettingsManager websiteSettingsManager,
+    IImageAppService imageAppService) : PikachuAppService, IWebsiteSettingsAppService
 {
     [Authorize(PikachuPermissions.WebsiteManagement.WebsiteSettings.Create)]
     public async Task<WebsiteSettingsDto> CreateAsync(CreateWebsiteSettingsDto input)
     {
         Check.NotNull(input, nameof(input));
-        MyCheck.NotDefaultOrNull<WebsitePageType>(input.PageType, nameof(input.PageType));
-        MyCheck.NotDefaultOrNull<GroupBuyTemplateType>(input.TemplateType, nameof(input.TemplateType));
-        
-        //var websiteSettings = await websiteSettingsManager.CreateAsync(input.PageTitle, input.LogoName, input.LogoUrl, input.PageDescription,
-        //    input.TitleDisplayOption!.Value, input.Facebook, input.Instagram, input.Line, input.ReturnExchangePolicy);
+        MyCheck.NotUndefinedOrNull<WebsitePageType>(input.PageType, nameof(input.PageType));
 
-        //return ObjectMapper.Map<WebsiteSettings, WebsiteSettingsDto>(websiteSettings);
-        return ObjectMapper.Map<WebsiteSettings, WebsiteSettingsDto>(new WebsiteSettings());
+        var websiteSettings = await websiteSettingsManager.CreateAsync(input.PageTitle, input.PageDescription, input.PageLink, input.SetAsHomePage,
+            input.PageType.Value, input.TemplateType, input.GroupBuyModuleType, input.ProductCategoryId, input.ArticleHtml);
+
+        if (input.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule)
+        {
+            if (input.Modules == null || input.Modules.Count == 0)
+            {
+                throw new UserFriendlyException("The field Page Type Module is required.");
+            }
+
+            foreach (var module in input.Modules)
+            {
+                var newModule = websiteSettings.AddModule(GuidGenerator.Create(), module.SortOrder, module.GroupBuyModuleType, module.AdditionalInfo,
+                    module.ProductGroupModuleTitle, module.ProductGroupModuleImageSize, module.ModuleNumber);
+
+                foreach (var moduleItem in module.ModuleItems ?? [])
+                {
+                    newModule.AddModuleItem(GuidGenerator.Create(), moduleItem.ItemId, moduleItem.SetItemId, moduleItem.ItemType, moduleItem.SortOrder,
+                        moduleItem.DisplayText, moduleItem.ModuleNumber);
+                }
+            }
+
+            foreach (var om in input.OverviewModules ?? [])
+            {
+                websiteSettings.AddOverviewModule(GuidGenerator.Create(), om.Title, om.Image, om.SubTitle, om.BodyText,
+                    om.IsButtonEnable, om.ButtonText, om.ButtonLink);
+            }
+
+            foreach (var im in input.InstructionModules ?? [])
+            {
+                websiteSettings.AddInstructionModule(GuidGenerator.Create(), im.Title, im.Image, im.BodyText);
+            }
+
+            foreach (var prm in input.ProductRankingModules ?? [])
+            {
+                websiteSettings.AddProductRankingModule(GuidGenerator.Create(), prm.Title, prm.SubTitle, prm.Content, prm.ModuleNumber);
+                foreach(var image in prm.Images)
+                {
+                    image.TargetId = websiteSettings.Id;
+                    await imageAppService.CreateAsync(image);
+                }
+            }
+        }
+
+        return ObjectMapper.Map<WebsiteSettings, WebsiteSettingsDto>(websiteSettings);
     }
 
     [Authorize(PikachuPermissions.WebsiteManagement.WebsiteSettings.Delete)]
@@ -45,7 +87,7 @@ public class WebsiteSettingsAppService(IWebsiteSettingsRepository websiteSetting
     {
         if (input.Sorting.IsNullOrWhiteSpace())
         {
-            input.Sorting = nameof(WebsiteSettings.StoreTitle);
+            input.Sorting = nameof(WebsiteSettings.PageTitle);
         }
 
         var totalCount = await websiteSettingsRepository.GetCountAsync(input.Filter);
@@ -63,15 +105,12 @@ public class WebsiteSettingsAppService(IWebsiteSettingsRepository websiteSetting
     public async Task<WebsiteSettingsDto> UpdateAsync(Guid id, UpdateWebsiteSettingsDto input)
     {
         Check.NotNull(input, nameof(input));
-        if (!Enum.IsDefined(typeof(WebsiteTitleDisplayOptions), input.TitleDisplayOption))
-        {
-            throw new InvalidEnumValueException(nameof(input.TitleDisplayOption));
-        }
+        MyCheck.NotUndefinedOrNull<WebsitePageType>(input.PageType, nameof(input.PageType));
 
         var websiteSettings = await websiteSettingsRepository.GetAsync(id);
 
-        await websiteSettingsManager.UpdateAsync(websiteSettings, input.NotificationBar, input.LogoName, input.LogoUrl, input.StoreTitle,
-            input.TitleDisplayOption!.Value, input.Facebook, input.Instagram, input.Line, input.ReturnExchangePolicy);
+        await websiteSettingsManager.UpdateAsync(websiteSettings, input.PageTitle, input.PageDescription, input.PageLink, input.SetAsHomePage,
+            input.PageType.Value, input.TemplateType, input.GroupBuyModuleType, input.ProductCategoryId, input.ArticleHtml);
 
         return ObjectMapper.Map<WebsiteSettings, WebsiteSettingsDto>(websiteSettings);
     }

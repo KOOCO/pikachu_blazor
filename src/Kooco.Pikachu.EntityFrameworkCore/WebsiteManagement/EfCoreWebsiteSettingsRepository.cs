@@ -29,8 +29,7 @@ public class EfCoreWebsiteSettingsRepository(IDbContextProvider<PikachuDbContext
         var queryable = await GetQueryableAsync();
 
         return queryable
-            .WhereIf(!filter.IsNullOrWhiteSpace(), x => x.NotificationBar.Contains(filter)
-            || x.StoreTitle.Contains(filter) || x.Facebook.Contains(filter) || x.Instagram.Contains(filter)
-            || x.Line.Contains(filter));
+            .WhereIf(!filter.IsNullOrWhiteSpace(), x => x.PageTitle.Contains(filter)
+            || x.PageLink.Contains(filter) || (x.PageDescription != null && x.PageDescription.Contains(filter)));
     }
 }

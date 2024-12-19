@@ -72,7 +72,7 @@ public partial class EditWebsiteSettings
             var fileBytes = memoryStream.ToArray();
 
             LogoBase64 = Convert.ToBase64String(fileBytes);
-            EditingEntity.LogoName = file.Name;
+            //EditingEntity.LogoName = file.Name;
 
             await InvokeAsync(StateHasChanged);
         }
@@ -90,8 +90,8 @@ public partial class EditWebsiteSettings
             if (!LogoBase64.IsNullOrWhiteSpace())
             {
                 var bytes = Convert.FromBase64String(LogoBase64);
-                oldBlobName = EditingEntity.LogoUrl.ExtractFileName();
-                EditingEntity.LogoUrl = await ImageAppService.UploadImageAsync(EditingEntity.LogoName, bytes);
+                //oldBlobName = EditingEntity.LogoUrl.ExtractFileName();
+                //EditingEntity.LogoUrl = await ImageAppService.UploadImageAsync(EditingEntity.LogoName, bytes);
             }
 
             await WebsiteSettingsAppService.UpdateAsync(Id, EditingEntity);

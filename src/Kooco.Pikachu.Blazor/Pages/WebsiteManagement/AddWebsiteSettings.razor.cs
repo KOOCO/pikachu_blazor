@@ -69,8 +69,8 @@ public partial class AddWebsiteSettings
         {
             try
             {
-                SetItemList = await _setItemAppService.GetItemsLookupAsync();
-                ItemsList = await _itemAppService.GetItemsLookupAsync();
+                SetItemList = await SetItemAppService.GetItemsLookupAsync();
+                ItemsList = await ItemAppService.GetItemsLookupAsync();
                 ItemsList.AddRange(SetItemList);
                 ProductCategoryLookup = await ProductCategoryAppService.GetProductCategoryLookupAsync();
                 WebsiteBasicSettings = await WebsiteBasicSettingAppService.FirstOrDefaultAsync();
@@ -191,60 +191,68 @@ public partial class AddWebsiteSettings
                 }
             }
 
+            if (GroupPurchaseOverviewModules is { Count: > 0 })
+            {
+                NewEntity.OverviewModules ??= [];
+                foreach (GroupPurchaseOverviewDto overview in GroupPurchaseOverviewModules)
+                {
+                    NewEntity.OverviewModules.Add(new WebsiteSettingsOverviewModuleDto
+                    {
+                        Title = overview.Title,
+                        Image = overview.Image,
+                        SubTitle = overview.SubTitle,
+                        BodyText = overview.BodyText,
+                        IsButtonEnable = overview.IsButtonEnable,
+                        ButtonText = overview.ButtonText,
+                        ButtonLink = overview.ButtonLink
+                    });
+                    //await _GroupPurchaseOverviewAppService.CreateGroupPurchaseOverviewAsync(overview);
+                }
+            }
+
+            if (GroupBuyOrderInstructionModules is { Count: > 0 })
+            {
+                NewEntity.InstructionModules ??= [];
+                foreach (GroupBuyOrderInstructionDto im in GroupBuyOrderInstructionModules)
+                {
+                    NewEntity.InstructionModules.Add(new WebsiteSettingsInstructionModuleDto
+                    {
+                        Title = im.Title,
+                        Image = im.Image,
+                        BodyText = im.BodyText,
+                    });
+                    //await _GroupBuyOrderInstructionAppService.CreateGroupBuyOrderInstructionAsync(im);
+                }
+            }
+
+
+            if (ProductRankingCarouselModules is { Count: > 0 })
+            {
+                foreach (ProductRankingCarouselModule productRankingCarouselModule in ProductRankingCarouselModules)
+                {
+                    NewEntity.ProductRankingModules.Add(new WebsiteSettingsProductRankingModuleDto()
+                    {
+                        Title = productRankingCarouselModule.Title,
+                        SubTitle = productRankingCarouselModule.SubTitle,
+                        Content = productRankingCarouselModule.Content,
+                        ModuleNumber = ProductRankingCarouselModules.IndexOf(productRankingCarouselModule) + 1,
+                        Images = productRankingCarouselModule.Images
+                    });
+                }
+            }
+
             var result = await WebsiteSettingsAppService.CreateAsync(NewEntity);
 
             List<List<List<CreateImageDto>>> imageModules = [CarouselModules, BannerModules];
 
             IEnumerable<CreateImageDto> allImages = imageModules.SelectMany(module => module.SelectMany(images => images.Where(w => !w.ImageUrl.IsNullOrEmpty() && !w.BlobImageName.IsNullOrEmpty())));
 
-            //foreach (CreateImageDto image in allImages)
-            //{
-            //    image.TargetId = result.Id;
+            foreach (CreateImageDto image in allImages)
+            {
+                image.TargetId = result.Id;
 
-            //    await _imageAppService.CreateAsync(image);
-            //}
-
-            //if (GroupPurchaseOverviewModules is { Count: > 0 })
-            //{
-            //    foreach (GroupPurchaseOverviewDto groupPurchaseOverview in GroupPurchaseOverviewModules)
-            //    {
-            //        groupPurchaseOverview.GroupBuyId = result.Id;
-
-            //        await _GroupPurchaseOverviewAppService.CreateGroupPurchaseOverviewAsync(groupPurchaseOverview);
-            //    }
-            //}
-
-            //if (GroupBuyOrderInstructionModules is { Count: > 0 })
-            //{
-            //    foreach (GroupBuyOrderInstructionDto groupBuyOrderInstruction in GroupBuyOrderInstructionModules)
-            //    {
-            //        groupBuyOrderInstruction.GroupBuyId = result.Id;
-
-            //        await _GroupBuyOrderInstructionAppService.CreateGroupBuyOrderInstructionAsync(groupBuyOrderInstruction);
-            //    }
-            //}
-
-            //if (ProductRankingCarouselModules is { Count: > 0 })
-            //{
-            //    foreach (ProductRankingCarouselModule productRankingCarouselModule in ProductRankingCarouselModules)
-            //    {
-            //        foreach (CreateImageDto image in productRankingCarouselModule.Images)
-            //        {
-            //            image.TargetId = result.Id;
-
-            //            await _imageAppService.CreateAsync(image);
-            //        }
-
-            //        await _GroupBuyProductRankingAppService.CreateGroupBuyProductRankingAsync(new()
-            //        {
-            //            GroupBuyId = result.Id,
-            //            Title = productRankingCarouselModule.Title,
-            //            SubTitle = productRankingCarouselModule.SubTitle,
-            //            Content = productRankingCarouselModule.Content,
-            //            ModuleNumber = ProductRankingCarouselModules.IndexOf(productRankingCarouselModule) + 1
-            //        });
-            //    }
-            //}
+                await ImageAppService.CreateAsync(image);
+            }
 
             IsLoading = false;
             NavigateToWebsiteSettings();
@@ -641,7 +649,7 @@ public partial class AddWebsiteSettings
 
                     await stream.CopyToAsync(memoryStream);
                     memoryStream.Position = 0;
-                    var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
+                    var url = await ImageContainerManager.SaveAsync(newFileName, memoryStream);
 
                     int sortNo = carouselImages.LastOrDefault()?.SortNo ?? 0;
 
@@ -770,7 +778,7 @@ public partial class AddWebsiteSettings
 
                 await stream.CopyToAsync(memoryStream);
                 memoryStream.Position = 0;
-                var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
+                var url = await ImageContainerManager.SaveAsync(newFileName, memoryStream);
 
                 int sortNo = bannerImages[0].SortNo is 0 ? bannerImages[0].SortNo + 1 : 1;
 
@@ -836,7 +844,7 @@ public partial class AddWebsiteSettings
             bool confirmed = await Message.Confirm(L[PikachuDomainErrorCodes.AreYouSureToDeleteImage]);
             if (confirmed)
             {
-                await _imageContainerManager.DeleteAsync(blobImageName);
+                await ImageContainerManager.DeleteAsync(blobImageName);
 
                 if (imageType is ImageType.GroupBuyBannerImage)
                 {
@@ -975,7 +983,7 @@ public partial class AddWebsiteSettings
 
                 memoryStream.Position = 0;
 
-                string url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
+                string url = await ImageContainerManager.SaveAsync(newFileName, memoryStream);
 
                 module.Image = url;
 
@@ -1004,14 +1012,14 @@ public partial class AddWebsiteSettings
             {
                 if (item.ItemType == ItemType.Item)
                 {
-                    selectedItem.Item = await _itemAppService.GetAsync(item.Id, true);
+                    selectedItem.Item = await ItemAppService.GetAsync(item.Id, true);
                     selectedItem.Id = selectedItem.Item.Id;
                     selectedItem.Name = selectedItem.Item.ItemName;
                     selectedItem.ItemType = ItemType.Item;
                 }
                 if (item.ItemType == ItemType.SetItem)
                 {
-                    selectedItem.SetItem = await _setItemAppService.GetAsync(item.Id, true);
+                    selectedItem.SetItem = await SetItemAppService.GetAsync(item.Id, true);
                     selectedItem.Id = selectedItem.SetItem.Id;
                     selectedItem.Name = selectedItem.SetItem.SetItemName;
                     selectedItem.ItemType = ItemType.SetItem;
@@ -1042,14 +1050,14 @@ public partial class AddWebsiteSettings
             {
                 if (item.ItemType == ItemType.Item)
                 {
-                    selectedItem.Item = await _itemAppService.GetAsync(item.Id, true);
+                    selectedItem.Item = await ItemAppService.GetAsync(item.Id, true);
                     selectedItem.Id = selectedItem.Item.Id;
                     selectedItem.Name = selectedItem.Item.ItemName;
                     selectedItem.ItemType = ItemType.Item;
                 }
                 if (item.ItemType == ItemType.SetItem)
                 {
-                    selectedItem.SetItem = await _setItemAppService.GetAsync(item.Id, true);
+                    selectedItem.SetItem = await SetItemAppService.GetAsync(item.Id, true);
                     selectedItem.Id = selectedItem.SetItem.Id;
                     selectedItem.Name = selectedItem.SetItem.SetItemName;
                     selectedItem.ItemType = ItemType.SetItem;
@@ -1113,7 +1121,7 @@ public partial class AddWebsiteSettings
 
                 memoryStream.Position = 0;
 
-                string url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
+                string url = await ImageContainerManager.SaveAsync(newFileName, memoryStream);
 
                 module.Image = url;
 
@@ -1138,7 +1146,7 @@ public partial class AddWebsiteSettings
 
         if (confirmed)
         {
-            await _imageContainerManager.DeleteAsync(module.Image);
+            await ImageContainerManager.DeleteAsync(module.Image);
 
             module.Image = string.Empty;
 
@@ -1152,7 +1160,7 @@ public partial class AddWebsiteSettings
 
         if (confirmed)
         {
-            await _imageContainerManager.DeleteAsync(module.Image);
+            await ImageContainerManager.DeleteAsync(module.Image);
 
             module.Image = string.Empty;
 

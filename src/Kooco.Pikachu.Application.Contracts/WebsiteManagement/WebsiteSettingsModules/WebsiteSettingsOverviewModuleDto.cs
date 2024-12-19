@@ -1,11 +1,11 @@
 ﻿using System;
-using Volo.Abp.Domain.Entities;
 
-namespace Kooco.Pikachu.GroupPurchaseOverviews;
+namespace Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
 
-public class GroupPurchaseOverview : Entity<Guid>
+public class WebsiteSettingsOverviewModuleDto
 {
-    public Guid GroupBuyId { get; set; }
+    public Guid Id { get; set; }
+    public Guid WebsiteSettingsId { get; set; }
     public string Title { get; set; }
     public string Image { get; set; }
     public string? SubTitle { get; set; }
@@ -13,4 +13,5 @@ public class GroupPurchaseOverview : Entity<Guid>
     public bool IsButtonEnable { get; set; }
     public string? ButtonText { get; set; }
     public string? ButtonLink { get; set; }
+    public Guid? TenantId { get; set; }
 }
