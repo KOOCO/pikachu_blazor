@@ -1,3 +1,4 @@
+using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Images;
 using System;
 using System.Collections.Generic;
@@ -153,4 +154,6 @@ public class CreateUpdateSetItemDto
     public string? ItemCategory { get; set; }
 
     public List<CreateImageDto> Images { get; set; } = new();
+
+    public ItemStorageTemperature? ItemStorageTemperature { get; set; }
 }

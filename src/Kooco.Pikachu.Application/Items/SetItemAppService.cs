@@ -40,7 +40,8 @@ public class SetItemAppService : CrudAppService<SetItem, SetItemDto, Guid, Paged
             input.LimitAvaliableTimeStart,
             input.LimitAvaliableTimeEnd,
             input.ShareProfit,
-            input.IsFreeShipping
+            input.IsFreeShipping,
+            input.ItemStorageTemperature
             );
         setItem.GroupBuyPrice = input.GroupBuyPrice;
         if (input.SetItemDetails.Any())
@@ -98,6 +99,7 @@ public class SetItemAppService : CrudAppService<SetItem, SetItemDto, Guid, Paged
         setItem.LimitAvaliableTimeStart = input.LimitAvaliableTimeStart;
         setItem.LimitAvaliableTimeEnd = input.LimitAvaliableTimeEnd;
         setItem.ShareProfit = input.ShareProfit;
+        setItem.ItemStorageTemperature = input.ItemStorageTemperature;
 
         setItem.IsFreeShipping = input.IsFreeShipping;
         await _setItemRepository.EnsureCollectionLoadedAsync(setItem, x => x.SetItemDetails);
@@ -168,7 +170,10 @@ public class SetItemAppService : CrudAppService<SetItem, SetItemDto, Guid, Paged
     public async Task<SetItemDto> GetAsync(Guid id, bool includeDetails = false)
     {
         var setItem = await _setItemRepository.GetWithDetailsAsync(id);
-
+        if (setItem.SetItemMainImageURL.IsNullOrWhiteSpace())
+        {
+            setItem.SetItemMainImageURL = setItem.Images.FirstOrDefault()?.ImageUrl;
+        }
         return ObjectMapper.Map<SetItem, SetItemDto>(setItem);
     }
     public async Task<List<ItemWithItemTypeDto>> GetItemsLookupAsync()

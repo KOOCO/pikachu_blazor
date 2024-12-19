@@ -1,3 +1,4 @@
+using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Images;
 using System;
 using System.Collections.Generic;
@@ -132,4 +133,5 @@ public class SetItemDto : FullAuditedEntityDto<Guid>
     public bool IsSelected { get; set; } = false;
 
     public ICollection<ImageDto> Images { get; set; }
+    public ItemStorageTemperature? ItemStorageTemperature { get; set; }
 }

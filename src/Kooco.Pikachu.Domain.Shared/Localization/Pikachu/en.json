@@ -1099,6 +1099,7 @@
     "IfYouWantToModifyVisitTenantSettings": "Please go to tenant settings to modify the information.",
     "Link|Title": "Link | Title",
     "TemplateType": "Template Type",
-    "WebsiteBasicSettingsUpdated": "Website Basic Settings Updated!"
+    "WebsiteBasicSettingsUpdated": "Website Basic Settings Updated!",
+    "Pikachu:ItemStorageTemperatureCannotBeNull": "The field Item Storage Temperature is required."
   }
 }

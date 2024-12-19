@@ -1,3 +1,4 @@
+using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Images;
 using System;
 using System.Collections.Generic;
@@ -97,6 +98,7 @@ namespace Kooco.Pikachu.Items
         /// </summary>
         public string? ItemCategory { get; set; }
 
+        public ItemStorageTemperature? ItemStorageTemperature { get; set; }
 
         public SetItem()
         {
@@ -114,7 +116,8 @@ namespace Kooco.Pikachu.Items
             DateTime limitAvaliableTimeStart,
             DateTime limitAvaliableTimeEnd,
             int shareProfit,
-            bool isFreeShipping
+            bool isFreeShipping,
+            ItemStorageTemperature? itemStorageTemperature
         ) : base(id)
         {
             TenantId = tenantId;
@@ -128,6 +131,7 @@ namespace Kooco.Pikachu.Items
             LimitAvaliableTimeEnd = limitAvaliableTimeEnd;
             ShareProfit = shareProfit;
             IsFreeShipping = isFreeShipping;
+            ItemStorageTemperature = itemStorageTemperature;
             SetItemDetails = new List<SetItemDetails>();
             Images = new List<Image>();
         }
