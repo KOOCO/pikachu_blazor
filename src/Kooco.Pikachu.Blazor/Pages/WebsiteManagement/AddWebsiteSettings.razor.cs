@@ -18,6 +18,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Kooco.Pikachu.Extensions;
+using Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
+using Kooco.Pikachu.GroupBuyOrderInstructions.Interface;
+using Kooco.Pikachu.GroupPurchaseOverviews.Interface;
 
 namespace Kooco.Pikachu.Blazor.Pages.WebsiteManagement;
 
@@ -71,7 +74,7 @@ public partial class AddWebsiteSettings
                 ItemsList.AddRange(SetItemList);
                 ProductCategoryLookup = await ProductCategoryAppService.GetProductCategoryLookupAsync();
                 WebsiteBasicSettings = await WebsiteBasicSettingAppService.FirstOrDefaultAsync();
-                NewEntity.GroupBuyTemplateType = WebsiteBasicSettings?.TemplateType;
+                NewEntity.TemplateType = WebsiteBasicSettings?.TemplateType;
             }
             catch (Exception ex)
             {
@@ -87,37 +90,178 @@ public partial class AddWebsiteSettings
 
     async Task CreateAsync()
     {
-        var validate = await ValidationsRef.ValidateAll();
-        if (!validate)
-        {
-            return;
-        }
-
-        validate = await ValidatePageType();
-        if (!validate)
-        {
-            return;
-        }
-
         try
         {
+            if (!await ValidationsRef.ValidateAll() || !await ValidatePageType())
+            {
+                return;
+            }
+
             IsLoading = true;
 
-            //await WebsiteSettingsAppService.CreateAsync(NewEntity);
-            //NavigateToWebsiteSettings();
+            foreach (var item in CollapseItem)
+            {
+                if (item.Selected.Any(s => s.Id == Guid.Empty && item.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor && s.Name.IsNullOrEmpty()))
+                {
+                    await Message.Error(L[PikachuDomainErrorCodes.GroupBuyModuleCannotBeEmpty]);
+                    return;
+                }
+
+                int j = 1;
+                if (item.Selected.Count != 0)
+                {
+                    UpdateWebsiteSettingsModuleDto itemGroup = new();
+
+                    if (item.GroupBuyModuleType is GroupBuyModuleType.ProductGroupModule)
+                    {
+                        itemGroup = new()
+                        {
+                            SortOrder = item.SortOrder,
+                            GroupBuyModuleType = item.GroupBuyModuleType,
+                            ProductGroupModuleTitle = item.ProductGroupModuleTitle,
+                            ProductGroupModuleImageSize = item.ProductGroupModuleImageSize
+                        };
+                    }
+
+                    else
+                    {
+                        itemGroup = new()
+                        {
+                            SortOrder = item.SortOrder,
+                            GroupBuyModuleType = item.GroupBuyModuleType
+                        };
+                    }
+
+                    foreach (var itemDetail in item.Selected)
+                    {
+                        if (itemDetail.Id != Guid.Empty || (item.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor && !itemDetail.Name.IsNullOrEmpty()))
+                        {
+                            itemGroup.ModuleItems.Add(new UpdateWebsiteSettingsModuleItemDto
+                            {
+                                SortOrder = j++,
+                                ItemId = itemDetail.ItemType == ItemType.Item && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
+                                SetItemId = itemDetail.ItemType == ItemType.SetItem && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
+                                ItemType = itemDetail.ItemType,
+                                DisplayText = itemGroup.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor ? itemDetail.Name : null
+                            });
+                        }
+                    }
+
+                    NewEntity.Modules.Add(itemGroup);
+                }
+
+                if (item.GroupBuyModuleType is GroupBuyModuleType.CarouselImages ||
+                    item.GroupBuyModuleType is GroupBuyModuleType.BannerImages ||
+                    item.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview ||
+                    item.GroupBuyModuleType is GroupBuyModuleType.CountdownTimer ||
+                    item.GroupBuyModuleType is GroupBuyModuleType.OrderInstruction ||
+                    item.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
+                {
+                    UpdateWebsiteSettingsModuleDto itemGroup = new()
+                    {
+                        SortOrder = item.SortOrder,
+                        GroupBuyModuleType = item.GroupBuyModuleType,
+                        AdditionalInfo = item.AdditionalInfo,
+                        ModuleNumber = item.ModuleNumber
+                    };
+
+                    if (item.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule &&
+                        ProductRankingCarouselModules is { Count: > 0 })
+                    {
+                        foreach (ProductRankingCarouselModule module in ProductRankingCarouselModules)
+                        {
+                            foreach (ItemWithItemTypeDto itemDetail in module.Selected)
+                            {
+                                if (itemDetail.Id == Guid.Empty) continue;
+
+                                itemGroup.ModuleItems.Add(new UpdateWebsiteSettingsModuleItemDto
+                                {
+                                    SortOrder = j++,
+                                    ItemId = itemDetail.ItemType is ItemType.Item && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
+                                    SetItemId = itemDetail.ItemType == ItemType.SetItem && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
+                                    ItemType = itemDetail.ItemType,
+                                    DisplayText = itemGroup.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor ? itemDetail.Name : null,
+                                    ModuleNumber = ProductRankingCarouselModules.IndexOf(module) + 1
+                                });
+                            }
+                        }
+                    }
+
+                    NewEntity.Modules.Add(itemGroup);
+                }
+            }
+
+            var result = await WebsiteSettingsAppService.CreateAsync(NewEntity);
+
+            List<List<List<CreateImageDto>>> imageModules = [CarouselModules, BannerModules];
+
+            IEnumerable<CreateImageDto> allImages = imageModules.SelectMany(module => module.SelectMany(images => images.Where(w => !w.ImageUrl.IsNullOrEmpty() && !w.BlobImageName.IsNullOrEmpty())));
+
+            //foreach (CreateImageDto image in allImages)
+            //{
+            //    image.TargetId = result.Id;
+
+            //    await _imageAppService.CreateAsync(image);
+            //}
+
+            //if (GroupPurchaseOverviewModules is { Count: > 0 })
+            //{
+            //    foreach (GroupPurchaseOverviewDto groupPurchaseOverview in GroupPurchaseOverviewModules)
+            //    {
+            //        groupPurchaseOverview.GroupBuyId = result.Id;
+
+            //        await _GroupPurchaseOverviewAppService.CreateGroupPurchaseOverviewAsync(groupPurchaseOverview);
+            //    }
+            //}
+
+            //if (GroupBuyOrderInstructionModules is { Count: > 0 })
+            //{
+            //    foreach (GroupBuyOrderInstructionDto groupBuyOrderInstruction in GroupBuyOrderInstructionModules)
+            //    {
+            //        groupBuyOrderInstruction.GroupBuyId = result.Id;
+
+            //        await _GroupBuyOrderInstructionAppService.CreateGroupBuyOrderInstructionAsync(groupBuyOrderInstruction);
+            //    }
+            //}
+
+            //if (ProductRankingCarouselModules is { Count: > 0 })
+            //{
+            //    foreach (ProductRankingCarouselModule productRankingCarouselModule in ProductRankingCarouselModules)
+            //    {
+            //        foreach (CreateImageDto image in productRankingCarouselModule.Images)
+            //        {
+            //            image.TargetId = result.Id;
+
+            //            await _imageAppService.CreateAsync(image);
+            //        }
+
+            //        await _GroupBuyProductRankingAppService.CreateGroupBuyProductRankingAsync(new()
+            //        {
+            //            GroupBuyId = result.Id,
+            //            Title = productRankingCarouselModule.Title,
+            //            SubTitle = productRankingCarouselModule.SubTitle,
+            //            Content = productRankingCarouselModule.Content,
+            //            ModuleNumber = ProductRankingCarouselModules.IndexOf(productRankingCarouselModule) + 1
+            //        });
+            //    }
+            //}
 
             IsLoading = false;
+            NavigateToWebsiteSettings();
         }
         catch (Exception ex)
         {
-            IsLoading = false;
             await HandleErrorAsync(ex);
+        }
+        finally
+        {
+            IsLoading = false;
         }
     }
 
     async Task<bool> ValidatePageType()
     {
-        if (NewEntity.WebsitePageType == WebsitePageType.ProductListPage)
+        if (NewEntity.PageType == WebsitePageType.ProductListPage)
         {
             if (!NewEntity.ProductCategoryId.HasValue)
             {
@@ -125,7 +269,8 @@ public partial class AddWebsiteSettings
                 return false;
             }
         }
-        if (NewEntity.WebsitePageType == WebsitePageType.ArticlePage)
+
+        if (NewEntity.PageType == WebsitePageType.ArticlePage)
         {
             var articleHtml = await ArticlePageHtml?.GetHTML();
             if (articleHtml.IsEmptyOrDefaultQuillHtml())
@@ -135,9 +280,10 @@ public partial class AddWebsiteSettings
             }
             NewEntity.ArticleHtml = articleHtml;
         }
-        if (NewEntity.WebsitePageType == WebsitePageType.CustomPage)
+
+        if (NewEntity.PageType == WebsitePageType.CustomPage)
         {
-            if (!NewEntity.SelectedGroupBuyModuleType.HasValue)
+            if (CollapseItem.Count == 0)
             {
                 await Message.Error("The field Page Type Module is required.");
                 return false;
@@ -153,13 +299,13 @@ public partial class AddWebsiteSettings
                 {
                     if (groupBuyOrderInstruction.Title.IsNullOrEmpty())
                     {
-                        await Message.Error("Title Cannot be empty in Group Purchase Overview Module");
+                        await Message.Error("The field Title is required in Group Purchase Overview Module.");
                         return false;
                     }
 
                     if (groupBuyOrderInstruction.Image.IsNullOrEmpty())
                     {
-                        await Message.Error("Please Add Image in Group Purchase Overview Module");
+                        await Message.Error("The field Image is required in Group Purchase Overview Module.");
                         return false;
                     }
                 }
@@ -170,13 +316,13 @@ public partial class AddWebsiteSettings
                 {
                     if (productRankingCarouselModule.Title.IsNullOrEmpty())
                     {
-                        await Message.Error("Title Cannot be empty in Group Purchase Overview Module");
+                        await Message.Error("The field Title is required in Group Purchase Overview Module.");
                         return false;
                     }
 
                     if (productRankingCarouselModule.SubTitle.IsNullOrEmpty())
                     {
-                        await Message.Error("SubTitle Cannot be empty in Group Purchase Overview Module");
+                        await Message.Error("The field SubTitle is required in Group Purchase Overview Module.");
                         return false;
                     }
                 }
@@ -186,15 +332,10 @@ public partial class AddWebsiteSettings
         return true;
     }
 
-    async Task WebsitePageTypeChanged(WebsitePageType? websitePageType)
-    {
-        NewEntity.WebsitePageType = websitePageType;
-    }
-
     void AddProductItem(GroupBuyModuleType? moduleType)
     {
         if (!moduleType.HasValue) return;
-        NewEntity.SelectedGroupBuyModuleType = null;
+        NewEntity.GroupBuyModuleType = null;
         var groupBuyModuleType = moduleType.Value;
         if (CollapseItem.Count >= 20)
         {
@@ -371,9 +512,9 @@ public partial class AddWebsiteSettings
 
         List<GroupBuyModuleType> templateModules = new();
 
-        if (NewEntity.GroupBuyTemplateType == GroupBuyTemplateType.PikachuOne) templateModules = [.. GroupBuyExtensions.GetPikachuOneList()];
+        if (NewEntity.TemplateType == GroupBuyTemplateType.PikachuOne) templateModules = [.. GroupBuyExtensions.GetPikachuOneList()];
 
-        else if (NewEntity.GroupBuyTemplateType == GroupBuyTemplateType.PikachuTwo) templateModules = [.. GroupBuyExtensions.GetPikachuTwoList()];
+        else if (NewEntity.TemplateType == GroupBuyTemplateType.PikachuTwo) templateModules = [.. GroupBuyExtensions.GetPikachuTwoList()];
 
         if (templateModules is { Count: > 0 })
         {

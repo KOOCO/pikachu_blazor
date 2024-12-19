@@ -1,4 +1,6 @@
-﻿using Kooco.Pikachu.Permissions;
+﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Permissions;
+using Kooco.Pikachu.Validators;
 using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
@@ -16,11 +18,9 @@ public class WebsiteSettingsAppService(IWebsiteSettingsRepository websiteSetting
     public async Task<WebsiteSettingsDto> CreateAsync(CreateWebsiteSettingsDto input)
     {
         Check.NotNull(input, nameof(input));
-        //if (!Enum.IsDefined(typeof(WebsiteTitleDisplayOptions), input.TitleDisplayOption))
-        //{
-        //    throw new InvalidEnumValueException(nameof(input.TitleDisplayOption));
-        //}
-
+        MyCheck.NotDefaultOrNull<WebsitePageType>(input.PageType, nameof(input.PageType));
+        MyCheck.NotDefaultOrNull<GroupBuyTemplateType>(input.TemplateType, nameof(input.TemplateType));
+        
         //var websiteSettings = await websiteSettingsManager.CreateAsync(input.PageTitle, input.LogoName, input.LogoUrl, input.PageDescription,
         //    input.TitleDisplayOption!.Value, input.Facebook, input.Instagram, input.Line, input.ReturnExchangePolicy);
 

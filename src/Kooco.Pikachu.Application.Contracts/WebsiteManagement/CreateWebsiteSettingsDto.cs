@@ -1,5 +1,7 @@
 ﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Kooco.Pikachu.WebsiteManagement;
@@ -21,15 +23,17 @@ public class CreateWebsiteSettingsDto
     public bool SetAsHomePage { get; set; }
 
     [Required]
-    public WebsitePageType? WebsitePageType { get; set; }
+    public WebsitePageType? PageType { get; set; }
 
     [Required]
-    public GroupBuyTemplateType? GroupBuyTemplateType { get; set; }
+    public GroupBuyTemplateType? TemplateType { get; set; }
 
     [Required]
-    public GroupBuyModuleType? SelectedGroupBuyModuleType { get; set; }
+    public GroupBuyModuleType? GroupBuyModuleType { get; set; }
 
     public Guid? ProductCategoryId { get; set; }
 
     public string? ArticleHtml { get; set; }
+
+    public List<UpdateWebsiteSettingsModuleDto> Modules { get; set; } = [];
 }

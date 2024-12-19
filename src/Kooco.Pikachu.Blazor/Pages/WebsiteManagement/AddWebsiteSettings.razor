@@ -87,16 +87,9 @@
                     </Column>
                     <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
                         <Field>
-                            <Select TValue="WebsitePageType?" SelectedValue="NewEntity.WebsitePageType" SelectedValueChanged="WebsitePageTypeChanged">
-                                <SelectItem Value="(WebsitePageType?)null"></SelectItem>
-                                @foreach (WebsitePageType type in Enum.GetValues(typeof(WebsitePageType)))
-                                {
-                                    <SelectItem Value="type">@L["Enum:WebsitePageType." + (int)type]</SelectItem>
-                                }
-                            </Select>
                             <Validation MessageLocalizer="@LH.Localize">
                                 <Field>
-                                    <Select TValue="WebsitePageType?" @bind-SelectedValue="NewEntity.WebsitePageType" Class="invisible-input">
+                                    <Select TValue="WebsitePageType?" @bind-SelectedValue="NewEntity.PageType">
                                         <Feedback>
                                             <ValidationError />
                                         </Feedback>
@@ -114,11 +107,11 @@
                     </Column>
                 </Row>
             </Validations>
-            @if (NewEntity.WebsitePageType.HasValue)
+            @if (NewEntity.PageType.HasValue)
             {
                 <Divider Class="border-0"></Divider>
             }
-            @if (NewEntity.WebsitePageType == WebsitePageType.ProductListPage)
+            @if (NewEntity.PageType == WebsitePageType.ProductListPage)
             {
                 <Row>
                     <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
@@ -143,7 +136,7 @@
                     </Column>
                 </Row>
             }
-            @if (NewEntity.WebsitePageType == WebsitePageType.ArticlePage)
+            @if (NewEntity.PageType == WebsitePageType.ArticlePage)
             {
                 <Row Class="mb-5">
                     <Column ColumnSize="ColumnSize.Is3">
@@ -187,12 +180,12 @@
                     </Column>
                 </Row>
             }
-            @if (NewEntity.WebsitePageType == WebsitePageType.CustomPage)
+            @if (NewEntity.PageType == WebsitePageType.CustomPage)
             {
                 <Row>
                     <Column ColumnSize="ColumnSize.Is3">
                         <Field>
-                            <Select TValue="GroupBuyTemplateType?" @bind-SelectedValue="NewEntity.GroupBuyTemplateType" Disabled>
+                            <Select TValue="GroupBuyTemplateType?" @bind-SelectedValue="NewEntity.TemplateType" Disabled>
                                 <SelectItem Value="(GroupBuyTemplateType?)null"></SelectItem>
                                 @foreach (GroupBuyTemplateType value in Enum.GetValues<GroupBuyTemplateType>())
                                 {
@@ -202,11 +195,11 @@
                         </Field>
                     </Column>
                     <Column ColumnSize="ColumnSize.Is9">
-                        <Select TValue="GroupBuyModuleType?" SelectedValue="NewEntity.SelectedGroupBuyModuleType" SelectedValueChanged="(e) => AddProductItem(e)">
+                        <Select TValue="GroupBuyModuleType?" SelectedValue="NewEntity.GroupBuyModuleType" SelectedValueChanged="(e) => AddProductItem(e)">
                             <SelectItem Value="(GroupBuyModuleType?)null">
                                 @L["SelectModule"]
                             </SelectItem>
-                            @if (NewEntity.GroupBuyTemplateType == GroupBuyTemplateType.PikachuOne)
+                            @if (NewEntity.TemplateType == GroupBuyTemplateType.PikachuOne)
                             {
                                 @foreach (GroupBuyModuleType module in GroupBuyExtensions.GetPikachuOneList())
                                 {
@@ -215,7 +208,7 @@
                                     </SelectItem>
                                 }
                             }
-                            @if (NewEntity.GroupBuyTemplateType == GroupBuyTemplateType.PikachuTwo)
+                            @if (NewEntity.TemplateType == GroupBuyTemplateType.PikachuTwo)
                             {
                                 @foreach (GroupBuyModuleType module in GroupBuyExtensions.GetPikachuTwoList())
                                 {
@@ -241,7 +234,7 @@
 
                                                 @if (module.IsWarnedForInCompatible)
                                                 {
-                                                    <Tooltip Text="@($"Incompatible Module for {L[NewEntity.GroupBuyTemplateType.ToString()]}")"
+                                                    <Tooltip Text="@($"Incompatible Module for {L[NewEntity.TemplateType.ToString()]}")"
                                                              TriggerTargetId="tooltip-custom-target"
                                                              Inline
                                                              Style="margin-left: 5px;">
@@ -915,10 +908,10 @@
                                             <div class="row mt-2">
                                                 @if (module.GroupBuyModuleType is GroupBuyModuleType.ProductGroupModule)
                                                 {
-                                                    <Div Class="col-md-6 text-left mb-3">
+                                                    <Div Class="col-md-8 text-left mb-3">
                                                         <InputText class="form-control" @bind-Value="module.ProductGroupModuleTitle" />
                                                     </Div>
-                                                    <Div Class="col-md-6 text-right mb-3">
+                                                    <Div Class="col-md-4 text-right mb-3">
                                                         <Select TValue="string" @onchange=@((e) => module.ProductGroupModuleImageSize = e.Value.ToString())>
                                                             <option value="">@L["SelectStyle"] </option>
                                                             <option value="SmallImage">@L["SmallImage"]</option>
