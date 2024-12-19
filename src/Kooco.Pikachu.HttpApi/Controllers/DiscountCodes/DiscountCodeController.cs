@@ -2,6 +2,7 @@
 using Kooco.Pikachu.DiscountCodes;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Items.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,7 @@ namespace Kooco.Pikachu.Controllers.DiscountCodes
     public class DiscountCodeController(IDiscountCodeAppService discountCodeAppService) : PikachuController, IDiscountCodeAppService
     {
         [HttpPost("check-for-discount")]
+        [AllowAnonymous]
         public Task<DiscountCheckOutputDto> CheckDiscountCodeAsync(DiscountCheckInputDto input)
         {
             return discountCodeAppService.CheckDiscountCodeAsync(input);

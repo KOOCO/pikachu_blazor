@@ -78,7 +78,7 @@ namespace Kooco.Pikachu.DiscountCodes
             await discountCodeRepository.UpdateAsync(discountCode);
             return;
         }
-
+        [AllowAnonymous]
         public async Task<DiscountCheckOutputDto> CheckDiscountCodeAsync(DiscountCheckInputDto input)
         {
             var discount = await discountCodeRepository
