@@ -10,6 +10,8 @@ namespace Kooco.Pikachu.DiscountCodes
     
     public class DiscountCheckOutputDto
     {
+		public string ProductsScope { get; set; }
+		public Guid[] ProductIds { get; set; }
         public string DiscountType { get; set; }
         public int? DiscountAmount { get; set; }
         public int? DiscountPercentage { get; set; }

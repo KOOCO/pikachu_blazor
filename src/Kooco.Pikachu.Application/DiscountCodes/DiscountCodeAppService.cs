@@ -98,6 +98,8 @@ namespace Kooco.Pikachu.DiscountCodes
                 return new DiscountCheckOutputDto { ErrorMessage = "DiscountClosed" };
             }
             await discountCodeRepository.EnsureCollectionLoadedAsync(discount, x => x.DiscountSpecificGroupbuys);
+            await discountCodeRepository.EnsureCollectionLoadedAsync(discount, x => x.DiscountSpecificProducts);
+          
             if (discount.GroupbuysScope == "AllGroupbuys" ||
                 discount.DiscountSpecificGroupbuys.Any(g => g.GroupbuyId == input.GroupbuyId))
             {
@@ -105,6 +107,12 @@ namespace Kooco.Pikachu.DiscountCodes
                 {
                     DiscountType = discount.DiscountMethod
                 };
+                output.ProductsScope = discount.ProductsScope;
+                if (discount.ProductsScope == "SpecificProducts")
+                {
+                    output.ProductIds = discount.DiscountSpecificProducts.Select(x => x.ProductId).ToArray();
+                
+                }
                 if (discount.DiscountAmount.HasValue&& discount.DiscountAmount>0)
                 {
                     output.DiscountAmount = discount.DiscountAmount;
