@@ -9,7 +9,7 @@ namespace Kooco.Pikachu.ElectronicInvoiceSettings
     public interface IElectronicInvoiceAppService:IApplicationService
     {
 
-         Task CreateInvoiceAsync(Guid orderId);
+         Task<string> CreateInvoiceAsync(Guid orderId);
         Task CreateVoidInvoiceAsync(Guid orderId,string reason);
         Task CreateCreditNoteAsync(Guid orderId);
     }
