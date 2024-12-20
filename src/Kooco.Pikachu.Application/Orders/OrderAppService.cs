@@ -1042,7 +1042,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
         order.CancellationDate = DateTime.Now;
 
         await _orderRepository.UpdateAsync(order);
-        if (status == ShippingStatus.Delivered)
+		await UnitOfWorkManager.Current.SaveChangesAsync();
+		await SendEmailAsync(order.Id);
+		var returnResult= ObjectMapper.Map<Order, OrderDto>(order);
+		if (status == ShippingStatus.Delivered)
         {
             var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
             if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.Delivered)
@@ -1055,9 +1058,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
                     if (invoiceDely == 0)
                     {
-                       await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
-                        
-                    }
+                       var result= await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+                        returnResult.InvoiceMsg=result;
+
+
+					}
                     else
                     {
                         var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
@@ -1068,10 +1073,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
 
         }
-        await UnitOfWorkManager.Current.SaveChangesAsync();
-        await SendEmailAsync(order.Id);
-        return ObjectMapper.Map<Order, OrderDto>(order);
-    }
+        return returnResult;
+
+
+	}
     public async Task RefundAmountAsync(double amount, Guid OrderId)
     {
         Order ord = await _orderRepository.GetWithDetailsAsync(OrderId);
@@ -1522,7 +1527,21 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         await _orderRepository.UpdateAsync(order);
         await UnitOfWorkManager.Current.SaveChangesAsync();
-        var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+		await _emailAppService.SendLogisticsEmailAsync(new OrderDeliveryDto
+		{
+			DeliveryMethod = 0,
+			ActualDeliveryMethod = 0,
+			DeliveryStatus = 0,
+			AllPayLogisticsID = "",
+			Editor = "",
+			DeliveryNo = "",
+			OrderId = order.Id
+
+
+		});
+		await SendEmailAsync(order.Id);
+		var returnOrder= ObjectMapper.Map<Order, OrderDto>(order);
+		var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
         if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.Shipped)
         {
             if (order.GroupBuy.IssueInvoice)
@@ -1532,7 +1551,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
                 if (invoiceDely == 0)
                 {
-                    await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+                    string result= await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+
+                    returnOrder.InvoiceMsg = result;
                 }
                 else
                 {
@@ -1542,21 +1563,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 }
             }
         }
+        return returnOrder;
         // await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
-        await _emailAppService.SendLogisticsEmailAsync(new OrderDeliveryDto
-        {
-            DeliveryMethod = 0,
-            ActualDeliveryMethod = 0,
-            DeliveryStatus = 0,
-            AllPayLogisticsID = "",
-            Editor = "",
-            DeliveryNo = "",
-            OrderId = order.Id
-
-
-        });
-        await SendEmailAsync(order.Id);
-        return ObjectMapper.Map<Order, OrderDto>(order);
+ 
     }
     public async Task<OrderDto> OrderToBeShipped(Guid id)
     {
@@ -1568,7 +1577,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         await _orderRepository.UpdateAsync(order);
         await UnitOfWorkManager.Current.SaveChangesAsync();
-        var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+		await SendEmailAsync(order.Id);
+		var returnOrder= ObjectMapper.Map<Order, OrderDto>(order);
+		var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
         if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
         {
             if (order.GroupBuy.IssueInvoice)
@@ -1578,7 +1589,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
                 if (invoiceDely == 0)
                 {
-                    await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+                     var result= await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+                    returnOrder.InvoiceMsg = result;
                 }
                 else
                 {
@@ -1589,8 +1601,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
         }
         // await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
-        await SendEmailAsync(order.Id);
-        return ObjectMapper.Map<Order, OrderDto>(order);
+        return returnOrder; 
+      
     }
     public async Task<OrderDto> OrderClosed(Guid id)
     {
@@ -1614,8 +1626,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
         order.CompletionTime = DateTime.Now;
 
         await _orderRepository.UpdateAsync(order);
-
-        var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+		await UnitOfWorkManager.Current.SaveChangesAsync();
+		await SendEmailAsync(order.Id);
+		var returnResult= ObjectMapper.Map<Order, OrderDto>(order);
+		var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
         if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.Completed)
         {
             if (order.GroupBuy.IssueInvoice)
@@ -1626,9 +1640,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
                 if (invoiceDely == 0)
                 {
-                    await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+                    var result= await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+                    returnResult.InvoiceMsg = result;
 
-                }
+				}
                 else
                 {
                     var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
@@ -1637,9 +1652,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 }
             }
         }
-        await UnitOfWorkManager.Current.SaveChangesAsync();
-        await SendEmailAsync(order.Id);
-        return ObjectMapper.Map<Order, OrderDto>(order);
+        return returnResult;
+        
     }
     private async Task SendEmailAsync(Guid id, OrderStatus? orderStatus = null)
     {
@@ -1811,7 +1825,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     }
 
     [AllowAnonymous]
-    public async Task HandlePaymentAsync(PaymentResult paymentResult)
+    public async Task<string> HandlePaymentAsync(PaymentResult paymentResult)
     {
         if (paymentResult.SimulatePaid is 0)
         {
@@ -1905,7 +1919,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 }
 
                 await _orderRepository.UpdateAsync(order);
-                await UnitOfWorkManager.Current.SaveChangesAsync();
+				await SendEmailAsync(order.Id);
+				await UnitOfWorkManager.Current.SaveChangesAsync();
 
                 if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.Processing)
                 {
@@ -1916,8 +1931,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
                         if (invoiceDely == 0)
                         {
-                            await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
-                        }
+                          string invoiceMsg=  await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+							await _orderRepository.UpdateAsync(order);
+							await UnitOfWorkManager.Current.SaveChangesAsync();
+                            return invoiceMsg;
+						}
                         else
                         {
                             var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
@@ -1926,11 +1944,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         }
                     }
                 }
-                await _orderRepository.UpdateAsync(order);
-                await UnitOfWorkManager.Current.SaveChangesAsync();
-                await SendEmailAsync(order.Id);
+
+                return "";
             }
         }
+        return "";
     }
 
     [AllowAnonymous]

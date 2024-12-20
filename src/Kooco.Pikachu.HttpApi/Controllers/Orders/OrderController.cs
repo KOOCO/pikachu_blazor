@@ -433,7 +433,7 @@ public class OrderController : AbpController, IOrderAppService
     }
 
     [HttpPost("handle-payment")]
-    public Task HandlePaymentAsync(PaymentResult paymentResult)
+    public Task<string> HandlePaymentAsync(PaymentResult paymentResult)
     {
         return _ordersAppService.HandlePaymentAsync(paymentResult);
     }
@@ -610,5 +610,7 @@ public class OrderController : AbpController, IOrderAppService
     {
         throw new NotImplementedException();
     }
-    #endregion
+
+	
+	#endregion
 }
