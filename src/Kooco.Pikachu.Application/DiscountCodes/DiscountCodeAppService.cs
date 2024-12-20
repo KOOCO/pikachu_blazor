@@ -119,7 +119,7 @@ namespace Kooco.Pikachu.DiscountCodes
                      
                         break;
 
-                    case "RequireSpending":
+                    case "RequireSpendings":
                         output.MinimumSpendAmount = discount.MinimumSpendAmount;
                         break;
 
