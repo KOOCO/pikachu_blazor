@@ -1989,7 +1989,11 @@ public partial class OrderDetails
             {
                 PaymentResult paymentResult = new();
                 paymentResult.OrderId = Order.Id;
-                await _orderAppService.HandlePaymentAsync(paymentResult);
+                var msg= await _orderAppService.HandlePaymentAsync(paymentResult);
+                if (!msg.IsNullOrWhiteSpace())
+                {
+					await _uiMessageService.Error(msg);
+				}
                 await GetOrderDetailsAsync();
                 await OnInitializedAsync();
                 StateHasChanged();
@@ -1999,24 +2003,36 @@ public partial class OrderDetails
             else if (selectedValue is ShippingStatus.ToBeShipped)
             {
 
-                await _orderAppService.OrderToBeShipped(Order.Id);
-                await GetOrderDetailsAsync();
+                var result= await _orderAppService.OrderToBeShipped(Order.Id);
+				if (!result.InvoiceMsg.IsNullOrWhiteSpace())
+				{
+					await _uiMessageService.Error(result.InvoiceMsg);
+				}
+				await GetOrderDetailsAsync();
                 await base.OnInitializedAsync();
                 await loading.Hide();
 
             }
             else if (selectedValue is ShippingStatus.Shipped)
             {
-                await _orderAppService.OrderShipped(Order.Id);
-                await GetOrderDetailsAsync();
+                var result= await _orderAppService.OrderShipped(Order.Id);
+				if (!result.InvoiceMsg.IsNullOrWhiteSpace())
+				{
+					await _uiMessageService.Error(result.InvoiceMsg);
+				}
+				await GetOrderDetailsAsync();
                 await base.OnInitializedAsync();
                 await loading.Hide();
 
             }
             else if (selectedValue is ShippingStatus.Completed)
             {
-                await _orderAppService.OrderComplete(Order.Id);
-                await GetOrderDetailsAsync();
+				var result = await _orderAppService.OrderComplete(Order.Id);
+				if (!result.InvoiceMsg.IsNullOrWhiteSpace())
+				{
+					await _uiMessageService.Error(result.InvoiceMsg);
+				}
+				await GetOrderDetailsAsync();
                 await base.OnInitializedAsync();
                 await loading.Hide();
             }
@@ -2028,8 +2044,12 @@ public partial class OrderDetails
                 await loading.Hide();
             }
             else {
-                await _orderAppService.ChangeOrderStatus(Order.Id,selectedValue);
-                await GetOrderDetailsAsync();
+				var result = await _orderAppService.ChangeOrderStatus(Order.Id,selectedValue);
+				if (!result.InvoiceMsg.IsNullOrWhiteSpace())
+				{
+					await _uiMessageService.Error(result.InvoiceMsg);
+				}
+				await GetOrderDetailsAsync();
                 await base.OnInitializedAsync();
                 await loading.Hide();
 
