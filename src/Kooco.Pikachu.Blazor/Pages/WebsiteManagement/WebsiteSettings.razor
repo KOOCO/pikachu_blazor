@@ -1,171 +1,181 @@
 ﻿@page "/Website-Settings"
+@using Kooco.Pikachu.EnumValues
 @using Kooco.Pikachu.Images
 @using Kooco.Pikachu.Localization
 @using Kooco.Pikachu.Permissions
+@using Kooco.Pikachu.ProductCategories
 @using Kooco.Pikachu.WebsiteManagement
 @using Volo.Abp.AspNetCore.Components.Notifications
 @using Volo.Abp.AspNetCore.Components.Web
 @attribute [Authorize(PikachuPermissions.WebsiteManagement.WebsiteSettings.Default)]
 @inherits PikachuComponentBase
 @inject IWebsiteSettingsAppService WebsiteSettingsAppService
+@inject IProductCategoryAppService ProductCategoryAppService
 @inject NavigationManager NavigationManager
-@inject IUiNotificationService UiNotificationService
-@inject IImageAppService ImageAppService
-@inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
 
 <Row>
     <Column ColumnSize="ColumnSize.Is6">
-        <h3>@L["WebsiteSettings"]</h3>
+        <h3 class="text-dark">@L["WebsiteSettings"]</h3>
     </Column>
     <Column ColumnSize="ColumnSize.Is6" Class="text-end">
-        <PikachuButton Class="pk-btn-sm pk-btn-primary" Clicked="@(() => NavigationManager.NavigateTo("/Website-Settings/Create"))">
-            <Icon Name="IconName.Add"></Icon>
-            @L["AddNew"]
-        </PikachuButton>
+        @if (CanCreateWebsiteSettings)
+        {
+            <PikachuButton Class="pk-btn-sm pk-btn-primary" Clicked="@(() => NavigationManager.NavigateTo("/Website-Settings/Create"))">
+                <Icon Name="IconName.Add"></Icon>
+                @L["AddNew"]
+            </PikachuButton>
+        }
     </Column>
 </Row>
-@* <Div Class="rounded-cards website-settings">
-    <Card>
-        <CardBody>
-            <Validations @ref="@ValidationsRef" Model="@NewEntity" ValidateOnLoad="false">
-                <Row>
-                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
-                        <h4>@L["WebsiteSettings"]</h4>
-                        @if (LogoBase64 != null)
+<Card>
+    <CardBody>
+        <Row>
+            <Column ColumnSize="ColumnSize.Is10">
+                <Div Class="input-group search-group">
+                    <TextEdit @bind-Text="Filters.Filter" />
+                    <Button Color="Color.Primary" Clicked="ApplyFilters">
+                        <Icon Class="fas fa-search"></Icon>
+                    </Button>
+                </Div>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is2">
+                <Button Class="btn-outline-primary w-100" Clicked="(() => FiltersVisible = !FiltersVisible)">
+                    @L["AdvanceFilters"]
+                    <Icon Class="@("ms-1 fas " + (FiltersVisible ? "fa-angles-up" : "fa-angles-down"))"></Icon>
+                </Button>
+            </Column>
+        </Row>
+        @if (FiltersVisible)
+        {
+            <Row Class="mt-2" Gutter="(10, 10)">
+                <Column ColumnSize="ColumnSize.Is12.Is2.OnFullHD">
+                    <FieldLabel>@L["PageTitle"]</FieldLabel>
+                    <TextEdit Size="Size.Small" @bind-Text="Filters.PageTitle"></TextEdit>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12.Is2.OnFullHD">
+                    <FieldLabel>@L["PageType"]</FieldLabel>
+                    <Select TValue="WebsitePageType?" Size="Size.Small" @bind-SelectedValue="Filters.PageType">
+                        <SelectItem Value="(WebsitePageType?)null"></SelectItem>
+                        @foreach (WebsitePageType pageType in Enum.GetValues(typeof(WebsitePageType)))
                         {
-                            <Div Class="image-thumbnail">
-                                <img src="@("data:image/png;base64," + LogoBase64)" class="img-fluid" />
-                            </Div>
+                            <SelectItem Value="pageType">@L["Enum:WebsitePageType." + (int)pageType]</SelectItem>
                         }
-                        else if (NewEntity.LogoUrl != null)
+                    </Select>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12.Is2.OnFullHD">
+                    <FieldLabel>@L["ProductCategory"]</FieldLabel>
+                    <Select TValue="Guid?" Size="Size.Small" @bind-SelectedValue="Filters.ProductCategoryId">
+                        <SelectItem Value="(Guid?)null"></SelectItem>
+                        @foreach (var productCategory in ProductCategories)
                         {
-                            <Div Class="image-thumbnail">
-                                <img src="@NewEntity.LogoUrl" class="img-fluid" />
-                            </Div>
+                            <SelectItem Value="productCategory.Id">@productCategory.Name</SelectItem>
                         }
-                    </Column>
-                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                        <Validation MessageLocalizer="@LH.Localize">
-                            <Field>
-                                <FieldLabel>@L["NotificationBar"]</FieldLabel>
-                                <TextEdit @bind-Text="@NewEntity.NotificationBar">
-                                    <Feedback>
-                                        <ValidationError />
-                                    </Feedback>
-                                </TextEdit>
-                            </Field>
-                        </Validation>
-                        <Row>
-                            <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                                <Validation MessageLocalizer="@LH.Localize">
-                                    <Field>
-                                        <FieldLabel>@L["StoreTitle"]</FieldLabel>
-                                        <TextEdit @bind-Text="@NewEntity.StoreTitle">
-                                            <Feedback>
-                                                <ValidationError />
-                                            </Feedback>
-                                        </TextEdit>
-                                    </Field>
-                                </Validation>
-                            </Column>
-                            <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
-                                <Validation MessageLocalizer="@LH.Localize">
-                                    <Field>
-                                        <FieldLabel>@L["TitleDisplayOption"]</FieldLabel>
-                                        <Select TValue="WebsiteTitleDisplayOptions?" @bind-SelectedValue="@NewEntity.TitleDisplayOption">
-                                            <SelectItem Value="(WebsiteTitleDisplayOptions?)null"></SelectItem>
-                                            @foreach (WebsiteTitleDisplayOptions option in Enum.GetValues(typeof(WebsiteTitleDisplayOptions)))
-                                            {
-                                                <SelectItem Value="option">@L["Enum:WebsiteTitleDisplayOptions." + (int)option]</SelectItem>
-                                            }
-                                        </Select>
-                                    </Field>
-                                </Validation>
-                            </Column>
-                        </Row>
-                        <Div Class="container-less-filepicker">
-                            <Field>
-                                <FilePicker Changed="@OnFileUploadAsync"
-                                            ShowMode="FilePickerShowMode.List"
-                                            Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
-                                    <FileTemplate></FileTemplate>
-                                    <ButtonsTemplate></ButtonsTemplate>
-                                </FilePicker>
-                                <Validation MessageLocalizer="@LH.Localize">
-                                    <TextEdit @bind-Text="@NewEntity.LogoName" Style="margin: 0; padding: 0; height: 0px;" Visibility="Visibility.Invisible">
-                                        <Feedback>
-                                            <ValidationError />
-                                        </Feedback>
-                                    </TextEdit>
-                                </Validation>
-                            </Field>
-                        </Div>
-                    </Column>
-                </Row>
-                <Divider></Divider>
-                <Row>
-                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
-                        <h4>@L["Socials"]</h4>
-                    </Column>
-                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                        <Validation MessageLocalizer="@LH.Localize">
-                            <Field>
-                                <FieldLabel>@L["Facebook"]</FieldLabel>
-                                <TextEdit @bind-Text="@NewEntity.Facebook">
-                                    <Feedback>
-                                        <ValidationError />
-                                    </Feedback>
-                                </TextEdit>
-                            </Field>
-                        </Validation>
-                        <Validation MessageLocalizer="@LH.Localize">
-                            <Field>
-                                <FieldLabel>@L["Instagram"]</FieldLabel>
-                                <TextEdit @bind-Text="@NewEntity.Instagram">
-                                    <Feedback>
-                                        <ValidationError />
-                                    </Feedback>
-                                </TextEdit>
-                            </Field>
-                        </Validation>
-                        <Validation MessageLocalizer="@LH.Localize">
-                            <Field>
-                                <FieldLabel>@L["Line"]</FieldLabel>
-                                <TextEdit @bind-Text="@NewEntity.Line">
-                                    <Feedback>
-                                        <ValidationError />
-                                    </Feedback>
-                                </TextEdit>
-                            </Field>
-                        </Validation>
-                    </Column>
-                </Row>
-                <Divider></Divider>
-                <Row>
-                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
-                        <h4>@L["ReturnExchangePolicy"]</h4>
-                    </Column>
-                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                        <Validation MessageLocalizer="@LH.Localize">
-                            <Field>
-                                <MemoEdit Rows="5" @bind-Text="@NewEntity.ReturnExchangePolicy">
-                                    <Feedback>
-                                        <ValidationError />
-                                    </Feedback>
-                                </MemoEdit>
-                            </Field>
-                        </Validation>
-                    </Column>
-                </Row>
-            </Validations>
-        </CardBody>
-    </Card>
-    <Div Class="text-end">
-        <PikachuButton Class="pk-btn-transparent" Disabled="IsLoading" Clicked="NavigateToWebsiteSettings">
-            @L["Cancel"]
-        </PikachuButton>
-        <PikachuButton Class="pk-btn-primary" Loading="IsLoading" Clicked="CreateAsync">
-            @L["Create"]
-        </PikachuButton>
-    </Div>
-</Div> *@
+                    </Select>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12.Is2.OnFullHD">
+                    <FieldLabel>@L["TemplateType"]</FieldLabel>
+                    <Select TValue="GroupBuyTemplateType?" Size="Size.Small" @bind-SelectedValue="Filters.TemplateType">
+                        <SelectItem Value="(GroupBuyTemplateType?)null"></SelectItem>
+                        @foreach (GroupBuyTemplateType templateType in Enum.GetValues(typeof(GroupBuyTemplateType)))
+                        {
+                            <SelectItem Value="templateType">@L["Enum:GroupBuyTemplateType." + (int)templateType]</SelectItem>
+                        }
+                    </Select>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12.Is2.OnFullHD">
+                    <FieldLabel>@L["SetAsHomePage"]</FieldLabel>
+                    <Select TValue="bool?" Size="Size.Small" @bind-SelectedValue="Filters.SetAsHomePage">
+                        <SelectItem Value="(bool?)null">@L["All"]</SelectItem>
+                        <SelectItem Value="true">@L["SetAsHomePage"]</SelectItem>
+                        <SelectItem Value="true">@L["NotSetAsHomePage"]</SelectItem>
+                    </Select>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12.Is2.OnFullHD">
+                    <Div Class="d-flex align-items-end gap-1 h-100">
+                        <PikachuButton Class="pk-btn-sm pk-btn-primary" Clicked="ApplyFilters">
+                            <Icon Name="IconName.Filter"></Icon>
+                            @L["Filter"]
+                        </PikachuButton>
+                        <PikachuButton Class="pk-btn-sm pk-btn-light" Clicked="ResetFilters">
+                            <Icon Name="IconName.Undo"></Icon>
+                            @L["Reset"]
+                        </PikachuButton>
+                    </Div>
+                </Column>
+            </Row>
+        }
+    </CardBody>
+</Card>
+<Card>
+    <CardBody>
+        <DataGrid TItem="WebsiteSettingsDto"
+                  Data="WebsiteSettingsList"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  PageSize="PageSize"
+                  CurrentPage="CurrentPage"
+                  Hoverable
+                  Narrow
+                  Responsive
+                  Striped>
+            <DataGridColumns>
+                <DataGridColumn Width="150px"
+                                TItem="WebsiteSettingsDto"
+                                Field="@nameof(WebsiteSettingsDto.Id)"
+                                Sortable="false"
+                                Caption="@L["Actions"]">
+                    <DisplayTemplate>
+                        <Dropdown>
+                            <DropdownToggle Color="Color.Primary">
+                                @L["Actions"]
+                            </DropdownToggle>
+                            <DropdownMenu>
+                                @if (CanEditWebsiteSettings)
+                                {
+                                    <DropdownItem Clicked="@(() => NavigationManager.NavigateTo("/Website-Settings/Edit/" + context.Id))">
+                                        @L["Edit"]
+                                    </DropdownItem>
+                                }
+                                @if (CanDeleteWebsiteSettings)
+                                {
+                                    <DropdownItem Clicked="() => DeleteAsync(context)">
+                                        @L["Delete"]
+                                    </DropdownItem>
+                                }
+                            </DropdownMenu>
+                        </Dropdown>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="WebsiteSettingsDto"
+                                Field="@nameof(WebsiteSettingsDto.PageTitle)"
+                                Caption="@L["PageTitle"]">
+                    <DisplayTemplate>
+                        <Copy Text="@context.Id" DisplayText="context.PageTitle" IconAlignment="Alignment.Start"></Copy>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="WebsiteSettingsDto"
+                                Field="@nameof(WebsiteSettingsDto.PageLink)"
+                                Caption="@L["PageLink"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="WebsiteSettingsDto"
+                                Field="@nameof(WebsiteSettingsDto.PageType)"
+                                Caption="@L["PageType"]">
+                    <DisplayTemplate>
+                        @L["Enum:WebsitePageType." + (int)context.PageType]
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="WebsiteSettingsDto"
+                                Field="@nameof(WebsiteSettingsDto.SetAsHomePage)"
+                                Caption="@L["HomePage"]"
+                                HeaderTextAlignment="TextAlignment.Center"
+                                TextAlignment="TextAlignment.Center">
+                    <DisplayTemplate>
+                        <Icon Name="context.SetAsHomePage ? IconName.Check : IconName.Times"
+                              Class="@(context.SetAsHomePage ? "text-success" : "text-danger")"></Icon>
+                    </DisplayTemplate>
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>

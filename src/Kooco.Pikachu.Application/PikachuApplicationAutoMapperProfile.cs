@@ -38,6 +38,7 @@ using Kooco.Pikachu.UserCumulativeOrders;
 using Kooco.Pikachu.UserShoppingCredits;
 using Kooco.Pikachu.WebsiteManagement;
 using Kooco.Pikachu.WebsiteManagement.WebsiteBasicSettings;
+using Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
 using System.Collections.Generic;
 using System.Linq;
 using Volo.Abp.Identity;
@@ -281,6 +282,11 @@ public class PikachuApplicationAutoMapperProfile : Profile
 
         CreateMap<WebsiteSettings, WebsiteSettingsDto>();
         CreateMap<WebsiteSettingsDto, UpdateWebsiteSettingsDto>();
+        CreateMap<WebsiteSettingsModule, WebsiteSettingsModuleDto>();
+        CreateMap<WebsiteSettingsModuleItem, WebsiteSettingsModuleItemDto>();
+        CreateMap<WebsiteSettingsOverviewModule, WebsiteSettingsOverviewModuleDto>();
+        CreateMap<WebsiteSettingsInstructionModule, WebsiteSettingsInstructionModuleDto>();
+        CreateMap<WebsiteSettingsProductRankingModule, WebsiteSettingsProductRankingModuleDto>();
 
         CreateMap<WebsiteBasicSetting, WebsiteBasicSettingDto>();
         CreateMap<WebsiteBasicSettingDto, UpdateWebsiteBasicSettingDto>();

@@ -2,7 +2,6 @@
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.Validators;
-using Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
 using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
@@ -59,7 +58,7 @@ public class WebsiteSettingsAppService(IWebsiteSettingsRepository websiteSetting
             foreach (var prm in input.ProductRankingModules ?? [])
             {
                 websiteSettings.AddProductRankingModule(GuidGenerator.Create(), prm.Title, prm.SubTitle, prm.Content, prm.ModuleNumber);
-                foreach(var image in prm.Images)
+                foreach (var image in prm.Images)
                 {
                     image.TargetId = websiteSettings.Id;
                     await imageAppService.CreateAsync(image);
@@ -90,9 +89,11 @@ public class WebsiteSettingsAppService(IWebsiteSettingsRepository websiteSetting
             input.Sorting = nameof(WebsiteSettings.PageTitle);
         }
 
-        var totalCount = await websiteSettingsRepository.GetCountAsync(input.Filter);
+        var totalCount = await websiteSettingsRepository.GetCountAsync(input.Filter, input.PageTitle, input.PageType,
+            input.ProductCategoryId, input.TemplateType, input.SetAsHomePage);
 
-        var items = await websiteSettingsRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter);
+        var items = await websiteSettingsRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter,
+            input.PageTitle, input.PageType, input.ProductCategoryId, input.TemplateType, input.SetAsHomePage);
 
         return new PagedResultDto<WebsiteSettingsDto>
         {

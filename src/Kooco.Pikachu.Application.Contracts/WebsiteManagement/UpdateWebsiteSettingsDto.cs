@@ -35,5 +35,11 @@ public class UpdateWebsiteSettingsDto
 
     public string? ArticleHtml { get; set; }
 
-    public List<UpdateWebsiteSettingsModuleDto> Modules { get; set; } = [];
+    public List<WebsiteSettingsModuleDto> Modules { get; set; } = [];
+
+    public List<WebsiteSettingsOverviewModuleDto> OverviewModules { get; set; } = [];
+
+    public List<WebsiteSettingsInstructionModuleDto> InstructionModules { get; set; } = [];
+
+    public List<WebsiteSettingsProductRankingModuleDto> ProductRankingModules { get; set; } = [];
 }

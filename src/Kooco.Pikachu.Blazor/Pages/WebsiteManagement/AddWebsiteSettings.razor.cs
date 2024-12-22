@@ -3,6 +3,7 @@ using Blazorise;
 using Blazorise.Components;
 using Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Extensions;
 using Kooco.Pikachu.GroupBuyOrderInstructions;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.GroupPurchaseOverviews;
@@ -10,6 +11,7 @@ using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.WebsiteManagement;
 using Kooco.Pikachu.WebsiteManagement.WebsiteBasicSettings;
+using Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using System;
@@ -17,10 +19,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Kooco.Pikachu.Extensions;
-using Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
-using Kooco.Pikachu.GroupBuyOrderInstructions.Interface;
-using Kooco.Pikachu.GroupPurchaseOverviews.Interface;
 
 namespace Kooco.Pikachu.Blazor.Pages.WebsiteManagement;
 
@@ -110,7 +108,7 @@ public partial class AddWebsiteSettings
                 int j = 1;
                 if (item.Selected.Count != 0)
                 {
-                    UpdateWebsiteSettingsModuleDto itemGroup = new();
+                    WebsiteSettingsModuleDto itemGroup = new();
 
                     if (item.GroupBuyModuleType is GroupBuyModuleType.ProductGroupModule)
                     {
@@ -136,7 +134,7 @@ public partial class AddWebsiteSettings
                     {
                         if (itemDetail.Id != Guid.Empty || (item.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor && !itemDetail.Name.IsNullOrEmpty()))
                         {
-                            itemGroup.ModuleItems.Add(new UpdateWebsiteSettingsModuleItemDto
+                            itemGroup.ModuleItems.Add(new WebsiteSettingsModuleItemDto
                             {
                                 SortOrder = j++,
                                 ItemId = itemDetail.ItemType == ItemType.Item && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
@@ -157,7 +155,7 @@ public partial class AddWebsiteSettings
                     item.GroupBuyModuleType is GroupBuyModuleType.OrderInstruction ||
                     item.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
                 {
-                    UpdateWebsiteSettingsModuleDto itemGroup = new()
+                    WebsiteSettingsModuleDto itemGroup = new()
                     {
                         SortOrder = item.SortOrder,
                         GroupBuyModuleType = item.GroupBuyModuleType,
@@ -174,7 +172,7 @@ public partial class AddWebsiteSettings
                             {
                                 if (itemDetail.Id == Guid.Empty) continue;
 
-                                itemGroup.ModuleItems.Add(new UpdateWebsiteSettingsModuleItemDto
+                                itemGroup.ModuleItems.Add(new WebsiteSettingsModuleItemDto
                                 {
                                     SortOrder = j++,
                                     ItemId = itemDetail.ItemType is ItemType.Item && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,

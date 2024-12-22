@@ -3,10 +3,10 @@ using System;
 
 namespace Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
 
-public class UpdateWebsiteSettingsModuleItemDto
+public class WebsiteSettingsModuleItemDto
 {
-    public Guid? Id { get; set; }
-    public Guid GroupBuyItemGroupId { get; set; }
+    public Guid Id { get; set; }
+    public Guid WebsiteSettingsModuleId { get; set; }
     public Guid? ItemId { get; set; }
     public Guid? SetItemId { get; set; }
     public ItemType ItemType { get; set; }

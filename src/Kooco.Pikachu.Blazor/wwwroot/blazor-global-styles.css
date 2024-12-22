@@ -548,3 +548,11 @@
     height: 0px;
     border: none;
 }
+
+.input-group.search-group > .form-control {
+    border-radius: 0.5rem 0 0 0.5rem !important;
+}
+
+.input-group.search-group > .btn {
+    border-radius: 0 0.5rem 0.5rem 0 !important;
+}

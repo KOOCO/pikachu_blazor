@@ -1059,7 +1059,7 @@
     "PageTitle": "Page Title",
     "PageDescription": "Page Description",
     "PageLink": "Page Link",
-    "SetAsHomePage": "Set as Home Page",
+    "SetAsHomePage": "Set as Homepage",
     "PageType": "Page Type",
     "WebsitePageType": "Page Type",
     "Menu:TopbarSettings": "Topbar Settings",
@@ -1100,6 +1100,10 @@
     "Link|Title": "Link | Title",
     "TemplateType": "Template Type",
     "WebsiteBasicSettingsUpdated": "Website Basic Settings Updated!",
-    "Pikachu:ItemStorageTemperatureCannotBeNull": "The field Item Storage Temperature is required."
+    "Pikachu:ItemStorageTemperatureCannotBeNull": "The field Item Storage Temperature is required.",
+    "GroupBuyModuleType": "Group Buy Module Type",
+    "HomePage": "Homepage",
+    "NotSetAsHomePage": "Not Set as Homepage",
+    "AreYouSureToDeleteThis": "Please be aware that once this record is deleted, it can never be restored. Do you wish to delete it?"
   }
 }

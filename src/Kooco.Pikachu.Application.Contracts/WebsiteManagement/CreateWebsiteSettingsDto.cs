@@ -28,14 +28,13 @@ public class CreateWebsiteSettingsDto
     [Required]
     public GroupBuyTemplateType? TemplateType { get; set; }
 
-    [Required]
     public GroupBuyModuleType? GroupBuyModuleType { get; set; }
 
     public Guid? ProductCategoryId { get; set; }
 
     public string? ArticleHtml { get; set; }
 
-    public List<UpdateWebsiteSettingsModuleDto> Modules { get; set; } = [];
+    public List<WebsiteSettingsModuleDto> Modules { get; set; } = [];
 
     public List<WebsiteSettingsOverviewModuleDto> OverviewModules { get; set; } = [];
 

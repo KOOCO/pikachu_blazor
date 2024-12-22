@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
 
-public class UpdateWebsiteSettingsModuleDto
+public class WebsiteSettingsModuleDto
 {
     public Guid? Id { get; set; }
     public Guid? TenantId { get; set; }
@@ -15,5 +15,5 @@ public class UpdateWebsiteSettingsModuleDto
     public string? ProductGroupModuleTitle { get; set; }
     public string? ProductGroupModuleImageSize { get; set; }
     public int? ModuleNumber { get; set; }
-    public List<UpdateWebsiteSettingsModuleItemDto> ModuleItems { get; set; } = [];
+    public List<WebsiteSettingsModuleItemDto> ModuleItems { get; set; } = [];
 }
