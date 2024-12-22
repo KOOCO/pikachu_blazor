@@ -2,6 +2,7 @@
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.Validators;
+using Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
 using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,7 @@ public class WebsiteSettingsAppService(IWebsiteSettingsRepository websiteSetting
         var websiteSettings = await websiteSettingsManager.CreateAsync(input.PageTitle, input.PageDescription, input.PageLink, input.SetAsHomePage,
             input.PageType.Value, input.TemplateType, input.GroupBuyModuleType, input.ProductCategoryId, input.ArticleHtml);
 
-        if (input.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule)
+        if (input.PageType == WebsitePageType.CustomPage)
         {
             if (input.Modules == null || input.Modules.Count == 0)
             {
@@ -76,9 +77,11 @@ public class WebsiteSettingsAppService(IWebsiteSettingsRepository websiteSetting
         await websiteSettingsRepository.DeleteAsync(websiteSettings);
     }
 
-    public async Task<WebsiteSettingsDto> GetAsync(Guid id)
+    public async Task<WebsiteSettingsDto> GetAsync(Guid id, bool includeDetails = false)
     {
-        var websiteSettings = await websiteSettingsRepository.GetAsync(id);
+        var websiteSettings = await (includeDetails
+            ? websiteSettingsRepository.GetWithDetailsAsync(id)
+            : websiteSettingsRepository.GetAsync(id));
         return ObjectMapper.Map<WebsiteSettings, WebsiteSettingsDto>(websiteSettings);
     }
 
@@ -114,5 +117,17 @@ public class WebsiteSettingsAppService(IWebsiteSettingsRepository websiteSetting
             input.PageType.Value, input.TemplateType, input.GroupBuyModuleType, input.ProductCategoryId, input.ArticleHtml);
 
         return ObjectMapper.Map<WebsiteSettings, WebsiteSettingsDto>(websiteSettings);
+    }
+
+    public async Task<List<WebsiteSettingsModuleDto>> GetModulesAsync(Guid id)
+    {
+        var modules = await websiteSettingsRepository.GetModulesAsync(id);
+        return ObjectMapper.Map<List<WebsiteSettingsModule>, List<WebsiteSettingsModuleDto>>(modules);
+    }
+
+    public async Task<WebsiteSettingsModuleDto> GetModuleAsync(Guid moduleId)
+    {
+        var itemGroup = await websiteSettingsRepository.GetModuleAsync(moduleId);
+        return ObjectMapper.Map<WebsiteSettingsModule, WebsiteSettingsModuleDto>(itemGroup);
     }
 }

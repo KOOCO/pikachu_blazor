@@ -103,7 +103,7 @@ public partial class WebsiteSettings
     {
         try
         {
-            var confirm = await Message.Confirm("AreYouSureToDeleteThis?");
+            var confirm = await Message.Confirm(L["AreYouSureToDeleteThis?"]);
             if (confirm)
             {
                 await WebsiteSettingsAppService.DeleteAsync(websiteSettings.Id);

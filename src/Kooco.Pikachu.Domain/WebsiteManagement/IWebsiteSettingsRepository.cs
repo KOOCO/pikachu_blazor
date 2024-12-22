@@ -1,4 +1,5 @@
 ﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,4 +16,7 @@ public interface IWebsiteSettingsRepository : IRepository<WebsiteSettings, Guid>
         WebsitePageType? pageType, Guid? productCategoryId, GroupBuyTemplateType? templateType, bool? setAsHomePage);
     Task<IQueryable<WebsiteSettings>> GetFilteredQueryableAsync(string? filter, string? pageTitle, WebsitePageType? pageType,
         Guid? productCategoryId, GroupBuyTemplateType? templateType, bool? setAsHomePage);
+    Task<WebsiteSettings> GetWithDetailsAsync(Guid id);
+    Task<List<WebsiteSettingsModule>> GetModulesAsync(Guid id);
+    Task<WebsiteSettingsModule> GetModuleAsync(Guid id);
 }

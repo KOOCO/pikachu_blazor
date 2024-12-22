@@ -226,7 +226,7 @@
                         <div class="d-flex">
                             <div class="p-2 flex-grow-1">
                                 <Accordion>
-                                    <Collapse>
+                                    <Collapse VisibleChanged="(e) => OnCollapseVisibleChanged(module, e)">
                                         <CollapseHeader>
                                             <AccordionToggle>
                                                 <i class="fa fa-trash text-danger me-2" @onclick="@(() => RemoveCollapseItem(@module.Index))"></i>

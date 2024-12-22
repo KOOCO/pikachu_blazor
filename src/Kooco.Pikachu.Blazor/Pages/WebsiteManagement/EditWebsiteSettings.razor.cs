@@ -54,6 +54,11 @@ public partial class EditWebsiteSettings
     private Modal AddLinkModal { get; set; }
     private List<ItemWithItemTypeDto> ItemsList { get; set; } = [];
     private List<ItemWithItemTypeDto> SetItemList { get; set; } = [];
+
+    private List<CreateImageDto> BannerImages { get; set; }
+    private List<CreateImageDto> CarouselImages { get; set; }
+    private List<ImageDto> ExistingImages { get; set; } = [];
+    private List<ImageDto> ExistingBannerImages { get; set; } = [];
     int CurrentIndex { get; set; }
 
     private bool LoadingItems { get; set; } = true;
@@ -74,7 +79,7 @@ public partial class EditWebsiteSettings
         {
             try
             {
-                var websiteSettings = await WebsiteSettingsAppService.GetAsync(Id);
+                var websiteSettings = await WebsiteSettingsAppService.GetAsync(Id, true);
                 EditingEntity = ObjectMapper.Map<WebsiteSettingsDto, UpdateWebsiteSettingsDto>(websiteSettings);
                 SetItemList = await SetItemAppService.GetItemsLookupAsync();
                 ItemsList = await ItemAppService.GetItemsLookupAsync();
@@ -84,6 +89,8 @@ public partial class EditWebsiteSettings
                 //NewEntity.TemplateType = WebsiteBasicSettings?.TemplateType;
                 await InvokeAsync(StateHasChanged);
                 await LoadHtml();
+                LoadingItems = false;
+                await LoadItemGroups();
             }
             catch (Exception ex)
             {
@@ -207,30 +214,30 @@ public partial class EditWebsiteSettings
     {
         if (CollapseItem.Count == 0)
         {
-            ICollection<GroupBuyItemGroupDto> itemGroups = [];
+            //ICollection<GroupBuyItemGroupDto> itemGroups = [];
 
             if (isRefreshItemGroup)
-                GroupBuy.ItemGroups = await _groupBuyAppService.GetGroupBuyItemGroupsAsync(Id);
+                EditingEntity.Modules = await WebsiteSettingsAppService.GetModulesAsync(Id);
 
-            itemGroups = GroupBuy.ItemGroups;
+            var modules = EditingEntity.Modules;
 
-            if (itemGroups.Any())
+            if (modules.Count != 0)
             {
-                if (itemGroups.Any(a => a.GroupBuyModuleType is GroupBuyModuleType.CarouselImages))
+                if (modules.Any(a => a.GroupBuyModuleType is GroupBuyModuleType.CarouselImages))
                 {
                     ExistingImages = await ImageAppService.GetGroupBuyImagesAsync(Id, ImageType.GroupBuyCarouselImage);
 
                     CarouselImages = ObjectMapper.Map<List<ImageDto>, List<CreateImageDto>>(ExistingImages);
                 }
 
-                else if (itemGroups.Any(a => a.GroupBuyModuleType is GroupBuyModuleType.BannerImages))
+                else if (modules.Any(a => a.GroupBuyModuleType is GroupBuyModuleType.BannerImages))
                 {
                     ExistingBannerImages = await ImageAppService.GetGroupBuyImagesAsync(Id, ImageType.GroupBuyBannerImage);
 
                     BannerImages = ObjectMapper.Map<List<ImageDto>, List<CreateImageDto>>(ExistingBannerImages);
                 }
 
-                foreach (var itemGroup in itemGroups)
+                foreach (var itemGroup in modules)
                 {
                     CollapseItem collapseItem = new();
 
@@ -286,6 +293,8 @@ public partial class EditWebsiteSettings
 
                     CollapseItem.Add(collapseItem);
                 }
+
+                StateHasChanged();
             }
         }
     }
@@ -301,19 +310,19 @@ public partial class EditWebsiteSettings
         {
             if (isVisible && collapseItem.Id.HasValue)
             {
-                var itemGroup = await GroupBuyAppService.GetGroupBuyItemGroupAsync(collapseItem.Id.Value);
+                var module = await WebsiteSettingsAppService.GetModuleAsync(collapseItem.Id.Value);
 
                 int index = CollapseItem.IndexOf(collapseItem);
                 CollapseItem[index].IsModified = true;
-                if (itemGroup != null)
+                if (module != null)
                 {
                     while (LoadingItems)
                     {
                         await Task.Delay(100);
                     }
-                    foreach (var item in itemGroup.ItemGroupDetails.OrderBy(x => x.SortOrder))
+                    foreach (var item in module.ModuleItems.OrderBy(x => x.SortOrder))
                     {
-                        if (itemGroup.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor)
+                        if (module.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor)
                         {
                             var itemWithItemType = new ItemWithItemTypeDto
                             {
@@ -342,16 +351,16 @@ public partial class EditWebsiteSettings
                         StateHasChanged();
                     }
 
-                    if (itemGroup.GroupBuyModuleType is not GroupBuyModuleType.ProductDescriptionModule
-                        && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.IndexAnchor
-                        && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.CarouselImages
-                        && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.BannerImages
-                        && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.GroupPurchaseOverview
-                        && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.CountdownTimer
-                        && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.OrderInstruction
-                        && itemGroup.ItemGroupDetails.Count < 3)
+                    if (module.GroupBuyModuleType is not GroupBuyModuleType.ProductDescriptionModule
+                        && module.GroupBuyModuleType is not GroupBuyModuleType.IndexAnchor
+                        && module.GroupBuyModuleType is not GroupBuyModuleType.CarouselImages
+                        && module.GroupBuyModuleType is not GroupBuyModuleType.BannerImages
+                        && module.GroupBuyModuleType is not GroupBuyModuleType.GroupPurchaseOverview
+                        && module.GroupBuyModuleType is not GroupBuyModuleType.CountdownTimer
+                        && module.GroupBuyModuleType is not GroupBuyModuleType.OrderInstruction
+                        && module.ModuleItems.Count < 3)
                     {
-                        for (int x = itemGroup.ItemGroupDetails.Count; x < 3; x++)
+                        for (int x = module.ModuleItems.Count; x < 3; x++)
                         {
                             CollapseItem[index].Selected.Add(new ItemWithItemTypeDto());
                         }
