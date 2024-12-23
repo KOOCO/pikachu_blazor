@@ -28,7 +28,6 @@ public class UpdateWebsiteSettingsDto
     [Required]
     public GroupBuyTemplateType? TemplateType { get; set; }
 
-    [Required]
     public GroupBuyModuleType? GroupBuyModuleType { get; set; }
 
     public Guid? ProductCategoryId { get; set; }

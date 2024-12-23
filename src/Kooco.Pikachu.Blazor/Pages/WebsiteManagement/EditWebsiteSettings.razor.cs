@@ -5,11 +5,14 @@ using Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Extensions;
 using Kooco.Pikachu.GroupBuyOrderInstructions;
+using Kooco.Pikachu.GroupBuyOrderInstructions.Interface;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.GroupPurchaseOverviews;
+using Kooco.Pikachu.GroupPurchaseOverviews.Interface;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.WebsiteManagement;
+using Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using System;
@@ -85,12 +88,10 @@ public partial class EditWebsiteSettings
                 ItemsList = await ItemAppService.GetItemsLookupAsync();
                 ItemsList.AddRange(SetItemList);
                 ProductCategoryLookup = await ProductCategoryAppService.GetProductCategoryLookupAsync();
-                //WebsiteBasicSettings = await WebsiteBasicSettingAppService.FirstOrDefaultAsync();
-                //NewEntity.TemplateType = WebsiteBasicSettings?.TemplateType;
                 await InvokeAsync(StateHasChanged);
-                await LoadHtml();
                 LoadingItems = false;
                 await LoadItemGroups();
+                await LoadHtml();
             }
             catch (Exception ex)
             {
@@ -101,39 +102,275 @@ public partial class EditWebsiteSettings
 
     async Task LoadHtml()
     {
-        await Task.Delay(5);
+        await Task.Delay(8);
         ArticlePageHtml?.LoadHTMLContent(EditingEntity.ArticleHtml);
+        await InvokeAsync(StateHasChanged);
     }
 
     async Task UpdateAsync()
     {
-        var validate = await ValidationsRef.ValidateAll();
-        if (!validate) return;
         try
         {
             IsLoading = true;
 
-            string oldBlobName = "";
-            //if (!LogoBase64.IsNullOrWhiteSpace())
-            //{
-            //    var bytes = Convert.FromBase64String(LogoBase64);
-            //    //oldBlobName = EditingEntity.LogoUrl.ExtractFileName();
-            //    //EditingEntity.LogoUrl = await ImageAppService.UploadImageAsync(EditingEntity.LogoName, bytes);
-            //}
-
-            await WebsiteSettingsAppService.UpdateAsync(Id, EditingEntity);
-
-            if (!oldBlobName.IsNullOrWhiteSpace())
+            if (!await ValidationsRef.ValidateAll() || !await ValidatePageType())
             {
-                //await DeleteOldImage(oldBlobName);
+                return;
             }
+
+            EditingEntity.Modules.Clear();
+
+            foreach (CollapseItem item in CollapseItem)
+            {
+                int j = 1;
+                var check = (item.IsModified && item.Id.HasValue)
+                    || item.Selected.Any(x => x.Id != Guid.Empty || (item.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor && !x.Name.IsNullOrEmpty()));
+                if (check)
+                {
+                    WebsiteSettingsModuleDto itemGroup = new()
+                    {
+                        Id = item.Id ?? Guid.Empty,
+                        SortOrder = item.SortOrder,
+                        GroupBuyModuleType = item.GroupBuyModuleType,
+                        WebsiteSettingsId = Id,
+                        AdditionalInfo = item.AdditionalInfo,
+                        ProductGroupModuleTitle = item.ProductGroupModuleTitle,
+                        ProductGroupModuleImageSize = item.ProductGroupModuleImageSize,
+                        ModuleNumber = item.ModuleNumber
+                    };
+
+                    if (item.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule &&
+                        ProductRankingCarouselModules is { Count: > 0 })
+                    {
+                        foreach (ProductRankingCarouselModule module in ProductRankingCarouselModules)
+                        {
+                            foreach (ItemWithItemTypeDto itemDetail in module.Selected)
+                            {
+                                if (itemDetail.Id == Guid.Empty) continue;
+
+                                itemGroup.ModuleItems.Add(new WebsiteSettingsModuleItemDto
+                                {
+                                    SortOrder = j++,
+                                    ItemId = itemDetail.ItemType is ItemType.Item && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
+                                    SetItemId = itemDetail.ItemType == ItemType.SetItem && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
+                                    ItemType = itemDetail.ItemType,
+                                    DisplayText = itemGroup.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor ? itemDetail.Name : null,
+                                    ModuleNumber = ProductRankingCarouselModules.IndexOf(module) + 1
+                                });
+                            }
+                        }
+                    }
+
+                    else
+                    {
+                        foreach (var itemDetail in item.Selected)
+                        {
+                            if (itemDetail.Id != Guid.Empty || (item.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor && !itemDetail.Name.IsNullOrEmpty()))
+                            {
+                                itemGroup.ModuleItems.Add(new WebsiteSettingsModuleItemDto
+                                {
+                                    SortOrder = j++,
+                                    ItemId = itemDetail.ItemType == ItemType.Item && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
+                                    SetItemId = itemDetail.ItemType == ItemType.SetItem && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
+                                    ItemType = itemDetail.ItemType,
+                                    DisplayText = itemGroup.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor ? itemDetail.Name : null
+                                });
+                            }
+                        }
+                    }
+
+                    EditingEntity.Modules.Add(itemGroup);
+                }
+
+                else if (item.Id is null || item.Id == Guid.Empty)
+                {
+                    WebsiteSettingsModuleDto itemGroup = new()
+                    {
+                        SortOrder = item.SortOrder,
+                        GroupBuyModuleType = item.GroupBuyModuleType,
+                        AdditionalInfo = item.AdditionalInfo,
+                        ModuleNumber = item.ModuleNumber
+                    };
+
+                    if (item.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule &&
+                        ProductRankingCarouselModules is { Count: > 0 })
+                    {
+                        foreach (ProductRankingCarouselModule module in ProductRankingCarouselModules)
+                        {
+                            foreach (ItemWithItemTypeDto itemDetail in module.Selected)
+                            {
+                                if (itemDetail.Id == Guid.Empty) continue;
+
+                                itemGroup.ModuleItems.Add(new WebsiteSettingsModuleItemDto
+                                {
+                                    SortOrder = j++,
+                                    ItemId = itemDetail.ItemType is ItemType.Item && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
+                                    SetItemId = itemDetail.ItemType == ItemType.SetItem && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
+                                    ItemType = itemDetail.ItemType,
+                                    DisplayText = itemGroup.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor ? itemDetail.Name : null,
+                                    ModuleNumber = ProductRankingCarouselModules.IndexOf(module) + 1
+                                });
+                            }
+                        }
+                    }
+
+                    EditingEntity.Modules.Add(itemGroup);
+                }
+            }
+
+            foreach (List<CreateImageDto> carouselImages in CarouselModules)
+            {
+                foreach (CreateImageDto carouselImage in carouselImages)
+                {
+                    if ((!ExistingImages.Any(a => a.BlobImageName == carouselImage.BlobImageName)) ||
+                        (ExistingImages.Any(a => a.CarouselStyle != carouselImage.CarouselStyle)))
+                    {
+                        if (carouselImage.Id != Guid.Empty)
+                        {
+                            await ImageAppService.UpdateImageAsync(carouselImage);
+                        }
+
+                        else
+                        {
+                            carouselImage.TargetId = Id;
+
+                            await ImageAppService.CreateAsync(carouselImage);
+                        }
+                    }
+                }
+            }
+
+            foreach (List<CreateImageDto> bannerImages in BannerModules)
+            {
+                foreach (CreateImageDto bannerImage in bannerImages)
+                {
+                    if (!ExistingBannerImages.Any(a => a.BlobImageName == bannerImage.BlobImageName))
+                    {
+                        if (bannerImage.Id != Guid.Empty)
+                        {
+                            await ImageAppService.UpdateImageAsync(bannerImage);
+                        }
+
+                        else
+                        {
+                            bannerImage.TargetId = Id;
+
+                            await ImageAppService.CreateAsync(bannerImage);
+                        }
+                    }
+                }
+            }
+
+            if (GroupPurchaseOverviewModules is { Count: > 0 })
+            {
+                foreach (GroupPurchaseOverviewDto overview in GroupPurchaseOverviewModules)
+                {
+                    if (overview.Id == Guid.Empty)
+                    {
+                        EditingEntity.OverviewModules.Add(new WebsiteSettingsOverviewModuleDto
+                        {
+                            Title = overview.Title,
+                            Image = overview.Image,
+                            SubTitle = overview.SubTitle,
+                            BodyText = overview.BodyText,
+                            IsButtonEnable = overview.IsButtonEnable,
+                            ButtonText = overview.ButtonText,
+                            ButtonLink = overview.ButtonLink,
+                            WebsiteSettingsId = Id
+                        });
+                    }
+
+                    else
+                    {
+                        var existing = EditingEntity.OverviewModules.First(x => x.Id == overview.Id);
+                        existing.Title = overview.Title;
+                        existing.Image = overview.Image;
+                        existing.SubTitle = overview.SubTitle;
+                        existing.BodyText = overview.BodyText;
+                        existing.IsButtonEnable = overview.IsButtonEnable;
+                        existing.ButtonText = overview.ButtonText;
+                        existing.ButtonLink = overview.ButtonLink;
+                    }
+                }
+            }
+
+            if (GroupBuyOrderInstructionModules is { Count: > 0 })
+            {
+                foreach (GroupBuyOrderInstructionDto im in GroupBuyOrderInstructionModules)
+                {
+                    if (im.Id == Guid.Empty)
+                    {
+                        EditingEntity.InstructionModules.Add(new WebsiteSettingsInstructionModuleDto
+                        {
+                            Title = im.Title,
+                            Image = im.Image,
+                            BodyText = im.BodyText,
+                            WebsiteSettingsId = Id
+                        });
+                    }
+
+                    else
+                    {
+                        var existing = EditingEntity.InstructionModules.First(x => x.Id == im.Id);
+                        existing.Title = im.Title;
+                        existing.Image = im.Image;
+                        existing.BodyText = im.BodyText;
+                    }
+                }
+            }
+
+            if (ProductRankingCarouselModules is { Count: > 0 })
+            {
+                foreach (ProductRankingCarouselModule productRankingCarouselModule in ProductRankingCarouselModules)
+                {
+                    foreach (CreateImageDto image in productRankingCarouselModule.Images)
+                    {
+                        if (!productRankingCarouselModule.Images.Any(a => a.BlobImageName == image.BlobImageName))
+                        {
+                            image.TargetId = Id;
+
+                            await ImageAppService.CreateAsync(image);
+                        }
+                    }
+
+                    if (productRankingCarouselModule.Id == Guid.Empty)
+                    {
+                        EditingEntity.ProductRankingModules.Add(new WebsiteSettingsProductRankingModuleDto()
+                        {
+                            Title = productRankingCarouselModule.Title,
+                            SubTitle = productRankingCarouselModule.SubTitle,
+                            Content = productRankingCarouselModule.Content,
+                            ModuleNumber = ProductRankingCarouselModules.IndexOf(productRankingCarouselModule) + 1,
+                            Images = productRankingCarouselModule.Images,
+                            WebsiteSettingsId = Id
+                        });
+                    }
+
+                    else
+                    {
+                        var existing = EditingEntity.ProductRankingModules.First(x => x.Id == productRankingCarouselModule.Id);
+                        existing.Id = productRankingCarouselModule.Id;
+                        existing.WebsiteSettingsId = Id;
+                        existing.Title = productRankingCarouselModule.Title;
+                        existing.SubTitle = productRankingCarouselModule.SubTitle;
+                        existing.Content = productRankingCarouselModule.Content;
+                        existing.ModuleNumber = ProductRankingCarouselModules.IndexOf(productRankingCarouselModule) + 1;
+                    }
+                }
+            }
+
+            EditingEntity.ArticleHtml = await ArticlePageHtml?.GetHTML();
+            await WebsiteSettingsAppService.UpdateAsync(Id, EditingEntity);
 
             NavigateToWebsiteSettings();
         }
         catch (Exception ex)
         {
-            IsLoading = false;
             await HandleErrorAsync(ex);
+        }
+        finally
+        {
+            IsLoading = false;
         }
     }
 
@@ -214,8 +451,6 @@ public partial class EditWebsiteSettings
     {
         if (CollapseItem.Count == 0)
         {
-            //ICollection<GroupBuyItemGroupDto> itemGroups = [];
-
             if (isRefreshItemGroup)
                 EditingEntity.Modules = await WebsiteSettingsAppService.GetModulesAsync(Id);
 
@@ -577,31 +812,64 @@ public partial class EditWebsiteSettings
         }
     }
 
-    private void RemoveCollapseItem(int index)
+    private async Task RemoveCollapseItem(int index)
     {
-        CollapseItem? collapseItem = CollapseItem.FirstOrDefault(f => f.Index == index);
-
-        int moduleNumber = collapseItem.ModuleNumber ?? 0;
-
-        if (collapseItem.GroupBuyModuleType is GroupBuyModuleType.CarouselImages)
+        try
         {
-            CarouselFilePickers.RemoveAt(moduleNumber - 1);
+            var item = CollapseItem.FirstOrDefault(f => f.Index == index);
 
-            CarouselModules.RemoveAll(r => r.Any(w => w.ModuleNumber == moduleNumber));
+            if (item?.Id is not null)
+            {
+                bool confirm = await Message.Confirm(L["ThisDeleteActionCannotBeReverted"]);
+
+                if (!confirm) return;
+
+                await WebsiteSettingsAppService.DeleteModuleAsync(Id, item.Id.Value);
+
+                if (item.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview)
+                    await WebsiteSettingsAppService.DeleteOverviewModuleAsync(Id);
+
+                else if (item.GroupBuyModuleType is GroupBuyModuleType.OrderInstruction)
+                    await WebsiteSettingsAppService.DeleteInstructionsModuleAsync(Id);
+
+                else if (item.GroupBuyModuleType is GroupBuyModuleType.CarouselImages)
+                    await ImageAppService.DeleteByGroupBuyIdAndImageTypeAsync(Id, ImageType.GroupBuyCarouselImage, item.ModuleNumber!.Value);
+
+                else if (item.GroupBuyModuleType is GroupBuyModuleType.BannerImages)
+                    await ImageAppService.DeleteByGroupBuyIdAndImageTypeAsync(Id, ImageType.GroupBuyBannerImage, item.ModuleNumber!.Value);
+
+                else if (item.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
+                    await WebsiteSettingsAppService.DeleteProductRankingModuleAsync(Id);
+
+                StateHasChanged();
+            }
+
+            int moduleNumber = item.ModuleNumber ?? 0;
+
+            if (item.GroupBuyModuleType is GroupBuyModuleType.CarouselImages)
+            {
+                CarouselFilePickers.RemoveAt(moduleNumber - 1);
+
+                CarouselModules.RemoveAll(r => r.Any(w => w.ModuleNumber == moduleNumber));
+            }
+
+            else if (item.GroupBuyModuleType is GroupBuyModuleType.BannerImages)
+            {
+                BannerFilePickers.RemoveAt(moduleNumber - 1);
+
+                BannerModules.RemoveAll(r => r.Any(w => w.ModuleNumber == moduleNumber));
+            }
+
+            CollapseItem.Remove(item);
+
+            if (item.GroupBuyModuleType is GroupBuyModuleType.CarouselImages ||
+                item.GroupBuyModuleType is GroupBuyModuleType.BannerImages)
+                ReindexingCollapseItem(moduleNumber, item.GroupBuyModuleType);
         }
-
-        else if (collapseItem.GroupBuyModuleType is GroupBuyModuleType.BannerImages)
+        catch (Exception ex)
         {
-            BannerFilePickers.RemoveAt(moduleNumber - 1);
-
-            BannerModules.RemoveAll(r => r.Any(w => w.ModuleNumber == moduleNumber));
+            await HandleErrorAsync(ex);
         }
-
-        CollapseItem.Remove(collapseItem);
-
-        if (collapseItem.GroupBuyModuleType is GroupBuyModuleType.CarouselImages ||
-            collapseItem.GroupBuyModuleType is GroupBuyModuleType.BannerImages)
-            ReindexingCollapseItem(moduleNumber, collapseItem.GroupBuyModuleType);
     }
 
     private void ReindexingCollapseItem(int moduleNumber, GroupBuyModuleType groupBuyModuleType)
