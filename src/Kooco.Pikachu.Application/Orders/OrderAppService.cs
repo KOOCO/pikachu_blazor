@@ -441,8 +441,25 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
             await _orderRepository.UpdateAsync(order);
             await SendEmailAsync(order.Id);
+			var validitySettings = (await _paymentGatewayRepository.GetQueryableAsync()).Where(x => x.PaymentIntegrationType == PaymentIntegrationType.OrderValidatePeriod).FirstOrDefault();
+			DateTime expirationTime = DateTime.Now.AddMinutes(10);
 
-            return ObjectMapper.Map<Order, OrderDto>(order);
+			if (validitySettings.Unit == "Days")
+			{
+				expirationTime = order.CreationTime.AddDays(validitySettings.Period.Value);
+			}
+			else if (validitySettings.Unit == "Hours")
+			{
+				expirationTime = order.CreationTime.AddHours(validitySettings.Period.Value);
+			}
+			else if (validitySettings.Unit == "Minutes")
+			{
+				expirationTime = order.CreationTime.AddMinutes(validitySettings.Period.Value);
+			}
+
+			ExpireOrderBackgroundJobArgs args = new ExpireOrderBackgroundJobArgs { OrderId = order.Id };
+			var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, (expirationTime-order.CreationTime));
+			return ObjectMapper.Map<Order, OrderDto>(order);
         }
     }
 
@@ -2164,6 +2181,45 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         return (paidAmount, unpaidAmount, refundedAmount);
     }
+    public async Task ExpireOrderAsync(Guid OrderId)
+    {
+        var order = await _orderRepository.GetWithDetailsAsync(OrderId);
+        if (order.ShippingStatus == ShippingStatus.WaitingForPayment)
+        {
+            order.OrderStatus = OrderStatus.Closed;
+            order.ShippingStatus = ShippingStatus.Closed;
+
+            foreach (var orderItem in order.OrderItems)
+            {
+                using (_dataFilter.Disable<IMultiTenant>())
+                {
+                    var details = await _itemDetailsRepository.FirstOrDefaultAsync(x => x.ItemId == orderItem.ItemId && x.ItemName == orderItem.Spec);
+
+                    if (details != null)
+                    {
+                        details.SaleableQuantity += orderItem.Quantity;
+                        details.StockOnHand += orderItem.Quantity;
+
+                        await _itemDetailsRepository.UpdateAsync(details);
+                    }
+
+                    if (orderItem.FreebieId != null)
+                    {
+                        var freebie = await _freebieRepository.FirstOrDefaultAsync(x => x.Id == orderItem.FreebieId);
+
+                        if (freebie != null)
+                        {
+                            freebie.FreebieAmount += orderItem.Quantity;
+                            await _freebieRepository.UpdateAsync(freebie);
+                        }
+                    }
+                }
+            }
+
+            await _orderRepository.UpdateAsync(order);
+        }
+
+	}
     #endregion
 }
 

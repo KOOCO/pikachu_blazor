@@ -449,13 +449,7 @@ public class PikachuBlazorModule : AbpModule
       .ServiceProvider
       .GetRequiredService<PassiveUserBirthdayCheckerWorker>()
 );
-        context.ServiceProvider
-     .GetRequiredService<IBackgroundWorkerManager>()
-     .AddAsync(
-         context
-             .ServiceProvider
-             .GetRequiredService<OrderStatusCheckerWorker>()
-     );
+     
 		var backgroundJobManager = context.ServiceProvider.GetRequiredService<IBackgroundJobManager>();
 
 		RecurringJob.AddOrUpdate<OrderDeliveryBackgroundJob>(
