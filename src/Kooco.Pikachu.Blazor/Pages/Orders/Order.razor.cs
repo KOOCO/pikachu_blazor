@@ -3,6 +3,7 @@ using Blazorise.DataGrid;
 using Blazorise.LoadingIndicator;
 using Blazorise.Utilities;
 using DinkToPdf;
+using HtmlAgilityPack;
 using Hangfire.Server;
 using Kooco.Pikachu.Assembly;
 using Kooco.Pikachu.Blazor.Pages.ItemManagement;
@@ -26,6 +27,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUglify.Html;
 using OneOf.Types;
+using PdfSharp;
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
 using System;
@@ -41,6 +43,7 @@ using Volo.Abp.Account.Web;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form;
 using static Kooco.Pikachu.Permissions.PikachuPermissions;
+using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace Kooco.Pikachu.Blazor.Pages.Orders;
 
@@ -277,6 +280,152 @@ public partial class Order
         await loading.Hide();
     }
 
+    public async Task OnPrintShippedLabel10Cm()
+    {
+        await loading.Show();
+
+        List<Guid> orderIds = Orders.Where(w => w.IsSelected).Select(s => s.OrderId).ToList();
+
+        Dictionary<string, string> AllPayLogisticsIds = new()
+        {
+            { "BlackCat1", string.Empty },
+            { "BlackCatFrozen", string.Empty },
+            { "BlackCatFreeze", string.Empty },
+            { "SevenToElevenFrozen", string.Empty },
+            { "PostOffice", string.Empty },
+            { "FamilyMart1", string.Empty },
+            { "SevenToEleven1", string.Empty },
+            { "SevenToElevenC2C", string.Empty },
+            { "FamilyMartC2C", string.Empty },
+            { "TCatDeliveryNormal", string.Empty },
+            { "TCatDeliveryFreeze", string.Empty },
+            { "TCatDeliveryFrozen", string.Empty },
+            { "TCatDeliverySevenElevenNormal", string.Empty },
+            { "TCatDeliverySevenElevenFreeze", string.Empty },
+            { "TCatDeliverySevenElevenFrozen", string.Empty },
+        };
+
+        Dictionary<string, string> allPayLogistic = new()
+        {
+            { "TCatDeliverySevenElevenNormal", string.Empty },
+            { "TCatDeliverySevenElevenFreeze", string.Empty },
+            { "TCatDeliverySevenElevenFrozen", string.Empty }
+        };
+
+        Dictionary<string, string> DeliveryNumbers = new()
+        {
+            { "SevenToElevenC2C", string.Empty },
+            { "FamilyMartC2C", string.Empty },
+            { "TCatDeliveryNormal", string.Empty },
+            { "TCatDeliveryFreeze", string.Empty },
+            { "TCatDeliveryFrozen", string.Empty },
+        };
+
+        foreach (Guid orderId in orderIds)
+        {
+            OrderDto order = await _orderAppService.GetAsync(orderId);
+
+            List<OrderDeliveryDto> orderDeliveries = await _OrderDeliveryAppService.GetListByOrderAsync(orderId);
+
+            foreach (OrderDeliveryDto? delivery in orderDeliveries)
+            {
+                if (!string.IsNullOrWhiteSpace(delivery.AllPayLogisticsID) &&
+                    (!(delivery.DeliveryMethod is EnumValues.DeliveryMethod.SelfPickup ||
+                     delivery.DeliveryMethod is EnumValues.DeliveryMethod.HomeDelivery ||
+                     delivery.DeliveryMethod is EnumValues.DeliveryMethod.DeliveredByStore)))
+                {
+                    string? AllPayLogisticsIdsValue = AllPayLogisticsIds.GetValueOrDefault(delivery.DeliveryMethod.ToString()) ?? string.Empty;
+
+                    List<string> AllPayLogisticId = AllPayLogisticsIdsValue.IsNullOrEmpty() ? [] : [.. AllPayLogisticsIdsValue.Split(',')];
+
+                    if (delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryNormal ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryFreeze ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryFrozen ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenNormal ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenFreeze ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenFrozen)
+                    {
+                        AllPayLogisticId.Add(delivery.FileNo);
+
+                        AllPayLogisticsIds.Remove(delivery.DeliveryMethod.ToString());
+
+                        AllPayLogisticsIds.Add(delivery.DeliveryMethod.ToString(), string.Join(",", AllPayLogisticId));
+
+                        if (delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenNormal ||
+                            delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenFreeze ||
+                            delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenFrozen)
+                        {
+                            string? aplValues = allPayLogistic.GetValueOrDefault(delivery.DeliveryMethod.ToString()) ?? string.Empty;
+
+                            List<string> aPL = aplValues.IsNullOrEmpty() ? [] : [.. aplValues.Split(',')];
+
+                            aPL.Add(delivery.AllPayLogisticsID);
+
+                            allPayLogistic.Remove(delivery.DeliveryMethod.ToString());
+
+                            allPayLogistic.Add(delivery.DeliveryMethod.ToString(), string.Join(",", aPL));
+                        }
+                    }
+
+                    else
+                    {
+                        AllPayLogisticId.Add(delivery.AllPayLogisticsID);
+
+                        AllPayLogisticsIds.Remove(delivery.DeliveryMethod.ToString());
+
+                        AllPayLogisticsIds.Add(delivery.DeliveryMethod.ToString(), string.Join(",", AllPayLogisticId));
+                    }
+
+                    if (delivery.DeliveryMethod is EnumValues.DeliveryMethod.FamilyMartC2C ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.SevenToElevenC2C ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryNormal ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryFreeze ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryFrozen)
+                    {
+                        string? DeliveryNumberValue = DeliveryNumbers.GetValueOrDefault(delivery.DeliveryMethod.ToString()) ?? string.Empty;
+
+                        List<string> DeliveryNumber = DeliveryNumberValue.IsNullOrEmpty() ? [] : [.. DeliveryNumberValue.Split(',')];
+
+                        DeliveryNumber.Add(delivery.DeliveryNo);
+
+                        DeliveryNumbers.Remove(delivery.DeliveryMethod.ToString());
+
+                        DeliveryNumbers.Add(delivery.DeliveryMethod.ToString(), string.Join(",", DeliveryNumber));
+                    }
+                }
+            }
+        }
+
+        string MergeTempFolder = Path.Combine(Path.GetTempPath(), "MergeTemp");
+
+        Directory.CreateDirectory(MergeTempFolder);
+
+        Tuple<List<string>, List<string>, List<string>> tuple = await _StoreLogisticsOrderAppService.OnBatchPrintingShippingLabel(AllPayLogisticsIds, DeliveryNumbers, allPayLogistic);
+
+        string errors = string.Join('\n', tuple.Item3);
+
+        if (!errors.IsNullOrWhiteSpace()) await _uiMessageService.Warn(errors);
+
+        List<string> outputPdfPaths = GenerateA6Pdf(tuple.Item1);
+
+        if (tuple.Item2 is { Count: > 0 }) outputPdfPaths.AddRange(tuple.Item2);
+
+        if (outputPdfPaths is { Count: > 0 })
+        {
+            MemoryStream combinedPdfStream = CombinePdf(outputPdfPaths);
+
+            await JSRuntime.InvokeVoidAsync("downloadFile", new
+            {
+                ByteArray = combinedPdfStream.ToArray(),
+                FileName = "Invoices.pdf",
+                ContentType = "application/pdf"
+            });
+        }
+
+        Directory.Delete(Path.Combine(Path.GetTempPath(), "MergeTemp"), true);
+
+        await loading.Hide();
+    }
     public List<string> GeneratePdf(List<string> htmls)
     {
         List<string> pdfFilePaths = [];
@@ -308,7 +457,8 @@ public partial class Order
                         ColorMode = ColorMode.Color,
                         Orientation = DinkToPdf.Orientation.Portrait,
                         PaperSize = PaperKind.A4,
-                        Out = pdfFilePath
+                        Out = pdfFilePath,
+                        
                     },
                     Objects =
                     {
@@ -320,7 +470,8 @@ public partial class Order
                             {
                                 EnableJavascript = true,
                                 DefaultEncoding = "UTF-8",
-                                LoadImages = true
+                                LoadImages = true,
+                               
                             }
                         }
                     }
@@ -337,8 +488,211 @@ public partial class Order
 
         return pdfFilePaths;
     }
+	public List<string> GenerateA6Pdf(List<string> htmls)
+	{
+		List<string> pdfFilePaths = new();
+		CustomAssemblyContext customAssembly = new();
+		customAssembly.LoadDinkToPdfDll();
 
-    public MemoryStream CombinePdf(List<string> inputPdfPaths)
+		string tempPath = "";
+
+		for (int i = 0; i < htmls.Count; i++)
+		{
+			try
+			{
+				// Parse the HTML content
+				HtmlDocument htmlDoc = new();
+				htmlDoc.LoadHtml(htmls[i]);
+
+				// Extract all <div class="div_frame">
+				var divFrames = htmlDoc.DocumentNode.SelectNodes("//div[contains(@class, 'div_frame')]");
+				if (divFrames == null || divFrames.Count == 0)
+				{
+					// Check for <table class="PrintContent">
+					var printContentTables = htmlDoc.DocumentNode.SelectNodes("//table[contains(@class, 'PrintContent')]");
+					if (printContentTables != null && printContentTables.Count > 0)
+					{
+						// Process PrintContent elements
+                        //7TO11Froozen
+						tempPath = Path.Combine(Path.GetTempPath(), "MergeTemp");
+						var headNode = htmlDoc.DocumentNode.SelectSingleNode("//head");
+						var bodyNode = htmlDoc.DocumentNode.SelectSingleNode("//body");
+
+						string originalHead = headNode?.OuterHtml ?? "<head></head>";
+						string originalBodyClass = bodyNode?.GetAttributeValue("class", string.Empty) ?? "";
+
+						for (int j = 0; j < printContentTables.Count; j++)
+						{
+							string htmlFilePath = Path.Combine(tempPath, $"outputHTML_{i}_{j}.html");
+							string pdfFilePath = Path.Combine(tempPath, $"output_{i}_{j}.pdf");
+
+							// Build the new HTML content for the current PrintContent table
+							string newHtmlContent = $@"
+                        <!DOCTYPE html>
+                        <html>
+                        {originalHead}
+                        <body class='{originalBodyClass}'>
+                            {printContentTables[j].OuterHtml}
+                        </body>
+                        </html>";
+
+							// Save the HTML file
+							Directory.CreateDirectory(tempPath); // Ensure temp directory exists
+							File.WriteAllText(htmlFilePath, newHtmlContent);
+
+							// Generate PDF
+							if (File.Exists(pdfFilePath)) File.Delete(pdfFilePath);
+
+							var doc = new HtmlToPdfDocument
+							{
+								GlobalSettings = new GlobalSettings
+								{
+									ColorMode = ColorMode.Color,
+									Orientation = DinkToPdf.Orientation.Portrait,
+									PaperSize = PaperKind.A6,
+									Margins = new MarginSettings { Top = 3, Left = 0, Bottom = 5, Right = 0 },
+									Out = pdfFilePath
+								},
+								Objects =
+							{
+								new ObjectSettings
+								{
+									Page = htmlFilePath,
+									LoadSettings = new LoadSettings { JSDelay = 5000 },
+									WebSettings = new WebSettings
+									{
+										EnableJavascript = true,
+										DefaultEncoding = "UTF-8",
+										LoadImages = true,
+									}
+								}
+							}
+							};
+
+							Converter.Convert(doc);
+							pdfFilePaths.Add(pdfFilePath);
+							Console.WriteLine($"PDF generated successfully for PrintContent: {pdfFilePath}");
+						}
+					}
+					else
+					{
+						// Existing logic for no div_frame and no PrintContent
+						tempPath = Path.Combine(Path.GetTempPath(), "MergeTemp");
+						string htmlFilePath = Path.Combine(tempPath, $"outputHTML{i}.html");
+						string pdfFilePath = Path.Combine(tempPath, $"output{i}.pdf");
+
+						pdfFilePaths.Add(pdfFilePath);
+
+						File.WriteAllText(htmlFilePath, htmls[i]);
+
+						if (File.Exists(pdfFilePath)) File.Delete(pdfFilePath);
+
+						var doc = new HtmlToPdfDocument
+						{
+							GlobalSettings = new GlobalSettings
+							{
+								ColorMode = ColorMode.Color,
+								Orientation = DinkToPdf.Orientation.Portrait,
+								PaperSize = PaperKind.A4,
+								Out = pdfFilePath,
+							},
+							Objects =
+						{
+							new ObjectSettings
+							{
+								Page = htmlFilePath,
+								LoadSettings = new LoadSettings { JSDelay = 5000 },
+								WebSettings = new WebSettings
+								{
+									EnableJavascript = true,
+									DefaultEncoding = "UTF-8",
+									LoadImages = true,
+								}
+							}
+						}
+						};
+
+						Converter.Convert(doc);
+						Console.WriteLine($"PDF generated successfully: {pdfFilePath}");
+					}
+				}
+				else
+				{
+                    //For SevenElevenC2C
+					// Logic for processing divFrames remains unchanged
+					tempPath = Path.Combine(Path.GetTempPath(), "MergeTemp");
+
+					var headNode = htmlDoc.DocumentNode.SelectSingleNode("//head");
+					var bodyNode = htmlDoc.DocumentNode.SelectSingleNode("//body");
+
+					string originalHead = headNode?.OuterHtml ?? "<head></head>";
+					string originalBodyStart = bodyNode?.InnerHtml.Split(new[] { "<div class=\"div_frame\">" }, StringSplitOptions.None)[0] ?? "";
+
+					// Create a separate PDF for each <div class="div_frame">
+					for (int j = 0; j < divFrames.Count; j++)
+					{
+						string htmlFilePath = Path.Combine(tempPath, $"outputHTML_{i}_{j}.html");
+						string pdfFilePath = Path.Combine(tempPath, $"output_{i}_{j}.pdf");
+
+						// Build the new HTML content for the current div_frame
+						string newHtmlContent = $@"
+                    <!DOCTYPE html>
+                    <html>
+                    {originalHead}
+                    <body class='{bodyNode.GetAttributeValue("class", string.Empty)}'>
+                        {originalBodyStart}
+                        {divFrames[j].OuterHtml}
+                    </body>
+                    </html>";
+
+						// Save the HTML file
+						File.WriteAllText(htmlFilePath, newHtmlContent);
+
+						// Generate PDF
+						if (File.Exists(pdfFilePath)) File.Delete(pdfFilePath);
+						pdfFilePaths.Add(pdfFilePath);
+
+						var doc = new HtmlToPdfDocument
+						{
+							GlobalSettings = new GlobalSettings
+							{
+								ColorMode = ColorMode.Color,
+								Orientation = DinkToPdf.Orientation.Portrait,
+								PaperSize = PaperKind.A6,
+								Margins = new MarginSettings { Top = 3, Left = 0, Bottom = 5, Right = 0 },
+								Out = pdfFilePath
+							},
+							Objects =
+						{
+							new ObjectSettings
+							{
+								Page = htmlFilePath,
+								LoadSettings = new LoadSettings { JSDelay = 5000 },
+								WebSettings = new WebSettings
+								{
+									EnableJavascript = true,
+									DefaultEncoding = "UTF-8",
+									LoadImages = true,
+								}
+							}
+						}
+						};
+
+						Converter.Convert(doc);
+						Console.WriteLine($"PDF generated successfully for div_frame: {pdfFilePath}");
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Error during PDF generation: {ex.Message}");
+			}
+		}
+
+		return pdfFilePaths;
+	}
+
+	public MemoryStream CombinePdf(List<string> inputPdfPaths)
     {
         var memoryStream = new MemoryStream();
 

@@ -98,22 +98,31 @@
             {
                 @if ((Orders.Where(x => x.IsSelected).Count() < 1))
                 {
-                    <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
-                        <i class="fa fa-print"></i>
-                        @L["PrintShippedLabel"]
-                    </Button>
+                            <Dropdown  Disabled>
+     <Button Size="Size.ExtraSmall" Disabled class="btn btn-sm btn-primary" @onclick="OnPrintShippedLabel" >@L["PrintShippedLabel"]</Button>
+    <DropdownToggle Size="Size.ExtraSmall" Color="Color.Primary" Split />
+    <DropdownMenu>
+        <DropdownItem>Action</DropdownItem>
+      
+    </DropdownMenu>
+</Dropdown>
                 }
                 else
                 {
-                    <Button Type="@ButtonType.Button"
-                            Clicked="OnPrintShippedLabel"
-                    Class="ms-1 btn btn-sm btn-primary">
-                        <i class="fa fa-print"></i>
-                        @L["PrintShippedLabel"]
-                    </Button>
-                }
+                    <Dropdown >
+     <Button Size="Size.ExtraSmall" class="btn btn-sm btn-primary" Clicked="OnPrintShippedLabel" >@L["PrintShippedLabel"]</Button>
+    <DropdownToggle Size="Size.ExtraSmall" Color="Color.Primary" Split />
+    <DropdownMenu>
+        <DropdownItem Clicked="OnPrintShippedLabel10Cm">@L["PrintShippedLabel10cm"]</DropdownItem>
+       
+    </DropdownMenu>
+</Dropdown>
+                
+  
+                   
+                
             }
-
+            }
             @if (SelectedTabName is PikachuResource.PrepareShipment)
             {
                 @if (Orders.Where(x => x.IsSelected).Count() < 1)
