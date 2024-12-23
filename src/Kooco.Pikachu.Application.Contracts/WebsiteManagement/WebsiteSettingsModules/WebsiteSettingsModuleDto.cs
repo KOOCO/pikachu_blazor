@@ -6,7 +6,7 @@ namespace Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
 
 public class WebsiteSettingsModuleDto
 {
-    public Guid? Id { get; set; }
+    public Guid Id { get; set; }
     public Guid? TenantId { get; set; }
     public Guid WebsiteSettingsId { get; set; }
     public int SortOrder { get; set; }

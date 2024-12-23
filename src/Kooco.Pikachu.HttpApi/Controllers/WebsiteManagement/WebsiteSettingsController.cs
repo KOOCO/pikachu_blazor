@@ -28,6 +28,30 @@ public class WebsiteSettingsController(IWebsiteSettingsAppService websiteSetting
         return websiteSettingsAppService.DeleteAsync(id);
     }
 
+    [HttpDelete("instructions-module/{id}")]
+    public Task DeleteInstructionsModuleAsync(Guid id)
+    {
+        return websiteSettingsAppService.DeleteInstructionsModuleAsync(id);
+    }
+
+    [HttpDelete("module/{id}/{moduleId}")]
+    public Task DeleteModuleAsync(Guid id, Guid moduleId)
+    {
+        return websiteSettingsAppService.DeleteModuleAsync(id, moduleId);
+    }
+
+    [HttpDelete("overview-module/{id}")]
+    public Task DeleteOverviewModuleAsync(Guid id)
+    {
+        return websiteSettingsAppService.DeleteOverviewModuleAsync(id);
+    }
+
+    [HttpDelete("product-ranking-module/{id}")]
+    public Task DeleteProductRankingModuleAsync(Guid id)
+    {
+        return websiteSettingsAppService.DeleteProductRankingModuleAsync(id);
+    }
+
     [HttpGet("{id}")]
     public Task<WebsiteSettingsDto> GetAsync(Guid id, bool includeDetails = false)
     {
