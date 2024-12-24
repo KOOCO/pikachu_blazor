@@ -26,7 +26,7 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
         await shopCartRepository.EnsureCollectionLoadedAsync(shopCart, s => s.CartItems);
 
         input.CartItems ??= [];
-        
+
         foreach (CreateCartItemDto cartItem in input.CartItems)
         {
             Check.NotNull(cartItem.ItemId, nameof(cartItem.ItemId));
@@ -42,7 +42,7 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
                 await shopCartRepository.UpdateAsync(shopCart);
             }
 
-            else await shopCartManager.AddCartItem(shopCart, cartItem.ItemId.Value, cartItem.Quantity, cartItem.UnitPrice, cartItem.ItemDetailId.Value);
+            else await shopCartManager.AddCartItem(shopCart, cartItem.Quantity, cartItem.UnitPrice, cartItem.ItemId, cartItem.ItemDetailId, cartItem.SetItemId);
         }
 
         return ObjectMapper.Map<ShopCart, ShopCartDto>(shopCart);
@@ -109,11 +109,9 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
         Check.NotDefaultOrNull<Guid>(userId, nameof(userId));
         Check.NotDefaultOrNull<Guid>(groupBuyId, nameof(groupBuyId));
         Check.NotNull(input, nameof(input));
-        Check.NotDefaultOrNull(input.ItemId, nameof(input.ItemId));
-        Check.NotDefaultOrNull(input.ItemDetailId, nameof(input.ItemDetailId));
 
         ShopCart shopCart = await shopCartRepository.FindByUserIdAndGroupBuyIdAsync(userId, groupBuyId);
-        
+
         if (shopCart is null) shopCart = await shopCartManager.CreateAsync(userId, groupBuyId);
 
         else
@@ -130,7 +128,7 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
             }
         }
 
-        else await shopCartManager.AddCartItem(shopCart, input.ItemId.Value, input.Quantity, input.UnitPrice, input.ItemDetailId.Value);
+        else await shopCartManager.AddCartItem(shopCart, input.Quantity, input.UnitPrice, input.ItemId, input.ItemDetailId, input.SetItemId);
 
         await shopCartRepository.UpdateAsync(shopCart);
 
@@ -141,8 +139,6 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
     {
         Check.NotDefaultOrNull<Guid>(cartItemId, nameof(cartItemId));
         Check.NotNull(input, nameof(input));
-        Check.NotDefaultOrNull(input.ItemId, nameof(input.ItemId));
-        Check.NotDefaultOrNull(input.ItemDetailId, nameof(input.ItemDetailId));
 
         ShopCart shopCart = await shopCartRepository.FindByCartItemIdAsync(cartItemId, exception: true);
 

@@ -25,34 +25,24 @@ public class ShopCartManager(IShopCartRepository shopCartRepository, IItemReposi
         };
 
         await shopCartRepository.InsertAsync(shopCart);
-        
+
         return shopCart;
     }
 
-    public async Task<ShopCart> AddCartItem(ShopCart shopCart, CartItem cartItem)
+    public async Task<ShopCart> AddCartItem(ShopCart shopCart, int quantity, int unitPrice, Guid? itemId, 
+        Guid? itemDetailId, Guid? setItemId)
     {
         Check.NotNull(shopCart, nameof(shopCart));
-        Check.NotNull(cartItem, nameof(cartItem));
-
-        await ValidateItemDetailsAsync(cartItem.ItemId, cartItem.ItemDetailId);
-        shopCart.AddCartItem(cartItem);
-        return shopCart;
-    }
-
-    public async Task<ShopCart> AddCartItem(ShopCart shopCart, Guid itemId, int quantity, int unitPrice, Guid itemDetailId)
-    {
-        Check.NotNull(shopCart, nameof(shopCart));
-        Check.NotDefaultOrNull<Guid>(itemId, nameof(itemId));
         Check.Range(quantity, nameof(quantity), 0, int.MaxValue);
         Check.Range(unitPrice, nameof(unitPrice), 0, int.MaxValue);
-        Check.NotDefaultOrNull<Guid>(itemDetailId, nameof(itemDetailId));
 
-        await ValidateItemDetailsAsync(itemId, itemDetailId);
-        shopCart.AddCartItem(GuidGenerator.Create(), itemId, quantity, unitPrice, itemDetailId);
+        await ValidateCartItemAsync(itemId, itemDetailId, setItemId);
+        shopCart.AddCartItem(GuidGenerator.Create(), quantity, unitPrice, itemId, itemDetailId, setItemId);
         return shopCart;
     }
 
-    public async Task<CartItem> UpdateCartItemAsync(ShopCart shopCart, Guid cartItemId, Guid itemId, int quantity, int unitPrice, Guid itemDetailId)
+    public async Task<CartItem> UpdateCartItemAsync(ShopCart shopCart, Guid cartItemId, int quantity, int unitPrice, 
+        Guid? itemId, Guid? itemDetailId, Guid? setItemId)
     {
         Check.NotNull(shopCart, nameof(shopCart));
         Check.NotDefaultOrNull<Guid>(cartItemId, nameof(cartItemId));
@@ -63,15 +53,12 @@ public class ShopCartManager(IShopCartRepository shopCartRepository, IItemReposi
         var cartItem = shopCart.CartItems.FirstOrDefault(x => x.Id == cartItemId)
                             ?? throw new EntityNotFoundException(typeof(CartItem), cartItemId);
 
-        if (itemId != cartItem.ItemId)
+        if (itemId != cartItem.ItemId
+            || itemDetailId != cartItem.ItemDetailId
+            || setItemId != cartItem.SetItemId)
         {
-            cartItem.ItemId = itemId;
-        }
-
-        if (itemDetailId != cartItem.ItemDetailId)
-        {
-            await ValidateItemDetailsAsync(itemId, itemDetailId);
-            cartItem.ItemDetailId = itemDetailId;
+            await ValidateCartItemAsync(itemId, itemDetailId, setItemId);
+            cartItem.SpecifyItemOrSetItem(itemId, itemDetailId, setItemId);
         }
 
         if (quantity != cartItem.Quantity)
@@ -119,12 +106,21 @@ public class ShopCartManager(IShopCartRepository shopCartRepository, IItemReposi
         return shopCart;
     }
 
-    public async Task ValidateItemDetailsAsync(Guid itemId, Guid itemDetailId)
+    public async Task ValidateCartItemAsync(Guid? itemId, Guid? itemDetailId, Guid? setItemId)
     {
-        var itemDetail = await itemRepository.FindItemDetailAsync(itemDetailId);
-        if (itemDetail == null || itemDetail.ItemId != itemId)
+        if ((!itemId.HasValue && !setItemId.HasValue) || (itemId.HasValue && setItemId.HasValue))
         {
-            throw new EntityNotFoundException(typeof(ItemDetails), itemDetailId);
+            throw new InvalidCartItemException();
+        }
+
+        if (itemId.HasValue)
+        {
+            var itemDetail = itemDetailId.HasValue ? await itemRepository.FindItemDetailAsync(itemDetailId.Value) : null;
+
+            if (itemDetail == null || itemDetail.ItemId != itemId)
+            {
+                throw new EntityNotFoundException(typeof(ItemDetails), itemDetailId);
+            }
         }
     }
 }
