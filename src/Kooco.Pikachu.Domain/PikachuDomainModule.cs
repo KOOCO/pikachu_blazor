@@ -83,8 +83,10 @@ public class PikachuDomainModule : AbpModule
         Configure<AzureStorageAccountOptions>(options => {
             var azureStorageConnectionString = configuration["AzureStorageAccountSettings:ConnectionString"];
             var azureStorageAccountUrl = configuration["AzureStorageAccountSettings:AccountUrl"];
-            options.ConnectionString = azureStorageConnectionString; options.AccountUrl = azureStorageAccountUrl;
-        });
+            var azureStorageCDNUrl = configuration["AzureStorageAccountSettings:CdnUrl"];
+            options.ConnectionString = azureStorageConnectionString; options.AccountUrl = azureStorageAccountUrl;options.CDNUrl = azureStorageCDNUrl;
+
+		});
     }
 
     private void ConfigureAbpBlobStoringOptions(IConfiguration configuration)
