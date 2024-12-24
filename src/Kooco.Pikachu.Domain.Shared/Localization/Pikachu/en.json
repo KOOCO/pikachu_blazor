@@ -1104,6 +1104,7 @@
     "GroupBuyModuleType": "Group Buy Module Type",
     "HomePage": "Homepage",
     "NotSetAsHomePage": "Not Set as Homepage",
-    "AreYouSureToDeleteThis?": "Please be aware that once this record is deleted, it can never be restored. Do you wish to delete it?"
+    "AreYouSureToDeleteThis?": "Please be aware that once this record is deleted, it can never be restored. Do you wish to delete it?",
+    "Pikachu:InvalidCartItem": "The provided parameters for cart item are invalid. Please either specify item or set item."
   }
 }

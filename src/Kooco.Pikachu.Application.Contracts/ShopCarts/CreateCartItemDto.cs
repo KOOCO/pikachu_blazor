@@ -5,15 +5,13 @@ namespace Kooco.Pikachu.ShopCarts;
 
 public class CreateCartItemDto
 {
-    [Required]
-    public Guid? ItemId { get; set; }
-
     [Range(int.MinValue, int.MaxValue)]
     public int Quantity { get; set; }
 
     [Range(0, int.MaxValue)]
     public int UnitPrice { get; set; }
 
-    [Required]
+    public Guid? ItemId { get; set; }
     public Guid? ItemDetailId { get; set; }
+    public Guid? SetItemId { get; set; }
 }

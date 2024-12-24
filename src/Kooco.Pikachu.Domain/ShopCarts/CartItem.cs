@@ -1,8 +1,8 @@
 ﻿using Kooco.Pikachu.Items;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using Volo.Abp;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
 
@@ -11,11 +11,12 @@ namespace Kooco.Pikachu.ShopCarts;
 public class CartItem : FullAuditedEntity<Guid>, IMultiTenant
 {
     public Guid ShopCartId { get; private set; }
-    public Guid ItemId { get; set; }
+    public Guid? ItemId { get; private set; }
     public int Quantity { get; set; }
     public int UnitPrice { get; private set; }
     public Guid? TenantId { get; set; }
-    public Guid ItemDetailId { get; set; }
+    public Guid? ItemDetailId { get; private set; }
+    public Guid? SetItemId { get; private set; }
 
     [ForeignKey(nameof(ShopCartId))]
     public ShopCart? ShopCart { get; set; }
@@ -23,22 +24,50 @@ public class CartItem : FullAuditedEntity<Guid>, IMultiTenant
     [ForeignKey(nameof(ItemId))]
     public Item? Item { get; set; }
 
+    [ForeignKey(nameof(SetItemId))]
+    public SetItem? SetItem { get; set; }
+
+
     private CartItem() { }
 
-    public CartItem(Guid id, Guid shopCartId, Guid itemId, int quantity, int unitPrice, Guid itemDetailId) : base(id)
+    public CartItem(
+        Guid id,
+        Guid shopCartId,
+        int quantity,
+        int unitPrice,
+        Guid? itemId,
+        Guid? itemDetailId,
+        Guid? setItemId
+        ) : base(id)
     {
         ShopCartId = shopCartId;
-        ItemId = itemId;
         SetQuantity(quantity);
         SetUnitPrice(unitPrice);
+        SpecifyItemOrSetItem(itemId, itemDetailId, setItemId);
+    }
+
+    internal CartItem SpecifyItemOrSetItem(Guid? itemId, Guid? itemDetailId, Guid? setItemId)
+    {
+        if ((!itemId.HasValue && !setItemId.HasValue) || (itemId.HasValue && setItemId.HasValue))
+        {
+            throw new InvalidCartItemException();
+        }
+
+        if (itemId.HasValue && !itemDetailId.HasValue)
+        {
+            throw new EntityNotFoundException(typeof(ItemDetails), itemDetailId);
+        }
+
+        ItemId = itemId;
         ItemDetailId = itemDetailId;
+        SetItemId = setItemId;
+
+        return this;
     }
 
     internal CartItem ChangeQuantity(int quantity)
     {
         Quantity += quantity;
-
-        //SetQuantity(quantity);
         return this;
     }
 
