@@ -1853,7 +1853,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 if (paymentResult.OrderId is null)
                 {
                     order = await _orderRepository
-                                   .FirstOrDefaultAsync(o => o.OrderNo == paymentResult.MerchantTradeNo)
+                                   .FirstOrDefaultAsync(o => o.MerchantTradeNo == paymentResult.MerchantTradeNo)
                                    ?? throw new EntityNotFoundException();
 
                     order = await _orderRepository.GetWithDetailsAsync(order.Id);
