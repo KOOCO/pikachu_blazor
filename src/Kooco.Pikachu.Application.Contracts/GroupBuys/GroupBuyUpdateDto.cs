@@ -222,6 +222,7 @@ public class GroupBuyUpdateDto :  IHasConcurrencyStamp
     public string? BackgroundColor { get; set; }
     public string? SecondaryBackgroundColor { get; set; }
     public string? AlertColor { get; set; }
+    public string? BlockColor { get; set; }
     public ProductDetailsDisplayMethod? ProductDetailsDisplayMethod { get; set; }
 
     public GroupBuyUpdateDto()

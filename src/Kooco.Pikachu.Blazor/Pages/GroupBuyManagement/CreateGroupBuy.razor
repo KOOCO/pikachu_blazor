@@ -975,6 +975,12 @@
                     <ColorPicker Class="color-scheme" @bind-Color="@CreateGroupBuyDto.AlertColor" />
                     <TextEdit Disabled @bind-text="CreateGroupBuyDto.AlertColor" class="form-control mt-2" />
                 </Div>
+
+                <Div Class="col-2">
+                    <label class="form-label">@L["Block"]</label>
+                    <ColorPicker Class="color-scheme" @bind-Color="@CreateGroupBuyDto.BlockColor" />
+                    <TextEdit Disabled @bind-text="CreateGroupBuyDto.BlockColor" class="form-control mt-2" />
+                </Div>
             </Div>
         }
 

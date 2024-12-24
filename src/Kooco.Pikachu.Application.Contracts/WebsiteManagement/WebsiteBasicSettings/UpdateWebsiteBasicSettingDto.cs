@@ -52,4 +52,8 @@ public class UpdateWebsiteBasicSettingDto
     [Required]
     [MaxLength(WebsiteBasicSettingConsts.MaxColorLength)]
     public string? AlertColor { get; set; }
+
+    [Required]
+    [MaxLength(WebsiteBasicSettingConsts.MaxColorLength)]
+    public string? BlockColor { get; set; }
 }

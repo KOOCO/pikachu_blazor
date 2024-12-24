@@ -11,7 +11,7 @@ public class WebsiteBasicSettingManager(IRepository<WebsiteBasicSetting, Guid> w
 {
     public async Task<WebsiteBasicSetting> UpdateAsync(bool isEnabled, WebsiteTitleDisplayOptions titleDisplayOption, string storeTitle,
         string description, string logoName, string logoUrl, GroupBuyTemplateType templateType, ColorScheme colorScheme,
-        string primaryColor, string secondaryColor, string backgroundColor, string secondaryBackgroundColor, string alertColor)
+        string primaryColor, string secondaryColor, string backgroundColor, string secondaryBackgroundColor, string alertColor, string blockColor)
     {
         var websiteBasicSettings = await websiteBasicSettingRepository.FirstOrDefaultAsync();
 
@@ -19,7 +19,7 @@ public class WebsiteBasicSettingManager(IRepository<WebsiteBasicSetting, Guid> w
         {
             websiteBasicSettings = new(GuidGenerator.Create(), isEnabled, titleDisplayOption, storeTitle, description,
             logoName, logoUrl, templateType, colorScheme, primaryColor, secondaryColor, backgroundColor,
-            secondaryBackgroundColor, alertColor);
+            secondaryBackgroundColor, alertColor, blockColor);
 
             await websiteBasicSettingRepository.InsertAsync(websiteBasicSettings);
         }
@@ -29,7 +29,7 @@ public class WebsiteBasicSettingManager(IRepository<WebsiteBasicSetting, Guid> w
             websiteBasicSettings.SetStoreTitle(storeTitle);
             websiteBasicSettings.SetDescription(description);
             websiteBasicSettings.SetLogo(logoName, logoUrl);
-            websiteBasicSettings.SetColorScheme(colorScheme, primaryColor, secondaryColor, backgroundColor, secondaryBackgroundColor, alertColor);
+            websiteBasicSettings.SetColorScheme(colorScheme, primaryColor, secondaryColor, backgroundColor, secondaryBackgroundColor, alertColor, blockColor);
             websiteBasicSettings.TitleDisplayOption = titleDisplayOption;
             websiteBasicSettings.TemplateType = templateType;
 

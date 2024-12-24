@@ -119,6 +119,7 @@ public partial class WebsiteBasicSettings
                 Entity.BackgroundColor = "#FFFFFF";
                 Entity.SecondaryBackgroundColor = "#C9D6BD";
                 Entity.AlertColor = "#FF902A";
+                Entity.BlockColor = "#EFF4EB";
                 break;
 
             case ColorScheme.TropicalSunset:
@@ -127,6 +128,7 @@ public partial class WebsiteBasicSettings
                 Entity.BackgroundColor = "#FFFFFF";
                 Entity.SecondaryBackgroundColor = "#E5D19A";
                 Entity.AlertColor = "#FF902A";
+                Entity.BlockColor = "#EFF4EB";
                 break;
 
             case ColorScheme.DeepSeaNight:
@@ -135,6 +137,7 @@ public partial class WebsiteBasicSettings
                 Entity.BackgroundColor = "#FFFFFF";
                 Entity.SecondaryBackgroundColor = "#DCD6D0";
                 Entity.AlertColor = "#A1E82D";
+                Entity.BlockColor = "#EFF4EB";
                 break;
 
             case ColorScheme.SweetApricotCream:
@@ -143,6 +146,7 @@ public partial class WebsiteBasicSettings
                 Entity.BackgroundColor = "#FFFFFF";
                 Entity.SecondaryBackgroundColor = "#DCBFC3";
                 Entity.AlertColor = "#FFC123";
+                Entity.BlockColor = "#EFF4EB";
                 break;
 
             case ColorScheme.DesertDawn:
@@ -151,6 +155,7 @@ public partial class WebsiteBasicSettings
                 Entity.BackgroundColor = "#FFFFFF";
                 Entity.SecondaryBackgroundColor = "#EBC7AD";
                 Entity.AlertColor = "#FF902A";
+                Entity.BlockColor = "#EFF4EB";
                 break;
 
 
@@ -160,6 +165,7 @@ public partial class WebsiteBasicSettings
                 Entity.BackgroundColor = string.Empty;
                 Entity.SecondaryBackgroundColor = string.Empty;
                 Entity.AlertColor = string.Empty;
+                Entity.BlockColor = string.Empty;
                 break;
         }
     }

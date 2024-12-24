@@ -196,6 +196,11 @@
                                     <ColorPicker Class="color-scheme" @bind-Color="@Entity.AlertColor" />
                                     <TextEdit Class="mt-2" Disabled @bind-text="Entity.AlertColor" />
                                 </Column>
+                                <Column ColumnSize="ColumnSize.Is2" Class="text-center">
+                                    <FieldLabel>@L["Block"]</FieldLabel>
+                                    <ColorPicker Class="color-scheme" @bind-Color="@Entity.BlockColor" />
+                                    <TextEdit Class="mt-2" Disabled @bind-text="Entity.BlockColor" />
+                                </Column>
                             </Row>
                         }
 

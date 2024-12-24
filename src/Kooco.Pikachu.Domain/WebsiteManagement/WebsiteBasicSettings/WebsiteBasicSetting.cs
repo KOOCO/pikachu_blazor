@@ -21,8 +21,10 @@ public class WebsiteBasicSetting : FullAuditedEntity<Guid>, IMultiTenant
     public string? BackgroundColor { get; set; }
     public string? SecondaryBackgroundColor { get; set; }
     public string? AlertColor { get; set; }
+    public string? BlockColor { get; set; }
     public Guid? TenantId { get; set; }
 
+    private WebsiteBasicSetting() { }
 
     public WebsiteBasicSetting(
         Guid id,
@@ -38,14 +40,15 @@ public class WebsiteBasicSetting : FullAuditedEntity<Guid>, IMultiTenant
         string secondaryColor,
         string backgroundColor,
         string secondaryBackgroundColor,
-        string alertColor
+        string alertColor,
+        string blockColor
         ) : base(id)
     {
         SetIsEnabled(isEnabled);
         SetStoreTitle(storeTitle);
         SetDescription(description);
         SetLogo(logoName, logoUrl);
-        SetColorScheme(colorScheme, primaryColor, secondaryColor, backgroundColor, secondaryBackgroundColor, alertColor);
+        SetColorScheme(colorScheme, primaryColor, secondaryColor, backgroundColor, secondaryBackgroundColor, alertColor, blockColor);
         TitleDisplayOption = titleDisplayOption;
         TemplateType = templateType;
     }
@@ -72,7 +75,7 @@ public class WebsiteBasicSetting : FullAuditedEntity<Guid>, IMultiTenant
     }
 
     public void SetColorScheme(ColorScheme colorScheme, string primaryColor, string secondaryColor, string backgroundColor,
-        string secondaryBackgroundColor, string alertColor)
+        string secondaryBackgroundColor, string alertColor, string blockColor)
     {
         ColorScheme = colorScheme;
         PrimaryColor = Check.NotNullOrWhiteSpace(primaryColor, nameof(PrimaryColor), maxLength: WebsiteBasicSettingConsts.MaxColorLength);
@@ -80,5 +83,6 @@ public class WebsiteBasicSetting : FullAuditedEntity<Guid>, IMultiTenant
         BackgroundColor = Check.NotNullOrWhiteSpace(backgroundColor, nameof(BackgroundColor), maxLength: WebsiteBasicSettingConsts.MaxColorLength);
         SecondaryBackgroundColor = Check.NotNullOrWhiteSpace(secondaryBackgroundColor, nameof(SecondaryBackgroundColor), maxLength: WebsiteBasicSettingConsts.MaxColorLength);
         AlertColor = Check.NotNullOrWhiteSpace(alertColor, nameof(AlertColor), maxLength: WebsiteBasicSettingConsts.MaxColorLength);
+        BlockColor = Check.NotNullOrWhiteSpace(blockColor, nameof(BlockColor), maxLength: WebsiteBasicSettingConsts.MaxColorLength);
     }
 }

@@ -27,6 +27,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
+using Volo.Abp.Domain.Entities;
 
 
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
@@ -296,6 +297,7 @@ public partial class CreateGroupBuy
                 CreateGroupBuyDto.BackgroundColor = "#FFFFFF";
                 CreateGroupBuyDto.SecondaryBackgroundColor = "#C9D6BD";
                 CreateGroupBuyDto.AlertColor = "#FF902A";
+                CreateGroupBuyDto.BlockColor = "#EFF4EB";
                 break;
 
             case ColorScheme.TropicalSunset:
@@ -304,6 +306,7 @@ public partial class CreateGroupBuy
                 CreateGroupBuyDto.BackgroundColor = "#FFFFFF";
                 CreateGroupBuyDto.SecondaryBackgroundColor = "#E5D19A";
                 CreateGroupBuyDto.AlertColor = "#FF902A";
+                CreateGroupBuyDto.BlockColor = "#EFF4EB";
                 break;
 
             case ColorScheme.DeepSeaNight:
@@ -312,6 +315,7 @@ public partial class CreateGroupBuy
                 CreateGroupBuyDto.BackgroundColor = "#FFFFFF";
                 CreateGroupBuyDto.SecondaryBackgroundColor = "#DCD6D0";
                 CreateGroupBuyDto.AlertColor = "#A1E82D";
+                CreateGroupBuyDto.BlockColor = "#EFF4EB";
                 break;
 
             case ColorScheme.SweetApricotCream:
@@ -320,6 +324,7 @@ public partial class CreateGroupBuy
                 CreateGroupBuyDto.BackgroundColor = "#FFFFFF";
                 CreateGroupBuyDto.SecondaryBackgroundColor = "#DCBFC3";
                 CreateGroupBuyDto.AlertColor = "#FFC123";
+                CreateGroupBuyDto.BlockColor = "#EFF4EB";
                 break;
 
             case ColorScheme.DesertDawn:
@@ -328,6 +333,7 @@ public partial class CreateGroupBuy
                 CreateGroupBuyDto.BackgroundColor = "#FFFFFF";
                 CreateGroupBuyDto.SecondaryBackgroundColor = "#EBC7AD";
                 CreateGroupBuyDto.AlertColor = "#FF902A";
+                CreateGroupBuyDto.BlockColor = "#EFF4EB";
                 break;
 
 
@@ -337,6 +343,7 @@ public partial class CreateGroupBuy
                 CreateGroupBuyDto.BackgroundColor = string.Empty;
                 CreateGroupBuyDto.SecondaryBackgroundColor = string.Empty;
                 CreateGroupBuyDto.AlertColor = string.Empty;
+                CreateGroupBuyDto.BlockColor = string.Empty;
                 IsColorPickerOpen = false;
                 break;
         }

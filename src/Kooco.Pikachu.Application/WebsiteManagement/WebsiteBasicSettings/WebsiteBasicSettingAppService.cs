@@ -27,7 +27,7 @@ public class WebsiteBasicSettingAppService(IRepository<WebsiteBasicSetting, Guid
 
         var websiteBasicSettings = await websiteBasicSettingManager.UpdateAsync(input.IsEnabled, input.TitleDisplayOption.Value, input.StoreTitle, input.Description,
             input.LogoName, input.LogoUrl, input.TemplateType.Value, input.ColorScheme.Value, input.PrimaryColor, input.SecondaryColor, input.BackgroundColor,
-            input.SecondaryColor, input.AlertColor);
+            input.SecondaryColor, input.AlertColor, input.BlockColor);
 
         return ObjectMapper.Map<WebsiteBasicSetting, WebsiteBasicSettingDto>(websiteBasicSettings);
     }

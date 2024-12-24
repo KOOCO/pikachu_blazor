@@ -19,5 +19,6 @@ public class WebsiteBasicSettingDto : EntityDto<Guid>
     public string? BackgroundColor { get; set; }
     public string? SecondaryBackgroundColor { get; set; }
     public string? AlertColor { get; set; }
+    public string? BlockColor { get; set; }
     public Guid? TenantId { get; set; }
 }
