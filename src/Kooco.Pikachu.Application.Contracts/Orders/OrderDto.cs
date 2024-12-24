@@ -112,4 +112,9 @@ public class OrderDto : FullAuditedEntityDto<Guid>
     public string? EcpayLogisticsStatus { get; set; }
 
     public string InvoiceMsg { get; set; }
+
+    public int CreditDeductionAmount { get; set; }
+    public Guid? DiscountCodeId { get; set; }
+    public int? DiscountAmount { get; set; }
+    public decimal cashback_amount { get; set; }
 }
