@@ -4,6 +4,7 @@ using Blazorise.RichTextEdit;
 using DinkToPdf;
 using DinkToPdf.Contracts;
 using Hangfire;
+using Hangfire.SqlServer;
 using Kooco.Pikachu.BackgroundWorkers;
 using Kooco.Pikachu.Blazor.Helpers;
 using Kooco.Pikachu.Blazor.Menus;
@@ -270,8 +271,12 @@ public class PikachuBlazorModule : AbpModule
     {
         context.Services.AddHangfire(config =>
         {
-            config.UseSqlServerStorage(configuration.GetConnectionString("Default"));
-        });
+            config.UseSqlServerStorage(configuration.GetConnectionString("HangFire"), new SqlServerStorageOptions
+			{
+				PrepareSchemaIfNecessary = true
+			});
+		
+	});
 
         context.Services.AddHangfireServer(options =>
         {
