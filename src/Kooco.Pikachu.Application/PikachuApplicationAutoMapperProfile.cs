@@ -37,6 +37,7 @@ using Kooco.Pikachu.UserCumulativeFinancials;
 using Kooco.Pikachu.UserCumulativeOrders;
 using Kooco.Pikachu.UserShoppingCredits;
 using Kooco.Pikachu.WebsiteManagement;
+using Kooco.Pikachu.WebsiteManagement.FooterSettings;
 using Kooco.Pikachu.WebsiteManagement.WebsiteBasicSettings;
 using Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
 using System.Collections.Generic;
@@ -290,6 +291,13 @@ public class PikachuApplicationAutoMapperProfile : Profile
 
         CreateMap<WebsiteBasicSetting, WebsiteBasicSettingDto>();
         CreateMap<WebsiteBasicSettingDto, UpdateWebsiteBasicSettingDto>();
+
+        CreateMap<FooterSetting, FooterSettingDto>();
+        CreateMap<FooterSettingDto, UpdateFooterSettingDto>();
+        CreateMap<FooterSettingSection, FooterSettingSectionDto>();
+        CreateMap<FooterSettingSectionDto, UpdateFooterSettingSectionDto>();
+        CreateMap<FooterSettingLink, FooterSettingLinkDto>();
+        CreateMap<FooterSettingLinkDto, UpdateFooterSettingLinkDto>();
 
         CreateMap<LoginConfiguration, LoginConfigurationDto>();
         CreateMap<LoginConfigurationDto, UpdateLoginConfigurationDto>();

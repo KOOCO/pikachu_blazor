@@ -1105,6 +1105,12 @@
     "HomePage": "Homepage",
     "NotSetAsHomePage": "Not Set as Homepage",
     "AreYouSureToDeleteThis?": "Please be aware that once this record is deleted, it can never be restored. Do you wish to delete it?",
-    "Pikachu:InvalidCartItem": "The provided parameters for cart item are invalid. Please either specify item or set item."
+    "Pikachu:InvalidCartItem": "The provided parameters for cart item are invalid. Please either specify item or set item.",
+    "Enum:FooterSettingsPositions.1": "Left",
+    "Enum:FooterSettingsPositions.2": "Center",
+    "Enum:FooterSettingsPositions.3": "Right",
+    "FooterSettingsType": "Footer Settings Type",
+    "Pikachu:InvalidNumberOfLinks": "The minimum number of links is 1 and the maximum number of allowed links are {0}. Please review your input for links and try again.",
+    "FooterSettingsUpdated": "Footer Settings Updated!"
   }
 }

@@ -49,6 +49,7 @@ using Kooco.Pikachu.GroupBuyProductRankings;
 using Kooco.Pikachu.ProductCategories;
 using Kooco.Pikachu.WebsiteManagement.WebsiteBasicSettings;
 using Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
+using Kooco.Pikachu.WebsiteManagement.FooterSettings;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -144,6 +145,8 @@ public class PikachuDbContext :
     public DbSet<WebsiteSettingsOverviewModule> WebsiteSettingsOverviewModules { get; set; }
     public DbSet<WebsiteSettingsInstructionModule> WebsiteSettingsInstructionModules { get; set; }
     public DbSet<WebsiteSettingsProductRankingModule> WebsiteSettingsProductRankingModules { get; set; }
+
+    public DbSet<FooterSetting> FooterSettings { get; set; }
 
     public DbSet<LoginConfiguration> LoginConfigurations { get; set; }
 
@@ -523,6 +526,31 @@ public class PikachuDbContext :
             b.ConfigureByConvention();
 
             b.HasOne(x => x.WebsiteSettings).WithMany(x => x.ProductRankingModules).HasForeignKey(x => x.WebsiteSettingsId);
+        });
+
+        builder.Entity<FooterSetting>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "FooterSettings", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.HasMany(x => x.Sections).WithOne(x => x.FooterSetting).HasForeignKey(x => x.FooterSettingId);
+        });
+
+        builder.Entity<FooterSettingSection>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "FooterSettingSections", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.HasOne(x => x.FooterSetting).WithMany(x => x.Sections).HasForeignKey(x => x.FooterSettingId);
+            b.HasMany(x => x.Links).WithOne(x => x.Section).HasForeignKey(x => x.SectionId);
+        });
+
+        builder.Entity<FooterSettingLink>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "FooterSettingLinks", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.HasOne(x => x.Section).WithMany(x => x.Links).HasForeignKey(x => x.SectionId);
         });
 
         builder.Entity<LoginConfiguration>(b =>

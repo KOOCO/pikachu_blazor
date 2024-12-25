@@ -1,4 +1,4 @@
-﻿namespace Kooco.Pikachu.WebsiteManagement;
+﻿namespace Kooco.Pikachu.WebsiteManagement.FooterSettings;
 
 public enum FooterSettingsType
 {

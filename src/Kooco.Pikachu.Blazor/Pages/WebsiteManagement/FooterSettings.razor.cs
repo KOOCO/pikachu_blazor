@@ -1,29 +1,94 @@
 using Blazorise;
 using Kooco.Pikachu.Extensions;
-using Kooco.Pikachu.WebsiteManagement;
+using Kooco.Pikachu.WebsiteManagement.FooterSettings;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 
 namespace Kooco.Pikachu.Blazor.Pages.WebsiteManagement;
 
 public partial class FooterSettings
 {
-    private List<Model> Models = [new("Left"), new("Center"), new("Right")];
+    private UpdateFooterSettingDto Entity { get; set; }
     private bool IsLoading { get; set; }
+    private bool IsCancelling { get; set; }
     private int DraggedLinkIndex { get; set; }
+
+    private Validations ValidationsRef;
+
+    public FooterSettings()
+    {
+        Entity = new();
+        Enum.GetValues(typeof(FooterSettingsPosition)).ToDynamicList().ForEach(enumValue =>
+        {
+            Entity.Sections.Add(new(enumValue));
+        });
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ResetAsync();
+    }
 
     async Task UpdateAsync()
     {
-        IsLoading = true;
-        StateHasChanged();
-        await Task.Delay(TimeSpan.FromSeconds(2));
-        IsLoading = false;
+        try
+        {
+            if (await ValidationsRef.ValidateAll())
+            {
+                if (Entity.Sections.Any(s => s.FooterSettingsType == FooterSettingsType.Link &&
+                    (s.Links == null || s.Links.Count == 0 || s.Links.Count >= FooterSettingsConsts.MaxAllowedLinks)))
+                {
+                    throw new InvalidNumberOfLinksException(FooterSettingsConsts.MaxAllowedLinks);
+                }
+                IsLoading = true;
+                Entity.Sections.ForEach(async section =>
+                {
+                    if (section.FooterSettingsType == FooterSettingsType.Image && section.ImageBase64 != null)
+                    {
+                        var bytes = Convert.FromBase64String(section.ImageBase64);
+                        section.ImageUrl = await ImageAppService.UploadImageAsync(section.ImageName, bytes);
+                    }
+                });
+                await FooterSettingAppService.UpdateAsync(Entity);
+                await Message.Success(L["FooterSettingsUpdated"]);
+            }
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
 
-    async Task OnFileUploadAsync(FileChangedEventArgs e, Model model)
+    async Task ResetAsync()
+    {
+        try
+        {
+            IsCancelling = true;
+            var footerSetting = await FooterSettingAppService.FirstOrDefaultAsync();
+            if (footerSetting is not null)
+            {
+                Entity = ObjectMapper.Map<FooterSettingDto, UpdateFooterSettingDto>(footerSetting);
+            }
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
+        finally
+        {
+            IsCancelling = false;
+            StateHasChanged();
+        }
+    }
+
+    async Task OnFileUploadAsync(FileChangedEventArgs e, UpdateFooterSettingSectionDto section)
     {
         var file = e.Files.FirstOrDefault();
 
@@ -47,87 +112,60 @@ public partial class FooterSettings
             await file.OpenReadStream().CopyToAsync(memoryStream);
             var fileBytes = memoryStream.ToArray();
 
-            model.ImageBase64 = Convert.ToBase64String(fileBytes);
-            model.ImageName = file.Name;
+            section.ImageBase64 = Convert.ToBase64String(fileBytes);
+            section.ImageName = file.Name;
 
             await InvokeAsync(StateHasChanged);
         }
     }
 
-    Task AddLink(Model model)
+    Task AddLink(UpdateFooterSettingSectionDto section)
     {
         RefreshLinksIndex();
-        model.Links.Add(new LinkModel(model.Links.Count));
+        section.Links.Add(new UpdateFooterSettingLinkDto(section.Links.Count));
         return Task.CompletedTask;
     }
 
-    Task RemoveLink(Model model, LinkModel link)
+    Task RemoveLink(UpdateFooterSettingSectionDto section, UpdateFooterSettingLinkDto link)
     {
-        model.Links.Remove(link);
+        section.Links.Remove(link);
         RefreshLinksIndex();
         return Task.CompletedTask;
     }
 
     Task RefreshLinksIndex()
     {
-        Models.ForEach(model =>
+        Entity.Sections.ForEach(section =>
         {
-            model.Links.ForEach(link =>
+            section.Links.ForEach(link =>
             {
-                link.Index = model.Links.IndexOf(link);
+                link.Index = section.Links.IndexOf(link);
             });
         });
 
         return Task.CompletedTask;
     }
 
-    Task StartLinkDrag(Model model, LinkModel link)
+    Task StartLinkDrag(UpdateFooterSettingSectionDto section, UpdateFooterSettingLinkDto link)
     {
-        DraggedLinkIndex = model.Links.IndexOf(link);
+        DraggedLinkIndex = section.Links.IndexOf(link);
         return Task.CompletedTask;
     }
 
-    Task LinkDrop(Model model, LinkModel link)
+    Task LinkDrop(UpdateFooterSettingSectionDto section, UpdateFooterSettingLinkDto link)
     {
-        if (model != null && link != null)
+        if (section != null && link != null)
         {
-            var index = model.Links.IndexOf(link);
+            var index = section.Links.IndexOf(link);
 
-            var current = model.Links[DraggedLinkIndex];
+            var current = section.Links[DraggedLinkIndex];
 
-            model.Links.RemoveAt(DraggedLinkIndex);
-            model.Links.Insert(index, current);
+            section.Links.RemoveAt(DraggedLinkIndex);
+            section.Links.Insert(index, current);
 
             RefreshLinksIndex();
             StateHasChanged();
         }
         return Task.CompletedTask;
-    }
-
-    private class Model
-    {
-        public string Heading { get; set; }
-        public FooterSettingsType? FooterSettingsType { get; set; }
-        public string ImageBase64 { get; set; }
-        public string ImageName { get; set; }
-        public List<LinkModel> Links { get; set; }
-
-        public Model(string heading)
-        {
-            Heading = heading;
-            Links = [];
-        }
-    }
-
-    private class LinkModel
-    {
-        public int Index { get; set; }
-        public string Title { get; set; }
-        public string Url { get; set; }
-
-        public LinkModel(int index)
-        {
-            Index = index;
-        }
     }
 }

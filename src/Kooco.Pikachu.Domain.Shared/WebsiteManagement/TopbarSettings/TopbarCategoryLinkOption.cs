@@ -1,4 +1,4 @@
-﻿namespace Kooco.Pikachu.WebsiteManagement;
+﻿namespace Kooco.Pikachu.WebsiteManagement.TopbarSettings;
 
 public enum TopbarCategoryLinkOption
 {
