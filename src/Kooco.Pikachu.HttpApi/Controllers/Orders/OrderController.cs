@@ -183,8 +183,7 @@ public class OrderController : AbpController, IOrderAppService
             oPayment.HashKey = hashKey;
             oPayment.HashIV = hashIV;
             oPayment.MerchantID = merchantID;
-            oPayment.Send.ReturnURL = "https://eowng60ht1hyw1q.m.pipedream.net";
-            //oPayment.Send.ReturnURL = $"{Request.Scheme}://{Request.Host}/api/app/orders/callback";
+            oPayment.Send.ReturnURL = $"{Request.Scheme}://{Request.Host}/api/app/orders/callback";
             oPayment.Send.ClientBackURL = clientBackUrl;
             oPayment.Send.MerchantTradeNo = order.MerchantTradeNo;
             oPayment.Send.MerchantTradeDate = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");

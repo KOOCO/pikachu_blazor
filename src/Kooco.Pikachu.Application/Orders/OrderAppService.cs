@@ -1858,9 +1858,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
                     order = await _orderRepository.GetWithDetailsAsync(order.Id);
 
-                    //if (paymentResult.CustomField1 != order.CheckMacValue) throw new Exception();
+                    if (paymentResult.CustomField1 != order.CheckMacValue) throw new Exception();
 
-                    //if (paymentResult.TradeAmt != order.TotalAmount) throw new Exception();
+                    if (paymentResult.TradeAmt != order.TotalAmount) throw new Exception();
                 }
                 else
                 {
