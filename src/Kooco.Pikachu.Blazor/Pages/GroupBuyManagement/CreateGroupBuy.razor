@@ -373,7 +373,7 @@
                                     <input type="checkbox"
                                            class="form-check-input me-1"
                                            id="@item"
-                                           disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")"
+                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item))"
                                            checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                     @L[item]
@@ -401,7 +401,7 @@
                                     <input type="checkbox"
                                            class="form-check-input me-1"
                                            id="@item"
-                                           disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")"
+                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item))"
                                            checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                     @L[item]
@@ -425,7 +425,7 @@
                                     <input type="checkbox"
                                            class="form-check-input me-1"
                                            id="@item"
-                                           disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")"
+                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item))"
                                            checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                     @L[item]
@@ -448,7 +448,7 @@
                                     <input type="checkbox"
                                            class="form-check-input me-1"
                                            id="@item"
-                                           disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")"
+                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item))"
                                            checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                     @L[item]
@@ -472,7 +472,7 @@
                                     <input type="checkbox"
                                            class="form-check-input me-1"
                                            id="@item"
-                                           disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")"
+                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item))"
                                            checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                     @L[item]
@@ -496,7 +496,7 @@
                                     <input type="checkbox"
                                            class="form-check-input me-1"
                                            id="@item"
-                                           disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")"
+                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item))"
                                            checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                     @L[item]
@@ -806,7 +806,7 @@
         <div class="row">
             <div class="col-2">@L["Invoice"]</div>
             <div class="col-2">@L["IssueInvoice"]</div>
-            <div class="col-4"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.IssueInvoice"></Switch></div>
+            <div class="col-4"> <Switch TValue="bool" Disabled="@IsInvoiceEnable()" @bind-Checked="@CreateGroupBuyDto.IssueInvoice"></Switch></div>
         </div>
         @* <div class="row">
         <div class="col-2"></div>
