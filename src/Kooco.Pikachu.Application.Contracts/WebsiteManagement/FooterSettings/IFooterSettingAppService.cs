@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
+using Volo.Abp.Application.Services;
 
-namespace Kooco.Pikachu.WebsiteManagement.FooterSettings
+namespace Kooco.Pikachu.WebsiteManagement.FooterSettings;
+
+public interface IFooterSettingAppService : IApplicationService
 {
-    public interface IFooterSettingAppService
-    {
-        Task<FooterSettingDto?> FirstOrDefaultAsync();
-        Task<FooterSettingDto> UpdateAsync(UpdateFooterSettingDto input);
-    }
+    Task<FooterSettingDto?> FirstOrDefaultAsync();
+    Task<FooterSettingDto> UpdateAsync(UpdateFooterSettingDto input);
 }

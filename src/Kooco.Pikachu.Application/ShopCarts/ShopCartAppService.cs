@@ -120,16 +120,24 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
             await shopCartRepository.EnsureCollectionLoadedAsync(shopCart, s => s.CartItems);
         }
 
-        if (shopCart.CartItems.Any(a => a.ItemId == input.ItemId.Value && a.ItemDetailId == input.ItemDetailId.Value))
+        if (shopCart.CartItems.Any(a => input.ItemId.HasValue && a.ItemId == input.ItemId && a.ItemDetailId == input.ItemDetailId))
         {
             foreach (CartItem cartItem in shopCart.CartItems.Where(w => w.ItemId == input.ItemId.Value && w.ItemDetailId == input.ItemDetailId.Value))
             {
                 cartItem.Quantity = input.Quantity;
             }
         }
-
-        else await shopCartManager.AddCartItem(shopCart, input.Quantity, input.UnitPrice, input.ItemId, input.ItemDetailId, input.SetItemId);
-
+        else if (shopCart.CartItems.Any(x => x.SetItemId == input.SetItemId))
+        {
+            foreach (CartItem cartItem in shopCart.CartItems.Where(w => w.SetItemId == input.SetItemId))
+            {
+                cartItem.Quantity = input.Quantity;
+            }
+        }
+        else
+        {
+            await shopCartManager.AddCartItem(shopCart, input.Quantity, input.UnitPrice, input.ItemId, input.ItemDetailId, input.SetItemId);
+        }
         await shopCartRepository.UpdateAsync(shopCart);
 
         return ObjectMapper.Map<ShopCart, ShopCartDto>(shopCart);

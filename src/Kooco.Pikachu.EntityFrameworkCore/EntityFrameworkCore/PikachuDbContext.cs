@@ -50,6 +50,7 @@ using Kooco.Pikachu.ProductCategories;
 using Kooco.Pikachu.WebsiteManagement.WebsiteBasicSettings;
 using Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
 using Kooco.Pikachu.WebsiteManagement.FooterSettings;
+using Kooco.Pikachu.WebsiteManagement.TopbarSettings;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -551,6 +552,31 @@ public class PikachuDbContext :
             b.ConfigureByConvention();
 
             b.HasOne(x => x.Section).WithMany(x => x.Links).HasForeignKey(x => x.SectionId);
+        });
+
+        builder.Entity<TopbarSetting>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "TopbarSettings", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.HasMany(x => x.Links).WithOne(x => x.TopbarSetting).HasForeignKey(x => x.TopbarSettingId);
+        });
+
+        builder.Entity<TopbarSettingLink>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "TopbarSettingLinks", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.HasOne(x => x.TopbarSetting).WithMany(x => x.Links).HasForeignKey(x => x.TopbarSettingId);
+            b.HasMany(x => x.CategoryOptions).WithOne(x => x.TopbarSettingLink).HasForeignKey(x => x.TopbarSettingLinkId);
+        });
+
+        builder.Entity<TopbarSettingCategoryOption>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "TopbarSettingCategoryOptions", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.HasOne(x => x.TopbarSettingLink).WithMany(x => x.CategoryOptions).HasForeignKey(x => x.TopbarSettingLinkId);
         });
 
         builder.Entity<LoginConfiguration>(b =>

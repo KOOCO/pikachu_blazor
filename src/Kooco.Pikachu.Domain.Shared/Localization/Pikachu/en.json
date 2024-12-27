@@ -1111,6 +1111,7 @@
     "Enum:FooterSettingsPositions.3": "Right",
     "FooterSettingsType": "Footer Settings Type",
     "Pikachu:InvalidNumberOfLinks": "The minimum number of links is 1 and the maximum number of allowed links are {0}. Please review your input for links and try again.",
-    "FooterSettingsUpdated": "Footer Settings Updated!"
+    "FooterSettingsUpdated": "Footer Settings Updated!",
+    "TopbarStyleSettings": "Topbar Style Settings"
   }
 }

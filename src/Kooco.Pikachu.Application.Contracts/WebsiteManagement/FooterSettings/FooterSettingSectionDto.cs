@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kooco.Pikachu.TenantManagement;
+using System;
 using System.Collections.Generic;
 using Volo.Abp.Domain.Entities;
 
@@ -13,7 +14,9 @@ public class FooterSettingSectionDto : Entity<Guid>
     public string ImageUrl { get; set; }
     public string ImageName { get; set; }
     public List<FooterSettingLinkDto> Links { get; set; }
-    public Guid? WebsiteBasicSettingsId { get; set; }
     public Guid FooterSettingId { get; set; }
     public Guid? TenantId { get; set; }
+
+    public TenantSocialMediaDto? SocialMedia { get; set; }
+    public TenantCustomerServiceDto? CustomerService { get; set; }
 }

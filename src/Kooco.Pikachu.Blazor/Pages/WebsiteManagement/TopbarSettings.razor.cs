@@ -1,149 +1,157 @@
+using Blazorise;
 using Kooco.Pikachu.WebsiteManagement.TopbarSettings;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Kooco.Pikachu.Blazor.Pages.WebsiteManagement;
 
 public partial class TopbarSettings
 {
+    private UpdateTopbarSettingDto Entity { get; set; }
     private TopbarLinkSettings? SelectedLinkSettings { get; set; }
-    private List<Model> Models { get; set; } = [];
-    private int DraggedModelIndex { get; set; }
-    private int DraggedChildIndex { get; set; }
-    private bool IsChildDragged { get; set; }
+    private int DraggedLinkIndex { get; set; }
+    private int DraggedCategoryOptionIndex { get; set; }
+    private bool IsCategoryOptionDragged { get; set; }
     private bool IsLoading { get; set; }
+    private bool IsCancelling { get; set; }
+
+    private Validations ValidationsRef;
+
+    public TopbarSettings()
+    {
+        Entity = new();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ResetAsync();
+    }
 
     async Task UpdateAsync()
     {
-        IsLoading = true;
-        StateHasChanged();
-        await Task.Delay(TimeSpan.FromSeconds(2));
-        IsLoading = false;
+        if (await ValidationsRef.ValidateAll())
+        {
+            IsLoading = true;
+            StateHasChanged();
+            await Task.Delay(TimeSpan.FromSeconds(2));
+            IsLoading = false;
+        }
+    }
+
+    async Task ResetAsync()
+    {
+        try
+        {
+            IsCancelling = true;
+            var entity = await TopbarSettingAppService.FirstOrDefaultAsync();
+            if(entity is not null)
+            {
+                Entity = ObjectMapper.Map<TopbarSettingDto, UpdateTopbarSettingDto>(entity);
+            }
+        }
+        catch(Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
+        finally
+        {
+            IsCancelling = false;
+        }
     }
 
     Task OnLinkSettingsSelected(TopbarLinkSettings? topbarLinkSettings)
     {
-        RefreshModelsIndex();
+        RefreshLinksIndex();
         if (topbarLinkSettings.HasValue)
         {
-            Models.Add(new Model(Models.Count, topbarLinkSettings.Value));
+            Entity.Links.Add(new UpdateTopbarSettingLinkDto(Entity.Links.Count, topbarLinkSettings.Value));
         }
         SelectedLinkSettings = null;
         return Task.CompletedTask;
     }
 
-    static Task OnTopbarCategoryLinkOptionSelected(Model model, TopbarCategoryLinkOption topbarCategoryLinkOption)
+    static Task OnTopbarCategoryLinkOptionSelected(UpdateTopbarSettingLinkDto link, TopbarCategoryLinkOption topbarCategoryLinkOption)
     {
-        RefreshChildrenIndex(model);
-        model.Children.Add(new ChildModel(model.Children.Count, topbarCategoryLinkOption));
+        RefreshCategoryOptionsIndex(link);
+        link.CategoryOptions.Add(new UpdateTopbarSettingCategoryOptionDto(link.CategoryOptions.Count, topbarCategoryLinkOption));
         return Task.CompletedTask;
     }
 
-    Task RefreshModelsIndex()
+    Task RefreshLinksIndex()
     {
-        Models.ForEach(model =>
+        Entity.Links.ForEach(link =>
         {
-            model.Index = Models.IndexOf(model);
+            link.Index = Entity.Links.IndexOf(link);
         });
         return Task.CompletedTask;
     }
 
-    static Task RefreshChildrenIndex(Model model)
+    static Task RefreshCategoryOptionsIndex(UpdateTopbarSettingLinkDto link)
     {
-        model.Children.ForEach(child =>
+        link.CategoryOptions.ForEach(categoryOption =>
         {
-            child.Index = model.Children.IndexOf(child);
+            categoryOption.Index = link.CategoryOptions.IndexOf(categoryOption);
         });
         return Task.CompletedTask;
     }
 
-    Task RemoveModel(Model model)
+    Task RemoveLink(UpdateTopbarSettingLinkDto link)
     {
-        Models.Remove(model);
+        Entity.Links.Remove(link);
         return Task.CompletedTask;
     }
 
-    static Task RemoveChild(Model model, ChildModel child)
+    static Task RemoveCategoryOption(UpdateTopbarSettingLinkDto link, UpdateTopbarSettingCategoryOptionDto categoryOption)
     {
-        model.Children.Remove(child);
+        link.CategoryOptions.Remove(categoryOption);
         return Task.CompletedTask;
     }
 
-    Task StartModelDrag(Model model)
+    Task StartLinkDrag(UpdateTopbarSettingLinkDto link)
     {
-        IsChildDragged = false;
-        DraggedModelIndex = Models.IndexOf(model);
+        IsCategoryOptionDragged = false;
+        DraggedLinkIndex = Entity.Links.IndexOf(link);
         return Task.CompletedTask;
     }
 
-    Task ModelDrop(Model model)
+    Task LinkDrop(UpdateTopbarSettingLinkDto link)
     {
-        if (!IsChildDragged && model != null)
+        if (!IsCategoryOptionDragged && link != null)
         {
-            var index = Models.IndexOf(model);
+            var index = Entity.Links.IndexOf(link);
 
-            var current = Models[DraggedModelIndex];
+            var current = Entity.Links[DraggedLinkIndex];
 
-            Models.RemoveAt(DraggedModelIndex);
-            Models.Insert(index, current);
+            Entity.Links.RemoveAt(DraggedLinkIndex);
+            Entity.Links.Insert(index, current);
 
-            RefreshModelsIndex();
+            RefreshLinksIndex();
             StateHasChanged();
         }
         return Task.CompletedTask;
     }
 
-    Task StartChildDrag(Model model, ChildModel child)
+    Task StartCategoryOptionDrag(UpdateTopbarSettingLinkDto link, UpdateTopbarSettingCategoryOptionDto categoryOption)
     {
-        IsChildDragged = true;
-        DraggedChildIndex = model.Children.IndexOf(child);
+        IsCategoryOptionDragged = true;
+        DraggedCategoryOptionIndex = link.CategoryOptions.IndexOf(categoryOption);
         return Task.CompletedTask;
     }
 
-    Task ChildDrop(Model model, ChildModel child)
+    Task CategoryOptionDrop(UpdateTopbarSettingLinkDto link, UpdateTopbarSettingCategoryOptionDto categoryOption)
     {
-        if (IsChildDragged && model != null && child != null)
+        if (IsCategoryOptionDragged && link != null && categoryOption != null)
         {
-            var index = model.Children.IndexOf(child);
+            var index = link.CategoryOptions.IndexOf(categoryOption);
 
-            var current = model.Children[DraggedChildIndex];
+            var current = link.CategoryOptions[DraggedCategoryOptionIndex];
 
-            model.Children.RemoveAt(DraggedChildIndex);
-            model.Children.Insert(index, current);
+            link.CategoryOptions.RemoveAt(DraggedCategoryOptionIndex);
+            link.CategoryOptions.Insert(index, current);
 
-            RefreshChildrenIndex(model);
+            RefreshCategoryOptionsIndex(link);
             StateHasChanged();
         }
         return Task.CompletedTask;
-    }
-
-    private class Model
-    {
-        public int Index { get; set; }
-        public TopbarLinkSettings TopbarLinkSettings { get; set; }
-        public string Title { get; set; }
-        public string Url { get; set; }
-        public List<ChildModel> Children { get; set; } = [];
-
-        public Model(int index, TopbarLinkSettings topbarLinkSettings)
-        {
-            Index = index;
-            TopbarLinkSettings = topbarLinkSettings;
-        }
-    }
-
-    private class ChildModel
-    {
-        public int Index { get; set; }
-        public TopbarCategoryLinkOption TopbarCategoryLinkOption { get; set; }
-        public string Title { get; set; }
-        public string Link { get; set; }
-
-        public ChildModel(int index, TopbarCategoryLinkOption topbarCategoryLinkOption)
-        {
-            Index = index;
-            TopbarCategoryLinkOption = topbarCategoryLinkOption;
-        }
     }
 }

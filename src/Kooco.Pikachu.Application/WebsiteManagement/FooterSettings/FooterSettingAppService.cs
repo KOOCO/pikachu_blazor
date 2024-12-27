@@ -1,4 +1,5 @@
 ﻿using Kooco.Pikachu.Permissions;
+using Kooco.Pikachu.TenantManagement;
 using Kooco.Pikachu.Validators;
 using Microsoft.AspNetCore.Authorization;
 using System.Linq;
@@ -8,14 +9,34 @@ using Volo.Abp;
 namespace Kooco.Pikachu.WebsiteManagement.FooterSettings;
 
 [RemoteService(IsEnabled = false)]
-[Authorize(PikachuPermissions.WebsiteManagement.TopbarSettings)]
-public class FooterSettingAppService(IFooterSettingRepository repository) : PikachuAppService, IFooterSettingAppService
+[Authorize(PikachuPermissions.WebsiteManagement.FooterSettings)]
+public class FooterSettingAppService(IFooterSettingRepository repository, ITenantSettingsAppService tenantSettingsAppService) : PikachuAppService, IFooterSettingAppService
 {
     [AllowAnonymous]
     public async Task<FooterSettingDto?> FirstOrDefaultAsync()
     {
         var footer = await repository.FirstOrDefaultAsync();
-        return ObjectMapper.Map<FooterSetting, FooterSettingDto>(footer);
+        var dto = ObjectMapper.Map<FooterSetting, FooterSettingDto>(footer);
+
+        if (dto != null && dto.Sections.Any(x => x.FooterSettingsType == FooterSettingsType.SocialMedia || x.FooterSettingsType == FooterSettingsType.CompanyAndCustomerServiceInformation))
+        {
+            var socialMedia = await tenantSettingsAppService.GetTenantSocialMediaAsync();
+            var customerService = await tenantSettingsAppService.GetTenantCustomerServiceAsync();
+
+            dto.Sections.ForEach(section =>
+            {
+                if (section.FooterSettingsType == FooterSettingsType.SocialMedia)
+                {
+                    section.SocialMedia = socialMedia;
+                }
+                if (section.FooterSettingsType == FooterSettingsType.CompanyAndCustomerServiceInformation)
+                {
+                    section.CustomerService = customerService;
+                }
+            });
+        }
+
+        return dto;
     }
 
     public async Task<FooterSettingDto> UpdateAsync(UpdateFooterSettingDto input)
