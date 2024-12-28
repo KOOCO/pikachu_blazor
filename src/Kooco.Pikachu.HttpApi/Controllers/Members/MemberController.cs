@@ -160,4 +160,10 @@ public class MemberController(IMemberAppService memberAppService, IPikachuAccoun
     {
         return memberAppService.GetAllAsync();
     }
+
+    [HttpGet("order/{orderId}")]
+    public Task<OrderDto> GetMemberOrderAsync(Guid orderId)
+    {
+        return memberAppService.GetMemberOrderAsync(orderId);
+    }
 }

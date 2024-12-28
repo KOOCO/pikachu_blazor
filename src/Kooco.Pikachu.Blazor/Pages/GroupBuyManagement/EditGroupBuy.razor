@@ -2098,6 +2098,13 @@
                 </div>
             </div>
         </div>
+        
+        <Row>
+            <Column ColumnSize="ColumnSize.Is2">@L["Availability"]</Column>
+            <Column ColumnSize="ColumnSize.Is10">
+                <Switch TValue="bool" @bind-Checked="EditGroupBuyDto.IsGroupBuyAvaliable"></Switch>
+            </Column>
+        </Row>
     </CardBody>
 
 </Card>

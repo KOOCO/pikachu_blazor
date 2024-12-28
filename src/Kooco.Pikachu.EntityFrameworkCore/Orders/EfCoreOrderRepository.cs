@@ -1,6 +1,7 @@
 ﻿using Kooco.Pikachu.EntityFrameworkCore;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies;
+using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.OrderItems;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
@@ -370,6 +372,30 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
         return await (await GetQueryableAsync())
                         .FirstOrDefaultAsync(w => w.OrderNo == merchantTradeNo || 
                                                   w.MerchantTradeNo == merchantTradeNo);
+    }
+
+    public async Task<Order> GetMemberOrderAsync(Guid orderId, Guid memberId)
+    {
+        return await (await GetQueryableAsync())
+            .Where(w => w.Id == orderId)
+            .Where(w => w.UserId == memberId)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Item)
+                .ThenInclude(i => i.Images)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.SetItem)
+                .ThenInclude(i => i.SetItemDetails)
+                .ThenInclude(i => i.Item)
+                .ThenInclude(i => i.Images)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.SetItem)
+                .ThenInclude(i => i.Images)
+            .Include(o => o.OrderItems.OrderBy(oi => oi.ItemType))
+                .ThenInclude(oi => oi.Freebie)
+                .ThenInclude(i => i.Images)
+            .Include(o => o.StoreComments.OrderByDescending(c => c.CreationTime))
+                .ThenInclude(c => c.User)
+            .FirstOrDefaultAsync();
     }
 
     public async Task<Order> GetOrderAsync(Guid groupBuyId, string orderNo, string extraInfo)

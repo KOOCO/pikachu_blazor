@@ -224,7 +224,7 @@ public class GroupBuyUpdateDto :  IHasConcurrencyStamp
     public string? AlertColor { get; set; }
     public string? BlockColor { get; set; }
     public ProductDetailsDisplayMethod? ProductDetailsDisplayMethod { get; set; }
-
+    public bool IsGroupBuyAvaliable { get; set; }
     public GroupBuyUpdateDto()
     {
         ShippingMethodList = new List<string>();
