@@ -23,11 +23,13 @@ public class TopbarSettingCategoryOption : Entity<Guid>, IMultiTenant
         TopbarCategoryLinkOption topbarCategoryLinkOption,
         int index,
         string title,
-        string link
+        string link,
+        Guid topbarSettingLinkId
         ) : base(id)
     {
         TopbarCategoryLinkOption = topbarCategoryLinkOption;
         Index = index;
+        TopbarSettingLinkId = topbarSettingLinkId;
         SetTitle(title);
         SetLink(link);
     }

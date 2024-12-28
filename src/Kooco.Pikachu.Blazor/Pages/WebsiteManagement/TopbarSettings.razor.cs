@@ -29,11 +29,21 @@ public partial class TopbarSettings
 
     async Task UpdateAsync()
     {
-        if (await ValidationsRef.ValidateAll())
+        try
         {
-            IsLoading = true;
-            StateHasChanged();
-            await Task.Delay(TimeSpan.FromSeconds(2));
+            if (await ValidationsRef.ValidateAll())
+            {
+                IsLoading = true;
+                await TopbarSettingAppService.UpdateAsync(Entity);
+                await ResetAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
+        finally
+        {
             IsLoading = false;
         }
     }
@@ -48,6 +58,7 @@ public partial class TopbarSettings
             {
                 Entity = ObjectMapper.Map<TopbarSettingDto, UpdateTopbarSettingDto>(entity);
             }
+            ValidationsRef?.ClearAll();
         }
         catch(Exception ex)
         {

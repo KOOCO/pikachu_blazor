@@ -39,7 +39,9 @@ public class TopbarSettingAppService(ITopbarSettingRepository topbarSettingRepos
             }
         }
 
-        await topbarSettingRepository.UpdateAsync(topbarSettings);
+        topbarSettings.ConcurrencyStamp = input.ConcurrencyStamp;
+
+        await topbarSettingRepository.UpdateAsync(topbarSettings, autoSave: true);
         return ObjectMapper.Map<TopbarSetting, TopbarSettingDto>(topbarSettings);
     }
 }

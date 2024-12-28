@@ -26,11 +26,13 @@ public class TopbarSettingLink : Entity<Guid>, IMultiTenant
         TopbarLinkSettings topbarLinkSettings,
         int index,
         string title,
-        string? url
+        string? url,
+        Guid topbarSettingId
         ) : base(id)
     {
         TopbarLinkSettings = topbarLinkSettings;
         Index = index;
+        TopbarSettingId = topbarSettingId;
         SetTitle(title);
         SetUrl(url);
         CategoryOptions = new List<TopbarSettingCategoryOption>();
@@ -51,7 +53,7 @@ public class TopbarSettingLink : Entity<Guid>, IMultiTenant
 
     public TopbarSettingCategoryOption AddCategoryOption(Guid id, TopbarCategoryLinkOption topbarCategoryLinkOption, int index, string title, string link)
     {
-        var categoryOption = new TopbarSettingCategoryOption(id, topbarCategoryLinkOption, index, title, link);
+        var categoryOption = new TopbarSettingCategoryOption(id, topbarCategoryLinkOption, index, title, link, Id);
         CategoryOptions.Add(categoryOption);
         return categoryOption;
     }

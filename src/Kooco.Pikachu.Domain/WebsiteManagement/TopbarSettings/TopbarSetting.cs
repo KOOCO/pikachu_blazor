@@ -23,7 +23,7 @@ public class TopbarSetting : FullAuditedAggregateRoot<Guid>, IMultiTenant
 
     public TopbarSettingLink AddLink(Guid id, TopbarLinkSettings topbarLinkSettings, int index, string title, string? url)
     {
-        var link = new TopbarSettingLink(id, topbarLinkSettings, index, title, url);
+        var link = new TopbarSettingLink(id, topbarLinkSettings, index, title, url, Id);
         Links.Add(link);
         return link;
     }

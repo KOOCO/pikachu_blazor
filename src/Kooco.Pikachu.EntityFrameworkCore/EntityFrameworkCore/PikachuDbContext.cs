@@ -148,6 +148,7 @@ public class PikachuDbContext :
     public DbSet<WebsiteSettingsProductRankingModule> WebsiteSettingsProductRankingModules { get; set; }
 
     public DbSet<FooterSetting> FooterSettings { get; set; }
+    public DbSet<TopbarSetting> TopbarSettings { get; set; }
 
     public DbSet<LoginConfiguration> LoginConfigurations { get; set; }
 
