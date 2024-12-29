@@ -16,6 +16,7 @@ using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.LogisticsProviders;
+using Kooco.Pikachu.PaymentGateways;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
@@ -120,7 +121,9 @@ public partial class CreateGroupBuy
 
     public List<LogisticsProviderSettingsDto> LogisticsProviders = [];
     public ElectronicInvoiceSettingDto ElectronicInvoiceSetting=new ElectronicInvoiceSettingDto();
+    public List<PaymentGatewayDto> PaymentGateways =[];
     private readonly ILogisticsProvidersAppService _LogisticsProvidersAppService;
+    private readonly IPaymentGatewayAppService _paymentGatewayAppService;
 
     private bool IsColorPickerOpen = false;
 
@@ -138,7 +141,8 @@ public partial class CreateGroupBuy
         IGroupBuyOrderInstructionAppService GroupBuyOrderInstructionAppService,
         ILogisticsProvidersAppService LogisticsProvidersAppService,
         IGroupBuyProductRankingAppService GroupBuyProductRankingAppService,
-        IElectronicInvoiceSettingAppService electronicInvoiceSettingAppService
+        IElectronicInvoiceSettingAppService electronicInvoiceSettingAppService,
+        IPaymentGatewayAppService paymentGatewayAppService
     )
     {
         _groupBuyAppService = groupBuyAppService;
@@ -155,6 +159,7 @@ public partial class CreateGroupBuy
         _LogisticsProvidersAppService = LogisticsProvidersAppService;
         _GroupBuyProductRankingAppService = GroupBuyProductRankingAppService;
         _electronicInvoiceSettingAppService = electronicInvoiceSettingAppService;
+        _paymentGatewayAppService = paymentGatewayAppService;
     }
     #endregion
 
@@ -168,7 +173,7 @@ public partial class CreateGroupBuy
 
         LogisticsProviders = await _LogisticsProvidersAppService.GetAllAsync();
         ElectronicInvoiceSetting = await _electronicInvoiceSettingAppService.GetSettingAsync();
-
+        PaymentGateways = await _paymentGatewayAppService.GetAllAsync();
     }
 
     private void SelectTemplate(ChangeEventArgs e)
@@ -458,6 +463,20 @@ public partial class CreateGroupBuy
             return LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.TCat).FirstOrDefault()?.IsEnabled ?? false;
 
         else return false;
+    }
+    public bool isPaymentMethodEnabled()
+    {
+        var ecpay = PaymentGateways.Where(x => x.PaymentIntegrationType == PaymentIntegrationType.EcPay).FirstOrDefault();
+        if (ecpay == null)
+        {
+            return true;
+        }
+        else if (!ecpay.IsEnabled) return true;
+        else if (ecpay.HashIV.IsNullOrEmpty() || ecpay.HashKey.IsNullOrEmpty() || ecpay.MerchantId.IsNullOrEmpty() || ecpay.TradeDescription.IsNullOrEmpty() || ecpay.CreditCheckCode.IsNullOrEmpty()) return true;
+        else {
+            return false;
+        
+        }
     }
     public bool IsInvoiceEnable() {
         return ElectronicInvoiceSetting.IsEnable;
