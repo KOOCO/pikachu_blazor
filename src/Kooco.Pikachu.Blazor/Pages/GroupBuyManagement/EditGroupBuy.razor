@@ -828,8 +828,13 @@
             </div>
         </div>
         <Divider></Divider>
-        <div class="row">
+          <div class="row">
             <div class="col-2">@L["AdvanceSetting"]</div>
+            <div class="col-2 form-label">@L["AddOnProducts"]</div>
+            <div class="col-4"> <Switch TValue="bool" @bind-Checked="@EditGroupBuyDto.AddonProduct"></Switch></div>
+        </div>
+        <div class="row">
+            <div class="col-2"></div>
             <div class="col-2 form-label">@L["HideCredention"]</div>
             <div class="col-4"> <Switch TValue="bool" @bind-Checked="@EditGroupBuyDto.ProtectPrivacyData"></Switch></div>
         </div>

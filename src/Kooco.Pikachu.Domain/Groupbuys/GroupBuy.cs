@@ -229,6 +229,7 @@ public class GroupBuy : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public string? SecondaryBackgroundColor { get; set; }
     public string? AlertColor { get; set; }
     public string? BlockColor { get; set; }
+    public bool AddOnProduct { get; set; }
     public ProductDetailsDisplayMethod? ProductDetailsDisplayMethod { get; set; }
     public ICollection<GroupBuyItemGroup> ItemGroups { get; set; }
 

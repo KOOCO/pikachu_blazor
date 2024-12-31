@@ -109,7 +109,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                                                     input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription, input.ShortCode, input.IsEnterprise, input.FreeShippingThreshold, input.SelfPickupDeliveryTime,
                                                     input.BlackCatDeliveryTime, input.HomeDeliveryDeliveryTime, input.DeliveredByStoreDeliveryTime, input.TaxType, input.ProductType,
                                                     input.ColorSchemeType, input.PrimaryColor, input.SecondaryColor, input.BackgroundColor, input.SecondaryBackgroundColor, input.AlertColor, input.BlockColor, input.ProductDetailsDisplayMethod, input.NotificationBar);
-
+        result.AddOnProduct = input.AddOnProduct;
         if (!input.FacebookLink.IsNullOrEmpty()) result.FacebookLink = input.FacebookLink;
 
         if (!input.InstagramLink.IsNullOrEmpty()) result.InstagramLink = input.InstagramLink;
