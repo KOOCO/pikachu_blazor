@@ -17,9 +17,9 @@ public class ShopCart(Guid id, Guid userId) : FullAuditedAggregateRoot<Guid>(id)
     public Guid? TenantId { get; set; }
 
     [ForeignKey(nameof(UserId))]
-    public IdentityUser? User { get; set; }
+    public virtual IdentityUser? User { get; set; }
 
-    public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+    public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
 
 
     public ShopCart AddCartItem(Guid id, int quantity, int unitPrice, Guid? itemId, Guid? itemDetailId, Guid? setItemId)

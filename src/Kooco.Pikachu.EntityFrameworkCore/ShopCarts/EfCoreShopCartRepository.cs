@@ -66,7 +66,9 @@ public class EfCoreShopCartRepository(IDbContextProvider<PikachuDbContext> dbCon
             queryable = queryable
                 .Include(x => x.User)
                 .Include(x => x.CartItems)
-                    .ThenInclude(x => x.Item);
+                    .ThenInclude(x => x.Item)
+                .Include(x => x.CartItems)
+                    .ThenInclude(x => x.SetItem);
         }
         return queryable;
     }
