@@ -1,8 +1,8 @@
 ﻿using Kooco.Pikachu.EntityFrameworkCore;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies;
-using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Items;
+using Kooco.Pikachu.Members;
 using Kooco.Pikachu.OrderItems;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -10,10 +10,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Kooco.Pikachu.Orders;
 
@@ -396,6 +394,24 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
             .Include(o => o.StoreComments.OrderByDescending(c => c.CreationTime))
                 .ThenInclude(c => c.User)
             .FirstOrDefaultAsync();
+    }
+
+    public async Task<List<MemberOrderInfoModel>> GetMemberOrdersByGroupBuyAsync(Guid memberId, Guid groupBuyId)
+    {
+        var orders = await (await GetQueryableAsync())
+            .Where(x => x.UserId == memberId && x.GroupBuyId == groupBuyId)
+            .OrderByDescending(x => x.CreationTime)
+            .Select(x => new MemberOrderInfoModel
+            {
+                Id = x.Id,
+                OrderNo = x.OrderNo,
+                CreationTime = x.CreationTime,
+                ShippingStatus = x.ShippingStatus,
+                TotalAmount = x.TotalAmount,
+                PaymentMethod = x.PaymentMethod
+            }).ToListAsync();
+
+        return orders;
     }
 
     public async Task<Order> GetOrderAsync(Guid groupBuyId, string orderNo, string extraInfo)
