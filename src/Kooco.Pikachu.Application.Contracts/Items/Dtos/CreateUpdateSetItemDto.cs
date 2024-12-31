@@ -3,6 +3,7 @@ using Kooco.Pikachu.Images;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace Kooco.Pikachu.Items.Dtos;
 
@@ -79,6 +80,7 @@ public class CreateUpdateSetItemDto
     /// 可販售數量限制
     /// </summary>
     [DisplayName("SetItemSaleableQuantity")]
+    [Range(0, int.MaxValue)]
     public int? SaleableQuantity { get; set; }
 
     /// <summary>

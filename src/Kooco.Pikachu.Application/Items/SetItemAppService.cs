@@ -41,7 +41,8 @@ public class SetItemAppService : CrudAppService<SetItem, SetItemDto, Guid, Paged
             input.LimitAvaliableTimeEnd,
             input.ShareProfit,
             input.IsFreeShipping,
-            input.ItemStorageTemperature
+            input.ItemStorageTemperature,
+            input.SaleableQuantity
             );
         setItem.GroupBuyPrice = input.GroupBuyPrice;
         if (input.SetItemDetails.Any())
@@ -100,6 +101,7 @@ public class SetItemAppService : CrudAppService<SetItem, SetItemDto, Guid, Paged
         setItem.LimitAvaliableTimeEnd = input.LimitAvaliableTimeEnd;
         setItem.ShareProfit = input.ShareProfit;
         setItem.ItemStorageTemperature = input.ItemStorageTemperature;
+        setItem.SaleableQuantity = input.SaleableQuantity;
 
         setItem.IsFreeShipping = input.IsFreeShipping;
         await _setItemRepository.EnsureCollectionLoadedAsync(setItem, x => x.SetItemDetails);
