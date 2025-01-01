@@ -345,18 +345,7 @@ namespace Kooco.Pikachu.OrderDeliveries
                 order.ShippingStatus = ShippingStatus.Shipped;
                 
                 await _orderRepository.UpdateAsync(order);
-                await _emailAppService.SendLogisticsEmailAsync(new OrderDeliveryDto
-                {
-                    DeliveryMethod = delivery.DeliveryMethod,
-                    ActualDeliveryMethod = delivery.ActualDeliveryMethod,
-                    DeliveryStatus = delivery.DeliveryStatus,
-                    AllPayLogisticsID = delivery.AllPayLogisticsID,
-                    Editor = delivery.Editor,
-                    DeliveryNo = delivery.DeliveryNo,
-                    OrderId = delivery.OrderId
-                  
-                  
-                });
+                await _emailAppService.SendLogisticsEmailAsync(delivery.OrderId, delivery.DeliveryNo);
                 await UnitOfWorkManager.Current.SaveChangesAsync();
                 var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
                 if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.Shipped)
@@ -378,7 +367,7 @@ namespace Kooco.Pikachu.OrderDeliveries
                         }
                     }
                 }
-                await SendEmailAsync(order.Id, delivery.DeliveryNo);
+                //await SendEmailAsync(order.Id, delivery.DeliveryNo);
             }
 
         }

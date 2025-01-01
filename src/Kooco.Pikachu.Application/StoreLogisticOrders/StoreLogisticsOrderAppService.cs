@@ -1,7 +1,5 @@
-﻿using AutoMapper;
-using Azure;
-using Azure.Core;
-using Kooco.Pikachu.ElectronicInvoiceSettings;
+﻿using Kooco.Pikachu.ElectronicInvoiceSettings;
+using Kooco.Pikachu.Emails;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
@@ -12,26 +10,18 @@ using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Response;
 using Kooco.Pikachu.TenantManagement;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using RestSharp;
-using Scriban;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using Volo.Abp;
@@ -40,8 +30,6 @@ using Volo.Abp.BackgroundJobs;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
-using static Kooco.Pikachu.Permissions.PikachuPermissions;
-using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Kooco.Pikachu.StoreLogisticOrders;
 
@@ -84,13 +72,14 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
     private readonly ITenantSettingsAppService _tenantSettingsAppService;
 
     private readonly IEmailSender _emailSender;
+    private readonly IEmailAppService _emailAppService;
     #endregion
 
     #region Constructor
     public StoreLogisticsOrderAppService(
         IOrderDeliveryRepository orderDeliveryRepository,
         IOrderRepository orderRepository,
-        ILogisticsProvidersAppService logisticsProvidersAppService, 
+        ILogisticsProvidersAppService logisticsProvidersAppService,
         IConfiguration configuration,
         IStringLocalizer<PikachuResource> L,
         IGroupBuyAppService GroupBuyAppService,
@@ -100,12 +89,13 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         IHttpContextAccessor httpContextAccessor,
         IGroupBuyRepository GroupBuyRepository,
         IEmailSender emailSender,
-        ITenantSettingsAppService tenantSettingsAppService
-    ) 
-    {   
+        ITenantSettingsAppService tenantSettingsAppService,
+        IEmailAppService emailAppService
+    )
+    {
         _orderRepository = orderRepository;
         _deliveryRepository = orderDeliveryRepository;
-        _logisticsProvidersAppService= logisticsProvidersAppService;
+        _logisticsProvidersAppService = logisticsProvidersAppService;
         _configuration = configuration;
         GreenWorld = new();
         HomeDelivery = new();
@@ -125,6 +115,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         _GroupBuyRepository = GroupBuyRepository;
         _emailSender = emailSender;
         _tenantSettingsAppService = tenantSettingsAppService;
+        _emailAppService = emailAppService;
     }
     #endregion
 
@@ -138,7 +129,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             List<OrderDelivery> orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
 
             OrderDelivery? orderDelivery = orderDeliverys.FirstOrDefault(f => f.Id == orderDeliveryId);
-            
+
             List<LogisticsProviderSettingsDto> providers = await _logisticsProvidersAppService.GetAllAsync();
 
             var greenWorld = providers.Where(p => p.LogisticProvider is LogisticProviders.GreenWorldLogistics).FirstOrDefault();
@@ -308,9 +299,9 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             request.AddParameter("MerchantID", GreenWorld.StoreCode);
             request.AddParameter("AllPayLogisticsID", orderDelivery.AllPayLogisticsID);
 
-            Dictionary<string, string> parameters = new() 
-            { 
-                { "MerchantID", GreenWorld.StoreCode }, 
+            Dictionary<string, string> parameters = new()
+            {
+                { "MerchantID", GreenWorld.StoreCode },
                 { "AllPayLogisticsID", orderDelivery.AllPayLogisticsID }
             };
 
@@ -483,9 +474,9 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
     }
 
     public async Task<Tuple<List<string>, List<string>, List<string>>> OnBatchPrintingShippingLabel(
-        Dictionary<string, string> allPayLogisticsIds, 
+        Dictionary<string, string> allPayLogisticsIds,
         Dictionary<string, string>? DeliveryNumbers,
-        Dictionary<string, string>? allPayLogisticsForTCat711) 
+        Dictionary<string, string>? allPayLogisticsForTCat711)
     {
         List<string> htmls = []; List<string> errors = []; List<string> preDefinedPdfPaths = [];
 
@@ -512,7 +503,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             RestClient client = new(options);
 
             RestRequest request = new();
-            
+
             Dictionary<string, string> parameters = [];
 
             if (allPayLogisticsId.Key.Contains("TCatDeliveryNormal") ||
@@ -523,8 +514,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 allPayLogisticsId.Key.Contains("TCatDeliverySevenElevenFrozen"))
             {
                 Tuple<List<string>, List<string>> tCatTuple = await HandleTCatRequest(
-                    allPayLogisticsId, 
-                    DeliveryNumbers, 
+                    allPayLogisticsId,
+                    DeliveryNumbers,
                     allPayLogisticsForTCat711.GetValueOrDefault(allPayLogisticsId.Key)
                 );
 
@@ -595,11 +586,11 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                     { "AllPayLogisticsID", allPayLogisticsId.Value},
                     { "CVSPaymentNo", string.Join(",", DeliveryNumbers?.GetValueOrDefault("SevenToElevenC2C")?
                                                                        .Split(',')
-                                                                       .Select(number => number.Remove(number.Length - 4))) 
+                                                                       .Select(number => number.Remove(number.Length - 4)))
                     },
                     { "CVSValidationNo", string.Join(",", DeliveryNumbers?.GetValueOrDefault("SevenToElevenC2C")?
                                                                           .Split(',')
-                                                                          .Select(number => number.Substring(number.Length - 4))) 
+                                                                          .Select(number => number.Substring(number.Length - 4)))
                     }
                 };
 
@@ -791,7 +782,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             };
         }
 
-        if(order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment)
+        if (order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment)
             isCollection = "Y";
 
         string isDeclare = TCatLogistics.DeclaredValue &&
@@ -799,13 +790,13 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         DayOfWeek TodaysDay = DateTime.Today.DayOfWeek;
 
-        PrintOBTRequest request = new ()
+        PrintOBTRequest request = new()
         {
             CustomerId = TCatLogistics.CustomerId,
             CustomerToken = TCatLogistics.CustomerToken,
             PrintType = "01",
             PrintOBTType = $"0{(int)TCatLogistics.TCatShippingLabelForm}",
-            Orders = 
+            Orders =
             [
                 new OrderOBT
                 {
@@ -843,7 +834,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         string jsonContent = JsonConvert.SerializeObject(request);
 
-        StringContent content = new (jsonContent, Encoding.UTF8, "application/json");
+        StringContent content = new(jsonContent, Encoding.UTF8, "application/json");
 
         using HttpClient httpClient = new();
 
@@ -858,8 +849,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         orderDelivery.SrvTranId = printObtResponse.SrvTranId;
         orderDelivery.FileNo = printObtResponse.Data.FileNo;
         orderDelivery.AllPayLogisticsID = printObtResponse.SrvTranId;
-        orderDelivery.LastModificationTime = DateTime.ParseExact(printObtResponse.Data.PrintDateTime, 
-                                                                 "yyyyMMddHHmmss", 
+        orderDelivery.LastModificationTime = DateTime.ParseExact(printObtResponse.Data.PrintDateTime,
+                                                                 "yyyyMMddHHmmss",
                                                                  System.Globalization.CultureInfo.InvariantCulture);
         orderDelivery.DeliveryNo = printObtResponse.Data.Orders.First().OBTNumber;
         orderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
@@ -1135,76 +1126,76 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
     public async Task<ResponseResultDto> CreateStoreLogisticsOrderAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null)
     {
-        ResponseResultDto result = new ();
-        
+        ResponseResultDto result = new();
+
         Order order = await _orderRepository.GetWithDetailsAsync(orderId);
 
         List<OrderDelivery> orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
 
         OrderDelivery? orderDelivery = orderDeliverys.Where(x => x.Id == orderDeliveryId).FirstOrDefault();
-       
+
         List<LogisticsProviderSettingsDto> providers = await _logisticsProvidersAppService.GetAllAsync();
 
         string logisticSubType = string.Empty;
 
         string isCollection = string.Empty;
-        
-        if (orderDelivery is not null && 
-            (orderDelivery.DeliveryMethod is DeliveryMethod.SevenToElevenC2C || 
-             orderDelivery.DeliveryMethod is DeliveryMethod.FamilyMartC2C || 
+
+        if (orderDelivery is not null &&
+            (orderDelivery.DeliveryMethod is DeliveryMethod.SevenToElevenC2C ||
+             orderDelivery.DeliveryMethod is DeliveryMethod.FamilyMartC2C ||
              deliveryMethod is DeliveryMethod.FamilyMartC2C ||
              deliveryMethod is DeliveryMethod.SevenToElevenC2C)
         )
         {
             LogisticsProviderSettingsDto? greenWorld = providers.Where(p => p.LogisticProvider == LogisticProviders.GreenWorldLogisticsC2C).FirstOrDefault();
-            
+
             if (greenWorld is not null) GreenWorld = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorld);
         }
-        
-        else 
+
+        else
         {
             LogisticsProviderSettingsDto? greenWorld = providers.Where(p => p.LogisticProvider == LogisticProviders.GreenWorldLogistics).FirstOrDefault();
-            
+
             if (greenWorld is not null) GreenWorld = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorld);
         }
 
         LogisticsProviderSettingsDto? homeDelivery = providers.Where(p => p.LogisticProvider == LogisticProviders.HomeDelivery).FirstOrDefault();
-        
+
         if (homeDelivery is not null) HomeDelivery = ObjectMapper.Map<LogisticsProviderSettingsDto, HomeDeliveryCreateUpdateDto>(homeDelivery);
 
         LogisticsProviderSettingsDto? postOffice = providers.Where(p => p.LogisticProvider == LogisticProviders.PostOffice).FirstOrDefault();
-        
+
         if (postOffice is not null) PostOffice = ObjectMapper.Map<LogisticsProviderSettingsDto, PostOfficeCreateUpdateDto>(postOffice);
 
         LogisticsProviderSettingsDto? sevenToEleven = providers.Where(p => p.LogisticProvider == LogisticProviders.SevenToEleven).FirstOrDefault();
-        
+
         if (sevenToEleven is not null) SevenToEleven = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(sevenToEleven);
 
         LogisticsProviderSettingsDto? familyMart = providers.Where(p => p.LogisticProvider == LogisticProviders.FamilyMart).FirstOrDefault();
-        
+
         if (familyMart is not null) FamilyMart = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(familyMart);
 
         LogisticsProviderSettingsDto? sevenToElevenFrozen = providers.Where(p => p.LogisticProvider == LogisticProviders.SevenToElevenFrozen).FirstOrDefault();
-        
+
         if (sevenToElevenFrozen is not null) SevenToElevenFrozen = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(sevenToElevenFrozen);
 
         LogisticsProviderSettingsDto? bNormal = providers.Where(p => p.LogisticProvider == LogisticProviders.BNormal).FirstOrDefault();
-        
+
         if (bNormal is not null) BNormal = ObjectMapper.Map<LogisticsProviderSettingsDto, BNormalCreateUpdateDto>(bNormal);
 
         LogisticsProviderSettingsDto? bFreeze = providers.Where(p => p.LogisticProvider == LogisticProviders.BFreeze).FirstOrDefault();
-        
+
         if (bFreeze is not null) BFreeze = ObjectMapper.Map<LogisticsProviderSettingsDto, BNormalCreateUpdateDto>(bFreeze);
 
         LogisticsProviderSettingsDto? bFrozen = providers.Where(p => p.LogisticProvider == LogisticProviders.BFrozen).FirstOrDefault();
-        
+
         if (bFrozen is not null) BFrozen = ObjectMapper.Map<LogisticsProviderSettingsDto, BNormalCreateUpdateDto>(bFreeze);
 
-        RestClientOptions options = new () { MaxTimeout = -1 };
+        RestClientOptions options = new() { MaxTimeout = -1 };
 
-        RestClient client = new (options);
+        RestClient client = new(options);
 
-        RestRequest request = new (_configuration["EcPay:LogisticApi"], Method.Post);
+        RestRequest request = new(_configuration["EcPay:LogisticApi"], Method.Post);
 
         string marchentDate = DateTime.Now.ToString("yyyy/MM/dd");
 
@@ -1237,10 +1228,10 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                  (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore && deliveryMethod is DeliveryMethod.SevenToElevenFrozen))
         {
             request.AddParameter("LogisticsSubType", "UNIMARTFREEZE");
-            
+
             logisticSubType = "UNIMARTFREEZE";
         }
-        else if (orderDelivery.DeliveryMethod is DeliveryMethod.FamilyMart1 || 
+        else if (orderDelivery.DeliveryMethod is DeliveryMethod.FamilyMart1 ||
                 (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore && deliveryMethod is DeliveryMethod.FamilyMart1))
         {
             request.AddParameter("LogisticsSubType", "FAMI");
@@ -1255,7 +1246,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             request.AddParameter("GoodsName", goodsName);
             request.AddParameter("SenderCellPhone", GreenWorld.SenderPhoneNumber);
         }
-        else if (orderDelivery.DeliveryMethod is DeliveryMethod.FamilyMartC2C || 
+        else if (orderDelivery.DeliveryMethod is DeliveryMethod.FamilyMartC2C ||
                  deliveryMethod is DeliveryMethod.FamilyMartC2C)
         {
             request.AddParameter("LogisticsSubType", "FAMIC2C");
@@ -1275,8 +1266,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             request.AddParameter("IsCollection", "Y");
             isCollection = "Y";
         }
-           
-        if (orderDelivery.DeliveryMethod is DeliveryMethod.SevenToElevenC2C || 
+
+        if (orderDelivery.DeliveryMethod is DeliveryMethod.SevenToElevenC2C ||
             orderDelivery.DeliveryMethod is DeliveryMethod.FamilyMartC2C ||
             deliveryMethod is DeliveryMethod.FamilyMartC2C ||
             deliveryMethod is DeliveryMethod.SevenToElevenC2C)
@@ -1284,7 +1275,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             request.AddParameter("CheckMacValue", GenerateRequestString(GreenWorld.HashKey, GreenWorld.HashIV, GreenWorld.StoreCode, order.OrderNo, marchentDate, "CVS", logisticSubType, Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)), GreenWorld.SenderName, order.RecipientName, order.RecipientPhone,
                 serverReplyURL, order.StoreId, goodsName, GreenWorld.SenderPhoneNumber, isCollection: isCollection));
         }
-        else {
+        else
+        {
             request.AddParameter("CheckMacValue", GenerateRequestString(GreenWorld.HashKey, GreenWorld.HashIV, GreenWorld.StoreCode, order.OrderNo, marchentDate, "CVS", logisticSubType, Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)), GreenWorld.SenderName, order.RecipientName, order.RecipientPhone,
                     serverReplyURL, order.StoreId, isCollection: isCollection));
         }
@@ -1299,8 +1291,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         {
             orderDelivery.DeliveryNo = result.ShippingInfo.BookingNote;
 
-            if (order.DeliveryMethod is DeliveryMethod.SevenToEleven1 || 
-                order.DeliveryMethod is DeliveryMethod.FamilyMart1 || 
+            if (order.DeliveryMethod is DeliveryMethod.SevenToEleven1 ||
+                order.DeliveryMethod is DeliveryMethod.FamilyMart1 ||
                 order.DeliveryMethod is DeliveryMethod.SevenToElevenFrozen ||
                 deliveryMethod is DeliveryMethod.FamilyMart1 ||
                 deliveryMethod is DeliveryMethod.SevenToEleven1 ||
@@ -1313,8 +1305,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 orderDelivery.DeliveryNo = responseResultDto.ShippingInfo.ShipmentNo;
             }
 
-            if (order.DeliveryMethod is DeliveryMethod.FamilyMartC2C || 
-                deliveryMethod is DeliveryMethod.FamilyMartC2C) 
+            if (order.DeliveryMethod is DeliveryMethod.FamilyMartC2C ||
+                deliveryMethod is DeliveryMethod.FamilyMartC2C)
                 orderDelivery.DeliveryNo = result.ShippingInfo.CVSPaymentNo;
 
             if (order.DeliveryMethod is DeliveryMethod.SevenToElevenC2C ||
@@ -1439,12 +1431,12 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         return str ?? string.Empty;
     }
 
-    public string GenerateRequestString(string HashKey, string HashIV, string merchantID, string merchantTradeNo, string merchantTradeDate, string logisticsType, string logisticsSubType, int goodsAmount, string senderName, string receiverName, string receiverCellPhone, string serverReplyURL, string receiverStoreID,string? goodName=null,string? senderCellNumber =null, string? isCollection = null)
+    public string GenerateRequestString(string HashKey, string HashIV, string merchantID, string merchantTradeNo, string merchantTradeDate, string logisticsType, string logisticsSubType, int goodsAmount, string senderName, string receiverName, string receiverCellPhone, string serverReplyURL, string receiverStoreID, string? goodName = null, string? senderCellNumber = null, string? isCollection = null)
     {
         //string HashKey = "5294y06JbISpM5x9";
         //string HashIV = "v77hoKGq4kWxNNIS";
         // Create a dictionary to hold parameters
-       
+
         var parameters = new Dictionary<string, string>
         {
             { "MerchantID", merchantID },
@@ -1497,18 +1489,18 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             {
                 sb.Append(hashBytes[i].ToString("X2")); // To hexadecimal string
             }
-         return sb.ToString(); // Step 7: Convert to uppercase implicitly
+            return sb.ToString(); // Step 7: Convert to uppercase implicitly
         }
     }
-    
+
     public async Task<EmapApiResponse> GetStoreAsync(string deliveryMethod)
     {
-        EmapApiResponse result = new ();
+        EmapApiResponse result = new();
         //var order=await _orderRepository.GetAsync(orderId);
         //var orderDeliverys= await _deliveryRepository.GetWithDetailsAsync(orderId);
         //var orderDelivery = orderDeliverys.Where(x => x.Id == orderDeliveryId).FirstOrDefault();
 
-        RestClient client1 = new (new RestClientOptions { MaxTimeout = -1 });
+        RestClient client1 = new(new RestClientOptions { MaxTimeout = -1 });
 
         //var request1 = new RestRequest(_configuration["EcPay:E-MAPApi"], Method.Post);
         var request1 = new RestRequest("https://logistics-stage.ecpay.com.tw/Express/map", Method.Post);
@@ -1530,7 +1522,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         request1.AddParameter("ServerReplyURL", "https://emap.pcsc.com.tw/ecmap/default.aspx");
         request1.AddParameter("IsCollection", "N");
         RestResponse response1 = await client1.ExecuteAsync(request1);
-        
+
         Console.WriteLine(response1.Content);
         result.HtmlString = response1.Content;
         result.CookieName = response1.Cookies.Select(x => x.Name).FirstOrDefault();
@@ -1588,7 +1580,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             byte[] inputBytes = Encoding.UTF8.GetBytes(lowercaseData);
             byte[] hashBytes = md5.ComputeHash(inputBytes);
 
-            StringBuilder sb = new ();
+            StringBuilder sb = new();
             for (int i = 0; i < hashBytes.Length; i++)
             {
                 sb.Append(hashBytes[i].ToString("X2"));
@@ -1598,12 +1590,12 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
     }
 
     public string GenerateCheckMac(string HashKey, string HashIV, string merchantID, string merchantTradeNo, string merchantTradeDate, string logisticsType, string logisticsSubType, int goodsAmount, decimal goodsWeight, string senderName, string senderPhone, string senderZipCode, string senderAddress,
-                                string receiverName, string receiverCellPhone, string receiverZipCode,string receiverAddress, string serverReplyURL)
+                                string receiverName, string receiverCellPhone, string receiverZipCode, string receiverAddress, string serverReplyURL)
     {
         //string HashKey = "5294y06JbISpM5x9";
         //string HashIV = "v77hoKGq4kWxNNIS";
         // Create a dictionary to hold parameters
-        Dictionary<string, string> parameters = new ()
+        Dictionary<string, string> parameters = new()
         {
             { "MerchantID", merchantID },
             { "MerchantTradeNo", merchantTradeNo },
@@ -1657,7 +1649,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
     static ResponseResultDto ParseApiResponse(string apiResponse, bool isSevenElevenB2C = false)
     {
-        ResponseResultDto result = new ();
+        ResponseResultDto result = new();
 
         // Split the response into response code and key-value pairs
         string[] responseParts = apiResponse.Split('|');
@@ -1681,7 +1673,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             string[] parts = kvPair.Split('=');
 
             string key = parts[0];
-            
+
             string value = parts.Length > 1 ? parts[1] : string.Empty;
 
             dataDict[key] = value;
@@ -1821,97 +1813,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
     private async Task SendEmailAsync(Guid id, string deliveryNo, OrderStatus? orderStatus = null)
     {
-        Order order = await _orderRepository.GetWithDetailsAsync(id);
-
-        GroupBuy groupbuy = await _GroupBuyRepository.GetAsync(g => g.Id == order.GroupBuyId);
-
-        string status = orderStatus == null ? _L[order.ShippingStatus.ToString()] : _L[orderStatus.ToString()];
-
-        string subject = $"{groupbuy.GroupBuyName} 訂單#{order.OrderNo} {status}";
-
-        string body = File.ReadAllText("wwwroot/EmailTemplates/email.html");
-
-        DateTime creationTime = order.CreationTime;
-
-        TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById("China Standard Time"); // UTC+8
-
-        DateTimeOffset creationTimeInTimeZone = TimeZoneInfo.ConvertTime(creationTime, tz);
-
-        string formattedTime = creationTimeInTimeZone.ToString("yyyy-MM-dd HH:mm:ss");
-
-        body = body.Replace("{{Greetings}}", "");
-
-        body = body.Replace("{{Footer}}", "");
-
-        if (order.ShippingStatus is ShippingStatus.WaitingForPayment) body = body.Replace("{{NotifyMessage}}", groupbuy.NotifyMessage);
-
-        else body = body.Replace("{{NotifyMessage}}", "");
-
-        if (!deliveryNo.IsNullOrEmpty()) body = body.Replace("{{DeliveryNo}}", deliveryNo);
-
-        else
-        {
-            string pattern = @"<span class=""spacer""></span>\s*<p>貨運號碼</p>\s*<p>\{\{DeliveryNo\}\}</p>";
-
-            body = Regex.Replace(body, pattern, "");
-        }
-
-        body = body.Replace("{{GroupBuyName}}", groupbuy.GroupBuyName);
-        body = body.Replace("{{OrderNo}}", order.OrderNo);
-        body = body.Replace("{{OrderDate}}", formattedTime);
-        body = body.Replace("{{CustomerName}}", order.CustomerName);
-        body = body.Replace("{{CustomerEmail}}", order.CustomerEmail);
-        body = body.Replace("{{CustomerPhone}}", order.CustomerPhone);
-        body = body.Replace("{{RecipientName}}", order.RecipientName);
-        body = body.Replace("{{RecipientPhone}}", order.RecipientPhone);
-
-        if (!groupbuy.IsEnterprise) body = body.Replace("{{PaymentMethod}}", _L[order.PaymentMethod.ToString()]);
-
-        body = body.Replace("{{PaymentStatus}}", _L[order.OrderStatus.ToString()]);
-        body = body.Replace("{{ShippingMethod}}", $"{_L[order.DeliveryMethod.ToString()]} {order.ShippingNumber}");
-        body = body.Replace("{{DeliveryFee}}", "0");
-        body = body.Replace("{{RecipientAddress}}", order.AddressDetails);
-        body = body.Replace("{{ShippingStatus}}", _L[order.ShippingStatus.ToString()]);
-        body = body.Replace("{{RecipientComments}}", order.Remarks);
-
-        if (order.OrderItems != null)
-        {
-            StringBuilder sb = new();
-            foreach (var item in order.OrderItems)
-            {
-                string itemName = "";
-                if (item.ItemType == ItemType.Item)
-                {
-                    itemName = item.Item?.ItemName;
-                }
-                else if (item.ItemType == ItemType.SetItem)
-                {
-                    itemName = item.SetItem?.SetItemName;
-                }
-                else
-                {
-                    itemName = item.Freebie?.ItemName;
-                }
-
-                itemName += $" {item.ItemPrice:N0} x {item.Quantity}";
-                sb.Append(
-                    $@"
-                    <tr>
-                        <td>{itemName}</td>
-                        <td>${item.ItemPrice:N0}</td>
-                        <td>{item.Quantity}</td>
-                        <td>${item.TotalAmount:N0}</td>
-                    </tr>"
-                );
-            }
-
-            body = body.Replace("{{OrderItems}}", sb.ToString());
-        }
-
-        body = body.Replace("{{DeliveryFee}}", "$0");
-        body = body.Replace("{{TotalAmount}}", $"${order.TotalAmount:N0}");
-
-        await _emailSender.SendAsync(order.CustomerEmail, subject, body);
+        await _emailAppService.SendOrderStatusEmailAsync(id, orderStatus);
     }
     #endregion
 }
