@@ -1529,7 +1529,8 @@
 
                                     @if (module.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
                                     {
-                                        foreach (ProductRankingCarouselModule productModule in ProductRankingCarouselModules)
+                                        List<ProductRankingCarouselModule>productModules=ProductRankingCarouselModules.Where(x=>x.ModuleNumber==module.ModuleNumber).ToList();
+                                        foreach (ProductRankingCarouselModule productModule in productModules)
                                         {
                                             <Div Class="col-12 d-flex">
                                                 <Div Class="col-5">

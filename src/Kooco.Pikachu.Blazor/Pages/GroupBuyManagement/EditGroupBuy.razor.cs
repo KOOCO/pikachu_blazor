@@ -964,22 +964,24 @@ public partial class EditGroupBuy
 
         else if (groupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
         {
-            if (ProductRankingCarouselModules is { Count: 0 })
-            {
+           
                 CollapseItem collapseItem = new()
                 {
                     Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
                     SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
-                    GroupBuyModuleType = groupBuyModuleType
+                    GroupBuyModuleType = groupBuyModuleType,
+                    ModuleNumber = CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule) > 0 ?
+                               CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule) + 1 : 1
                 };
 
                 CollapseItem.Add(collapseItem);
-            }
+            
 
             ProductRankingCarouselPickers.Add(new());
 
             ProductRankingCarouselModules.Add(new()
             {
+                ModuleNumber = collapseItem.ModuleNumber,
                 Selected = [
                     new ItemWithItemTypeDto(),
                     new ItemWithItemTypeDto(),
