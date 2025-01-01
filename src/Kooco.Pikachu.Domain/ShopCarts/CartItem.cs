@@ -19,13 +19,13 @@ public class CartItem : FullAuditedEntity<Guid>, IMultiTenant
     public Guid? SetItemId { get; private set; }
 
     [ForeignKey(nameof(ShopCartId))]
-    public ShopCart? ShopCart { get; set; }
+    public virtual ShopCart? ShopCart { get; set; }
 
     [ForeignKey(nameof(ItemId))]
-    public Item? Item { get; set; }
+    public virtual Item? Item { get; set; }
 
     [ForeignKey(nameof(SetItemId))]
-    public SetItem? SetItem { get; set; }
+    public virtual SetItem? SetItem { get; set; }
 
 
     private CartItem() { }

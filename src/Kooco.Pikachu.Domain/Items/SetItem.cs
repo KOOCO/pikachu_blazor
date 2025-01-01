@@ -117,7 +117,8 @@ namespace Kooco.Pikachu.Items
             DateTime limitAvaliableTimeEnd,
             int shareProfit,
             bool isFreeShipping,
-            ItemStorageTemperature? itemStorageTemperature
+            ItemStorageTemperature? itemStorageTemperature,
+            int? saleableQuantity
         ) : base(id)
         {
             TenantId = tenantId;
@@ -132,6 +133,7 @@ namespace Kooco.Pikachu.Items
             ShareProfit = shareProfit;
             IsFreeShipping = isFreeShipping;
             ItemStorageTemperature = itemStorageTemperature;
+            SaleableQuantity = saleableQuantity;
             SetItemDetails = new List<SetItemDetails>();
             Images = new List<Image>();
         }

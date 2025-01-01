@@ -311,6 +311,14 @@
                 <InputNumber class="form-control no-spinners" TValue="int?" @bind-Value="@CreateUpdateSetItemDto.GroupBuyPrice" />
             </div>
         </div>
+        <div class="row mt-2">
+            <div class="col-2">
+                <label>@L["SellableQuantity"]</label>
+            </div>
+            <div class="col-3">
+                <InputNumber class="form-control no-spinners" TValue="int?" @bind-Value="@CreateUpdateSetItemDto.SaleableQuantity" />
+            </div>
+        </div>
         <div class="row mt-3">
             <div class="col-2">
                 <label>@L["CommodityAttributes"]</label>

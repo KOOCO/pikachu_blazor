@@ -2,12 +2,12 @@
 using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
-using System.Linq;
 
 namespace Kooco.Pikachu.ShopCarts;
 
@@ -86,9 +86,12 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
 
     public async Task<ShopCartDto?> FindByUserIdAndGroupBuyIdAsync(Guid userId, Guid groupBuyId)
     {
-        return ObjectMapper.Map<ShopCart?, ShopCartDto?>(
-            await shopCartRepository.FindByUserIdAndGroupBuyIdAsync(userId, groupBuyId, true)
-        );
+        var shopCart = await shopCartRepository.FindByUserIdAndGroupBuyIdAsync(userId, groupBuyId);
+        if (shopCart is not null)
+        {
+            await shopCartRepository.EnsureCollectionLoadedAsync(shopCart, s => s.CartItems);
+        }
+        return ObjectMapper.Map<ShopCart?, ShopCartDto?>(shopCart);
     }
 
     public async Task DeleteByUserIdAsync(Guid userId)

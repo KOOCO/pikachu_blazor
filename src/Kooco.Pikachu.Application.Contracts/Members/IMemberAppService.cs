@@ -32,4 +32,5 @@ public interface IMemberAppService : IApplicationService
     Task<MemberDto> RegisterAsync(CreateMemberDto input);
     Task<List<MemberDto>> GetAllAsync();
     Task<OrderDto> GetMemberOrderAsync(Guid orderId);
+    Task<List<MemberOrderInfoDto>> GetMemberOrdersByGroupBuyAsync(Guid groupBuyId);
 }

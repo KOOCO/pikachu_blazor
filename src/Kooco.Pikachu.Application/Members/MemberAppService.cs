@@ -206,7 +206,7 @@ public class MemberAppService(IMemberRepository memberRepository, IdentityUserMa
     {
         if (!CurrentUser.Id.HasValue)
         {
-            throw new UnauthorizedAccessException();
+            throw new EntityNotFoundException(nameof(IdentityUser));
         }
 
         var order = await orderRepository.GetMemberOrderAsync(orderId, CurrentUser.Id.Value);
@@ -217,6 +217,17 @@ public class MemberAppService(IMemberRepository memberRepository, IdentityUserMa
         }
 
         return ObjectMapper.Map<Order, OrderDto>(order);
+    }
+
+    public async Task<List<MemberOrderInfoDto>> GetMemberOrdersByGroupBuyAsync(Guid groupBuyId)
+    {
+        if (!CurrentUser.Id.HasValue)
+        {
+            throw new EntityNotFoundException(nameof(IdentityUser));
+        }
+
+        var orders = await orderRepository.GetMemberOrdersByGroupBuyAsync(CurrentUser.Id.Value, groupBuyId);
+        return ObjectMapper.Map<List<MemberOrderInfoModel>, List<MemberOrderInfoDto>>(orders);
     }
 
     [AllowAnonymous]
