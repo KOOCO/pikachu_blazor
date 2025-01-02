@@ -297,7 +297,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                                                 detail.SaleableQuantity -= item.Quantity;
                                                 detail.StockOnHand -= item.Quantity;
 
-                                                await _itemDetailsRepository.UpdateAsync(details);
+                                                await _itemDetailsRepository.UpdateAsync(detail);
                                             }
                                         }
                                     }
