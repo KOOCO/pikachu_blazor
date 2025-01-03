@@ -716,7 +716,77 @@ public partial class Order
                         Console.WriteLine($"PDF generated successfully: {pdfFilePath}");
                     }
                 }
-            }
+                else
+                {
+                    //For SevenElevenC2C
+                    // Logic for processing divFrames remains unchanged
+                    tempPath = Path.Combine(Path.GetTempPath(), "MergeTemp");
+
+                    var headNode = htmlDoc.DocumentNode.SelectSingleNode("//head");
+                    var bodyNode = htmlDoc.DocumentNode.SelectSingleNode("//body");
+
+                    string originalHead = headNode?.OuterHtml ?? "<head></head>";
+                    string originalBodyStart = bodyNode?.InnerHtml.Split(new[] { "<div class=\"div_frame\">" }, StringSplitOptions.None)[0] ?? "";
+
+                    // Create a separate PDF for each <div class="div_frame">
+                    for (int j = 0; j < divFrames.Count; j++)
+                    {
+                        string htmlFilePath = Path.Combine(tempPath, $"outputHTML_{i}_{j}.html");
+                        string pdfFilePath = Path.Combine(tempPath, $"output_{i}_{j}.pdf");
+
+                        // Build the new HTML content for the current div_frame
+                        string newHtmlContent = $@"
+                    <!DOCTYPE html>
+                    <html>
+                    {originalHead}
+                    <body class='{bodyNode.GetAttributeValue("class", string.Empty)}'>
+                        {originalBodyStart}
+                        {divFrames[j].OuterHtml}
+                    </body>
+                    </html>";
+
+                        // Save the HTML file
+                        File.WriteAllText(htmlFilePath, newHtmlContent);
+
+                        // Generate PDF
+                        if (File.Exists(pdfFilePath)) File.Delete(pdfFilePath);
+                        pdfFilePaths.Add(pdfFilePath);
+
+                        var doc = new HtmlToPdfDocument
+                        {
+                            GlobalSettings = new GlobalSettings
+                            {
+                                ColorMode = ColorMode.Color,
+                                Orientation = DinkToPdf.Orientation.Portrait,
+                                PaperSize = PaperKind.A6,
+                                Margins = new MarginSettings { Top = 3, Left = 0, Bottom = 5, Right = 0 },
+                                Out = pdfFilePath
+                            },
+                            Objects =
+                        {
+                            new ObjectSettings
+                            {
+                                Page = htmlFilePath,
+                                LoadSettings = new LoadSettings { JSDelay = 5000 },
+                                WebSettings = new WebSettings
+                                {
+                                    EnableJavascript = true,
+                                    DefaultEncoding = "UTF-8",
+                                    LoadImages = true,
+                                }
+                            }
+                        }
+                        };
+
+                        Converter.Convert(doc);
+                        Console.WriteLine($"PDF generated successfully for div_frame: {pdfFilePath}");
+                    }
+                
+            
+         
+        }
+
+    }
             catch (Exception ex)
             {
                 // Log any errors that occur during PDF generation
