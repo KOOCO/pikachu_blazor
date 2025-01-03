@@ -44,6 +44,8 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form;
 using static Kooco.Pikachu.Permissions.PikachuPermissions;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
+using MudBlazor;
+using static Volo.Abp.Ui.LayoutHooks.LayoutHooks;
 
 namespace Kooco.Pikachu.Blazor.Pages.Orders;
 
@@ -490,13 +492,13 @@ public partial class Order
     }
     public List<string> GenerateA6Pdf(List<string> htmls)
     {
-        List<string> pdfFilePaths = new();
+        List<string> pdfFilePaths = new(); // List to store generated PDF file paths
         CustomAssemblyContext customAssembly = new();
-        customAssembly.LoadDinkToPdfDll();
+        customAssembly.LoadDinkToPdfDll(); // Load the required DLL for PDF conversion
 
-        string tempPath = "";
+        string tempPath = Path.GetTempPath(); // Get the system's temporary folder path
 
-        for (int i = 0; i < htmls.Count; i++)
+        for (int i = 0; i < htmls.Count; i++) // Loop through each HTML string provided
         {
             try
             {
@@ -504,42 +506,137 @@ public partial class Order
                 HtmlDocument htmlDoc = new();
                 htmlDoc.LoadHtml(htmls[i]);
 
-                // Check for <div id="PrintBlock">
-                var printBlock = htmlDoc.DocumentNode.SelectSingleNode("//div[@id='PrintBlock']");
-                if (printBlock != null)
+                // Check if <div class="PrintToolsBlock"> exists
+                var printToolsBlockDiv = htmlDoc.DocumentNode.SelectSingleNode("//div[contains(@class, 'PrintToolsBlock')]");
+                if (printToolsBlockDiv != null)
                 {
-                    var imgTags = printBlock.SelectNodes(".//img");
-                    if (imgTags != null && imgTags.Count > 1)
+                    // Check if <div id="PrintBlock"> exists inside PrintToolsBlock
+                    var printBlockDiv = printToolsBlockDiv.SelectSingleNode(".//div[@id='PrintBlock']");
+                    if (printBlockDiv != null)
                     {
-                        // Separate <img> tags into individual HTML documents
-                        tempPath = Path.Combine(Path.GetTempPath(), "MergeTemp");
-                        Directory.CreateDirectory(tempPath);
-
-                        for (int j = 0; j < imgTags.Count; j++)
+                        // Check if the number of <img> tags inside PrintBlock is more than 1
+                        var imgTags = printBlockDiv.SelectNodes(".//img");
+                        if (imgTags != null && imgTags.Count > 1)
                         {
+                            // Retrieve the head and body nodes from the HTML document
+                            var headNode = htmlDoc.DocumentNode.SelectSingleNode("//head");
+                            var bodyNode = htmlDoc.DocumentNode.SelectSingleNode("//body");
+
+                            // Store the original head content and body class
+                            string originalHead = headNode?.OuterHtml ?? "<head></head>";
+                            string originalBodyClass = bodyNode?.GetAttributeValue("class", string.Empty) ?? "";
+
+                            for (int j = 0; j < imgTags.Count; j++) // Loop through each image tag
+                            {
+                                // Define paths for temporary HTML and PDF files
+                                string htmlFilePath = Path.Combine(tempPath, $"outputHTML_{i}_{j}.html");
+                                string pdfFilePath = Path.Combine(tempPath, $"output_{i}_{j}.pdf");
+
+                                // Create new HTML content containing the image and the original structure
+                                string newHtmlContent = $@"
+                            <!DOCTYPE html>
+                            <html>
+                            {originalHead}
+                            <body class='{originalBodyClass}'>
+                                <div id='PrintBlock'>
+                                        < div style ='position: relative; display: inline-block;'> <!-- Corrected display property -->
+                                            { imgTags[j].OuterHtml}
+                                    </ div >
+                                </ div >
+                            </ body >
+                            </ html > ";
+    
+                            // Write the new HTML content to a temporary file
+                            File.WriteAllText(htmlFilePath, newHtmlContent);
+
+                                // Delete the existing PDF file if it already exists
+                                if (File.Exists(pdfFilePath)) File.Delete(pdfFilePath);
+
+                                // Create a PDF document configuration
+                                var doc = new HtmlToPdfDocument
+                                {
+                                    GlobalSettings = new GlobalSettings
+                                    {
+                                        ColorMode = ColorMode.Color,
+                                        Orientation = DinkToPdf.Orientation.Portrait,
+                                        PaperSize = PaperKind.A6,
+                                        Margins = new MarginSettings { Top = 3, Left = 0, Bottom = 5, Right = 0 },
+                                        Out = pdfFilePath
+                                    },
+                                    Objects =
+                                {
+                                    new ObjectSettings
+                                    {
+                                        Page = htmlFilePath,
+                                        LoadSettings = new LoadSettings { JSDelay = 5000 },
+                                        WebSettings = new WebSettings
+                                        {
+                                            EnableJavascript = true,
+                                            DefaultEncoding = "UTF-8",
+                                            LoadImages = true
+                                        }
+                                    }
+                                }
+                                };
+
+                                // Convert the HTML to PDF and add the PDF path to the list
+                                Converter.Convert(doc);
+                                pdfFilePaths.Add(pdfFilePath);
+                                Console.WriteLine($"PDF generated successfully for PrintBlock image: {pdfFilePath}");
+                            }
+                            continue; // Skip to the next HTML input after processing images
+                        }
+                    }
+                }
+
+                // Existing logic for div_frame or PrintContent tables...
+                var divFrames = htmlDoc.DocumentNode.SelectNodes("//div[contains(@class, 'div_frame')]");
+                if (divFrames == null || divFrames.Count == 0) // Check if there are no div_frames
+                {
+                    // Check for <table class="PrintContent">
+                    var printContentTables = htmlDoc.DocumentNode.SelectNodes("//table[contains(@class, 'PrintContent')]");
+                    if (printContentTables != null && printContentTables.Count > 0)
+                    {
+                        // Define a temporary directory for merged content
+                        tempPath = Path.Combine(tempPath, "MergeTemp");
+
+                        // Retrieve the head and body nodes from the HTML document
+                        var headNode = htmlDoc.DocumentNode.SelectSingleNode("//head");
+                        var bodyNode = htmlDoc.DocumentNode.SelectSingleNode("//body");
+
+                        // Store the original head content and body class
+                        string originalHead = headNode?.OuterHtml ?? "<head></head>";
+                        string originalBodyClass = bodyNode?.GetAttributeValue("class", string.Empty) ?? "";
+
+                        for (int j = 0; j < printContentTables.Count; j++) // Loop through each table
+                        {
+                            // Define paths for temporary HTML and PDF files
                             string htmlFilePath = Path.Combine(tempPath, $"outputHTML_{i}_{j}.html");
                             string pdfFilePath = Path.Combine(tempPath, $"output_{i}_{j}.pdf");
 
-                            // Create a new HTML content for the current <img>
+                            // Create new HTML content containing the table and the original structure
                             string newHtmlContent = $@"
-						<!DOCTYPE html>
-						<html>
-						<head>
-							{htmlDoc.DocumentNode.SelectSingleNode("//head")?.OuterHtml ?? "<head></head>"}
-						</head>
-						<body>
-							<div id='PrintBlock'>
-								{imgTags[j].OuterHtml}
-							</div>
-						</body>
-						</html>";
+                        <!DOCTYPE html>
+                        <html>
+                        {originalHead}
+                        <body class='
+                            {originalBodyClass}'>
+                            <div style='position: relative; display: inline - block;'> <!-- Corrected display property -->
+                                    { printContentTables[j].OuterHtml}
+                            </ div >
+                        </ body >
+                        </ html > ";
+    
+                        // Create the temporary directory if it doesn't exist
+                        Directory.CreateDirectory(tempPath);
 
-                            // Save the HTML file
+                            // Write the new HTML content to a temporary file
                             File.WriteAllText(htmlFilePath, newHtmlContent);
 
-                            // Generate PDF
+                            // Delete the existing PDF file if it already exists
                             if (File.Exists(pdfFilePath)) File.Delete(pdfFilePath);
 
+                            // Create a PDF document configuration
                             var doc = new HtmlToPdfDocument
                             {
                                 GlobalSettings = new GlobalSettings
@@ -566,63 +663,38 @@ public partial class Order
                             }
                             };
 
+                            // Convert the HTML to PDF and add the PDF path to the list
                             Converter.Convert(doc);
                             pdfFilePaths.Add(pdfFilePath);
-                            Console.WriteLine($"PDF generated successfully for img tag: {pdfFilePath}");
+                            Console.WriteLine($"PDF generated successfully for PrintContent: {pdfFilePath}");
                         }
-                        continue;
                     }
-                }
-
-                // Existing logic for div_frame or PrintContent tables...
-                var divFrames = htmlDoc.DocumentNode.SelectNodes("//div[contains(@class, 'div_frame')]");
-                if (divFrames == null || divFrames.Count == 0)
-                {
-                    // Check for <table class="PrintContent">
-                    var printContentTables = htmlDoc.DocumentNode.SelectNodes("//table[contains(@class, 'PrintContent')]");
-                    if (printContentTables != null && printContentTables.Count > 0)
+                    else // Process any remaining HTML without specific blocks or tables
                     {
-                        // Process PrintContent elements
-                        tempPath = Path.Combine(Path.GetTempPath(), "MergeTemp");
-                        var headNode = htmlDoc.DocumentNode.SelectSingleNode("//head");
-                        var bodyNode = htmlDoc.DocumentNode.SelectSingleNode("//body");
+                        // Define paths for temporary HTML and PDF files
+                        string htmlFilePath = Path.Combine(tempPath, $"outputHTML{i}.html");
+                        string pdfFilePath = Path.Combine(tempPath, $"output{i}.pdf");
 
-                        string originalHead = headNode?.OuterHtml ?? "<head></head>";
-                        string originalBodyClass = bodyNode?.GetAttributeValue("class", string.Empty) ?? "";
+                        // Add the PDF file path to the list
+                        pdfFilePaths.Add(pdfFilePath);
 
-                        for (int j = 0; j < printContentTables.Count; j++)
+                        // Write the original HTML content to a temporary file
+                        File.WriteAllText(htmlFilePath, htmls[i]);
+
+                        // Delete the existing PDF file if it already exists
+                        if (File.Exists(pdfFilePath)) File.Delete(pdfFilePath);
+
+                        // Create a PDF document configuration
+                        var doc = new HtmlToPdfDocument
                         {
-                            string htmlFilePath = Path.Combine(tempPath, $"outputHTML_{i}_{j}.html");
-                            string pdfFilePath = Path.Combine(tempPath, $"output_{i}_{j}.pdf");
-
-                            // Build the new HTML content for the current PrintContent table
-                            string newHtmlContent = $@"
-						<!DOCTYPE html>
-						<html>
-						{originalHead}
-						<body class='{originalBodyClass}'>
-							{printContentTables[j].OuterHtml}
-						</body>
-						</html>";
-
-                            // Save the HTML file
-                            Directory.CreateDirectory(tempPath); // Ensure temp directory exists
-                            File.WriteAllText(htmlFilePath, newHtmlContent);
-
-                            // Generate PDF
-                            if (File.Exists(pdfFilePath)) File.Delete(pdfFilePath);
-
-                            var doc = new HtmlToPdfDocument
+                            GlobalSettings = new GlobalSettings
                             {
-                                GlobalSettings = new GlobalSettings
-                                {
-                                    ColorMode = ColorMode.Color,
-                                    Orientation = DinkToPdf.Orientation.Portrait,
-                                    PaperSize = PaperKind.A6,
-                                    Margins = new MarginSettings { Top = 3, Left = 0, Bottom = 5, Right = 0 },
-                                    Out = pdfFilePath
-                                },
-                                Objects =
+                                ColorMode = ColorMode.Color,
+                                Orientation = DinkToPdf.Orientation.Portrait,
+                                PaperSize = PaperKind.A4,
+                                Out = pdfFilePath
+                            },
+                            Objects =
                         {
                             new ObjectSettings
                             {
@@ -632,134 +704,29 @@ public partial class Order
                                 {
                                     EnableJavascript = true,
                                     DefaultEncoding = "UTF-8",
-                                    LoadImages = true,
+                                    LoadImages = true
                                 }
                             }
                         }
-                            };
-
-                            Converter.Convert(doc);
-                            pdfFilePaths.Add(pdfFilePath);
-                            Console.WriteLine($"PDF generated successfully for PrintContent: {pdfFilePath}");
-                        }
-                    }
-                    else
-                    {
-                        // Existing logic for no div_frame and no PrintContent
-                        tempPath = Path.Combine(Path.GetTempPath(), "MergeTemp");
-                        string htmlFilePath = Path.Combine(tempPath, $"outputHTML{i}.html");
-                        string pdfFilePath = Path.Combine(tempPath, $"output{i}.pdf");
-
-                        pdfFilePaths.Add(pdfFilePath);
-
-                        File.WriteAllText(htmlFilePath, htmls[i]);
-
-                        if (File.Exists(pdfFilePath)) File.Delete(pdfFilePath);
-
-                        var doc = new HtmlToPdfDocument
-                        {
-                            GlobalSettings = new GlobalSettings
-                            {
-                                ColorMode = ColorMode.Color,
-                                Orientation = DinkToPdf.Orientation.Portrait,
-                                PaperSize = PaperKind.A4,
-                                Out = pdfFilePath,
-                            },
-                            Objects =
-                    {
-                        new ObjectSettings
-                        {
-                            Page = htmlFilePath,
-                            LoadSettings = new LoadSettings { JSDelay = 5000 },
-                            WebSettings = new WebSettings
-                            {
-                                EnableJavascript = true,
-                                DefaultEncoding = "UTF-8",
-                                LoadImages = true,
-                            }
-                        }
-                    }
                         };
 
+                        // Convert the HTML to PDF
                         Converter.Convert(doc);
                         Console.WriteLine($"PDF generated successfully: {pdfFilePath}");
-                    }
-                }
-                else
-                {
-                    //For SevenElevenC2C
-                    // Logic for processing divFrames remains unchanged
-                    tempPath = Path.Combine(Path.GetTempPath(), "MergeTemp");
-
-                    var headNode = htmlDoc.DocumentNode.SelectSingleNode("//head");
-                    var bodyNode = htmlDoc.DocumentNode.SelectSingleNode("//body");
-
-                    string originalHead = headNode?.OuterHtml ?? "<head></head>";
-                    string originalBodyStart = bodyNode?.InnerHtml.Split(new[] { "<div class=\"div_frame\">" }, StringSplitOptions.None)[0] ?? "";
-
-                    // Create a separate PDF for each <div class="div_frame">
-                    for (int j = 0; j < divFrames.Count; j++)
-                    {
-                        string htmlFilePath = Path.Combine(tempPath, $"outputHTML_{i}_{j}.html");
-                        string pdfFilePath = Path.Combine(tempPath, $"output_{i}_{j}.pdf");
-
-                        // Build the new HTML content for the current div_frame
-                        string newHtmlContent = $@"
-					<!DOCTYPE html>
-					<html>
-					{originalHead}
-					<body class='{bodyNode.GetAttributeValue("class", string.Empty)}'>
-						{originalBodyStart}
-						{divFrames[j].OuterHtml}
-					</body>
-					</html>";
-
-                        // Save the HTML file
-                        File.WriteAllText(htmlFilePath, newHtmlContent);
-
-                        // Generate PDF
-                        if (File.Exists(pdfFilePath)) File.Delete(pdfFilePath);
-                        pdfFilePaths.Add(pdfFilePath);
-
-                        var doc = new HtmlToPdfDocument
-                        {
-                            GlobalSettings = new GlobalSettings
-                            {
-                                ColorMode = ColorMode.Color,
-                                Orientation = DinkToPdf.Orientation.Portrait,
-                                PaperSize = PaperKind.A6,
-                                Margins = new MarginSettings { Top = 3, Left = 0, Bottom = 5, Right = 0 },
-                                Out = pdfFilePath
-                            },
-                            Objects =
-                    {
-                        new ObjectSettings
-                        {
-                            Page = htmlFilePath,
-                            LoadSettings = new LoadSettings { JSDelay = 5000 },
-                            WebSettings = new WebSettings
-                            {
-                                EnableJavascript = true,
-                                DefaultEncoding = "UTF-8",
-                                LoadImages = true,
-                            }
-                        }
-                    }
-                        };
-
-                        Converter.Convert(doc);
-                        Console.WriteLine($"PDF generated successfully for div_frame: {pdfFilePath}");
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error during PDF generation: {ex.Message}");
+                // Log any errors that occur during PDF generation
+                Console.WriteLine($"Error generating PDF: {ex.Message}");
             }
         }
 
+        // Return the list of generated PDF file paths
         return pdfFilePaths;
     }
+
 
 
     public MemoryStream CombinePdf(List<string> inputPdfPaths)
@@ -1234,7 +1201,7 @@ public partial class Order
 
     async void OnSortChange(DataGridSortChangedEventArgs e)
     {
-        Sorting = e.FieldName + " " + (e.SortDirection != SortDirection.Default ? e.SortDirection : "");
+        Sorting = e.FieldName + " " + (e.SortDirection != Blazorise.SortDirection.Default ? e.SortDirection : "");
         await UpdateItemList();
     }
 
