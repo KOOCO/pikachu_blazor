@@ -27,29 +27,29 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
 
         input.CartItems ??= [];
 
-        foreach (CreateCartItemDto cartItem in input.CartItems)
+        foreach (CreateCartItemDto inputItem in input.CartItems)
         {
-            if (shopCart.CartItems.Any(a => cartItem.ItemId.HasValue && a.ItemId == cartItem.ItemId.Value && a.ItemDetailId == cartItem.ItemDetailId.Value))
+            if (shopCart.CartItems.Any(ci => inputItem.ItemId.HasValue && ci.ItemId == inputItem.ItemId.Value && ci.ItemDetailId == inputItem.ItemDetailId.Value))
             {
-                foreach (CartItem item in shopCart.CartItems.Where(w => w.ItemId == cartItem.ItemId.Value && w.ItemDetailId == cartItem.ItemDetailId.Value))
+                foreach (CartItem cartItem in shopCart.CartItems.Where(ci => ci.ItemId == inputItem.ItemId.Value && ci.ItemDetailId == inputItem.ItemDetailId.Value))
                 {
-                    item.Quantity += cartItem.Quantity;
+                    cartItem.Quantity += inputItem.Quantity;
                 }
 
                 await shopCartRepository.UpdateAsync(shopCart);
             }
 
-            else if (shopCart.CartItems.Any(x => cartItem.SetItemId.HasValue && x.SetItemId == cartItem.SetItemId))
+            else if (shopCart.CartItems.Any(ci => inputItem.SetItemId.HasValue && ci.SetItemId == inputItem.SetItemId))
             {
-                foreach (CartItem item in shopCart.CartItems.Where(w => w.SetItemId == cartItem.SetItemId))
+                foreach (CartItem cartItem in shopCart.CartItems.Where(w => w.SetItemId == inputItem.SetItemId))
                 {
-                    cartItem.Quantity += item.Quantity;
+                    cartItem.Quantity += inputItem.Quantity;
                 }
             }
 
             else
             {
-                await shopCartManager.AddCartItem(shopCart, cartItem.Quantity, cartItem.UnitPrice, cartItem.ItemId, cartItem.ItemDetailId, cartItem.SetItemId);
+                await shopCartManager.AddCartItem(shopCart, inputItem.Quantity, inputItem.UnitPrice, inputItem.ItemId, inputItem.ItemDetailId, inputItem.SetItemId);
             }
         }
 
