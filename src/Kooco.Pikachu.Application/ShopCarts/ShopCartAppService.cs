@@ -29,10 +29,7 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
 
         foreach (CreateCartItemDto cartItem in input.CartItems)
         {
-            Check.NotNull(cartItem.ItemId, nameof(cartItem.ItemId));
-            Check.NotNull(cartItem.ItemDetailId, nameof(cartItem.ItemDetailId));
-
-            if (shopCart.CartItems.Any(a => a.ItemId == cartItem.ItemId.Value && a.ItemDetailId == cartItem.ItemDetailId.Value))
+            if (shopCart.CartItems.Any(a => cartItem.ItemId.HasValue && a.ItemId == cartItem.ItemId.Value && a.ItemDetailId == cartItem.ItemDetailId.Value))
             {
                 foreach (CartItem item in shopCart.CartItems.Where(w => w.ItemId == cartItem.ItemId.Value && w.ItemDetailId == cartItem.ItemDetailId.Value))
                 {
@@ -42,7 +39,18 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
                 await shopCartRepository.UpdateAsync(shopCart);
             }
 
-            else await shopCartManager.AddCartItem(shopCart, cartItem.Quantity, cartItem.UnitPrice, cartItem.ItemId, cartItem.ItemDetailId, cartItem.SetItemId);
+            else if (shopCart.CartItems.Any(x => cartItem.SetItemId.HasValue && x.SetItemId == cartItem.SetItemId))
+            {
+                foreach (CartItem item in shopCart.CartItems.Where(w => w.SetItemId == cartItem.SetItemId))
+                {
+                    cartItem.Quantity += item.Quantity;
+                }
+            }
+
+            else
+            {
+                await shopCartManager.AddCartItem(shopCart, cartItem.Quantity, cartItem.UnitPrice, cartItem.ItemId, cartItem.ItemDetailId, cartItem.SetItemId);
+            }
         }
 
         return ObjectMapper.Map<ShopCart, ShopCartDto>(shopCart);
