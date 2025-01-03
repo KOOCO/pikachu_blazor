@@ -138,7 +138,7 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
                 cartItem.Quantity = input.Quantity;
             }
         }
-        else if (shopCart.CartItems.Any(x => x.SetItemId == input.SetItemId))
+        else if (shopCart.CartItems.Any(x => input.SetItemId.HasValue && x.SetItemId == input.SetItemId))
         {
             foreach (CartItem cartItem in shopCart.CartItems.Where(w => w.SetItemId == input.SetItemId))
             {
