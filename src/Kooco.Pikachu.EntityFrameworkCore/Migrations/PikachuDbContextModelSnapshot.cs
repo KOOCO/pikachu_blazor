@@ -833,6 +833,9 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("AddOnProduct")
+                        .HasColumnType("bit");
+
                     b.Property<string>("AlertColor")
                         .HasColumnType("nvarchar(max)");
 
@@ -852,6 +855,9 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BlackCatDeliveryTime")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BlockColor")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ColorSchemeType")
@@ -1693,6 +1699,9 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<string>("ItemCategory")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("ItemStorageTemperature")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnType("datetime2")
                         .HasColumnName("LastModificationTime");
@@ -2145,6 +2154,12 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<string>("SrvTranId")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("StatusId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StatusName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("TenantId");
@@ -2511,6 +2526,9 @@ namespace Kooco.Pikachu.Migrations
 
                     b.Property<int?>("ReturnStatus")
                         .HasColumnType("int");
+
+                    b.Property<string>("ReturnedOrderItemIds")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Road")
                         .HasColumnType("nvarchar(max)");
@@ -2963,10 +2981,10 @@ namespace Kooco.Pikachu.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("IsDeleted");
 
-                    b.Property<Guid>("ItemDetailId")
+                    b.Property<Guid?>("ItemDetailId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ItemId")
+                    b.Property<Guid?>("ItemId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("LastModificationTime")
@@ -2979,6 +2997,9 @@ namespace Kooco.Pikachu.Migrations
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
+
+                    b.Property<Guid?>("SetItemId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("ShopCartId")
                         .HasColumnType("uniqueidentifier");
@@ -2995,6 +3016,8 @@ namespace Kooco.Pikachu.Migrations
                     b.HasIndex("ItemDetailId");
 
                     b.HasIndex("ItemId");
+
+                    b.HasIndex("SetItemId");
 
                     b.HasIndex("ShopCartId");
 
@@ -3870,10 +3893,17 @@ namespace Kooco.Pikachu.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Kooco.Pikachu.WebsiteManagement.WebsiteSettings", b =>
+            modelBuilder.Entity("Kooco.Pikachu.WebsiteManagement.FooterSettings.FooterSetting", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)")
+                        .HasColumnName("ConcurrencyStamp");
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2")
@@ -3891,13 +3921,10 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("DeletionTime");
 
-                    b.Property<string>("Facebook")
+                    b.Property<string>("ExtraProperties")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Instagram")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ExtraProperties");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -3913,29 +3940,280 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("LastModifierId");
 
-                    b.Property<string>("Line")
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("TenantId");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AppFooterSettings", (string)null);
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.WebsiteManagement.FooterSettings.FooterSettingLink", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Index")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("SectionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("TenantId");
+
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LogoName")
+                    b.Property<string>("Url")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SectionId");
+
+                    b.ToTable("AppFooterSettingLinks", (string)null);
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.WebsiteManagement.FooterSettings.FooterSettingSection", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("FooterSettingId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("FooterSettingsPosition")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FooterSettingsType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ImageName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("TenantId");
+
+                    b.Property<string>("Text")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FooterSettingId");
+
+                    b.ToTable("AppFooterSettingSections", (string)null);
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.WebsiteManagement.TopbarSettings.TopbarSetting", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)")
+                        .HasColumnName("ConcurrencyStamp");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<string>("ExtraProperties")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ExtraProperties");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("TenantId");
+
+                    b.Property<int>("TopbarStyleSettings")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AppTopbarSettings", (string)null);
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.WebsiteManagement.TopbarSettings.TopbarSettingCategoryOption", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Index")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Link")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("TenantId");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TopbarCategoryLinkOption")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("TopbarSettingLinkId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TopbarSettingLinkId");
+
+                    b.ToTable("AppTopbarSettingCategoryOptions", (string)null);
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.WebsiteManagement.TopbarSettings.TopbarSettingLink", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Index")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("TenantId");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TopbarLinkSettings")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("TopbarSettingId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Url")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TopbarSettingId");
+
+                    b.ToTable("AppTopbarSettingLinks", (string)null);
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.WebsiteManagement.WebsiteBasicSettings.WebsiteBasicSetting", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AlertColor")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BackgroundColor")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BlockColor")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ColorScheme")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<bool>("IsEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<string>("LogoName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LogoUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("NotificationBar")
-                        .IsRequired()
+                    b.Property<string>("PrimaryColor")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ReturnExchangePolicy")
-                        .IsRequired()
+                    b.Property<string>("SecondaryBackgroundColor")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SecondaryColor")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("StoreTitle")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TemplateType")
+                        .HasColumnType("int");
 
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uniqueidentifier")
@@ -3946,7 +4224,296 @@ namespace Kooco.Pikachu.Migrations
 
                     b.HasKey("Id");
 
+                    b.ToTable("AppWebsiteBasicSettings", null, t =>
+                        {
+                            t.HasComment("");
+                        });
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.WebsiteManagement.WebsiteSettings", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ArticleHtml")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)")
+                        .HasColumnName("ConcurrencyStamp");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<string>("ExtraProperties")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ExtraProperties");
+
+                    b.Property<int?>("GroupBuyModuleType")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<string>("PageDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PageLink")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PageTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PageType")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("ProductCategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("SetAsHomePage")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("TemplateType")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("TenantId");
+
+                    b.HasKey("Id");
+
                     b.ToTable("AppWebsiteSettings", null, t =>
+                        {
+                            t.HasComment("");
+                        });
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules.WebsiteSettingsInstructionModule", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("BodyText")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("TenantId");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("WebsiteSettingsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WebsiteSettingsId");
+
+                    b.ToTable("AppWebsiteSettingsInstructionModules", null, t =>
+                        {
+                            t.HasComment("");
+                        });
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules.WebsiteSettingsModule", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AdditionalInfo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("GroupBuyModuleType")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ModuleNumber")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProductGroupModuleImageSize")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductGroupModuleTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("TenantId");
+
+                    b.Property<Guid>("WebsiteSettingsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WebsiteSettingsId");
+
+                    b.ToTable("AppWebsiteSettingsModules", null, t =>
+                        {
+                            t.HasComment("");
+                        });
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules.WebsiteSettingsModuleItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DisplayText")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("ItemId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("ItemType")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ModuleNumber")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("SetItemId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("TenantId");
+
+                    b.Property<Guid>("WebsiteSettingsModuleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("WebsiteSettingsModuleId2")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("SetItemId");
+
+                    b.HasIndex("WebsiteSettingsModuleId");
+
+                    b.ToTable("AppWebsiteSettingsModuleItems", null, t =>
+                        {
+                            t.HasComment("");
+                        });
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules.WebsiteSettingsOverviewModule", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("BodyText")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ButtonLink")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ButtonText")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsButtonEnable")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SubTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("TenantId");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("WebsiteSettingsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WebsiteSettingsId");
+
+                    b.ToTable("AppWebsiteSettingsOverviewModules", null, t =>
+                        {
+                            t.HasComment("");
+                        });
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules.WebsiteSettingsProductRankingModule", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ModuleNumber")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SubTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("TenantId");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("WebsiteSettingsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WebsiteSettingsId");
+
+                    b.ToTable("AppWebsiteSettingsProductRankingModules", null, t =>
                         {
                             t.HasComment("");
                         });
@@ -6046,9 +6613,11 @@ namespace Kooco.Pikachu.Migrations
                 {
                     b.HasOne("Kooco.Pikachu.Items.Item", "Item")
                         .WithMany()
-                        .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ItemId");
+
+                    b.HasOne("Kooco.Pikachu.Items.SetItem", "SetItem")
+                        .WithMany()
+                        .HasForeignKey("SetItemId");
 
                     b.HasOne("Kooco.Pikachu.ShopCarts.ShopCart", "ShopCart")
                         .WithMany("CartItems")
@@ -6057,6 +6626,8 @@ namespace Kooco.Pikachu.Migrations
                         .IsRequired();
 
                     b.Navigation("Item");
+
+                    b.Navigation("SetItem");
 
                     b.Navigation("ShopCart");
                 });
@@ -6223,6 +6794,117 @@ namespace Kooco.Pikachu.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.WebsiteManagement.FooterSettings.FooterSettingLink", b =>
+                {
+                    b.HasOne("Kooco.Pikachu.WebsiteManagement.FooterSettings.FooterSettingSection", "Section")
+                        .WithMany("Links")
+                        .HasForeignKey("SectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Section");
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.WebsiteManagement.FooterSettings.FooterSettingSection", b =>
+                {
+                    b.HasOne("Kooco.Pikachu.WebsiteManagement.FooterSettings.FooterSetting", "FooterSetting")
+                        .WithMany("Sections")
+                        .HasForeignKey("FooterSettingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FooterSetting");
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.WebsiteManagement.TopbarSettings.TopbarSettingCategoryOption", b =>
+                {
+                    b.HasOne("Kooco.Pikachu.WebsiteManagement.TopbarSettings.TopbarSettingLink", "TopbarSettingLink")
+                        .WithMany("CategoryOptions")
+                        .HasForeignKey("TopbarSettingLinkId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TopbarSettingLink");
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.WebsiteManagement.TopbarSettings.TopbarSettingLink", b =>
+                {
+                    b.HasOne("Kooco.Pikachu.WebsiteManagement.TopbarSettings.TopbarSetting", "TopbarSetting")
+                        .WithMany("Links")
+                        .HasForeignKey("TopbarSettingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TopbarSetting");
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules.WebsiteSettingsInstructionModule", b =>
+                {
+                    b.HasOne("Kooco.Pikachu.WebsiteManagement.WebsiteSettings", "WebsiteSettings")
+                        .WithMany("InstructionModules")
+                        .HasForeignKey("WebsiteSettingsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WebsiteSettings");
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules.WebsiteSettingsModule", b =>
+                {
+                    b.HasOne("Kooco.Pikachu.WebsiteManagement.WebsiteSettings", "WebsiteSettings")
+                        .WithMany("Modules")
+                        .HasForeignKey("WebsiteSettingsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WebsiteSettings");
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules.WebsiteSettingsModuleItem", b =>
+                {
+                    b.HasOne("Kooco.Pikachu.Items.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId");
+
+                    b.HasOne("Kooco.Pikachu.Items.SetItem", "SetItem")
+                        .WithMany()
+                        .HasForeignKey("SetItemId");
+
+                    b.HasOne("Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules.WebsiteSettingsModule", "WebsiteSettingsModule")
+                        .WithMany("ModuleItems")
+                        .HasForeignKey("WebsiteSettingsModuleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Item");
+
+                    b.Navigation("SetItem");
+
+                    b.Navigation("WebsiteSettingsModule");
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules.WebsiteSettingsOverviewModule", b =>
+                {
+                    b.HasOne("Kooco.Pikachu.WebsiteManagement.WebsiteSettings", "WebsiteSettings")
+                        .WithMany("OverviewModules")
+                        .HasForeignKey("WebsiteSettingsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WebsiteSettings");
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules.WebsiteSettingsProductRankingModule", b =>
+                {
+                    b.HasOne("Kooco.Pikachu.WebsiteManagement.WebsiteSettings", "WebsiteSettings")
+                        .WithMany("ProductRankingModules")
+                        .HasForeignKey("WebsiteSettingsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WebsiteSettings");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLogAction", b =>
@@ -6455,6 +7137,42 @@ namespace Kooco.Pikachu.Migrations
                     b.Navigation("SpecificGroupbuys");
 
                     b.Navigation("SpecificProducts");
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.WebsiteManagement.FooterSettings.FooterSetting", b =>
+                {
+                    b.Navigation("Sections");
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.WebsiteManagement.FooterSettings.FooterSettingSection", b =>
+                {
+                    b.Navigation("Links");
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.WebsiteManagement.TopbarSettings.TopbarSetting", b =>
+                {
+                    b.Navigation("Links");
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.WebsiteManagement.TopbarSettings.TopbarSettingLink", b =>
+                {
+                    b.Navigation("CategoryOptions");
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.WebsiteManagement.WebsiteSettings", b =>
+                {
+                    b.Navigation("InstructionModules");
+
+                    b.Navigation("Modules");
+
+                    b.Navigation("OverviewModules");
+
+                    b.Navigation("ProductRankingModules");
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules.WebsiteSettingsModule", b =>
+                {
+                    b.Navigation("ModuleItems");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLog", b =>

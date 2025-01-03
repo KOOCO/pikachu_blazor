@@ -47,6 +47,10 @@ using Kooco.Pikachu.GroupBuyOrderInstructions;
 using Kooco.Pikachu.LoginConfigurations;
 using Kooco.Pikachu.GroupBuyProductRankings;
 using Kooco.Pikachu.ProductCategories;
+using Kooco.Pikachu.WebsiteManagement.WebsiteBasicSettings;
+using Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
+using Kooco.Pikachu.WebsiteManagement.FooterSettings;
+using Kooco.Pikachu.WebsiteManagement.TopbarSettings;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -133,10 +137,19 @@ public class PikachuDbContext :
     public DbSet<GroupBuyProductRanking> GroupBuyProductRankings { get; set; }
     public DbSet<ShopCart> ShopCarts { get; set; }
     public DbSet<TenantSettings> TenantSettings { get; set; }
-
     public DbSet<OrderMessage> OrderMessages { get; set; }
 
+    public DbSet<WebsiteBasicSetting> WebsiteBasicSettings { get; set; }
     public DbSet<WebsiteSettings> WebsiteSettings { get; set; }
+    public DbSet<WebsiteSettingsModule> WebsiteSettingsModules { get; set; }
+    public DbSet<WebsiteSettingsModuleItem> WebsiteSettingsModuleItems { get; set; }
+    public DbSet<WebsiteSettingsOverviewModule> WebsiteSettingsOverviewModules { get; set; }
+    public DbSet<WebsiteSettingsInstructionModule> WebsiteSettingsInstructionModules { get; set; }
+    public DbSet<WebsiteSettingsProductRankingModule> WebsiteSettingsProductRankingModules { get; set; }
+
+    public DbSet<FooterSetting> FooterSettings { get; set; }
+    public DbSet<TopbarSetting> TopbarSettings { get; set; }
+
     public DbSet<LoginConfiguration> LoginConfigurations { get; set; }
 
     public DbSet<ProductCategory> ProductCategories { get; set; }
@@ -459,10 +472,112 @@ public class PikachuDbContext :
             b.ConfigureByConvention();
         });
 
+        builder.Entity<WebsiteBasicSetting>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "WebsiteBasicSettings", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+        });
+
         builder.Entity<WebsiteSettings>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "WebsiteSettings", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
+
+            b.HasMany(x => x.Modules).WithOne(x => x.WebsiteSettings).HasForeignKey(x => x.WebsiteSettingsId);
+            b.HasMany(x => x.OverviewModules).WithOne(x => x.WebsiteSettings).HasForeignKey(x => x.WebsiteSettingsId);
+            b.HasMany(x => x.InstructionModules).WithOne(x => x.WebsiteSettings).HasForeignKey(x => x.WebsiteSettingsId);
+            b.HasMany(x => x.ProductRankingModules).WithOne(x => x.WebsiteSettings).HasForeignKey(x => x.WebsiteSettingsId);
+        });
+
+        builder.Entity<WebsiteSettingsModule>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "WebsiteSettingsModules", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+
+            b.HasMany(x => x.ModuleItems).WithOne().HasForeignKey(x => x.WebsiteSettingsModuleId);
+            b.HasOne(x => x.WebsiteSettings).WithMany(x => x.Modules).HasForeignKey(x => x.WebsiteSettingsId);
+        });
+
+        builder.Entity<WebsiteSettingsModuleItem>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "WebsiteSettingsModuleItems", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+
+            b.HasOne(x => x.WebsiteSettingsModule).WithMany(x => x.ModuleItems).HasForeignKey(x => x.WebsiteSettingsModuleId);
+        });
+
+        builder.Entity<WebsiteSettingsOverviewModule>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "WebsiteSettingsOverviewModules", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+
+            b.HasOne(x => x.WebsiteSettings).WithMany(x => x.OverviewModules).HasForeignKey(x => x.WebsiteSettingsId);
+        });
+
+        builder.Entity<WebsiteSettingsInstructionModule>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "WebsiteSettingsInstructionModules", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+
+            b.HasOne(x => x.WebsiteSettings).WithMany(x => x.InstructionModules).HasForeignKey(x => x.WebsiteSettingsId);
+        });
+
+        builder.Entity<WebsiteSettingsProductRankingModule>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "WebsiteSettingsProductRankingModules", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+
+            b.HasOne(x => x.WebsiteSettings).WithMany(x => x.ProductRankingModules).HasForeignKey(x => x.WebsiteSettingsId);
+        });
+
+        builder.Entity<FooterSetting>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "FooterSettings", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.HasMany(x => x.Sections).WithOne(x => x.FooterSetting).HasForeignKey(x => x.FooterSettingId);
+        });
+
+        builder.Entity<FooterSettingSection>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "FooterSettingSections", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.HasOne(x => x.FooterSetting).WithMany(x => x.Sections).HasForeignKey(x => x.FooterSettingId);
+            b.HasMany(x => x.Links).WithOne(x => x.Section).HasForeignKey(x => x.SectionId);
+        });
+
+        builder.Entity<FooterSettingLink>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "FooterSettingLinks", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.HasOne(x => x.Section).WithMany(x => x.Links).HasForeignKey(x => x.SectionId);
+        });
+
+        builder.Entity<TopbarSetting>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "TopbarSettings", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.HasMany(x => x.Links).WithOne(x => x.TopbarSetting).HasForeignKey(x => x.TopbarSettingId);
+        });
+
+        builder.Entity<TopbarSettingLink>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "TopbarSettingLinks", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.HasOne(x => x.TopbarSetting).WithMany(x => x.Links).HasForeignKey(x => x.TopbarSettingId);
+            b.HasMany(x => x.CategoryOptions).WithOne(x => x.TopbarSettingLink).HasForeignKey(x => x.TopbarSettingLinkId);
+        });
+
+        builder.Entity<TopbarSettingCategoryOption>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "TopbarSettingCategoryOptions", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.HasOne(x => x.TopbarSettingLink).WithMany(x => x.CategoryOptions).HasForeignKey(x => x.TopbarSettingLinkId);
         });
 
         builder.Entity<LoginConfiguration>(b =>

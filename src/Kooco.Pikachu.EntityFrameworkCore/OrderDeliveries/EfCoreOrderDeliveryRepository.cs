@@ -66,5 +66,14 @@ public class EfCoreOrderDeliveryRepository :
             throw;
         }
     }
+
+    public async Task<Guid> GetOrderIdByAllPayLogisticsId(string AllPayLogisticsId)
+    {
+        return (await GetQueryableAsync())
+                            .Where(w => w.AllPayLogisticsID == AllPayLogisticsId || w.FileNo == AllPayLogisticsId)
+                            .Select(s => s.OrderId)
+                            .FirstOrDefault();
+    }
+
     #endregion
 }

@@ -10,5 +10,6 @@ namespace Kooco.Pikachu.AzureStorage
     {
         public string ConnectionString { get; set; }
         public string AccountUrl { get; set; }
+        public string CDNUrl { get; set; }
     }
 }

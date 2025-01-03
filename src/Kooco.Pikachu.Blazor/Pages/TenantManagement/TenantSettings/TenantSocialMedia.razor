@@ -8,14 +8,18 @@
         <Card>
             <CardBody>
                 <Row>
-                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
-                        <h4>@L["SocialMedia"]</h4>
-                    </Column>
-                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                    @if (!ViewMode)
+                    {
+                        <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                            <h4>@L["SocialMedia"]</h4>
+                        </Column>
+                    }
+
+                    <Column ColumnSize="ViewMode ? ColumnSize.Is12 : ColumnSize.Is12.Is9.OnDesktop">
                         <Validation MessageLocalizer="@LH.Localize">
                             <Field>
                                 <FieldLabel>@L["Facebook"]</FieldLabel>
-                                <TextEdit @bind-Text="Entity.Facebook">
+                                <TextEdit @bind-Text="Entity.Facebook" Disabled="ViewMode">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
@@ -25,7 +29,7 @@
                         <Validation MessageLocalizer="@LH.Localize">
                             <Field>
                                 <FieldLabel>@L["Instagram"]</FieldLabel>
-                                <TextEdit @bind-Text="Entity.Instagram">
+                                <TextEdit @bind-Text="Entity.Instagram" Disabled="ViewMode">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
@@ -35,7 +39,7 @@
                         <Validation MessageLocalizer="@LH.Localize">
                             <Field>
                                 <FieldLabel>@L["Line"]</FieldLabel>
-                                <TextEdit @bind-Text="Entity.Line">
+                                <TextEdit @bind-Text="Entity.Line" Disabled="ViewMode">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
@@ -48,12 +52,15 @@
         </Card>
     </Validations>
 
-    <Div Class="text-end">
-        <PikachuButton Class="pk-btn-transparent" Disabled="IsLoading" Loading="IsCancelling" Clicked="CancelAsync">
-            @L["Cancel"]
-        </PikachuButton>
-        <PikachuButton Class="pk-btn-primary" Disabled="IsCancelling" Loading="IsLoading" Clicked="UpdateAsync">
-            @L["Update"]
-        </PikachuButton>
-    </Div>
+    @if (!ViewMode)
+    {
+        <Div Class="text-end">
+            <PikachuButton Class="pk-btn-transparent" Disabled="IsLoading" Loading="IsCancelling" Clicked="CancelAsync">
+                @L["Cancel"]
+            </PikachuButton>
+            <PikachuButton Class="pk-btn-primary" Disabled="IsCancelling" Loading="IsLoading" Clicked="UpdateAsync">
+                @L["Update"]
+            </PikachuButton>
+        </Div>
+    }
 </Form>

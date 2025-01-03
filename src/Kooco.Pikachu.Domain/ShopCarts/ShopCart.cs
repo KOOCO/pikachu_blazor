@@ -17,25 +17,16 @@ public class ShopCart(Guid id, Guid userId) : FullAuditedAggregateRoot<Guid>(id)
     public Guid? TenantId { get; set; }
 
     [ForeignKey(nameof(UserId))]
-    public IdentityUser? User { get; set; }
+    public virtual IdentityUser? User { get; set; }
 
-    public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+    public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
 
 
-    public ShopCart AddCartItem(Guid id, Guid itemId, int quantity, int unitPrice, Guid itemDetailId)
+    public ShopCart AddCartItem(Guid id, int quantity, int unitPrice, Guid? itemId, Guid? itemDetailId, Guid? setItemId)
     {
-        var cartItem = new CartItem(id, Id, itemId, quantity, unitPrice, itemDetailId);
+        var cartItem = new CartItem(id, Id, quantity, unitPrice, itemId, itemDetailId, setItemId);
         CartItems ??= new List<CartItem>();
-        ValidateExistingCartItem(cartItem.ItemId, cartItem.ItemDetailId);
-        CartItems.Add(cartItem);
-        return this;
-    }
-
-    public ShopCart AddCartItem(CartItem cartItem)
-    {
-        Check.NotNull(cartItem, nameof(cartItem));
-        CartItems ??= new List<CartItem>();
-        ValidateExistingCartItem(cartItem.ItemId, cartItem.ItemDetailId);
+        ValidateExistingCartItem(cartItem.ItemId, cartItem.ItemDetailId, cartItem.SetItemId);
         CartItems.Add(cartItem);
         return this;
     }
@@ -56,9 +47,10 @@ public class ShopCart(Guid id, Guid userId) : FullAuditedAggregateRoot<Guid>(id)
         return this;
     }
 
-    public void ValidateExistingCartItem(Guid itemId, Guid itemDetailId)
+    public void ValidateExistingCartItem(Guid? itemId, Guid? itemDetailId, Guid? setItemId)
     {
-        var existing = CartItems.FirstOrDefault(x => x.ItemId == itemId && x.ItemDetailId == itemDetailId);
+        var existing = CartItems.FirstOrDefault(x => (setItemId.HasValue && x.SetItemId == setItemId)
+                            || (itemId.HasValue && x.ItemId == itemId && x.ItemDetailId == itemDetailId));
         if (existing != null)
         {
             throw new CartItemForUserAlreadyExistsException();

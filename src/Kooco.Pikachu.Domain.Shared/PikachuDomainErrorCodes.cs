@@ -49,10 +49,13 @@ public static class PikachuDomainErrorCodes
     public const string ExpirationDateCannotBePast = "Pikachu:ExpirationDateCannotBePast";
     public const string ShopCartForUserAlreadyExists = "Pikachu:ShopCartForUserAlreadyExists";
     public const string CartItemForUserAlreadyExists = "Pikachu:CartItemForUserAlreadyExists";
+    public const string InvalidCartItem = "Pikachu:InvalidCartItem";
     public const string InvalidServiceHoursException = "Pikachu:InvalidServiceHoursException";
     public const string TenantSettingsAlreadyExist = "Pikachu:TenantSettingsAlreadyExist";
     public const string InvalidEnumValue = "Pikachu:InvalidEnumValue";
     public const string ProductCategoryAlreadyExists = "Pikachu:ProductCategoryAlreadyExists";
     public const string ProductCategoryImageMaxLimit = "Pikachu:ProductCategoryImageMaxLimit";
     public const string InvalidUrl = "Pikachu:InvalidUrlWithProperty";
+    public const string ItemStorageTemperatureCannotBeNull = "Pikachu:ItemStorageTemperatureCannotBeNull";
+    public const string InvalidNumberOfLinks = "Pikachu:InvalidNumberOfLinks";
 }

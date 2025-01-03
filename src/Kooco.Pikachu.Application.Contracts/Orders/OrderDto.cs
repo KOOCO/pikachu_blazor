@@ -43,6 +43,7 @@ public class OrderDto : FullAuditedEntityDto<Guid>
     public OrderStatus OrderStatus { get; set; }
     public List<OrderItemDto> OrderItems { get; set; }
     public List<StoreCommentDto> StoreComments { get; set; }
+    public List<OrderMessageDto> StoreCustomerServiceMessages { get; set; }
     public bool IsSelected { get; set; } = false;
     public ShippingStatus ShippingStatus { get; set; }
     public DateTime? ShippingDate { get; set; }
@@ -109,4 +110,11 @@ public class OrderDto : FullAuditedEntityDto<Guid>
     public ReceivingTime? ReceivingTimeFreeze { get; set; }
     public ReceivingTime? ReceivingTimeFrozen { get; set; }
     public string? EcpayLogisticsStatus { get; set; }
+
+    public string InvoiceMsg { get; set; }
+
+    public int CreditDeductionAmount { get; set; }
+    public Guid? DiscountCodeId { get; set; }
+    public int? DiscountAmount { get; set; }
+    public decimal cashback_amount { get; set; }
 }

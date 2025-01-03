@@ -189,37 +189,36 @@ public class PikachuMenuContributor : IMenuContributor
         context.Menu.AddItem(membersMenu);
 
         var promotions =
-new ApplicationMenuItem(
-  PikachuMenus.ProductManagement,
-  displayName: l["Menu:Promotions"],
-  //"商品設定",
-  icon: "fas fa-gift",
-  order: 5
-);
+            new ApplicationMenuItem(
+              PikachuMenus.ProductManagement,
+              displayName: l["Menu:Promotions"],
+              //"商品設定",
+              icon: "fas fa-gift",
+              order: 5
+            );
 
 
         promotions.AddItem(new ApplicationMenuItem(
-   name: "AddOnProducts",
-
-   displayName: l["AddOnProducts"],
-   url: "/add-on-products",
-   requiredPermissionName: PikachuPermissions.AddOnProducts.Default)
-   );
+               name: "AddOnProducts",
+               displayName: l["AddOnProducts"],
+               url: "/add-on-products",
+               requiredPermissionName: PikachuPermissions.AddOnProducts.Default)
+               );
 
         promotions.AddItem(new ApplicationMenuItem(
-   name: "DiscountCodes",
+               name: "DiscountCodes",
 
-   displayName: l["DiscountCodes"],
-   url: "/discount-code",
-   requiredPermissionName: PikachuPermissions.DiscountCodes.Default)
-   );
+               displayName: l["DiscountCodes"],
+               url: "/discount-code",
+               requiredPermissionName: PikachuPermissions.DiscountCodes.Default)
+               );
         promotions.AddItem(new ApplicationMenuItem(
-name: "ShoppingCredits",
+            name: "ShoppingCredits",
 
-displayName: l["ShoppingCredits"],
-url: "/shopping-credit",
-requiredPermissionName: PikachuPermissions.ShoppingCredits.Default)
-);
+            displayName: l["ShoppingCredits"],
+            url: "/shopping-credit",
+            requiredPermissionName: PikachuPermissions.ShoppingCredits.Default)
+            );
         context.Menu.AddItem(promotions);
 
         var paymentManagement = new ApplicationMenuItem(
@@ -298,20 +297,47 @@ requiredPermissionName: PikachuPermissions.ShoppingCredits.Default)
 
         context.Menu.AddItem(logisticsManagment);
 
-        var websiteSettings = new ApplicationMenuItem(
+        var websiteManagement = new ApplicationMenuItem(
             PikachuMenus.WebsiteManagement,
             displayName: l["Menu:WebsiteManagement"],
             icon: "fas fa-computer",
-            order: 6
+            order: 6,
+            requiredPermissionName: PikachuPermissions.WebsiteManagement.Default
             );
-        websiteSettings.AddItem(new ApplicationMenuItem(
+
+        websiteManagement.AddItem(new ApplicationMenuItem(
+            name: PikachuMenus.WebsiteBasicSettings,
+            displayName: l["Menu:WebsiteBasicSettings"],
+            url: "/Website-Basic-Settings",
+            icon: "fas fa-sliders",
+            requiredPermissionName: PikachuPermissions.WebsiteManagement.WebsiteBasicSettings
+            ));
+
+        websiteManagement.AddItem(new ApplicationMenuItem(
+            name: PikachuMenus.TopbarSettings,
+            displayName: l["Menu:TopbarSettings"],
+            url: "/Topbar-Settings",
+            icon: "fas fa-window-maximize",
+            requiredPermissionName: PikachuPermissions.WebsiteManagement.TopbarSettings
+            ));
+
+        websiteManagement.AddItem(new ApplicationMenuItem(
+            name: PikachuMenus.FooterSettings,
+            displayName: l["Menu:FooterSettings"],
+            url: "/Footer-Settings",
+            icon: "fas fa-window-maximize",
+            requiredPermissionName: PikachuPermissions.WebsiteManagement.TopbarSettings
+            ));
+
+        websiteManagement.AddItem(new ApplicationMenuItem(
             name: PikachuMenus.WebsiteSettings,
             displayName: l["Menu:WebsiteSettings"],
-            url: "/Website-Basic-Settings",
-            icon: "fas fa-window-maximize",
-            requiredPermissionName: PikachuPermissions.WebsiteSettings.Default
+            url: "/Website-Settings",
+            icon: "fas fa-laptop-code",
+            requiredPermissionName: PikachuPermissions.WebsiteManagement.WebsiteSettings.Default
             ));
-        context.Menu.AddItem(websiteSettings);
+
+        context.Menu.AddItem(websiteManagement);
 
 
         //context.Menu.Items.Insert(
@@ -347,7 +373,7 @@ requiredPermissionName: PikachuPermissions.ShoppingCredits.Default)
         //context.Menu.AddItem(systemManagment);
 
         //systemManagment
-      
+
 
         if (MultiTenancyConsts.IsEnabled)
         {

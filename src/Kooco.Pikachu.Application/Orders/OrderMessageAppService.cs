@@ -57,6 +57,13 @@ namespace Kooco.Pikachu.Orders
             );
         }
 
+        public async Task<List<OrderMessageDto>> GetOrderMessagesAsync(Guid orderId)
+        {
+            return ObjectMapper.Map<List<OrderMessage>, List<OrderMessageDto>>(
+                await _orderMessageRepository.GetOrderMessagesAsync(orderId)
+            );
+        }
+
         // Create a new OrderMessage
         public async Task<OrderMessageDto> CreateAsync(CreateUpdateOrderMessageDto input)
         {
@@ -68,6 +75,7 @@ namespace Kooco.Pikachu.Orders
                 input.IsMerchant);
 
             await _orderMessageRepository.InsertAsync(orderMessage);
+
             return ObjectMapper.Map<OrderMessage, OrderMessageDto>(orderMessage);
         }
 

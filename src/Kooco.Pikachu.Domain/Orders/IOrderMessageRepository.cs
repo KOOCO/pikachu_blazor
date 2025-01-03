@@ -32,5 +32,7 @@ namespace Kooco.Pikachu.Orders
             bool? isMerchant = null,
             DateTime? timeStamp = null
         );
+
+        Task<List<OrderMessage>> GetOrderMessagesAsync(Guid orderId);
     }
 }

@@ -1,0 +1,191 @@
+﻿@page "/Footer-Settings"
+@using Kooco.Pikachu.Blazor.Pages.Components.Icons
+@using Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantSettings
+@using Kooco.Pikachu.Images
+@using Kooco.Pikachu.Localization
+@using Kooco.Pikachu.Permissions
+@using Kooco.Pikachu.TenantManagement
+@using Kooco.Pikachu.WebsiteManagement.FooterSettings
+@using Volo.Abp.AspNetCore.Components.Web
+@attribute [Authorize(PikachuPermissions.WebsiteManagement.FooterSettings)]
+@inherits PikachuComponentBase
+@inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
+@inject ITenantSettingsAppService TenantSettingsAppService
+@inject IFooterSettingAppService FooterSettingAppService
+@inject IImageAppService ImageAppService
+
+<h3 class="text-dark text-center">@L["FooterSettings"]</h3>
+
+<Div Class="rounded-cards">
+    <Card>
+        <CardBody>
+            <Validations @ref="@ValidationsRef" Model="@Entity" ValidateOnLoad="false">
+                <Row>
+                    @foreach (var section in Entity.Sections)
+                    {
+                        <Column ColumnSize="ColumnSize.Is12.Is4.OnFullHD"
+                                Class="@(Entity.Sections.IndexOf(section) == 1 ? "border-start-1 border-end-1 border-light" : "")">
+                            <h4>@L["Enum:FooterSettingsPositions." + (int)section.FooterSettingsPosition]</h4>
+                            <Validation MessageLocalizer="@LH.Localize">
+                                <Field>
+                                    <TextEdit Placeholder="@L["EnterTitle"]" @bind-Text="section.Title">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </TextEdit>
+                                </Field>
+                            </Validation>
+                            <Validation MessageLocalizer="@LH.Localize">
+                                <Field>
+                                    <FieldLabel>@L["SelectType"] *</FieldLabel>
+                                    <Select TValue="FooterSettingsType?" @bind-SelectedValue="section.FooterSettingsType">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                        <ChildContent>
+                                            <SelectItem Value="(FooterSettingsType?)null"></SelectItem>
+                                            @foreach (FooterSettingsType type in Enum.GetValues(typeof(FooterSettingsType)))
+                                            {
+                                                <SelectItem Value="type">@L["Enum:FooterSettingsType." + (int)type]</SelectItem>
+                                            }
+                                        </ChildContent>
+                                    </Select>
+                                </Field>
+                            </Validation>
+
+                            @if (section.FooterSettingsType == FooterSettingsType.Text)
+                            {
+                                <Validation MessageLocalizer="@LH.Localize">
+                                    <MemoEdit Style="min-height: 205px" @bind-Text="section.Text">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </MemoEdit>
+                                </Validation>
+                            }
+                            @if (section.FooterSettingsType == FooterSettingsType.Link)
+                            {
+                                <Div>
+                                    <PikachuButton Class="pk-btn-sm pk-btn-outline-primary w-100"
+                                                   Disabled="section.Links.Count >= 5"
+                                                   Clicked="() => AddLink(section)">
+                                        <Icon Name="IconName.Add"></Icon>
+                                        @L["AddLink"] (@(section.Links.Count)/5)
+                                    </PikachuButton>
+                                </Div>
+                                @if (section.Links.Count > 0)
+                                {
+                                    <Div ondragover="event.preventDefault();">
+                                        <Row VerticalGutter="15">
+                                            @foreach (var link in section.Links.OrderBy(x => x.Index))
+                                            {
+                                                <Column ColumnSize="ColumnSize.Is12">
+                                                    <Div Class="d-flex">
+                                                        <Div Class="p-2 flex-grow-1">
+                                                            <Accordion>
+                                                                <Collapse>
+                                                                    <CollapseHeader>
+                                                                        <AccordionToggle>
+                                                                            <Div Class="d-flex justify-content-between w-100">
+                                                                                <Div>
+                                                                                    <i class="fa fa-trash text-danger me-2" @onclick="@(() => RemoveLink(section, link))"></i>
+                                                                                    @L["Link|Title"]
+                                                                                </Div>
+                                                                            </Div>
+                                                                        </AccordionToggle>
+                                                                    </CollapseHeader>
+                                                                    <CollapseBody>
+                                                                        <Validation MessageLocalizer="@LH.Localize">
+                                                                            <Field>
+                                                                                <FieldLabel>@L["LinkTitle"] *</FieldLabel>
+                                                                                <TextEdit Placeholder="@L["EnterLinkTitle"]" @bind-Text="link.Title">
+                                                                                    <Feedback>
+                                                                                        <ValidationError />
+                                                                                    </Feedback>
+                                                                                </TextEdit>
+                                                                            </Field>
+                                                                        </Validation>
+                                                                        <Validation MessageLocalizer="@LH.Localize">
+                                                                            <Field>
+                                                                                <FieldLabel>@L["LinkUrl"] *</FieldLabel>
+                                                                                <TextEdit Placeholder="@L["EnterLinkUrl"]" @bind-Text="link.Url">
+                                                                                    <Feedback>
+                                                                                        <ValidationError />
+                                                                                    </Feedback>
+                                                                                </TextEdit>
+                                                                            </Field>
+                                                                        </Validation>
+                                                                    </CollapseBody>
+                                                                </Collapse>
+                                                            </Accordion>
+                                                        </Div>
+                                                        <Div Class="py-2 mt-2" draggable="true"
+                                                             @ondrop="@(()=> LinkDrop(section, link))" @ondrag="@(()=> StartLinkDrag(section, link))">
+                                                            <Span Class="drag-drop-span">
+                                                                <i class="fa-solid fa-bars fa-2xl"></i>
+                                                            </Span>
+                                                        </Div>
+                                                    </Div>
+                                                </Column>
+                                            }
+                                        </Row>
+                                    </Div>
+                                }
+                            }
+                            @if (section.FooterSettingsType == FooterSettingsType.Image)
+                            {
+                                <Div Class="container-less-filepicker">
+                                    <Field>
+                                        <FilePicker Changed="@((e) => OnFileUploadAsync(e, section))"
+                                                    ShowMode="FilePickerShowMode.List"
+                                                    Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
+                                            <FileTemplate></FileTemplate>
+                                            <ButtonsTemplate></ButtonsTemplate>
+                                        </FilePicker>
+                                        <Validation MessageLocalizer="@LH.Localize">
+                                            <TextEdit @bind-Text="@(section.ImageName)" Class="invisible-input">
+                                                <Feedback>
+                                                    <ValidationError />
+                                                </Feedback>
+                                            </TextEdit>
+                                        </Validation>
+                                    </Field>
+                                </Div>
+                                <Div Class="text-center">
+                                    @if (section.ImageBase64 != null)
+                                    {
+                                        <img class="img-fluid" src="@("data:image/png;base64," + section.ImageBase64)" style="max-height: 300px;" />
+                                    }
+                                    else if (section.ImageUrl != null)
+                                    {
+                                        <img class="img-fluid" src="@(section.ImageUrl)" style="max-height: 300px;" />
+                                    }
+                                </Div>
+                            }
+                            @if (section.FooterSettingsType == FooterSettingsType.CompanyAndCustomerServiceInformation)
+                            {
+                                <Label Class="fs-small">** @L["IfYouWantToModifyVisitTenantSettings"]</Label>
+                                <TenantCustomerService AppService="TenantSettingsAppService" ViewMode="true"></TenantCustomerService>
+                            }
+                            @if (section.FooterSettingsType == FooterSettingsType.SocialMedia)
+                            {
+                                <Label Class="fs-small">** @L["IfYouWantToModifyVisitTenantSettings"]</Label>
+                                <TenantSocialMedia AppService="TenantSettingsAppService" ViewMode="true"></TenantSocialMedia>
+                            }
+                        </Column>
+                    }
+                </Row>
+            </Validations>
+        </CardBody>
+    </Card>
+    <Div Class="text-end">
+        <PikachuButton Class="pk-btn-transparent" Disabled="IsLoading" Loading="IsCancelling" Clicked="ResetAsync">
+            @L["Cancel"]
+        </PikachuButton>
+        <PikachuButton Class="pk-btn-primary" Disabled="IsCancelling" Loading="IsLoading" Clicked="UpdateAsync">
+            @L["Update"]
+        </PikachuButton>
+    </Div>
+</Div>
+
+

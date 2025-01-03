@@ -4,6 +4,7 @@ using Blazorise.RichTextEdit;
 using DinkToPdf;
 using DinkToPdf.Contracts;
 using Hangfire;
+using Hangfire.SqlServer;
 using Kooco.Pikachu.BackgroundWorkers;
 using Kooco.Pikachu.Blazor.Helpers;
 using Kooco.Pikachu.Blazor.Menus;
@@ -93,8 +94,9 @@ public class PikachuBlazorModule : AbpModule
 
         context.Services.AddBlazoriseRichTextEdit();
         context.Services.AddAntDesign();
+		context.Services.AddTransient<OrderDeliveryBackgroundJob>();
 
-        PreConfigure<OpenIddictBuilder>(builder =>
+		PreConfigure<OpenIddictBuilder>(builder =>
         {
             builder.AddValidation(options =>
             {
@@ -269,8 +271,12 @@ public class PikachuBlazorModule : AbpModule
     {
         context.Services.AddHangfire(config =>
         {
-            config.UseSqlServerStorage(configuration.GetConnectionString("Default"));
-        });
+            config.UseSqlServerStorage(configuration.GetConnectionString("HangFire"), new SqlServerStorageOptions
+			{
+				PrepareSchemaIfNecessary = true
+			});
+		
+	});
 
         context.Services.AddHangfireServer(options =>
         {
@@ -448,19 +454,20 @@ public class PikachuBlazorModule : AbpModule
       .ServiceProvider
       .GetRequiredService<PassiveUserBirthdayCheckerWorker>()
 );
-        context.ServiceProvider
-     .GetRequiredService<IBackgroundWorkerManager>()
-     .AddAsync(
-         context
-             .ServiceProvider
-             .GetRequiredService<OrderStatusCheckerWorker>()
-     );
-       // await context.AddBackgroundWorkerAsync<OrderStatusCheckerWorker>();
+     
+		var backgroundJobManager = context.ServiceProvider.GetRequiredService<IBackgroundJobManager>();
+
+		RecurringJob.AddOrUpdate<OrderDeliveryBackgroundJob>(
+			"DailyOrderStatusUpdate",         // Job identifier
+			job => job.ExecuteAsync(0),      // Method to call
+			"0 1 * * *"                     // Cron expression for 1 AM daily
+		);
+		
 
 
 
 
-    }
+	}
 
     // This method is required for the Image Upload in blazor
     // To avoid Did not receive data in allotted time

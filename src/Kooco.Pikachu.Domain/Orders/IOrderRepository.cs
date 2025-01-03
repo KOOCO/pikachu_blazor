@@ -1,4 +1,5 @@
 ﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Members;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -8,6 +9,8 @@ namespace Kooco.Pikachu.Orders
 {
     public interface IOrderRepository : IRepository<Order, Guid>
     {
+        Task<Order> GetMemberOrderAsync(Guid orderId, Guid memberId);
+        Task<List<MemberOrderInfoModel>> GetMemberOrdersByGroupBuyAsync(Guid memberId, Guid groupBuyId);
         Task<Order> GetOrderAsync(Guid groupBuyId, string orderNo, string extraInfo);
 
         Task<long> CountAsync(string? filter,
@@ -61,5 +64,6 @@ namespace Kooco.Pikachu.Orders
         Task<(int normalCount, int freezeCount, int frozenCount)> GetTotalDeliveryTemperatureCountsAsync();
 
         Task<Order> GetOrderByMerchantTradeNoAsync(string merchantTradeNo);
+        Task<string> GetOrderNoByOrderId(Guid OrderId);
     }
 }

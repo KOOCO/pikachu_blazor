@@ -220,6 +220,8 @@ namespace Kooco.Pikachu.GroupBuys
         public string? BackgroundColor { get; set; }
         public string? SecondaryBackgroundColor { get; set; }
         public string? AlertColor { get; set; }
+        public string? BlockColor { get; set; }
+        public bool AddOnProduct { get; set; }
         public ProductDetailsDisplayMethod? ProductDetailsDisplayMethod { get; set; }
 
         public GroupBuyCreateDto()

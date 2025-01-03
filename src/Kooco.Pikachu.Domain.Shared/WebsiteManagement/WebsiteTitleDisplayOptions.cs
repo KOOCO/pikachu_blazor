@@ -3,6 +3,6 @@
 public enum WebsiteTitleDisplayOptions
 {
     StoreTitle,
-    StoreTitle_CategoryName,
-    CategoryName_StoreTitle
+    StoreTitle_SubpageTitle,
+    SubpageTitle_StoreTitle
 }

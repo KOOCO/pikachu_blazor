@@ -37,6 +37,10 @@ using Kooco.Pikachu.UserCumulativeFinancials;
 using Kooco.Pikachu.UserCumulativeOrders;
 using Kooco.Pikachu.UserShoppingCredits;
 using Kooco.Pikachu.WebsiteManagement;
+using Kooco.Pikachu.WebsiteManagement.FooterSettings;
+using Kooco.Pikachu.WebsiteManagement.TopbarSettings;
+using Kooco.Pikachu.WebsiteManagement.WebsiteBasicSettings;
+using Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
 using System.Collections.Generic;
 using System.Linq;
 using Volo.Abp.Identity;
@@ -172,6 +176,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.Birthday, opt => opt.MapFrom(src => src.ExtraProperties.GetValueOrDefault(Constant.Birthday)));
         CreateMap<MemberDto, UpdateMemberDto>();
         CreateMap<MemberModel, MemberDto>();
+        CreateMap<MemberOrderInfoModel, MemberOrderInfoDto>();
 
         CreateMap<UserAddress, UserAddressDto>();
         CreateMap<UserAddressDto, UpdateUserAddressDto>();
@@ -280,6 +285,28 @@ public class PikachuApplicationAutoMapperProfile : Profile
 
         CreateMap<WebsiteSettings, WebsiteSettingsDto>();
         CreateMap<WebsiteSettingsDto, UpdateWebsiteSettingsDto>();
+        CreateMap<WebsiteSettingsModule, WebsiteSettingsModuleDto>();
+        CreateMap<WebsiteSettingsModuleItem, WebsiteSettingsModuleItemDto>();
+        CreateMap<WebsiteSettingsOverviewModule, WebsiteSettingsOverviewModuleDto>();
+        CreateMap<WebsiteSettingsInstructionModule, WebsiteSettingsInstructionModuleDto>();
+        CreateMap<WebsiteSettingsProductRankingModule, WebsiteSettingsProductRankingModuleDto>();
+
+        CreateMap<WebsiteBasicSetting, WebsiteBasicSettingDto>();
+        CreateMap<WebsiteBasicSettingDto, UpdateWebsiteBasicSettingDto>();
+
+        CreateMap<FooterSetting, FooterSettingDto>();
+        CreateMap<FooterSettingDto, UpdateFooterSettingDto>();
+        CreateMap<FooterSettingSection, FooterSettingSectionDto>();
+        CreateMap<FooterSettingSectionDto, UpdateFooterSettingSectionDto>();
+        CreateMap<FooterSettingLink, FooterSettingLinkDto>();
+        CreateMap<FooterSettingLinkDto, UpdateFooterSettingLinkDto>();
+
+        CreateMap<TopbarSetting, TopbarSettingDto>();
+        CreateMap<TopbarSettingDto, UpdateTopbarSettingDto>();
+        CreateMap<TopbarSettingLink, TopbarSettingLinkDto>();
+        CreateMap<TopbarSettingLinkDto, UpdateTopbarSettingLinkDto>();
+        CreateMap<TopbarSettingCategoryOption, TopbarSettingCategoryOptionDto>();
+        CreateMap<TopbarSettingCategoryOptionDto, UpdateTopbarSettingCategoryOptionDto>();
 
         CreateMap<LoginConfiguration, LoginConfigurationDto>();
         CreateMap<LoginConfigurationDto, UpdateLoginConfigurationDto>();

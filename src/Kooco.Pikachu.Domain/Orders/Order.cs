@@ -145,6 +145,7 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public ReceivingTime? ReceivingTimeFreeze { get; set; }
     public ReceivingTime? ReceivingTimeFrozen { get; set; }
     public string? EcpayLogisticsStatus { get; set; }
+    public string? ReturnedOrderItemIds { get; set; }
 
     public Order() { }
 
@@ -159,8 +160,8 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
         PaymentMethods? paymentMethods,
         InvoiceType? invoiceType,
         string? invoiceNumber,
-        string? carrierId,
         string? uniformNumber,
+        string? carrierId,
         string? taxTitle,
         bool isAsSameBuyer,
         string? recipientName,

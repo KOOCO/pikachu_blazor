@@ -274,6 +274,7 @@ public partial class EditGroupBuy
                 EditGroupBuyDto.BackgroundColor = "#FFFFFF";
                 EditGroupBuyDto.SecondaryBackgroundColor = "#C9D6BD";
                 EditGroupBuyDto.AlertColor = "#FF902A";
+                EditGroupBuyDto.BlockColor = "#EFF4EB";
                 break;
 
             case ColorScheme.TropicalSunset:
@@ -282,6 +283,7 @@ public partial class EditGroupBuy
                 EditGroupBuyDto.BackgroundColor = "#FFFFFF";
                 EditGroupBuyDto.SecondaryBackgroundColor = "#E5D19A";
                 EditGroupBuyDto.AlertColor = "#FF902A";
+                EditGroupBuyDto.BlockColor = "#EFF4EB";
                 break;
 
             case ColorScheme.DeepSeaNight:
@@ -290,6 +292,7 @@ public partial class EditGroupBuy
                 EditGroupBuyDto.BackgroundColor = "#FFFFFF";
                 EditGroupBuyDto.SecondaryBackgroundColor = "#DCD6D0";
                 EditGroupBuyDto.AlertColor = "#A1E82D";
+                EditGroupBuyDto.BlockColor = "#EFF4EB";
                 break;
 
             case ColorScheme.SweetApricotCream:
@@ -298,6 +301,7 @@ public partial class EditGroupBuy
                 EditGroupBuyDto.BackgroundColor = "#FFFFFF";
                 EditGroupBuyDto.SecondaryBackgroundColor = "#DCBFC3";
                 EditGroupBuyDto.AlertColor = "#FFC123";
+                EditGroupBuyDto.BlockColor = "#EFF4EB";
                 break;
 
             case ColorScheme.DesertDawn:
@@ -306,6 +310,7 @@ public partial class EditGroupBuy
                 EditGroupBuyDto.BackgroundColor = "#FFFFFF";
                 EditGroupBuyDto.SecondaryBackgroundColor = "#EBC7AD";
                 EditGroupBuyDto.AlertColor = "#FF902A";
+                EditGroupBuyDto.BlockColor = "#EFF4EB";
                 break;
 
             default:
@@ -314,6 +319,7 @@ public partial class EditGroupBuy
                 EditGroupBuyDto.BackgroundColor = string.Empty;
                 EditGroupBuyDto.SecondaryBackgroundColor = string.Empty;
                 EditGroupBuyDto.AlertColor = string.Empty;
+                EditGroupBuyDto.BlockColor = string.Empty;
                 IsColorPickerOpen = false;
                 break;
         }
@@ -958,22 +964,24 @@ public partial class EditGroupBuy
 
         else if (groupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
         {
-            if (ProductRankingCarouselModules is { Count: 0 })
-            {
+           
                 CollapseItem collapseItem = new()
                 {
                     Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
                     SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
-                    GroupBuyModuleType = groupBuyModuleType
+                    GroupBuyModuleType = groupBuyModuleType,
+                    ModuleNumber = CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule) > 0 ?
+                               CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule) + 1 : 1
                 };
 
                 CollapseItem.Add(collapseItem);
-            }
+            
 
             ProductRankingCarouselPickers.Add(new());
 
             ProductRankingCarouselModules.Add(new()
             {
+                ModuleNumber = collapseItem.ModuleNumber,
                 Selected = [
                     new ItemWithItemTypeDto(),
                     new ItemWithItemTypeDto(),

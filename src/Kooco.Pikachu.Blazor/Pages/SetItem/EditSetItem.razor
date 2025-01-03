@@ -1,5 +1,6 @@
 ﻿@page "/SetItem/Edit/{id}"
 
+@using Kooco.Pikachu.EnumValues
 @using Kooco.Pikachu.Items
 @using Kooco.Pikachu.Items.Dtos;
 @using Kooco.Pikachu.Localization;
@@ -19,22 +20,25 @@
             <div class="col-2">
                 <label>@L["ItemName"]</label>
             </div>
-            <div class="col-9">
-                <TextEdit @bind-Text="@CreateUpdateSetItemDto.SetItemName" MaxLength="@MaxTextCount" />
-            </div>
-            <div class="col-1">
-                <span>
-                    @(string.IsNullOrWhiteSpace(CreateUpdateSetItemDto.SetItemName) ? 60 : (MaxTextCount - CreateUpdateSetItemDto.SetItemName.Count()))/@MaxTextCount
-                </span>
+            <div class="col-10">
+                <Addons>
+                    <Addon AddonType="AddonType.Body">
+                        <TextEdit @bind-Text="@CreateUpdateSetItemDto.SetItemName" MaxLength="@MaxTextCount" />
+                    </Addon>
+                    <Addon AddonType="AddonType.End">
+                        <AddonLabel Style="background-color: #f5f5f7">
+                            @(string.IsNullOrWhiteSpace(CreateUpdateSetItemDto.SetItemName) ? 0 : (CreateUpdateSetItemDto.SetItemName.Count()))/@MaxTextCount
+                        </AddonLabel>
+                    </Addon>
+                </Addons>
             </div>
         </div>
-
 
         <div class="row mt-2">
             <div class="col-2">
                 <label>@L["ItemImage"]</label>
             </div>
-            <div class="col-10 row">
+            <div class="col-10">
                 <Field>
                     <FilePicker @ref="FilePicker"
                                 Multiple
@@ -78,7 +82,7 @@
         </div>
         @if (CreateUpdateSetItemDto.Images.Count > 0)
         {
-            <div class="col-12 row">
+            <div class="row">
                 <div class="col-2"></div>
                 <div class="col-10">
                     <div class="image-list-container">
@@ -101,12 +105,20 @@
             <div class="col-2">
                 <fieldLabel>@L["ItemDescription"]</fieldLabel>
             </div>
-            <div class="col-9">
+            <div class="col-10">
                 <div class="col-12">
-                    <fieldLabel></fieldLabel>
-                    <TextEdit Placeholder="@L["ItemDescriptionTitle"]" @bind-Text="@CreateUpdateSetItemDto.SetItemDescriptionTitle" />
+                    <Addons>
+                        <Addon AddonType="AddonType.Body">
+                            <TextEdit Placeholder="@L["ItemDescriptionTitle"]" @bind-Text="@CreateUpdateSetItemDto.SetItemDescriptionTitle" />
+                        </Addon>
+                        <Addon AddonType="AddonType.End">
+                            <AddonLabel Style="background-color: #f5f5f7">
+                                @(string.IsNullOrWhiteSpace(CreateUpdateSetItemDto.SetItemDescriptionTitle) ? 0 : (CreateUpdateSetItemDto.SetItemDescriptionTitle.Count()))/@MaxTextCount
+                            </AddonLabel>
+                        </Addon>
+                    </Addons>
                 </div>
-                <div class=" col-12">
+                <div class="col-12">
                     <Blazored.TextEditor.BlazoredTextEditor @ref="@QuillHtml">
                         <ToolbarContent>
                             <select class="ql-header">
@@ -144,13 +156,22 @@
                     </Blazored.TextEditor.BlazoredTextEditor>
                 </div>
             </div>
-            <div class="col-1">
-                <span>
-                    @(string.IsNullOrWhiteSpace(CreateUpdateSetItemDto.SetItemDescriptionTitle) ? 60 : (MaxTextCount - CreateUpdateSetItemDto.SetItemDescriptionTitle.Count()))/@MaxTextCount
-                </span>
+        </div>
+        <div class="row mt-2">
+            <div class="col-2">
+                <label class="pt-2">@L["ItemTemperature"]</label>
+            </div>
+            <div class="col-10">
+                <Select TValue="ItemStorageTemperature?"
+                        @bind-SelectedValue="@CreateUpdateSetItemDto.ItemStorageTemperature">
+                    <SelectItem Value="(ItemStorageTemperature?)null"></SelectItem>
+                    @foreach (var enumValue in Enum.GetValues(typeof(ItemStorageTemperature)))
+                    {
+                        <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                    }
+                </Select>
             </div>
         </div>
-
         <div class="row mt-3">
             <h4>@L["ChooseItem"]</h4>
         </div>
@@ -288,6 +309,14 @@
             </div>
             <div class="col-3">
                 <InputNumber class="form-control no-spinners" TValue="int?" @bind-Value="@CreateUpdateSetItemDto.GroupBuyPrice" />
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-2">
+                <label>@L["SellableQuantity"]</label>
+            </div>
+            <div class="col-3">
+                <InputNumber class="form-control no-spinners" TValue="int?" @bind-Value="@CreateUpdateSetItemDto.SaleableQuantity" />
             </div>
         </div>
         <div class="row mt-3">

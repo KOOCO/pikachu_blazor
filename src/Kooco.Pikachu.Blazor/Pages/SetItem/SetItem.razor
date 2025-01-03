@@ -63,6 +63,15 @@
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="SetItemDto"
+                                Field="@nameof(SetItemDto.SaleableQuantity)"
+                                Caption="@L["SellableQuantity"]">
+                    <DisplayTemplate>
+                        <Div Class="text-center">
+                            @context.SaleableQuantity
+                        </Div>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="SetItemDto"
                                 Field="@nameof(SetItemDto.IsFreeShipping)"
                                 Caption="@L["FreeShipping"]">
                     <DisplayTemplate>
@@ -90,5 +99,5 @@
 </Card>
 
 @code {
-   
+
 }

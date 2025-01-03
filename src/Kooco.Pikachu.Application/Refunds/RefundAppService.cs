@@ -8,6 +8,7 @@ using Kooco.Pikachu.Permissions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using RestSharp;
 using System;
 using System.Collections.Generic;
@@ -137,46 +138,6 @@ public class RefundAppService : ApplicationService, IRefundAppService
 
         Order order = await _orderRepository.GetWithDetailsAsync(refund.OrderId);
 
-        Order OriginalOrder = new();
-
-        if (order.SplitFromId is null || order.SplitFromId == Guid.Empty) OriginalOrder = order;
-
-        else OriginalOrder = await _orderRepository.GetWithDetailsAsync((Guid)order.SplitFromId);
-
-        OriginalOrder.TotalAmount -= order.TotalAmount;
-
-        if (
-            order.ShippingStatus is ShippingStatus.WaitingForPayment ||
-            order.ShippingStatus is ShippingStatus.PrepareShipment ||
-            order.ShippingStatus is ShippingStatus.ToBeShipped ||
-            order.ShippingStatus is ShippingStatus.EnterpricePurchase
-        )
-            order.TotalAmount -= order.TotalAmount; 
-
-        else if (
-            order.ShippingStatus is ShippingStatus.Shipped ||
-            order.ShippingStatus is ShippingStatus.Delivered ||
-            order.ShippingStatus is ShippingStatus.Completed ||
-            order.ShippingStatus is ShippingStatus.Return ||
-            order.ShippingStatus is ShippingStatus.Closed
-        )
-            order.TotalAmount -= order.TotalAmount - (order.DeliveryCost ?? 0);
-
-        order.TotalQuantity -= order.TotalQuantity;
-
-        foreach (OrderItem orderItem in order.OrderItems)
-        {
-            orderItem.TotalAmount -= orderItem.TotalAmount;
-
-            orderItem.ItemPrice -= orderItem.ItemPrice;
-
-            orderItem.Quantity -= orderItem.Quantity;
-        }
-
-        await _orderRepository.UpdateAsync(order);
-
-        await _orderRepository.UpdateAsync(OriginalOrder);
-
         PaymentGatewayDto? ecpay = (await _PaymentGatewayAppService.GetAllAsync()).FirstOrDefault(f => f.PaymentIntegrationType is PaymentIntegrationType.EcPay) ??
                                     throw new UserFriendlyException("Please Set Ecpay Setting First"); ;
 
@@ -215,7 +176,68 @@ public class RefundAppService : ApplicationService, IRefundAppService
             }
         }
 
-        await UpdateRefundReviewAsync(id, refund.RefundReview);
+        RefundDto refundDto = await UpdateRefundReviewAsync(id, refund.RefundReview);
+
+        if (refundDto.RefundReview is RefundReviewStatus.Success)
+        {
+            Order OriginalOrder = new();
+
+            if (order.SplitFromId is null || order.SplitFromId == Guid.Empty) OriginalOrder = order;
+
+            else OriginalOrder = await _orderRepository.GetWithDetailsAsync((Guid)order.SplitFromId);
+
+            //OriginalOrder.TotalAmount -= order.TotalAmount;
+
+            if (
+                order.ShippingStatus is ShippingStatus.WaitingForPayment ||
+                order.ShippingStatus is ShippingStatus.PrepareShipment ||
+                order.ShippingStatus is ShippingStatus.ToBeShipped ||
+                order.ShippingStatus is ShippingStatus.EnterpricePurchase
+            )
+                OriginalOrder.TotalAmount -= order.TotalAmount;
+
+            else if (
+                order.ShippingStatus is ShippingStatus.Shipped ||
+                order.ShippingStatus is ShippingStatus.Delivered ||
+                order.ShippingStatus is ShippingStatus.Completed ||
+                order.ShippingStatus is ShippingStatus.Return ||
+                order.ShippingStatus is ShippingStatus.Closed
+            )
+                OriginalOrder.TotalAmount -= order.TotalAmount - (order.DeliveryCost ?? 0);
+
+            //OriginalOrder.TotalQuantity -= order.TotalQuantity;
+
+            foreach (OrderItem orderItem in OriginalOrder.OrderItems)
+            {
+                if (!OriginalOrder.ReturnedOrderItemIds.IsNullOrEmpty())
+                {
+                    List<Guid> returnedOrderItemGuids = [];
+
+                    List<string>? returnedOrderItemIds = [.. OriginalOrder.ReturnedOrderItemIds.Split(',')];
+
+                    if (returnedOrderItemIds is { Count: > 0 })
+                    {
+                        foreach (string item in returnedOrderItemIds)
+                        {
+                            returnedOrderItemGuids.Add(Guid.Parse(item));
+                        }
+
+                        if (returnedOrderItemGuids.Any(a => a == orderItem.Id))
+                        {
+                            orderItem.TotalAmount -= orderItem.TotalAmount;
+
+                            orderItem.ItemPrice -= orderItem.ItemPrice;
+
+                            orderItem.Quantity -= orderItem.Quantity;
+                        }
+                    }
+                }
+            }
+
+            //await _orderRepository.UpdateAsync(order);
+
+            await _orderRepository.UpdateAsync(OriginalOrder);
+        }
     }
 
     private async Task<string> GetPaymentStatus(Order order, PaymentGatewayDto? ecpay)
@@ -257,7 +279,7 @@ public class RefundAppService : ApplicationService, IRefundAppService
 
             RestResponse response = await client.ExecuteAsync(request);
 
-            PaymentStatus? paymentStatus = JsonSerializer.Deserialize<PaymentStatus>(response.Content);
+            PaymentStatus? paymentStatus = System.Text.Json.JsonSerializer.Deserialize<PaymentStatus>(response.Content);
 
             if (paymentStatus is null || paymentStatus.RtnValue?.status is null) return string.Empty;
 

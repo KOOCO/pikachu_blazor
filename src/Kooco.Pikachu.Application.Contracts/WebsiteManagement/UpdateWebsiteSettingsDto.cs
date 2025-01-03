@@ -1,41 +1,44 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
+using System.Collections.Generic;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Kooco.Pikachu.WebsiteManagement;
 
 public class UpdateWebsiteSettingsDto
 {
     [Required]
-    [MaxLength(WebsiteSettingsConsts.MaxNotificationBarLength)]
-    public string NotificationBar { get; set; }
+    [MaxLength(WebsiteSettingsConsts.MaxPageTitleLength)]
+    public string PageTitle { get; set; }
 
     [Required]
-    [MaxLength(WebsiteSettingsConsts.MaxLogoNameLength)]
-    public string LogoName { get; set; }
+    [MaxLength(WebsiteSettingsConsts.MaxPageDescriptionLength)]
+    public string PageDescription { get; set; }
 
     [Required]
-    [MaxLength(WebsiteSettingsConsts.MaxLogoUrlLength)]
-    public string LogoUrl { get; set; }
+    [MaxLength(WebsiteSettingsConsts.MaxPageLinkLength)]
+    public string PageLink { get; set; }
+
+    public bool SetAsHomePage { get; set; }
 
     [Required]
-    [MaxLength(WebsiteSettingsConsts.MaxStoreTitleLength)]
-    public string StoreTitle { get; set; }
+    public WebsitePageType? PageType { get; set; }
 
     [Required]
-    public WebsiteTitleDisplayOptions? TitleDisplayOption { get; set; }
+    public GroupBuyTemplateType? TemplateType { get; set; }
 
-    [Required]
-    [MaxLength(WebsiteSettingsConsts.MaxFacebookLength)]
-    public string Facebook { get; set; }
+    public GroupBuyModuleType? GroupBuyModuleType { get; set; }
 
-    [Required]
-    [MaxLength(WebsiteSettingsConsts.MaxInstagramLength)]
-    public string Instagram { get; set; }
+    public Guid? ProductCategoryId { get; set; }
 
-    [Required]
-    [MaxLength(WebsiteSettingsConsts.MaxLineLength)]
-    public string Line { get; set; }
+    public string? ArticleHtml { get; set; }
 
-    [Required]
-    [MaxLength(WebsiteSettingsConsts.MaxReturnExchangePolicyLength)]
-    public string ReturnExchangePolicy { get; set; }
+    public List<WebsiteSettingsModuleDto> Modules { get; set; } = [];
+
+    public List<WebsiteSettingsOverviewModuleDto> OverviewModules { get; set; } = [];
+
+    public List<WebsiteSettingsInstructionModuleDto> InstructionModules { get; set; } = [];
+
+    public List<WebsiteSettingsProductRankingModuleDto> ProductRankingModules { get; set; } = [];
 }

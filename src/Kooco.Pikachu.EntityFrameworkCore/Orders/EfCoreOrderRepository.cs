@@ -2,6 +2,7 @@
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Items;
+using Kooco.Pikachu.Members;
 using Kooco.Pikachu.OrderItems;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -11,7 +12,6 @@ using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Kooco.Pikachu.Orders;
 
@@ -310,7 +310,7 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
             .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate.Value.Date)
             .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
             //.Where(x => x.ShippingStatus == ShippingStatus.Shipped)
-            .Where(x=>x.IsVoidInvoice==false && x.InvoiceStatus==InvoiceStatus.Issued);
+            .Where(x=>x.IsVoidInvoice==false && x.IssueStatus!=null);
             //.Where(x => x.OrderType != OrderType.MargeToNew);
     }
     private static IQueryable<Order> ApplyVoidFilters(IQueryable<Order> queryable,
@@ -372,6 +372,48 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
                                                   w.MerchantTradeNo == merchantTradeNo);
     }
 
+    public async Task<Order> GetMemberOrderAsync(Guid orderId, Guid memberId)
+    {
+        return await (await GetQueryableAsync())
+            .Where(w => w.Id == orderId)
+            .Where(w => w.UserId == memberId)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Item)
+                .ThenInclude(i => i.Images)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.SetItem)
+                .ThenInclude(i => i.SetItemDetails)
+                .ThenInclude(i => i.Item)
+                .ThenInclude(i => i.Images)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.SetItem)
+                .ThenInclude(i => i.Images)
+            .Include(o => o.OrderItems.OrderBy(oi => oi.ItemType))
+                .ThenInclude(oi => oi.Freebie)
+                .ThenInclude(i => i.Images)
+            .Include(o => o.StoreComments.OrderByDescending(c => c.CreationTime))
+                .ThenInclude(c => c.User)
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<List<MemberOrderInfoModel>> GetMemberOrdersByGroupBuyAsync(Guid memberId, Guid groupBuyId)
+    {
+        var orders = await (await GetQueryableAsync())
+            .Where(x => x.UserId == memberId && x.GroupBuyId == groupBuyId)
+            .OrderByDescending(x => x.CreationTime)
+            .Select(x => new MemberOrderInfoModel
+            {
+                Id = x.Id,
+                OrderNo = x.OrderNo,
+                CreationTime = x.CreationTime,
+                ShippingStatus = x.ShippingStatus,
+                TotalAmount = x.TotalAmount,
+                PaymentMethod = x.PaymentMethod
+            }).ToListAsync();
+
+        return orders;
+    }
+
     public async Task<Order> GetOrderAsync(Guid groupBuyId, string orderNo, string extraInfo)
     {
         return await (await GetQueryableAsync())
@@ -380,7 +422,7 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
             .Where(w => w.CustomerEmail == extraInfo || 
                         w.CustomerName == extraInfo || 
                         w.CustomerPhone == extraInfo)
-            .Include(o => o.GroupBuy)
+            //.Include(o => o.GroupBuy)
             .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Item)
                 .ThenInclude(i => i.Images)
@@ -430,5 +472,13 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
         }
 
         await UpdateManyAsync(orders);
+    }
+
+    public async Task<string> GetOrderNoByOrderId(Guid OrderId)
+    {
+      return (await GetQueryableAsync())
+                     .Where(w => w.Id == OrderId)
+                     .Select(s => s.OrderNo)
+                     .FirstOrDefault();
     }
 }

@@ -11,13 +11,15 @@ public partial class TenantSocialMedia
     [Parameter]
     public ITenantSettingsAppService AppService { get; set; }
 
+    [Parameter]
+    public bool ViewMode { get; set; } = false;
+
     private TenantSocialMediaDto TenantSocialMediaDto { get; set; }
     private UpdateTenantSocialMediaDto Entity { get; set; }
     private Validations ValidationsRef { get; set; }
 
     private bool IsLoading { get; set; } = false;
     private bool IsCancelling { get; set; } = false;
-
     public TenantSocialMedia()
     {
         Entity = new();
@@ -35,6 +37,7 @@ public partial class TenantSocialMedia
     {
         try
         {
+            if (ViewMode) return;
             if (await ValidationsRef.ValidateAll())
             {
                 IsLoading = true;

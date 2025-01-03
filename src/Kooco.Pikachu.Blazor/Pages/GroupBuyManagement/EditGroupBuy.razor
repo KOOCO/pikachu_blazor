@@ -828,8 +828,13 @@
             </div>
         </div>
         <Divider></Divider>
-        <div class="row">
+          <div class="row">
             <div class="col-2">@L["AdvanceSetting"]</div>
+            <div class="col-2 form-label">@L["AddOnProducts"]</div>
+            <div class="col-4"> <Switch TValue="bool" @bind-Checked="@EditGroupBuyDto.AddonProduct"></Switch></div>
+        </div>
+        <div class="row">
+            <div class="col-2"></div>
             <div class="col-2 form-label">@L["HideCredention"]</div>
             <div class="col-4"> <Switch TValue="bool" @bind-Checked="@EditGroupBuyDto.ProtectPrivacyData"></Switch></div>
         </div>
@@ -972,6 +977,12 @@
                     <label class="form-label">@L["Alert"]</label>
                     <ColorPicker Class="color-scheme" @bind-Color="@EditGroupBuyDto.AlertColor" />
                     <TextEdit Disabled @bind-text="EditGroupBuyDto.AlertColor" class="form-control mt-2" />
+                </Div>
+
+                <Div Class="col-2">
+                    <label class="form-label">@L["Block"]</label>
+                    <ColorPicker Class="color-scheme" @bind-Color="@EditGroupBuyDto.BlockColor" />
+                    <TextEdit Disabled @bind-text="EditGroupBuyDto.BlockColor" class="form-control mt-2" />
                 </Div>
             </Div>
         }
@@ -1540,7 +1551,9 @@
 
                                     @if (module.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
                                     {
-                                        foreach (ProductRankingCarouselModule productModule in ProductRankingCarouselModules)
+                                        List<ProductRankingCarouselModule>productModules=ProductRankingCarouselModules.Where(x=>x.ModuleNumber==module.ModuleNumber).ToList();
+                                      
+                                        foreach (ProductRankingCarouselModule productModule in productModules)
                                         {
                                             <Div Class="col-12 d-flex">
                                                 <Div Class="col-5">
@@ -1704,6 +1717,7 @@
                                                                     <Div Class="col-12">
                                                                         <Div Class="image-list-container d-block flex-nowrap">
                                                                             <Div Class="d-flex flex-wrap">
+
                                                                                 @foreach (CreateImageDto image in productModule.Images)
                                                                                 {
                                                                                     <Div Class="image-container">
@@ -1749,6 +1763,7 @@
 
                                     @if (module.GroupBuyModuleType is not GroupBuyModuleType.ProductRankingCarouselModule)
                                     {
+
                                         <div class="row mt-2">
                                             @if (module.GroupBuyModuleType is GroupBuyModuleType.ProductGroupModule)
                                             {
@@ -2092,6 +2107,13 @@
                 </div>
             </div>
         </div>
+        
+        <Row>
+            <Column ColumnSize="ColumnSize.Is2">@L["Availability"]</Column>
+            <Column ColumnSize="ColumnSize.Is10">
+                <Switch TValue="bool" @bind-Checked="EditGroupBuyDto.IsGroupBuyAvaliable"></Switch>
+            </Column>
+        </Row>
     </CardBody>
 
 </Card>

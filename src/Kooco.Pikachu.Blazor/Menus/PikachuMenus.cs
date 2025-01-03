@@ -26,5 +26,8 @@ public class PikachuMenus
     public const string TenantSettings = Prefix + ".TenantSettings";
 
     public const string WebsiteManagement = Prefix + ".WebsiteManagement";
-    public const string WebsiteSettings = Prefix + ".WebsiteSettings";
+    public const string WebsiteSettings = WebsiteManagement + ".WebsiteSettings";
+    public const string TopbarSettings = WebsiteManagement + ".TopbarSettings";
+    public const string FooterSettings = WebsiteManagement + ".FooterSettings";
+    public const string WebsiteBasicSettings = WebsiteManagement + ".WebsiteBasicSettings";
 }

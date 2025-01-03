@@ -218,6 +218,8 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
 
                 CreateUpdateSetItemDto.Description = await QuillHtml.GetHTML();
 
+                CreateUpdateSetItemDto.SetItemMainImageURL = CreateUpdateSetItemDto.Images.FirstOrDefault()?.ImageUrl;
+
                 await _setItemAppService.CreateAsync(CreateUpdateSetItemDto);
                 NavigationManager.NavigateTo("/SetItem");
             }
@@ -236,6 +238,11 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
             if (CreateUpdateSetItemDto.SetItemName.IsNullOrWhiteSpace())
             {
                 throw new BusinessException(L[PikachuDomainErrorCodes.ItemNameCannotBeNull]);
+            }
+
+            if (!CreateUpdateSetItemDto.ItemStorageTemperature.HasValue)
+            {
+                throw new BusinessException(L[PikachuDomainErrorCodes.ItemStorageTemperatureCannotBeNull]);
             }
         }
 

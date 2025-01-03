@@ -18,6 +18,7 @@ using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Identity;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
 
@@ -199,6 +200,34 @@ public class MemberAppService(IMemberRepository memberRepository, IdentityUserMa
     {
         var queryable = await userAddressRepository.GetFilteredQueryableAsync(userId: id);
         return ObjectMapper.Map<List<UserAddress>, List<UserAddressDto>>([.. queryable]);
+    }
+
+    public async Task<OrderDto> GetMemberOrderAsync(Guid orderId)
+    {
+        if (!CurrentUser.Id.HasValue)
+        {
+            throw new EntityNotFoundException(nameof(IdentityUser));
+        }
+
+        var order = await orderRepository.GetMemberOrderAsync(orderId, CurrentUser.Id.Value);
+
+        if (order == null || order.UserId != CurrentUser.Id)
+        {
+            throw new EntityNotFoundException(typeof(Order), orderId);
+        }
+
+        return ObjectMapper.Map<Order, OrderDto>(order);
+    }
+
+    public async Task<List<MemberOrderInfoDto>> GetMemberOrdersByGroupBuyAsync(Guid groupBuyId)
+    {
+        if (!CurrentUser.Id.HasValue)
+        {
+            throw new EntityNotFoundException(nameof(IdentityUser));
+        }
+
+        var orders = await orderRepository.GetMemberOrdersByGroupBuyAsync(CurrentUser.Id.Value, groupBuyId);
+        return ObjectMapper.Map<List<MemberOrderInfoModel>, List<MemberOrderInfoDto>>(orders);
     }
 
     [AllowAnonymous]

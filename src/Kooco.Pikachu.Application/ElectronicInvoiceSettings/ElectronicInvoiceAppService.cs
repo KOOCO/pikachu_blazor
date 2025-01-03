@@ -18,6 +18,7 @@ using System.Reflection.PortableExecutable;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 using System.Web;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
@@ -25,6 +26,7 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.SettingManagement;
+using Volo.Abp.Uow;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Kooco.Pikachu.ElectronicInvoiceSettings;
@@ -57,7 +59,7 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
     #endregion
 
     #region Methods
-    public async Task CreateInvoiceAsync(Guid orderId)
+    public async Task<string> CreateInvoiceAsync(Guid orderId)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
@@ -66,13 +68,13 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
 
             order = await _orderRepository.GetWithDetailsAsync(orderId);
 
-            if (!order.InvoiceNumber.IsNullOrEmpty()) return;
+            if (!order.InvoiceNumber.IsNullOrEmpty()) return"";
 
             GroupBuy groupBuy = await _groupBuyRepository.GetAsync(order.GroupBuyId);
 
             string print = setting.IsEnable ? "0" : "1";
             string? CarrierType = setting.IsEnable ? "1" : null;
-            CarrierType = order.InvoiceType == InvoiceType.CellphoneInvoice ? "3" : null;
+            CarrierType = (order.InvoiceType == InvoiceType.CellphoneInvoice) ? "3" : (order.InvoiceType == InvoiceType.BusinessInvoice ? "1" : null); 
             string? CarrierNumber = CarrierType == "3" ? order.UniformNumber : null;
             string CustomerAddress = order.AddressDetails.IsNullOrEmpty() ? order.CustomerEmail : order.AddressDetails;
             RestClientOptions options = new() { MaxTimeout = -1 };
@@ -148,11 +150,15 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
                 ResponseModel jsonObj = JsonConvert.DeserializeObject<ResponseModel>(data);
                 if (jsonObj.InvoiceNo.IsNullOrWhiteSpace())
                 {
-                    order.VoidUser = CurrentUser.Name;
-                    order.IssueStatus = IssueInvoiceStatus.Failed;
-                    await _orderRepository.UpdateAsync(order);
-                    throw new UserFriendlyException(jsonObj.RtnMsg.ToString());
-                    return;
+				
+						order.VoidUser = CurrentUser.Name;
+						order.IssueStatus = IssueInvoiceStatus.Failed;
+						await _orderRepository.UpdateAsync(order,true);
+                        await UnitOfWorkManager.Current.SaveChangesAsync();
+					
+
+					return jsonObj.RtnMsg.ToString();
+                   
                 }
                 order.InvoiceNumber = jsonObj.InvoiceNo;
                 order.IssueStatus = IssueInvoiceStatus.Succeeded;
@@ -162,6 +168,7 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
               
                 await _orderRepository.UpdateAsync(order);
             }
+            return "";
         }
     }
     public async Task CreateCreditNoteAsync(Guid orderId)

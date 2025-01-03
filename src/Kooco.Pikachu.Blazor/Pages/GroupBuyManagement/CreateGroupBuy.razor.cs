@@ -3,6 +3,7 @@ using Blazorise;
 using Blazorise.Extensions;
 using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.AzureStorage.Image;
+using Kooco.Pikachu.ElectronicInvoiceSettings;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.GroupBuyOrderInstructions;
 using Kooco.Pikachu.GroupBuyOrderInstructions.Interface;
@@ -15,6 +16,7 @@ using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.LogisticsProviders;
+using Kooco.Pikachu.PaymentGateways;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
@@ -27,6 +29,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
+using Volo.Abp.Domain.Entities;
 
 
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
@@ -114,12 +117,16 @@ public partial class CreateGroupBuy
     private readonly IGroupBuyOrderInstructionAppService _GroupBuyOrderInstructionAppService;
 
     private readonly IGroupBuyProductRankingAppService _GroupBuyProductRankingAppService;
+    private readonly IElectronicInvoiceSettingAppService _electronicInvoiceSettingAppService;
 
     public List<LogisticsProviderSettingsDto> LogisticsProviders = [];
-
+    public ElectronicInvoiceSettingDto ElectronicInvoiceSetting=new ElectronicInvoiceSettingDto();
+    public List<PaymentGatewayDto> PaymentGateways =[];
     private readonly ILogisticsProvidersAppService _LogisticsProvidersAppService;
+    private readonly IPaymentGatewayAppService _paymentGatewayAppService;
 
     private bool IsColorPickerOpen = false;
+
     #endregion
 
     #region Constructor
@@ -133,7 +140,9 @@ public partial class CreateGroupBuy
         IGroupPurchaseOverviewAppService GroupPurchaseOverviewAppService,
         IGroupBuyOrderInstructionAppService GroupBuyOrderInstructionAppService,
         ILogisticsProvidersAppService LogisticsProvidersAppService,
-        IGroupBuyProductRankingAppService GroupBuyProductRankingAppService
+        IGroupBuyProductRankingAppService GroupBuyProductRankingAppService,
+        IElectronicInvoiceSettingAppService electronicInvoiceSettingAppService,
+        IPaymentGatewayAppService paymentGatewayAppService
     )
     {
         _groupBuyAppService = groupBuyAppService;
@@ -149,6 +158,8 @@ public partial class CreateGroupBuy
         _GroupBuyOrderInstructionAppService = GroupBuyOrderInstructionAppService;
         _LogisticsProvidersAppService = LogisticsProvidersAppService;
         _GroupBuyProductRankingAppService = GroupBuyProductRankingAppService;
+        _electronicInvoiceSettingAppService = electronicInvoiceSettingAppService;
+        _paymentGatewayAppService = paymentGatewayAppService;
     }
     #endregion
 
@@ -161,6 +172,8 @@ public partial class CreateGroupBuy
         ItemsList.AddRange(SetItemList);
 
         LogisticsProviders = await _LogisticsProvidersAppService.GetAllAsync();
+        ElectronicInvoiceSetting = await _electronicInvoiceSettingAppService.GetSettingAsync();
+        PaymentGateways = await _paymentGatewayAppService.GetAllAsync();
     }
 
     private void SelectTemplate(ChangeEventArgs e)
@@ -188,6 +201,237 @@ public partial class CreateGroupBuy
         }
     }
 
+    public bool CheckForShippingMethodData(string method)
+    {
+		if (LogisticsProviders is { Count: 0 }) return true;
+
+		DeliveryMethod deliveryMethod = Enum.Parse<DeliveryMethod>(method);
+        if (deliveryMethod is DeliveryMethod.PostOffice)
+        {
+            var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.PostOffice).FirstOrDefault();
+            if (data==null||(data.Freight <= 0 && data.Weight <= 0))
+            {
+                return true;
+            }
+            else {
+                return false;
+
+
+			}
+         
+             }
+		else if (deliveryMethod is DeliveryMethod.FamilyMart1)
+		{
+			var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.FamilyMart).FirstOrDefault();
+			if (data == null || (data.Freight <0 ))
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+
+
+			}
+		}
+        else if (deliveryMethod is DeliveryMethod.SevenToEleven1)
+        {
+            var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.SevenToEleven).FirstOrDefault();
+            if (data == null || (data.Freight <0 ))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+
+
+            }
+        }
+        else if (deliveryMethod is DeliveryMethod.SevenToElevenFrozen)
+        {
+            var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.SevenToElevenFrozen).FirstOrDefault();
+            if (data == null || (data.Freight < 0 ))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+
+
+            }
+        }
+        else if (deliveryMethod is DeliveryMethod.BlackCat1)
+        {
+            var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.BNormal).FirstOrDefault();
+            if (data == null || (data.Freight < 0 || data.OuterIslandFreight<0))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+
+
+            }
+        }
+        else if (deliveryMethod is DeliveryMethod.BlackCatFreeze)
+        {
+            var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.BFreeze).FirstOrDefault();
+            if (data == null || (data.Freight < 0 ))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+
+
+            }
+        }
+        else if (deliveryMethod is DeliveryMethod.BlackCatFrozen)
+        {
+            var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.BFrozen).FirstOrDefault();
+            if (data == null || (data.Freight <0 ))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+
+
+            }
+        }
+        else if (deliveryMethod is DeliveryMethod.SevenToElevenC2C)
+        {
+            var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.SevenToElevenC2C).FirstOrDefault();
+            if (data == null || (data.Freight <0 ))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+
+
+            }
+        }
+        else if (deliveryMethod is DeliveryMethod.FamilyMartC2C)
+        {
+            var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.FamilyMartC2C).FirstOrDefault();
+            if (data == null || (data.Freight < 0 ))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+
+
+            }
+        }
+        else if (deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenNormal)
+        {
+            var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.TCat711Normal).FirstOrDefault();
+            if (data == null || (data.Freight < 0 ))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+
+
+            }
+        }
+        else if (deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFreeze)
+        {
+            var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.TCat711Freeze).FirstOrDefault();
+            if (data == null || (data.Freight <0 ))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+
+
+            }
+        }
+        else if (deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFrozen)
+        {
+            var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.TCat711Frozen).FirstOrDefault();
+            if (data == null || (data.Freight < 0 ))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+
+
+            }
+        }
+        else if (deliveryMethod is DeliveryMethod.TCatDeliveryNormal)
+        {
+            var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.TCatNormal).FirstOrDefault();
+            if (data == null || (data.Freight < 0 || data.OuterIslandFreight<0||data.Size<=0||data.TCatPaymentMethod==null|| data.TCatPaymentMethod<=0))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+
+
+            }
+        }
+        else if (deliveryMethod is DeliveryMethod.TCatDeliveryFreeze)
+        {
+            var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.TCat711Freeze).FirstOrDefault();
+            if (data == null || (data.Freight < 0 || data.OuterIslandFreight < 0 || data.Size <= 0 || data.TCatPaymentMethod == null || data.TCatPaymentMethod <= 0))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+
+
+            }
+        }
+        else if (deliveryMethod is DeliveryMethod.TCatDeliveryFrozen)
+        {
+            var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.TCat711Frozen).FirstOrDefault();
+            if (data == null || (data.Freight < 0 || data.OuterIslandFreight < 0 || data.Size <= 0 || data.TCatPaymentMethod == null || data.TCatPaymentMethod <= 0))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+
+
+            }
+        }
+        else if (deliveryMethod is DeliveryMethod.DeliveredByStore)
+        {
+            var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.HomeDelivery).FirstOrDefault();
+            if (data == null || data.MainIslands.IsNullOrEmpty() ||data.Freight<0||(data.IsOuterIslands&& data.OuterIslands.IsNullOrEmpty()))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+
+
+            }
+        }
+        return true;
+	}
     public bool IsShippingMethodEnabled(string method)
     {
         if (LogisticsProviders is { Count: 0 }) return false;
@@ -220,7 +464,25 @@ public partial class CreateGroupBuy
 
         else return false;
     }
-
+    public bool isPaymentMethodEnabled()
+    {
+        var ecpay = PaymentGateways.Where(x => x.PaymentIntegrationType == PaymentIntegrationType.EcPay).FirstOrDefault();
+        if (ecpay == null)
+        {
+            return true;
+        }
+        else if (!ecpay.IsEnabled) return true;
+        else if (ecpay.HashIV.IsNullOrEmpty() || ecpay.HashKey.IsNullOrEmpty() || ecpay.MerchantId.IsNullOrEmpty() || ecpay.TradeDescription.IsNullOrEmpty() || ecpay.CreditCheckCode.IsNullOrEmpty()) return true;
+        else {
+            return false;
+        
+        }
+    }
+    public bool IsInvoiceEnable() {
+        return ElectronicInvoiceSetting.IsEnable;
+    
+    
+    }
     private void OpenAddLinkModal(CreateImageDto createImageDto)
     {
         SelectedImageDto = createImageDto;
@@ -296,6 +558,7 @@ public partial class CreateGroupBuy
                 CreateGroupBuyDto.BackgroundColor = "#FFFFFF";
                 CreateGroupBuyDto.SecondaryBackgroundColor = "#C9D6BD";
                 CreateGroupBuyDto.AlertColor = "#FF902A";
+                CreateGroupBuyDto.BlockColor = "#EFF4EB";
                 break;
 
             case ColorScheme.TropicalSunset:
@@ -304,6 +567,7 @@ public partial class CreateGroupBuy
                 CreateGroupBuyDto.BackgroundColor = "#FFFFFF";
                 CreateGroupBuyDto.SecondaryBackgroundColor = "#E5D19A";
                 CreateGroupBuyDto.AlertColor = "#FF902A";
+                CreateGroupBuyDto.BlockColor = "#EFF4EB";
                 break;
 
             case ColorScheme.DeepSeaNight:
@@ -312,6 +576,7 @@ public partial class CreateGroupBuy
                 CreateGroupBuyDto.BackgroundColor = "#FFFFFF";
                 CreateGroupBuyDto.SecondaryBackgroundColor = "#DCD6D0";
                 CreateGroupBuyDto.AlertColor = "#A1E82D";
+                CreateGroupBuyDto.BlockColor = "#EFF4EB";
                 break;
 
             case ColorScheme.SweetApricotCream:
@@ -320,6 +585,7 @@ public partial class CreateGroupBuy
                 CreateGroupBuyDto.BackgroundColor = "#FFFFFF";
                 CreateGroupBuyDto.SecondaryBackgroundColor = "#DCBFC3";
                 CreateGroupBuyDto.AlertColor = "#FFC123";
+                CreateGroupBuyDto.BlockColor = "#EFF4EB";
                 break;
 
             case ColorScheme.DesertDawn:
@@ -328,6 +594,7 @@ public partial class CreateGroupBuy
                 CreateGroupBuyDto.BackgroundColor = "#FFFFFF";
                 CreateGroupBuyDto.SecondaryBackgroundColor = "#EBC7AD";
                 CreateGroupBuyDto.AlertColor = "#FF902A";
+                CreateGroupBuyDto.BlockColor = "#EFF4EB";
                 break;
 
 
@@ -337,6 +604,7 @@ public partial class CreateGroupBuy
                 CreateGroupBuyDto.BackgroundColor = string.Empty;
                 CreateGroupBuyDto.SecondaryBackgroundColor = string.Empty;
                 CreateGroupBuyDto.AlertColor = string.Empty;
+                CreateGroupBuyDto.BlockColor = string.Empty;
                 IsColorPickerOpen = false;
                 break;
         }
@@ -909,22 +1177,25 @@ public partial class CreateGroupBuy
 
         else if (groupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
         {
-            if (ProductRankingCarouselModules is { Count: 0 })
-            {
+          
                 CollapseItem collapseItem = new()
                 {
                     Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
                     SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
-                    GroupBuyModuleType = groupBuyModuleType
+                    GroupBuyModuleType = groupBuyModuleType,
+                    ModuleNumber = CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule) > 0 ?
+                               CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule) + 1 : 1
+
                 };
 
                 CollapseItem.Add(collapseItem);
-            }
+            
 
             ProductRankingCarouselPickers.Add(new());
 
             ProductRankingCarouselModules.Add(new()
             {
+                ModuleNumber = collapseItem.ModuleNumber,
                 Selected = [
                     new ItemWithItemTypeDto(),
                     new ItemWithItemTypeDto(),

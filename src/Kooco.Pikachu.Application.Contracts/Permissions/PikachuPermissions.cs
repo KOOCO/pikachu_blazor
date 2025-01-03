@@ -38,6 +38,8 @@ public static class PikachuPermissions
     public const string MembersManagement = "MembersManagement";
     public const string WebSiteSettings = "WebsiteSettings";
     public const string Promotions = "Promotions";
+
+    public const string WebsiteManagementGroup = "WebsiteManagement";
     /// <summary>
     /// 
     /// </summary>
@@ -141,12 +143,20 @@ public static class PikachuPermissions
         public const string Edit = Default + ".Edit";
     }
 
-    public static class WebsiteSettings
+    public static class WebsiteManagement
     {
-        public const string Default = ".WebsiteSettings";
-        public const string Create = Default + ".Create";
-        public const string Edit = Default + ".Edit";
-        public const string Delete = Default + ".Delete";
+        public const string Default = WebsiteManagementGroup;
+        public const string WebsiteBasicSettings = Default + ".WebsiteBasicSettings";
+        public const string TopbarSettings = Default + ".TopbarSettings";
+        public const string FooterSettings = Default + ".FooterSettings";
+
+        public static class WebsiteSettings
+        {
+            public const string Default = WebsiteManagementGroup + ".WebsiteSettings";
+            public const string Create = Default + ".Create";
+            public const string Edit = Default + ".Edit";
+            public const string Delete = Default + ".Delete";
+        }
     }
 
     public static class ProductCategories

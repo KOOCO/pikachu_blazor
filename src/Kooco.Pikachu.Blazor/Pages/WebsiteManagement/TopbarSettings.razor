@@ -1,0 +1,277 @@
+﻿@page "/Topbar-Settings"
+@using Kooco.Pikachu.Blazor.Pages.Components.Icons
+@using Kooco.Pikachu.Localization
+@using Kooco.Pikachu.Permissions
+@using Kooco.Pikachu.WebsiteManagement.TopbarSettings
+@using Volo.Abp.AspNetCore.Components.Web
+@attribute [Authorize(PikachuPermissions.WebsiteManagement.TopbarSettings)]
+@inherits PikachuComponentBase
+@inject ITopbarSettingAppService TopbarSettingAppService
+@inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
+
+<h3 class="text-dark text-center">@L["TopbarSettings"]</h3>
+
+<Div Class="rounded-cards">
+    <Validations @ref="@ValidationsRef" Model="@Entity" ValidateOnLoad="false">
+        <Card>
+            <CardBody>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                        <h4 class="pt-1">@L["StyleSettings"]</h4>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12.Is8.OnDesktop">
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <Select TValue="TopbarStyleSettings?" @bind-SelectedValue="Entity.TopbarStyleSettings">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                    <ChildContent>
+                                        <SelectItem Value="(TopbarStyleSettings?)null"></SelectItem>
+                                        @foreach (TopbarStyleSettings styleSettings in Enum.GetValues(typeof(TopbarStyleSettings)))
+                                        {
+                                            <SelectItem Value="styleSettings">@L["Enum:TopbarStyleSettings." + (int)styleSettings]</SelectItem>
+                                        }
+                                    </ChildContent>
+                                </Select>
+                            </Field>
+                        </Validation>
+                    </Column>
+                </Row>
+            </CardBody>
+        </Card>
+        <Card>
+            <CardBody>
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                        <h4 class="pt-1">@L["LinkSettings"]</h4>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12.Is8.OnDesktop">
+                        <Field>
+                            <Select TValue="TopbarLinkSettings?" SelectedValue="SelectedLinkSettings"
+                                    SelectedValueChanged="OnLinkSettingsSelected">
+                                <SelectItem Value="(TopbarLinkSettings?)null">@L["SelectModule"]</SelectItem>
+                                @foreach (TopbarLinkSettings linkSettings in Enum.GetValues(typeof(TopbarLinkSettings)))
+                                {
+                                    <SelectItem Value="linkSettings">@L["Enum:TopbarLinkSettings." + (int)linkSettings]</SelectItem>
+                                }
+                            </Select>
+                        </Field>
+                    </Column>
+                </Row>
+
+                @if (Entity.Links.Count > 0)
+                {
+                    <Div ondragover="event.preventDefault();">
+                        <Row VerticalGutter="15">
+                            @foreach (var link in Entity.Links.OrderBy(x => x.Index))
+                            {
+                                <Column ColumnSize="ColumnSize.Is12">
+                                    <Div Class="d-flex">
+                                        <Div Class="p-2 flex-grow-1">
+                                            <Accordion>
+                                                <Collapse>
+                                                    <CollapseHeader>
+                                                        <AccordionToggle>
+                                                            <Div Class="d-flex justify-content-between w-100">
+                                                                <Div>
+                                                                    <i class="fa fa-trash text-danger me-2" @onclick="@(() => RemoveLink(link))"></i>
+                                                                    @L["Enum:TopbarLinkSettings." + (int)link.TopbarLinkSettings]
+                                                                </Div>
+                                                                @if (link.TopbarLinkSettings == TopbarLinkSettings.Category)
+                                                                {
+                                                                    <Div>
+                                                                        <AntDesign.Dropdown>
+                                                                            <Overlay>
+                                                                                <AntDesign.Menu>
+                                                                                    @foreach (TopbarCategoryLinkOption topbarCategoryLink in Enum.GetValues(typeof(TopbarCategoryLinkOption)))
+                                                                                    {
+                                                                                        <AntDesign.MenuItem OnClick="() => OnTopbarCategoryLinkOptionSelected(link, topbarCategoryLink)">
+                                                                                            @L["Enum:TopbarCategoryLinkOption." + (int)topbarCategoryLink]
+                                                                                        </AntDesign.MenuItem>
+                                                                                    }
+                                                                                </AntDesign.Menu>
+                                                                            </Overlay>
+                                                                            <ChildContent>
+                                                                                <a class="ant-dropdown-link" @onclick:preventDefault>
+                                                                                    <i class="fa fa-plus me-3"></i>
+                                                                                </a>
+                                                                            </ChildContent>
+                                                                        </AntDesign.Dropdown>
+                                                                    </Div>
+                                                                }
+                                                            </Div>
+                                                        </AccordionToggle>
+                                                    </CollapseHeader>
+                                                    <CollapseBody>
+                                                        @if (link.TopbarLinkSettings == TopbarLinkSettings.Category)
+                                                        {
+                                                            <Validation MessageLocalizer="@LH.Localize">
+                                                                <Field>
+                                                                    <Row>
+                                                                        <Column ColumnSize="ColumnSize.Is12.Is2.OnDesktop">
+                                                                            <FieldLabel Padding="Padding.Is2.FromTop">@L["CategoryTitle"]</FieldLabel>
+                                                                        </Column>
+                                                                        <Column ColumnSize="ColumnSize.Is12.Is10.OnDesktop">
+                                                                            <TextEdit Placeholder="@L["EnterCategoryTitle"]" @bind-Text="link.Title">
+                                                                                <Feedback>
+                                                                                    <ValidationError />
+                                                                                </Feedback>
+                                                                            </TextEdit>
+                                                                        </Column>
+                                                                    </Row>
+                                                                </Field>
+                                                            </Validation>
+                                                        }
+                                                        @if (link.TopbarLinkSettings == TopbarLinkSettings.Link)
+                                                        {
+                                                            <Validation MessageLocalizer="@LH.Localize">
+                                                                <Field>
+                                                                    <Row>
+                                                                        <Column ColumnSize="ColumnSize.Is12.Is2.OnDesktop">
+                                                                            <FieldLabel Padding="Padding.Is2.FromTop">@L["LinkTitle"]</FieldLabel>
+                                                                        </Column>
+                                                                        <Column ColumnSize="ColumnSize.Is12.Is10.OnDesktop">
+                                                                            <TextEdit Placeholder="@L["EnterLinkTitle"]" @bind-Text="link.Title">
+                                                                                <Feedback>
+                                                                                    <ValidationError />
+                                                                                </Feedback>
+                                                                            </TextEdit>
+                                                                        </Column>
+                                                                    </Row>
+                                                                </Field>
+                                                            </Validation>
+                                                            <Validation MessageLocalizer="@LH.Localize">
+                                                                <Field>
+                                                                    <Row>
+                                                                        <Column ColumnSize="ColumnSize.Is12.Is2.OnDesktop">
+                                                                            <FieldLabel Padding="Padding.Is2.FromTop">@L["LinkUrl"]</FieldLabel>
+                                                                        </Column>
+                                                                        <Column ColumnSize="ColumnSize.Is12.Is10.OnDesktop">
+                                                                            <TextEdit Placeholder="@L["EnterLinkUrl"]" @bind-Text="link.Url">
+                                                                                <Feedback>
+                                                                                    <ValidationError />
+                                                                                </Feedback>
+                                                                            </TextEdit>
+                                                                        </Column>
+                                                                    </Row>
+                                                                </Field>
+                                                            </Validation>
+                                                        }
+                                                    </CollapseBody>
+                                                </Collapse>
+                                            </Accordion>
+                                        </Div>
+                                        <Div Class="py-2 mt-2" draggable="true"
+                                             @ondrop="@(()=> LinkDrop(link))" @ondrag="@(()=> StartLinkDrag(link))">
+                                            <Span Class="drag-drop-span">
+                                                <i class="fa-solid fa-bars fa-2xl"></i>
+                                            </Span>
+                                        </Div>
+                                    </Div>
+                                </Column>
+
+                                <Div ondragover="event.preventDefault();">
+                                    @foreach (var categoryOption in link.CategoryOptions)
+                                    {
+                                        <Column ColumnSize="ColumnSize.Is12">
+                                            <Div Class="d-flex">
+                                                <Div Class="ps-2 align-self-center">
+                                                    <ArrowDownRightSvg></ArrowDownRightSvg>
+                                                </Div>
+                                                <Div Class="p-2 flex-grow-1">
+                                                    <Accordion>
+                                                        <Collapse>
+                                                            <CollapseHeader>
+                                                                <AccordionToggle>
+                                                                    <Div>
+                                                                        <i class="fa fa-trash text-danger me-2" @onclick="@(() => RemoveCategoryOption(link, categoryOption))"></i>
+                                                                        @L["Enum:TopbarCategoryLinkOption." + (int)categoryOption.TopbarCategoryLinkOption]
+                                                                    </Div>
+                                                                </AccordionToggle>
+                                                            </CollapseHeader>
+                                                            <CollapseBody>
+                                                                <Validation MessageLocalizer="@LH.Localize">
+                                                                    <Field>
+                                                                        <Row>
+                                                                            <Column ColumnSize="ColumnSize.Is12.Is2.OnDesktop">
+                                                                                <FieldLabel Padding="Padding.Is2.FromTop">@L["OptionTitle"]</FieldLabel>
+                                                                            </Column>
+                                                                            <Column ColumnSize="ColumnSize.Is12.Is10.OnDesktop">
+                                                                                <TextEdit Placeholder="@L["EnterOptionTitle"]" @bind-Text="categoryOption.Title">
+                                                                                    <Feedback>
+                                                                                        <ValidationError />
+                                                                                    </Feedback>
+                                                                                </TextEdit>
+                                                                            </Column>
+                                                                        </Row>
+                                                                    </Field>
+                                                                </Validation>
+                                                                @if (categoryOption.TopbarCategoryLinkOption == TopbarCategoryLinkOption.SubPage)
+                                                                {
+                                                                    <Validation MessageLocalizer="@LH.Localize">
+                                                                        <Field>
+                                                                            <Row>
+                                                                                <Column ColumnSize="ColumnSize.Is12.Is2.OnDesktop">
+                                                                                    <FieldLabel Padding="Padding.Is2.FromTop">@L["LinkedPage"]</FieldLabel>
+                                                                                </Column>
+                                                                                <Column ColumnSize="ColumnSize.Is12.Is10.OnDesktop">
+                                                                                    <TextEdit Placeholder="@L["SearchPage"]" @bind-Text="categoryOption.Link">
+                                                                                        <Feedback>
+                                                                                            <ValidationError />
+                                                                                        </Feedback>
+                                                                                    </TextEdit>
+                                                                                </Column>
+                                                                            </Row>
+                                                                        </Field>
+                                                                    </Validation>
+                                                                }
+                                                                @if (categoryOption.TopbarCategoryLinkOption == TopbarCategoryLinkOption.SubLink)
+                                                                {
+                                                                    <Validation MessageLocalizer="@LH.Localize">
+                                                                        <Field>
+                                                                            <Row>
+                                                                                <Column ColumnSize="ColumnSize.Is12.Is2.OnDesktop">
+                                                                                    <FieldLabel Padding="Padding.Is2.FromTop">@L["Link"]</FieldLabel>
+                                                                                </Column>
+                                                                                <Column ColumnSize="ColumnSize.Is12.Is10.OnDesktop">
+                                                                                    <TextEdit Placeholder="@L["EnterLink"]" @bind-Text="categoryOption.Link">
+                                                                                        <Feedback>
+                                                                                            <ValidationError />
+                                                                                        </Feedback>
+                                                                                    </TextEdit>
+                                                                                </Column>
+                                                                            </Row>
+                                                                        </Field>
+                                                                    </Validation>
+                                                                }
+                                                            </CollapseBody>
+                                                        </Collapse>
+                                                    </Accordion>
+                                                </Div>
+                                                <Div Class="py-2 mt-2" draggable="true"
+                                                     @ondrop="@(()=> CategoryOptionDrop(link, categoryOption))" @ondrag="@(()=> StartCategoryOptionDrag(link, categoryOption))">
+                                                    <Span Class="drag-drop-span">
+                                                        <i class="fa-solid fa-bars fa-2xl"></i>
+                                                    </Span>
+                                                </Div>
+                                            </Div>
+                                        </Column>
+                                    }
+                                </Div>
+                            }
+                        </Row>
+                    </Div>
+                }
+            </CardBody>
+        </Card>
+        <Div Class="text-end">
+            <PikachuButton Class="pk-btn-transparent" Disabled="IsLoading" Loading="IsCancelling" Clicked="ResetAsync">
+                @L["Cancel"]
+            </PikachuButton>
+            <PikachuButton Class="pk-btn-primary" Disabled="IsCancelling" Loading="IsLoading" Clicked="UpdateAsync">
+                @L["Update"]
+            </PikachuButton>
+        </Div>
+    </Validations>
+</Div>
