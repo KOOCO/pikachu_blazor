@@ -503,7 +503,7 @@
                                                                     <br />
 
                                                                     @{
-                                                                        List<string> setItemNames = [.. item.Spec.Split(", ")];
+                                                                        List<string> setItemNames = (item.Spec != null ? [.. item.Spec.Split(", ")] : []);
                                                                     }
 
                                                                     @foreach (string setItemName in setItemNames)
