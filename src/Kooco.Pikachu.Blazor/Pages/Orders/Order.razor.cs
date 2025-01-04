@@ -93,10 +93,6 @@ public partial class Order
     #region Methods
     private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<OrderDto> e)
     {
-        await JSRuntime.InvokeVoidAsync("removeSelectClass", "mySelectElement");
-        await JSRuntime.InvokeVoidAsync("removeSelectClass", "shippingMethodSelectElem");
-        await JSRuntime.InvokeVoidAsync("removeInputClass", "startDate");
-        await JSRuntime.InvokeVoidAsync("removeInputClass", "endDate");
         PageIndex = e.Page - 1;
         await UpdateItemList();
         await GetGroupBuyList();
@@ -1067,11 +1063,6 @@ public partial class Order
 
     public async Task OnTabLoadDataGridReadAsync(DataGridReadDataEventArgs<OrderDto> e, string tabName)
     {
-        await JSRuntime.InvokeVoidAsync("removeSelectClass", "mySelectElement");
-        await JSRuntime.InvokeVoidAsync("removeSelectClass", "shippingMethodSelectElem");
-        await JSRuntime.InvokeVoidAsync("removeInputClass", "startDate");
-        await JSRuntime.InvokeVoidAsync("removeInputClass", "endDate");
-
         PageIndex = e.Page - 1;
 
         await LoadTabAsPerNameAsync(tabName);
@@ -1188,9 +1179,29 @@ public partial class Order
 
     async Task OnSearch(Guid? e = null)
     {
-        if (e == Guid.Empty) GroupBuyFilter = null;
+        if (e == Guid.Empty)
+        {
+            GroupBuyFilter = null;
+        }
 
-        else GroupBuyFilter = e;
+        else
+        {
+            GroupBuyFilter = e;
+        }
+
+        SelectedGroupBuy = e;
+
+        PageIndex = 0;
+
+        if (SelectedTabName is "All") await UpdateItemList();
+
+        else await LoadTabAsPerNameAsync(SelectedTabName);
+    }
+
+    async Task OnDateChange(DateTime? startDate, DateTime? endDate)
+    {
+        StartDate = startDate;
+        EndDate = endDate;
 
         PageIndex = 0;
 

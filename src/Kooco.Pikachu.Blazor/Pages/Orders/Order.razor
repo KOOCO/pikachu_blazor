@@ -65,30 +65,24 @@
             {
                 @if ((Orders.Where(x => x.IsSelected).Count() < 1))
                 {
-                            <Dropdown  Disabled>
-     <Button Size="Size.ExtraSmall" Disabled class="btn btn-sm btn-primary" @onclick="OnPrintShippedLabel" >@L["PrintShippedLabel"]</Button>
-    <DropdownToggle Size="Size.ExtraSmall" Color="Color.Primary" Split />
-    <DropdownMenu>
-        <DropdownItem>Action</DropdownItem>
-      
-    </DropdownMenu>
-</Dropdown>
+                    <Dropdown Disabled>
+                        <Button Size="Size.ExtraSmall" Disabled class="btn btn-sm btn-primary" @onclick="OnPrintShippedLabel">@L["PrintShippedLabel"]</Button>
+                        <DropdownToggle Size="Size.ExtraSmall" Class="btn-sm" Color="Color.Primary" Split />
+                        <DropdownMenu>
+                            <DropdownItem>Action</DropdownItem>
+                        </DropdownMenu>
+                    </Dropdown>
                 }
                 else
                 {
-                    <Dropdown >
-     <Button Size="Size.ExtraSmall" class="btn btn-sm btn-primary" Clicked="OnPrintShippedLabel" >@L["PrintShippedLabel"]</Button>
-    <DropdownToggle Size="Size.ExtraSmall" Color="Color.Primary" Split />
-    <DropdownMenu>
-        <DropdownItem Clicked="OnPrintShippedLabel10Cm">@L["PrintShippedLabel10cm"]</DropdownItem>
-       
-    </DropdownMenu>
-</Dropdown>
-                
-  
-                   
-                
-            }
+                    <Dropdown>
+                        <Button Size="Size.ExtraSmall" class="btn btn-sm btn-primary" Clicked="OnPrintShippedLabel">@L["PrintShippedLabel"]</Button>
+                        <DropdownToggle Size="Size.ExtraSmall" Class="btn-sm" Color="Color.Primary" Split />
+                        <DropdownMenu>
+                            <DropdownItem Clicked="OnPrintShippedLabel10Cm">@L["PrintShippedLabel10cm"]</DropdownItem>
+                        </DropdownMenu>
+                    </Dropdown>
+                }
             }
             @if (SelectedTabName is PikachuResource.PrepareShipment)
             {
@@ -319,9 +313,9 @@
                     </Column>
                     <Column ColumnSize="ColumnSize.Is6">
                         <Div Class="d-flex w-100 align-items-center gap-1">
-                            <DateEdit id="startDate" KeyDown="@(e=>OnSearch())" @bind-Date="@StartDate" TValue="DateTime?" />
+                            <DateEdit Date="StartDate" DateChanged="(e) => OnDateChange(e, EndDate)" TValue="DateTime?" />
                             <Span>~</Span>
-                            <DateEdit KeyDown="(e=>OnSearch())" id="endDate" @bind-Date="@EndDate" TValue="DateTime?" />
+                            <DateEdit Date="EndDate" DateChanged="(e) => OnDateChange(StartDate, e)" TValue="DateTime?" />
                         </Div>
                     </Column>
                 </Row>
