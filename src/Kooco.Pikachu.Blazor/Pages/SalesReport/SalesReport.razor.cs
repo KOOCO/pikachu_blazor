@@ -70,6 +70,7 @@ public partial class SalesReport
     private async Task UnitChangedAsync(ReportCalculationUnits reportCalculationUnit)
     {
         Filters.ReportCalculationUnit = reportCalculationUnit;
+        await InvokeAsync(StateHasChanged);
         await GetSalesReportAsync();
     }
 
