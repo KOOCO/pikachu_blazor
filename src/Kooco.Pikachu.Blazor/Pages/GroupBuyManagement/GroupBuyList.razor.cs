@@ -225,10 +225,10 @@ public partial class GroupBuyList
         CreditCard =false;
         IsCashOnDelivery =false;
         BankTransfer = false;
+        await UpdateGroupBuyList();
         await InvokeAsync(StateHasChanged);
-
-
     }
+
     private async Task CopyAsync()
     {
 

@@ -26,15 +26,6 @@
             <h3>@L["GroupBuyList"]</h3>
         </div>
         <div class="col-8 text-end">
-            @*   <div class="d-inline-block">
-                <div class="input-group">
-                    <InputText class="form-control form-control-sm search-bar" @bind-Value="@SelectedAutoCompleteText" placeholder="@L["Search"]"></InputText>
-
-                    <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="OnSearch">
-                        <i class="fa fa-search"></i>
-                    </Button>
-                </div>
-            </div> *@
             <div class="custom-check-group me-1">
                 <input type="checkbox" class="form-check-input" checked="@IsAllSelected" @onchange="HandleSelectAllChange" />
                 <Label Class="form-label">@L["SelectAll"]</Label>
@@ -53,27 +44,31 @@
     </div>
     <Card>
         <CardBody>
-            <Div Class="input-group">
-                <InputText class="form-control" @bind-Value="@Filters.FilterText" placeholder="@L["Search"]"></InputText>
-                <Button Color="Color.Primary" Clicked="ApplyFilters">
-                    <Icon Class="fas fa-search"></Icon>
-                </Button>
-            </Div>
-            <Button Color="Color.Link" Clicked="AdvanceFiltersVisibleChangedAsync">
-                @L["AdvanceFilters"]
-                @if (AdvanceFiltersVisible)
-                {
-                    <Icon Class="fa-chevron-up ms-1"></Icon>
-                }
-                else
-                {
-                    <Icon Class="fa-chevron-down ms-1"></Icon>
-                }
-            </Button>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is10">
+                    <Addons>
+                        <Addon AddonType="AddonType.Body">
+                            <TextEdit @bind-Text="@Filters.FilterText" Style="border-radius: 0.5rem 0 0 0.5rem;" />
+                        </Addon>
+                        <Addon AddonType="AddonType.End">
+                            <Button Type="ButtonType.Button" Color="Color.Primary" Clicked="(e) => ApplyFilters()"
+                                    Style="border-radius: 0 0.5rem 0.5rem 0;">
+                                <Icon Name="IconName.Search"></Icon>
+                            </Button>
+                        </Addon>
+                    </Addons>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is2">
+                    <Button Class="btn-outline-primary w-100" Clicked="(() => AdvanceFiltersVisible = !AdvanceFiltersVisible)">
+                        @L["Filters"]
+                        <i class="fas @(AdvanceFiltersVisible ? "fa-angles-up" : "fa-angles-down") ms-1"></i>
+                    </Button>
+                </Column>
+            </Row>
             @{
                 var columnSize = ColumnSize.Is2.OnQuadHD.Is3.OnFullHD.Is4.OnDesktop.Is6.OnTablet.Is12;
             }
-            <Row VerticalGutter="10">
+            <Row VerticalGutter="10" Style="margin-top: 10px;">
                 @if (AdvanceFiltersVisible)
                 {
                     <Column ColumnSize="ColumnSize.Is12" Class="d-flex justify-content-end">
