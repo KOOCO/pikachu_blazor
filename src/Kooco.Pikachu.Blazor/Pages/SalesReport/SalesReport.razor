@@ -1,4 +1,5 @@
 ﻿@page "/sales-report"
+@using Kooco.Pikachu.Blazor.Helpers
 @using Kooco.Pikachu.GroupBuys
 @using Kooco.Pikachu.Reports
 @using Kooco.Pikachu.SalesReports
@@ -7,6 +8,7 @@
 @inherits PikachuComponentBase
 @inject ISalesReportAppService SalesReportAppService
 @inject IGroupBuyAppService GroupBuyAppService
+@inject ExcelDownloadHelper ExcelDownloadHelper
 
 <Div>
     <Row>
@@ -14,6 +16,11 @@
             <h3 class="text-dark">@L["SalesReport"]</h3>
         </Column>
         <Column ColumnSize="ColumnSize.Is6" TextAlignment="TextAlignment.End">
+            <PikachuButton Clicked="ExportAsync"
+                           Class="pk-btn-sm pk-btn-transparent mx-2">
+                <Icon Class="fa-file-excel"></Icon>
+                @L["Export"]
+            </PikachuButton>
             <PikachuButton Clicked="() => UnitChangedAsync(ReportCalculationUnits.Daily)"
                            Class="@("pk-btn-sm " + (Filters.ReportCalculationUnit == ReportCalculationUnits.Daily ? "pk-btn-primary" : "pk-btn-outline-primary"))"
                            Disabled="IsLoading">
