@@ -176,7 +176,7 @@ public partial class OrderDetails
 
     async Task GetOrderDetailsAsync()
     {
-        Order = await _orderAppService.GetWithDetailsAsync(OrderId);
+        Order = await _orderAppService.GetWithDetailsAsync(OrderId) ?? new();
 
         if (Order.DeliveryMethod is not DeliveryMethod.SelfPickup &&
             Order.DeliveryMethod is not DeliveryMethod.DeliveredByStore)

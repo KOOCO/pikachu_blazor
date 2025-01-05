@@ -53,6 +53,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         private DeliveryMethod? DeliveryMethod = null;
 
         private Guid? ExpandedOrderId = null;
+        private bool FiltersVisible { get; set; } = false;
         #endregion
 
         #region Methods
@@ -217,13 +218,31 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
 
         async Task OnSearch(Guid? e = null)
         {
-            if (e == Guid.Empty) GroupBuyFilter = null;
+            if (e == Guid.Empty)
+            {
+                GroupBuyFilter = null;
+            }
 
-            else GroupBuyFilter = e;
+            else
+            {
+                GroupBuyFilter = e;
+            }
+
+            SelectedGroupBuy = e;
 
             PageIndex = 0;
 
-            await UpdateItemList();
+            await LoadTabAsPerNameAsync("EnterpricePurchase");
+        }
+
+        async Task OnDateChange(DateTime? startDate, DateTime? endDate)
+        {
+            StartDate = startDate;
+            EndDate = endDate;
+
+            PageIndex = 0;
+
+            await LoadTabAsPerNameAsync("EnterpricePurchase");
         }
 
         void HandleSelectAllChange(ChangeEventArgs e)
@@ -240,7 +259,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         {
             await loading.Show();
 
-            var id = e.Item.Id;
+            var id = e.Item.OrderId;
             NavigationManager.NavigateTo($"Orders/OrderDetails/{id}");
 
             await loading.Hide();
