@@ -1001,13 +1001,16 @@ public partial class Order
 
             if (responseResults is { Count: > 0 })
             {
+                int i = 0;
                 foreach (Dictionary<string, string> response in responseResults)
                 {
                     if (wholeErrorMessage.IsNullOrEmpty())
-                        wholeErrorMessage = wholeErrorMessage.Insert(0, response.Keys.First() + " -> " + response.Values.First());
+                        wholeErrorMessage = wholeErrorMessage.Insert(i, response.Keys.First() + " -> " + response.Values.First()+"\n");
 
                     else
-                        wholeErrorMessage = wholeErrorMessage.Insert(wholeErrorMessage.Length + 1, Environment.NewLine + response.Keys.First() + " -> " + response.Values.First());
+                        wholeErrorMessage = wholeErrorMessage.Insert(i, Environment.NewLine + response.Keys.First() + " -> " + response.Values.First() + "\n");
+
+                    i++;
                 }
 
                 await loading.Hide();
