@@ -35,7 +35,7 @@ public class UserShoppingCredit : FullAuditedEntity<Guid>, IMultiTenant
         SetTransactionDescription(transactionDescription);
         SetAmount(amount);
         SetCurrentRemainingCredits(currentRemainingCredits);
-        SetExpirationDate(expirationDate);
+        ExpirationDate= expirationDate;
     }
 
     public UserShoppingCredit ChangeAmount(int amount)
@@ -80,7 +80,7 @@ public class UserShoppingCredit : FullAuditedEntity<Guid>, IMultiTenant
 
     private void SetExpirationDate(DateTime? expirationDate)
     {
-        if (expirationDate?.Date <= DateTime.Today)
+        if (expirationDate is not null && expirationDate?.Date <= DateTime.Today)
         {
             throw new ExpirationDateCannotBePastException();
         }
