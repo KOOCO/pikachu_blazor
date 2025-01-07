@@ -238,22 +238,26 @@ public partial class EditItem
     }
     async Task OnFileUploadAsync(FileChangedEventArgs e)
     {
-        if (e.Files.Length > MaxAllowedFilesPerUpload)
-        {
-            await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesExceedMaxAllowedPerUpload]);
-            await FilePickerCustom.Clear();
-            return;
-        }
-        if (UpdateItemDto.Images.Count > TotalMaxAllowedFiles)
-        {
-            await _uiMessageService.Error(L[PikachuDomainErrorCodes.AlreadyUploadMaxAllowedFiles]);
-            await FilePickerCustom.Clear();
-            return;
-        }
-        var count = 0;
+        if (e.Files != null && e.Files.Length == 0) return;
+
         try
         {
+            if (e.Files.Length > MaxAllowedFilesPerUpload)
+            {
+                await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesExceedMaxAllowedPerUpload]);
+                await FilePickerCustom.Clear();
+                return;
+            }
+            if (UpdateItemDto.Images.Count > TotalMaxAllowedFiles)
+            {
+                await _uiMessageService.Error(L[PikachuDomainErrorCodes.AlreadyUploadMaxAllowedFiles]);
+                await FilePickerCustom.Clear();
+                return;
+            }
+            var count = 0;
+
             await Loading.Show();
+            
             foreach (var file in e.Files)
             {
                 if (!ValidFileExtensions.Contains(Path.GetExtension(file.Name).ToLower()))
@@ -299,7 +303,6 @@ public partial class EditItem
                 finally
                 {
                     stream.Close();
-                    await Loading.Hide();
                 }
             }
             if (count > 0)
@@ -314,6 +317,8 @@ public partial class EditItem
         }
         finally
         {
+            await InvokeAsync(StateHasChanged);
+            await FilePickerCustom.Clear();
             await Loading.Hide();
         }
     }

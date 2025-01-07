@@ -119,22 +119,23 @@ public partial class CreateItem
 
     async Task OnFileUploadAsync(FileChangedEventArgs e)
     {
-        if (e.Files.Length > MaxAllowedFilesPerUpload)
-        {
-            await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesExceedMaxAllowedPerUpload]);
-            await FilePickerCustom.Clear();
-            return;
-        }
-        if (CreateItemDto.ItemImages.Count > TotalMaxAllowedFiles)
-        {
-            await _uiMessageService.Error(L[PikachuDomainErrorCodes.AlreadyUploadMaxAllowedFiles]);
-            await FilePickerCustom.Clear();
-            return;
-        }
-        var count = 0;
+        if (e.Files != null && e.Files.Length == 0) return;
+
         try
         {
-
+            if (e.Files.Length > MaxAllowedFilesPerUpload)
+            {
+                await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesExceedMaxAllowedPerUpload]);
+                await FilePickerCustom.Clear();
+                return;
+            }
+            if (CreateItemDto.ItemImages.Count > TotalMaxAllowedFiles)
+            {
+                await _uiMessageService.Error(L[PikachuDomainErrorCodes.AlreadyUploadMaxAllowedFiles]);
+                await FilePickerCustom.Clear();
+                return;
+            }
+            var count = 0;
             foreach (var file in e.Files)
             {
                 await Loading.Show();
@@ -175,19 +176,10 @@ public partial class CreateItem
                         ImageType = ImageType.Item,
                         SortNo = sortNo + 1
                     });
-
-
-                }
-                catch (Exception ex)
-                {
-                    await Loading.Hide();
-                    throw ex;
                 }
                 finally
                 {
                     stream.Close();
-
-                    //await Loading.Hide();
                 }
             }
             if (count > 0)
