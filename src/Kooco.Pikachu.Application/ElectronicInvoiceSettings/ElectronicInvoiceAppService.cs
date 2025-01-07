@@ -166,7 +166,7 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
                 order.InvoiceDate = jsonObj.InvoiceDate;
                 order.VoidUser = CurrentUser.Name;
               
-                await _orderRepository.UpdateAsync(order);
+                await _orderRepository.UpdateAsync(order,autoSave:true);
             }
             return "";
         }
