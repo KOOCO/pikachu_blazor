@@ -36,7 +36,7 @@ namespace Kooco.Pikachu.Blazor.Pages.DiscountCodes
         {
             CreateDiscountCode = new();
             Products = [];
-             Groupbuys = [];
+            Groupbuys = [];
             SelectedGroupBuy = [];
             SelectedProducts = [];
             SelectedShippings = [];
@@ -65,7 +65,8 @@ namespace Kooco.Pikachu.Blazor.Pages.DiscountCodes
                         {
                             SelectedDiscountType = "Amount";
                         }
-                        else {
+                        else
+                        {
 
                             SelectedDiscountType = "Percentage";
                         }
@@ -86,11 +87,8 @@ namespace Kooco.Pikachu.Blazor.Pages.DiscountCodes
         {
             messageStore?.Clear();
             IsUpdating = true;
-            if (CreateDiscountCode.GroupbuysScope == "AllGroupbuys")
-            {
-              
-            }
-            else
+            
+            if (CreateDiscountCode.GroupbuysScope != "AllGroupbuys")
             {
                 CreateDiscountCode.GroupbuyIds = SelectedGroupBuy.ToList();
                 if (CreateDiscountCode.GroupbuyIds.Count == 0)
@@ -100,11 +98,8 @@ namespace Kooco.Pikachu.Blazor.Pages.DiscountCodes
                     return;
                 }
             }
-            if (CreateDiscountCode.ShippingDiscountScope == "AllMethods")
-            {
             
-            }
-            else
+            if (CreateDiscountCode.DiscountMethod == "SpecificMethods" && CreateDiscountCode.ShippingDiscountScope != "AllMethods")
             {
                 CreateDiscountCode.SpecificShippingMethods = SelectedShippings.Cast<int>().ToList();
                 if (CreateDiscountCode.SpecificShippingMethods.Count == 0)
@@ -113,14 +108,9 @@ namespace Kooco.Pikachu.Blazor.Pages.DiscountCodes
                     IsUpdating = false;
                     return;
                 }
-
             }
-            // Custom validation logic
-            if (CreateDiscountCode.ProductsScope == "AllProducts")
-            {
-                
-            }
-            else
+            
+            if (CreateDiscountCode.ProductsScope != "AllProducts")
             {
                 CreateDiscountCode.ProductIds = SelectedProducts.ToList();
                 if (CreateDiscountCode.ProductIds.Count == 0)
@@ -130,25 +120,28 @@ namespace Kooco.Pikachu.Blazor.Pages.DiscountCodes
                     return;
                 }
             }
-            
-        
-          
 
-            if (await ValidationsRef.ValidateAll())
+            try
             {
-                if (Id == Guid.Empty)
+                if (await ValidationsRef.ValidateAll())
                 {
-                    await DiscountCodeAppService.CreateAsync(CreateDiscountCode);
+                    if (Id == Guid.Empty)
+                    {
+                        await DiscountCodeAppService.CreateAsync(CreateDiscountCode);
+                    }
+                    else
+                    {
+                        await DiscountCodeAppService.UpdateAsync(Id, CreateDiscountCode);
+                    }
+                    IsUpdating = false;
+                    NavigateToDiscountCodes();
                 }
-                else
-                {
-
-                    await DiscountCodeAppService.UpdateAsync(Id, CreateDiscountCode);
-                }
-                IsUpdating = false;
-                NavigateToDiscountCodes();
-        }
-        IsUpdating = false;
+            }
+            catch (Exception ex)
+            {
+                await HandleErrorAsync(ex);
+            }
+            IsUpdating = false;
         }
 
 
@@ -190,11 +183,11 @@ namespace Kooco.Pikachu.Blazor.Pages.DiscountCodes
         void NavigateToDiscountCodes()
         {
             NavigationManager.NavigateTo("/discount-code");
-        
+
         }
         private void SetAmountDiscount(bool check)
         {
-            if ( check)
+            if (check)
             {
                 CreateDiscountCode.DiscountPercentage = 0;
             }

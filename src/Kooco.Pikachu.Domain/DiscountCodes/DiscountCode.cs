@@ -69,7 +69,7 @@ namespace Kooco.Pikachu.DiscountCodes
             ProductsScope = productsScope;
             DiscountMethod = discountMethod;
             SetMinimumSpendAmount(minimumSpendAmount);
-            ShippingDiscountScope = shippingDiscountScope;
+            ShippingDiscountScope = shippingDiscountScope ?? "";
             //SpecificShippingMethods = specificShippingMethods;
             DiscountPercentage = discountPercentage;
             DiscountAmount = discountAmount;
@@ -114,7 +114,7 @@ namespace Kooco.Pikachu.DiscountCodes
 
         public void AddSpecificGroupbuys(List<Guid> groupbuyIds)
         {
-            if (groupbuyIds.Count > 0)
+            if (groupbuyIds != null && groupbuyIds.Count > 0)
             {
                 foreach (var id in groupbuyIds)
                 {
@@ -131,7 +131,7 @@ namespace Kooco.Pikachu.DiscountCodes
 
         public void AddSpecificProducts(List<Guid> productIds)
         {
-            if (productIds.Count > 0)
+            if (productIds != null && productIds.Count > 0)
             {
                 foreach (var id in productIds)
                 {

@@ -63,7 +63,7 @@ namespace Kooco.Pikachu.DiscountCodes
                 //specificShippingMethods.ToArray(),
                 discountPercentage,
                 discountAmount);
-            discount.SpecificShippingMethods = specificShippingMethods.ToArray();
+            discount.SpecificShippingMethods = specificShippingMethods?.ToArray() ?? [];
             // Add associated group buys and products
             discount.AddSpecificGroupbuys(groupbuyIds);
             discount.AddSpecificProducts(productIds);
