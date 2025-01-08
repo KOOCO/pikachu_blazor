@@ -38,7 +38,7 @@ public class ItemDetailsAppService : CrudAppService<ItemDetails, ItemDetailsDto,
     }
     public async Task<PagedResultDto<ItemDetailsDto>> GetInventroyReport(GetInventroyInputDto input)
     {
-        var count = await _repository.CountAsync(input.FilterText);
+        var count = await _repository.GetInventroyListCountAsync(input.FilterText);
         var items = await _repository.GetInventroyListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.FilterText);
         return new PagedResultDto<ItemDetailsDto>
         {

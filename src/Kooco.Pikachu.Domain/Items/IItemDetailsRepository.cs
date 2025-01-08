@@ -14,4 +14,5 @@ public interface IItemDetailsRepository : IRepository<ItemDetails, Guid>
     Task<List<ItemDetails>> GetListAsync(int skipCount, int maxResultCount, string? sorting, string? filter);
     Task<List<ItemDetails>> GetInventroyListAsync(int skipCount, int maxResultCount, string? sorting, string? filter);
     Task<List<ItemDetails>> GetWithItemId(Guid itemId);
+    Task<long> GetInventroyListCountAsync(string? filter);
 }
