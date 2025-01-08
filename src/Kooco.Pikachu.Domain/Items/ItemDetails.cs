@@ -80,7 +80,7 @@ namespace Kooco.Pikachu.Items
             LimitQuantity = limitQuantity;
             SellingPrice = sellingPrice;
             Cost = cost;
-            OpeningStock = openingStock;
+            StockOnHand = openingStock;
             SaleableQuantity = saleableQuantity;
             PreOrderableQuantity = preOrderableQuantity;
             SaleablePreOrderQuantity = saleablePreOrderQuantity;

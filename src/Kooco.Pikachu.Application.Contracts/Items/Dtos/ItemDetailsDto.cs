@@ -26,6 +26,7 @@ public class ItemDetailsDto : FullAuditedEntityDto<Guid>
     public string? ItemDescription { get; set; }
     public string? Image { get; set; }
     public bool Status { get; set; }
+    public float Cost { get; set; }
     /// <summary>
     /// 商品售價
     ///ItemSellingPrice

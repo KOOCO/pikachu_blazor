@@ -317,6 +317,7 @@ public class ItemAppService :
                     existing.SellingPrice = itemDetail.SellingPrice;
                     existing.SaleableQuantity = itemDetail.SaleableQuantity;
                     existing.StockOnHand = itemDetail.StockOnHand;
+                    existing.Cost = itemDetail.Cost;
                     existing.PreOrderableQuantity = itemDetail.PreOrderableQuantity;
                     existing.SaleablePreOrderQuantity = itemDetail.SaleablePreOrderQuantity;
                     existing.GroupBuyPrice = itemDetail.GroupBuyPrice;

@@ -146,7 +146,7 @@ namespace Kooco.Pikachu.Items
             IsReturnable = isReturnable;
             ShippingMethodId = shippingMethodId;
             TaxTypeId = taxTypeId;
-
+            
             CustomField1Value = customField1Value;
             CustomField1Name = customField1Name;
             CustomField2Value = customField2Value;
