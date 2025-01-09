@@ -76,7 +76,8 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             {
                 Sorting = Sorting,
                 MaxResultCount = PageSize,
-                SkipCount = skipCount
+                SkipCount = skipCount,
+                FilterText= FilterText,
             };
             var remoteStreamContent = await _itemDetailAppService.GetListAsExcelFileAsync(input);
             using (var responseStream = remoteStreamContent.GetStream())
