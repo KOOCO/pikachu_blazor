@@ -90,7 +90,7 @@
                         <DatePicker TValue="DateTime?" @bind-Date="Filters.EndTime" Size="Size.Small" />
                     </Column>
                     <Column ColumnSize="columnSize">
-                        <Label>@L["Status"]</Label>
+                        <Label>@L["Availability"]</Label>
                         <Select TValue="bool?" @bind-SelectedValue="Filters.IsGroupBuyAvaliable" Class="form-select form-select-sm">
                             <SelectItem TValue="bool?" Value="null"></SelectItem>
                             <SelectItem TValue="bool?" Value="true">@L["Active"]</SelectItem>

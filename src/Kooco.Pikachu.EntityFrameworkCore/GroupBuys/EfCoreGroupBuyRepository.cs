@@ -23,7 +23,7 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
         var query = ApplyFilter((await GetDbSetAsync()), filterText, groupBuyNo, status, groupBuyName, entryURL, entryURL2, subjectLine, shortName, logoURL, bannerURL, startTime, endTime, freeShipping,
             allowShipToOuterTaiwan, allowShipOversea, expectShippingDateFrom, expectShippingDateTo, moneyTransferValidDayBy, moneyTransferValidDays,
             issueInvoice, autoIssueTriplicateInvoice, invoiceNote, protectPrivacyData, inviteCode, profitShare, metaPixelNo, fBID, iGID, lineID, gAID, gTM,
-            warningMessage, orderContactInfo, exchangePolicy, notifyMessage, ExcludeShippingMethod ,PaymentMethod,IsInviteCode,IsEnterprise );
+            warningMessage, orderContactInfo, exchangePolicy, notifyMessage, ExcludeShippingMethod ,PaymentMethod,IsInviteCode, IsEnterprise,isGroupbuyAvailable);
         return await query.LongCountAsync(GetCancellationToken(cancellationToken));
     }
 
@@ -32,7 +32,7 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
         var query = ApplyFilter((await GetQueryableAsync()), filterText, groupBuyNo, status, groupBuyName, entryURL, entryURL2, subjectLine, shortName, logoURL, bannerURL, startTime, endTime, freeShipping,
             allowShipToOuterTaiwan, allowShipOversea, expectShippingDateFrom, expectShippingDateTo, moneyTransferValidDayBy, moneyTransferValidDays,
             issueInvoice, autoIssueTriplicateInvoice, invoiceNote, protectPrivacyData, inviteCode, profitShare, metaPixelNo, fBID, iGID, lineID, gAID, gTM,
-            warningMessage, orderContactInfo, exchangePolicy, notifyMessage, ExcludeShippingMethod, PaymentMethod, IsInviteCode, IsEnterprise);
+            warningMessage, orderContactInfo, exchangePolicy, notifyMessage, ExcludeShippingMethod, PaymentMethod, IsInviteCode, IsEnterprise,isGroupbuyAvailable);
 
         query = query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? GroupBuyConsts.GetDefaultSorting(false) : sorting).PageBy(skipCount, maxResultCount);
         var result= await query.Select(x=>new GroupBuyList { 
@@ -259,11 +259,15 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
                 .WhereIf(!string.IsNullOrWhiteSpace(ExcludeShippingMethod),e=>e.ExcludeShippingMethod.Contains(ExcludeShippingMethod))
                 .WhereIf(!string.IsNullOrWhiteSpace(PaymentMethod),e=>e.PaymentMethod.Contains(PaymentMethod))
                 .WhereIf(issueInvoice.HasValue,e=>e.IssueInvoice==issueInvoice)
+                .WhereIf(startTime.HasValue,e=>e.StartTime.Value.Date>=startTime.Value.Date)
+                .WhereIf(endTime.HasValue,e=>e.EndTime.Value.Date<=endTime.Value.Date)
+                .WhereIf(isGroupbuyAvailable.HasValue, e => e.IsGroupBuyAvaliable == isGroupbuyAvailable)
                 .WhereIf(IsEnterprise.HasValue,e=>e.IsEnterprise==IsEnterprise)
                 .WhereIf(freeShipping.HasValue,e=>e.FreeShipping==freeShipping)
                 .WhereIf(allowShipToOuterTaiwan.HasValue,e=>e.AllowShipToOuterTaiwan==allowShipToOuterTaiwan)
-                .WhereIf(isGroupbuyAvailable.HasValue,e=>e.IsGroupBuyAvaliable==isGroupbuyAvailable)
+                
                 .WhereIf(IsInviteCode.HasValue,e=>!string.IsNullOrWhiteSpace(e.InviteCode))
+             
 
         
                 .WhereIf(groupBuyNo.HasValue, e => e.GroupBuyNo == groupBuyNo);
