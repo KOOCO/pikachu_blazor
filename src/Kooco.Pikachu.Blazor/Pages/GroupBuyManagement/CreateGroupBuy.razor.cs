@@ -743,7 +743,8 @@ public partial class CreateGroupBuy
 
                         else if (imageType is ImageType.GroupBuyBannerImage)
                             indexInCarouselModules = BannerModules.FindIndex(module => module.Any(img => img.ModuleNumber == carouselModuleNumber));
-
+                        else if (imageType is ImageType.GroupBuyProductRankingCarousel)
+                            indexInCarouselModules = ProductRankingCarouselModules.FindIndex(img => img.ModuleNumber == carouselModuleNumber);
                         if (indexInCarouselModules >= 0)
                         {
                             // List<CreateImageDto> originalCarouselImages = CarouselModules[indexInCarouselModules];
@@ -755,6 +756,8 @@ public partial class CreateGroupBuy
 
                             else if (imageType is ImageType.GroupBuyBannerImage)
                                 originalCarouselImages = BannerModules[indexInCarouselModules];
+                            else if (imageType is ImageType.GroupBuyProductRankingCarousel)
+                                originalCarouselImages = ProductRankingCarouselModules[indexInCarouselModules].Images;
 
                             if (originalCarouselImages.Any(a => a.SortNo is 0))
                             {

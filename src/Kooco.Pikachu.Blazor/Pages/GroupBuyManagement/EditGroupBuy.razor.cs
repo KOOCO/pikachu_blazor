@@ -479,9 +479,9 @@ public partial class EditGroupBuy
                     module.Selected.Add(new()
                     {
                         Id = groupBuyItemGroup.Id,
-                        Item = groupBuyItemGroup.Item,
+                        Item = groupBuyItemGroup?.Item,
                         ItemType = groupBuyItemGroup.ItemType,
-                        Name = groupBuyItemGroup.Item.ItemName,
+                        Name = groupBuyItemGroup.Item!=null? groupBuyItemGroup.Item.ItemName:"",
                         SetItem = groupBuyItemGroup.SetItem
                     });
                 }
@@ -1331,6 +1331,8 @@ public partial class EditGroupBuy
 
                         else if (imageType is ImageType.GroupBuyBannerImage)
                             indexInCarouselModules = BannerModules.FindIndex(module => module.Any(img => img.ModuleNumber == carouselModuleNumber));
+                        else if (imageType is ImageType.GroupBuyProductRankingCarousel)
+                            indexInCarouselModules = ProductRankingCarouselModules.FindIndex(img => img.ModuleNumber == carouselModuleNumber);
 
                         if (indexInCarouselModules >= 0)
                         {
@@ -1343,7 +1345,8 @@ public partial class EditGroupBuy
 
                             else if (imageType is ImageType.GroupBuyBannerImage)
                                 originalCarouselImages = BannerModules[indexInCarouselModules];
-
+                            else if (imageType is ImageType.GroupBuyProductRankingCarousel)
+                                originalCarouselImages = ProductRankingCarouselModules[indexInCarouselModules].Images;
                             if (originalCarouselImages.Any(a => a.SortNo is 0))
                             {
                                 int index = originalCarouselImages.IndexOf(originalCarouselImages.First(f => f.SortNo == 0));
@@ -2358,12 +2361,13 @@ public partial class EditGroupBuy
                 {
                     foreach (CreateImageDto image in productRankingCarouselModule.Images)
                     {
-                        if (!productRankingCarouselModule.Images.Any(a => a.BlobImageName == image.BlobImageName))
+                        if (image.TargetId==Guid.Empty)
                         {
                             image.TargetId = result.Id;
 
                             await _imageAppService.CreateAsync(image);
                         }
+                      
                     }
 
                     if (productRankingCarouselModule.Id == Guid.Empty)
