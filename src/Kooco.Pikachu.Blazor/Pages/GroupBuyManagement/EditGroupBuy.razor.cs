@@ -1880,8 +1880,7 @@ public partial class EditGroupBuy
                     ExistingBannerImages = [.. ExistingBannerImages.Where(w => w.BlobImageName != blobImageName)];
                 }
 
-                else if (imageType is ImageType.GroupBuyProductRankingCarousel)
-                {
+               
                   else if (imageType is ImageType.GroupBuyProductRankingCarousel)
                     {
                         foreach (ProductRankingCarouselModule module in ProductRankingCarouselModules)
@@ -1889,7 +1888,7 @@ public partial class EditGroupBuy
                             module.Images.RemoveAll(r => r.BlobImageName == blobImageName);
                         }
                     }
-                }
+                
 
                 StateHasChanged();
                 await Loading.Hide();
