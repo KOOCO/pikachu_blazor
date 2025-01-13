@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using Volo.Abp.Application.Dtos;
 
@@ -12,4 +13,6 @@ public class GroupBuyProductRankingDto : AuditedEntityDto<Guid>
     public string SubTitle { get; set; }
     public string? Content { get; set; }
     public int? ModuleNumber { get; set; }
+  
+    public List<string> CarouselImages { get; set; }
 }

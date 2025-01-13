@@ -1882,7 +1882,13 @@ public partial class EditGroupBuy
 
                 else if (imageType is ImageType.GroupBuyProductRankingCarousel)
                 {
-
+                  else if (imageType is ImageType.GroupBuyProductRankingCarousel)
+                    {
+                        foreach (ProductRankingCarouselModule module in ProductRankingCarouselModules)
+                        {
+                            module.Images.RemoveAll(r => r.BlobImageName == blobImageName);
+                        }
+                    }
                 }
 
                 StateHasChanged();

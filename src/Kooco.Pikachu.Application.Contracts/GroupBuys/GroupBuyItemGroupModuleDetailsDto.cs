@@ -1,5 +1,6 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.GroupBuyOrderInstructions;
+using Kooco.Pikachu.GroupBuyProductRankings;
 using Kooco.Pikachu.GroupPurchaseOverviews;
 using Kooco.Pikachu.Response;
 using System;
@@ -25,6 +26,7 @@ public class GroupBuyItemGroupModuleDetailsDto
     public string? CarouselModuleStyle { get; set; }
     public List<string> BannerModulesImages { get; set; }
     public List<GroupPurchaseOverviewDto> GroupPurchaseOverviewModules { get; set; }
+    public GroupBuyProductRankingDto GroupBuyProductRankingModules { get; set; }
     public List<GroupBuyOrderInstructionDto> GetGroupBuyOrderInstructionModules { get; set; }
     public string? ConcurrencyStamp { get; set; }
 }

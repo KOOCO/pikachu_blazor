@@ -8,6 +8,8 @@ using Kooco.Pikachu.GroupBuyItemGroups;
 using Kooco.Pikachu.GroupBuyItemGroupsDetails;
 using Kooco.Pikachu.GroupBuyOrderInstructions;
 using Kooco.Pikachu.GroupBuyOrderInstructions.Interface;
+using Kooco.Pikachu.GroupBuyProductRankings;
+using Kooco.Pikachu.GroupBuyProductRankings.Interface;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.Groupbuys.Interface;
 using Kooco.Pikachu.GroupPurchaseOverviews;
@@ -58,6 +60,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     private readonly IGroupBuyOrderInstructionAppService _GroupBuyOrderInstructionAppService;
     private readonly IDeliveryTemperatureCostAppService _DeliveryTemperatureCostAppService;
     private readonly IImageAppService _ImageAppService;
+    private readonly IGroupBuyProductRankingAppService _groupBuyProductRankingAppService;
     #endregion
 
     #region Constructor
@@ -76,7 +79,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         IGroupPurchaseOverviewAppService GroupPurchaseOverviewAppService,
         IGroupBuyOrderInstructionAppService GroupBuyOrderInstructionAppService,
         IDeliveryTemperatureCostAppService DeliveryTemperatureCostAppService,
-        IImageAppService ImageAppService
+        IImageAppService ImageAppService,
+        IGroupBuyProductRankingAppService groupBuyProductRankingAppService
     )
     {
         _groupBuyManager = groupBuyManager;
@@ -94,6 +98,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         _GroupBuyOrderInstructionAppService = GroupBuyOrderInstructionAppService;
         _DeliveryTemperatureCostAppService = DeliveryTemperatureCostAppService;
         _ImageAppService = ImageAppService;
+        _groupBuyProductRankingAppService = groupBuyProductRankingAppService;
     }
     #endregion
 
@@ -650,8 +655,9 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
+            var moduless = await _groupBuyRepository.GetGroupBuyItemGroupBuyGroupBuyIdAsync(groupBuyId);
             List<GroupBuyItemGroupModuleDetailsDto> modules = ObjectMapper.Map<List<GroupBuyItemGroup>, List<GroupBuyItemGroupModuleDetailsDto>>(
-                await _groupBuyRepository.GetGroupBuyItemGroupBuyGroupBuyIdAsync(groupBuyId)
+                moduless
             );
 
             foreach (GroupBuyItemGroupModuleDetailsDto module in modules)
@@ -744,7 +750,18 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
                 module.GroupBuyModuleTypeName = module.GroupBuyModuleType.ToString();
 
-                if (module.GroupBuyModuleType is GroupBuyModuleType.CarouselImages)
+                if (module.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
+                {
+                    var productRanking = await _groupBuyProductRankingAppService.GetListByGroupBuyIdAsync(groupBuyId);
+                    module.GroupBuyProductRankingModules = new();
+                    module.GroupBuyProductRankingModules = productRanking.Where(x => x.ModuleNumber == module.ModuleNumber).FirstOrDefault();
+                    module.GroupBuyProductRankingModules.CarouselImages = (await _ImageAppService.GetGroupBuyImagesAsync(groupBuyId, ImageType.GroupBuyProductRankingCarousel)).Where(x => x.ModuleNumber == module.ModuleNumber).Select(x => x.ImageUrl).ToList();
+
+
+
+
+                }
+                    if (module.GroupBuyModuleType is GroupBuyModuleType.CarouselImages)
                 {
                     Tuple<List<string>, string?> tuple = await GetCarouselImagesModuleWiseAsync(groupBuyId, module.ModuleNumber!.Value);
 
