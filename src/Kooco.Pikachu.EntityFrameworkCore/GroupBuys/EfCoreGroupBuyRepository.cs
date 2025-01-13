@@ -259,8 +259,8 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
                 .WhereIf(!string.IsNullOrWhiteSpace(ExcludeShippingMethod),e=>e.ExcludeShippingMethod.Contains(ExcludeShippingMethod))
                 .WhereIf(!string.IsNullOrWhiteSpace(PaymentMethod),e=>e.PaymentMethod.Contains(PaymentMethod))
                 .WhereIf(issueInvoice.HasValue,e=>e.IssueInvoice==issueInvoice)
-                .WhereIf(startTime.HasValue,e=>e.StartTime.Value.Date>=startTime.Value.Date)
-                .WhereIf(endTime.HasValue,e=>e.EndTime.Value.Date<=endTime.Value.Date)
+                .WhereIf(startTime.HasValue || endTime.HasValue, e =>(!startTime.HasValue || e.EndTime.Value.Date >= startTime.Value.Date) &&
+                         (!endTime.HasValue || e.StartTime.Value.Date <= endTime.Value.Date))
                 .WhereIf(isGroupbuyAvailable.HasValue, e => e.IsGroupBuyAvaliable == isGroupbuyAvailable)
                 .WhereIf(IsEnterprise.HasValue,e=>e.IsEnterprise==IsEnterprise)
                 .WhereIf(freeShipping.HasValue,e=>e.FreeShipping==freeShipping)
