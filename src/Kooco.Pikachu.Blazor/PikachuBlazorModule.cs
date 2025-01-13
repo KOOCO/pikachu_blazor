@@ -11,8 +11,10 @@ using Kooco.Pikachu.Blazor.Menus;
 using Kooco.Pikachu.Blazor.OpenIddict;
 using Kooco.Pikachu.Blazor.Pages.TenantManagement;
 using Kooco.Pikachu.EntityFrameworkCore;
+using Kooco.Pikachu.Interfaces;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.MultiTenancy;
+using Kooco.Pikachu.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Extensions.DependencyInjection;
@@ -57,6 +59,8 @@ using Volo.Abp.TenantManagement.Blazor.Server;
 using Volo.Abp.UI.Navigation;
 using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.VirtualFileSystem;
+using Serilog;
+using Serilog.Events;
 
 namespace Kooco.Pikachu.Blazor;
 
@@ -214,7 +218,7 @@ public class PikachuBlazorModule : AbpModule
         File.WriteAllBytes(file, certificate.Export(X509ContentType.Pfx, password));
         return new X509Certificate2(file, password, X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.MachineKeySet);
     }
-
+ 
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         var hostingEnvironment = context.Services.GetHostingEnvironment();
@@ -232,7 +236,7 @@ public class PikachuBlazorModule : AbpModule
         ConfigureMenu(context);
         ConfigureSignalRHubOptions();
         ConfigureHangfire(context, configuration);
-
+        ConfigureLoggerService(context, configuration);
         if (!hostingEnvironment.IsDevelopment())
         {
             Configure<AbpTenantResolveOptions>(options =>
@@ -289,6 +293,46 @@ public class PikachuBlazorModule : AbpModule
     private void ConfigureAuthentication(ServiceConfigurationContext context)
     {
         context.Services.ForwardIdentityAuthenticationForBearer(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
+    }
+    private static void ConfigureLoggerService(ServiceConfigurationContext context, IConfiguration configuration)
+    {
+        var env = Environment.GetEnvironmentVariable("Environment");
+        if (env.IsNullOrWhiteSpace())
+        {
+            env = "Local";
+        }
+
+        var logConfig = new LoggerConfiguration()
+#if DEBUG
+            .MinimumLevel.Debug()
+#else
+            .MinimumLevel.Information()
+#endif
+            //.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+            .MinimumLevel.Override("Microsoft.AspNetCore.Authorization", LogEventLevel.Warning)
+            .MinimumLevel.Override("Microsoft.AspNetCore.Mvc.Infrastructure", LogEventLevel.Warning)
+            .MinimumLevel.Override("Microsoft.AspNetCore.Mvc.RazorPages", LogEventLevel.Warning)
+            .MinimumLevel.Override("Microsoft.AspNetCore.Routing", LogEventLevel.Warning)
+            .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
+            .Enrich.FromLogContext()
+            .Enrich.WithProperty("ApplicationName", $"{Globals.PikachuConsts.ApplicationName}-{env}")
+            .WriteTo.Async(c => c.File(
+                path: "Logs/log-.txt",
+                rollingInterval: RollingInterval.Day,
+                retainedFileCountLimit: 7,
+                fileSizeLimitBytes: 100 * 1024 * 1024,
+                shared: true))
+
+#if RELEASE
+            .WriteTo.Seq(configuration["SeqLog:ServerUrl"] ?? "", apiKey: configuration["SeqLog:ApiKey"])
+#endif
+        .WriteTo.Async(c => c.Console());
+
+        Serilog.Debugging.SelfLog.Enable(Console.Error);
+        Log.Logger = logConfig.CreateLogger();
+
+        context.Services.AddSingleton(Log.Logger);
+        context.Services.AddTransient(typeof(ILoggerService<>), typeof(SerilogService<>));
     }
 
     private void ConfigureUrls(IConfiguration configuration)
