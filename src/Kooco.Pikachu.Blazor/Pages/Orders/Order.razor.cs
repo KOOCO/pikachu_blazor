@@ -1291,16 +1291,29 @@ public partial class Order
         order.IsSelected = e;
 
         if (SelectedTabName is not "ToBeShipped") return;
+        var orderDeliveries = GetOrderDeliveries(order.OrderId);
+        if (order.IsSelected)
+        {
+            OrdersSelected.Add(order);
 
-        if (order.IsSelected) OrdersSelected.Add(order);
+            NormalCount = orderDeliveries.Any(a => a.Items.Any(ai => ai.DeliveryTemperature is ItemStorageTemperature.Normal)) ? NormalCount + 1 : NormalCount;
 
-        else OrdersSelected.Remove(order);
+            FreezeCount = orderDeliveries.Any(a => a.Items.Any(ai => ai.DeliveryTemperature is ItemStorageTemperature.Freeze)) ? FreezeCount + 1 : FreezeCount ;
 
-        NormalCount = OrdersSelected.Any(a => a.OrderItems.Any(ai => ai.DeliveryTemperature is ItemStorageTemperature.Normal)) ? NormalCount + 1 : NormalCount;
+            FrozenCount = orderDeliveries.Any(a => a.Items.Any(ai => ai.DeliveryTemperature is ItemStorageTemperature.Frozen)) ? FrozenCount + 1 : FrozenCount;
+        }
+        else
 
-        FreezeCount = OrdersSelected.Any(a => a.OrderItems.Any(ai => ai.DeliveryTemperature is ItemStorageTemperature.Freeze)) ? FreezeCount + 1 : FreezeCount;
+        {
+            OrdersSelected.Remove(order);
+            NormalCount = orderDeliveries.Any(a => a.Items.Any(ai => ai.DeliveryTemperature is ItemStorageTemperature.Normal)) ?  NormalCount - 1 : NormalCount;
+            FreezeCount = orderDeliveries.Any(a => a.Items.Any(ai => ai.DeliveryTemperature is ItemStorageTemperature.Freeze))?FreezeCount - 1 : FreezeCount;
+           FrozenCount= orderDeliveries.Any(a => a.Items.Any(ai => ai.DeliveryTemperature is ItemStorageTemperature.Frozen)) ?  FrozenCount - 1 : FrozenCount;
 
-        FrozenCount = OrdersSelected.Any(a => a.OrderItems.Any(ai => ai.DeliveryTemperature is ItemStorageTemperature.Frozen)) ? FrozenCount + 1 : FrozenCount;
+
+        }
+        
+     
     }
 
     async Task OnSearch(Guid? e = null)
