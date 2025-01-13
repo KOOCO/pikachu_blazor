@@ -1077,7 +1077,9 @@
     "Permission:SystemManagement": "系統管理",
     "Permission:PaymentManagement": "金流管理",
     "ItemCost": "成本",
-    "PleaseFillInTheRequiredInformation.": "Please Fill In The Required Information."
+    "PleaseFillInTheRequiredInformation.": "Please Fill In The Required Information.",
+    "PrintShippedLabel": "列印托運單",
+    "pieces": "件"
 
 
   }

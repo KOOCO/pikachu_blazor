@@ -257,7 +257,7 @@
         @if (SelectedTabName is PikachuResource.ToBeShipped)
         {
             <Div Class="col-12 text-lg-end">
-                <h5>Normal: @NormalCount piece(s) Freeze: @FreezeCount piece(s) Frozen: @FrozenCount piece(s)</h5>
+                <h5>@L["Normal"]: @NormalCount @L["pieces"], @L["Freeze"]: @FreezeCount @L["pieces"], @L["Frozen"]: @FrozenCount @L["pieces"]</h5>
             </Div>
         }
     </div>

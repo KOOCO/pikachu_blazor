@@ -337,7 +337,7 @@
     "CurrentStock": "Current Stock",
     "AvailableStock": "Available Stock",
     "AvailablePreorderQuantity": "Available Preorder Quantity",
-    "PrintShippedLabel": "Print Shipped Label",
+    "PrintShippedLabel": "Print Shipping Label",
     "GenerateDeliveryNumber": "Generate Delivery Number",
     "SelfPickupShipping": "Self Pickup Shipping",
     "PersonalDeliveryShipping": "Personal Delivery Shipping",
@@ -1113,6 +1113,7 @@
     "Pikachu:InvalidNumberOfLinks": "The minimum number of links is 1 and the maximum number of allowed links are {0}. Please review your input for links and try again.",
     "FooterSettingsUpdated": "Footer Settings Updated!",
     "TopbarStyleSettings": "Topbar Style Settings",
-    "SellableQuantity": "Sellable Quantity"
+    "SellableQuantity": "Sellable Quantity",
+    "pieces": "piece(s)"
   }
 }
