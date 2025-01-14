@@ -662,7 +662,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
             foreach (GroupBuyItemGroupModuleDetailsDto module in modules)
             {
-                if (module.GroupBuyModuleType is GroupBuyModuleType.ProductGroupModule)
+                if (module.GroupBuyModuleType is GroupBuyModuleType.ProductGroupModule|| module.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
                 {
                     foreach (GroupBuyItemGroupDetailsDto itemDetail in module.ItemGroupDetails)
                     {
