@@ -1885,7 +1885,13 @@ public partial class EditGroupBuy
                     {
                         foreach (ProductRankingCarouselModule module in ProductRankingCarouselModules)
                         {
+                        var image = module.Images.Where(x => x.BlobImageName == blobImageName).FirstOrDefault();
+                            await _imageAppService.DeleteAsync(image.Id);
+
+                        
                             module.Images.RemoveAll(r => r.BlobImageName == blobImageName);
+                        
+                       
                         }
                     }
                 
