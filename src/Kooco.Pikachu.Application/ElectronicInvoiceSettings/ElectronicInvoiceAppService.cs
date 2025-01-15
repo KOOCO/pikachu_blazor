@@ -64,7 +64,7 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
         using (_dataFilter.Disable<IMultiTenant>())
         {
             ElectronicInvoiceSetting? setting = await _repository.FirstOrDefaultAsync();
-            Order order = new Order();
+            //Order order = new Order();
 
             order = await _orderRepository.GetWithDetailsAsync(orderId);
 
