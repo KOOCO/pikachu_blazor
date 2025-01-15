@@ -250,11 +250,13 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
                     order.ShippingStatus = ShippingStatus.ToBeShipped;
 
-                    await _orderRepository.UpdateAsync(order);
-                    await _deliveryRepository.UpdateAsync(orderDelivery);
+                    await _orderRepository.UpdateAsync(order,true);
+                    await _deliveryRepository.UpdateAsync(orderDelivery,true);
+                    await UnitOfWorkManager.Current.SaveChangesAsync();
                     var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
                     if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
                     {
+                        order = await _orderRepository.GetWithDetailsAsync(orderId);
                         if (order.GroupBuy.IssueInvoice)
                         {
                             order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
@@ -281,7 +283,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 Logger.LogException(e);
                 if (result.ResponseCode is "1")
                 {
-                    order = await _orderRepository.GetWithDetailsAsync(orderId);
+                   
 
                      orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
 
@@ -296,15 +298,16 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                         deliveryMethod is not null)
                         orderDelivery.ActualDeliveryMethod = deliveryMethod;
 
-                    await _deliveryRepository.UpdateAsync(orderDelivery);
+                    await _deliveryRepository.UpdateAsync(orderDelivery,true);
 
                     order.ShippingStatus = ShippingStatus.ToBeShipped;
 
-                    await _orderRepository.UpdateAsync(order);
-
+                    await _orderRepository.UpdateAsync(order,true);
+                    await UnitOfWorkManager.Current.SaveChangesAsync();
                     var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
                     if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
                     {
+                        order = await _orderRepository.GetWithDetailsAsync(orderId);
                         if (order.GroupBuy.IssueInvoice)
                         {
                             order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
