@@ -782,8 +782,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             };
         }
 
-        if (order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment)
-            isCollection = "Y";
+        //if (order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment)
+        //    isCollection = "Y";
 
         string isDeclare = TCatLogistics.DeclaredValue &&
                            IsOrderAmountValid(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost) ? "Y" : "N";
