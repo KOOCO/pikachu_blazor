@@ -66,7 +66,7 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
             ElectronicInvoiceSetting? setting = await _repository.FirstOrDefaultAsync();
             //Order order = new Order();
 
-            order = await _orderRepository.GetWithDetailsAsync(orderId);
+            var order = await _orderRepository.GetWithDetailsAsync(orderId);
 
             if (!order.InvoiceNumber.IsNullOrEmpty()) return"";
 
