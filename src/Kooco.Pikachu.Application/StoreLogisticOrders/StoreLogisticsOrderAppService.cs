@@ -273,7 +273,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                         }
                     }
 
-                    await SendEmailAsync(orderId, orderDelivery.DeliveryNo);
+                   // await SendEmailAsync(orderId, orderDelivery.DeliveryNo);
                 }
             }
             catch (DBConcurrencyException e)
@@ -323,7 +323,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                         }
                     }
 
-                    await SendEmailAsync(orderId, orderDelivery.DeliveryNo);
+                    //await SendEmailAsync(orderId, orderDelivery.DeliveryNo);
                 }
 
             }
