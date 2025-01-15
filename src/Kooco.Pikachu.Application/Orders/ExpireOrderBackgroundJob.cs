@@ -13,7 +13,7 @@ namespace Kooco.Pikachu.Orders
 	{
 		public override async Task ExecuteAsync(ExpireOrderBackgroundJobArgs args)
 		{
-			await orderAppService.ExchangeOrderAsync(args.OrderId);
+			await orderAppService.ExpireOrderAsync(args.OrderId);
 		}
 	}
 }
