@@ -857,15 +857,15 @@
     "Item": "品項",
     "Image": "圖片",
     "Remove": "移除",
-   
-    "Info": "提醒您",
-   
 
-   
+    "Info": "提醒您",
+
+
+
     "GroupbuysScope": "團購範圍",
-    
+
     "RefundsList": "退款列表",
-   
+
     "T-Cat": "黑貓",
     "CashOnly": "只收現金",
     "CardAndMobilePaymentsAccepted": "接受刷卡和行動支付",
@@ -875,9 +875,9 @@
 
 
 
-   
+
     "PrintShippedLabel": "列印托運單",
-  
+
     "ReportNotification": "自動發送報表",
 
     "RedeemedPoints": "兌換點數",
@@ -1114,15 +1114,15 @@
     "CustomerServiceContactPhone": "客服聯絡電話",
     "Menu:SalesReport": "銷售報表",
     "SalesReport": "銷售報表",
-    "GrossSales": "總銷售額",
-    "NetSales": "淨銷售額",
+    "GrossSales": "銷售總額",
+    "NetSales": "銷售淨額",
     "Discount": "折扣",
-    "NumberOfOrders": "訂單數",
+    "NumberOfOrders": "訂單數量",
     "AverageOrderValue": "平均訂單金額",
-    "CostOfGoodsSold": "銷貨成本",
-    "ShippingCost": "運費",
-    "GrossProfit": "總利潤",
-    "GrossProfitMargin": "總利潤率",
+    "CostOfGoodsSold": "銷售成本",
+    "ShippingCost": "運輸成本",
+    "GrossProfit": "毛利",
+    "GrossProfitMargin": "毛利率",
     "AdvanceFilters": "進階篩選",
     "Menu:WebsiteBasicSettings": "網站基本設定",
     "WebsiteBasicSettings": "網站基本設定",
@@ -1195,6 +1195,8 @@
     "FooterSettingsUpdated": "底部欄設定已更新!",
     "TopbarStyleSettings": "頂部欄樣式設定",
     "SellableQuantity": "可售數量",
-    "pieces": "件"
+    "pieces": "件",
+    "Monthly": "每月",
+    "GroupBuy": "團購名稱"
   }
 }

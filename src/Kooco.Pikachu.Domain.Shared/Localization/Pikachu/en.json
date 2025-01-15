@@ -1114,6 +1114,7 @@
     "FooterSettingsUpdated": "Footer Settings Updated!",
     "TopbarStyleSettings": "Topbar Style Settings",
     "SellableQuantity": "Sellable Quantity",
-    "pieces": "piece(s)"
+    "pieces": "piece(s)",
+    "GroupBuy": "Group Buy"
   }
 }

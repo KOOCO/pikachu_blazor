@@ -26,6 +26,7 @@ using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.PikachuAccounts;
 using Kooco.Pikachu.ProductCategories;
 using Kooco.Pikachu.Refunds;
+using Kooco.Pikachu.SalesReports;
 using Kooco.Pikachu.ShopCarts;
 using Kooco.Pikachu.ShoppingCredits;
 using Kooco.Pikachu.StoreComments;
@@ -323,5 +324,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<CategoryProductDto, CreateUpdateCategoryProductDto>();
         CreateMap<CategoryProductDto, CreateUpdateItemCategoryDto>()
             .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ProductCategoryFirstImageUrl));
+
+        CreateMap<SalesReportModel, SalesReportDto>();
     }
 }

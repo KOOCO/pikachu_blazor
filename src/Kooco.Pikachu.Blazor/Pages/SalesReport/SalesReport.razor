@@ -17,7 +17,8 @@
         </Column>
         <Column ColumnSize="ColumnSize.Is6" TextAlignment="TextAlignment.End">
             <PikachuButton Clicked="ExportAsync"
-                           Class="pk-btn-sm pk-btn-transparent mx-2">
+                           Class="pk-btn-sm pk-btn-transparent mx-2"
+                           Disabled="IsLoading">
                 <Icon Class="fa-file-excel"></Icon>
                 @L["Export"]
             </PikachuButton>
@@ -117,7 +118,7 @@
                             <TableRowCell>@(r.CostOfGoodsSold > 0 ? r.CostOfGoodsSold.ToString("N0") : "-")</TableRowCell>
                             <TableRowCell>@(r.ShippingCost > 0 ? r.ShippingCost.ToString("N0") : "-")</TableRowCell>
                             <TableRowCell>@(r.GrossProfit > 0 ? r.GrossProfit.ToString("N0") : "-")</TableRowCell>
-                            <TableRowCell>@(r.GrossProfitMargin > 0 ? r.GrossProfitMargin.ToString("N3") : "-")</TableRowCell>
+                            <TableRowCell>@(r.GrossProfitMargin > 0 ? r.GrossProfitMargin.ToString("N2") + "%" : "-")</TableRowCell>
                         </TableRow>
                         @if (r.ShowDetails)
                         {
@@ -138,7 +139,7 @@
                                     <TableRowCell>@(detail.CostOfGoodsSold > 0 ? detail.CostOfGoodsSold.ToString("N0") : "-")</TableRowCell>
                                     <TableRowCell>@(detail.ShippingCost > 0 ? detail.ShippingCost.ToString("N0") : "-")</TableRowCell>
                                     <TableRowCell>@(detail.GrossProfit > 0 ? detail.GrossProfit.ToString("N0") : "-")</TableRowCell>
-                                    <TableRowCell>@(detail.GrossProfitMargin > 0 ? detail.GrossProfitMargin.ToString("N3") : "-")</TableRowCell>
+                                    <TableRowCell>@(detail.GrossProfitMargin > 0 ? detail.GrossProfitMargin.ToString("N2") + "%" : "-")</TableRowCell>
                                 </TableRow>
                             }
                         }
