@@ -233,9 +233,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             {
                 if (result.ResponseCode is "1")
                 {
-                    order = await _orderRepository.GetWithDetailsAsync(orderId);
 
-                    orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
+                    //orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
 
                     orderDelivery = orderDeliverys.FirstOrDefault(f => f.Id == orderDeliveryId);
                     orderDelivery.DeliveryNo = result.ShippingInfo.BookingNote;
@@ -248,41 +247,35 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                         deliveryMethod is not null)
                         orderDelivery.ActualDeliveryMethod = deliveryMethod;
 
-                    
 
-                    order.ShippingStatus = ShippingStatus.ToBeShipped;
+                    await _deliveryRepository.UpdateAsync(orderDelivery);
 
-                    using (var newUnitOfWork = UnitOfWorkManager.Begin(requiresNew: true))
-                    {
-                        await _deliveryRepository.UpdateAsync(orderDelivery, true);
-
+                    //order = await _orderRepository.GetAsync(orderId);
+                    //order.ShippingStatus = ShippingStatus.ToBeShipped;
+                    //await _orderRepository.UpdateAsync(order);
 
 
-                        await _orderRepository.UpdateAsync(order, true);
-                        await newUnitOfWork.SaveChangesAsync();
-                        await newUnitOfWork.CompleteAsync();
-                    }
-                    var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
-                    if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
-                    {
-                        order = await _orderRepository.GetWithDetailsAsync(orderId);
-                        if (order.GroupBuy.IssueInvoice)
-                        {
-                            order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
-                            //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
-                            var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
-                            if (invoiceDely == 0)
-                            {
-                                await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
-                            }
-                            else
-                            {
-                                var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
-                                GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
-                                var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
-                            }
-                        }
-                    }
+                    //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                    //if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
+                    //{
+                    //    order = await _orderRepository.GetWithDetailsAsync(orderId);
+                    //    if (order.GroupBuy.IssueInvoice)
+                    //    {
+                    //        order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
+                    //        //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                    //        var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
+                    //        if (invoiceDely == 0)
+                    //        {
+                    //            await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+                    //        }
+                    //        else
+                    //        {
+                    //            var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
+                    //            GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
+                    //            var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                    //        }
+                    //    }
+                    //}
 
                     await SendEmailAsync(orderId, orderDelivery.DeliveryNo);
                 }
@@ -292,11 +285,11 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 Logger.LogException(e);
                 if (result.ResponseCode is "1")
                 {
-                   
 
-                     orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
 
-                  orderDelivery = orderDeliverys.FirstOrDefault(f => f.Id == orderDeliveryId);
+                    orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
+
+                    orderDelivery = orderDeliverys.FirstOrDefault(f => f.Id == orderDeliveryId);
                     orderDelivery.DeliveryNo = result.ShippingInfo.BookingNote;
 
                     orderDelivery.AllPayLogisticsID = result.ShippingInfo.AllPayLogisticsID;
@@ -973,7 +966,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             orderDeliveries = await _deliveryRepository.GetWithDetailsAsync(orderId);
 
-             orderDelivery = orderDeliveries.First(f => f.Id == orderDeliveryId);
+            orderDelivery = orderDeliveries.First(f => f.Id == orderDeliveryId);
             orderDelivery.SrvTranId = printObtResponse.SrvTranId;
             orderDelivery.FileNo = printObtResponse.Data.FileNo;
             orderDelivery.AllPayLogisticsID = printObtResponse.SrvTranId;
@@ -987,7 +980,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                     deliveryMethod is not null)
                 orderDelivery.ActualDeliveryMethod = deliveryMethod;
 
-           
+
 
             order.ShippingStatus = ShippingStatus.ToBeShipped;
             await _deliveryRepository.UpdateAsync(orderDelivery);
@@ -1153,7 +1146,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         {
             order = await _orderRepository.GetWithDetailsAsync(orderId);
 
-             orderDeliveries = await _deliveryRepository.GetWithDetailsAsync(orderId);
+            orderDeliveries = await _deliveryRepository.GetWithDetailsAsync(orderId);
 
             orderDelivery = orderDeliveries.First(f => f.Id == orderDeliveryId);
             orderDelivery.SrvTranId = printObtB2SResponse.SrvTranId;
@@ -1538,9 +1531,9 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             {
                 order = await _orderRepository.GetWithDetailsAsync(orderId);
 
-               orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
+                orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
 
-                 orderDelivery = orderDeliverys.Where(x => x.Id == orderDeliveryId).FirstOrDefault();
+                orderDelivery = orderDeliverys.Where(x => x.Id == orderDeliveryId).FirstOrDefault();
 
                 orderDelivery.DeliveryNo = result.ShippingInfo.BookingNote;
 
