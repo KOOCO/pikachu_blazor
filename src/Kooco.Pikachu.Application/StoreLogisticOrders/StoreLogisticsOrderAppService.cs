@@ -16,6 +16,7 @@ using Newtonsoft.Json;
 using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -846,46 +847,97 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         if (printObtResponse is null || printObtResponse.Data is null) return printObtResponse;
 
-        orderDelivery.SrvTranId = printObtResponse.SrvTranId;
-        orderDelivery.FileNo = printObtResponse.Data.FileNo;
-        orderDelivery.AllPayLogisticsID = printObtResponse.SrvTranId;
-        orderDelivery.LastModificationTime = DateTime.ParseExact(printObtResponse.Data.PrintDateTime,
-                                                                 "yyyyMMddHHmmss",
-                                                                 System.Globalization.CultureInfo.InvariantCulture);
-        orderDelivery.DeliveryNo = printObtResponse.Data.Orders.First().OBTNumber;
-        orderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
-
-        if (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore &&
-                deliveryMethod is not null)
-            orderDelivery.ActualDeliveryMethod = deliveryMethod;
-
-        await _deliveryRepository.UpdateAsync(orderDelivery);
-
-        order.ShippingStatus = ShippingStatus.ToBeShipped;
-
-        await _orderRepository.UpdateAsync(order);
-        var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
-        if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
+        try
         {
-            if (order.GroupBuy.IssueInvoice)
+            orderDelivery.SrvTranId = printObtResponse.SrvTranId;
+            orderDelivery.FileNo = printObtResponse.Data.FileNo;
+            orderDelivery.AllPayLogisticsID = printObtResponse.SrvTranId;
+            orderDelivery.LastModificationTime = DateTime.ParseExact(printObtResponse.Data.PrintDateTime,
+                                                                     "yyyyMMddHHmmss",
+                                                                     System.Globalization.CultureInfo.InvariantCulture);
+            orderDelivery.DeliveryNo = printObtResponse.Data.Orders.First().OBTNumber;
+            orderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
+
+            if (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore &&
+                    deliveryMethod is not null)
+                orderDelivery.ActualDeliveryMethod = deliveryMethod;
+
+            await _deliveryRepository.UpdateAsync(orderDelivery);
+
+            order.ShippingStatus = ShippingStatus.ToBeShipped;
+
+            await _orderRepository.UpdateAsync(order);
+            var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+            if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
             {
-                order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
-                //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
-                var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
-                if (invoiceDely == 0)
+                if (order.GroupBuy.IssueInvoice)
                 {
-                    await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
-                }
-                else
-                {
-                    var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
-                    GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
-                    var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                    order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
+                    //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                    var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
+                    if (invoiceDely == 0)
+                    {
+                        await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+                    }
+                    else
+                    {
+                        var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
+                        GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
+                        var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                    }
                 }
             }
-        }
 
-        await SendEmailAsync(orderId, orderDelivery.DeliveryNo);
+            await SendEmailAsync(orderId, orderDelivery.DeliveryNo);
+        }
+        catch (DBConcurrencyException e)
+        {
+            order = await _orderRepository.GetWithDetailsAsync(orderId);
+
+            orderDeliveries = await _deliveryRepository.GetWithDetailsAsync(orderId);
+
+             orderDelivery = orderDeliveries.First(f => f.Id == orderDeliveryId);
+            orderDelivery.SrvTranId = printObtResponse.SrvTranId;
+            orderDelivery.FileNo = printObtResponse.Data.FileNo;
+            orderDelivery.AllPayLogisticsID = printObtResponse.SrvTranId;
+            orderDelivery.LastModificationTime = DateTime.ParseExact(printObtResponse.Data.PrintDateTime,
+                                                                     "yyyyMMddHHmmss",
+                                                                     System.Globalization.CultureInfo.InvariantCulture);
+            orderDelivery.DeliveryNo = printObtResponse.Data.Orders.First().OBTNumber;
+            orderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
+
+            if (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore &&
+                    deliveryMethod is not null)
+                orderDelivery.ActualDeliveryMethod = deliveryMethod;
+
+           
+
+            order.ShippingStatus = ShippingStatus.ToBeShipped;
+            await _deliveryRepository.UpdateAsync(orderDelivery);
+            await _orderRepository.UpdateAsync(order);
+            var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+            if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
+            {
+                if (order.GroupBuy.IssueInvoice)
+                {
+                    order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
+                    //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                    var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
+                    if (invoiceDely == 0)
+                    {
+                        await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+                    }
+                    else
+                    {
+                        var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
+                        GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
+                        var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                    }
+                }
+            }
+
+            await SendEmailAsync(orderId, orderDelivery.DeliveryNo);
+        }
 
         return printObtResponse;
     }
@@ -977,46 +1029,97 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         if (printObtB2SResponse is null || printObtB2SResponse.Data is null) return printObtB2SResponse;
 
-        orderDelivery.SrvTranId = printObtB2SResponse.SrvTranId;
-        orderDelivery.FileNo = printObtB2SResponse.Data.FileNo;
-        orderDelivery.AllPayLogisticsID = printObtB2SResponse.Data.Orders.First().OBTNumber;
-        orderDelivery.LastModificationTime = DateTime.ParseExact(printObtB2SResponse.Data.PrintDateTime,
-                                                                 "yyyyMMddHHmmss",
-                                                                 System.Globalization.CultureInfo.InvariantCulture);
-        orderDelivery.DeliveryNo = printObtB2SResponse.Data.Orders.First().DeliveryId;
-        orderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
-
-        if (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore &&
-                deliveryMethod is not null)
-            orderDelivery.ActualDeliveryMethod = deliveryMethod;
-
-        await _deliveryRepository.UpdateAsync(orderDelivery);
-
-        order.ShippingStatus = ShippingStatus.ToBeShipped;
-
-        await _orderRepository.UpdateAsync(order);
-        var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
-        if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
+        try
         {
-            if (order.GroupBuy.IssueInvoice)
+            orderDelivery.SrvTranId = printObtB2SResponse.SrvTranId;
+            orderDelivery.FileNo = printObtB2SResponse.Data.FileNo;
+            orderDelivery.AllPayLogisticsID = printObtB2SResponse.Data.Orders.First().OBTNumber;
+            orderDelivery.LastModificationTime = DateTime.ParseExact(printObtB2SResponse.Data.PrintDateTime,
+                                                                     "yyyyMMddHHmmss",
+                                                                     System.Globalization.CultureInfo.InvariantCulture);
+            orderDelivery.DeliveryNo = printObtB2SResponse.Data.Orders.First().DeliveryId;
+            orderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
+
+            if (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore &&
+                    deliveryMethod is not null)
+                orderDelivery.ActualDeliveryMethod = deliveryMethod;
+
+            await _deliveryRepository.UpdateAsync(orderDelivery);
+
+            order.ShippingStatus = ShippingStatus.ToBeShipped;
+
+            await _orderRepository.UpdateAsync(order);
+            var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+            if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
             {
-                order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
-                //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
-                var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
-                if (invoiceDely == 0)
+                if (order.GroupBuy.IssueInvoice)
                 {
-                    await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
-                }
-                else
-                {
-                    var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
-                    GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
-                    var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                    order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
+                    //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                    var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
+                    if (invoiceDely == 0)
+                    {
+                        await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+                    }
+                    else
+                    {
+                        var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
+                        GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
+                        var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                    }
                 }
             }
-        }
 
-        await SendEmailAsync(orderId, orderDelivery.DeliveryNo);
+            await SendEmailAsync(orderId, orderDelivery.DeliveryNo);
+        }
+        catch (DBConcurrencyException e)
+        {
+            order = await _orderRepository.GetWithDetailsAsync(orderId);
+
+             orderDeliveries = await _deliveryRepository.GetWithDetailsAsync(orderId);
+
+            orderDelivery = orderDeliveries.First(f => f.Id == orderDeliveryId);
+            orderDelivery.SrvTranId = printObtB2SResponse.SrvTranId;
+            orderDelivery.FileNo = printObtB2SResponse.Data.FileNo;
+            orderDelivery.AllPayLogisticsID = printObtB2SResponse.Data.Orders.First().OBTNumber;
+            orderDelivery.LastModificationTime = DateTime.ParseExact(printObtB2SResponse.Data.PrintDateTime,
+                                                                     "yyyyMMddHHmmss",
+                                                                     System.Globalization.CultureInfo.InvariantCulture);
+            orderDelivery.DeliveryNo = printObtB2SResponse.Data.Orders.First().DeliveryId;
+            orderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
+
+            if (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore &&
+                    deliveryMethod is not null)
+                orderDelivery.ActualDeliveryMethod = deliveryMethod;
+
+            await _deliveryRepository.UpdateAsync(orderDelivery);
+
+            order.ShippingStatus = ShippingStatus.ToBeShipped;
+
+            await _orderRepository.UpdateAsync(order);
+            var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+            if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
+            {
+                if (order.GroupBuy.IssueInvoice)
+                {
+                    order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
+                    //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                    var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
+                    if (invoiceDely == 0)
+                    {
+                        await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+                    }
+                    else
+                    {
+                        var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
+                        GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
+                        var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                    }
+                }
+            }
+
+            await SendEmailAsync(orderId, orderDelivery.DeliveryNo);
+        }
 
         return printObtB2SResponse;
     }
@@ -1286,69 +1389,144 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         RestResponse response = await client.ExecuteAsync(request);
 
         result = ParseApiResponse(response.Content?.ToString());
-
-        if (result.ResponseCode is "1")
+        try
         {
-            orderDelivery.DeliveryNo = result.ShippingInfo.BookingNote;
-
-            if (order.DeliveryMethod is DeliveryMethod.SevenToEleven1 ||
-                order.DeliveryMethod is DeliveryMethod.FamilyMart1 ||
-                order.DeliveryMethod is DeliveryMethod.SevenToElevenFrozen ||
-                deliveryMethod is DeliveryMethod.FamilyMart1 ||
-                deliveryMethod is DeliveryMethod.SevenToEleven1 ||
-                deliveryMethod is DeliveryMethod.SevenToElevenFrozen)
+            if (result.ResponseCode is "1")
             {
-                string strResponse = await GenerateShipmentForB2C(result);
+                orderDelivery.DeliveryNo = result.ShippingInfo.BookingNote;
 
-                ResponseResultDto responseResultDto = ParseApiResponse(strResponse, true);
-
-                orderDelivery.DeliveryNo = responseResultDto.ShippingInfo.ShipmentNo;
-            }
-
-            if (order.DeliveryMethod is DeliveryMethod.FamilyMartC2C ||
-                deliveryMethod is DeliveryMethod.FamilyMartC2C)
-                orderDelivery.DeliveryNo = result.ShippingInfo.CVSPaymentNo;
-
-            if (order.DeliveryMethod is DeliveryMethod.SevenToElevenC2C ||
-                deliveryMethod is DeliveryMethod.SevenToElevenC2C)
-                orderDelivery.DeliveryNo = string.Concat(result.ShippingInfo.CVSPaymentNo, result.ShippingInfo.CVSValidationNo);
-
-            orderDelivery.AllPayLogisticsID = result.ShippingInfo.AllPayLogisticsID;
-
-            orderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
-
-            if (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore &&
-                deliveryMethod is not null)
-                orderDelivery.ActualDeliveryMethod = deliveryMethod;
-
-            await _deliveryRepository.UpdateAsync(orderDelivery);
-
-            order.ShippingStatus = ShippingStatus.ToBeShipped;
-
-            await _orderRepository.UpdateAsync(order);
-
-            var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
-            if (invoiceSetting is not null && invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
-            {
-                if (order.GroupBuy.IssueInvoice)
+                if (order.DeliveryMethod is DeliveryMethod.SevenToEleven1 ||
+                    order.DeliveryMethod is DeliveryMethod.FamilyMart1 ||
+                    order.DeliveryMethod is DeliveryMethod.SevenToElevenFrozen ||
+                    deliveryMethod is DeliveryMethod.FamilyMart1 ||
+                    deliveryMethod is DeliveryMethod.SevenToEleven1 ||
+                    deliveryMethod is DeliveryMethod.SevenToElevenFrozen)
                 {
-                    order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
-                    //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
-                    var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
-                    if (invoiceDely == 0)
+                    string strResponse = await GenerateShipmentForB2C(result);
+
+                    ResponseResultDto responseResultDto = ParseApiResponse(strResponse, true);
+
+                    orderDelivery.DeliveryNo = responseResultDto.ShippingInfo.ShipmentNo;
+                }
+
+                if (order.DeliveryMethod is DeliveryMethod.FamilyMartC2C ||
+                    deliveryMethod is DeliveryMethod.FamilyMartC2C)
+                    orderDelivery.DeliveryNo = result.ShippingInfo.CVSPaymentNo;
+
+                if (order.DeliveryMethod is DeliveryMethod.SevenToElevenC2C ||
+                    deliveryMethod is DeliveryMethod.SevenToElevenC2C)
+                    orderDelivery.DeliveryNo = string.Concat(result.ShippingInfo.CVSPaymentNo, result.ShippingInfo.CVSValidationNo);
+
+                orderDelivery.AllPayLogisticsID = result.ShippingInfo.AllPayLogisticsID;
+
+                orderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
+
+                if (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore &&
+                    deliveryMethod is not null)
+                    orderDelivery.ActualDeliveryMethod = deliveryMethod;
+
+                await _deliveryRepository.UpdateAsync(orderDelivery);
+
+                order.ShippingStatus = ShippingStatus.ToBeShipped;
+
+                await _orderRepository.UpdateAsync(order);
+
+                var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                if (invoiceSetting is not null && invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
+                {
+                    if (order.GroupBuy.IssueInvoice)
                     {
-                        await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
-                    }
-                    else
-                    {
-                        var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
-                        GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
-                        var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                        order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
+                        //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                        var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
+                        if (invoiceDely == 0)
+                        {
+                            await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+                        }
+                        else
+                        {
+                            var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
+                            GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
+                            var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                        }
                     }
                 }
+
+                await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
+            }
+        }
+        catch (DBConcurrencyException e)
+        {
+            if (result.ResponseCode is "1")
+            {
+                order = await _orderRepository.GetWithDetailsAsync(orderId);
+
+               orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
+
+                 orderDelivery = orderDeliverys.Where(x => x.Id == orderDeliveryId).FirstOrDefault();
+
+                orderDelivery.DeliveryNo = result.ShippingInfo.BookingNote;
+
+                if (order.DeliveryMethod is DeliveryMethod.SevenToEleven1 ||
+                    order.DeliveryMethod is DeliveryMethod.FamilyMart1 ||
+                    order.DeliveryMethod is DeliveryMethod.SevenToElevenFrozen ||
+                    deliveryMethod is DeliveryMethod.FamilyMart1 ||
+                    deliveryMethod is DeliveryMethod.SevenToEleven1 ||
+                    deliveryMethod is DeliveryMethod.SevenToElevenFrozen)
+                {
+                    string strResponse = await GenerateShipmentForB2C(result);
+
+                    ResponseResultDto responseResultDto = ParseApiResponse(strResponse, true);
+
+                    orderDelivery.DeliveryNo = responseResultDto.ShippingInfo.ShipmentNo;
+                }
+
+                if (order.DeliveryMethod is DeliveryMethod.FamilyMartC2C ||
+                    deliveryMethod is DeliveryMethod.FamilyMartC2C)
+                    orderDelivery.DeliveryNo = result.ShippingInfo.CVSPaymentNo;
+
+                if (order.DeliveryMethod is DeliveryMethod.SevenToElevenC2C ||
+                    deliveryMethod is DeliveryMethod.SevenToElevenC2C)
+                    orderDelivery.DeliveryNo = string.Concat(result.ShippingInfo.CVSPaymentNo, result.ShippingInfo.CVSValidationNo);
+
+                orderDelivery.AllPayLogisticsID = result.ShippingInfo.AllPayLogisticsID;
+
+                orderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
+
+                if (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore &&
+                    deliveryMethod is not null)
+                    orderDelivery.ActualDeliveryMethod = deliveryMethod;
+
+                await _deliveryRepository.UpdateAsync(orderDelivery);
+
+                order.ShippingStatus = ShippingStatus.ToBeShipped;
+
+                await _orderRepository.UpdateAsync(order);
+
+                var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                if (invoiceSetting is not null && invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
+                {
+                    if (order.GroupBuy.IssueInvoice)
+                    {
+                        order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
+                        //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                        var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
+                        if (invoiceDely == 0)
+                        {
+                            await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+                        }
+                        else
+                        {
+                            var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
+                            GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
+                            var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                        }
+                    }
+                }
+
+                await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
             }
 
-            await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
         }
 
         return result;
