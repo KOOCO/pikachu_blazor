@@ -230,6 +230,11 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             {
                 if (result.ResponseCode is "1")
                 {
+                    order = await _orderRepository.GetWithDetailsAsync(orderId);
+
+                    orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
+
+                    orderDelivery = orderDeliverys.FirstOrDefault(f => f.Id == orderDeliveryId);
                     orderDelivery.DeliveryNo = result.ShippingInfo.BookingNote;
 
                     orderDelivery.AllPayLogisticsID = result.ShippingInfo.AllPayLogisticsID;
@@ -240,12 +245,12 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                         deliveryMethod is not null)
                         orderDelivery.ActualDeliveryMethod = deliveryMethod;
 
-                    await _deliveryRepository.UpdateAsync(orderDelivery);
+                    
 
                     order.ShippingStatus = ShippingStatus.ToBeShipped;
 
                     await _orderRepository.UpdateAsync(order);
-
+                    await _deliveryRepository.UpdateAsync(orderDelivery);
                     var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
                     if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
                     {
