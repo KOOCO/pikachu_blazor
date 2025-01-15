@@ -2132,16 +2132,17 @@ public class OrderAppService : ApplicationService, IOrderAppService
     }
     public async Task ExpireOrderAsync(Guid OrderId)
     {
+        using(_dataFilter.Disable<IMultiTenant>())
+        { 
         var order = await _orderRepository.GetWithDetailsAsync(OrderId);
-        if (order.ShippingStatus == ShippingStatus.WaitingForPayment)
-        {
-            order.OrderStatus = OrderStatus.Closed;
-            order.ShippingStatus = ShippingStatus.Closed;
-
-            foreach (var orderItem in order.OrderItems)
+            if (order.ShippingStatus == ShippingStatus.WaitingForPayment)
             {
-                using (_dataFilter.Disable<IMultiTenant>())
+                order.OrderStatus = OrderStatus.Closed;
+                order.ShippingStatus = ShippingStatus.Closed;
+
+                foreach (var orderItem in order.OrderItems)
                 {
+
                     var details = await _itemDetailsRepository.FirstOrDefaultAsync(x => x.ItemId == orderItem.ItemId && x.ItemName == orderItem.Spec);
 
                     if (details != null)
@@ -2162,10 +2163,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
                             await _freebieRepository.UpdateAsync(freebie);
                         }
                     }
-                }
-            }
 
-            await _orderRepository.UpdateAsync(order);
+                }
+
+                await _orderRepository.UpdateAsync(order);
+            }
         }
 
     }
