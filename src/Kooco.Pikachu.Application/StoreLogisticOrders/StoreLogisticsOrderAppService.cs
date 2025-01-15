@@ -12,6 +12,7 @@ using Kooco.Pikachu.TenantManagement;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using RestSharp;
 using System;
@@ -277,6 +278,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             }
             catch (DBConcurrencyException e)
             {
+                Logger.LogException(e);
                 if (result.ResponseCode is "1")
                 {
                     order = await _orderRepository.GetWithDetailsAsync(orderId);
@@ -329,6 +331,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         }
         catch (Exception ex)
         {
+            Logger.LogException(ex);
             throw;
         }
     }
