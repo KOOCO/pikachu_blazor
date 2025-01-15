@@ -10,6 +10,7 @@ using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Response;
 using Kooco.Pikachu.TenantManagement;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -278,7 +279,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                     await SendEmailAsync(orderId, orderDelivery.DeliveryNo);
                 }
             }
-            catch (DBConcurrencyException e)
+            catch (DbUpdateConcurrencyException e)
             {
                 Logger.LogException(e);
                 if (result.ResponseCode is "1")
@@ -954,7 +955,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             await SendEmailAsync(orderId, orderDelivery.DeliveryNo);
         }
-        catch (DBConcurrencyException e)
+        catch (DbUpdateConcurrencyException e)
         {
             order = await _orderRepository.GetWithDetailsAsync(orderId);
 
@@ -1136,7 +1137,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             await SendEmailAsync(orderId, orderDelivery.DeliveryNo);
         }
-        catch (DBConcurrencyException e)
+        catch (DbUpdateConcurrencyException e)
         {
             order = await _orderRepository.GetWithDetailsAsync(orderId);
 
@@ -1519,7 +1520,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
             }
         }
-        catch (DBConcurrencyException e)
+        catch (DbUpdateConcurrencyException e)
         {
             if (result.ResponseCode is "1")
             {
