@@ -250,9 +250,9 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
                     await _deliveryRepository.UpdateAsync(orderDelivery);
 
-                    order = await _orderRepository.GetAsync(orderId);
-                    order.ShippingStatus = ShippingStatus.ToBeShipped;
-                    await _orderRepository.UpdateAsync(order);
+                    //order = await _orderRepository.GetAsync(orderId);
+                    //order.ShippingStatus = ShippingStatus.ToBeShipped;
+                    //await _orderRepository.UpdateAsync(order);
 
 
                     //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
