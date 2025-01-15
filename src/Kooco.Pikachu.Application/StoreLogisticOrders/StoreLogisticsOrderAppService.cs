@@ -33,6 +33,7 @@ using Volo.Abp.BackgroundJobs;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
+using Volo.Abp.Uow;
 
 namespace Kooco.Pikachu.StoreLogisticOrders;
 
@@ -251,9 +252,16 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
                     order.ShippingStatus = ShippingStatus.ToBeShipped;
 
-                    await _orderRepository.UpdateAsync(order,true);
-                    await _deliveryRepository.UpdateAsync(orderDelivery,true);
-                    await UnitOfWorkManager.Current.SaveChangesAsync();
+                    using (var newUnitOfWork = UnitOfWorkManager.Begin(requiresNew: true))
+                    {
+                        await _deliveryRepository.UpdateAsync(orderDelivery, true);
+
+
+
+                        await _orderRepository.UpdateAsync(order, true);
+                        await newUnitOfWork.SaveChangesAsync();
+                        await newUnitOfWork.CompleteAsync();
+                    }
                     var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
                     if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
                     {
@@ -298,13 +306,17 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                     if (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore &&
                         deliveryMethod is not null)
                         orderDelivery.ActualDeliveryMethod = deliveryMethod;
-
-                    await _deliveryRepository.UpdateAsync(orderDelivery,true);
-
                     order.ShippingStatus = ShippingStatus.ToBeShipped;
+                    using (var newUnitOfWork = UnitOfWorkManager.Begin(requiresNew: true))
+                    {
+                        await _deliveryRepository.UpdateAsync(orderDelivery, true);
 
-                    await _orderRepository.UpdateAsync(order,true);
-                    await UnitOfWorkManager.Current.SaveChangesAsync();
+
+
+                        await _orderRepository.UpdateAsync(order, true);
+                        await newUnitOfWork.SaveChangesAsync();
+                        await newUnitOfWork.CompleteAsync();
+                    }
                     var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
                     if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
                     {

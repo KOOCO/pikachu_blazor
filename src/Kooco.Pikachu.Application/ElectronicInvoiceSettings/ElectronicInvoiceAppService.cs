@@ -61,114 +61,118 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
     #region Methods
     public async Task<string> CreateInvoiceAsync(Guid orderId)
     {
-        using (_dataFilter.Disable<IMultiTenant>())
+        using (var newUnitOfWork = UnitOfWorkManager.Begin(requiresNew:true))
         {
-            ElectronicInvoiceSetting? setting = await _repository.FirstOrDefaultAsync();
-            //Order order = new Order();
-
-            var order = await _orderRepository.GetWithDetailsAsync(orderId);
-
-            if (!order.InvoiceNumber.IsNullOrEmpty()) return"";
-
-            GroupBuy groupBuy = await _groupBuyRepository.GetAsync(order.GroupBuyId);
-
-            string print = setting.IsEnable ? "0" : "1";
-            string? CarrierType = setting.IsEnable ? "1" : null;
-            CarrierType = (order.InvoiceType == InvoiceType.CellphoneInvoice) ? "3" : (order.InvoiceType == InvoiceType.BusinessInvoice ? "1" : null); 
-            string? CarrierNumber = CarrierType == "3" ? order.UniformNumber : null;
-            string CustomerAddress = order.AddressDetails.IsNullOrEmpty() ? order.CustomerEmail : order.AddressDetails;
-            RestClientOptions options = new() { MaxTimeout = -1 };
-
-            RestClient client = new(options);
-
-            RestRequest request = new(_configuration["EcPay:InvoiceApi"], Method.Post);
-
-            Parameters parameters = new()
+            using (_dataFilter.Disable<IMultiTenant>())
             {
-                MerchantID = setting?.StoreCode ?? string.Empty,
-                RelateNumber = order.OrderNo,
-                CustomerName = order.InvoiceType == InvoiceType.BusinessInvoice?order.TaxTitle: order.CustomerName,
-                CustomerAddr = order.AddressDetails,
-                CustomerPhone = order.RecipientPhone,
-                CustomerEmail = order.CustomerEmail,
-                ClearanceMark = "1",
-                InvoiceRemark = setting?.DisplayInvoiceName ?? string.Empty,
-                
-                
-                CarrierNum = CarrierNumber,
-                CarrierType = CarrierType,
+                ElectronicInvoiceSetting? setting = await _repository.FirstOrDefaultAsync();
+                //Order order = new Order();
 
-                Print = print,
-                Donation = "0",
-                TaxType = "1", //groupBuy.TaxType==TaxType.Taxable?"1":groupBuy.TaxType==TaxType.NonTaxable?"3":"9",
-                SalesAmount = order.OrderItems.Sum(x => x.TotalAmount),
-                InvType = "07",
-                vat = "1",
-                Items = new List<myItem>()
-            };
-            if (order.InvoiceType == InvoiceType.BusinessInvoice)
-            {
-                parameters.CustomerIdentifier = order.CarrierId;
-            
-            }    
-            foreach (var item in order?.OrderItems)
-            {
-                myItem orderitem = new();
-                orderitem.ItemSeq = 1;
-                orderitem.ItemName = item.Item?.ItemName ?? item.Freebie.ItemName;
-                orderitem.ItemCount = 1;
-                orderitem.ItemWord = "1";
-                orderitem.ItemPrice = item.ItemPrice;
-                orderitem.ItemTaxType = 1;//(await _enumvalueRepository.FirstOrDefaultAsync(x=>x.Id==item.Item.TaxTypeId)).Text=="Taxable"?1:3;
-                orderitem.ItemAmount = item.TotalAmount;
-                orderitem.ItemRemark = "";
-                parameters.Items.Add(orderitem);
+                var order = await _orderRepository.GetWithDetailsAsync(orderId);
 
-            }
+                if (!order.InvoiceNumber.IsNullOrEmpty()) return "";
+
+                GroupBuy groupBuy = await _groupBuyRepository.GetAsync(order.GroupBuyId);
+
+                string print = setting.IsEnable ? "0" : "1";
+                string? CarrierType = setting.IsEnable ? "1" : null;
+                CarrierType = (order.InvoiceType == InvoiceType.CellphoneInvoice) ? "3" : (order.InvoiceType == InvoiceType.BusinessInvoice ? "1" : null);
+                string? CarrierNumber = CarrierType == "3" ? order.UniformNumber : null;
+                string CustomerAddress = order.AddressDetails.IsNullOrEmpty() ? order.CustomerEmail : order.AddressDetails;
+                RestClientOptions options = new() { MaxTimeout = -1 };
+
+                RestClient client = new(options);
+
+                RestRequest request = new(_configuration["EcPay:InvoiceApi"], Method.Post);
+
+                Parameters parameters = new()
+                {
+                    MerchantID = setting?.StoreCode ?? string.Empty,
+                    RelateNumber = order.OrderNo,
+                    CustomerName = order.InvoiceType == InvoiceType.BusinessInvoice ? order.TaxTitle : order.CustomerName,
+                    CustomerAddr = order.AddressDetails,
+                    CustomerPhone = order.RecipientPhone,
+                    CustomerEmail = order.CustomerEmail,
+                    ClearanceMark = "1",
+                    InvoiceRemark = setting?.DisplayInvoiceName ?? string.Empty,
 
 
-            string json = JsonConvert.SerializeObject(parameters);
-            //var json = "{\"MerchantID\": \"2000132\",\"RelateNumber\": ,\"CustomerName\": \"SomiKayani\",\"CustomerAddr\": \"Abcxyz street 123\",\"CustomerPhone\": \"0912345678\",\"CustomerEmail\": \"kiani_mujahid@yahoo.com\",\"ClearanceMark\": \"1\",\"Print\": \"1\",\"Donation\": \"0\",\"TaxType\": \"1\",\"SalesAmount\": 70,\"InvType\": \"07\",\"vat\": \"1\",\"Items\": [{\"ItemSeq\": 1,\"ItemName\": \"item01\",\"ItemCount\": 1,\"ItemWord\": \"Test\",\"ItemPrice\": 50,\"ItemTaxType\": \"1\",\"ItemAmount\": 50,\"ItemRemark\": \"item01_desc\"},{\"ItemSeq\": 2,\"ItemName\": \"item02\",\"ItemCount\": 1,\"ItemWord\": \"Test2\",\"ItemPrice\": 20,\"ItemTaxType\": \"1\",\"ItemAmount\": 20,\"ItemRemark\": \"item02_desc\"}]}";
-            var newJson = Uri.EscapeDataString(json);
-            var encryptedString = EncryptStringToAES(newJson, setting.HashKey, setting.HashIV);
-            request.AddHeader("Content-Type", "application/json");
-            var body = $@"{{
+                    CarrierNum = CarrierNumber,
+                    CarrierType = CarrierType,
+
+                    Print = print,
+                    Donation = "0",
+                    TaxType = "1", //groupBuy.TaxType==TaxType.Taxable?"1":groupBuy.TaxType==TaxType.NonTaxable?"3":"9",
+                    SalesAmount = order.OrderItems.Sum(x => x.TotalAmount),
+                    InvType = "07",
+                    vat = "1",
+                    Items = new List<myItem>()
+                };
+                if (order.InvoiceType == InvoiceType.BusinessInvoice)
+                {
+                    parameters.CustomerIdentifier = order.CarrierId;
+
+                }
+                foreach (var item in order?.OrderItems)
+                {
+                    myItem orderitem = new();
+                    orderitem.ItemSeq = 1;
+                    orderitem.ItemName = item.Item?.ItemName ?? item.Freebie.ItemName;
+                    orderitem.ItemCount = 1;
+                    orderitem.ItemWord = "1";
+                    orderitem.ItemPrice = item.ItemPrice;
+                    orderitem.ItemTaxType = 1;//(await _enumvalueRepository.FirstOrDefaultAsync(x=>x.Id==item.Item.TaxTypeId)).Text=="Taxable"?1:3;
+                    orderitem.ItemAmount = item.TotalAmount;
+                    orderitem.ItemRemark = "";
+                    parameters.Items.Add(orderitem);
+
+                }
+
+
+                string json = JsonConvert.SerializeObject(parameters);
+                //var json = "{\"MerchantID\": \"2000132\",\"RelateNumber\": ,\"CustomerName\": \"SomiKayani\",\"CustomerAddr\": \"Abcxyz street 123\",\"CustomerPhone\": \"0912345678\",\"CustomerEmail\": \"kiani_mujahid@yahoo.com\",\"ClearanceMark\": \"1\",\"Print\": \"1\",\"Donation\": \"0\",\"TaxType\": \"1\",\"SalesAmount\": 70,\"InvType\": \"07\",\"vat\": \"1\",\"Items\": [{\"ItemSeq\": 1,\"ItemName\": \"item01\",\"ItemCount\": 1,\"ItemWord\": \"Test\",\"ItemPrice\": 50,\"ItemTaxType\": \"1\",\"ItemAmount\": 50,\"ItemRemark\": \"item01_desc\"},{\"ItemSeq\": 2,\"ItemName\": \"item02\",\"ItemCount\": 1,\"ItemWord\": \"Test2\",\"ItemPrice\": 20,\"ItemTaxType\": \"1\",\"ItemAmount\": 20,\"ItemRemark\": \"item02_desc\"}]}";
+                var newJson = Uri.EscapeDataString(json);
+                var encryptedString = EncryptStringToAES(newJson, setting.HashKey, setting.HashIV);
+                request.AddHeader("Content-Type", "application/json");
+                var body = $@"{{
                          ""MerchantID"": ""{setting?.StoreCode ?? string.Empty}"",
                          ""RqHeader"": {{
                          ""Timestamp"": {DateTimeOffset.UtcNow.ToUnixTimeSeconds()}
                            }},
                         ""Data"": ""{encryptedString}""
                       }}";
-            request.AddStringBody(body, DataFormat.Json);
-            RestResponse response = await client.ExecuteAsync(request);
-            ApiResponse? response1 = JsonConvert.DeserializeObject<ApiResponse>(response.Content);
-            if (response1?.TransCode == 1)
-            {
-                var result = DecryptStringFromAES(response1.Data, setting.HashKey, setting.HashIV);
-
-                var data = HttpUtility.UrlDecode(result);
-                ResponseModel jsonObj = JsonConvert.DeserializeObject<ResponseModel>(data);
-                if (jsonObj.InvoiceNo.IsNullOrWhiteSpace())
+                request.AddStringBody(body, DataFormat.Json);
+                RestResponse response = await client.ExecuteAsync(request);
+                ApiResponse? response1 = JsonConvert.DeserializeObject<ApiResponse>(response.Content);
+                if (response1?.TransCode == 1)
                 {
-				
-						order.VoidUser = CurrentUser.Name;
-						order.IssueStatus = IssueInvoiceStatus.Failed;
-						await _orderRepository.UpdateAsync(order);
-                      
-					
+                    var result = DecryptStringFromAES(response1.Data, setting.HashKey, setting.HashIV);
 
-					return jsonObj.RtnMsg.ToString();
-                   
+                    var data = HttpUtility.UrlDecode(result);
+                    ResponseModel jsonObj = JsonConvert.DeserializeObject<ResponseModel>(data);
+                    if (jsonObj.InvoiceNo.IsNullOrWhiteSpace())
+                    {
+
+                        order.VoidUser = CurrentUser.Name;
+                        order.IssueStatus = IssueInvoiceStatus.Failed;
+                        await _orderRepository.UpdateAsync(order);
+                        await newUnitOfWork.SaveChangesAsync();
+
+
+                        return jsonObj.RtnMsg.ToString();
+
+                    }
+                    order.InvoiceNumber = jsonObj.InvoiceNo;
+                    order.IssueStatus = IssueInvoiceStatus.Succeeded;
+                    order.InvoiceStatus = InvoiceStatus.Issued;
+                    order.InvoiceDate = jsonObj.InvoiceDate;
+                    order.VoidUser = CurrentUser.Name;
+
+                    await _orderRepository.UpdateAsync(order);
+                    await newUnitOfWork.SaveChangesAsync();
                 }
-                order.InvoiceNumber = jsonObj.InvoiceNo;
-                order.IssueStatus = IssueInvoiceStatus.Succeeded;
-                order.InvoiceStatus = InvoiceStatus.Issued;
-                order.InvoiceDate = jsonObj.InvoiceDate;
-                order.VoidUser = CurrentUser.Name;
-              
-                await _orderRepository.UpdateAsync(order);
+                return "";
             }
-            return "";
         }
     }
     public async Task CreateCreditNoteAsync(Guid orderId)
