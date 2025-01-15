@@ -31,6 +31,7 @@
 	  <PackageReference Include="DinkToPdf" Version="1.0.8" />
 	  <PackageReference Include="ECPay.Payment.Integration" Version="1.0.0.8" />
 	  <PackageReference Include="Hangfire.Core" Version="1.8.6" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.4" />
 	  <PackageReference Include="MiniExcel" Version="1.31.2" />
 	  <PackageReference Include="PDFsharp" Version="6.1.1" />
 	  <PackageReference Include="RestSharp" Version="110.2.0" />
