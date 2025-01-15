@@ -272,6 +272,7 @@ public class PikachuDbContext :
             b.Property(o => o.TotalAmount).HasColumnType("money");
             b.Property(p => p.RefundAmount).HasColumnType("decimal(18,2)");
             b.Property(p => p.cashback_amount).HasColumnType("decimal(18,2)");
+            b.Property(o => o.RowVersion).IsRowVersion();
         });
         builder.Entity<OrderDelivery>(b =>
         {

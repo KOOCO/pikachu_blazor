@@ -153,8 +153,8 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
 				
 						order.VoidUser = CurrentUser.Name;
 						order.IssueStatus = IssueInvoiceStatus.Failed;
-						await _orderRepository.UpdateAsync(order,true);
-                        await UnitOfWorkManager.Current.SaveChangesAsync();
+						await _orderRepository.UpdateAsync(order);
+                      
 					
 
 					return jsonObj.RtnMsg.ToString();
@@ -166,7 +166,7 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
                 order.InvoiceDate = jsonObj.InvoiceDate;
                 order.VoidUser = CurrentUser.Name;
               
-                await _orderRepository.UpdateAsync(order,autoSave:true);
+                await _orderRepository.UpdateAsync(order);
             }
             return "";
         }

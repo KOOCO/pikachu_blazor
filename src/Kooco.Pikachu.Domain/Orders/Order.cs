@@ -146,7 +146,7 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public ReceivingTime? ReceivingTimeFrozen { get; set; }
     public string? EcpayLogisticsStatus { get; set; }
     public string? ReturnedOrderItemIds { get; set; }
-
+    public byte[] RowVersion { get; set; } // Concurrency token
     public Order() { }
 
     public Order(
