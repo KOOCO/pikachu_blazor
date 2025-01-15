@@ -610,7 +610,12 @@ public class OrderController : AbpController, IOrderAppService
     {
         throw new NotImplementedException();
     }
+    [HttpPost("order-expire")]
+    public Task ExpireOrderAsync(Guid OrderId)
+    {
+       return _ordersAppService.ExpireOrderAsync(OrderId);
+    }
 
-	
-	#endregion
+
+    #endregion
 }
