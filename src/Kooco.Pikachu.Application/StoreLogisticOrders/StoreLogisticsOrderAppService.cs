@@ -129,11 +129,11 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         ResponseResultDto result = new ResponseResultDto();
         try
         {
-            Order order = await _orderRepository.GetAsync(orderId);
+            var order = await _orderRepository.GetAsync(orderId);
             await _orderRepository.EnsurePropertyLoadedAsync(order, o => o.GroupBuy); 
-            List<OrderDelivery> orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
+           var orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
 
-            OrderDelivery? orderDelivery = orderDeliverys.FirstOrDefault(f => f.Id == orderDeliveryId);
+            var orderDelivery = orderDeliverys.FirstOrDefault(f => f.Id == orderDeliveryId);
 
             List<LogisticsProviderSettingsDto> providers = await _logisticsProvidersAppService.GetAllAsync();
 
@@ -247,6 +247,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                         orderDelivery.ActualDeliveryMethod = deliveryMethod;
 
                     order.ShippingStatus = ShippingStatus.ToBeShipped;
+                   
                     await _deliveryRepository.UpdateAsync(orderDelivery);
 
                     //order = await _orderRepository.GetAsync(orderId);
@@ -284,59 +285,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
                 Logger.LogWarning("CatchBlock");
                 Logger.LogException(e);
-                if (result.ResponseCode is "1")
-                {
-
-                 var  neworder = await _orderRepository.GetAsync(orderId);
-                    await _orderRepository.EnsurePropertyLoadedAsync(order, o => o.GroupBuy);
-                    orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
-
-                    orderDelivery = orderDeliverys.FirstOrDefault(f => f.Id == orderDeliveryId);
-                    orderDelivery.DeliveryNo = result.ShippingInfo.BookingNote;
-
-                    orderDelivery.AllPayLogisticsID = result.ShippingInfo.AllPayLogisticsID;
-
-                    orderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
-
-                    if (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore &&
-                        deliveryMethod is not null)
-                        orderDelivery.ActualDeliveryMethod = deliveryMethod;
-
-                    using (var newUnitOfWork = UnitOfWorkManager.Begin(requiresNew: true))
-                    {
-                        neworder.ShippingStatus = ShippingStatus.ToBeShipped;
-                        await _deliveryRepository.UpdateAsync(orderDelivery);
-
-
-
-                        //await _orderRepository.UpdateAsync(order, true);
-                        await newUnitOfWork.SaveChangesAsync();
-                        await newUnitOfWork.CompleteAsync();
-                    }
-                    
-                    var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
-                    if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
-                    {
-                        if (neworder.GroupBuy.IssueInvoice)
-                        {
-                            neworder.IssueStatus = IssueInvoiceStatus.SentToBackStage;
-                            //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
-                            var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
-                            if (invoiceDely == 0)
-                            {
-                                await _electronicInvoiceAppService.CreateInvoiceAsync(orderId);
-                            }
-                            else
-                            {
-                                var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
-                                GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
-                                var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
-                            }
-                        }
-                    }
-
-                    await SendEmailAsync(orderId, orderDelivery.DeliveryNo);
-                }
+               
 
             }
             return result;
