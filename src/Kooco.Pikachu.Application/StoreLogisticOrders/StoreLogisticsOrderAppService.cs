@@ -249,33 +249,33 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                    
                    
                     await _deliveryRepository.UpdateAsync(orderDelivery);
-                   // order.ShippingStatus = ShippingStatus.ToBeShipped;
+                    // order.ShippingStatus = ShippingStatus.ToBeShipped;
                     //order = await _orderRepository.GetAsync(orderId);
 
                     //await _orderRepository.UpdateAsync(order);
 
 
-                    //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
-                    //if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
-                    //{
+                    var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                    if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
+                    {
 
-                    //    if (order.GroupBuy.IssueInvoice)
-                    //    {
-                    //        order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
-                    //        //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
-                    //        var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
-                    //        if (invoiceDely == 0)
-                    //        {
-                    //            await _electronicInvoiceAppService.CreateInvoiceAsync(orderId);
-                    //        }
-                    //        else
-                    //        {
-                    //            var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
-                    //            GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = orderId };
-                    //            var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
-                    //        }
-                    //    }
-                    //}
+                        if (order.GroupBuy.IssueInvoice)
+                        {
+                           // order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
+                            //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                            var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
+                            if (invoiceDely == 0)
+                            {
+                                await _electronicInvoiceAppService.CreateInvoiceAsync(orderId);
+                            }
+                            else
+                            {
+                                var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
+                                GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = orderId };
+                                var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                            }
+                        }
+                    }
 
                     await SendEmailAsync(orderId, orderDelivery.DeliveryNo);
                 }
