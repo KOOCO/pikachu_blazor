@@ -247,41 +247,43 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                         deliveryMethod is not null)
                         orderDelivery.ActualDeliveryMethod = deliveryMethod;
 
-
+                    order.ShippingStatus = ShippingStatus.ToBeShipped;
                     await _deliveryRepository.UpdateAsync(orderDelivery);
 
                     //order = await _orderRepository.GetAsync(orderId);
-                    //order.ShippingStatus = ShippingStatus.ToBeShipped;
+                   
                     //await _orderRepository.UpdateAsync(order);
 
 
-                    //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
-                    //if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
-                    //{
-                    //    order = await _orderRepository.GetWithDetailsAsync(orderId);
-                    //    if (order.GroupBuy.IssueInvoice)
-                    //    {
-                    //        order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
-                    //        //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
-                    //        var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
-                    //        if (invoiceDely == 0)
-                    //        {
-                    //            await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
-                    //        }
-                    //        else
-                    //        {
-                    //            var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
-                    //            GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
-                    //            var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
-                    //        }
-                    //    }
-                    //}
+                    var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                    if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
+                    {
+                        order = await _orderRepository.GetWithDetailsAsync(orderId);
+                        if (order.GroupBuy.IssueInvoice)
+                        {
+                            order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
+                            //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                            var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
+                            if (invoiceDely == 0)
+                            {
+                                await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+                            }
+                            else
+                            {
+                                var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
+                                GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
+                                var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                            }
+                        }
+                    }
 
                     await SendEmailAsync(orderId, orderDelivery.DeliveryNo);
                 }
             }
             catch (DbUpdateConcurrencyException e)
             {
+
+                Logger.LogInformation("CtachBlock");
                 Logger.LogException(e);
                 if (result.ResponseCode is "1")
                 {
@@ -299,14 +301,15 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                     if (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore &&
                         deliveryMethod is not null)
                         orderDelivery.ActualDeliveryMethod = deliveryMethod;
-                    order.ShippingStatus = ShippingStatus.ToBeShipped;
+
                     using (var newUnitOfWork = UnitOfWorkManager.Begin(requiresNew: true))
                     {
-                        await _deliveryRepository.UpdateAsync(orderDelivery, true);
+                        order.ShippingStatus = ShippingStatus.ToBeShipped;
+                        await _deliveryRepository.UpdateAsync(orderDelivery);
 
 
 
-                        await _orderRepository.UpdateAsync(order, true);
+                        //await _orderRepository.UpdateAsync(order, true);
                         await newUnitOfWork.SaveChangesAsync();
                         await newUnitOfWork.CompleteAsync();
                     }
