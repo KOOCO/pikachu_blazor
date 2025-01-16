@@ -246,19 +246,19 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                         deliveryMethod is not null)
                         orderDelivery.ActualDeliveryMethod = deliveryMethod;
 
-                    order.ShippingStatus = ShippingStatus.ToBeShipped;
+                   
                    
                     await _deliveryRepository.UpdateAsync(orderDelivery);
-
+                   // order.ShippingStatus = ShippingStatus.ToBeShipped;
                     //order = await _orderRepository.GetAsync(orderId);
-                   
+
                     //await _orderRepository.UpdateAsync(order);
 
 
                     //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
                     //if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
                     //{
-                      
+
                     //    if (order.GroupBuy.IssueInvoice)
                     //    {
                     //        order.IssueStatus = IssueInvoiceStatus.SentToBackStage;

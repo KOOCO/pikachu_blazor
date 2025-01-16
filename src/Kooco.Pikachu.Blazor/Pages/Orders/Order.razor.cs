@@ -46,6 +46,7 @@ using static Kooco.Pikachu.Permissions.PikachuPermissions;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 using MudBlazor;
 using static Volo.Abp.Ui.LayoutHooks.LayoutHooks;
+using AntDesign;
 
 namespace Kooco.Pikachu.Blazor.Pages.Orders;
 
@@ -1350,14 +1351,40 @@ public partial class Order
         else await LoadTabAsPerNameAsync(SelectedTabName);
     }
 
-    void HandleSelectAllChange(ChangeEventArgs e)
+   async void HandleSelectAllChange(ChangeEventArgs e)
     {
+        await loading.Show();
         IsAllSelected = e.Value != null ? (bool)e.Value : false;
-        Orders.ForEach(item =>
+        NormalCount = 0;
+        FreezeCount = 0;
+        FrozenCount = 0;
+        foreach (var item in Orders)
         {
+
             item.IsSelected = IsAllSelected;
-        });
+          
+            if (item.IsSelected)
+            {
+                var orderDeliveries = await _OrderDeliveryAppService.GetListByOrderAsync(item.OrderId);
+                OrdersSelected.Add(item);
+
+                NormalCount = orderDeliveries.Any(x => x.Items.Any(ai => ai.DeliveryTemperature is ItemStorageTemperature.Normal)) ? NormalCount + 1 : NormalCount;
+
+                FreezeCount = orderDeliveries.Any(x => x.Items.Any(ai => ai.DeliveryTemperature is ItemStorageTemperature.Freeze)) ? FreezeCount + 1 : FreezeCount;
+
+                FrozenCount = orderDeliveries.Any(x => x.Items.Any(ai => ai.DeliveryTemperature is ItemStorageTemperature.Frozen)) ? FrozenCount + 1 : FrozenCount;
+            }
+            else
+
+            {
+                OrdersSelected.Remove(item);
+               
+
+            }
+        }
+     
         StateHasChanged();
+        await loading.Hide();
     }
 
     public async void NavigateToOrderDetails(DataGridRowMouseEventArgs<OrderDto> e)
