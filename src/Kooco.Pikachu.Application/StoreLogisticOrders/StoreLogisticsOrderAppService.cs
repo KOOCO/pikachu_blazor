@@ -888,15 +888,15 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             await _deliveryRepository.UpdateAsync(orderDelivery);
 
-            order.ShippingStatus = ShippingStatus.ToBeShipped;
+            //order.ShippingStatus = ShippingStatus.ToBeShipped;
 
-            await _orderRepository.UpdateAsync(order);
+            //await _orderRepository.UpdateAsync(order);
             var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
             if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
             {
                 if (order.GroupBuy.IssueInvoice)
                 {
-                    order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
+                    //order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
                     //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
                     var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
                     if (invoiceDely == 0)
@@ -1070,15 +1070,15 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             await _deliveryRepository.UpdateAsync(orderDelivery);
 
-            order.ShippingStatus = ShippingStatus.ToBeShipped;
+            //order.ShippingStatus = ShippingStatus.ToBeShipped;
 
-            await _orderRepository.UpdateAsync(order);
+            //await _orderRepository.UpdateAsync(order);
             var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
             if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
             {
                 if (order.GroupBuy.IssueInvoice)
                 {
-                    order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
+                   // order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
                     //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
                     var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
                     if (invoiceDely == 0)
@@ -1451,16 +1451,16 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
                 await _deliveryRepository.UpdateAsync(orderDelivery);
 
-                order.ShippingStatus = ShippingStatus.ToBeShipped;
+                //order.ShippingStatus = ShippingStatus.ToBeShipped;
 
-                await _orderRepository.UpdateAsync(order);
+               // await _orderRepository.UpdateAsync(order);
 
                 var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
                 if (invoiceSetting is not null && invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
                 {
                     if (order.GroupBuy.IssueInvoice)
                     {
-                        order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
+                        //order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
                         //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
                         var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
                         if (invoiceDely == 0)
