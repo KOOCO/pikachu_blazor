@@ -96,6 +96,7 @@
                                     </ChildContent>
                                     <Feedback>
                                         <ValidationError />
+                                        <ValidationMessage For="() => CreateDiscountCode!.Code" />
                                     </Feedback>
                                 </RadioGroup>
                             </Validation>
@@ -221,6 +222,7 @@
                         <Column ColumnSize="ColumnSize.Is12">
                             <Validation MessageLocalizer="@LH.Localize">
                                 <Label>@L["DiscountMethod"]</Label>
+                                 <EditForm EditContext="editContext">
                                 <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="DiscountMethod" @bind-CheckedValue="@CreateDiscountCode.DiscountMethod">
                                     <ChildContent>
                                         <Radio Value="@("DirectDiscount")">@L["DirectDiscount"]</Radio>
@@ -237,7 +239,13 @@
                                         </Radio>
                                         <Radio Value="@("ShippingDiscount")">@L["ShippingDiscount"]</Radio>
                                     </ChildContent>
+                                    <Feedback>
+                                        <ValidationError />
+                                        <ValidationMessage For="() => CreateDiscountCode!.DiscountMethod" />
+                                    </Feedback>
+
                                 </RadioGroup>
+                                </EditForm>
                             </Validation>
 
                         </Column>

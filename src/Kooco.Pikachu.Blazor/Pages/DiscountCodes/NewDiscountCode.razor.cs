@@ -87,7 +87,13 @@ namespace Kooco.Pikachu.Blazor.Pages.DiscountCodes
         {
             messageStore?.Clear();
             IsUpdating = true;
-            
+            if (CreateDiscountCode.Code.IsNullOrEmpty())
+            {
+                messageStore?.Add(() => CreateDiscountCode.Code, "Select at least one.");
+                IsUpdating = false;
+                return;
+            }
+          
             if (CreateDiscountCode.GroupbuysScope != "AllGroupbuys")
             {
                 CreateDiscountCode.GroupbuyIds = SelectedGroupBuy.ToList();
@@ -120,7 +126,13 @@ namespace Kooco.Pikachu.Blazor.Pages.DiscountCodes
                     return;
                 }
             }
-
+            if (CreateDiscountCode.DiscountMethod.IsNullOrEmpty())
+            {
+                messageStore?.Add(() => CreateDiscountCode.DiscountMethod, "Select at least one.");
+                IsUpdating = false;
+                StateHasChanged();
+                return;
+            }
             try
             {
                 if (await ValidationsRef.ValidateAll())
