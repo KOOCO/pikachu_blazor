@@ -86,6 +86,20 @@ namespace Kooco.Pikachu.PaymentGateways
             }
         }
 
+        public async Task<PaymentGatewayDto?> GetLinePayAsync(bool decrypt = false)
+        {
+            var linePay = await _paymentGatewayRepository.FirstOrDefaultAsync(x => x.PaymentIntegrationType == PaymentIntegrationType.LinePay);
+            if (linePay == null) return default;
+
+            var linePayDto = ObjectMapper.Map<PaymentGateway, PaymentGatewayDto>(linePay);
+            if (decrypt)
+            {
+                linePayDto = Decrypt(linePayDto);
+            }
+
+            return linePayDto;
+        }
+
         public async Task UpdateLinePayAsync(UpdateLinePayDto input)
         {
             var linePay = await _paymentGatewayRepository.FirstOrDefaultAsync(x => x.PaymentIntegrationType == PaymentIntegrationType.LinePay);
@@ -122,10 +136,10 @@ namespace Kooco.Pikachu.PaymentGateways
             {
                 validity = new PaymentGateway
                 {
-                    PaymentIntegrationType= PaymentIntegrationType.OrderValidatePeriod,
+                    PaymentIntegrationType = PaymentIntegrationType.OrderValidatePeriod,
                     Period = input.Period,
-                Unit = input.Unit
-            };
+                    Unit = input.Unit
+                };
 
                 await _paymentGatewayRepository.InsertAsync(validity);
             }
@@ -138,25 +152,32 @@ namespace Kooco.Pikachu.PaymentGateways
 
             foreach (PaymentGatewayDto paymentGatewayDto in paymentGatewayDtos)
             {
-                PropertyInfo[] properties = typeof(PaymentGatewayDto).GetProperties();
+                Decrypt(paymentGatewayDto);
+            }
 
-                foreach (PropertyInfo property in properties)
+            return paymentGatewayDtos;
+        }
+
+        private PaymentGatewayDto Decrypt(PaymentGatewayDto paymentGatewayDto)
+        {
+            PropertyInfo[] properties = typeof(PaymentGatewayDto).GetProperties();
+
+            foreach (PropertyInfo property in properties)
+            {
+                if (property.PropertyType == typeof(string) && property.Name != "Unit")
                 {
-                    if (property.PropertyType == typeof(string) && property.Name!="Unit")
+                    string? value = (string?)property.GetValue(paymentGatewayDto);
+
+                    if (!string.IsNullOrEmpty(value))
                     {
-                        string? value = (string?)property.GetValue(paymentGatewayDto);
+                        string? decryptedValue = _stringEncryptionService.Decrypt(value);
 
-                        if (!string.IsNullOrEmpty(value))
-                        {
-                            string? decryptedValue = _stringEncryptionService.Decrypt(value);
-
-                            property.SetValue(paymentGatewayDto, decryptedValue);
-                        }
+                        property.SetValue(paymentGatewayDto, decryptedValue);
                     }
                 }
             }
 
-            return paymentGatewayDtos;
+            return paymentGatewayDto;
         }
 
         public async Task<string?> GetCreditCheckCodeAsync()

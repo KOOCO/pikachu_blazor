@@ -159,6 +159,12 @@ public class PaymentGatewayController(
         throw new NotImplementedException();
     }
 
+    [HttpGet("line-pay")]
+    public Task<PaymentGatewayDto?> GetLinePayAsync(bool decrypt = false)
+    {
+        return _paymentGatewayAppService.GetLinePayAsync(decrypt);
+    }
+
     #region Private Functions
     private string CloseWindowsScript()
     {

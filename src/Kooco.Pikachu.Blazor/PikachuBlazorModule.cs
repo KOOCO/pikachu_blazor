@@ -61,6 +61,8 @@ using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.VirtualFileSystem;
 using Serilog;
 using Serilog.Events;
+using Kooco.Pikachu.PaymentGateways.LinePay;
+using Microsoft.Extensions.Options;
 
 namespace Kooco.Pikachu.Blazor;
 
@@ -98,9 +100,9 @@ public class PikachuBlazorModule : AbpModule
 
         context.Services.AddBlazoriseRichTextEdit();
         context.Services.AddAntDesign();
-		context.Services.AddTransient<OrderDeliveryBackgroundJob>();
+        context.Services.AddTransient<OrderDeliveryBackgroundJob>();
 
-		PreConfigure<OpenIddictBuilder>(builder =>
+        PreConfigure<OpenIddictBuilder>(builder =>
         {
             builder.AddValidation(options =>
             {
@@ -218,7 +220,7 @@ public class PikachuBlazorModule : AbpModule
         File.WriteAllBytes(file, certificate.Export(X509ContentType.Pfx, password));
         return new X509Certificate2(file, password, X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.MachineKeySet);
     }
- 
+
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         var hostingEnvironment = context.Services.GetHostingEnvironment();
@@ -266,28 +268,37 @@ public class PikachuBlazorModule : AbpModule
         {
             options.IsJobExecutionEnabled = true;
         });
+
+        ConfigurePaymentGateways(context);
+
         context.Services.AddScoped<OrderStatusCheckerWorker>();
         context.Services.AddScoped<PassiveUserBirthdayCheckerWorker>();
 
         context.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
     }
+
+    private void ConfigurePaymentGateways(ServiceConfigurationContext context)
+    {
+        context.Services.AddTransient<IConfigureOptions<LinePayConfiguration>, ConfigureLinePayOptions>();
+    }
+
     private void ConfigureHangfire(ServiceConfigurationContext context, IConfiguration configuration)
     {
         context.Services.AddHangfire(config =>
         {
             config.UseSqlServerStorage(configuration.GetConnectionString("HangFire"), new SqlServerStorageOptions
-			{
-				PrepareSchemaIfNecessary = true
-			});
-		
-	});
+            {
+                PrepareSchemaIfNecessary = true
+            });
+
+        });
 
         context.Services.AddHangfireServer(options =>
         {
             options.Queues = new[] { "automatic-emails-job", "automatic-issue-invoice" };
         });
 
-      
+
     }
 
     private void ConfigureAuthentication(ServiceConfigurationContext context)
@@ -393,7 +404,7 @@ public class PikachuBlazorModule : AbpModule
                 options.SwaggerDoc("v1", new OpenApiInfo { Title = "Pikachu API", Version = "v1", Description = "Application API" });
                 options.DocInclusionPredicate((docName, description) => true);
                 options.CustomSchemaIds(type => type.FullName);
-                
+
             }
         );
     }
@@ -490,28 +501,28 @@ public class PikachuBlazorModule : AbpModule
         });
 
         app.UseConfiguredEndpoints();
-        
-         context.ServiceProvider
+
+        context.ServiceProvider
 .GetRequiredService<IBackgroundWorkerManager>()
 .AddAsync(
-  context
-      .ServiceProvider
-      .GetRequiredService<PassiveUserBirthdayCheckerWorker>()
+ context
+     .ServiceProvider
+     .GetRequiredService<PassiveUserBirthdayCheckerWorker>()
 );
-     
-		var backgroundJobManager = context.ServiceProvider.GetRequiredService<IBackgroundJobManager>();
 
-		RecurringJob.AddOrUpdate<OrderDeliveryBackgroundJob>(
-			"DailyOrderStatusUpdate",         // Job identifier
-			job => job.ExecuteAsync(0),      // Method to call
-			"0 1 * * *"                     // Cron expression for 1 AM daily
-		);
-		
+        var backgroundJobManager = context.ServiceProvider.GetRequiredService<IBackgroundJobManager>();
 
+        RecurringJob.AddOrUpdate<OrderDeliveryBackgroundJob>(
+            "DailyOrderStatusUpdate",         // Job identifier
+            job => job.ExecuteAsync(0),      // Method to call
+            "0 1 * * *"                     // Cron expression for 1 AM daily
+        );
 
 
 
-	}
+
+
+    }
 
     // This method is required for the Image Upload in blazor
     // To avoid Did not receive data in allotted time
