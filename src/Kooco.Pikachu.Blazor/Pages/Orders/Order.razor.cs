@@ -105,7 +105,10 @@ public partial class Order
         SelectedTabName = e;
 
         TotalCount = 0;
-
+        NormalCount = 0;
+        FreezeCount = 0;
+        FreezeCount = 0;
+        OrdersSelected =new List<OrderDto>();
         StateHasChanged();
     }
 
