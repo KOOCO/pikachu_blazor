@@ -79,6 +79,7 @@
                         <Column ColumnSize="ColumnSize.Is12">
                             <Validation MessageLocalizer="@LH.Localize">
                                 <Label>@L["DiscountCode"]</Label>
+                                  <EditForm EditContext="editContext">
                                 <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="DiscountCode" @bind-CheckedValue="@CreateDiscountCode.Code">
                                     <ChildContent>
                                         <Radio Value="@("NoCodeRequired")">@L["NoCodeRequiredForDiscount"]</Radio>
@@ -99,6 +100,7 @@
                                         <ValidationMessage For="() => CreateDiscountCode!.Code" />
                                     </Feedback>
                                 </RadioGroup>
+                                </EditForm>
                             </Validation>
 
                         </Column>
