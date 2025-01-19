@@ -460,6 +460,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         var groupbuys = (await _groupBuyRepository.GetQueryableAsync())
                         .Where(g => g.IsGroupBuyAvaliable)
                         .Select(x => new GroupBuyList { Id = x.Id, GroupBuyName = x.GroupBuyName })
+                        .OrderBy(x => x.GroupBuyName)
                         .ToList();
         return ObjectMapper.Map<List<GroupBuyList>, List<KeyValueDto>>(groupbuys);
     }

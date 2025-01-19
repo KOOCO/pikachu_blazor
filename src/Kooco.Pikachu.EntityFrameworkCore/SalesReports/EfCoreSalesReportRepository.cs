@@ -42,7 +42,7 @@ public class EfCoreSalesReportRepository(IDbContextProvider<PikachuDbContext> db
             .Where(i => itemIds.Select(i => i.ItemId).Contains(i.Id))
             .Include(i => i.ItemDetails)
             .SelectMany(i => i.ItemDetails)
-            .Where(id => itemIds.Select(i => i.SKU).Contains(id.SKU))
+            .Where(id => itemIds.Select(i => i.Spec).Contains(id.SKU))
             .Select(x => new DataModel
             {
                 ItemId = x.ItemId,
@@ -175,7 +175,7 @@ public class EfCoreSalesReportRepository(IDbContextProvider<PikachuDbContext> db
         var grossSales = orders.Sum(y => y.TotalAmount);
         var discountAmount = orders.Sum(o => o.DiscountAmount) ?? 0;
         var netSales = grossSales - orders.Sum(o => o.OrderStatus == OrderStatus.Returned ? o.TotalAmount : (o.DiscountAmount ?? 0));
-        var grossProfit = grossSales - costOfGoodsSold;
+        var grossProfit = netSales - costOfGoodsSold;
         var grossProfitMargin = grossSales > 0 ? (grossProfit / netSales) * 100 : 0; //Multiply by 100 to caclulate in percentage.
 
         return new SalesReportModel
@@ -203,8 +203,8 @@ public class EfCoreSalesReportRepository(IDbContextProvider<PikachuDbContext> db
         var itemsCost = items
                     .Where(x => orderItems
                            .Where(oi => oi.ItemId.HasValue)
-                           .Select(oi => new { ItemId = oi.ItemId!.Value, SKU = oi.SKU }).ToList()
-                           .Contains(new { x.ItemId, SKU = (string?)x.SKU }))
+                           .Select(oi => new { ItemId = oi.ItemId!.Value, P = oi.Spec }).ToList()
+                           .Contains(new { x.ItemId, P = (string?)x.SKU }))
                     .Sum(i => i.Cost);
 
         var setItemsCost = setItems
