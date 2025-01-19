@@ -6,5 +6,6 @@ namespace Kooco.Pikachu.PaymentGateways.LinePay;
 
 public interface ILinePayAppService : IApplicationService
 {
-    Task<LinePayPaymentResponseDto> PaymentRequest(Guid orderId);
+    Task<LinePayResponseDto<LinePayPaymentResponseInfoDto>> PaymentRequest(Guid orderId);
+    Task<object> ConfirmPayment(long transactionId, string? orderNo);
 }
