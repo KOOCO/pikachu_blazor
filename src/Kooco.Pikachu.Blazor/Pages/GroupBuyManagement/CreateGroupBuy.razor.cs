@@ -120,8 +120,8 @@ public partial class CreateGroupBuy
     private readonly IElectronicInvoiceSettingAppService _electronicInvoiceSettingAppService;
 
     public List<LogisticsProviderSettingsDto> LogisticsProviders = [];
-    public ElectronicInvoiceSettingDto ElectronicInvoiceSetting=new ElectronicInvoiceSettingDto();
-    public List<PaymentGatewayDto> PaymentGateways =[];
+    public ElectronicInvoiceSettingDto ElectronicInvoiceSetting = new ElectronicInvoiceSettingDto();
+    public List<PaymentGatewayDto> PaymentGateways = [];
     private readonly ILogisticsProvidersAppService _LogisticsProvidersAppService;
     private readonly IPaymentGatewayAppService _paymentGatewayAppService;
 
@@ -163,6 +163,28 @@ public partial class CreateGroupBuy
     }
     #endregion
 
+    private List<string> OrderedDeliveryMethods =
+    [
+        DeliveryMethod.SevenToEleven1.ToString(),
+        DeliveryMethod.SevenToElevenC2C.ToString(),
+        DeliveryMethod.FamilyMart1.ToString(),
+        DeliveryMethod.FamilyMartC2C.ToString(),
+        DeliveryMethod.PostOffice.ToString(),
+        DeliveryMethod.BlackCat1.ToString(),
+        DeliveryMethod.TCatDeliveryNormal.ToString(),
+        DeliveryMethod.TCatDeliverySevenElevenNormal.ToString(),
+        DeliveryMethod.BlackCatFreeze.ToString(),
+        DeliveryMethod.TCatDeliveryFreeze.ToString(),
+        DeliveryMethod.TCatDeliverySevenElevenFreeze.ToString(),
+        DeliveryMethod.BlackCatFrozen.ToString(),
+        DeliveryMethod.SevenToElevenFrozen.ToString(),
+        DeliveryMethod.TCatDeliveryFrozen.ToString(),
+        DeliveryMethod.TCatDeliverySevenElevenFrozen.ToString(),
+        DeliveryMethod.SelfPickup.ToString(),
+        DeliveryMethod.HomeDelivery.ToString(),
+        DeliveryMethod.DeliveredByStore.ToString()
+    ];
+
     #region Methods
     protected override async Task OnInitializedAsync()
     {
@@ -203,41 +225,42 @@ public partial class CreateGroupBuy
 
     public bool CheckForShippingMethodData(string method)
     {
-		if (LogisticsProviders is { Count: 0 }) return true;
+        if (LogisticsProviders is { Count: 0 }) return true;
 
-		DeliveryMethod deliveryMethod = Enum.Parse<DeliveryMethod>(method);
+        DeliveryMethod deliveryMethod = Enum.Parse<DeliveryMethod>(method);
         if (deliveryMethod is DeliveryMethod.PostOffice)
         {
             var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.PostOffice).FirstOrDefault();
-            if (data==null||(data.Freight <= 0 && data.Weight <= 0))
+            if (data == null || (data.Freight <= 0 && data.Weight <= 0))
             {
                 return true;
             }
-            else {
+            else
+            {
                 return false;
 
 
-			}
-         
-             }
-		else if (deliveryMethod is DeliveryMethod.FamilyMart1)
-		{
-			var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.FamilyMart).FirstOrDefault();
-			if (data == null || (data.Freight <0 ))
-			{
-				return true;
-			}
-			else
-			{
-				return false;
+            }
+
+        }
+        else if (deliveryMethod is DeliveryMethod.FamilyMart1)
+        {
+            var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.FamilyMart).FirstOrDefault();
+            if (data == null || (data.Freight < 0))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
 
 
-			}
-		}
+            }
+        }
         else if (deliveryMethod is DeliveryMethod.SevenToEleven1)
         {
             var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.SevenToEleven).FirstOrDefault();
-            if (data == null || (data.Freight <0 ))
+            if (data == null || (data.Freight < 0))
             {
                 return true;
             }
@@ -251,7 +274,7 @@ public partial class CreateGroupBuy
         else if (deliveryMethod is DeliveryMethod.SevenToElevenFrozen)
         {
             var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.SevenToElevenFrozen).FirstOrDefault();
-            if (data == null || (data.Freight < 0 ))
+            if (data == null || (data.Freight < 0))
             {
                 return true;
             }
@@ -265,7 +288,7 @@ public partial class CreateGroupBuy
         else if (deliveryMethod is DeliveryMethod.BlackCat1)
         {
             var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.BNormal).FirstOrDefault();
-            if (data == null || (data.Freight < 0 || data.OuterIslandFreight<0))
+            if (data == null || (data.Freight < 0 || data.OuterIslandFreight < 0))
             {
                 return true;
             }
@@ -279,7 +302,7 @@ public partial class CreateGroupBuy
         else if (deliveryMethod is DeliveryMethod.BlackCatFreeze)
         {
             var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.BFreeze).FirstOrDefault();
-            if (data == null || (data.Freight < 0 ))
+            if (data == null || (data.Freight < 0))
             {
                 return true;
             }
@@ -293,7 +316,7 @@ public partial class CreateGroupBuy
         else if (deliveryMethod is DeliveryMethod.BlackCatFrozen)
         {
             var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.BFrozen).FirstOrDefault();
-            if (data == null || (data.Freight <0 ))
+            if (data == null || (data.Freight < 0))
             {
                 return true;
             }
@@ -307,7 +330,7 @@ public partial class CreateGroupBuy
         else if (deliveryMethod is DeliveryMethod.SevenToElevenC2C)
         {
             var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.SevenToElevenC2C).FirstOrDefault();
-            if (data == null || (data.Freight <0 ))
+            if (data == null || (data.Freight < 0))
             {
                 return true;
             }
@@ -321,7 +344,7 @@ public partial class CreateGroupBuy
         else if (deliveryMethod is DeliveryMethod.FamilyMartC2C)
         {
             var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.FamilyMartC2C).FirstOrDefault();
-            if (data == null || (data.Freight < 0 ))
+            if (data == null || (data.Freight < 0))
             {
                 return true;
             }
@@ -335,7 +358,7 @@ public partial class CreateGroupBuy
         else if (deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenNormal)
         {
             var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.TCat711Normal).FirstOrDefault();
-            if (data == null || (data.Freight < 0 ))
+            if (data == null || (data.Freight < 0))
             {
                 return true;
             }
@@ -349,7 +372,7 @@ public partial class CreateGroupBuy
         else if (deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFreeze)
         {
             var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.TCat711Freeze).FirstOrDefault();
-            if (data == null || (data.Freight <0 ))
+            if (data == null || (data.Freight < 0))
             {
                 return true;
             }
@@ -363,7 +386,7 @@ public partial class CreateGroupBuy
         else if (deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFrozen)
         {
             var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.TCat711Frozen).FirstOrDefault();
-            if (data == null || (data.Freight < 0 ))
+            if (data == null || (data.Freight < 0))
             {
                 return true;
             }
@@ -377,7 +400,7 @@ public partial class CreateGroupBuy
         else if (deliveryMethod is DeliveryMethod.TCatDeliveryNormal)
         {
             var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.TCatNormal).FirstOrDefault();
-            if (data == null || (data.Freight < 0 || data.OuterIslandFreight<0||data.Size<=0||data.TCatPaymentMethod==null|| data.TCatPaymentMethod<=0))
+            if (data == null || (data.Freight < 0 || data.OuterIslandFreight < 0 || data.Size <= 0 || data.TCatPaymentMethod == null || data.TCatPaymentMethod <= 0))
             {
                 return true;
             }
@@ -419,7 +442,7 @@ public partial class CreateGroupBuy
         else if (deliveryMethod is DeliveryMethod.DeliveredByStore)
         {
             var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.HomeDelivery).FirstOrDefault();
-            if (data == null || data.MainIslands.IsNullOrEmpty() ||data.Freight<0||(data.IsOuterIslands&& data.OuterIslands.IsNullOrEmpty()))
+            if (data == null || data.MainIslands.IsNullOrEmpty() || data.Freight < 0 || (data.IsOuterIslands && data.OuterIslands.IsNullOrEmpty()))
             {
                 return true;
             }
@@ -431,7 +454,7 @@ public partial class CreateGroupBuy
             }
         }
         return true;
-	}
+    }
     public bool IsShippingMethodEnabled(string method)
     {
         if (LogisticsProviders is { Count: 0 }) return false;
@@ -473,15 +496,17 @@ public partial class CreateGroupBuy
         }
         else if (!ecpay.IsEnabled) return true;
         else if (ecpay.HashIV.IsNullOrEmpty() || ecpay.HashKey.IsNullOrEmpty() || ecpay.MerchantId.IsNullOrEmpty() || ecpay.TradeDescription.IsNullOrEmpty() || ecpay.CreditCheckCode.IsNullOrEmpty()) return true;
-        else {
+        else
+        {
             return false;
-        
+
         }
     }
-    public bool IsInvoiceEnable() {
+    public bool IsInvoiceEnable()
+    {
         return ElectronicInvoiceSetting.IsEnable;
-    
-    
+
+
     }
     private void OpenAddLinkModal(CreateImageDto createImageDto)
     {
@@ -805,7 +830,7 @@ public partial class CreateGroupBuy
             await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
         }
     }
-    
+
     async Task OnBannerImageModuleUploadAsync(
         FileChangedEventArgs e,
         List<CreateImageDto> bannerImages,
@@ -870,7 +895,7 @@ public partial class CreateGroupBuy
             {
                 stream.Close();
             }
-            
+
             if (count > 0)
             {
                 await _uiMessageService.Error(count + ' ' + L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
@@ -1021,16 +1046,16 @@ public partial class CreateGroupBuy
                         bannerModule.RemoveAll(r => r.BlobImageName == blobImageName);
 
                         if (!bannerModule.Any() && moduleNumber.HasValue)
-                                bannerModule.Add(new CreateImageDto
-                                {
-                                    Name = string.Empty,
-                                    ImageUrl = string.Empty,
-                                    ImageType = ImageType.GroupBuyBannerImage,
-                                    BlobImageName = string.Empty,
-                                    CarouselStyle = null,
-                                    ModuleNumber = moduleNumber.Value,
-                                    SortNo = 0
-                                });
+                            bannerModule.Add(new CreateImageDto
+                            {
+                                Name = string.Empty,
+                                ImageUrl = string.Empty,
+                                ImageType = ImageType.GroupBuyBannerImage,
+                                BlobImageName = string.Empty,
+                                CarouselStyle = null,
+                                ModuleNumber = moduleNumber.Value,
+                                SortNo = 0
+                            });
                     }
                 }
 
@@ -1045,17 +1070,17 @@ public partial class CreateGroupBuy
 
                         carouselModule.RemoveAll(r => r.BlobImageName == blobImageName);
 
-                        if(!carouselModule.Any() && moduleNumber.HasValue) 
-                                carouselModule.Add(new CreateImageDto
-                                {
-                                    Name = string.Empty,
-                                    ImageUrl = string.Empty,
-                                    ImageType = ImageType.GroupBuyCarouselImage,
-                                    BlobImageName = string.Empty,
-                                    CarouselStyle = null,
-                                    ModuleNumber = moduleNumber.Value,
-                                    SortNo = 0
-                                });
+                        if (!carouselModule.Any() && moduleNumber.HasValue)
+                            carouselModule.Add(new CreateImageDto
+                            {
+                                Name = string.Empty,
+                                ImageUrl = string.Empty,
+                                ImageType = ImageType.GroupBuyCarouselImage,
+                                BlobImageName = string.Empty,
+                                CarouselStyle = null,
+                                ModuleNumber = moduleNumber.Value,
+                                SortNo = 0
+                            });
                     }
                 }
 
@@ -1110,12 +1135,12 @@ public partial class CreateGroupBuy
                 Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
                 SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
                 GroupBuyModuleType = groupBuyModuleType,
-                ModuleNumber = CollapseItem.Any(c => c.GroupBuyModuleType is GroupBuyModuleType.CarouselImages) ? 
+                ModuleNumber = CollapseItem.Any(c => c.GroupBuyModuleType is GroupBuyModuleType.CarouselImages) ?
                                CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.CarouselImages) + 1 : 1
             };
 
             CollapseItem.Add(collapseItem);
-            
+
             CarouselFilePickers.Add(new());
 
             CarouselModules.Add([new() { ModuleNumber = collapseItem.ModuleNumber }]);
@@ -1123,14 +1148,14 @@ public partial class CreateGroupBuy
 
         else if (groupBuyModuleType is GroupBuyModuleType.BannerImages)
         {
-            
+
             CollapseItem collapseItem = new()
             {
                 Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
                 SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
                 GroupBuyModuleType = groupBuyModuleType,
                 ModuleNumber = CollapseItem.Any(c => c.GroupBuyModuleType is GroupBuyModuleType.BannerImages) ?
-                               CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.BannerImages) + 1: 1
+                               CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.BannerImages) + 1 : 1
             };
 
             CollapseItem.Add(collapseItem);
@@ -1180,19 +1205,19 @@ public partial class CreateGroupBuy
 
         else if (groupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
         {
-          
-                CollapseItem collapseItem = new()
-                {
-                    Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
-                    SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
-                    GroupBuyModuleType = groupBuyModuleType,
-                    ModuleNumber = CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule) > 0 ?
-                               CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule) + 1 : 1
 
-                };
+            CollapseItem collapseItem = new()
+            {
+                Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
+                GroupBuyModuleType = groupBuyModuleType,
+                ModuleNumber = CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule) > 0 ?
+                           CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule) + 1 : 1
 
-                CollapseItem.Add(collapseItem);
-            
+            };
+
+            CollapseItem.Add(collapseItem);
+
 
             ProductRankingCarouselPickers.Add(new());
 
@@ -1319,13 +1344,18 @@ public partial class CreateGroupBuy
         CreateGroupBuyDto.BlackCatDeliveryTime = JsonConvert.SerializeObject(BlackCateDeliveryTimeList);
 
     }
-    void DeliverdByStoreDeliveryTimeCheckedChange(string method, ChangeEventArgs e)
+    void DeliverdByStoreDeliveryTimeCheckedChange(string method, ChangeEventArgs e, bool clearAll = false)
     {
-        if (method is PikachuResource.UnableToSpecifyDuringPeakPeriods)
+        if (method is PikachuResource.UnableToSpecifyDuringPeakPeriods && !clearAll)
         {
             if (IsUnableToSpecifyDuringPeakPeriodsForDeliveredByStore) IsUnableToSpecifyDuringPeakPeriodsForDeliveredByStore = false;
 
             else IsUnableToSpecifyDuringPeakPeriodsForDeliveredByStore = true;
+        }
+        
+        if (clearAll)
+        {
+            IsUnableToSpecifyDuringPeakPeriodsForDeliveredByStore = false;
         }
 
         bool value = (bool)(e?.Value ?? false);
@@ -1338,9 +1368,9 @@ public partial class CreateGroupBuy
 
     }
 
-    void HomeDeliveryTimeCheckedChange(string method, ChangeEventArgs e)
+    void HomeDeliveryTimeCheckedChange(string method, ChangeEventArgs e, bool clearAll = false)
     {
-        if (method is PikachuResource.UnableToSpecifyDuringPeakPeriods)
+        if (method is PikachuResource.UnableToSpecifyDuringPeakPeriods && !clearAll)
         {
             if (IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery)
             {
@@ -1351,20 +1381,25 @@ public partial class CreateGroupBuy
             else
             {
                 IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery = true;
-                
+
                 HomeDeliveryTimeList.Clear();
-                
+
                 HomeDeliveryTimeList.Add(PikachuResource.UnableToSpecifyDuringPeakPeriods);
             }
         }
 
         bool value = (bool)(e?.Value ?? false);
 
-        if (!IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery)
+        if (!IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery || clearAll)
         {
             if (value) HomeDeliveryTimeList.Add(method);
 
             else HomeDeliveryTimeList.Remove(method);
+
+            if (clearAll)
+            {
+                IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery = false;
+            }
         }
 
         CreateGroupBuyDto.HomeDeliveryDeliveryTime = JsonConvert.SerializeObject(HomeDeliveryTimeList);
@@ -1461,6 +1496,43 @@ public partial class CreateGroupBuy
         else
         {
             CreateGroupBuyDto.ShippingMethodList.Remove(method);
+        }
+
+        var blackCat = new[]
+        {
+            DeliveryMethod.TCatDeliveryNormal.ToString(),
+            DeliveryMethod.TCatDeliverySevenElevenNormal.ToString(),
+            DeliveryMethod.TCatDeliveryFreeze.ToString(),
+            DeliveryMethod.TCatDeliverySevenElevenFreeze.ToString(),
+            DeliveryMethod.TCatDeliveryFrozen.ToString(),
+            DeliveryMethod.TCatDeliverySevenElevenFrozen.ToString()
+        };
+
+        if (!CreateGroupBuyDto.ShippingMethodList.Any(x => blackCat.Contains(x)))
+        {
+            DeliveryTimeConts.BlackCat.ForEach(item =>
+            {
+                BlackCatDeliveryTimeCheckedChange(item, new ChangeEventArgs { Value = false });
+                JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", item);
+            });
+        }
+
+        if (!CreateGroupBuyDto.ShippingMethodList.Contains(DeliveryMethod.HomeDelivery.ToString()))
+        {
+            DeliveryTimeConts.HomeDelivery.ForEach(item =>
+            {
+                HomeDeliveryTimeCheckedChange(item, new ChangeEventArgs { Value = false }, true);
+                JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", item);
+            });
+        }
+
+        if (!CreateGroupBuyDto.ShippingMethodList.Contains(DeliveryMethod.DeliveredByStore.ToString()))
+        {
+            DeliveryTimeConts.DeliveredByStore.ForEach(item =>
+            {
+                DeliverdByStoreDeliveryTimeCheckedChange(item, new ChangeEventArgs { Value = false }, true);
+                JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", item);
+            });
         }
 
         // Serialize the updated list and assign it to ExcludeShippingMethod
@@ -2212,20 +2284,20 @@ public partial class CreateGroupBuy
 
         CollapseItem.Remove(collapseItem);
 
-        if(collapseItem.GroupBuyModuleType is GroupBuyModuleType.CarouselImages || 
+        if (collapseItem.GroupBuyModuleType is GroupBuyModuleType.CarouselImages ||
             collapseItem.GroupBuyModuleType is GroupBuyModuleType.BannerImages)
-                ReindexingCollapseItem(moduleNumber, collapseItem.GroupBuyModuleType);
+            ReindexingCollapseItem(moduleNumber, collapseItem.GroupBuyModuleType);
     }
 
     private void ReindexingCollapseItem(int moduleNumber, GroupBuyModuleType groupBuyModuleType)
     {
-        foreach(CollapseItem collapseItem in CollapseItem.Where(w => w.GroupBuyModuleType == groupBuyModuleType && w.ModuleNumber > moduleNumber).ToList())
+        foreach (CollapseItem collapseItem in CollapseItem.Where(w => w.GroupBuyModuleType == groupBuyModuleType && w.ModuleNumber > moduleNumber).ToList())
         {
             int oldModuleNumber = (int)collapseItem.ModuleNumber!;
 
             collapseItem.ModuleNumber = collapseItem.ModuleNumber - 1;
 
-            if(groupBuyModuleType is GroupBuyModuleType.CarouselImages)
+            if (groupBuyModuleType is GroupBuyModuleType.CarouselImages)
             {
                 foreach (List<CreateImageDto> images in CarouselModules.Select(s => s.Where(w => w.ModuleNumber == oldModuleNumber && s.Count > 0).ToList()).ToList())
                 {
@@ -2236,7 +2308,7 @@ public partial class CreateGroupBuy
                 }
             }
 
-            else if(groupBuyModuleType is GroupBuyModuleType.BannerImages)
+            else if (groupBuyModuleType is GroupBuyModuleType.BannerImages)
             {
                 foreach (List<CreateImageDto> images in BannerModules.Select(s => s.Where(w => w.ModuleNumber == oldModuleNumber && s.Count > 0).ToList()).ToList())
                 {

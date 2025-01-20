@@ -356,7 +356,7 @@
                 <label class="form-label">@L["Normal"]</label><br />
                 @if (EditGroupBuyDto.AllowShipToOuterTaiwan && !EditGroupBuyDto.AllowShipOversea)
                 {
-                    @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
+                    @foreach (string item in OrderedDeliveryMethods)
                     {
                         if (item == Enum.GetName(DeliveryMethod.BlackCat1) ||
                         item == Enum.GetName(DeliveryMethod.TCatDeliveryNormal) ||
@@ -375,12 +375,18 @@
                                     @L[item]
                                 </label>
                             }
+                            @if (item == Enum.GetName(DeliveryMethod.FamilyMartC2C)
+                           || item == Enum.GetName(DeliveryMethod.BlackCat1))
+                            {
+                                <br />
+                                <Div Class="mt-1"></Div>
+                            }
                         }
                     }
                 }
                 else
                 {
-                    @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
+                    @foreach (string item in OrderedDeliveryMethods)
                     {
                         if (item == Enum.GetName(DeliveryMethod.PostOffice) ||
                         item == Enum.GetName(DeliveryMethod.BlackCat1) ||
@@ -406,14 +412,21 @@
                                     @L[item]
                                 </label>
                             }
+                            @if (item == Enum.GetName(DeliveryMethod.FamilyMartC2C)
+                           || item == Enum.GetName(DeliveryMethod.BlackCat1))
+                            {
+                                <br />
+                                <Div Class="mt-1"></Div>
+                            }
                         }
                     }
                 }
                 <br />
+                <Div Class="mt-2"></Div>
                 <label class="form-label">@L["Freeze"]</label><br />
                 @if (EditGroupBuyDto.AllowShipToOuterTaiwan && !EditGroupBuyDto.AllowShipOversea)
                 {
-                    @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
+                    @foreach (string item in OrderedDeliveryMethods)
                     {
                         if (item == Enum.GetName(DeliveryMethod.BlackCatFreeze) ||
                         item == Enum.GetName(DeliveryMethod.TCatDeliveryFreeze))
@@ -435,7 +448,7 @@
                 }
                 else
                 {
-                    @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
+                    @foreach (string item in OrderedDeliveryMethods)
                     {
                         if (item == Enum.GetName(DeliveryMethod.BlackCatFreeze) ||
                         item == Enum.GetName(DeliveryMethod.TCatDeliveryFreeze) ||
@@ -460,10 +473,11 @@
                     }
                 }
                 <br />
+                <Div Class="mt-2"></Div>
                 <label class="form-label">@L["Frozen"]</label><br />
                 @if (EditGroupBuyDto.AllowShipToOuterTaiwan && !EditGroupBuyDto.AllowShipOversea)
                 {
-                    @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
+                    @foreach (string item in OrderedDeliveryMethods)
                     {
                         if (item == Enum.GetName(DeliveryMethod.BlackCatFrozen) ||
                         item == Enum.GetName(DeliveryMethod.TCatDeliveryFrozen))
@@ -485,7 +499,7 @@
                 }
                 else
                 {
-                    @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
+                    @foreach (string item in OrderedDeliveryMethods)
                     {
                         if (item == Enum.GetName(DeliveryMethod.BlackCatFrozen) ||
                         item == Enum.GetName(DeliveryMethod.TCatDeliveryFrozen) ||
@@ -511,8 +525,9 @@
                     }
                 }
                 <br />
+                <Div Class="mt-2"></Div>
                 <label class="form-label">@L["DeliveryTypeOthers"]</label><br />
-                @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
+                @foreach (string item in OrderedDeliveryMethods)
                 {
                     if (item == Enum.GetName(DeliveryMethod.HomeDelivery))
                     {
@@ -617,7 +632,7 @@
             <div class="col-2"></div>
             <div class="col-2"></div>
             <div class="col-8">
-                 <label class="form-label">@L["HomeDelivery"]<span class="text-danger"> </span></label>
+                <label class="form-label">@L["HomeDelivery"]<span class="text-danger"> </span></label>
             </div>
             <div class="col-2"></div>
             <div class="col-2"></div>
@@ -662,7 +677,7 @@
             <div class="col-2"></div>
             <div class="col-2"></div>
             <div class="col-8">
-               <label class="form-label">@L["SelfPickup"]<span class="text-danger"> </span></label>
+                <label class="form-label">@L["SelfPickup"]<span class="text-danger"> </span></label>
             </div>
             <div class="col-2"></div>
             <div class="col-2"></div>
@@ -828,7 +843,7 @@
             </div>
         </div>
         <Divider></Divider>
-          <div class="row">
+        <div class="row">
             <div class="col-2">@L["AdvanceSetting"]</div>
             <div class="col-2 form-label">@L["AddOnProducts"]</div>
             <div class="col-4"> <Switch TValue="bool" @bind-Checked="@EditGroupBuyDto.AddonProduct"></Switch></div>
@@ -841,11 +856,11 @@
         <div class="row">
             <div class="col-2"></div>
             <div class="col-2 form-label">@L["EnterprisePurchase"]</div>
-            <div class="col-4"> 
-                <Switch TValue="bool" 
+            <div class="col-4">
+                <Switch TValue="bool"
                         Checked="@EditGroupBuyDto.IsEnterprise"
                         CheckedChanged="OnEnterPriseChange"
-                        CheckedExpression="@(() => EditGroupBuyDto.IsEnterprise)"/>
+                        CheckedExpression="@(() => EditGroupBuyDto.IsEnterprise)" />
             </div>
         </div>
         <div class="row">
@@ -1216,7 +1231,7 @@
                                                             <option>Select Style</option>
                                                             @foreach (object? enumValue in Enum.GetValues(typeof(StyleForCarouselImages)))
                                                             {
-                                                                if (enumValue is not null && carouselImages.Any(a => a.CarouselStyle == (StyleForCarouselImages)enumValue)) 
+                                                                if (enumValue is not null && carouselImages.Any(a => a.CarouselStyle == (StyleForCarouselImages)enumValue))
                                                                 {
                                                                     <option value="@enumValue" selected>@L[enumValue.ToString()]</option>
                                                                 }
@@ -1551,8 +1566,8 @@
 
                                     @if (module.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
                                     {
-                                        List<ProductRankingCarouselModule>productModules=ProductRankingCarouselModules.Where(x=>x.ModuleNumber==module.ModuleNumber).ToList();
-                                      
+                                        List<ProductRankingCarouselModule> productModules = ProductRankingCarouselModules.Where(x => x.ModuleNumber == module.ModuleNumber).ToList();
+
                                         foreach (ProductRankingCarouselModule productModule in productModules)
                                         {
                                             <Div Class="col-12 d-flex">
@@ -2107,7 +2122,7 @@
                 </div>
             </div>
         </div>
-        
+
         <Row>
             <Column ColumnSize="ColumnSize.Is2">@L["Availability"]</Column>
             <Column ColumnSize="ColumnSize.Is10">

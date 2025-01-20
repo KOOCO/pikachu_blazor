@@ -3,10 +3,18 @@ using Blazorise;
 using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.AzureStorage.Image;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.GroupBuyOrderInstructions;
+using Kooco.Pikachu.GroupBuyOrderInstructions.Interface;
+using Kooco.Pikachu.GroupBuyProductRankings;
+using Kooco.Pikachu.GroupBuyProductRankings.Interface;
 using Kooco.Pikachu.GroupBuys;
+using Kooco.Pikachu.GroupPurchaseOverviews;
+using Kooco.Pikachu.GroupPurchaseOverviews.Interface;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
+using Kooco.Pikachu.Localization;
+using Kooco.Pikachu.LogisticsProviders;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
@@ -20,20 +28,7 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
 using Volo.Abp.ObjectMapping;
-using System.Text.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
-using Kooco.Pikachu.Localization;
-using Kooco.Pikachu.GroupPurchaseOverviews;
-using Kooco.Pikachu.GroupPurchaseOverviews.Interface;
-using Kooco.Pikachu.GroupBuyOrderInstructions.Interface;
-using Kooco.Pikachu.GroupBuyOrderInstructions;
-using Kooco.Pikachu.LogisticsProviders;
-using Kooco.Pikachu.Tenants;
-using Volo.Abp.MultiTenancy;
-using Kooco.Pikachu.GroupBuyProductRankings;
-using Kooco.Pikachu.GroupBuyProductRankings.Interface;
-using Kooco.Pikachu.Groupbuys.Interface;
-using Microsoft.AspNetCore.Components.Forms;
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
 
 public partial class EditGroupBuy
@@ -131,6 +126,28 @@ public partial class EditGroupBuy
     private bool IsColorPickerOpen = false;
     #endregion
 
+    private List<string> OrderedDeliveryMethods =
+    [
+        DeliveryMethod.SevenToEleven1.ToString(),
+        DeliveryMethod.SevenToElevenC2C.ToString(),
+        DeliveryMethod.FamilyMart1.ToString(),
+        DeliveryMethod.FamilyMartC2C.ToString(),
+        DeliveryMethod.PostOffice.ToString(),
+        DeliveryMethod.BlackCat1.ToString(),
+        DeliveryMethod.TCatDeliveryNormal.ToString(),
+        DeliveryMethod.TCatDeliverySevenElevenNormal.ToString(),
+        DeliveryMethod.BlackCatFreeze.ToString(),
+        DeliveryMethod.TCatDeliveryFreeze.ToString(),
+        DeliveryMethod.TCatDeliverySevenElevenFreeze.ToString(),
+        DeliveryMethod.BlackCatFrozen.ToString(),
+        DeliveryMethod.SevenToElevenFrozen.ToString(),
+        DeliveryMethod.TCatDeliveryFrozen.ToString(),
+        DeliveryMethod.TCatDeliverySevenElevenFrozen.ToString(),
+        DeliveryMethod.SelfPickup.ToString(),
+        DeliveryMethod.HomeDelivery.ToString(),
+        DeliveryMethod.DeliveredByStore.ToString()
+    ];
+
     #region Constructor
     public EditGroupBuy(
         IGroupBuyAppService groupBuyAppService,
@@ -184,7 +201,7 @@ public partial class EditGroupBuy
 
             EditGroupBuyDto.ShortCode = EditGroupBuyDto?.ShortCode == "" ? null : EditGroupBuyDto?.ShortCode;
 
-            IsUnableToSpecifyDuringPeakPeriodsForSelfPickups = !EditGroupBuyDto.SelfPickupDeliveryTime.IsNullOrEmpty() && 
+            IsUnableToSpecifyDuringPeakPeriodsForSelfPickups = !EditGroupBuyDto.SelfPickupDeliveryTime.IsNullOrEmpty() &&
                                                                 EditGroupBuyDto.SelfPickupDeliveryTime.Contains("UnableToSpecifyDuringPeakPeriods") ? true : false;
 
             IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery = !EditGroupBuyDto.HomeDeliveryDeliveryTime.IsNullOrEmpty() &&
@@ -482,7 +499,7 @@ public partial class EditGroupBuy
                         Id = groupBuyItemGroup.Id,
                         Item = groupBuyItemGroup?.Item,
                         ItemType = groupBuyItemGroup.ItemType,
-                        Name = groupBuyItemGroup.Item!=null? groupBuyItemGroup.Item.ItemName:"",
+                        Name = groupBuyItemGroup.Item != null ? groupBuyItemGroup.Item.ItemName : "",
                         SetItem = groupBuyItemGroup.SetItem
                     });
                 }
@@ -518,14 +535,14 @@ public partial class EditGroupBuy
 
                 //BannerImages = _objectMapper.Map<List<ImageDto>, List<CreateImageDto>>(ExistingBannerImages);
 
-               // BannerModules = [.. BannerImages.GroupBy(g => g.ModuleNumber).Select(s => s.ToList())];
+                // BannerModules = [.. BannerImages.GroupBy(g => g.ModuleNumber).Select(s => s.ToList())];
 
                 GroupPurchaseOverviewModules = await _GroupPurchaseOverviewAppService.GetListByGroupBuyIdAsync(Id);
 
                 GroupBuyOrderInstructionModules = await _GroupBuyOrderInstructionAppService.GetListByGroupBuyIdAsync(Id);
 
                 await GetProductRankingCarouselsAsync();
-                
+
                 //foreach (List<CreateImageDto> carouselImages in CarouselModules)
                 //{
                 //    int? moduleNumber = carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key;
@@ -548,7 +565,7 @@ public partial class EditGroupBuy
                 //    //    });
 
                 //    CollapseItem.Add(collapseItem);
-                    
+
                 //    CarouselFilePickers.Add(new());
                 //}
 
@@ -908,7 +925,7 @@ public partial class EditGroupBuy
 
         else if (groupBuyModuleType is GroupBuyModuleType.BannerImages)
         {
-           
+
             CollapseItem collapseItem = new()
             {
                 Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
@@ -965,18 +982,18 @@ public partial class EditGroupBuy
 
         else if (groupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
         {
-           
-                CollapseItem collapseItem = new()
-                {
-                    Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
-                    SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
-                    GroupBuyModuleType = groupBuyModuleType,
-                    ModuleNumber = CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule) > 0 ?
-                               CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule) + 1 : 1
-                };
 
-                CollapseItem.Add(collapseItem);
-            
+            CollapseItem collapseItem = new()
+            {
+                Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
+                GroupBuyModuleType = groupBuyModuleType,
+                ModuleNumber = CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule) > 0 ?
+                           CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule) + 1 : 1
+            };
+
+            CollapseItem.Add(collapseItem);
+
 
             ProductRankingCarouselPickers.Add(new());
 
@@ -1279,7 +1296,7 @@ public partial class EditGroupBuy
             await carouselPicker.Clear();
             return;
         }
-        
+
         int count = 0;
         try
         {
@@ -1604,9 +1621,9 @@ public partial class EditGroupBuy
 
         EditGroupBuyDto.BlackCatDeliveryTime = JsonConvert.SerializeObject(BlackCateDeliveryTimeList);
     }
-    void HomeDeliveryTimeCheckedChange(string method, ChangeEventArgs e)
+    void HomeDeliveryTimeCheckedChange(string method, ChangeEventArgs e, bool clearAll = false)
     {
-        if (method is PikachuResource.UnableToSpecifyDuringPeakPeriods)
+        if (method is PikachuResource.UnableToSpecifyDuringPeakPeriods && !clearAll)
         {
             if (IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery)
             {
@@ -1617,16 +1634,21 @@ public partial class EditGroupBuy
             else
             {
                 IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery = true;
-                
+
                 HomeDeliveryTimeList.Clear();
-                
+
                 HomeDeliveryTimeList.Add(PikachuResource.UnableToSpecifyDuringPeakPeriods);
             }
         }
 
+        if (clearAll)
+        {
+            IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery = false;
+        }
+
         bool value = (bool)(e?.Value ?? false);
 
-        if (!IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery)
+        if (!IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery || clearAll)
         {
             if (value) HomeDeliveryTimeList.Add(method);
 
@@ -1635,13 +1657,18 @@ public partial class EditGroupBuy
 
         EditGroupBuyDto.HomeDeliveryDeliveryTime = JsonConvert.SerializeObject(HomeDeliveryTimeList);
     }
-    void DeliveredByStoreTimeCheckedChange(string method, ChangeEventArgs e)
+    void DeliveredByStoreTimeCheckedChange(string method, ChangeEventArgs e, bool clearAll = false)
     {
-        if (method is PikachuResource.UnableToSpecifyDuringPeakPeriods)
+        if (method is PikachuResource.UnableToSpecifyDuringPeakPeriods && !clearAll)
         {
             if (IsUnableToSpecifyDuringPeakPeriodsForDeliveredByStore) IsUnableToSpecifyDuringPeakPeriodsForDeliveredByStore = false;
 
             else IsUnableToSpecifyDuringPeakPeriodsForDeliveredByStore = true;
+        }
+
+        if (clearAll)
+        {
+            IsUnableToSpecifyDuringPeakPeriodsForDeliveredByStore = false;
         }
 
         bool value = (bool)(e?.Value ?? false);
@@ -1746,6 +1773,43 @@ public partial class EditGroupBuy
             EditGroupBuyDto.ShippingMethodList.Remove(method);
         }
 
+        var blackCat = new[]
+        {
+            DeliveryMethod.TCatDeliveryNormal.ToString(),
+            DeliveryMethod.TCatDeliverySevenElevenNormal.ToString(),
+            DeliveryMethod.TCatDeliveryFreeze.ToString(),
+            DeliveryMethod.TCatDeliverySevenElevenFreeze.ToString(),
+            DeliveryMethod.TCatDeliveryFrozen.ToString(),
+            DeliveryMethod.TCatDeliverySevenElevenFrozen.ToString()
+        };
+
+        if (!EditGroupBuyDto.ShippingMethodList.Any(x => blackCat.Contains(x)))
+        {
+            DeliveryTimeConts.BlackCat.ForEach(item =>
+            {
+                BlackCatDeliveryTimeCheckedChange(item, new ChangeEventArgs { Value = false });
+                JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", item);
+            });
+        }
+
+        if (!EditGroupBuyDto.ShippingMethodList.Contains(DeliveryMethod.HomeDelivery.ToString()))
+        {
+            DeliveryTimeConts.HomeDelivery.ForEach(item =>
+            {
+                HomeDeliveryTimeCheckedChange(item, new ChangeEventArgs { Value = false }, true);
+                JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", item);
+            });
+        }
+
+        if (!EditGroupBuyDto.ShippingMethodList.Contains(DeliveryMethod.DeliveredByStore.ToString()))
+        {
+            DeliveryTimeConts.DeliveredByStore.ForEach(item =>
+            {
+                DeliveredByStoreTimeCheckedChange(item, new ChangeEventArgs { Value = false }, true);
+                JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", item);
+            });
+        }
+
         // Serialize the updated list and assign it to ExcludeShippingMethod
         EditGroupBuyDto.ExcludeShippingMethod = JsonConvert.SerializeObject(EditGroupBuyDto.ShippingMethodList);
     }
@@ -1829,16 +1893,16 @@ public partial class EditGroupBuy
                         carouselModule.RemoveAll(r => r.BlobImageName == blobImageName);
 
                         if (!carouselModule.Any() && moduleNumber.HasValue)
-                                carouselModule.Add(new CreateImageDto
-                                {
-                                    Name = string.Empty,
-                                    ImageUrl = string.Empty,
-                                    ImageType = ImageType.GroupBuyCarouselImage,
-                                    BlobImageName = string.Empty,
-                                    CarouselStyle = null,
-                                    ModuleNumber = moduleNumber.Value,
-                                    SortNo = 0
-                                });
+                            carouselModule.Add(new CreateImageDto
+                            {
+                                Name = string.Empty,
+                                ImageUrl = string.Empty,
+                                ImageType = ImageType.GroupBuyCarouselImage,
+                                BlobImageName = string.Empty,
+                                CarouselStyle = null,
+                                ModuleNumber = moduleNumber.Value,
+                                SortNo = 0
+                            });
                     }
 
                     carouselImages = carouselImages.Where(x => x.BlobImageName != blobImageName).ToList();
@@ -1865,15 +1929,16 @@ public partial class EditGroupBuy
                         bannerModule.RemoveAll(r => r.BlobImageName == blobImageName);
 
                         if (!bannerModule.Any() && moduleNumber.HasValue)
-                                bannerModule.Add(new CreateImageDto 
-                                {   Name = string.Empty,
-                                    ImageUrl = string.Empty,
-                                    ImageType = ImageType.GroupBuyBannerImage,
-                                    BlobImageName = string.Empty,
-                                    CarouselStyle = null,
-                                    ModuleNumber = moduleNumber.Value,
-                                    SortNo = 0
-                                });
+                            bannerModule.Add(new CreateImageDto
+                            {
+                                Name = string.Empty,
+                                ImageUrl = string.Empty,
+                                ImageType = ImageType.GroupBuyBannerImage,
+                                BlobImageName = string.Empty,
+                                CarouselStyle = null,
+                                ModuleNumber = moduleNumber.Value,
+                                SortNo = 0
+                            });
                     }
 
                     carouselImages = [.. carouselImages.Where(w => w.BlobImageName != blobImageName)];
@@ -1881,21 +1946,21 @@ public partial class EditGroupBuy
                     ExistingBannerImages = [.. ExistingBannerImages.Where(w => w.BlobImageName != blobImageName)];
                 }
 
-               
-                  else if (imageType is ImageType.GroupBuyProductRankingCarousel)
-                    {
-                        foreach (ProductRankingCarouselModule module in ProductRankingCarouselModules)
-                        {
-                        var image = module.Images.Where(x => x.BlobImageName == blobImageName).FirstOrDefault();
-                            await _imageAppService.DeleteAsync(image.Id);
 
-                        
-                            module.Images.RemoveAll(r => r.BlobImageName == blobImageName);
-                        
-                       
-                        }
+                else if (imageType is ImageType.GroupBuyProductRankingCarousel)
+                {
+                    foreach (ProductRankingCarouselModule module in ProductRankingCarouselModules)
+                    {
+                        var image = module.Images.Where(x => x.BlobImageName == blobImageName).FirstOrDefault();
+                        await _imageAppService.DeleteAsync(image.Id);
+
+
+                        module.Images.RemoveAll(r => r.BlobImageName == blobImageName);
+
+
                     }
-                
+                }
+
 
                 StateHasChanged();
                 await Loading.Hide();
@@ -2196,7 +2261,7 @@ public partial class EditGroupBuy
                     || item.Selected.Any(x => x.Id != Guid.Empty || (item.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor && !x.Name.IsNullOrEmpty()));
                 if (check)
                 {
-                    GroupBuyItemGroupCreateUpdateDto itemGroup = new() 
+                    GroupBuyItemGroupCreateUpdateDto itemGroup = new()
                     {
                         Id = item.Id,
                         SortOrder = item.SortOrder,
@@ -2373,13 +2438,13 @@ public partial class EditGroupBuy
                 {
                     foreach (CreateImageDto image in productRankingCarouselModule.Images)
                     {
-                        if (image.TargetId==Guid.Empty)
+                        if (image.TargetId == Guid.Empty)
                         {
                             image.TargetId = result.Id;
 
                             await _imageAppService.CreateAsync(image);
                         }
-                      
+
                     }
 
                     if (productRankingCarouselModule.Id == Guid.Empty)
@@ -2528,9 +2593,9 @@ public partial class EditGroupBuy
                 if (!confirm) return;
 
                 await Loading.Show();
-                
+
                 Guid GroupBuyId = Guid.Parse(id);
-                
+
                 await _groupBuyAppService.DeleteGroupBuyItemAsync(item.Id.Value, GroupBuyId);
 
                 if (item.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview)
@@ -2604,7 +2669,7 @@ public partial class EditGroupBuy
     private void AddCarouselStyle()
     {
         StyleForCarouselImages.Add(new StyleForCarouselImages());
-    } 
+    }
     private async Task UpdateCarouselStyle(CreateImageDto image)
     {
         await _imageAppService.UpdateCarouselStyleAsync(image);
