@@ -8,6 +8,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Volo.Abp;
+using Volo.Abp.Data;
 
 namespace Kooco.Pikachu.PaymentGateways.LinePay;
 
@@ -74,8 +76,10 @@ public static class LinePayExtensionService
             Packages = packages,
             RedirectUrls = new LinePayPaymentRequestRedirectUrlDto
             {
-                ConfirmUrl = $"{apiOptions.SelfUrl}/api/app/line-pay/confirm",
-                CancelUrl = $"{apiOptions.SelfUrl}/api/app/line-pay/cancel"
+                //ConfirmUrl = $"{apiOptions.SelfUrl}/api/app/line-pay/confirm",
+                ConfirmUrl = $"https://eouvklepztg7h1t.m.pipedream.net",
+                //CancelUrl = $"{apiOptions.SelfUrl}/api/app/line-pay/cancel"
+                CancelUrl = $"https://eouvklepztg7h1t.m.pipedream.net"
             }
         };
 
@@ -95,11 +99,17 @@ public static class LinePayExtensionService
     public static LinePayResponseDto<LinePayPaymentResponseInfoDto> DeserializePaymentRequest(RestResponse restResponse)
     {
         var responseContent = restResponse.Content;
+        var responseDto = DeserializePaymentRequest(responseContent);
+        responseDto.IsSuccessful = restResponse.IsSuccessful;
+        return responseDto;
+    }
+
+    public static LinePayResponseDto<LinePayPaymentResponseInfoDto> DeserializePaymentRequest(string? responseContent)
+    {
         var responseDto = (responseContent == null ? new()
             : JsonSerializer.Deserialize<LinePayResponseDto<LinePayPaymentResponseInfoDto>>(responseContent, GetJsonOptions()))
             ?? new();
 
-        responseDto.IsSuccessful = restResponse.IsSuccessful;
         return responseDto;
     }
 
@@ -132,7 +142,7 @@ public static class LinePayExtensionService
         return Convert.ToBase64String(hash);
     }
 
-    private static JsonSerializerOptions GetJsonOptions()
+    public static JsonSerializerOptions GetJsonOptions()
     {
         return new JsonSerializerOptions
         {

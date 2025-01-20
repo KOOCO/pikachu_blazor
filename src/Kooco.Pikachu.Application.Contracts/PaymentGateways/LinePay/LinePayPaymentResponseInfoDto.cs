@@ -1,10 +1,34 @@
-﻿namespace Kooco.Pikachu.PaymentGateways.LinePay;
+﻿using System.Numerics;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
+namespace Kooco.Pikachu.PaymentGateways.LinePay;
 
 public class LinePayPaymentResponseInfoDto
 {
-    public long TransactionId { get; set; }
+    [JsonPropertyName("transactionId")]
+    public JsonElement TransactionId { get; set; }
+
+    [JsonIgnore]
+    public BigInteger BigTransactionId
+    {
+        get
+        {
+            if (TransactionId.ValueKind != JsonValueKind.Undefined)
+            {
+                return TransactionId.ValueKind switch
+                {
+                    JsonValueKind.Number => new BigInteger(TransactionId.GetDecimal()),
+                    JsonValueKind.String => BigInteger.Parse(TransactionId.GetString()),
+                    _ => throw new JsonException("Invalid transactionId format.")
+                };
+            }
+
+            return default;
+        }
+    }
     public string PaymentAccessToken { get; set; }
-    public LinePayPaymentResponseUrlDto PaymentUrl { get; set; }
+public LinePayPaymentResponseUrlDto PaymentUrl { get; set; }
 }
 
 public class LinePayPaymentResponseUrlDto
