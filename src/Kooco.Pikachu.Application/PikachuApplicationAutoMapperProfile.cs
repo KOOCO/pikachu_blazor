@@ -196,7 +196,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<AddOnProductDto, CreateUpdateAddOnProductDto>();
 
 
-        CreateMap<DiscountCode, DiscountCodeDto>();
+        CreateMap<DiscountCode, DiscountCodeDto>().ForMember(x=>x.TotalQuantity,y=>y.MapFrom(z=>z.DiscountCodeUsages.Sum(a=>a.TotalOrders)));
         CreateMap<DiscountSpecificGroupbuy, DiscountCodeSpecificGroupbuyDto>();
         CreateMap<DiscountSpecificProduct, DiscountCodeSpecificProductDto>();
         CreateMap<DiscountCodeUsage, DiscountCodeUsageDto>();

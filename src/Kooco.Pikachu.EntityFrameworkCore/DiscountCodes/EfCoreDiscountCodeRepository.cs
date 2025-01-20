@@ -89,7 +89,7 @@ namespace Kooco.Pikachu.DiscountCodes
             int? discountPercentage = null,
             int? discountAmount = null)
         {
-            var queryable = await GetQueryableAsync();
+            var queryable = (await GetQueryableAsync()).Include(x=>x.DiscountCodeUsages);
 
             return queryable
                 .WhereIf(!string.IsNullOrWhiteSpace(eventName), x => x.EventName.Contains(eventName))
