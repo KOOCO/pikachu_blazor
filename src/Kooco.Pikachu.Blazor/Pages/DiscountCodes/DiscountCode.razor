@@ -82,11 +82,18 @@
                                 Field="@nameof(DiscountCodeDto.AvailableQuantity)"
                                 Caption="@L["Quantity"]">
                     <DisplayTemplate>
-                        <AntDesign.Progress  Percent=@context.AvailableQuantity ShowInfo="false" />
-                       @*  <br />
-                        <Span>@context.TotalQuantity @L["discountcode"]</Span> *@
+                        <Progress ShowValue=false Value="100">
+                            <ProgressBar Color="Color.Danger" Value="@((int)(((double)context.TotalQuantity / (context.AvailableQuantity + context.TotalQuantity)) * 100))"   />
+                            <ProgressBar Color="Color.Success" Value="@((int)(((double)context.AvailableQuantity / (context.AvailableQuantity + context.TotalQuantity)) * 100))" />
+                           
+                        </Progress>
+                       
+
+                      
+                         <br />
+                        <Span>@context.TotalQuantity @L["Used"]</Span> 
                         <br />
-                        <Span>@context.AvailableQuantity @L["available"]</Span>
+                        <Span>@context.AvailableQuantity @L["UnUsed"]</Span>
                     </DisplayTemplate>
                 </DataGridColumn>
 

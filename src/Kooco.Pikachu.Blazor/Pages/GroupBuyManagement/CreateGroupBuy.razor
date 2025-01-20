@@ -533,7 +533,7 @@
                                    class="form-check-input me-1"
                                    id="@item"
                                    disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")"
-                                   checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
+                                   checked="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item))||( item == Enum.GetName(DeliveryMethod.SelfPickup) &&CreateGroupBuyDto.IsEnterprise)))"
                                    @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                             @L[item]
                         </label>

@@ -1510,7 +1510,9 @@ public partial class CreateGroupBuy
         if (CreateGroupBuyDto.IsEnterprise)
         {
             IsCashOnDelivery = true; CreditCard = false; BankTransfer = false;
+            OnShippingMethodCheckedChange("SelfPickup", new ChangeEventArgs { Value = true });
         }
+
     }
 
     private void HandlePaymentTagInputKeyUp(KeyboardEventArgs e)
