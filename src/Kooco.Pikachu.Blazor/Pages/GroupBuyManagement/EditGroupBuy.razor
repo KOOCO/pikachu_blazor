@@ -539,8 +539,8 @@
                                    disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) &&
                                                item is not "DeliveredByStore")"
-                                   checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
-                                              (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
+                                   checked="@(((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                              (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))||( item == Enum.GetName(DeliveryMethod.SelfPickup) && EditGroupBuyDto.IsEnterprise))"
                                    @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                             @L[item]
                         </label>

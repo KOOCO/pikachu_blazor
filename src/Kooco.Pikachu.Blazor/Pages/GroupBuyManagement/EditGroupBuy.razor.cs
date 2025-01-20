@@ -255,6 +255,7 @@ public partial class EditGroupBuy
         if (EditGroupBuyDto.IsEnterprise)
         {
             IsCashOnDelivery = true; CreditCard = false; BankTransfer = false;
+            OnShippingMethodCheckedChange("SelfPickup", new ChangeEventArgs { Value = true });
         }
     }
 
