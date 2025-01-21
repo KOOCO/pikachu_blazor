@@ -1,10 +1,11 @@
-﻿using System.Numerics;
+﻿using System.Collections.Generic;
+using System.Numerics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Kooco.Pikachu.PaymentGateways.LinePay;
 
-public class LinePayPaymentResponseInfoDto
+public class LinePayConfirmResponseInfoDto
 {
     [JsonPropertyName("transactionId")]
     public JsonElement TransactionId { get; set; }
@@ -27,12 +28,15 @@ public class LinePayPaymentResponseInfoDto
             return default;
         }
     }
-    public string PaymentAccessToken { get; set; }
-    public LinePayPaymentResponseUrlDto PaymentUrl { get; set; }
+
+    public string OrderId { get; set; }
+    public List<LinePayConfirmResponsePayInfoDto> PayInfo { get; set; }
+    public object Packages { get; set; }
 }
 
-public class LinePayPaymentResponseUrlDto
+public class LinePayConfirmResponsePayInfoDto
 {
-    public string? Web { get; set; }
-    public string? App { get; set; }
+    public string Method { get; set; }
+    public int Amount { get; set; }
+    public string MaskedCreditCardNumber { get; set; }
 }

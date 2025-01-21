@@ -42,13 +42,13 @@ public class LinePayAppService : PikachuAppService, ILinePayAppService
 
         var nonce = Guid.NewGuid().ToString();
 
-        var signature = LinePayExtensionService.GeneratePostSignature(_apiOptions, linePay.ChannelSecretKey, body, nonce);
+        var signature = LinePayExtensionService.GeneratePostSignature(_apiOptions.PaymentApiPath, linePay.ChannelSecretKey, body, nonce);
 
         var response = await _restClient.Post(_apiOptions.PaymentApiPath, body, nonce, linePay.ChannelId, signature);
 
         order.ExtraProperties.TryAdd(PaymentGatewayConsts.PaymentResponse, response.Content);
 
-        var responseDto = LinePayExtensionService.DeserializePaymentRequest(response);
+        var responseDto = LinePayExtensionService.DeserializePaymentRequest<LinePayPaymentResponseInfoDto>(response);
 
         if (response.IsSuccessful && responseDto.ReturnCode == _apiOptions.SuccessReturnCode)
         {
@@ -75,15 +75,15 @@ public class LinePayAppService : PikachuAppService, ILinePayAppService
 
         var nonce = Guid.NewGuid().ToString();
 
-        var signature = LinePayExtensionService.GeneratePostSignature(_apiOptions, linePay.ChannelSecretKey, body, nonce);
-
         string apiPath = string.Format(_apiOptions.ConfirmPaymentApiPath, transactionId);
+
+        var signature = LinePayExtensionService.GeneratePostSignature(apiPath, linePay.ChannelSecretKey, body, nonce);
 
         var response = await _restClient.Post(apiPath, body, nonce, linePay.ChannelId, signature);
 
         order.ExtraProperties.TryAdd(PaymentGatewayConsts.ConfirmPaymentResponse, response.Content);
 
-        var responseDto = LinePayExtensionService.DeserializePaymentRequest(response);
+        var responseDto = LinePayExtensionService.DeserializePaymentRequest<LinePayConfirmResponseInfoDto>(response);
 
         if (response.IsSuccessful && responseDto.ReturnCode == _apiOptions.SuccessReturnCode)
         {
@@ -110,7 +110,7 @@ public class LinePayAppService : PikachuAppService, ILinePayAppService
         var paymentResponse = order.GetProperty(PaymentGatewayConsts.PaymentResponse)
             ?? throw new UserFriendlyException("Payment does not exist against this order.");
 
-        var paymentResponseDto = LinePayExtensionService.DeserializePaymentRequest(paymentResponse.ToString());
+        var paymentResponseDto = LinePayExtensionService.DeserializePaymentRequest<LinePayPaymentResponseInfoDto>(paymentResponse.ToString());
 
         var body = JsonSerializer.Serialize(new
         {
@@ -119,15 +119,15 @@ public class LinePayAppService : PikachuAppService, ILinePayAppService
 
         var nonce = Guid.NewGuid().ToString();
 
-        var signature = LinePayExtensionService.GeneratePostSignature(_apiOptions, linePay.ChannelSecretKey, body, nonce);
-
         var apiPath = string.Format(_apiOptions.RefundApiPath, paymentResponseDto.Info.TransactionId);
+
+        var signature = LinePayExtensionService.GeneratePostSignature(apiPath, linePay.ChannelSecretKey, body, nonce);
 
         var response = await _restClient.Post(apiPath, body, nonce, linePay.ChannelId, signature);
 
         order.ExtraProperties.TryAdd(PaymentGatewayConsts.PaymentResponse, response.Content);
 
-        var responseDto = LinePayExtensionService.DeserializePaymentRequest(response);
+        var responseDto = LinePayExtensionService.DeserializePaymentRequest<LinePayPaymentResponseInfoDto>(response);
 
         return responseDto;
     }

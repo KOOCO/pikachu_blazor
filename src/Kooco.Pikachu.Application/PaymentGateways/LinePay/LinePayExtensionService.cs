@@ -4,12 +4,11 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Volo.Abp;
-using Volo.Abp.Data;
 
 namespace Kooco.Pikachu.PaymentGateways.LinePay;
 
@@ -96,26 +95,26 @@ public static class LinePayExtensionService
         return JsonSerializer.Serialize(body, GetJsonOptions());
     }
 
-    public static LinePayResponseDto<LinePayPaymentResponseInfoDto> DeserializePaymentRequest(RestResponse restResponse)
+    public static LinePayResponseDto<TInfo> DeserializePaymentRequest<TInfo>(RestResponse restResponse)
     {
         var responseContent = restResponse.Content;
-        var responseDto = DeserializePaymentRequest(responseContent);
+        var responseDto = DeserializePaymentRequest<TInfo>(responseContent);
         responseDto.IsSuccessful = restResponse.IsSuccessful;
         return responseDto;
     }
 
-    public static LinePayResponseDto<LinePayPaymentResponseInfoDto> DeserializePaymentRequest(string? responseContent)
+    public static LinePayResponseDto<TInfo> DeserializePaymentRequest<TInfo>(string? responseContent)
     {
         var responseDto = (responseContent == null ? new()
-            : JsonSerializer.Deserialize<LinePayResponseDto<LinePayPaymentResponseInfoDto>>(responseContent, GetJsonOptions()))
+            : JsonSerializer.Deserialize<LinePayResponseDto<TInfo>>(responseContent, GetJsonOptions()))
             ?? new();
 
         return responseDto;
     }
 
-    public static string GeneratePostSignature(LinePayConfiguration apiOptions, string channelSecretKey, string serializedBody, string nonce)
+    public static string GeneratePostSignature(string apiPath, string channelSecretKey, string serializedBody, string nonce)
     {
-        var signatureBase = channelSecretKey + apiOptions.PaymentApiPath + serializedBody + nonce;
+        var signatureBase = channelSecretKey + apiPath + serializedBody + nonce;
         return GenerateHmacSignature(channelSecretKey, signatureBase);
     }
 
