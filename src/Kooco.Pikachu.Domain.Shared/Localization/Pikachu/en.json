@@ -1115,6 +1115,7 @@
     "TopbarStyleSettings": "Topbar Style Settings",
     "SellableQuantity": "Sellable Quantity",
     "pieces": "piece(s)",
-    "GroupBuy": "Group Buy"
+    "GroupBuy": "Group Buy",
+    "DeliveryTimePreferance": "Delivery Time Preferance"
   }
 }

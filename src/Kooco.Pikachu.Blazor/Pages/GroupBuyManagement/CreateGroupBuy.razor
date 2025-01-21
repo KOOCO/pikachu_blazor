@@ -369,9 +369,9 @@
                         {
                             if (IsShippingMethodEnabled(item))
                             {
-                                <label for="@item" class="form-label">
+                                <label for="@item" class="form-label me-2">
                                     <input type="checkbox"
-                                           class="form-check-input me-1"
+                                           class="form-check-input"
                                            id="@item"
                                            disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item))"
                                            checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
@@ -403,9 +403,9 @@
                         {
                             if (IsShippingMethodEnabled(item))
                             {
-                                <label for="@item" class="form-label ">
+                                <label for="@item" class="form-label me-2">
                                     <input type="checkbox"
-                                           class="form-check-input me-1"
+                                           class="form-check-input"
                                            id="@item"
                                            disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item))"
                                            checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
@@ -434,9 +434,9 @@
                         {
                             if (IsShippingMethodEnabled(item))
                             {
-                                <label for="@item" class="form-label">
+                                <label for="@item" class="form-label me-2">
                                     <input type="checkbox"
-                                           class="form-check-input me-1"
+                                           class="form-check-input"
                                            id="@item"
                                            disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item))"
                                            checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
@@ -457,9 +457,9 @@
                         {
                             if (IsShippingMethodEnabled(item))
                             {
-                                <label for="@item" class="form-label ">
+                                <label for="@item" class="form-label me-2">
                                     <input type="checkbox"
-                                           class="form-check-input me-1"
+                                           class="form-check-input"
                                            id="@item"
                                            disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item))"
                                            checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
@@ -482,9 +482,9 @@
                         {
                             if (IsShippingMethodEnabled(item))
                             {
-                                <label for="@item" class="form-label">
+                                <label for="@item" class="form-label me-2">
                                     <input type="checkbox"
-                                           class="form-check-input me-1"
+                                           class="form-check-input"
                                            id="@item"
                                            disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item))"
                                            checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
@@ -506,9 +506,9 @@
                         {
                             if (IsShippingMethodEnabled(item))
                             {
-                                <label for="@item" class="form-label ">
+                                <label for="@item" class="form-label me-2">
                                     <input type="checkbox"
-                                           class="form-check-input me-1"
+                                           class="form-check-input"
                                            id="@item"
                                            disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item))"
                                            checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
@@ -528,9 +528,9 @@
                     {
                         if (IsShippingMethodEnabled(item))
                         {
-                            <label for="@item" class="form-label ">
+                            <label for="@item" class="form-label me-2">
                                 <input type="checkbox"
-                                       class="form-check-input me-1"
+                                       class="form-check-input"
                                        id="@item"
                                        disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")"
                                        checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
@@ -543,9 +543,9 @@
                     if (item == Enum.GetName(DeliveryMethod.DeliveredByStore) ||
                     item == Enum.GetName(DeliveryMethod.SelfPickup))
                     {
-                        <label for="@item" class="form-label ">
+                        <label for="@item" class="form-label me-2">
                             <input type="checkbox"
-                                   class="form-check-input me-1"
+                                   class="form-check-input"
                                    id="@item"
                                    disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")"
                                    checked="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item))||( item == Enum.GetName(DeliveryMethod.SelfPickup) &&CreateGroupBuyDto.IsEnterprise)))"
@@ -597,9 +597,9 @@
                        (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenFrozen")) ||
                        (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))))
                         {
-                            <label for="@island" class="form-label">
+                            <label for="@island" class="form-label me-2">
                                 <input type="checkbox"
-                                       class="form-check-input me-1"
+                                       class="form-check-input"
                                        id="@island"
                                        checked="@(CreateGroupBuyDto.BlackCatDeliveryTime != null && CreateGroupBuyDto.BlackCatDeliveryTime.Contains(island))"
                                        @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)" />
@@ -608,10 +608,10 @@
                         }
                         else
                         {
-                            <label for="@island" class="form-label">
+                            <label for="@island" class="form-label me-2">
                                 <input disabled
                                        type="checkbox"
-                                       class="form-check-input me-1"
+                                       class="form-check-input"
                                        id="@island"
                                        checked="@(CreateGroupBuyDto.BlackCatDeliveryTime != null && CreateGroupBuyDto.BlackCatDeliveryTime.Contains(island))"
                                        @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)" />
@@ -624,6 +624,7 @@
             <div class="col-2"></div>
             <div class="col-2"></div>
             <div class="col-8">
+                <Div Class="mt-2"></Div>
                 <label class="form-label">@L["HomeDelivery"]<span class="text-danger"> </span></label>
             </div>
             <div class="col-2"></div>
@@ -636,9 +637,9 @@
                         @if ((CreateGroupBuyDto.ExcludeShippingMethod is not null) &&
                        (CreateGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery")))
                         {
-                            <label for="@(island)_HomeDelivery" class="form-label">
+                            <label for="@(island)_HomeDelivery" class="form-label me-2">
                                 <input type="checkbox"
-                                       class="form-check-input me-1"
+                                       class="form-check-input"
                                        id="@island"
                                        disabled="@(island is not PikachuResource.UnableToSpecifyDuringPeakPeriods ?
                                                     IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery :
@@ -652,10 +653,10 @@
                         else
                         {
 
-                            <label for="@(island)_HomeDelivery" class="form-label">
+                            <label for="@(island)_HomeDelivery" class="form-label me-2">
                                 <input disabled
                                        type="checkbox"
-                                       class="form-check-input me-1"
+                                       class="form-check-input"
                                        id="@island"
                                        checked="@(CreateGroupBuyDto.HomeDeliveryDeliveryTime is not null &&
                                                   CreateGroupBuyDto.HomeDeliveryDeliveryTime.Contains(island))"
@@ -670,6 +671,7 @@
             <div class="col-2"></div>
 
             <div class="col-8">
+                <Div Class="mt-2"></Div>
                 <label class="form-label">@L["SelfPickup"]<span class="text-danger"> </span></label>
             </div>
             <div class="col-2"></div>
@@ -682,9 +684,9 @@
                         @if ((CreateGroupBuyDto.ExcludeShippingMethod is not null) &&
                        (CreateGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup")))
                         {
-                            <label for="@(island)_SelfPickUp" class="form-label ">
+                            <label for="@(island)_SelfPickUp" class="form-label me-2">
                                 <input type="checkbox"
-                                       class="form-check-input me-1"
+                                       class="form-check-input"
                                        id="@island"
                                        disabled="@(island is not PikachuResource.UnableToSpecifyDuringPeakPeriods ?
                                                         IsUnableToSpecifyDuringPeakPeriodsForSelfPickups :
@@ -697,10 +699,10 @@
                         }
                         else
                         {
-                            <label for="@(island)_SelfPickUp" class="form-label ">
+                            <label for="@(island)_SelfPickUp" class="form-label me-2">
                                 <input disabled
                                        type="checkbox"
-                                       class="form-check-input me-1"
+                                       class="form-check-input"
                                        id="@island"
                                        checked="@(CreateGroupBuyDto.SelfPickupDeliveryTime is not null &&
                                                       CreateGroupBuyDto.SelfPickupDeliveryTime.Contains(island))"
@@ -714,6 +716,7 @@
             <div class="col-2"></div>
             <div class="col-2"></div>
             <div class="col-8">
+                <Div Class="mt-2"></Div>
                 <label class="form-label">@L["DeliveredByStore"]<span class="text-danger"> </span></label>
             </div>
             <div class="col-2"></div>
@@ -726,9 +729,9 @@
                         @if ((CreateGroupBuyDto.ExcludeShippingMethod is not null) &&
                        (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
                         {
-                            <label for="@(island)_DeliveredByStore" class="form-label">
+                            <label for="@(island)_DeliveredByStore" class="form-label me-2">
                                 <input type="checkbox"
-                                       class="form-check-input me-1"
+                                       class="form-check-input"
                                        id="@island"
                                        disabled="@(island is not PikachuResource.UnableToSpecifyDuringPeakPeriods ?
                                                     IsUnableToSpecifyDuringPeakPeriodsForDeliveredByStore :
@@ -742,10 +745,10 @@
                         else
                         {
 
-                            <label for="@(island)_DeliveredByStore" class="form-label">
+                            <label for="@(island)_DeliveredByStore" class="form-label me-2">
                                 <input disabled
                                        type="checkbox"
-                                       class="form-check-input me-1"
+                                       class="form-check-input"
                                        id="@island"
                                        checked="@(CreateGroupBuyDto.DeliveredByStoreDeliveryTime is not null &&
                                                  CreateGroupBuyDto.DeliveredByStoreDeliveryTime.Contains(island))"
