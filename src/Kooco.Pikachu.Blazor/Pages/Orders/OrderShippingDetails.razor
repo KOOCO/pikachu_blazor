@@ -133,11 +133,23 @@
                                 <tfoot>
                                     <tr>
                                         <td colspan="3" class="text-end">@L["DeliveryFee"] :</td>
-                                        <td class="text-center">0</td>
+                                        <td class="text-center">
+                                                
+                       
+                                                @("NT $"+order.DeliveryCost?.ToString("N0"))
+
+                                          
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td colspan="3" class="text-end">@L["Total"] :</td>
-                                        <td class="text-center">NT $@order?.TotalAmount.ToString("N0")</td>
+                                        <td class="text-center">
+                                 
+                                              @( "NT $"+order?.TotalAmount.ToString("N0"))
+
+
+                                          
+                                        </td>
                                     </tr>
                                 </tfoot>
                             </table>

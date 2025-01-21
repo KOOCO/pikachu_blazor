@@ -812,6 +812,18 @@
                                         </DataGridColumn>
                                     </DataGridColumns>
                                     <DetailRowTemplate Context="orderDelivery">
+                                                                            @{
+                                isDeliveryCostDisplayed = false;
+
+                                isNormal = orderDelivery.Items.Any(i => i.DeliveryTemperature is ItemStorageTemperature.Normal);
+
+                                isFreeze = orderDelivery.Items.Any(i => i.DeliveryTemperature is ItemStorageTemperature.Freeze) &&
+                                OrderDeliveries.Count(a => a.Items.Any(af => af.DeliveryTemperature is ItemStorageTemperature.Normal)) is 0;
+
+                                isFrozen = orderDelivery.Items.Any(i => i.DeliveryTemperature is ItemStorageTemperature.Frozen) &&
+                                OrderDeliveries.Count(a => a.Items.Any(af => af.DeliveryTemperature is ItemStorageTemperature.Normal)) is 0 &&
+                                OrderDeliveries.Count(a => a.Items.Any(af => af.DeliveryTemperature is ItemStorageTemperature.Freeze)) is 0;
+                            }
                                         <table class="table table-responsive rm-table-min-height table-striped text-center">
                                             <thead>
                                                 <tr>
@@ -869,8 +881,28 @@
                                                             <td>
                                                                 @L[item.DeliveryTemperature.ToString()]
                                                             </td>
-                                                            <td>
-                                                                @item.DeliveryTemperatureCost
+                                                                   <td>
+                                                                
+                                                        @if (!isDeliveryCostDisplayed && isNormal ||
+                                                       !isDeliveryCostDisplayed && isFreeze ||
+                                                       !isDeliveryCostDisplayed && isFrozen)
+                                                        {
+                                                            if (order.DeliveryMethod ==EnumValues.DeliveryMethod.DeliveredByStore)
+                                                            {
+                                                                @GetDeliveryCost(order,item.DeliveryTemperature).ToString("N2")
+                                                            }
+                                                            else
+                                                            {
+                                                                @(OrderDeliveryCost?.ToString("N2") ?? "0.00")
+                                                            }
+
+                                                            isDeliveryCostDisplayed = true;
+                                                        }
+                                                        else
+                                                        {
+                                                            @(0.00.ToString("N2"))
+                                                        }
+                                                    
                                                             </td>
                                                             <td>
                                                                 @item.Quantity
@@ -1042,7 +1074,20 @@
                                             </DisplayTemplate>
                                         </DataGridColumn>
                                     </DataGridColumns>
+              
                                     <DetailRowTemplate Context="orderDelivery">
+                                                                @{
+                                isDeliveryCostDisplayed = false;
+
+                                isNormal = orderDelivery.Items.Any(i => i.DeliveryTemperature is ItemStorageTemperature.Normal);
+
+                                isFreeze = orderDelivery.Items.Any(i => i.DeliveryTemperature is ItemStorageTemperature.Freeze) &&
+                                OrderDeliveries.Count(a => a.Items.Any(af => af.DeliveryTemperature is ItemStorageTemperature.Normal)) is 0;
+
+                                isFrozen = orderDelivery.Items.Any(i => i.DeliveryTemperature is ItemStorageTemperature.Frozen) &&
+                                OrderDeliveries.Count(a => a.Items.Any(af => af.DeliveryTemperature is ItemStorageTemperature.Normal)) is 0 &&
+                                OrderDeliveries.Count(a => a.Items.Any(af => af.DeliveryTemperature is ItemStorageTemperature.Freeze)) is 0;
+                            }
                                         <table class="table table-responsive rm-table-min-height table-striped text-center">
                                             <thead>
                                                 <tr>
@@ -1101,7 +1146,27 @@
                                                                 @L[item.DeliveryTemperature.ToString()]
                                                             </td>
                                                             <td>
-                                                                @item.DeliveryTemperatureCost
+                                                                
+                                                        @if (!isDeliveryCostDisplayed && isNormal ||
+                                                       !isDeliveryCostDisplayed && isFreeze ||
+                                                       !isDeliveryCostDisplayed && isFrozen)
+                                                        {
+                                                            if (order.DeliveryMethod ==EnumValues.DeliveryMethod.DeliveredByStore)
+                                                            {
+                                                                @GetDeliveryCost(order,item.DeliveryTemperature).ToString("N2")
+                                                            }
+                                                            else
+                                                            {
+                                                                @(OrderDeliveryCost?.ToString("N2") ?? "0.00")
+                                                            }
+
+                                                            isDeliveryCostDisplayed = true;
+                                                        }
+                                                        else
+                                                        {
+                                                            @(0.00.ToString("N2"))
+                                                        }
+                                                    
                                                             </td>
                                                             <td>
                                                                 @item.Quantity
@@ -1271,6 +1336,18 @@
                                         </DataGridColumn>
                                     </DataGridColumns>
                                     <DetailRowTemplate Context="orderDelivery">
+                                                                               @{
+                                isDeliveryCostDisplayed = false;
+
+                                isNormal = orderDelivery.Items.Any(i => i.DeliveryTemperature is ItemStorageTemperature.Normal);
+
+                                isFreeze = orderDelivery.Items.Any(i => i.DeliveryTemperature is ItemStorageTemperature.Freeze) &&
+                                OrderDeliveries.Count(a => a.Items.Any(af => af.DeliveryTemperature is ItemStorageTemperature.Normal)) is 0;
+
+                                isFrozen = orderDelivery.Items.Any(i => i.DeliveryTemperature is ItemStorageTemperature.Frozen) &&
+                                OrderDeliveries.Count(a => a.Items.Any(af => af.DeliveryTemperature is ItemStorageTemperature.Normal)) is 0 &&
+                                OrderDeliveries.Count(a => a.Items.Any(af => af.DeliveryTemperature is ItemStorageTemperature.Freeze)) is 0;
+                            }
                                         <table class="table table-responsive rm-table-min-height table-striped text-center">
                                             <thead>
                                                 <tr>
@@ -1330,7 +1407,27 @@
                                                                 @L[item.DeliveryTemperature.ToString()]
                                                             </td>
                                                             <td>
-                                                                @item.DeliveryTemperatureCost
+                                                                
+                                                        @if (!isDeliveryCostDisplayed && isNormal ||
+                                                       !isDeliveryCostDisplayed && isFreeze ||
+                                                       !isDeliveryCostDisplayed && isFrozen)
+                                                        {
+                                                            if (order.DeliveryMethod ==EnumValues.DeliveryMethod.DeliveredByStore)
+                                                            {
+                                                                @GetDeliveryCost(order,item.DeliveryTemperature).ToString("N2")
+                                                            }
+                                                            else
+                                                            {
+                                                                @(OrderDeliveryCost?.ToString("N2") ?? "0.00")
+                                                            }
+
+                                                            isDeliveryCostDisplayed = true;
+                                                        }
+                                                        else
+                                                        {
+                                                            @(0.00.ToString("N2"))
+                                                        }
+                                                    
                                                             </td>
                                                             <td>
                                                                 @item.Quantity
@@ -1500,6 +1597,18 @@
                                         </DataGridColumn>
                                     </DataGridColumns>
                                     <DetailRowTemplate Context="orderDelivery">
+                                                                                          @{
+                                isDeliveryCostDisplayed = false;
+
+                                isNormal = orderDelivery.Items.Any(i => i.DeliveryTemperature is ItemStorageTemperature.Normal);
+
+                                isFreeze = orderDelivery.Items.Any(i => i.DeliveryTemperature is ItemStorageTemperature.Freeze) &&
+                                OrderDeliveries.Count(a => a.Items.Any(af => af.DeliveryTemperature is ItemStorageTemperature.Normal)) is 0;
+
+                                isFrozen = orderDelivery.Items.Any(i => i.DeliveryTemperature is ItemStorageTemperature.Frozen) &&
+                                OrderDeliveries.Count(a => a.Items.Any(af => af.DeliveryTemperature is ItemStorageTemperature.Normal)) is 0 &&
+                                OrderDeliveries.Count(a => a.Items.Any(af => af.DeliveryTemperature is ItemStorageTemperature.Freeze)) is 0;
+                            }
                                         <table class="table table-responsive rm-table-min-height table-striped text-center">
                                             <thead>
                                                 <tr>
@@ -1557,8 +1666,28 @@
                                                             <td>
                                                                 @L[item.DeliveryTemperature.ToString()]
                                                             </td>
-                                                            <td>
-                                                                @item.DeliveryTemperatureCost
+                                                             <td>
+                                                                
+                                                        @if (!isDeliveryCostDisplayed && isNormal ||
+                                                       !isDeliveryCostDisplayed && isFreeze ||
+                                                       !isDeliveryCostDisplayed && isFrozen)
+                                                        {
+                                                            if (order.DeliveryMethod ==EnumValues.DeliveryMethod.DeliveredByStore)
+                                                            {
+                                                                @GetDeliveryCost(order,item.DeliveryTemperature).ToString("N2")
+                                                            }
+                                                            else
+                                                            {
+                                                                @(OrderDeliveryCost?.ToString("N2") ?? "0.00")
+                                                            }
+
+                                                            isDeliveryCostDisplayed = true;
+                                                        }
+                                                        else
+                                                        {
+                                                            @(0.00.ToString("N2"))
+                                                        }
+                                                    
                                                             </td>
                                                             <td>
                                                                 @item.Quantity
