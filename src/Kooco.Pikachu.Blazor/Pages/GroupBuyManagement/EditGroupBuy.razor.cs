@@ -240,7 +240,7 @@ public partial class EditGroupBuy
                 else if (GroupBuy.PaymentMethod is "Cash On Delivery") IsCashOnDelivery = true;
             }
 
-            EditGroupBuyDto.EntryURL = $"{(await MyTenantAppService.FindTenantUrlAsync(CurrentTenant.Id))?.TrimEnd('/')}/{Id}";
+            EditGroupBuyDto.EntryURL = $"{(await MyTenantAppService.FindTenantUrlAsync(CurrentTenant.Id))?.TrimEnd('/')}/groupBuy/{Id}";
 
             SelectedTemplate = GroupBuy.TemplateType;
 

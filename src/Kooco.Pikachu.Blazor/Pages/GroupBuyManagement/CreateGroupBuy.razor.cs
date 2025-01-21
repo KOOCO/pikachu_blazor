@@ -188,7 +188,7 @@ public partial class CreateGroupBuy
     #region Methods
     protected override async Task OnInitializedAsync()
     {
-        CreateGroupBuyDto.EntryURL = await MyTenantAppService.FindTenantUrlAsync(CurrentTenant.Id);
+        CreateGroupBuyDto.EntryURL = (await MyTenantAppService.FindTenantUrlAsync(CurrentTenant.Id))+ "groupBuy/";
         SetItemList = await _setItemAppService.GetItemsLookupAsync();
         ItemsList = await _itemAppService.GetItemsLookupAsync();
         ItemsList.AddRange(SetItemList);
