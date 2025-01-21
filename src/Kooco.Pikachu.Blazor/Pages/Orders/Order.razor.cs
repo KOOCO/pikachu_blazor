@@ -79,12 +79,15 @@ public partial class Order
     private List<DeliveryMethod> DeliveryMethods { get; set; } = [];
     private List<OrderDto> OrdersSelected = [];
     private string SelectedTabName = "All";
-
+    private decimal? OrderDeliveryCost { get; set; } = 0.00m;
     private int NormalCount = 0;
     private int FreezeCount = 0;
     private int FrozenCount = 0;
     private DeliveryMethod? DeliveryMethod = null;
-
+    private bool isDeliveryCostDisplayed = false;
+    private bool isNormal = false;
+    private bool isFreeze = false;
+    private bool isFrozen = false;
     private Guid? ExpandedOrderId = null;
 
     private bool IsDeliveryNoExists = false;
@@ -180,7 +183,7 @@ public partial class Order
         foreach (Guid orderId in orderIds)
         {
             OrderDto order = await _orderAppService.GetAsync(orderId);
-
+       
             List<OrderDeliveryDto> orderDeliveries = await _OrderDeliveryAppService.GetListByOrderAsync(orderId);
 
             foreach (OrderDeliveryDto? delivery in orderDeliveries)
@@ -1174,7 +1177,10 @@ public partial class Order
     {
         await loading.Show();
         OrderDeliveries = [];
-
+        OrderDto order = await _orderAppService.GetAsync(orderId);
+        if (order.DeliveryMethod is not EnumValues.DeliveryMethod.SelfPickup &&
+     order.DeliveryMethod is not EnumValues.DeliveryMethod.DeliveredByStore)
+            OrderDeliveryCost = order.DeliveryCost;
         if (!OrderDeliveriesByOrderId.ContainsKey(orderId))
         {
             List<OrderDeliveryDto> orderDeliveries = await _OrderDeliveryAppService.GetListByOrderAsync(orderId);
@@ -1551,7 +1557,23 @@ public partial class Order
 
         await loading.Hide();
     }
+    private decimal GetDeliveryCost(OrderDto order,ItemStorageTemperature item)
+    {
+        if (order.DeliveryMethod is EnumValues.DeliveryMethod.DeliveredByStore)
+        {
+            switch (item)
+            {
+                case ItemStorageTemperature.Normal:
+                    return order.DeliveryCostForNormal ?? 0.00m;
+                case ItemStorageTemperature.Freeze:
+                    return order.DeliveryCostForFreeze ?? 0.00m;
+                case ItemStorageTemperature.Frozen:
+                    return order.DeliveryCostForFrozen ?? 0.00m;
+            }
+        }
 
+        return 0.00m;
+    }
     private async void OrderItemDelivered()
     {
         await loading.Show();

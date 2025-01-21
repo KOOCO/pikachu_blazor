@@ -202,7 +202,7 @@ public partial class GroupBuyList
 
             foreach (GroupBuyDto groupBuyItem in GroupBuyListItem)
             {
-                groupBuyItem.EntryURL = $"{tenantUrl}/{groupBuyItem.Id}";
+                groupBuyItem.EntryURL = $"{tenantUrl}/groupBuy/{groupBuyItem.Id}";
             }
 
             Total = (int)result.TotalCount;

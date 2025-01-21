@@ -360,10 +360,10 @@
 
                 @if (CreateGroupBuyDto.AllowShipToOuterTaiwan && !CreateGroupBuyDto.AllowShipOversea)
                 {
-                    @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
+                    @foreach (string item in OrderedDeliveryMethods)
                     {
                         if (item == Enum.GetName(DeliveryMethod.BlackCat1) ||
-                         item == Enum.GetName(DeliveryMethod.TCatDeliveryNormal) ||
+                        item == Enum.GetName(DeliveryMethod.TCatDeliveryNormal) ||
                         item == Enum.GetName(DeliveryMethod.SevenToElevenC2C) ||
                         item == Enum.GetName(DeliveryMethod.SevenToEleven1))
                         {
@@ -379,12 +379,18 @@
                                     @L[item]
                                 </label>
                             }
+                            @if (item == Enum.GetName(DeliveryMethod.FamilyMartC2C)
+                           || item == Enum.GetName(DeliveryMethod.BlackCat1))
+                            {
+                                <br />
+                                <Div Class="mt-1"></Div>
+                            }
                         }
                     }
                 }
                 else
                 {
-                    @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
+                    @foreach (string item in OrderedDeliveryMethods)
                     {
                         if (item == Enum.GetName(DeliveryMethod.PostOffice) ||
                         item == Enum.GetName(DeliveryMethod.BlackCat1) ||
@@ -407,14 +413,21 @@
                                     @L[item]
                                 </label>
                             }
+                            @if (item == Enum.GetName(DeliveryMethod.FamilyMartC2C)
+                           || item == Enum.GetName(DeliveryMethod.BlackCat1))
+                            {
+                                <br />
+                                <Div Class="mt-1"></Div>
+                            }
                         }
                     }
                 }
                 <br />
+                <Div Class="mt-2"></Div>
                 <label class="form-label">@L["Freeze"]</label><br />
                 @if (CreateGroupBuyDto.AllowShipToOuterTaiwan && !CreateGroupBuyDto.AllowShipOversea)
                 {
-                    @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
+                    @foreach (string item in OrderedDeliveryMethods)
                     {
                         if (item == Enum.GetName(DeliveryMethod.BlackCatFreeze) ||
                         item == Enum.GetName(DeliveryMethod.TCatDeliveryFreeze))
@@ -436,7 +449,7 @@
                 }
                 else
                 {
-                    @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
+                    @foreach (string item in OrderedDeliveryMethods)
                     {
                         if (item == Enum.GetName(DeliveryMethod.BlackCatFreeze) ||
                         item == Enum.GetName(DeliveryMethod.TCatDeliveryFreeze) ||
@@ -458,10 +471,11 @@
                     }
                 }
                 <br />
+                <Div Class="mt-2"></Div>
                 <label class="form-label">@L["Frozen"]</label><br />
                 @if (CreateGroupBuyDto.AllowShipToOuterTaiwan && !CreateGroupBuyDto.AllowShipOversea)
                 {
-                    @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
+                    @foreach (string item in OrderedDeliveryMethods)
                     {
                         if (item == Enum.GetName(DeliveryMethod.BlackCatFrozen) ||
                         item == Enum.GetName(DeliveryMethod.TCatDeliveryFrozen))
@@ -483,7 +497,7 @@
                 }
                 else
                 {
-                    @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
+                    @foreach (string item in OrderedDeliveryMethods)
                     {
                         if (item == Enum.GetName(DeliveryMethod.BlackCatFrozen) ||
                         item == Enum.GetName(DeliveryMethod.TCatDeliveryFrozen) ||
@@ -506,8 +520,9 @@
                     }
                 }
                 <br />
+                <Div Class="mt-2"></Div>
                 <label class="form-label">@L["DeliveryTypeOthers"]</label><br />
-                @foreach (string item in Enum.GetNames(typeof(DeliveryMethod)))
+                @foreach (string item in OrderedDeliveryMethods)
                 {
                     if (item == Enum.GetName(DeliveryMethod.HomeDelivery))
                     {
@@ -526,7 +541,7 @@
                     }
 
                     if (item == Enum.GetName(DeliveryMethod.DeliveredByStore) ||
-                        item == Enum.GetName(DeliveryMethod.SelfPickup))
+                    item == Enum.GetName(DeliveryMethod.SelfPickup))
                     {
                         <label for="@item" class="form-label ">
                             <input type="checkbox"
@@ -838,7 +853,7 @@
             </div>
         </div>
         <Divider></Divider>
-  <div class="row">
+        <div class="row">
             <div class="col-2">@L["AdvanceSetting"]</div>
             <div class="col-2 form-label">@L["AddOnProducts"]</div>
             <div class="col-4"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.AddOnProduct"></Switch></div>
@@ -851,10 +866,10 @@
         <div class="row">
             <div class="col-2"></div>
             <div class="col-2 form-label">@L["EnterprisePurchase"]</div>
-            <div class="col-4"> 
-                <Switch TValue="bool" 
-                        Checked="@CreateGroupBuyDto.IsEnterprise" 
-                        CheckedChanged="OnEnterPriseChange" 
+            <div class="col-4">
+                <Switch TValue="bool"
+                        Checked="@CreateGroupBuyDto.IsEnterprise"
+                        CheckedChanged="OnEnterPriseChange"
                         CheckedExpression="@(() => CreateGroupBuyDto.IsEnterprise)" />
             </div>
         </div>
@@ -993,10 +1008,10 @@
 
         <Div Class="row">
             <Div Class="col-2">@L["DisplayMethodForProductDetails"]</Div>
-                <Div Class="col-8">
-                    <select class="form-select"
-                            @onchange=OnProductDetailsDisplayMethodChange>
-                        <option value="0" selected>@L["ChooseMethod"]</option>
+            <Div Class="col-8">
+                <select class="form-select"
+                        @onchange=OnProductDetailsDisplayMethodChange>
+                    <option value="0" selected>@L["ChooseMethod"]</option>
                     @foreach (ProductDetailsDisplayMethod value in Enum.GetValues<ProductDetailsDisplayMethod>())
                     {
                         <option value="@value">@L[value.ToString()]</option>
@@ -1111,17 +1126,17 @@
                                                                                                                            carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value,
                                                                                                                            CarouselFilePickers[carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1],
                                                                                                                            ImageType.GroupBuyCarouselImage))"
-                                                         ShowMode="FilePickerShowMode.List"
-                                                         Accept=".jpg, .png, .svg, .jpeg, .webp">
-                                                             <FileTemplate>
-                                                                 <Div Flex="Flex.JustifyContent.Between">
-                                                                     <Div>
-                                                                         <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
-                                                                            <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
-                                                                        </Div>
-                                                                        <Div Class="ps-2">
-                                                                            <Div>
-                                                                                @if (context.File.Status is FileEntryStatus.Ready)
+                                                                    ShowMode="FilePickerShowMode.List"
+                                                                    Accept=".jpg, .png, .svg, .jpeg, .webp">
+                                                            <FileTemplate>
+                                                                <Div Flex="Flex.JustifyContent.Between">
+                                                                    <Div>
+                                                                        <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
+                                                                        <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                                                    </Div>
+                                                                    <Div Class="ps-2">
+                                                                        <Div>
+                                                                            @if (context.File.Status is FileEntryStatus.Ready)
                                                                             {
                                                                                 <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
                                                                             }
@@ -1160,23 +1175,22 @@
                                                                     @foreach (CreateImageDto image in carouselImages.Where(w => !w.ImageUrl.IsNullOrEmpty()).ToList())
                                                                     {
                                                                         <Div Class="image-container">
-                                                                            <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image"      
-                                                                                Fluid
-                                                                             />
-                                                                             <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName,
+                                                                            <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image"
+                                                                                   Fluid />
+                                                                            <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName,
                                                                                                                                            carouselImages,
                                                                                                                                            ImageType.GroupBuyCarouselImage)">
-                                                                                 <i class="fa fa-trash"></i>
-                                                                             </button>
-                                                                         </Div>
+                                                                                <i class="fa fa-trash"></i>
+                                                                            </button>
+                                                                        </Div>
                                                                     }
                                                                 </Div>
                                                                 <Div Class="d-flex">
                                                                     @foreach (CreateImageDto createImageDto in carouselImages.Where(w => !w.ImageUrl.IsNullOrEmpty()).ToList())
                                                                     {
                                                                         <button type="button"
-                                                                        class="btn btn-primary @(carouselImages.IndexOf(createImageDto) > 0 ? "mx-1" : "")"
-                                                                        @onclick="() => OpenAddLinkModal(createImageDto)">
+                                                                                class="btn btn-primary @(carouselImages.IndexOf(createImageDto) > 0 ? "mx-1" : "")"
+                                                                                @onclick="() => OpenAddLinkModal(createImageDto)">
                                                                             @L["AddLink"]
                                                                         </button>
                                                                     }
@@ -1331,11 +1345,11 @@
                                                                 <Div Flex="Flex.JustifyContent.Between">
                                                                     <Div>
                                                                         <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
-                                                                            <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
-                                                                        </Div>
-                                                                        <Div Class="ps-2">
-                                                                            <Div>
-                                                                                @if (context.File.Status is FileEntryStatus.Ready)
+                                                                        <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
+                                                                    </Div>
+                                                                    <Div Class="ps-2">
+                                                                        <Div>
+                                                                            @if (context.File.Status is FileEntryStatus.Ready)
                                                                             {
                                                                                 <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
                                                                             }
@@ -1374,14 +1388,14 @@
                                                                 <Div Class="image-list-container">
                                                                     <Div Class="image-container">
                                                                         <Image Class="blur-image" Source="@module.Image" Text="Logo Image" Fluid />
-                                                                         <Button Class="delete-button"
-                                                                                 Clicked="@(async (e) => await DeleteImageAsync(e, module))">
-                                                                             <i class="fa fa-trash" />
-                                                                         </Button>
-                                                                     </Div>
-                                                                 </Div>
-                                                             </Div>
-                                                         </Div>
+                                                                        <Button Class="delete-button"
+                                                                                Clicked="@(async (e) => await DeleteImageAsync(e, module))">
+                                                                            <i class="fa fa-trash" />
+                                                                        </Button>
+                                                                    </Div>
+                                                                </Div>
+                                                            </Div>
+                                                        </Div>
                                                     }
                                                 </Div>
                                                 <Div Class="col-6">
@@ -1393,23 +1407,23 @@
                                                     </Div>
                                                     <Div Class="col-2 pb-1">
                                                         <Label>@L["SubTitle"]</Label>
-                                                        </Div>
-                                                        <Div Class="col-12 pb-1">
-                                                            <TextEdit @bind-Text="@module.SubTitle" />
-                                                        </Div>
-                                                        <Div Class="col-2 pb-1">
-                                                            <Label>@L["BodyText"]</Label>
-                                                        </Div>
-                                                        <Div Class="col-12 pb-1">
-                                                            <TextEdit @bind-Text="@module.BodyText" />
-                                                        </Div>
-                                                        <Div Class="col-12 pb-1"></Div>
-                                                        <Div Class="col-12 pb-1">
-                                                            <Switch TValue="bool"
-                                                                    @bind-Checked="@module.IsButtonEnable" />
-                                                        </Div>
+                                                    </Div>
+                                                    <Div Class="col-12 pb-1">
+                                                        <TextEdit @bind-Text="@module.SubTitle" />
+                                                    </Div>
+                                                    <Div Class="col-2 pb-1">
+                                                        <Label>@L["BodyText"]</Label>
+                                                    </Div>
+                                                    <Div Class="col-12 pb-1">
+                                                        <TextEdit @bind-Text="@module.BodyText" />
+                                                    </Div>
+                                                    <Div Class="col-12 pb-1"></Div>
+                                                    <Div Class="col-12 pb-1">
+                                                        <Switch TValue="bool"
+                                                                @bind-Checked="@module.IsButtonEnable" />
+                                                    </Div>
 
-                                                        @if (module.IsButtonEnable)
+                                                    @if (module.IsButtonEnable)
                                                     {
                                                         <Div Class="col-2 pb-1">
                                                             <Label>@L["ButtonText"] <Span Class="text-danger">*</Span></Label>
@@ -1529,7 +1543,7 @@
 
                                     @if (module.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
                                     {
-                                        List<ProductRankingCarouselModule>productModules=ProductRankingCarouselModules.Where(x=>x.ModuleNumber==module.ModuleNumber).ToList();
+                                        List<ProductRankingCarouselModule> productModules = ProductRankingCarouselModules.Where(x => x.ModuleNumber == module.ModuleNumber).ToList();
                                         foreach (ProductRankingCarouselModule productModule in productModules)
                                         {
                                             <Div Class="col-12 d-flex">
