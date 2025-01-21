@@ -1,6 +1,7 @@
 ﻿using Kooco.Pikachu.EntityFrameworkCore;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
+using Kooco.Pikachu.Orders;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
         var query = ApplyFilter((await GetDbSetAsync()), filterText, groupBuyNo, status, groupBuyName, entryURL, entryURL2, subjectLine, shortName, logoURL, bannerURL, startTime, endTime, freeShipping,
             allowShipToOuterTaiwan, allowShipOversea, expectShippingDateFrom, expectShippingDateTo, moneyTransferValidDayBy, moneyTransferValidDays,
             issueInvoice, autoIssueTriplicateInvoice, invoiceNote, protectPrivacyData, inviteCode, profitShare, metaPixelNo, fBID, iGID, lineID, gAID, gTM,
-            warningMessage, orderContactInfo, exchangePolicy, notifyMessage, ExcludeShippingMethod ,PaymentMethod,IsInviteCode, IsEnterprise,isGroupbuyAvailable);
+            warningMessage, orderContactInfo, exchangePolicy, notifyMessage, ExcludeShippingMethod, PaymentMethod, IsInviteCode, IsEnterprise, isGroupbuyAvailable);
         return await query.LongCountAsync(GetCancellationToken(cancellationToken));
     }
 
@@ -32,18 +33,19 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
         var query = ApplyFilter((await GetQueryableAsync()), filterText, groupBuyNo, status, groupBuyName, entryURL, entryURL2, subjectLine, shortName, logoURL, bannerURL, startTime, endTime, freeShipping,
             allowShipToOuterTaiwan, allowShipOversea, expectShippingDateFrom, expectShippingDateTo, moneyTransferValidDayBy, moneyTransferValidDays,
             issueInvoice, autoIssueTriplicateInvoice, invoiceNote, protectPrivacyData, inviteCode, profitShare, metaPixelNo, fBID, iGID, lineID, gAID, gTM,
-            warningMessage, orderContactInfo, exchangePolicy, notifyMessage, ExcludeShippingMethod, PaymentMethod, IsInviteCode, IsEnterprise,isGroupbuyAvailable);
+            warningMessage, orderContactInfo, exchangePolicy, notifyMessage, ExcludeShippingMethod, PaymentMethod, IsInviteCode, IsEnterprise, isGroupbuyAvailable);
 
         query = query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? GroupBuyConsts.GetDefaultSorting(false) : sorting).PageBy(skipCount, maxResultCount);
-        var result= await query.Select(x=>new GroupBuyList { 
-        Id=x.Id,
-        GroupBuyName=x.GroupBuyName,
-        StartTime=x.StartTime,
-        EndTime=x.EndTime,
-        CreationTime=x.CreationTime,
-        IsGroupBuyAvaliable=x.IsGroupBuyAvaliable
+        var result = await query.Select(x => new GroupBuyList
+        {
+            Id = x.Id,
+            GroupBuyName = x.GroupBuyName,
+            StartTime = x.StartTime,
+            EndTime = x.EndTime,
+            CreationTime = x.CreationTime,
+            IsGroupBuyAvaliable = x.IsGroupBuyAvaliable
 
-        
+
         }).ToListAsync();
         return result;
     }
@@ -206,20 +208,20 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
         var query = from order in dbContext.Orders
                     join groupbuy in dbContext.GroupBuys on order.GroupBuyId equals groupbuy.Id
                     join tenant in dbContext.Tenants on groupbuy.TenantId equals tenant.Id // Assuming there's a Tenant navigation property in GroupBuy entity
-                   where groupbuy.TenantId!=null
+                    where groupbuy.TenantId != null
                     group order by order.GroupBuyId into groupedOrders
-                  
+
                     select new GroupBuyReport
                     {
                         GroupBuyId = groupedOrders.Key,
                         GroupBuyName = groupedOrders.First().GroupBuy.GroupBuyName,
-                        TenantName = dbContext.Tenants.Where(x=>x.Id==groupedOrders.First().GroupBuy.TenantId).Select(x=>x.Name).FirstOrDefault().ToString(), // Assuming TenantName is a property in the Tenant entity
+                        TenantName = dbContext.Tenants.Where(x => x.Id == groupedOrders.First().GroupBuy.TenantId).Select(x => x.Name).FirstOrDefault().ToString(), // Assuming TenantName is a property in the Tenant entity
                         TotalQuantity = groupedOrders.Sum(order => order.TotalQuantity),
                         TotalAmount = groupedOrders.Where(x => x.OrderStatus == OrderStatus.Open && x.ShippingStatus == ShippingStatus.WaitingForPayment).Sum(order => order.TotalAmount),
                         PaidAmount = groupedOrders.Where(x => x.OrderStatus == OrderStatus.Open && x.ShippingStatus == ShippingStatus.PrepareShipment).Sum(order => order.TotalAmount),
-                    TotalOrder = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Count(),
+                        TotalOrder = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Count(),
                         SalesAmount = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(order => order.TotalAmount),
-                      WatingForShipment=groupedOrders.Where(x=>x.OrderStatus==OrderStatus.Open && x.ShippingStatus==ShippingStatus.PrepareShipment).Count(),
+                        WatingForShipment = groupedOrders.Where(x => x.OrderStatus == OrderStatus.Open && x.ShippingStatus == ShippingStatus.PrepareShipment).Count(),
                         AmountReceived = groupedOrders.Where(x => x.OrderStatus == OrderStatus.Open && x.ShippingStatus == ShippingStatus.PrepareShipment).Sum(order => order.TotalAmount),
 
                     };
@@ -237,7 +239,7 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
     {
         return query
                 .WhereIf(!string.IsNullOrWhiteSpace(filterText), e => e.Status.Contains(filterText) || e.GroupBuyName.Contains(filterText) ||
-                e.Id.ToString().Contains(filterText)|| e.EntryURL.Contains(filterText) || e.EntryURL2.Contains(filterText) || e.SubjectLine.Contains(filterText) || e.ShortName.Contains(filterText)
+                e.Id.ToString().Contains(filterText) || e.EntryURL.Contains(filterText) || e.EntryURL2.Contains(filterText) || e.SubjectLine.Contains(filterText) || e.ShortName.Contains(filterText)
                 || e.InvoiceNote.Contains(filterText) || e.FBID.Contains(filterText) || e.IGID.Contains(filterText) || e.LineID.Contains(filterText) || e.GAID.Contains(filterText) ||
                 e.GTM.Contains(filterText) || e.WarningMessage.Contains(filterText) || e.OrderContactInfo.Contains(filterText) || e.ExchangePolicy.Contains(filterText)
                 || e.NotifyMessage.Contains(filterText))
@@ -256,20 +258,20 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
                 .WhereIf(!string.IsNullOrWhiteSpace(orderContactInfo), e => e.OrderContactInfo.Contains(orderContactInfo))
                 .WhereIf(!string.IsNullOrWhiteSpace(exchangePolicy), e => e.ExchangePolicy.Contains(exchangePolicy))
                 .WhereIf(!string.IsNullOrWhiteSpace(notifyMessage), e => e.NotifyMessage.Contains(notifyMessage))
-                .WhereIf(!string.IsNullOrWhiteSpace(ExcludeShippingMethod),e=>e.ExcludeShippingMethod.Contains(ExcludeShippingMethod))
-                .WhereIf(!string.IsNullOrWhiteSpace(PaymentMethod),e=>e.PaymentMethod.Contains(PaymentMethod))
-                .WhereIf(issueInvoice.HasValue,e=>e.IssueInvoice==issueInvoice)
-                .WhereIf(startTime.HasValue || endTime.HasValue, e =>(!startTime.HasValue || e.EndTime.Value.Date >= startTime.Value.Date) &&
+                .WhereIf(!string.IsNullOrWhiteSpace(ExcludeShippingMethod), e => e.ExcludeShippingMethod.Contains(ExcludeShippingMethod))
+                .WhereIf(!string.IsNullOrWhiteSpace(PaymentMethod), e => e.PaymentMethod.Contains(PaymentMethod))
+                .WhereIf(issueInvoice.HasValue, e => e.IssueInvoice == issueInvoice)
+                .WhereIf(startTime.HasValue || endTime.HasValue, e => (!startTime.HasValue || e.EndTime.Value.Date >= startTime.Value.Date) &&
                          (!endTime.HasValue || e.StartTime.Value.Date <= endTime.Value.Date))
                 .WhereIf(isGroupbuyAvailable.HasValue, e => e.IsGroupBuyAvaliable == isGroupbuyAvailable)
-                .WhereIf(IsEnterprise.HasValue,e=>e.IsEnterprise==IsEnterprise)
-                .WhereIf(freeShipping.HasValue,e=>e.FreeShipping==freeShipping)
-                .WhereIf(allowShipToOuterTaiwan.HasValue,e=>e.AllowShipToOuterTaiwan==allowShipToOuterTaiwan)
-                
-                .WhereIf(IsInviteCode.HasValue,e=>!string.IsNullOrWhiteSpace(e.InviteCode))
-             
+                .WhereIf(IsEnterprise.HasValue, e => e.IsEnterprise == IsEnterprise)
+                .WhereIf(freeShipping.HasValue, e => e.FreeShipping == freeShipping)
+                .WhereIf(allowShipToOuterTaiwan.HasValue, e => e.AllowShipToOuterTaiwan == allowShipToOuterTaiwan)
 
-        
+                .WhereIf(IsInviteCode.HasValue, e => !string.IsNullOrWhiteSpace(e.InviteCode))
+
+
+
                 .WhereIf(groupBuyNo.HasValue, e => e.GroupBuyNo == groupBuyNo);
     }
 
@@ -292,7 +294,7 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
         return await (from groupbuy in dbContext.GroupBuys
                       join orders in dbContext.Orders
                       on groupbuy.Id equals orders.GroupBuyId
-                      where orders.PaymentDate.HasValue && groupbuy.TenantId!=null
+                      where orders.PaymentDate.HasValue && groupbuy.TenantId != null
                       select groupbuy.Id)
                       .Distinct()
                       .CountAsync();
@@ -302,28 +304,28 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
     {
         var dbContext = await GetDbContextAsync();
         var query = await (from order in dbContext.Orders
-                           .Include(x=>x.OrderItems).ThenInclude(x=>x.Item)
+                           .Include(x => x.OrderItems).ThenInclude(x => x.Item)
                     .WhereIf(startDate.HasValue, x => x.CreationTime >= startDate)
                     .WhereIf(endDate.HasValue, x => x.CreationTime < endDate)
                     .WhereIf(orderStatus.HasValue, x => x.OrderStatus == orderStatus)
-                    join groupbuy in dbContext.GroupBuys.Where(g => g.Id == id) on order.GroupBuyId equals groupbuy.Id
-                    group order by order.GroupBuyId into groupedOrders 
-                    select new GroupBuyReportDetails
-                    {
-                        GroupBuyName = groupedOrders.First().GroupBuy.GroupBuyName,
-                        StartDate = startDate ?? groupedOrders.First().GroupBuy.CreationTime,
-                        EndDate = endDate ?? DateTime.Now,
-                        OrderItems = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open ).Distinct().SelectMany(o => o.OrderItems).ToList(),
-                        OrderItemsPaid= groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open && order.ShippingStatus != ShippingStatus.WaitingForPayment).Distinct().SelectMany(o => o.OrderItems).ToList(),
-                        OrderQuantityPaid = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open && order.ShippingStatus != ShippingStatus.WaitingForPayment).Count()-(groupedOrders.Where(order=>order.IsRefunded).Count()),
-                        TotalOrderQuantity = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Count(),
-                        SalesAmount = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Distinct().Sum(order => order.TotalAmount),
-                        //SalesAmountExclShipping = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open && order.ShippingStatus == ShippingStatus.PrepareShipment).Sum(order => order.TotalAmount) ,
-                        AmountReceived = groupedOrders.Where(x => x.OrderStatus == OrderStatus.Open && x.ShippingStatus != ShippingStatus.WaitingForPayment).Distinct().Sum(order => order.TotalAmount),
-                       GroupBuy= groupedOrders.First().GroupBuy,
-                       // SalesAmountMinusShipping = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(order => order.TotalAmount) - groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(x => x.TotalAmount - x.OrderItems.Sum(y => y.ItemPrice)),
-                        //BloggersProfit = (groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open && order.ShippingStatus==ShippingStatus.PrepareShipment).Sum(order => order.TotalAmount) - groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open && order.ShippingStatus == ShippingStatus.PrepareShipment).Count() * 200) * (groupedOrders.First().GroupBuy.ProfitShare / 100.0M)
-                    }).FirstOrDefaultAsync();
+                           join groupbuy in dbContext.GroupBuys.Where(g => g.Id == id) on order.GroupBuyId equals groupbuy.Id
+                           group order by order.GroupBuyId into groupedOrders
+                           select new GroupBuyReportDetails
+                           {
+                               GroupBuyName = groupedOrders.First().GroupBuy.GroupBuyName,
+                               StartDate = startDate ?? groupedOrders.First().GroupBuy.CreationTime,
+                               EndDate = endDate ?? DateTime.Now,
+                               OrderItems = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Distinct().SelectMany(o => o.OrderItems).ToList(),
+                               OrderItemsPaid = groupedOrders.Where(order => (order.PaymentMethod == PaymentMethods.CashOnDelivery && order.ShippingStatus != ShippingStatus.PrepareShipment && order.ShippingStatus != ShippingStatus.ToBeShipped) || (order.PaymentMethod != PaymentMethods.CashOnDelivery && order.OrderStatus == OrderStatus.Open && order.ShippingStatus != ShippingStatus.WaitingForPayment)).Distinct().SelectMany(o => o.OrderItems).ToList(),
+                               OrderQuantityPaid = groupedOrders.Where(order => (order.PaymentMethod == PaymentMethods.CashOnDelivery && order.ShippingStatus != ShippingStatus.PrepareShipment && order.ShippingStatus != ShippingStatus.ToBeShipped) || (order.PaymentMethod != PaymentMethods.CashOnDelivery && order.OrderStatus == OrderStatus.Open && order.ShippingStatus != ShippingStatus.WaitingForPayment)).Count() - (groupedOrders.Where(order => order.IsRefunded).Count()),
+                               TotalOrderQuantity = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Count(),
+                               SalesAmount = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Distinct().Sum(order => order.TotalAmount),
+                               //SalesAmountExclShipping = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open && order.ShippingStatus == ShippingStatus.PrepareShipment).Sum(order => order.TotalAmount) ,
+                               AmountReceived = groupedOrders.Where(x => (x.PaymentMethod == PaymentMethods.CashOnDelivery && x.ShippingStatus != ShippingStatus.PrepareShipment && x.ShippingStatus != ShippingStatus.ToBeShipped) || (x.PaymentMethod != PaymentMethods.CashOnDelivery && x.OrderStatus == OrderStatus.Open && x.ShippingStatus != ShippingStatus.WaitingForPayment)).Distinct().Sum(order => order.TotalAmount),
+                               GroupBuy = groupedOrders.First().GroupBuy,
+                               // SalesAmountMinusShipping = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(order => order.TotalAmount) - groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(x => x.TotalAmount - x.OrderItems.Sum(y => y.ItemPrice)),
+                               //BloggersProfit = (groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open && order.ShippingStatus==ShippingStatus.PrepareShipment).Sum(order => order.TotalAmount) - groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open && order.ShippingStatus == ShippingStatus.PrepareShipment).Count() * 200) * (groupedOrders.First().GroupBuy.ProfitShare / 100.0M)
+                           }).FirstOrDefaultAsync();
         if (query != null)
         {
             query.SalesAmountExclShipping = query.OrderItems.Sum(order => order.TotalAmount) - query.OrderItems.Sum(x => x.TotalAmount - (x.ItemPrice * x.Quantity));
@@ -334,7 +336,7 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
             decimal profit = 0;
             foreach (var item in itemWithShareProfit)
             {
-                profit +=((decimal)(query.GroupBuy.ProfitShare-item.Item.ShareProfit) / 100.0M) *item.TotalAmount;
+                profit += ((decimal)(query.GroupBuy.ProfitShare - item.Item.ShareProfit) / 100.0M) * item.TotalAmount;
 
             }
             if (groupbuyProfit < profit)
