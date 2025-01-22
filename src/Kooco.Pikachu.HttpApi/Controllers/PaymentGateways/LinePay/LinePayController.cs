@@ -13,20 +13,20 @@ namespace Kooco.Pikachu.Controllers.PaymentGateways.LinePay;
 [Route("api/app/line-pay")]
 public class LinePayController(ILinePayAppService linePayAppService) : PikachuController, ILinePayAppService
 {
-    [HttpPost("confirm/{transactionId}/{orderNo}")]
-    public Task<object> ConfirmPayment(string transactionId, string? orderNo)
-    {
-        return linePayAppService.ConfirmPayment(transactionId, orderNo);
-    }
-
     [HttpPost("payment-request/{orderId}")]
     public Task<LinePayResponseDto<LinePayPaymentResponseInfoDto>> PaymentRequest(Guid orderId)
     {
         return linePayAppService.PaymentRequest(orderId);
     }
 
+    [HttpPost("confirm/{transactionId}/{orderNo}")]
+    public Task<LinePayResponseDto<LinePayConfirmResponseInfoDto>> ConfirmPayment(string transactionId, string? orderNo)
+    {
+        return linePayAppService.ConfirmPayment(transactionId, orderNo);
+    }
+
     [HttpPost("refund/{orderId}")]
-    public Task<object> ProcessRefund(Guid orderId)
+    public Task<LinePayResponseDto<LinePayRefundResponseInfoDto>> ProcessRefund(Guid orderId)
     {
         return linePayAppService.ProcessRefund(orderId);
     }

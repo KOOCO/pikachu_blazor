@@ -4,7 +4,6 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -16,20 +15,43 @@ public static class LinePayExtensionService
 {
     public static string CreatePaymentRequest(this Order order, LinePayConfiguration apiOptions, IStringLocalizer l)
     {
+        var orderDiscount = order.DiscountAmount ?? 0;
+        var totalAmount = Convert.ToInt32(order.OrderItems.Sum(oi => oi.TotalAmount) - orderDiscount);
+
+        // Initialize the product list and track the rounded total
+        var products = order.OrderItems.Select((oi, index) => new LinePayPaymentRequestProductDto
+        {
+            Id = oi.Id.ToString(),
+            Name = oi.ItemId.HasValue ? oi.Item?.ItemName : oi.SetItem?.SetItemName,
+            ImageUrl = oi.ItemId.HasValue ? oi.Item?.ItemMainImageURL : oi.SetItem?.SetItemMainImageURL,
+            Quantity = oi.Quantity,
+            Price = Convert.ToInt32(Math.Floor(oi.ItemPrice - (orderDiscount / order.OrderItems.Count))),
+            OriginalPrice = Convert.ToInt32(oi.ItemPrice)
+        }).ToList();
+
+        var roundedSum = products.Sum(p => p.Price);
+        if (roundedSum < totalAmount)
+        {
+            // Add a compensation product to match the total amount
+            products.Add(new LinePayPaymentRequestProductDto
+            {
+                Id = "Adjustment",
+                Name = "Rounding Adjustment",
+                ImageUrl = null,
+                Quantity = 1,
+                Price = totalAmount - roundedSum,
+                OriginalPrice = 0
+            });
+        }
+
         var packages = new List<LinePayPaymentRequestPackageDto>
         {
-            new() {
+            new()
+            {
                 Id = order.OrderNo,
-                Amount = Convert.ToInt32(order.OrderItems.Sum(oi => oi.TotalAmount)),
+                Amount = totalAmount,
                 Name = order.GroupBuy?.GroupBuyName,
-                Products = order.OrderItems.Select(oi => new LinePayPaymentRequestProductDto
-                {
-                    Id = oi.Id.ToString(),
-                    Name = oi.ItemId.HasValue ? oi.Item?.ItemName : oi.SetItem?.SetItemName,
-                    ImageUrl = oi.ItemId.HasValue ? oi.Item?.ItemMainImageURL : oi.SetItem?.SetItemMainImageURL,
-                    Quantity = oi.Quantity,
-                    Price = Convert.ToInt32(oi.ItemPrice)
-                }).ToList()
+                Products = products
             }
         };
 
@@ -95,15 +117,13 @@ public static class LinePayExtensionService
         return JsonSerializer.Serialize(body, GetJsonOptions());
     }
 
-    public static LinePayResponseDto<TInfo> DeserializePaymentRequest<TInfo>(RestResponse restResponse)
+    public static LinePayResponseDto<TInfo> Deserialize<TInfo>(RestResponse restResponse)
     {
         var responseContent = restResponse.Content;
-        var responseDto = DeserializePaymentRequest<TInfo>(responseContent);
-        responseDto.IsSuccessful = restResponse.IsSuccessful;
-        return responseDto;
+        return Deserialize<TInfo>(responseContent);
     }
 
-    public static LinePayResponseDto<TInfo> DeserializePaymentRequest<TInfo>(string? responseContent)
+    public static LinePayResponseDto<TInfo> Deserialize<TInfo>(string? responseContent)
     {
         var responseDto = (responseContent == null ? new()
             : JsonSerializer.Deserialize<LinePayResponseDto<TInfo>>(responseContent, GetJsonOptions()))
@@ -147,5 +167,14 @@ public static class LinePayExtensionService
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
+    }
+
+    public static LinePayResponseDto<LinePayPaymentResponseInfoDto>? GetPaymentResponse(this Order order)
+    {
+        _ = order.ExtraProperties.TryGetValue(PaymentGatewayConsts.PaymentResponse, out var response);
+
+        var responseString = response?.ToString();
+
+        return responseString != null ? Deserialize<LinePayPaymentResponseInfoDto>(responseString) : null;
     }
 }

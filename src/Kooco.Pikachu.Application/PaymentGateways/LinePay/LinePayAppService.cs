@@ -7,7 +7,6 @@ using System;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Volo.Abp;
-using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 
@@ -48,7 +47,7 @@ public class LinePayAppService : PikachuAppService, ILinePayAppService
 
         order.ExtraProperties.TryAdd(PaymentGatewayConsts.PaymentResponse, response.Content);
 
-        var responseDto = LinePayExtensionService.DeserializePaymentRequest<LinePayPaymentResponseInfoDto>(response);
+        var responseDto = LinePayExtensionService.Deserialize<LinePayPaymentResponseInfoDto>(response);
 
         if (response.IsSuccessful && responseDto.ReturnCode == _apiOptions.SuccessReturnCode)
         {
@@ -60,14 +59,15 @@ public class LinePayAppService : PikachuAppService, ILinePayAppService
         order.OrderStatus = OrderStatus.Closed;
         order.ShippingStatus = ShippingStatus.Closed;
 
-        Logger.LogError(@"Error in Line Pay Payment Request: {0}", response.ToString());
+        Logger.LogError(@"Error in Line Pay Payment Request: {response}", response.ToString());
         return responseDto;
     }
 
-    public async Task<object> ConfirmPayment(string transactionId, string? orderNo)
+    public async Task<LinePayResponseDto<LinePayConfirmResponseInfoDto>> ConfirmPayment(string transactionId, string? orderNo)
     {
         var linePay = await _paymentGatewayAppService.GetLinePayAsync(true)
             ?? throw new EntityNotFoundException(typeof(PaymentGateway));
+
         var order = await _orderRepository.FirstOrDefaultAsync(x => x.OrderNo == orderNo)
             ?? throw new EntityNotFoundException(typeof(Order), orderNo);
 
@@ -83,11 +83,11 @@ public class LinePayAppService : PikachuAppService, ILinePayAppService
 
         order.ExtraProperties.TryAdd(PaymentGatewayConsts.ConfirmPaymentResponse, response.Content);
 
-        var responseDto = LinePayExtensionService.DeserializePaymentRequest<LinePayConfirmResponseInfoDto>(response);
+        var responseDto = LinePayExtensionService.Deserialize<LinePayConfirmResponseInfoDto>(response);
 
         if (response.IsSuccessful && responseDto.ReturnCode == _apiOptions.SuccessReturnCode)
         {
-            order.ShippingStatus = ShippingStatus.WaitingForPayment;
+            order.ShippingStatus = ShippingStatus.PrepareShipment;
             await _orderRepository.UpdateAsync(order);
             return responseDto;
         }
@@ -95,11 +95,11 @@ public class LinePayAppService : PikachuAppService, ILinePayAppService
         order.OrderStatus = OrderStatus.Closed;
         order.ShippingStatus = ShippingStatus.Closed;
 
-        Logger.LogError(@"Error in Line Pay Payment Request: {0}", response.ToString());
+        Logger.LogError(@"Error in Line Pay Confirm Payment Request: {response}", response.ToString());
         return responseDto;
     }
 
-    public async Task<object> ProcessRefund(Guid orderId)
+    public async Task<LinePayResponseDto<LinePayRefundResponseInfoDto>> ProcessRefund(Guid orderId)
     {
         var linePay = await _paymentGatewayAppService.GetLinePayAsync(true)
             ?? throw new EntityNotFoundException(typeof(PaymentGateway));
@@ -107,28 +107,37 @@ public class LinePayAppService : PikachuAppService, ILinePayAppService
         var order = await _orderRepository.GetWithDetailsAsync(orderId)
             ?? throw new EntityNotFoundException(typeof(Order), orderId);
 
-        var paymentResponse = order.GetProperty(PaymentGatewayConsts.PaymentResponse)
+        var paymentResponse = order.GetPaymentResponse()
             ?? throw new UserFriendlyException("Payment does not exist against this order.");
-
-        var paymentResponseDto = LinePayExtensionService.DeserializePaymentRequest<LinePayPaymentResponseInfoDto>(paymentResponse.ToString());
 
         var body = JsonSerializer.Serialize(new
         {
-            refundAmount = order.TotalAmount
+            refundAmount = (int)order.TotalAmount
         });
 
         var nonce = Guid.NewGuid().ToString();
 
-        var apiPath = string.Format(_apiOptions.RefundApiPath, paymentResponseDto.Info.TransactionId);
+        var apiPath = string.Format(_apiOptions.RefundApiPath, paymentResponse.Info.TransactionId);
 
         var signature = LinePayExtensionService.GeneratePostSignature(apiPath, linePay.ChannelSecretKey, body, nonce);
 
         var response = await _restClient.Post(apiPath, body, nonce, linePay.ChannelId, signature);
 
-        order.ExtraProperties.TryAdd(PaymentGatewayConsts.PaymentResponse, response.Content);
+        order.ExtraProperties.TryAdd(PaymentGatewayConsts.RefundResponse, response.Content);
 
-        var responseDto = LinePayExtensionService.DeserializePaymentRequest<LinePayPaymentResponseInfoDto>(response);
+        var responseDto = LinePayExtensionService.Deserialize<LinePayRefundResponseInfoDto>(response);
 
+        if (response.IsSuccessful && responseDto.ReturnCode == _apiOptions.SuccessReturnCode)
+        {
+            order.RefundAmount = order.TotalAmount;
+            order.IsRefunded = true;
+            order.OrderStatus = OrderStatus.Refund;
+            order.OrderRefundType = OrderRefundType.FullRefund;
+        }
+        else
+        {
+            Logger.LogError(@"Error in Line Pay Refund Request: {response}", response.ToString());
+        }
         return responseDto;
     }
 }

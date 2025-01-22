@@ -26,6 +26,7 @@ public class LinePayPaymentRequestProductDto
     public string? ImageUrl { get; set; }
     public int Quantity { get; set; }
     public int Price { get; set; }
+    public int OriginalPrice { get; set; }
 }
 
 public class LinePayPaymentRequestRedirectUrlDto

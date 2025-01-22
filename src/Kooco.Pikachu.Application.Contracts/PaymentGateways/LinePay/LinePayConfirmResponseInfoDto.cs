@@ -21,7 +21,7 @@ public class LinePayConfirmResponseInfoDto
                 {
                     JsonValueKind.Number => new BigInteger(TransactionId.GetDecimal()),
                     JsonValueKind.String => BigInteger.Parse(TransactionId.GetString()),
-                    _ => throw new JsonException("Invalid transactionId format.")
+                    _ => default
                 };
             }
 
