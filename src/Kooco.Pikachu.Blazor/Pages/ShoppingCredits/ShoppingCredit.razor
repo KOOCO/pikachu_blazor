@@ -4,10 +4,12 @@
 
 @using Kooco.Pikachu.Permissions
 @using Kooco.Pikachu.ShoppingCredits
+@using Kooco.Pikachu.UserShoppingCredits
 @using Microsoft.Extensions.Localization
 @inherits PikachuComponentBase
 @inject IShoppingCreditUsageSettingAppService ShoppingCreditUsageSettingAppService
 @inject IShoppingCreditEarnSettingAppService ShoppingCreditEarnSettingAppService
+@inject IUserShoppingCreditAppService UserShoppingCreditAppService
 @inject NavigationManager NavigationManager
 
 <Div>
@@ -165,13 +167,13 @@
                 <h4>@L["IssuedPoints"]</h4>
                 <Row Class="py-3" HorizontalGutter="10">
                     <Column ColumnSize="ColumnSize.Is4">
-                        <PikachuCard Type="danger" Title="@L["Today"]" AmountVisible="true" Amount="125"></PikachuCard>
+                        <PikachuCard Type="danger" Title="@L["Today"]" AmountVisible="true" Amount="@((decimal)Stats.TodayIssueAmount)"></PikachuCard>
                     </Column>
                     <Column ColumnSize="ColumnSize.Is4">
-                            <PikachuCard Type="warning" Title="@L["ThisWeek"]" AmountVisible="true" Amount="99"></PikachuCard>
+                            <PikachuCard Type="warning" Title="@L["ThisWeek"]" AmountVisible="true" Amount="@((decimal)(Stats.ThisWeekIssueAmount))"></PikachuCard>
                     </Column>
                     <Column ColumnSize="ColumnSize.Is4">
-                            <PikachuCard Type="success" Title="@L["ThisMonth"]" AmountVisible="true" Amount="32"></PikachuCard>
+                            <PikachuCard Type="success" Title="@L["ThisMonth"]" AmountVisible="true" Amount="@((decimal)(Stats.ThisMonthIssueAmount))"></PikachuCard>
                     </Column>
                 </Row>
             </CardBody>
@@ -184,13 +186,13 @@
                 <h4>@L["RedeemedPoints"]</h4>
                 <Row Class="py-3" HorizontalGutter="10">
                     <Column ColumnSize="ColumnSize.Is4">
-                        <PikachuCard Type="danger" Title="@L["Today"]" Amount="125"></PikachuCard>
+                            <PikachuCard Type="danger" Title="@L["Today"]" AmountVisible="true" Amount="@((decimal)Stats.TodayRedeemedAmount)"></PikachuCard>
                     </Column>
                     <Column ColumnSize="ColumnSize.Is4">
-                        <PikachuCard Type="warning" Title="@L["ThisWeek"]" Amount="99"></PikachuCard>
+                            <PikachuCard Type="warning" Title="@L["ThisWeek"]" AmountVisible="true" Amount="@((decimal)Stats.ThisWeekRedeemedAmount)"></PikachuCard>
                     </Column>
                     <Column ColumnSize="ColumnSize.Is4">
-                        <PikachuCard Type="success" Title="@L["ThisMonth"]" Amount="32"></PikachuCard>
+                            <PikachuCard Type="success" Title="@L["ThisMonth"]" AmountVisible="true" Amount="@((decimal)Stats.ThisMonthRedeemedAmount)"></PikachuCard>
                     </Column>
                 </Row>
             </CardBody>

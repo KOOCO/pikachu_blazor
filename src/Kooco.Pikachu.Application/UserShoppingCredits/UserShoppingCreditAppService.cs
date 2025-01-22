@@ -1,5 +1,6 @@
 ﻿using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Permissions;
+using Kooco.Pikachu.ShoppingCredits;
 using Kooco.Pikachu.UserCumulativeCredits;
 using Microsoft.AspNetCore.Authorization;
 using System;
@@ -83,7 +84,21 @@ public class UserShoppingCreditAppService(UserShoppingCreditManager userShopping
             input.CurrentRemainingCredits, input.TransactionDescription, input.ExpirationDate, input.IsActive);
         return ObjectMapper.Map<UserShoppingCredit, UserShoppingCreditDto>(userShoppingCredit);
     }
+    public async Task<ShoppingCreditStatDto> GetShoppingCreditStatsAsync()
+    {
+        var query = await userShoppingCreditRepository.GetQueryableAsync();
+        var result = new ShoppingCreditStatDto();
 
+        result.TodayIssueAmount = query.Where(x => !(x.TransactionDescription.Contains("購物折抵"))&& x.CreationTime.Date==DateTime.Now.Date).Sum(x => x.Amount);
+        result.ThisWeekIssueAmount = query.Where(x => !(x.TransactionDescription.Contains("購物折抵"))&&( x.CreationTime.Date<= DateTime.Now.Date && x.CreationTime.Date > DateTime.Now.Date.AddDays(-7))).Sum(x => x.Amount);
+        result.ThisMonthIssueAmount = query.Where(x => !(x.TransactionDescription.Contains("購物折抵"))&&( x.CreationTime.Date<= DateTime.Now.Date && x.CreationTime.Date > DateTime.Now.Date.AddDays(-30))).Sum(x => x.Amount);
+
+        result.TodayRedeemedAmount = query.Where(x => (x.TransactionDescription.Contains("購物折抵")) && x.CreationTime.Date == DateTime.Now.Date).Sum(x => x.Amount);
+        result.ThisWeekRedeemedAmount = query.Where(x => (x.TransactionDescription.Contains("購物折抵")) && (x.CreationTime.Date <= DateTime.Now.Date && x.CreationTime.Date > DateTime.Now.Date.AddDays(-7))).Sum(x => x.Amount);
+        result.ThisMonthRedeemedAmount = query.Where(x => (x.TransactionDescription.Contains("購物折抵")) && (x.CreationTime.Date <= DateTime.Now.Date && x.CreationTime.Date > DateTime.Now.Date.AddDays(-30))).Sum(x => x.Amount);
+        return result;
+
+    }
     [Authorize(PikachuPermissions.UserShoppingCredits.SetIsActive)]
     public async Task<UserShoppingCreditDto> SetIsActiveAsync(Guid id, bool isActive)
     {
