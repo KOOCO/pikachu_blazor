@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Domain.Entities;
+using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
 
@@ -32,7 +33,7 @@ public class MemberAppService(IMemberRepository memberRepository, IdentityUserMa
     UserCumulativeFinancialManager userCumulativeFinancialManager,
     IUserShoppingCreditAppService userShoppingCreditAppService,
     IShoppingCreditEarnSettingAppService shoppingCreditEarnSettingAppService,
-    IPikachuAccountAppService pikachuAccountAppService, IUserAddressRepository userAddressRepository) : PikachuAppService, IMemberAppService
+    IPikachuAccountAppService pikachuAccountAppService, IUserAddressRepository userAddressRepository,IUserCumulativeCreditAppService userCumulativeCreditAppService,IUserCumulativeCreditRepository userCumulativeCreditRepository) : PikachuAppService, IMemberAppService
 {
     public async Task<MemberDto> GetAsync(Guid id)
     {
@@ -264,6 +265,19 @@ public class MemberAppService(IMemberRepository memberRepository, IdentityUserMa
 
 
             });
+            var userCumulativeCredit = await userCumulativeCreditRepository.FirstOrDefaultAsync(x => x.UserId == identityUser.Id);
+            if (userCumulativeCredit is null)
+            {
+                await userCumulativeCreditAppService.CreateAsync(new CreateUserCumulativeCreditDto { TotalAmount = shoppingCredit.RegistrationEarnedPoints, TotalDeductions = 0, TotalRefunds = 0, UserId = identityUser.Id });
+
+
+            }
+            else
+            {
+                userCumulativeCredit.ChangeTotalAmount((int)(userCumulativeCredit.TotalAmount + shoppingCredit.RegistrationEarnedPoints));
+                await userCumulativeCreditRepository.UpdateAsync(userCumulativeCredit);
+            }
+
         }
         return ObjectMapper.Map<IdentityUserDto, MemberDto>(identityUser);
     }

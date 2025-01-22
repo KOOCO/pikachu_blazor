@@ -426,9 +426,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             {
                 if (order.cashback_amount > 0)
                 {
-                    var cashback = (await _userShoppingCreditRepository.GetQueryableAsync()).Where(x => x.TransactionDescription.Contains("購物回饋：訂單 #") && x.UserId == order.UserId).FirstOrDefault();
-                    if (cashback is null)
-                    {
+                  
                         var newcashback = await _userShoppingCreditAppService.RecordShoppingCreditAsync(new RecordUserShoppingCreditDto
                         {
                             Amount = (int)order.cashback_amount,
@@ -441,14 +439,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         });
                         order.cashback_amount = newcashback.Amount;
                         order.cashback_record_id = newcashback.Id;
-                    }
-                    else
-                    {
-                        cashback.ChangeAmount((int)(cashback.Amount + order.cashback_amount));
-                        cashback.ChangeCurrentRemainingCredits((int)(cashback.CurrentRemainingCredits + order.cashback_amount));
-                        order.cashback_record_id = cashback.Id;
-                        await _userShoppingCreditRepository.UpdateAsync(cashback);
-                    }
+                 
                     var userCumulativeCredits = await _userCumulativeCreditRepository.FirstOrDefaultAsync(x => x.UserId == order.UserId);
                     if (userCumulativeCredits is null)
                     {
@@ -462,8 +453,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
                     }
                  
-                    order.cashback_amount = cashback.Amount;
-                    order.cashback_record_id = cashback.Id;
+                 
 
                 }
 
@@ -472,9 +462,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             {
                 if (order.CreditDeductionAmount > 0)
                 {
-                    var deduction = (await _userShoppingCreditRepository.GetQueryableAsync()).Where(x => x.TransactionDescription.Contains("購物折抵：訂單 #") && x.UserId == order.UserId).FirstOrDefault();
-                    if (deduction is null)
-                    {
+                  
                         var newdeduction = await _userShoppingCreditAppService.RecordShoppingCreditAsync(new RecordUserShoppingCreditDto
                         {
                             Amount = (int)order.CreditDeductionAmount,
@@ -486,16 +474,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
                         });
                         order.CreditDeductionAmount = newdeduction.Amount;
-                        order.CreditDeductionRecordId = deduction.Id;
-                    }
-                    else
-                    {
-                        deduction.ChangeAmount((int)(deduction.Amount - order.CreditDeductionAmount));
-                        deduction.ChangeCurrentRemainingCredits((int)(deduction.CurrentRemainingCredits - order.CreditDeductionAmount));
-                        order.cashback_record_id = deduction.Id;
-                        await _userShoppingCreditRepository.UpdateAsync(deduction);
-
-                    }
+                        order.CreditDeductionRecordId = newdeduction.Id;
+                   
                     var userCumulativeCredits = await _userCumulativeCreditRepository.FirstOrDefaultAsync(x => x.UserId == order.UserId);
                     if (userCumulativeCredits is null)
                     {

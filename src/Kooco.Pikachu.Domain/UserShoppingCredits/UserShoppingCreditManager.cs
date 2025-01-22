@@ -23,7 +23,14 @@ public class UserShoppingCreditManager(IUserShoppingCreditRepository userShoppin
             throw new ExpirationDateCannotBePastException();
         }
         var oldCredit = (await userShoppingCreditRepository.GetQueryableAsync()).Where(x => x.UserId == userId).OrderBy(x=>x.CreationTime).LastOrDefault();
-        currentRemainingCredits = currentRemainingCredits + (oldCredit?.CurrentRemainingCredits ?? 0);
+        if (transactionDescription.Contains("購物折抵"))
+        {
+            currentRemainingCredits = (oldCredit?.CurrentRemainingCredits ?? 0) - currentRemainingCredits;
+        }
+        else
+        {
+            currentRemainingCredits = currentRemainingCredits + (oldCredit?.CurrentRemainingCredits ?? 0);
+        }
         var userShoppingCredit = new UserShoppingCredit(GuidGenerator.Create(), userId, amount,
             currentRemainingCredits, transactionDescription, expirationDate, isActive);
 
