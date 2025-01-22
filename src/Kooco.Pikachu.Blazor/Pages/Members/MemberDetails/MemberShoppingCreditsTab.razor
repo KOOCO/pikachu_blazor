@@ -13,15 +13,15 @@
             }
         </Div>
         <Row HorizontalGutter="10">
-            <Column ColumnSize="ColumnSize.Is4">
+            <Column ColumnSize="ColumnSize.Is6">
                 <PikachuCard Type="success" Title="@L["Amount"]" Amount="CumulativeCredits?.TotalAmount" AmountVisible="true"></PikachuCard>
             </Column>
-            <Column ColumnSize="ColumnSize.Is4">
+            <Column ColumnSize="ColumnSize.Is6">
                 <PikachuCard Type="warning" Title="@L["Deductions"]" Amount="CumulativeCredits?.TotalDeductions" AmountVisible="true"></PikachuCard>
             </Column>
-            <Column ColumnSize="ColumnSize.Is4">
+        @*     <Column ColumnSize="ColumnSize.Is4">
                 <PikachuCard Type="danger" Title="@L["Refunds"]" Amount="CumulativeCredits?.TotalRefunds" AmountVisible="true"></PikachuCard>
-            </Column>
+            </Column> *@
         </Row>
     </CardBody>
 </Card>

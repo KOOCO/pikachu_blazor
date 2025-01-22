@@ -14,6 +14,7 @@ using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.Refunds;
 using Kooco.Pikachu.Response;
 using Kooco.Pikachu.TenantManagement;
+using Kooco.Pikachu.UserCumulativeCredits;
 using Kooco.Pikachu.UserShoppingCredits;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Localization;
@@ -72,6 +73,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IEmailAppService _emailAppService;
     private readonly IOrderMessageAppService _OrderMessageAppService;
     private readonly ISetItemRepository _setItemRepository;
+    private readonly IUserCumulativeCreditAppService _userCumulativeCreditAppService;
+    private readonly IUserCumulativeCreditRepository _userCumulativeCreditRepository;
     #endregion
 
     #region Constructor
@@ -100,7 +103,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
         IUserShoppingCreditRepository userShoppingCreditRepository,
         IEmailAppService emailAppService,
         IOrderMessageAppService OrderMessageAppService,
-        ISetItemRepository setItemRepository
+        ISetItemRepository setItemRepository,
+        IUserCumulativeCreditAppService userCumulativeCreditAppService,
+        IUserCumulativeCreditRepository userCumulativeCreditRepository
     )
     {
         _orderRepository = orderRepository;
@@ -129,6 +134,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _emailAppService = emailAppService;
         _OrderMessageAppService = OrderMessageAppService;
         _setItemRepository = setItemRepository;
+        _userCumulativeCreditAppService = userCumulativeCreditAppService;
     }
     #endregion
 
@@ -443,7 +449,19 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         order.cashback_record_id = cashback.Id;
                         await _userShoppingCreditRepository.UpdateAsync(cashback);
                     }
+                    var userCumulativeCredits = await _userCumulativeCreditRepository.FirstOrDefaultAsync(x => x.UserId == order.UserId);
+                    if (userCumulativeCredits is null)
+                    {
+                        await _userCumulativeCreditAppService.CreateAsync(new CreateUserCumulativeCreditDto { TotalAmount = (int)order.cashback_amount, TotalDeductions = 0, TotalRefunds = 0, UserId = order.UserId });
 
+
+                    }
+                    else {
+                        userCumulativeCredits.ChangeTotalAmount((int)(userCumulativeCredits.TotalAmount + order.cashback_amount));
+                        await _userCumulativeCreditRepository.UpdateAsync(userCumulativeCredits);
+
+                    }
+                 
                     order.cashback_amount = cashback.Amount;
                     order.cashback_record_id = cashback.Id;
 
@@ -472,10 +490,23 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     }
                     else
                     {
-                        deduction.ChangeAmount((int)(deduction.Amount - order.cashback_amount));
-                        deduction.ChangeCurrentRemainingCredits((int)(deduction.CurrentRemainingCredits - order.cashback_amount));
+                        deduction.ChangeAmount((int)(deduction.Amount - order.CreditDeductionAmount));
+                        deduction.ChangeCurrentRemainingCredits((int)(deduction.CurrentRemainingCredits - order.CreditDeductionAmount));
                         order.cashback_record_id = deduction.Id;
                         await _userShoppingCreditRepository.UpdateAsync(deduction);
+
+                    }
+                    var userCumulativeCredits = await _userCumulativeCreditRepository.FirstOrDefaultAsync(x => x.UserId == order.UserId);
+                    if (userCumulativeCredits is null)
+                    {
+                        await _userCumulativeCreditAppService.CreateAsync(new CreateUserCumulativeCreditDto { TotalAmount = 0, TotalDeductions = order.CreditDeductionAmount, TotalRefunds = 0, UserId = order.UserId });
+
+
+                    }
+                    else
+                    {
+                        userCumulativeCredits.ChangeTotalDeductions((int)(userCumulativeCredits.TotalDeductions + order.CreditDeductionAmount));
+                        await _userCumulativeCreditRepository.UpdateAsync(userCumulativeCredits);
 
                     }
                 }
