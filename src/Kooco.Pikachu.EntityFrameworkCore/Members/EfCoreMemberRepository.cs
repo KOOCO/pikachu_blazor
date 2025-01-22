@@ -35,10 +35,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
     {
         var dbContext = await GetPikachuDbContextAsync();
         var query = from user in dbContext.Users
-                    join cumulativeOrder in dbContext.UserCumulativeOrders on user.Id equals cumulativeOrder.UserId into ordersGroup
-                    from cumulativeOrder in ordersGroup.DefaultIfEmpty() // Left join to allow nulls
-                    join cumulativeFinancial in dbContext.UserCumulativeFinancials on user.Id equals cumulativeFinancial.UserId into financialsGroup
-                    from cumulativeFinancial in financialsGroup.DefaultIfEmpty() // Left join to allow nulls
+                    
                     where string.IsNullOrWhiteSpace(filter)
                           || user.UserName.Contains(filter)
                           || user.PhoneNumber.Contains(filter)
@@ -51,8 +48,8 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                         PhoneNumber = user.PhoneNumber,
                         Email = user.Email,
                         Birthday = (DateTime?)user.GetProperty(Constant.Birthday, null),
-                        TotalOrders = cumulativeOrder != null ? cumulativeOrder.TotalOrders : 0,
-                        TotalSpent = cumulativeFinancial != null ? cumulativeFinancial.TotalSpent : 0
+                        TotalOrders =dbContext.Orders.Where(x=>x.UserId==user.Id).Count(),
+                        TotalSpent = (int)dbContext.Orders.Where(x => x.UserId == user.Id && (x.OrderStatus!=EnumValues.OrderStatus.Exchange && x.OrderStatus != EnumValues.OrderStatus.Refund)).Sum(x=>x.TotalAmount)
                     };
 
 
