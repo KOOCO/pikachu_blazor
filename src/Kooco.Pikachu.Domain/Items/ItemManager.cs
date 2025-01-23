@@ -120,6 +120,7 @@ namespace Kooco.Pikachu.Items
                 attribute3Name,
 
                 itemTemperature
+                
                 );
         }
 
@@ -141,7 +142,9 @@ namespace Kooco.Pikachu.Items
             string? attribute3Value,
             string? image,
             string? itemDescription,
+            int sortNo,
             bool status = false
+            
         )
         {
             Check.NotNull(@item, nameof(Item));
@@ -171,6 +174,7 @@ namespace Kooco.Pikachu.Items
                 attribute3Value,
                 image,
                 itemDescription,
+                sortNo,
                 status
             );
         }

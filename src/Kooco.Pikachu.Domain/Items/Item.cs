@@ -87,7 +87,7 @@ namespace Kooco.Pikachu.Items
         public string? Attribute1Name { get; set; }
         public string? Attribute2Name { get; set; }
         public string? Attribute3Name { get; set; }
-
+       
         public ItemStorageTemperature? ItemStorageTemperature { get; set; }
         public List<CategoryProduct> CategoryProducts { get; set; }
 
@@ -133,6 +133,7 @@ namespace Kooco.Pikachu.Items
             string? attribute3Name,
 
             ItemStorageTemperature? itemTemperature
+           
             ) : base(id)
         {
             SetItemName(itemName);
@@ -173,7 +174,7 @@ namespace Kooco.Pikachu.Items
             Attribute3Name = attribute3Name;
 
             ItemStorageTemperature = itemTemperature;
-
+            
             ItemDetails = new Collection<ItemDetails>();
             Images = new Collection<Image>();
             CategoryProducts = [];
@@ -219,6 +220,7 @@ namespace Kooco.Pikachu.Items
             string? attribute3Value,
             string? image,
             string? itemDescription,
+            int sortNo,
             bool status = false
         )
         {
@@ -248,6 +250,7 @@ namespace Kooco.Pikachu.Items
                     attribute3Value,
                     image,
                     itemDescription,
+                    sortNo,
                     status
                 )
             );

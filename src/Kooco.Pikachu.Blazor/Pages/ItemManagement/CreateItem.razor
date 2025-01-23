@@ -16,6 +16,8 @@
 @inject IMessageService _message
 @inject IJSRuntime JSRuntime;
 @inject IProductCategoryAppService ProductCategoryAppService
+@using Microsoft.JSInterop;
+@inject IJSRuntime JS;
 
 <style>
     .row {
@@ -25,6 +27,13 @@
     .drag-drop-span i {
         cursor: pointer;
     }
+    .draggable-row {
+    cursor: grab;
+}
+
+.draggable-row:active {
+    cursor: grabbing;
+}
 </style>
 
 <LoadingIndicator @ref="Loading" FullScreen></LoadingIndicator>
@@ -334,12 +343,23 @@
                                     <TableHeaderCell Class="text-center">
                                         @L["Status"]
                                     </TableHeaderCell>
+                                    <TableHeaderCell Class="text-center">
+                                      
+                                    </TableHeaderCell>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 @foreach (CreateItemDetailsDto item in ItemDetailsList)
                                 {
-                                    <TableRow Class="text-center align-items-center">
+                                    <TableRow 
+                                     Class="text-center align-items-center draggable-row"
+                                        Draggable=true
+                                      
+                                        DragStart="(e) => OnDragStart(e, item)"
+                                      DragOver="(e) => OnDragOver(e)"
+                                        Drop="(e) => OnDrop(e, item)">
+                                  
+                                    
                                         <TableRowCell>
                                             <i class="fas fa-caret-@(item.IsExpanded ? "up" : "down")" @onclick="() => ToggleExpanded(item)" />
                                         </TableRowCell>
@@ -385,6 +405,9 @@
                                         </TableRowCell>
                                         <TableRowCell>
                                             <Switch @bind-Checked="@item.Status" />
+                                        </TableRowCell>
+                                        <TableRowCell>
+                                              <i class="fa-solid fa-bars fa-2xl"></i>
                                         </TableRowCell>
                                     </TableRow>
 

@@ -107,6 +107,7 @@ public class ItemAppService :
                     itemDetail.Attribute3Value,
                     itemDetail.Image,
                     itemDetail.ItemDescription,
+                    itemDetail.SortNo,
                     itemDetail.Status
                 );
             }
@@ -213,6 +214,7 @@ public class ItemAppService :
                         itemDetail.Attribute3Value,
                         itemDetail.Image,
                         itemDetail.ItemDescription,
+                        itemDetail.SortNo,
                         itemDetail.Status
                         );
                 }
@@ -328,6 +330,7 @@ public class ItemAppService :
                     existing.Image = itemDetail.Image;
                     existing.ItemDescription = itemDetail.ItemDescription;
                     existing.Status = itemDetail.Status;
+                    existing.SortNo = itemDetail.SortNo;
                 }
                 else
                 {
@@ -349,6 +352,7 @@ public class ItemAppService :
                         itemDetail.Attribute3Value,
                         itemDetail.Image,
                         itemDetail.ItemDescription,
+                        itemDetail.SortNo,
                         itemDetail.Status
                     );
                 }

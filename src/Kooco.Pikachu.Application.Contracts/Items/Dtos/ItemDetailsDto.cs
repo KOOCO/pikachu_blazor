@@ -128,4 +128,5 @@ public class ItemDetailsDto : FullAuditedEntityDto<Guid>
     /// Item Type
     /// </summary>
     public string? ItemType { get; set; }
+    public int SortNo { get; set; }
 }

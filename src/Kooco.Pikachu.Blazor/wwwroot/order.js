@@ -86,6 +86,9 @@ window.openPopup = function (htmlContent) {
 window.openInNewTab = function (url) {
     window.open(url, '_blank');
 }
+function preventDefaultDrag(event) {
+    event.preventDefault(); // Prevent the default drag behavior
+}
 
 function submitForm() {
     var formElement = document.getElementById('formid');

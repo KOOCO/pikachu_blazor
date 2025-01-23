@@ -50,7 +50,7 @@ public partial class EditItem
     private SKUModel SKUModel { get; set; } = new();
     private FilePicker FilePickerCustom { get; set; }
     private string QuillReadOnlyContent { get; set; } = "";
-
+    private CreateItemDetailsDto draggedItem;
     private readonly IItemAppService _itemAppService;
     private readonly IEnumValueAppService _enumValueService;
     private readonly IUiMessageService _uiMessageService;
@@ -136,6 +136,7 @@ public partial class EditItem
                             Id = 2,
                             Name = L[ExistingItem.Attribute2Name],
                             ItemTags = ItemDetailsList.Where(x => x.Attribute2Value != null).Select(x => x.Attribute2Value).Distinct().ToList()
+                           
                         });
                 }
                 if (!ExistingItem.Attribute3Name.IsNullOrWhiteSpace())
@@ -439,15 +440,16 @@ public partial class EditItem
             return;
 
         List<List<string>> permutations = GeneratePermutations(Attributes.Select(x => x.ItemTags.Any() ? x.ItemTags : new List<string> { "" }).ToList());
-
+        int sortNo = 1;
         foreach (List<string> permutation in permutations)
         {
             ItemDetailsList.Add(new CreateItemDetailsDto
             {
                 ItemName = string.Join("/", permutation).TrimEnd('/'),
-                Status = true
+                Status = true,
+                SortNo=sortNo
             });
-
+            sortNo = sortNo + 1;
             ItemDetailsQuillHtml.Add(new());
 
             ItemDetailPickers.Add(new());
@@ -1041,6 +1043,38 @@ public partial class EditItem
         }
 
         StateHasChanged(); // Refresh UI
+    }
+
+    private void OnDragStart(DragEventArgs e, CreateItemDetailsDto item)
+    {
+        draggedItem = item; // Store the item being dragged
+    }
+
+    private async Task OnDragOver(DragEventArgs e)
+    {
+        // Call JavaScript to prevent default drag behavior
+        await JS.InvokeVoidAsync("preventDefaultDrag", e);
+    }
+
+    private void OnDrop(DragEventArgs e, CreateItemDetailsDto targetItem)
+    {
+        if (draggedItem == null || draggedItem == targetItem)
+            return;
+
+        int fromIndex = ItemDetailsList.IndexOf(draggedItem);
+        int toIndex = ItemDetailsList.IndexOf(targetItem);
+
+        // Rearrange items in the list
+        ItemDetailsList.RemoveAt(fromIndex);
+        ItemDetailsList.Insert(toIndex, draggedItem);
+
+
+        for (int i = 0; i < ItemDetailsList.Count; i++)
+        {
+            ItemDetailsList[i].SortNo = i + 1;
+        }
+        StateHasChanged();
+        draggedItem = null; // Reset dragged item
     }
     #endregion
 }
