@@ -5,6 +5,8 @@ public static class PikachuDomainErrorCodes
     /* You can add your business exception error codes here, as constants */
 
     public const string ItemNameCannotBeNull = "Pikachu:ItemNameCannotBeNull";
+    public const string ItemStyleKeyCannotBeNull = "Pikachu:ItemStyleKeyCannotBeNull";
+    public const string ItemStyleKeyCannotBeDuplicate = "Pikachu:ItemStyleKeyCannotBeDuplicate";
     public const string GetCannotBeEmptyOrZero = "Pikachu:GetCannotBeEmptyOrZero";
     public const string GetCannotBeGreaterThanGiftableQuantity = "Pikachu:GetCannotBeGreaterThanGiftableQuantity";
     public const string GroupBuyNameCannotBeNull = "Pikachu:GroupBuyNameCannotBeNull";

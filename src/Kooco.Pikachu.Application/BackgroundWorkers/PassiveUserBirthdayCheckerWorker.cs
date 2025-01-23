@@ -1,5 +1,6 @@
 ﻿using Kooco.Pikachu.Members;
 using Kooco.Pikachu.ShoppingCredits;
+using Kooco.Pikachu.UserCumulativeCredits;
 using Kooco.Pikachu.UserShoppingCredits;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -9,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.BackgroundWorkers;
+using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Threading;
 using Volo.Abp.Users;
@@ -49,6 +51,12 @@ namespace Kooco.Pikachu.BackgroundWorkers
                 var shoppingCreditEarnSettingAppService = workerContext
                   .ServiceProvider
                   .GetRequiredService<IShoppingCreditEarnSettingAppService>();
+                var userCumulativeCreditAppService = workerContext
+                 .ServiceProvider
+                 .GetRequiredService<IUserCumulativeCreditAppService>();
+                var userCumulativeCreditRepository = workerContext
+               .ServiceProvider
+               .GetRequiredService<IUserCumulativeCreditRepository>();
 
                 var shoppingCredit = await shoppingCreditEarnSettingAppService.GetFirstAsync();
 
@@ -73,6 +81,18 @@ namespace Kooco.Pikachu.BackgroundWorkers
 
 
                             });
+                            var userCumulativeCredit = await userCumulativeCreditRepository.FirstOrDefaultAsync(x => x.UserId == member.Id);
+                            if (userCumulativeCredit is null)
+                            {
+                                await userCumulativeCreditAppService.CreateAsync(new CreateUserCumulativeCreditDto { TotalAmount = shoppingCredit.BirthdayEarnedPoints, TotalDeductions = 0, TotalRefunds = 0, UserId = member.Id });
+
+
+                            }
+                            else
+                            {
+                                userCumulativeCredit.ChangeTotalAmount((int)(userCumulativeCredit.TotalAmount + shoppingCredit.BirthdayEarnedPoints));
+                                await userCumulativeCreditRepository.UpdateAsync(userCumulativeCredit);
+                            }
                         }
 
                     }

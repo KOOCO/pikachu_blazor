@@ -25,4 +25,5 @@ public class CreateItemDetailsDto
     public string? Image { get; set; }
     public bool Status { get; set; }
     public bool IsExpanded { get; set; }
+    public int SortNo { get; set; }
 }

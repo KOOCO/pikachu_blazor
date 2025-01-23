@@ -47,7 +47,7 @@ namespace Kooco.Pikachu.Items
         public string? ItemDescription { get; set; }
         public string? Image { get; set; }
         public bool Status { get; set; }
-
+        public int SortNo { get; set; }
         public ItemDetails() { }
 
         public ItemDetails(
@@ -69,6 +69,7 @@ namespace Kooco.Pikachu.Items
             string? attribute3Value,
             string? image,
             string? itemDescription,
+            int sortNo,
             bool status = false
         ) : base(id)
         {
@@ -92,6 +93,7 @@ namespace Kooco.Pikachu.Items
             Image = image;
             ItemDescription = itemDescription;
             Status = status;
+            SortNo = sortNo;
         }
 
         private void SetSKU(

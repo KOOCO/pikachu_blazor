@@ -49,6 +49,7 @@ public partial class CreateItem
     private readonly ImageContainerManager _imageContainerManager;
     LoadingIndicator Loading { get; set; }
     int CurrentIndex { get; set; }
+    int PriceInventoryCurrentIndex { get; set; }
     private List<FilePicker> ItemDetailPickers = [];
 
     private List<KeyValueDto> ProductCategoryLookup { get; set; } = [];
@@ -56,6 +57,8 @@ public partial class CreateItem
     private Autocomplete<KeyValueDto, Guid?> AutocompleteField { get; set; }
     private string SelectedAutoCompleteText { get; set; }
     private Dictionary<CreateItemDetailsDto, string> ValidationErrors = new();
+
+    private CreateItemDetailsDto draggedItem;
     #endregion
 
     #region Constructor
@@ -322,7 +325,7 @@ public partial class CreateItem
         ItemDetailsList = new List<CreateItemDetailsDto>();
         if (!Attributes.Any())
             return;
-
+        int sortNo = 1;
         List<List<string>> permutations = GeneratePermutations(Attributes.Select(x => x.ItemTags.Any() ? x.ItemTags : new List<string> { "" }).ToList());
 
         foreach (List<string> permutation in permutations)
@@ -331,10 +334,10 @@ public partial class CreateItem
             {
                 ItemName = string.Join("/", permutation).TrimEnd('/'),
                 Status = true,
-                StockOnHand=0
-                
+                StockOnHand=0,
+                SortNo = sortNo
             });
-
+            sortNo= sortNo + 1;
             ItemDetailsQuillHtml.Add(new());
 
             ItemDetailPickers.Add(new());
@@ -447,7 +450,7 @@ public partial class CreateItem
             await Loading.Show();
             ValidateForm();
             GenerateAttributesForItemDetails();
-
+          
             CreateItemDto.ItemDetails = ItemDetailsList;
 
             CreateItemDto.ItemDescription = await QuillHtml.GetHTML();
@@ -513,7 +516,17 @@ public partial class CreateItem
         {
             throw new BusinessException(L[PikachuDomainErrorCodes.ItemNameCannotBeNull]);
         }
+        if (Attributes.Any(x => x.Name.IsNullOrEmpty()))
+        {
+            throw new BusinessException(L[PikachuDomainErrorCodes.ItemStyleKeyCannotBeNull]);
+  
+        }
+        if (Attributes.GroupBy(x => x.Name).Any(g => g.Count() > 1))
+        {
+          
+            throw new BusinessException(L[PikachuDomainErrorCodes.ItemStyleKeyCannotBeDuplicate]);
 
+        }
         if (ItemDetailsList.Any(x => x.Sku.IsNullOrWhiteSpace()))
         {
             throw new BusinessException(L[PikachuDomainErrorCodes.SKUForItemDetailsCannotBeNull]);
@@ -949,6 +962,62 @@ public partial class CreateItem
     }
 
 
+    private void OnDragStart(DragEventArgs e, CreateItemDetailsDto item)
+    {
+        draggedItem = item; // Store the item being dragged
+    }
+
+    private async Task OnDragOver(DragEventArgs e)
+    {
+        // Call JavaScript to prevent default drag behavior
+        await JS.InvokeVoidAsync("preventDefaultDrag", e);
+    }
+
+    private void OnDrop(DragEventArgs e, CreateItemDetailsDto targetItem)
+    {
+        if (draggedItem == null || draggedItem == targetItem)
+            return;
+
+        int fromIndex = ItemDetailsList.IndexOf(draggedItem);
+        int toIndex = ItemDetailsList.IndexOf(targetItem);
+
+        // Rearrange items in the list
+        ItemDetailsList.RemoveAt(fromIndex);
+        ItemDetailsList.Insert(toIndex, draggedItem);
+       
+
+        for (int i = 0; i < ItemDetailsList.Count; i++)
+        {
+            ItemDetailsList[i].SortNo = i + 1;
+        }
+        StateHasChanged();
+        draggedItem = null; // Reset dragged item
+    }
+    //void StartPriceAndInventoryDrag(CreateItemDetailsDto item)
+    //{
+    //    PriceInventoryCurrentIndex = ItemDetailsList.IndexOf(item);
+    //}
+
+    //void DropPriceAndInventory(CreateItemDetailsDto item)
+    //{
+    //    if (item != null)
+    //    {
+    //        var index = ItemDetailsList.IndexOf(item);
+
+    //        var current = ItemDetailsList[PriceInventoryCurrentIndex];
+
+    //        ItemDetailsList.RemoveAt(PriceInventoryCurrentIndex);
+    //        ItemDetailsList.Insert(index, current);
+
+    //        PriceInventoryCurrentIndex = index;
+
+    //        for (int i = 0; i < ItemDetailsList.Count; i++)
+    //        {
+    //            ItemDetailsList[i].SortNo = i + 1;
+    //        }
+    //        StateHasChanged();
+    //    }
+    //}
     #endregion
 }
 
