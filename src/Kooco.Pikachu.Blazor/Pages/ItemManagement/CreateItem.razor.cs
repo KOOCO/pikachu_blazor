@@ -447,7 +447,7 @@ public partial class CreateItem
             await Loading.Show();
             ValidateForm();
             GenerateAttributesForItemDetails();
-
+          
             CreateItemDto.ItemDetails = ItemDetailsList;
 
             CreateItemDto.ItemDescription = await QuillHtml.GetHTML();
@@ -513,7 +513,17 @@ public partial class CreateItem
         {
             throw new BusinessException(L[PikachuDomainErrorCodes.ItemNameCannotBeNull]);
         }
+        if (Attributes.Any(x => x.Name.IsNullOrEmpty()))
+        {
+            throw new BusinessException(L[PikachuDomainErrorCodes.ItemStyleKeyCannotBeNull]);
+  
+        }
+        if (Attributes.GroupBy(x => x.Name).Any(g => g.Count() > 1))
+        {
+          
+            throw new BusinessException(L[PikachuDomainErrorCodes.ItemStyleKeyCannotBeDuplicate]);
 
+        }
         if (ItemDetailsList.Any(x => x.Sku.IsNullOrWhiteSpace()))
         {
             throw new BusinessException(L[PikachuDomainErrorCodes.SKUForItemDetailsCannotBeNull]);

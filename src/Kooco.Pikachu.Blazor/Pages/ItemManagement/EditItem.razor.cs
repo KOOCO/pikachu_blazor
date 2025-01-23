@@ -522,7 +522,17 @@ public partial class EditItem
         {
             throw new BusinessException(L[PikachuDomainErrorCodes.SKUForItemDetailsCannotBeNull]);
         }
+        if (Attributes.Any(x => x.Name.IsNullOrEmpty()))
+        {
+            throw new BusinessException(L[PikachuDomainErrorCodes.ItemStyleKeyCannotBeNull]);
 
+        }
+        if (Attributes.GroupBy(x => x.Name).Any(g => g.Count() > 1))
+        {
+
+            throw new BusinessException(L[PikachuDomainErrorCodes.ItemStyleKeyCannotBeDuplicate]);
+
+        }
         if (ItemDetailsList.Any(x => ItemDetailsList.Any(y => y != x && y.Sku == x.Sku)))
         {
             throw new BusinessException(L[PikachuDomainErrorCodes.ItemWithSKUAlreadyExists]);
