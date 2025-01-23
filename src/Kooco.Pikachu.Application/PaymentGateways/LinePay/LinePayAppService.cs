@@ -34,8 +34,9 @@ public class LinePayAppService : PikachuAppService, ILinePayAppService
         var linePay = await _paymentGatewayAppService.GetLinePayAsync(true)
             ?? throw new EntityNotFoundException(typeof(PaymentGateway));
 
-        var order = await _orderRepository.GetWithDetailsAsync(orderId)
-            ?? throw new EntityNotFoundException(typeof(Order), orderId);
+        var order = await _orderRepository.GetAsync(orderId);
+
+        await _orderRepository.EnsurePropertyLoadedAsync(order, o => o.GroupBuy);
 
         var body = order.CreatePaymentRequest(L, linePay.LinePointsRedemption, input);
 
@@ -104,8 +105,7 @@ public class LinePayAppService : PikachuAppService, ILinePayAppService
         var linePay = await _paymentGatewayAppService.GetLinePayAsync(true)
             ?? throw new EntityNotFoundException(typeof(PaymentGateway));
 
-        var order = await _orderRepository.GetWithDetailsAsync(orderId)
-            ?? throw new EntityNotFoundException(typeof(Order), orderId);
+        var order = await _orderRepository.GetAsync(orderId);
 
         var confirmPaymentResponse = order.GetConfirmPaymentResponse()
             ?? throw new UserFriendlyException("Payment does not exist against this order.");
