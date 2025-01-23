@@ -17,6 +17,7 @@ namespace Kooco.Pikachu.PaymentGateways
         //LinePay
         public string? ChannelId { get; set; }
         public string? ChannelSecretKey { get; set; }
+        public bool LinePointsRedemption { get; set; }
 
         //Common for ChinaTrust and GreenSector
         public string? MerchantId { get; set; }

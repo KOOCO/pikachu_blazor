@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Kooco.Pikachu.PaymentGateways
 {
@@ -14,5 +11,7 @@ namespace Kooco.Pikachu.PaymentGateways
 
         [Required(ErrorMessage = "This Field Is Required")]
         public string ChannelSecretKey { get; set; }
+
+        public bool LinePointsRedemption { get; set; }
     }
 }

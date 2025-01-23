@@ -29,7 +29,7 @@ public class LinePayAppService : PikachuAppService, ILinePayAppService
         _restClient = new RestClient(_apiOptions.ApiBaseUrl);
     }
 
-    public async Task<LinePayResponseDto<LinePayPaymentResponseInfoDto>> PaymentRequest(Guid orderId)
+    public async Task<LinePayResponseDto<LinePayPaymentResponseInfoDto>> PaymentRequest(Guid orderId, LinePayPaymentRequestRedirectUrlDto input)
     {
         var linePay = await _paymentGatewayAppService.GetLinePayAsync(true)
             ?? throw new EntityNotFoundException(typeof(PaymentGateway));
@@ -37,7 +37,7 @@ public class LinePayAppService : PikachuAppService, ILinePayAppService
         var order = await _orderRepository.GetWithDetailsAsync(orderId)
             ?? throw new EntityNotFoundException(typeof(Order), orderId);
 
-        var body = order.CreatePaymentRequest(_apiOptions, L);
+        var body = order.CreatePaymentRequest(L, linePay.LinePointsRedemption, input);
 
         var nonce = Guid.NewGuid().ToString();
 
@@ -107,7 +107,7 @@ public class LinePayAppService : PikachuAppService, ILinePayAppService
         var order = await _orderRepository.GetWithDetailsAsync(orderId)
             ?? throw new EntityNotFoundException(typeof(Order), orderId);
 
-        var paymentResponse = order.GetPaymentResponse()
+        var confirmPaymentResponse = order.GetConfirmPaymentResponse()
             ?? throw new UserFriendlyException("Payment does not exist against this order.");
 
         var body = JsonSerializer.Serialize(new
@@ -117,7 +117,7 @@ public class LinePayAppService : PikachuAppService, ILinePayAppService
 
         var nonce = Guid.NewGuid().ToString();
 
-        var apiPath = string.Format(_apiOptions.RefundApiPath, paymentResponse.Info.TransactionId);
+        var apiPath = string.Format(_apiOptions.RefundApiPath, confirmPaymentResponse.Info.TransactionId);
 
         var signature = LinePayExtensionService.GeneratePostSignature(apiPath, linePay.ChannelSecretKey, body, nonce);
 

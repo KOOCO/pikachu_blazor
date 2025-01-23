@@ -1116,6 +1116,11 @@
     "SellableQuantity": "Sellable Quantity",
     "pieces": "piece(s)",
     "GroupBuy": "Group Buy",
-    "DeliveryTimePreferance": "Delivery Time Preferance"
+    "DeliveryTimePreferance": "Delivery Time Preferance",
+    "LinePointsRedemption": "Line Points Redemption",
+    "CreditCheckCode": "Credit Check Code",
+    "OrderValidityUnit": "Order Validity Unit",
+    "ValidatePeriod": "Validate Period",
+    "PaymentDeadline": "Payment Deadline"
   }
 }

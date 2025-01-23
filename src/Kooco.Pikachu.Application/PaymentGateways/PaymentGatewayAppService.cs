@@ -108,6 +108,7 @@ namespace Kooco.Pikachu.PaymentGateways
                 linePay.IsEnabled = input.IsEnabled;
                 linePay.ChannelId = _stringEncryptionService.Encrypt(input.ChannelId);
                 linePay.ChannelSecretKey = _stringEncryptionService.Encrypt(input.ChannelSecretKey);
+                linePay.LinePointsRedemption = input.LinePointsRedemption;
                 await _paymentGatewayRepository.UpdateAsync(linePay);
             }
             else
@@ -118,6 +119,7 @@ namespace Kooco.Pikachu.PaymentGateways
                     IsEnabled = input.IsEnabled,
                     ChannelId = _stringEncryptionService.Encrypt(input.ChannelId),
                     ChannelSecretKey = _stringEncryptionService.Encrypt(input.ChannelSecretKey),
+                    LinePointsRedemption = input.LinePointsRedemption
                 };
 
                 await _paymentGatewayRepository.InsertAsync(linePay);

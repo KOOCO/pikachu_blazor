@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Kooco.Pikachu.PaymentGateways.LinePay;
 
@@ -9,6 +10,7 @@ public class LinePayPaymentRequestDto
     public string OrderId { get; set; }
     public List<LinePayPaymentRequestPackageDto> Packages { get; set; }
     public LinePayPaymentRequestRedirectUrlDto RedirectUrls { get; set; }
+    public LinePayPaymentRequestOptionsDto Options { get; set; }
 }
 
 public class LinePayPaymentRequestPackageDto
@@ -31,6 +33,25 @@ public class LinePayPaymentRequestProductDto
 
 public class LinePayPaymentRequestRedirectUrlDto
 {
+    [Required]
     public string ConfirmUrl { get; set; }
+
+    [Required]
     public string CancelUrl { get; set; }
+}
+
+public class LinePayPaymentRequestOptionsDto
+{
+    public LinePayPaymentRequestExtraDto Extra { get; set; }
+}
+
+public class LinePayPaymentRequestExtraDto
+{
+    public LinePayPromotionRestrictionDto PromotionRestriction { get; set; }
+}
+
+public class LinePayPromotionRestrictionDto
+{
+    public int UseLimit { get; set; }
+    public int RewardLimit { get; set; }
 }
