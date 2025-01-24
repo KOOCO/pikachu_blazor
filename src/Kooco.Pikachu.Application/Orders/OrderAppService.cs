@@ -41,6 +41,7 @@ using Volo.Abp.Emailing;
 using Volo.Abp.Localization;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Security.Encryption;
+using static Kooco.Pikachu.Permissions.PikachuPermissions;
 
 namespace Kooco.Pikachu.Orders;
 
@@ -316,10 +317,14 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         {
                             Freebie? freebie = await _freebieRepository.FirstOrDefaultAsync(x => x.Id == item.FreebieId);
 
-                            if (freebie != null)
+                            if (freebie != null && freebie.FreebieAmount > 0)
                             {
                                 freebie.FreebieAmount -= item.Quantity;
                                 await _freebieRepository.UpdateAsync(freebie);
+                            }
+                            else {
+
+                                insufficientItems.Add("Insufficient Giftable Quantity");
                             }
                         }
                     }
