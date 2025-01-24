@@ -573,7 +573,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         Order ord = await _orderRepository.GetWithDetailsAsync(Ids[0]);
 
         GroupBuy groupBuy = new();
-
+        List<decimal> DeliveriesCost=new();
         using (_dataFilter.Disable<IMultiTenant>())
         {
             groupBuy = await _groupBuyRepository.GetAsync(ord.GroupBuyId);
@@ -589,7 +589,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
                 TotalAmount += order.TotalAmount;
                 TotalQuantity += order.TotalQuantity;
-
+                if(order.DeliveryCost is not null)
+                DeliveriesCost.Add(order.DeliveryCost.Value);
                 foreach (OrderItem item in order.OrderItems)
                 {
                     if (orderItems.Any(x => x.ItemId == item.ItemId && x.FreebieId == null) ||
@@ -713,7 +714,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     item.DeliveryTemperatureCost
                 );
             }
-
+            if(DeliveriesCost.Count>0)
+            order1.DeliveryCost = DeliveriesCost.Max();
             await _orderRepository.InsertAsync(order1);
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
