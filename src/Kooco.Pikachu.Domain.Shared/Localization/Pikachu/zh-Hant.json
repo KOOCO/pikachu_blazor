@@ -1199,6 +1199,7 @@
     "SellableQuantity": "可售數量",
     "pieces": "件",
     "Monthly": "每月",
-    "GroupBuy": "團購名稱"
+    "GroupBuy": "團購名稱",
+    "EnterItemStyleDescription": "請輸入商品規格描述"
   }
 }

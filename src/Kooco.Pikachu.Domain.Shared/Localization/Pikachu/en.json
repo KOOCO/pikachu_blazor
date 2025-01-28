@@ -1123,6 +1123,7 @@
     "CreditCheckCode": "Credit Check Code",
     "OrderValidityUnit": "Order Validity Unit",
     "ValidatePeriod": "Validate Period",
-    "PaymentDeadline": "Payment Deadline"
+    "PaymentDeadline": "Payment Deadline",
+    "EnterItemStyleDescription": "Enter item style description"
   }
 }
