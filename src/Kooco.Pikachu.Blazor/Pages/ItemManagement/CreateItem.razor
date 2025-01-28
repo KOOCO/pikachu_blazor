@@ -425,6 +425,7 @@
                                                     <Div Class="col-12">
                                                         <Field>
                                                             <FilePicker @ref="ItemDetailPickers[ItemDetailsList.IndexOf(item)]"
+                                                                        FilePickerLocalizer="(key,args)=>LocalizeFilePicker(key,args)"                                      
                                                                         Changed="@(async (e) => await OnImageUploadAsync(e,
                                                                                                                          item,
                                                                                                                          ItemDetailPickers[ItemDetailsList.IndexOf(item)]))"
