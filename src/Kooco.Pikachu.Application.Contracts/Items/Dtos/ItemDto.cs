@@ -4,6 +4,7 @@ using Kooco.Pikachu.ProductCategories;
 using Kooco.Pikachu.Response;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Volo.Abp.Application.Dtos;
 
 namespace Kooco.Pikachu.Items.Dtos;
@@ -12,6 +13,8 @@ namespace Kooco.Pikachu.Items.Dtos;
 public class ItemDto : FullAuditedEntityDto<Guid>
 {
     public string ItemName { get; set; } //商品名稱/ItemName
+    [MaxLength(4)]
+    public string ItemBadge { get; set; } //商品名稱/ItemName
     public string ItemDescriptionTitle { get; set; }
     public string? ItemDescription { get; set; }
     public DateTime LimitAvaliableTimeStart { get; set; }

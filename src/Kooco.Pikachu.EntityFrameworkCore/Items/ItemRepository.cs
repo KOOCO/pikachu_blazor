@@ -88,6 +88,7 @@ public class ItemRepository : EfCoreRepository<PikachuDbContext, Item, Guid>, II
             {
                 Id = item.Id,
                 ItemName = item.ItemName,
+                ItemBadge=item.ItemBadge,
                 ItemDescriptionTitle = item.ItemDescriptionTitle,
                 LimitAvaliableTimeStart = item.LimitAvaliableTimeStart,
                 LimitAvaliableTimeEnd = item.LimitAvaliableTimeEnd,

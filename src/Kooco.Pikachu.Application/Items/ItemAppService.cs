@@ -49,6 +49,7 @@ public class ItemAppService :
     {
         var item = await _itemManager.CreateAsync(
             input.ItemName,
+            input.ItemBadge,
             input.ItemDescriptionTitle,
             input.ItemDescription,
             input.ItemTags,
@@ -156,6 +157,7 @@ public class ItemAppService :
 
             var item = await _itemManager.CreateAsync(
                 orignalItem.ItemName + "Copy",
+                orignalItem.ItemBadge,
                 orignalItem.ItemDescriptionTitle,
                 orignalItem.ItemDescription,
                 orignalItem.ItemTags,
@@ -264,6 +266,7 @@ public class ItemAppService :
         await _itemRepository.EnsureCollectionLoadedAsync(item, i => i.CategoryProducts);
 
         item.ItemName = input.ItemName;
+        item.ItemBadge = input.ItemBadge;
         item.ItemDescriptionTitle = input.ItemDescriptionTitle;
         item.ItemDescription = input.ItemDescription;
         item.ItemTags = input.ItemTags;

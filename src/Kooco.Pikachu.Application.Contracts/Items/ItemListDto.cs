@@ -6,6 +6,7 @@ public class ItemListDto
 {
     public Guid Id { get; set; }
     public string ItemName { get; set; }
+    public string ItemBadge { get; set; }
     public string ItemDescriptionTitle { get; set; }
     public DateTime LimitAvaliableTimeStart { get; set; }
     public DateTime LimitAvaliableTimeEnd { get; set; }

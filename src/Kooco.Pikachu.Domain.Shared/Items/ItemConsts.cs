@@ -5,5 +5,6 @@ namespace Kooco.Pikachu.Items
     {
         public const int MaxItemNameLength = 60;
         public const int MaxDescriptionTitleLength = 60;
+        public const int MaxItemBadgeLength = 4;
     }
 }

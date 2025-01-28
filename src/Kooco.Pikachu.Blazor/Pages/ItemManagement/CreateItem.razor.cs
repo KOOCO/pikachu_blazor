@@ -26,6 +26,7 @@ public partial class CreateItem
 {
     #region Inject
     private const int MaxTextCount = 60; //input max length
+    private const int MaxBadgeTextCount = 4; //input max length
     private const int MaxAllowedFilesPerUpload = 10;
     private const int TotalMaxAllowedFiles = 50;
     private const int MaxAllowedFileSize = 1024 * 1024 * 10;

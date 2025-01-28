@@ -3,6 +3,7 @@ using Kooco.Pikachu.Images;
 using Kooco.Pikachu.ProductCategories;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Kooco.Pikachu.Items.Dtos;
 
@@ -11,6 +12,8 @@ public class CreateItemDto
 {
     public string ItemNo { get; set; }
     public string ItemName { get; set; } = "";
+    [MaxLength(4)]
+    public string? ItemBadge { get; set; } = "";
     public List<CreateItemDetailsDto> ItemDetails { get; set; }
     public List<CreateImageDto> ItemImages { get; set; }
     public string ItemDescriptionTitle { get; set; } = "";

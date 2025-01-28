@@ -30,6 +30,7 @@ public partial class EditItem
     [Parameter]
     public string Id { get; set; }
     private const int MaxTextCount = 60; //input max length
+    private const int MaxItemBadgeCount = 4; //input max length
     private const int MaxAllowedFilesPerUpload = 10;
     private const int TotalMaxAllowedFiles = 50;
     private const int MaxAllowedFileSize = 1024 * 1024 * 10;

@@ -5,6 +5,7 @@ using Kooco.Pikachu.ProductCategories;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
@@ -17,6 +18,8 @@ namespace Kooco.Pikachu.Items
         public Guid? TenantId { get; set; }
         public long ItemNo { get; set; } //商品編號/ItemNo
         public string ItemName { get; set; } //商品名稱/ItemName
+        [MaxLength(4)]
+        public string? ItemBadge { get; set; } //商品名稱/ItemName
         public virtual ICollection<ItemDetails> ItemDetails { get; set; } //项目详情/ItemDetails
         public virtual ICollection<Image> Images { get; set; }
         public string? ItemDescriptionTitle { get; set; } //商品敘述抬頭/ItemDescriptionTitle
@@ -95,6 +98,7 @@ namespace Kooco.Pikachu.Items
         public Item(
             Guid id,
             [NotNull] string itemName,
+            string? itemBadge,
             string? itemDescriptionTitle,
             string? itemDescription,
             string? itemTags,
@@ -147,7 +151,7 @@ namespace Kooco.Pikachu.Items
             IsReturnable = isReturnable;
             ShippingMethodId = shippingMethodId;
             TaxTypeId = taxTypeId;
-            
+            SetItemBadge(itemBadge);
             CustomField1Value = customField1Value;
             CustomField1Name = customField1Name;
             CustomField2Value = customField2Value;
@@ -190,7 +194,16 @@ namespace Kooco.Pikachu.Items
                 maxLength: ItemConsts.MaxItemNameLength
                 );
         }
-
+        private void SetItemBadge(
+        [CanBeNull] string? itemBadge
+        )
+        {
+               ItemBadge = Check.Length(
+                itemBadge,
+                nameof(ItemBadge),
+                ItemConsts.MaxItemBadgeLength
+                );
+        }
         private void SetItemDescriptionTitle(
             [CanBeNull] string? itemDescriptionTitle
             )
