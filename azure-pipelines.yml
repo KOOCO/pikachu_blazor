@@ -33,10 +33,10 @@ jobs:
       includePreviewVersions: false
       version: ${{ variables.DOTNET_CORE_VERSION }}
       
-  - script: dotnet restore "${{ variables.WORKING_DIRECTORY }}" --no-cache
+  - script: dotnet restore "${{ variables.WORKING_DIRECTORY }}"
     displayName: 'Restore'
 
-  - script: dotnet build "${{ variables.WORKING_DIRECTORY }}" --configuration ${{ variables.CONFIGURATION }} --no-restore --no-incremental
+  - script: dotnet build "${{ variables.WORKING_DIRECTORY }}" --configuration ${{ variables.CONFIGURATION }} --no-restore 
     displayName: 'Build'
 
 
