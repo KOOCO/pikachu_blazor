@@ -35,7 +35,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Identity.UsersManagement
             else _passwordTextRole = textRole.Value;
         }
 
-        protected override ValueTask SetTableColumnsAsync()
+        protected override async ValueTask SetTableColumnsAsync()
         {
             CustomUserManagementTableColumns
                 .AddRange(new TableColumn[]
@@ -71,10 +71,9 @@ namespace Kooco.Pikachu.Blazor.Pages.Identity.UsersManagement
                     }
                 });
 
-            CustomUserManagementTableColumns.AddRange(GetExtensionTableColumns(IdentityModuleExtensionConsts.ModuleName,
-                IdentityModuleExtensionConsts.EntityNames.User));
-
-            return ValueTask.CompletedTask;
+            var columns = await GetExtensionTableColumnsAsync(IdentityModuleExtensionConsts.ModuleName,
+                IdentityModuleExtensionConsts.EntityNames.User);
+            CustomUserManagementTableColumns.AddRange(columns);
         }
 
         protected override async Task CreateEntityAsync()

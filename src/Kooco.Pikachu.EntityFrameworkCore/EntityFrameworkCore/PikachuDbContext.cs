@@ -154,6 +154,8 @@ public class PikachuDbContext :
 
     public DbSet<ProductCategory> ProductCategories { get; set; }
 
+    public DbSet<IdentitySession> Sessions { get; set; }
+
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
     {

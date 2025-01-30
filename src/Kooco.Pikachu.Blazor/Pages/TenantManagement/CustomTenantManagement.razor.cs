@@ -141,9 +141,9 @@ public partial class CustomTenantManagement
         TenantContactEmail = null;
         Domain = null;
     }
-    protected override ValueTask SetTableColumnsAsync()
+    protected override async ValueTask SetTableColumnsAsync()
     {
-        var columns = (GetExtensionTableColumns(
+        var columns = (await GetExtensionTableColumnsAsync(
             TenantManagementModuleExtensionConsts.ModuleName,
             TenantManagementModuleExtensionConsts.EntityNames.Tenant)).ToList();
 
@@ -230,12 +230,8 @@ public partial class CustomTenantManagement
             });
 
         //TableColumns.Get<Volo.Abp.TenantManagement.Blazor.Pages.TenantManagement.TenantManagement>().Add(confirmedColumn);
-
-        return new ValueTask();
-
-
-
     }
+
     protected override Task OpenCreateModalAsync()
     {
         LogoUrl = null;

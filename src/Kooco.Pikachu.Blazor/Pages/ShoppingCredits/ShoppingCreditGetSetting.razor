@@ -24,156 +24,156 @@
 
     </Row>
 </Div>
-<Form >
-    <Validations  @ref="@ValidationsRef" Model="@CreateUpdateEarn" ValidateOnLoad="false">
-<Card>
-    <CardBody>
-        <Row VerticalGutter="10">
-            <Column ColumnSize="ColumnSize.Is3">
-                <h4 class="text-dark">@L["RegistrationBounsPoint"]</h4>
-            </Column>
-            <Column ColumnSize="ColumnSize.Is9">
-                  <Validation MessageLocalizer="@LH.Localize">
-                <Column ColumnSize="ColumnSize.Is12">
-                    <Switch @bind-Checked="CreateUpdateEarn.RegistrationBonusEnabled" TValue="bool"  >
-                    <Feedback>
-                        <ValidationError/>
-                    </Feedback>    
-                    </Switch>
-
-                </Column>
-                </Validation>
-                <Column ColumnSize="ColumnSize.Is12">
-                    <Validation MessageLocalizer="@LH.Localize">
-                    <Label>@L["EarnedPoints"]</Label>
-                    <NumericEdit @bind-Value="CreateUpdateEarn.RegistrationEarnedPoints" TValue="int" >
-                    <Feedback>
-                        <ValidationError/>
-                    </Feedback>    
-                    </NumericEdit>
-                    </Validation>
-
-                </Column>
-                <Column ColumnSize="ColumnSize.Is12">
-                    <Validation MessageLocalizer="@LH.Localize">
-                    <Label>@L["UsagePeriod"]</Label>
-                    <RadioGroup Orientation="Orientation.Vertical" TValue="string" @bind-CheckedValue="CreateUpdateEarn.RegistrationUsagePeriodType" Name="RegistrationUsagePeriod">
-                       <ChildContent>
-                        <Radio Value="@("NoExpiry")">@L["NoExpiry"]</Radio>
-                        <Radio Value="@("Limited")">@L["Limited,validfordays"]</Radio><NumericEdit  @bind-Value="CreateUpdateEarn.RegistrationValidDays" TValue="int" />
-                   </ChildContent>
-                   <Feedback>
-                       <ValidationError/>
-                   </Feedback>
-                    </RadioGroup>
-                    </Validation>
-                </Column>
-            </Column>
-           
-
-        </Row>
-    </CardBody>
-</Card>
-<Card>
-    <CardBody>
-        <Row VerticalGutter="10">
-            <Column ColumnSize="ColumnSize.Is3">
-                <h4 class="text-dark">@L["BirthdayBounsPoint"]</h4>
-            </Column>
-            <Column ColumnSize="ColumnSize.Is9">
-                <Validation MessageLocalizer="@LH.Localize">
-                <Column ColumnSize="ColumnSize.Is12">
-                    <Switch TValue="bool" @bind-Checked="CreateUpdateEarn.BirthdayBonusEnabled">
-                        <Feedback>
-                            <ValidationError/>
-                        </Feedback>
-                    </Switch>
-
-                </Column>
-                </Validation>
-                <Column ColumnSize="ColumnSize.Is12">
-                    <Validation MessageLocalizer="@LH.Localize">
-                    <Label>@L["EarnedPoints"]</Label>
-                    <NumericEdit @bind-Value="CreateUpdateEarn.BirthdayEarnedPoints" TValue="int" >
-                    <Feedback>
-                        <ValidationError/>
-                    </Feedback>    
-                    </NumericEdit>
-                    </Validation>
-                </Column>
-                <Column ColumnSize="ColumnSize.Is12">
-                    <Validation MessageLocalizer="@LH.Localize">
-                    <Label>@L["UsagePeriod"]</Label>
-                    <RadioGroup Orientation="Orientation.Vertical" TValue="string" @bind-CheckedValue="CreateUpdateEarn.BirthdayUsagePeriodType" Name="BirthdayUsagePeriod">
-                       <ChildContent>
-                        <Radio Value="@("NoExpiry")">@L["NoExpiry"]</Radio>
-                        <Radio Value="@("Limited")">@L["Limited,validfordays"]</Radio><NumericEdit @bind-Value="CreateUpdateEarn.BirthdayValidDays" TValue="int"/>
-                    </ChildContent>
-                    <Feedback>
-                        <ValidationError/>
-                    </Feedback>
-                    </RadioGroup>
-                    </Validation>
-                </Column>
-            </Column>
-
-
-        </Row>
-    </CardBody>
-</Card>
-<Card>
-    <CardBody>
-        <Row VerticalGutter="10">
-            <Column ColumnSize="ColumnSize.Is3">
-                <h4 class="text-dark">@L["ShoppingCashbackPoints"]</h4>
-            </Column>
-            <Column ColumnSize="ColumnSize.Is9">
-                <Column ColumnSize="ColumnSize.Is12">
-                    <Validation MessageLocalizer="@LH.Localize">
-                    <Column ColumnSize="ColumnSize.Is12">
-                        <Switch TValue="bool" @bind-Checked="CreateUpdateEarn.CashbackEnabled" >
-                            <Feedback>
-                                <ValidationError/>
-                            </Feedback>
-                            </Switch>
-
+<Form>
+    <Validations @ref="@ValidationsRef" Model="@CreateUpdateEarn" ValidateOnLoad="false">
+        <Card>
+            <CardBody>
+                <Row VerticalGutter="10">
+                    <Column ColumnSize="ColumnSize.Is3">
+                        <h4 class="text-dark">@L["RegistrationBounsPoint"]</h4>
                     </Column>
-                  </Validation>
-                    <Column ColumnSize="ColumnSize.Is12">
+                    <Column ColumnSize="ColumnSize.Is9">
                         <Validation MessageLocalizer="@LH.Localize">
-                        <Label>@L["UsagePeriod"]</Label>
-                        <RadioGroup Orientation="Orientation.Vertical" TValue="string" @bind-CheckedValue="CreateUpdateEarn.CashbackUsagePeriodType" Name="CashBackUsagePeriod">
-                           <ChildContent>
-                            <Radio Value="@("NoExpiry")">@L["NoExpiry"]</Radio>
-                            <Radio Value="@("Limited")">@L["Limited,validfordays"]</Radio><NumericEdit @bind-Value="CreateUpdateEarn.CashbackValidDays" TValue="int" />
-                       </ChildContent>
-                       <Feedback>
-                       <ValidationError/>
-                       </Feedback>
-                        </RadioGroup>
+                            <Column ColumnSize="ColumnSize.Is12">
+                                <Switch @bind-Checked="CreateUpdateEarn.RegistrationBonusEnabled" TValue="bool">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </Switch>
+
+                            </Column>
                         </Validation>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Validation MessageLocalizer="@LH.Localize">
+                                <Label>@L["EarnedPoints"]</Label>
+                                <NumericEdit @bind-Value="CreateUpdateEarn.RegistrationEarnedPoints" TValue="int">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </NumericEdit>
+                            </Validation>
+
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Validation MessageLocalizer="@LH.Localize">
+                                <Label>@L["UsagePeriod"]</Label>
+                                <RadioGroup Orientation="Orientation.Vertical" TValue="string" @bind-CheckedValue="CreateUpdateEarn.RegistrationUsagePeriodType" Name="RegistrationUsagePeriod">
+                                    <ChildContent>
+                                        <Radio Value="@("NoExpiry")">@L["NoExpiry"]</Radio>
+                                        <Radio Value="@("Limited")">@L["Limited,validfordays"]</Radio><NumericEdit @bind-Value="CreateUpdateEarn.RegistrationValidDays" TValue="int" />
+                                    </ChildContent>
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </RadioGroup>
+                            </Validation>
+                        </Column>
                     </Column>
-                    <Validation MessageLocalizer="@LH.Localize">
-                    <Label>@L["CalculationMethod"]</Label>
-                    <RadioGroup Orientation="Orientation.Vertical" TValue="string" @bind-CheckedValue="CreateUpdateEarn.CashbackCalculationMethod" Name="DeductionMethod">
-                        <ChildContent>
-                        <Radio Value="@("UnifiedCalculation")">@L["UnifiedCalculation:"]<NumericEdit @bind-Value="CreateUpdateEarn.CashbackUnifiedMaxDeductiblePoints" Max="100" TValue="int" />%</Radio>
-                        <Radio Value="@("StagedCalculation")">@L["StagedCalculation"]</Radio>
-                    </ChildContent>
-                    <Feedback>
-                        <ValidationError/>
-                    </Feedback>
-                    </RadioGroup>
-                    </Validation>
-                </Column>
-                <Column ColumnSize="ColumnSize.Is12">
-                    <Row>
-                        <Column ColumnSize="ColumnSize.Is6">
-                            <Label>@L["StageSettings"]</Label>
+
+
+                </Row>
+            </CardBody>
+        </Card>
+        <Card>
+            <CardBody>
+                <Row VerticalGutter="10">
+                    <Column ColumnSize="ColumnSize.Is3">
+                        <h4 class="text-dark">@L["BirthdayBounsPoint"]</h4>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is9">
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Column ColumnSize="ColumnSize.Is12">
+                                <Switch TValue="bool" @bind-Checked="CreateUpdateEarn.BirthdayBonusEnabled">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </Switch>
+
+                            </Column>
+                        </Validation>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Validation MessageLocalizer="@LH.Localize">
+                                <Label>@L["EarnedPoints"]</Label>
+                                <NumericEdit @bind-Value="CreateUpdateEarn.BirthdayEarnedPoints" TValue="int">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </NumericEdit>
+                            </Validation>
                         </Column>
-                        <Column Class="text-end" ColumnSize="ColumnSize.Is6">
-                            <Button Clicked="AddNewRow"><Icon Name="IconName.Add"></Icon></Button>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Validation MessageLocalizer="@LH.Localize">
+                                <Label>@L["UsagePeriod"]</Label>
+                                <RadioGroup Orientation="Orientation.Vertical" TValue="string" @bind-CheckedValue="CreateUpdateEarn.BirthdayUsagePeriodType" Name="BirthdayUsagePeriod">
+                                    <ChildContent>
+                                        <Radio Value="@("NoExpiry")">@L["NoExpiry"]</Radio>
+                                        <Radio Value="@("Limited")">@L["Limited,validfordays"]</Radio><NumericEdit @bind-Value="CreateUpdateEarn.BirthdayValidDays" TValue="int" />
+                                    </ChildContent>
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </RadioGroup>
+                            </Validation>
                         </Column>
+                    </Column>
+
+
+                </Row>
+            </CardBody>
+        </Card>
+        <Card>
+            <CardBody>
+                <Row VerticalGutter="10">
+                    <Column ColumnSize="ColumnSize.Is3">
+                        <h4 class="text-dark">@L["ShoppingCashbackPoints"]</h4>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is9">
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Validation MessageLocalizer="@LH.Localize">
+                                <Column ColumnSize="ColumnSize.Is12">
+                                    <Switch TValue="bool" @bind-Checked="CreateUpdateEarn.CashbackEnabled">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </Switch>
+
+                                </Column>
+                            </Validation>
+                            <Column ColumnSize="ColumnSize.Is12">
+                                <Validation MessageLocalizer="@LH.Localize">
+                                    <Label>@L["UsagePeriod"]</Label>
+                                    <RadioGroup Orientation="Orientation.Vertical" TValue="string" @bind-CheckedValue="CreateUpdateEarn.CashbackUsagePeriodType" Name="CashBackUsagePeriod">
+                                        <ChildContent>
+                                            <Radio Value="@("NoExpiry")">@L["NoExpiry"]</Radio>
+                                            <Radio Value="@("Limited")">@L["Limited,validfordays"]</Radio><NumericEdit @bind-Value="CreateUpdateEarn.CashbackValidDays" TValue="int" />
+                                        </ChildContent>
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </RadioGroup>
+                                </Validation>
+                            </Column>
+                            <Validation MessageLocalizer="@LH.Localize">
+                                <Label>@L["CalculationMethod"]</Label>
+                                <RadioGroup Orientation="Orientation.Vertical" TValue="string" @bind-CheckedValue="CreateUpdateEarn.CashbackCalculationMethod" Name="DeductionMethod">
+                                    <ChildContent>
+                                        <Radio Value="@("UnifiedCalculation")">@L["UnifiedCalculation:"]<NumericEdit @bind-Value="CreateUpdateEarn.CashbackUnifiedMaxDeductiblePoints" Max="100" TValue="int" />%</Radio>
+                                        <Radio Value="@("StagedCalculation")">@L["StagedCalculation"]</Radio>
+                                    </ChildContent>
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </RadioGroup>
+                            </Validation>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is6">
+                                    <Label>@L["StageSettings"]</Label>
+                                </Column>
+                                <Column Class="text-end" ColumnSize="ColumnSize.Is6">
+                                    <Button Clicked="AddNewRow"><Icon Name="IconName.Add"></Icon></Button>
+                                </Column>
                                 @foreach (var setting in stagedSettings)
                                 {
                                     <Column ColumnSize="ColumnSize.Is6">
@@ -185,97 +185,97 @@
                                         <NumericEdit @bind-Value="setting.Points" TValue="int" />
                                     </Column>
                                 }
-                    </Row>
-                </Column>
-                <Column ColumnSize="ColumnSize.Is12">
-                    <Validation MessageLocalizer="@LH.Localize">
-                    <Label>@L["ApplicableItems"]</Label>
-                    <RadioGroup Orientation="Orientation.Vertical" TValue="string" @bind-CheckedValue="CreateUpdateEarn.CashbackApplicableItems" Name="ApplicableItems">
-                        <ChildContent>
-                        <Radio Value="@("AddOnProducts")">@L["Add-OnProducts"]</Radio>
-                        <Radio Value="@("ShippingFees")">@L["ShippingFees"]</Radio>
-                   </ChildContent>
-                   <Feedback>
-                       <ValidationError/>
-                   </Feedback>
-                    </RadioGroup>
-                    </Validation>
-                </Column>
-                <Column ColumnSize="ColumnSize.Is12">
-                    <Validation MessageLocalizer="@LH.Localize">
-                        <Label>@L["ApplicableforGroupbuying"]</Label>
-                    <RadioGroup Orientation="Orientation.Vertical"  @bind-CheckedValue="CreateUpdateEarn.CashbackApplicableGroupbuys" TValue="string" Name="Groupbuys">
-                        <ChildContent >
-                        <Radio Value="@("AllGroupbuys")">@L["AllGroupbuys"]</Radio>
-                        <Radio Value="@("SpecificGroupbuys")">@L["SpecificGroupbuys"]</Radio>
-                        </ChildContent>
-                        <Feedback>
-                            <ValidationError/>
-                        </Feedback>
-                    </RadioGroup>
-                    </Validation>
-                </Column>
-                <Column ColumnSize="ColumnSize.Is12">
-                      <EditForm EditContext="editContext">
-                    <AntDesign.Select Mode="multiple"
-                                      TItem="Guid"
-                                      TItemValue="Guid"
-                                      @bind-Values="@SelectedGroupBuy"
-                                      Placeholder="@L["SelectaGroupBuys"]"
-                                      EnableSearch>
-                        <SelectOptions>
-                            @foreach (var item in Groupbuys)
-                            {
-                                <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@item.GroupBuyName />
-                            }
-                        </SelectOptions>
-                    </AntDesign.Select>
+                            </Row>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Validation MessageLocalizer="@LH.Localize">
+                                <Label>@L["ApplicableItems"]</Label>
+                                <RadioGroup Orientation="Orientation.Vertical" TValue="string" @bind-CheckedValue="CreateUpdateEarn.CashbackApplicableItems" Name="ApplicableItems">
+                                    <ChildContent>
+                                        <Radio Value="@("AddOnProducts")">@L["Add-OnProducts"]</Radio>
+                                        <Radio Value="@("ShippingFees")">@L["ShippingFees"]</Radio>
+                                    </ChildContent>
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </RadioGroup>
+                            </Validation>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Validation MessageLocalizer="@LH.Localize">
+                                <Label>@L["ApplicableforGroupbuying"]</Label>
+                                <RadioGroup Orientation="Orientation.Vertical" @bind-CheckedValue="CreateUpdateEarn.CashbackApplicableGroupbuys" TValue="string" Name="Groupbuys">
+                                    <ChildContent>
+                                        <Radio Value="@("AllGroupbuys")">@L["AllGroupbuys"]</Radio>
+                                        <Radio Value="@("SpecificGroupbuys")">@L["SpecificGroupbuys"]</Radio>
+                                    </ChildContent>
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </RadioGroup>
+                            </Validation>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <EditForm EditContext="editContext">
+                                <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
+                                                  TItem="Guid"
+                                                  TItemValue="Guid"
+                                                  @bind-Values="@SelectedGroupBuy"
+                                                  Placeholder="@L["SelectaGroupBuys"]"
+                                                  EnableSearch>
+                                    <SelectOptions>
+                                        @foreach (var item in Groupbuys)
+                                        {
+                                            <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@item.GroupBuyName />
+                                        }
+                                    </SelectOptions>
+                                </AntDesign.Select>
                                 <ValidationMessage For="() => CreateUpdateEarn!.SpecificGroupbuyIds" />
-                    </EditForm>
+                            </EditForm>
 
-                </Column>
+                        </Column>
 
-                <Divider></Divider>
+                        <Divider></Divider>
 
-                <Column ColumnSize="ColumnSize.Is12">
-                    <Validation MessageLocalizer="@LH.Localize">
-                    <Label>@L["ApplicableforProducts"]</Label>
-                    <RadioGroup Orientation="Orientation.Vertical" @bind-CheckedValue="CreateUpdateEarn.CashbackApplicableProducts" TValue="string" Name="Products">
-                       <ChildContent>
-                        <Radio Value="@("AllProducts")">@L["AllProducts"]</Radio>
-                        <Radio Value="@("SpecificProducts")">@L["SpecificProducts"]</Radio>
-                   </ChildContent>
-                   <Feedback>
-                  <ValidationError/>
-                  </Feedback>
-                    </RadioGroup>
-                    </Validation>
-                </Column>
-                <Column ColumnSize="ColumnSize.Is12">
-                     <EditForm EditContext="editContext">
-                    <AntDesign.Select Mode="multiple"
-                                      TItem="Guid"
-                                      TItemValue="Guid"
-                                      @bind-Values="@SelectedProducts"
-                                      Placeholder="@L["SelectaProducts"]"
-                                      EnableSearch>
-                        <SelectOptions>
-                            @foreach (var item in Products)
-                            {
-                                <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@item.Name />
-                            }
-                        </SelectOptions>
-                    </AntDesign.Select>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Validation MessageLocalizer="@LH.Localize">
+                                <Label>@L["ApplicableforProducts"]</Label>
+                                <RadioGroup Orientation="Orientation.Vertical" @bind-CheckedValue="CreateUpdateEarn.CashbackApplicableProducts" TValue="string" Name="Products">
+                                    <ChildContent>
+                                        <Radio Value="@("AllProducts")">@L["AllProducts"]</Radio>
+                                        <Radio Value="@("SpecificProducts")">@L["SpecificProducts"]</Radio>
+                                    </ChildContent>
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </RadioGroup>
+                            </Validation>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <EditForm EditContext="editContext">
+                                <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
+                                                  TItem="Guid"
+                                                  TItemValue="Guid"
+                                                  @bind-Values="@SelectedProducts"
+                                                  Placeholder="@L["SelectaProducts"]"
+                                                  EnableSearch>
+                                    <SelectOptions>
+                                        @foreach (var item in Products)
+                                        {
+                                            <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@item.Name />
+                                        }
+                                    </SelectOptions>
+                                </AntDesign.Select>
                                 <ValidationMessage For="() => CreateUpdateEarn!.SpecificProductIds" />
                             </EditForm>
-                </Column>
+                        </Column>
 
-            </Column>
+                    </Column>
 
-        </Row>
-    </CardBody>
-</Card>
-</Validations>
+                </Row>
+            </CardBody>
+        </Card>
+    </Validations>
 </Form>
 
 <Div Class="text-end">

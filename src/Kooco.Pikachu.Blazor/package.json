@@ -3,8 +3,8 @@
   "name": "my-app",
   "private": true,
   "dependencies": {
-    "@abp/aspnetcore.components.server.leptonxlitetheme": "~3.1.1",
-    "@abp/aspnetcore.mvc.ui.theme.leptonxlite": "~3.1.1"
+    "@abp/aspnetcore.components.server.leptonxlitetheme": "~4.0.5",
+    "@abp/aspnetcore.mvc.ui.theme.leptonxlite": "~4.0.5"
   },
   "devDependencies": {
     "eslint": "^8.47.0"
