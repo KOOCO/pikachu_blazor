@@ -12,7 +12,7 @@ variables:
   - name: CONFIGURATION
     value: Release
   - name: DOTNET_CORE_VERSION
-    value: '8.x'
+    value: '9.x'
   - name: WORKING_DIRECTORY
     value: 'src\Kooco.Pikachu.Blazor'
   - name: AZURE_WEBAPP_NAME_PRODUCTION
