@@ -8,6 +8,7 @@ using System.Linq;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp;
 using Kooco.Pikachu.ProductCategories;
+using Ganss.Xss;
 
 namespace Kooco.Pikachu.Items;
 
@@ -25,17 +26,20 @@ public class ItemAppService :
     #region Inject
     private readonly IItemRepository _itemRepository;
     private readonly ItemManager _itemManager;
+    private readonly HtmlSanitizer _htmlSanitizer;
     #endregion
 
     #region Constructor
     public ItemAppService(
         IItemRepository repository,
         ItemManager itemManager
+       
     )
         : base(repository)
     {
         _itemRepository = repository;
         _itemManager = itemManager;
+        _htmlSanitizer = new HtmlSanitizer();
     }
     #endregion
 
@@ -47,6 +51,12 @@ public class ItemAppService :
     /// <returns>item</returns>
     public override async Task<ItemDto> CreateAsync(CreateItemDto input)
     {
+        if (!input.ItemDescription.IsNullOrWhiteSpace())
+        {
+            input.ItemDescription = SanitizeItemDescription(input.ItemDescription);
+
+
+        }
         var item = await _itemManager.CreateAsync(
             input.ItemName,
             input.ItemBadge,
@@ -85,7 +95,10 @@ public class ItemAppService :
             input.Attribute3Name,
             input.ItemStorageTemperature
             );
-
+        if (input.IsTest)
+        {
+            item.ItemNo = 12345;
+        }
         if (input.ItemDetails != null && input.ItemDetails.Any())
         {
             foreach (var itemDetail in input.ItemDetails)
@@ -527,6 +540,23 @@ public class ItemAppService :
         var items = await _itemRepository.GetItemsWithAttributesAsync(ids);
         return ObjectMapper.Map<List<Item>, List<ItemDto>>(items);
     }
+    public string SanitizeItemDescription(string itemDescription)
+    {
+        // Block dangerous tags like <script> etc.
+        _htmlSanitizer.AllowedTags.Remove("script");
+        // Block or sanitize all event handler attributes like onerror, onclick, etc.
+        _htmlSanitizer.AllowedAttributes.Remove("onerror");
+        _htmlSanitizer.AllowedAttributes.Remove("onclick");
+        _htmlSanitizer.AllowedAttributes.Remove("onload");
+        _htmlSanitizer.AllowedAttributes.Remove("onmouseover");
+        _htmlSanitizer.AllowedAttributes.Remove("onfocus");
+        if (string.IsNullOrEmpty(itemDescription))
+        {
+            return itemDescription;
+        }
 
+        // Sanitize and return the safe HTML
+        return _htmlSanitizer.Sanitize(itemDescription);
+    }
     #endregion
 }

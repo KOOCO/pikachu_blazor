@@ -70,7 +70,7 @@ namespace Kooco.Pikachu.Items
         {
             if (itemName.IsNullOrWhiteSpace())
             {
-                throw new BusinessException(PikachuDomainErrorCodes.ItemNameCannotBeNull);
+                throw new BusinessException(_l[PikachuDomainErrorCodes.ItemNameCannotBeNull]);
             }
 
             Check.NotNullOrWhiteSpace(itemName, nameof(itemName), maxLength: ItemConsts.MaxItemNameLength);

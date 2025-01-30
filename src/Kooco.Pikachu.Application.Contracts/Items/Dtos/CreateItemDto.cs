@@ -11,6 +11,7 @@ namespace Kooco.Pikachu.Items.Dtos;
 public class CreateItemDto
 {
     public string ItemNo { get; set; }
+  
     public string ItemName { get; set; } = "";
     [MaxLength(4)]
     public string? ItemBadge { get; set; } = "";
@@ -22,6 +23,7 @@ public class CreateItemDto
     public bool IsReturnable { get; set; }
     public DateTime LimitAvaliableTimeStart { get; set; } = DateTime.UtcNow;
     public DateTime LimitAvaliableTimeEnd { get; set; } = DateTime.UtcNow;
+    [Range(0,100,ErrorMessage = "Profit must be a greate than equal to 0 and less than equal to 100.")]
     public float ShareProfit { get; set; }
     public bool IsFreeShipping { get; set; } = false;
     public int ShippingMethodId { get; set; }
@@ -50,7 +52,7 @@ public class CreateItemDto
     public string? Attribute1Name { get; set; }
     public string? Attribute2Name { get; set; }
     public string? Attribute3Name { get; set; }
-
+    public bool IsTest { get; set; }
     public ItemStorageTemperature? ItemStorageTemperature { get; set; }
 
     public List<CreateUpdateItemCategoryDto> ItemCategories { get; set; } = [];

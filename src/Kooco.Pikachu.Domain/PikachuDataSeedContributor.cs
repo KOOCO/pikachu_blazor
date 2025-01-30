@@ -35,6 +35,7 @@ namespace Kooco.Pikachu
                 {
                     var item = new Item()
                     {
+                        ItemNo=1234,
                         ItemName = "SunShine Umbrella",
                         ItemDescription = "This is a simple description of demo item",
                         Returnable = false,
@@ -65,6 +66,7 @@ namespace Kooco.Pikachu
 
                     item = new Item()
                     {
+                        ItemNo=1235,
                         ItemName = "SunShine Computer",
                         ItemDescription = "This is a simple description of demo item",
                         Returnable = false,
@@ -94,7 +96,7 @@ namespace Kooco.Pikachu
                     await _appItemRepository.InsertAsync(item);
 
                     item = new Item()
-                    {
+                    {ItemNo = 1236,
                         ItemName = "Lovely Pillow",
                         ItemDescription = "This is a simple description of demo item",
                         Returnable = false,

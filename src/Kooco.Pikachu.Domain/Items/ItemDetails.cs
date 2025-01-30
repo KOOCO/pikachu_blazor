@@ -1,5 +1,6 @@
 ﻿using JetBrains.Annotations;
 using System;
+using System.ComponentModel.DataAnnotations;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.MultiTenancy;
@@ -12,6 +13,7 @@ namespace Kooco.Pikachu.Items
         public Guid ItemId { get; set; }
         public string ItemName { get; set; }
         public string SKU { get; set; }
+       
         public float SellingPrice { get; set; } //商品售價/ItemSellingPrice
         public float? GroupBuyPrice { get; set; } //商品團購價/Group Buy Price
         public float Cost { get; set; }
