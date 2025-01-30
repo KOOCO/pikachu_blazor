@@ -33,9 +33,6 @@ jobs:
       includePreviewVersions: false
       version: ${{ variables.DOTNET_CORE_VERSION }}
       
-  - script: dotnet clean "${{ variables.WORKING_DIRECTORY }}"
-    displayName: 'Clean'
-
   - script: dotnet restore "${{ variables.WORKING_DIRECTORY }}" --no-cache
     displayName: 'Restore'
 
