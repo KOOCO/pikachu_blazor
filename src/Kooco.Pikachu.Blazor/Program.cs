@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
-using Serilog.Events;
 
 
 namespace Kooco.Pikachu.Blazor;
@@ -13,7 +12,7 @@ public class Program
 {
     public  static async Task<int> Main(string[] args)
     {
-        Log.Logger = new LoggerConfiguration()
+       /* Log.Logger = new LoggerConfiguration()
 #if DEBUG
             .MinimumLevel.Debug()
 #else
@@ -24,11 +23,11 @@ public class Program
             .Enrich.FromLogContext()
             .WriteTo.Async(c => c.File("Logs/logs.txt", rollOnFileSizeLimit: true, fileSizeLimitBytes: 40000000))
             .WriteTo.Async(c => c.Console())
-            .CreateLogger();
+            .CreateLogger();*/
 
         try
         {
-            Log.Information("Starting web host.");
+            //Log.Information("Starting web host.");
             var builder = WebApplication.CreateBuilder(args);
             builder.Host.AddAppSettingsSecretsJson()
                 .UseAutofac()
