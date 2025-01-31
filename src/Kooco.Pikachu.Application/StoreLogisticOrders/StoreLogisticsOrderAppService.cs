@@ -1938,6 +1938,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             body = body.Replace("{{NotifyMessage}}", "");
         }
 
+        var deliveryCost = (order.DeliveryCost ?? 0) + (order.DeliveryCostForNormal ?? 0) + (order.DeliveryCostForFreeze ?? 0) + (order.DeliveryCostForFrozen ?? 0);
+
         body = body.Replace("{{GroupBuyName}}", groupbuy.GroupBuyName);
         body = body.Replace("{{GroupBuyUrl}}", groupbuy.EntryURL);
         body = body.Replace("{{OrderNo}}", order.OrderNo);
@@ -1953,7 +1955,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         }
         body = body.Replace("{{PaymentStatus}}", _L[order.OrderStatus.ToString()]);
         body = body.Replace("{{ShippingMethod}}", $"{_L[order.DeliveryMethod.ToString()]} {order.ShippingNumber}");
-        body = body.Replace("{{DeliveryFee}}", "0");
+        body = body.Replace("{{DeliveryFee}}", $"${deliveryCost}");
         body = body.Replace("{{RecipientAddress}}", order.AddressDetails);
         body = body.Replace("{{ShippingStatus}}", _L[status]);
         body = body.Replace("{{RecipientComments}}", order.Remarks);
@@ -1997,7 +1999,6 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             body = body.Replace("{{OrderItems}}", sb.ToString());
         }
 
-        body = body.Replace("{{DeliveryFee}}", "$0");
         body = body.Replace("{{TotalAmount}}", $"${order.TotalAmount:N0}");
 
         var tenantSettings = await _tenantSettingsAppService.FirstOrDefaultAsync();

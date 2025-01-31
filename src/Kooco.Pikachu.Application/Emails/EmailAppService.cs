@@ -77,6 +77,7 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             DateTimeOffset creationTimeInTimeZone = TimeZoneInfo.ConvertTime(creationTime, tz);
             string formattedTime = creationTimeInTimeZone.ToString("yyyy-MM-dd HH:mm:ss");
 
+            var deliveryCost = (order.DeliveryCost ?? 0) + (order.DeliveryCostForNormal ?? 0) + (order.DeliveryCostForFreeze ?? 0) + (order.DeliveryCostForFrozen ?? 0);
             if (order.ShippingStatus == ShippingStatus.WaitingForPayment)
             {
                 body = body.Replace("{{NotifyMessage}}", groupbuy.NotifyMessage);
@@ -101,7 +102,7 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             }
             body = body.Replace("{{PaymentStatus}}", L[order.OrderStatus.ToString()]);
             body = body.Replace("{{ShippingMethod}}", $"{L[order.DeliveryMethod.ToString()]} {order.ShippingNumber}");
-            body = body.Replace("{{DeliveryFee}}", "0");
+            body = body.Replace("{{DeliveryFee}}", $"${deliveryCost}");
             body = body.Replace("{{RecipientAddress}}", order.AddressDetails);
             body = body.Replace("{{ShippingStatus}}", L[order.ShippingStatus.ToString()]);
             body = body.Replace("{{RecipientComments}}", order.Remarks);
@@ -145,7 +146,6 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
                 body = body.Replace("{{OrderItems}}", sb.ToString());
             }
 
-            body = body.Replace("{{DeliveryFee}}", "$0");
             body = body.Replace("{{TotalAmount}}", $"${order.TotalAmount:N0}");
 
             var tenantSettings = await tenantSettingsAppService.FirstOrDefaultAsync();
