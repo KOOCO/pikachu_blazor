@@ -126,7 +126,7 @@
                     </div>  *@
                         <Divider></Divider>
 
-                        @if (Order.DeliveryMethod is not DeliveryMethod.DeliveredByStore) 
+                        @if (Order.DeliveryMethod is not DeliveryMethod.DeliveredByStore)
                         {
                             <div class="row">
                                 <div class="col-12">
@@ -465,11 +465,12 @@
                                                 </tr>
                                             }
 
-                                             <tr>
+                                            <tr>
                                                 <td>@L["DeliveryTime"]</td>
                                                 <td>
                                                     <div class="input-group">
-                                                        @if (Order.ReceivingTime is not null) {
+                                                        @if (Order.ReceivingTime is not null)
+                                                        {
                                                             <span>@L[Order.ReceivingTime?.ToString()]</span>
                                                         }
                                                     </div>
@@ -500,7 +501,7 @@
                             }
                         }
 
-                        else 
+                        else
                         {
                             <div class="row">
                                 <div class="col-12">
@@ -516,14 +517,14 @@
                                             <Div Width="Width.Max100">
                                                 <select class="form-select form-select my-1" @onchange=TemperatureControlChange>
                                                     <option value="">@L["SelectTemperatureControl"]</option>
-                                                    @foreach (string temperature in Enum.GetNames<ItemStorageTemperature>()) 
+                                                    @foreach (string temperature in Enum.GetNames<ItemStorageTemperature>())
                                                     {
                                                         if (temperature == ItemStorageTemperature.Normal.ToString())
                                                         {
                                                             <option value="@temperature" selected>@L[temperature]</option>
                                                         }
 
-                                                        else 
+                                                        else
                                                         {
                                                             <option value="@temperature">@L[temperature]</option>
                                                         }
@@ -534,7 +535,7 @@
                                             <tr>
                                                 <td>@L["Recipient"]</td>
                                                 @if (SelectedTemperatureControl is ItemStorageTemperature.Normal)
-                                                { 
+                                                {
                                                     @if (ModificationTrack.IsRecipientNameDbsNormalInputVisible)
                                                     {
                                                         <td>
@@ -1393,16 +1394,18 @@
 
                                             <tr>
                                                 <td>@L["RecipientComments"]</td>
-                                                @if (SelectedTemperatureControl is ItemStorageTemperature.Normal) 
+                                                @if (SelectedTemperatureControl is ItemStorageTemperature.Normal)
                                                 {
                                                     <td>@Order.RemarksDbsNormal</td>
                                                 }
 
-                                                else if (SelectedTemperatureControl is ItemStorageTemperature.Freeze) {
+                                                else if (SelectedTemperatureControl is ItemStorageTemperature.Freeze)
+                                                {
                                                     <td>@Order.RemarksDbsFreeze</td>
                                                 }
 
-                                                else if (SelectedTemperatureControl is ItemStorageTemperature.Frozen) {
+                                                else if (SelectedTemperatureControl is ItemStorageTemperature.Frozen)
+                                                {
                                                     <td>@Order.RemarksDbsFrozen</td>
                                                 }
                                             </tr>
@@ -1446,8 +1449,8 @@
                     {
                         @if (Order.ShippingStatus is not ShippingStatus.WaitingForPayment && Order.IsRefunded is false)
                         {
-                            <Button Type="ButtonType.Button" 
-                                    Class="btn btn-sm btn-danger" 
+                            <Button Type="ButtonType.Button"
+                                    Class="btn btn-sm btn-danger"
                                     Clicked="OpenRefundModal">
                                 @L["ApplyRefund"]
                             </Button>
@@ -1455,25 +1458,25 @@
                         else
                         {
                             <Button Type="ButtonType.Button"
-                                    Disabled 
-                                    Class="btn btn-sm btn-danger" 
+                                    Disabled
+                                    Class="btn btn-sm btn-danger"
                                     Clicked="OpenRefundModal">
-                                 @L["ApplyRefund"]
+                                @L["ApplyRefund"]
                             </Button>
                         }
-                        @if (Order?.OrderStatus is not OrderStatus.Returned && 
-                             Order?.OrderStatus is not OrderStatus.Exchange && 
-                             Order?.ShippingStatus is not ShippingStatus.WaitingForPayment && 
-                             Order?.ShippingStatus is not ShippingStatus.PrepareShipment && 
-                             Order.OrderStatus is not OrderStatus.Refund)
+                        @if (Order?.OrderStatus is not OrderStatus.Returned &&
+                       Order?.OrderStatus is not OrderStatus.Exchange &&
+                       Order?.ShippingStatus is not ShippingStatus.WaitingForPayment &&
+                       Order?.ShippingStatus is not ShippingStatus.PrepareShipment &&
+                       Order.OrderStatus is not OrderStatus.Refund)
                         {
-                            <Button Type="ButtonType.Button" 
-                                    Clicked="ReturnOrder" 
+                            <Button Type="ButtonType.Button"
+                                    Clicked="ReturnOrder"
                                     Class="btn btn-sm btn-secondary me-1">
                                 @L["ReturnOrder"]
                             </Button>
-                            <Button Type="ButtonType.Button" 
-                                    Clicked="ExchangeOrder" 
+                            <Button Type="ButtonType.Button"
+                                    Clicked="ExchangeOrder"
                                     Class="btn btn-sm btn-secondary me-1">
                                 @L["ExchangeItem"]
                             </Button>
@@ -1487,16 +1490,16 @@
                         {
                             @if (Order.ShippingStatus is ShippingStatus.PrepareShipment && Order.OrderItems.Any(x => x.IsSelected == true) && (Order.OrderType is null || Order.OrderType is 0))
                             {
-                                <Button Clicked="SplitOrder" 
-                                        Type="ButtonType.Button" 
+                                <Button Clicked="SplitOrder"
+                                        Type="ButtonType.Button"
                                         Class="btn btn-sm btn-secondary me-1">
                                     @L["SplitOrder"]
                                 </Button>
                             }
                             else if (Order.ShippingStatus is ShippingStatus.WaitingForPayment && Order.OrderItems.Any(x => x.IsSelected == true) && (Order.OrderType is null || Order.OrderType is 0))
                             {
-                                <Button Clicked="SplitOrder" 
-                                        Type="ButtonType.Button" 
+                                <Button Clicked="SplitOrder"
+                                        Type="ButtonType.Button"
                                         Class="btn btn-sm btn-secondary me-1">
                                     @L["SplitOrder"]
                                 </Button>
@@ -1504,15 +1507,15 @@
                             else
                             {
                                 <Button Type="ButtonType.Button"
-                                        Disabled 
+                                        Disabled
                                         Class="btn btn-sm btn-secondary me-1">
-                                     @L["SplitOrder"]
+                                    @L["SplitOrder"]
                                 </Button>
                             }
                         }
                     }
-                    <Button Type="ButtonType.Button" 
-                            @onclick="NavigateToOrderShipmentDetails" 
+                    <Button Type="ButtonType.Button"
+                            @onclick="NavigateToOrderShipmentDetails"
                             Class="btn btn-sm btn-primary">
                         <Icon Class="fa fa-print" />
                         @L["PrintOrder"]
@@ -1551,7 +1554,7 @@
                                 <p>@L[ShippingStatus.PrepareShipment.ToString()]</p>
                             </div>
                         }
-                         else if (Order?.ShippingStatus == ShippingStatus.Shipped)
+                        else if (Order?.ShippingStatus == ShippingStatus.Shipped)
                         {
                             <div class="col-12 d-flex justify-content-between">
                                 <p>@Order?.CreationTime.ToShortDateString()</p>
@@ -1568,7 +1571,7 @@
                                 <p>@L[ShippingStatus.Shipped.ToString()]</p>
                             </div>
                         }
-                         else if (Order?.ShippingStatus == ShippingStatus.Completed)
+                        else if (Order?.ShippingStatus == ShippingStatus.Completed)
                         {
                             <div class="col-12 d-flex justify-content-between">
                                 <p>@Order?.CreationTime.ToShortDateString()</p>
@@ -1597,7 +1600,7 @@
                                 <p>@L[ShippingStatus.Completed.ToString()]</p>
                             </div>
                         }
-                         else if (Order?.ShippingStatus == ShippingStatus.Exchange)
+                        else if (Order?.ShippingStatus == ShippingStatus.Exchange)
                         {
                             <div class="col-12 d-flex justify-content-between">
                                 <p>@Order?.CreationTime.ToShortDateString()</p>
@@ -1633,7 +1636,7 @@
                                 <p>@L[ShippingStatus.Exchange.ToString()]</p>
                             </div>
                         }
-                         else if (Order?.ShippingStatus == ShippingStatus.Closed)
+                        else if (Order?.ShippingStatus == ShippingStatus.Closed)
                         {
                             <div class="col-12 d-flex justify-content-between">
                                 <p>@Order?.CreationTime.ToShortDateString()</p>
@@ -1891,19 +1894,29 @@
                                     <td>
                                     </td>
                                     @* <td> *@
-                                        @if (Order.DeliveryCost is null) 
-                                        {
-                                            <td>$0</td>
-                                        }
+                                    @if (Order.DeliveryCost is null)
+                                    {
+                                        <td>$0</td>
+                                    }
 
-                                        else 
-                                        {
-                                            <td>$@(Order.DeliveryCost?.ToString("N2"))</td>
-                                        }
-                                        @* $@((Order.TotalAmount - Order.OrderItems.Sum(x => x.TotalAmount)).ToString("N2")) *@
+                                    else
+                                    {
+                                        <td>$@(Order.DeliveryCost?.ToString("N2"))</td>
+                                    }
+                                    @* $@((Order.TotalAmount - Order.OrderItems.Sum(x => x.TotalAmount)).ToString("N2")) *@
                                     @* </td> *@
                                 </tr>
-                                @if (Order.RefundAmount > 0) 
+                                <tr>
+                                    <td colspan="2" class="text-end">
+                                        @L["Discount"]
+                                    </td>
+                                    <td>
+                                    </td>
+                                    <td>
+                                    </td>
+                                    <td>$@(!Order.DiscountAmount.HasValue ? "0" : Order.DiscountAmount?.ToString("N2"))</td>
+                                </tr>
+                                @if (Order.RefundAmount > 0)
                                 {
                                     <tr>
                                         <td colspan="2" class="text-end">
@@ -1953,11 +1966,11 @@
                               Responsive
                               RowClicked="ToggleRow"
                               Class=" rm-table-min-height">
-                         <DataGridColumns>
-                             <DataGridCommandColumn />
-                             <DataGridColumn Field="@nameof(OrderDeliveryDto.DeliveryNo)" Caption="@L["DeliveryNo"]">
-                                 <DisplayTemplate>
-                                     @{
+                        <DataGridColumns>
+                            <DataGridCommandColumn />
+                            <DataGridColumn Field="@nameof(OrderDeliveryDto.DeliveryNo)" Caption="@L["DeliveryNo"]">
+                                <DisplayTemplate>
+                                    @{
                                         var isExpanded = ExpandedRows.Contains(context.Id);
                                         var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
                                     }
@@ -1990,11 +2003,16 @@
                             </DataGridColumn>
                             <DataGridColumn Field="@nameof(OrderDeliveryDto.DeliveryStatus)" Caption="@L["DeliveryStatus"]">
                                 <DisplayTemplate>
-                                    @L[context.DeliveryStatus.ToString()] 
+                                    @L[context.DeliveryStatus.ToString()]
 
-                                    @if (!Order.EcpayLogisticsStatus.IsNullOrWhiteSpace()) {
+                                    @if (!Order.EcpayLogisticsStatus.IsNullOrWhiteSpace())
+                                    {
                                         <br />
-                                        <b>[</b>@Order.EcpayLogisticsStatus<b>]</b>
+                                        <b>[</b>
+
+                                        @Order.EcpayLogisticsStatus
+
+                                        <b>]</b>
                                     }
                                 </DisplayTemplate>
 
@@ -2055,10 +2073,10 @@
                                         else
                                         {
                                             <Button Type="ButtonType.Button"
-                                                                Disabled
-                                                     Clicked="() => OrderItemShipped(context)"
-                                                     Class="btn btn-sm btn-secondary me-1">
-                                                 @L["Shipped"]
+                                                    Disabled
+                                                    Clicked="() => OrderItemShipped(context)"
+                                                    Class="btn btn-sm btn-secondary me-1">
+                                                @L["Shipped"]
                                             </Button>
                                         }
 
@@ -2108,9 +2126,9 @@
                                                             }
                                                             @item.Item?.ItemName
                                                             <br />
-                                                            @item.Spec  
+                                                            @item.Spec
                                                         </Div>
-                                                       
+
                                                     }
 
                                                     @if (item.ItemType is ItemType.SetItem)
@@ -2123,7 +2141,7 @@
                                                                 <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
                                                             }
                                                             @item.SetItem?.SetItemName
-                                                             <br />
+                                                            <br />
                                                             @item.Spec
                                                         </Div>
                                                     }
@@ -2138,7 +2156,7 @@
                                                                 <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
                                                             }
                                                             @item.Freebie?.ItemName
-                                                             <br />
+                                                            <br />
                                                             @item.Spec
                                                         </Div>
                                                     }
@@ -2421,13 +2439,13 @@
             <EditForm Model="@shipments" OnValidSubmit="ApplyShipmentAsync">
                 <ModalHeader>
                     <ModalTitle>@L["ShipmentNotify"]</ModalTitle>
-                        <CloseButton Clicked="CloseShipmentModal" onv />
-                    </ModalHeader>
-                    <ModalBody>
+                    <CloseButton Clicked="CloseShipmentModal" onv />
+                </ModalHeader>
+                <ModalBody>
 
-                        <DataAnnotationsValidator />
-                        <div class="row my-2">
-                            <label class="form-label">@L["ShippingMethod"]</label>
+                    <DataAnnotationsValidator />
+                    <div class="row my-2">
+                        <label class="form-label">@L["ShippingMethod"]</label>
                         <div class="col-12">
                             <InputSelect class="form-select" @bind-Value="@shipments.ShippingMethod">
                                 @foreach (DeliveryMethod option in Enum.GetValues(typeof(DeliveryMethod)))
@@ -2467,15 +2485,15 @@
             <EditForm Model="@refunds" OnValidSubmit="ApplyRefundAsync">
                 <ModalHeader>
                     <ModalTitle>@L["Refund"]</ModalTitle>
-                        <CloseButton Clicked="CloseRefundModal" onv />
-                    </ModalHeader>
-                    <ModalBody>
+                    <CloseButton Clicked="CloseRefundModal" onv />
+                </ModalHeader>
+                <ModalBody>
 
-                        <DataAnnotationsValidator />
-                        <Div Class="row">
-                            <Div Class="col-6">
-                                <Label>
-                                    @L["RefundChannel"]: @(GetRefundChannel())
+                    <DataAnnotationsValidator />
+                    <Div Class="row">
+                        <Div Class="col-6">
+                            <Label>
+                                @L["RefundChannel"]: @(GetRefundChannel())
                             </Label>
                         </Div>
                         <Div Class="col-6">
@@ -2523,7 +2541,7 @@
                                                         <td>
                                                             @if (item.ItemType is not ItemType.SetItem)
                                                             {
-                                                                if (item.Quantity > 0) 
+                                                                if (item.Quantity > 0)
                                                                 {
                                                                     <InputCheckbox class="form-check-input"
                                                                                    ValueChanged="@((e) => CheckboxChanged(e, item))"
@@ -2531,7 +2549,7 @@
                                                                                    Value="item.IsSelected" />
                                                                 }
 
-                                                                else 
+                                                                else
                                                                 {
                                                                     <input type="checkbox" disabled class="form-check-input" />
                                                                 }
