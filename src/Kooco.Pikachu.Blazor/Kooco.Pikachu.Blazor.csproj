@@ -23,41 +23,41 @@
 
   <ItemGroup>
 
-      <PackageReference Include="AntDesign" Version="1.1.4" />
+    <PackageReference Include="AntDesign" Version="1.1.4" />
 
-      <PackageReference Include="Blazored.TextEditor" Version="1.1.2" />
+    <PackageReference Include="Blazored.TextEditor" Version="1.1.2" />
 
-      <PackageReference Include="Blazorise.LoadingIndicator" Version="1.7.3" />
+    <PackageReference Include="Blazorise.LoadingIndicator" Version="1.7.3" />
 
-      <PackageReference Include="Hangfire.Core" Version="1.8.17" />
+    <PackageReference Include="Hangfire.Core" Version="1.8.17" />
 
-      <PackageReference Include="Hangfire.SqlServer" Version="1.8.17" />
+    <PackageReference Include="Hangfire.SqlServer" Version="1.8.17" />
 
-      <PackageReference Include="HtmlAgilityPack" Version="1.11.72" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.72" />
 
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.1">
-        <PrivateAssets>all</PrivateAssets>
-        <!-- <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets> -->
-      </PackageReference>
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.1" />
-      <PackageReference Include="MudBlazor" Version="8.1.0" />
-      <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
-      <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
-	  <PackageReference Include="Serilog.Sinks.Async" Version="2.1.0" />
-        <PackageReference Include="Volo.Abp.AspNetCore.Mvc.UI.Theme.Basic" Version="9.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <!-- <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets> -->
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.1" />
+    <PackageReference Include="MudBlazor" Version="8.1.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+    <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
+    <PackageReference Include="Serilog.Sinks.Async" Version="2.1.0" />
+    <PackageReference Include="Volo.Abp.AspNetCore.Mvc.UI.Theme.Basic" Version="9.0.4" />
 
-        <PackageReference Include="Blazorise" Version="1.7.3" />
-        <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.7.3" />
-        <PackageReference Include="Blazorise.Snackbar" Version="1.7.3" />
-        <PackageReference Include="Blazorise.Components" Version="1.7.3" />
-        <PackageReference Include="Blazorise.Bootstrap5" Version="1.7.3" />
-        <PackageReference Include="Blazorise.DataGrid" Version="1.7.3" />
-        <PackageReference Include="Blazorise.RichTextEdit" Version="1.7.3" />
-        <PackageReference Include="Blazorise.AntDesign" Version="1.7.3" />
-        <PackageReference Include="Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite" Version="4.0.5" />
-        <PackageReference Include="Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme" Version="4.0.5" />
-        <PackageReference Include="Volo.Abp.BackgroundJobs.HangFire" Version="9.0.4" />
-        <PackageReference Include="Volo.Abp.HangFire" Version="9.0.4" />
+    <PackageReference Include="Blazorise" Version="1.7.3" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.7.3" />
+    <PackageReference Include="Blazorise.Snackbar" Version="1.7.3" />
+    <PackageReference Include="Blazorise.Components" Version="1.7.3" />
+    <PackageReference Include="Blazorise.Bootstrap5" Version="1.7.3" />
+    <PackageReference Include="Blazorise.DataGrid" Version="1.7.3" />
+    <PackageReference Include="Blazorise.RichTextEdit" Version="1.7.3" />
+    <PackageReference Include="Blazorise.AntDesign" Version="1.7.3" />
+    <PackageReference Include="Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite" Version="4.0.5" />
+    <PackageReference Include="Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme" Version="4.0.5" />
+    <PackageReference Include="Volo.Abp.BackgroundJobs.HangFire" Version="9.0.4" />
+    <PackageReference Include="Volo.Abp.HangFire" Version="9.0.4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -71,7 +71,7 @@
     <PackageReference Include="Volo.Abp.Identity.Blazor.Server" Version="9.0.4" />
     <PackageReference Include="Volo.Abp.TenantManagement.Blazor.Server" Version="9.0.4" />
     <PackageReference Include="Volo.Abp.SettingManagement.Blazor.Server" Version="9.0.4" />
-     <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
     <PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
     <PackageReference Include="Serilog.Sinks.Seq" Version="9.0.0" />
@@ -83,12 +83,13 @@
     <EmbeddedResource Remove="Logs\**" />
     <None Remove="Logs\**" />
     <Content Remove="wwwroot\order.js" />
-      <Content Include="encryption-certificate.pfx">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Content Include="encryption-certificate.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="signing-certificate.pfx">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Remove="openiddict.pfx" />
     <None Remove="Pages\ItemManagement\" />
   </ItemGroup>
 
@@ -96,6 +97,12 @@
     <None Include="wwwroot\order.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="openiddict.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

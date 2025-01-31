@@ -113,20 +113,21 @@ public class PikachuBlazorModule : AbpModule
 
             var hostingEnvironment = context.Services.GetHostingEnvironment();
 
-            if (hostingEnvironment.IsDevelopment()) return;
-
-            PreConfigure<AbpOpenIddictAspNetCoreOptions>(options =>
+            if (!hostingEnvironment.IsDevelopment())
             {
-                options.AddDevelopmentEncryptionAndSigningCertificate = false;
-            });
+                PreConfigure<AbpOpenIddictAspNetCoreOptions>(options =>
+                {
+                    options.AddDevelopmentEncryptionAndSigningCertificate = false;
+                });
 
-            PreConfigure<OpenIddictServerBuilder>(builder =>
-            {
-                builder.AddEncryptionCertificate(GetEncryptionCertificate(hostingEnvironment,
-                    context.Services.GetConfiguration()));
-                builder.AddSigningCertificate(
-                    GetSigningCertificate(hostingEnvironment, context.Services.GetConfiguration()));
-            });
+                PreConfigure<OpenIddictServerBuilder>(serverBuilder =>
+                {
+                    var configuration = context.Services.GetConfiguration();
+                    serverBuilder.AddProductionEncryptionAndSigningCertificate("openiddict.pfx", configuration["MyAppCertificate:X590:Password"]);
+                    //serverBuilder.AddEncryptionCertificate(GetEncryptionCertificate(hostingEnvironment, context.Services.GetConfiguration()));
+                    //serverBuilder.AddSigningCertificate(GetSigningCertificate(hostingEnvironment, context.Services.GetConfiguration()));
+                });
+            }
         });
 
         PreConfigure<OpenIddictServerBuilder>(builder =>
@@ -136,23 +137,6 @@ public class PikachuBlazorModule : AbpModule
                 openIddictServerOptions.GrantTypes.Add(UserIdTokenExtensionGrant.ExtensionGrantName);
             });
             builder.SetAccessTokenLifetime(TimeSpan.FromDays(7));
-        });
-
-        var hostingEnvironment = context.Services.GetHostingEnvironment();
-
-        if (hostingEnvironment.IsDevelopment()) return;
-
-        PreConfigure<AbpOpenIddictAspNetCoreOptions>(options =>
-        {
-            options.AddDevelopmentEncryptionAndSigningCertificate = false;
-        });
-
-        PreConfigure<OpenIddictServerBuilder>(builder =>
-        {
-            builder.AddEncryptionCertificate(GetEncryptionCertificate(hostingEnvironment,
-                context.Services.GetConfiguration()));
-            builder.AddSigningCertificate(
-                GetSigningCertificate(hostingEnvironment, context.Services.GetConfiguration()));
         });
     }
 
