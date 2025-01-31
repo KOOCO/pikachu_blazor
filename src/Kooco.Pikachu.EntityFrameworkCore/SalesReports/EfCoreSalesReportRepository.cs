@@ -239,7 +239,7 @@ public class EfCoreSalesReportRepository(IDbContextProvider<PikachuDbContext> db
             .Where(i => itemIds.Select(i => i.ItemId).Contains(i.Id))
             .Include(i => i.ItemDetails)
             .SelectMany(i => i.ItemDetails)
-            .Where(id => itemIds.Select(i => i.SKU).Contains(id.SKU))
+            .Where(id => itemIds.Select(i => i.Spec).Contains(id.SKU))
             .Select(x => new DataModel
             {
                 ItemId = x.ItemId,
