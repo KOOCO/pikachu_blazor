@@ -24,7 +24,7 @@ namespace Kooco.Pikachu.GroupBuys
         Task DeleteAsync(Guid id);
         Task<GroupBuyDto> UpdateAsync(Guid id, GroupBuyUpdateDto input);
         Task<GroupBuyDto> GetWithDetailsAsync(Guid id);
-        Task<List<string>> GetCarouselImagesAsync(Guid id);
+        Task<List<ImageWithLinkDto>> GetCarouselImagesAsync(Guid id);
         Task<Tuple<List<string>, string?>> GetCarouselImagesModuleWiseAsync(Guid id, int moduleNumber);
         Task<List<string>> GetBannerImagesModuleWiseAsync(Guid id, int moduleNumber);
         Task<List<GroupPurchaseOverviewDto>> GetGroupPurchaseOverviewsAsync(Guid groupBuyId);

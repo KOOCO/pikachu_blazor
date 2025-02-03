@@ -80,7 +80,7 @@ public class GroupBuyController : AbpController, IGroupBuyAppService
     }
 
     [HttpGet("get-carousel-images/{id}")]
-    public Task<List<string>> GetCarouselImagesAsync(Guid id)
+    public Task<List<ImageWithLinkDto>> GetCarouselImagesAsync(Guid id)
     {
         return _groupBuyAppService.GetCarouselImagesAsync(id);
     }

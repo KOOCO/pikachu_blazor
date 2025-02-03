@@ -802,12 +802,12 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     /// Do not change unless you want to make changes in the Store Front End Code
     /// </summary>
     /// <returns></returns>
-    public async Task<List<string>> GetCarouselImagesAsync(Guid id)
+    public async Task<List<ImageWithLinkDto>> GetCarouselImagesAsync(Guid id)
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
             var data = await _imageRepository.GetListAsync(x => x.TargetId == id && x.ImageType == ImageType.GroupBuyCarouselImage);
-            return data.Select(i => i.ImageUrl).ToList();
+            return ObjectMapper.Map<List<Image>, List<ImageWithLinkDto>>(data);
         }
     }
 

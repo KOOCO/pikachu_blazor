@@ -196,7 +196,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<AddOnProductDto, CreateUpdateAddOnProductDto>();
 
 
-        CreateMap<DiscountCode, DiscountCodeDto>().ForMember(x=>x.TotalQuantity,y=>y.MapFrom(z=>z.DiscountCodeUsages.Sum(a=>a.TotalOrders)));
+        CreateMap<DiscountCode, DiscountCodeDto>().ForMember(x => x.TotalQuantity, y => y.MapFrom(z => z.DiscountCodeUsages.Sum(a => a.TotalOrders)));
         CreateMap<DiscountSpecificGroupbuy, DiscountCodeSpecificGroupbuyDto>();
         CreateMap<DiscountSpecificProduct, DiscountCodeSpecificProductDto>();
         CreateMap<DiscountCodeUsage, DiscountCodeUsageDto>();
@@ -326,5 +326,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ProductCategoryFirstImageUrl));
 
         CreateMap<SalesReportModel, SalesReportDto>();
+
+        CreateMap<Image, ImageWithLinkDto>();
     }
 }
