@@ -90,7 +90,11 @@ public partial class CashFlowReconciliationStatement
 
     async Task IssueInvoice(Guid orderId) {
 
-        await _electronicInvoiceAppService.CreateInvoiceAsync(orderId);
+        var msg= await _electronicInvoiceAppService.CreateInvoiceAsync(orderId);
+        if (!msg.IsNullOrWhiteSpace())
+        {
+            await _uiMessageService.Error(msg);
+        }
         await UpdateItemList();
 
     }
