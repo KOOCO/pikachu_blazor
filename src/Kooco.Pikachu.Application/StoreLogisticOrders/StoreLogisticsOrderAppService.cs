@@ -1956,7 +1956,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         body = body.Replace("{{PaymentStatus}}", _L[order.OrderStatus.ToString()]);
         body = body.Replace("{{ShippingMethod}}", $"{_L[order.DeliveryMethod.ToString()]} {order.ShippingNumber}");
         body = body.Replace("{{DeliveryFee}}", $"${deliveryCost}");
-        body = body.Replace("{{RecipientAddress}}", order.AddressDetails);
+        body = body.Replace("{{RecipientAddress}}", $"{order.City} {order.AddressDetails}");
         body = body.Replace("{{ShippingStatus}}", _L[status]);
         body = body.Replace("{{RecipientComments}}", order.Remarks);
         body = body.Replace("{{OrderStatus}}", _L[order.ShippingStatus.ToString()]);

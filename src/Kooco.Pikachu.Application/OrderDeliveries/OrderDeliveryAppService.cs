@@ -154,7 +154,7 @@ namespace Kooco.Pikachu.OrderDeliveries
             body = body.Replace("{{PaymentStatus}}", _l[order.OrderStatus.ToString()]);
             body = body.Replace("{{ShippingMethod}}", _l[deliveryOrder.DeliveryMethod.ToString()]);
             body = body.Replace("{{DeliveryFee}}", $"${deliveryCost}");
-            body = body.Replace("{{RecipientAddress}}", order.AddressDetails);
+            body = body.Replace("{{RecipientAddress}}", $"{order.City} {order.AddressDetails}");
             body = body.Replace("{{ShippingStatus}}", _l[order.OrderStatus.ToString()]);
             body = body.Replace("{{RecipientComments}}", order.Remarks);
 
