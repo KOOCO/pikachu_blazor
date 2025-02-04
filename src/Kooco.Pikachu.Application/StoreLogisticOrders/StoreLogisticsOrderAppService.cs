@@ -127,34 +127,44 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
     #region Methods
     public async Task IssueInvoiceAync(Guid orderId)
     {
-        var order = await _orderRepository.GetAsync(orderId);
-        
-        await _orderRepository.EnsurePropertyLoadedAsync(order, o => o.GroupBuy);
-        order.ShippingStatus = ShippingStatus.ToBeShipped;
-        var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
-        if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
+        try
         {
+            var order = await _orderRepository.GetAsync(orderId);
 
-            if (order.GroupBuy.IssueInvoice)
+            // await _orderRepository.EnsurePropertyLoadedAsync(order, o => o.GroupBuy);
+            var groupbuy = await _GroupBuyRepository.GetAsync(order.GroupBuyId);
+            order.ShippingStatus = ShippingStatus.ToBeShipped;
+            var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+            if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
             {
-                 order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
-                //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
-               
-                var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
-                if (invoiceDely == 0)
+
+                if (groupbuy.IssueInvoice)
                 {
-                    await _electronicInvoiceAppService.CreateInvoiceAsync(orderId);
-                }
-                else
-                {
-                    var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
-                    GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = orderId };
-                    var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                    order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
+                    //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+
+                    var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
+                    if (invoiceDely == 0)
+                    {
+                        await _electronicInvoiceAppService.CreateInvoiceAsync(orderId);
+                    }
+                    else
+                    {
+                        var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
+                        GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = orderId };
+                        var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                    }
                 }
             }
+            await UnitOfWorkManager.Current.SaveChangesAsync();
         }
-        await UnitOfWorkManager.Current.SaveChangesAsync();
-        
+        catch (AbpDbConcurrencyException e)
+        {
+            Logger.LogError(e.Message);
+            Logger.LogWarning("Check");
+
+        }
+
 
     }
     public async Task<ResponseResultDto> CreateHomeDeliveryShipmentOrderAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null)
