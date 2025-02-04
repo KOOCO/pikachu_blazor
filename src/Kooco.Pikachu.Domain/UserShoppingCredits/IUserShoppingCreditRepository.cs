@@ -19,4 +19,6 @@ public interface IUserShoppingCreditRepository : IRepository<UserShoppingCredit,
     Task<IQueryable<UserShoppingCredit>> GetFilteredQueryableAsync(string? filter, Guid? userId, int? minAmount, int? maxAmount,
         int? minCurrentRemainingCredits, int? maxCurrentRemainingCredits, string? transactionDescription,
         DateTime? minExpirationDate, DateTime? maxExpirationDate, bool? isActive);
+
+    Task<List<UserShoppingCredit>> GetExpirableCreditsAsync();
 }

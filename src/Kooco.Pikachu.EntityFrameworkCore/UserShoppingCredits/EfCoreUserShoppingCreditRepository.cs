@@ -49,4 +49,14 @@ public class EfCoreUserShoppingCreditRepository(IDbContextProvider<PikachuDbCont
             .WhereIf(!string.IsNullOrWhiteSpace(filter), x => (x.TransactionDescription != null && x.TransactionDescription.Contains(filter))
             || x.Amount.ToString() == filter || x.CurrentRemainingCredits.ToString() == filter);
     }
+
+    public async Task<List<UserShoppingCredit>> GetExpirableCreditsAsync()
+    {
+        var expirableCredits = await (await GetQueryableAsync())
+            .Where(usc => usc.IsActive && usc.ShoppingCreditType == UserShoppingCreditType.Grant
+                && usc.ExpirationDate.HasValue && usc.ExpirationDate < DateTime.Today)
+            .ToListAsync();
+
+        return expirableCredits;
+    }
 }

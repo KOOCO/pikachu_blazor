@@ -33,6 +33,9 @@ public class CreateUserShoppingCreditDto : ICreateUpdateUserShoppingCreditDto
     [Required(ErrorMessage = "SelectionIsRequired")]
     public bool? CanExpire { get; set; }
 
+    [Required]
+    public UserShoppingCreditType? ShoppingCreditType { get; set; }
+
     public bool SendEmail { get; set; }
     public bool SendSms { get; set; }
 }

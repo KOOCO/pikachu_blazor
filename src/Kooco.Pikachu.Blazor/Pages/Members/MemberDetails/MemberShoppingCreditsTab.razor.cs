@@ -49,6 +49,7 @@ public partial class MemberShoppingCreditsTab
             {
                 CumulativeCredits = await MemberAppService.GetMemberCumulativeCreditsAsync(Member.Id);
                 await GetMemberCreditRecordsAsync();
+                StateHasChanged();
             }
             catch (Exception ex)
             {

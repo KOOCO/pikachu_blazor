@@ -75,18 +75,12 @@ namespace Kooco.Pikachu.BackgroundWorkers
                                 ExpirationDate = shoppingCredit.BirthdayUsagePeriodType == "NoExpiry" ? null : DateTime.Now.AddDays(shoppingCredit.BirthdayValidDays),
                                 IsActive = shoppingCredit.BirthdayBonusEnabled,
                                 TransactionDescription = "獲得生日禮金",
-
-
-
-
-
+                                ShoppingCreditType = UserShoppingCreditType.Grant
                             });
                             var userCumulativeCredit = await userCumulativeCreditRepository.FirstOrDefaultAsync(x => x.UserId == member.Id);
                             if (userCumulativeCredit is null)
                             {
                                 await userCumulativeCreditAppService.CreateAsync(new CreateUserCumulativeCreditDto { TotalAmount = shoppingCredit.BirthdayEarnedPoints, TotalDeductions = 0, TotalRefunds = 0, UserId = member.Id });
-
-
                             }
                             else
                             {

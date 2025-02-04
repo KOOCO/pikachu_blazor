@@ -19,7 +19,10 @@ public partial class CreateShoppingCredits
 
     public CreateShoppingCredits()
     {
-        NewUserShoppingCredit = new();
+        NewUserShoppingCredit = new()
+        {
+            ShoppingCreditType = UserShoppingCreditType.Grant
+        };
     }
 
     protected override void OnParametersSet()

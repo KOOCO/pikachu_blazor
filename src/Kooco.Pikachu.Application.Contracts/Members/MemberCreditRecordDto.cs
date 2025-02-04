@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kooco.Pikachu.UserShoppingCredits;
+using System;
 
 namespace Kooco.Pikachu.Members;
 
@@ -10,4 +11,5 @@ public class MemberCreditRecordDto
     public int Amount { get; set; }
     public DateTime? ExpirationDate { get; set; }
     public decimal RemainingCredits { get; set; }
+    public UserShoppingCreditType ShoppingCreditType { get; set; }
 }

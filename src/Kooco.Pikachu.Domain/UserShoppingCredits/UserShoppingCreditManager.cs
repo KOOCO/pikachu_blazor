@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
-using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Services;
 
 namespace Kooco.Pikachu.UserShoppingCredits;
@@ -12,27 +9,39 @@ namespace Kooco.Pikachu.UserShoppingCredits;
 public class UserShoppingCreditManager(IUserShoppingCreditRepository userShoppingCreditRepository) : DomainService
 {
     public async Task<UserShoppingCredit> CreateAsync(Guid userId, int amount, int currentRemainingCredits,
-        string? transactionDescription, DateTime? expirationDate, bool isActive)
+        string? transactionDescription, DateTime? expirationDate, bool isActive, UserShoppingCreditType shoppingCreditType,
+        bool isJobRunning = false)
     {
-        Check.Positive(amount, nameof(amount));
-        Check.Positive(currentRemainingCredits, nameof(currentRemainingCredits));
+        Check.Range(amount, nameof(amount), 0);
+        Check.Range(currentRemainingCredits, nameof(currentRemainingCredits), 0);
         Check.Length(transactionDescription, nameof(transactionDescription), UserShoppingCreditConsts.MaxTransactionDescriptionLength);
 
         if (expirationDate?.Date < DateTime.Today)
         {
             throw new ExpirationDateCannotBePastException();
         }
-        var oldCredit = (await userShoppingCreditRepository.GetQueryableAsync()).Where(x => x.UserId == userId).OrderBy(x=>x.CreationTime).LastOrDefault();
-        if (transactionDescription.Contains("購物折抵"))
+
+        var oldCredit = (await userShoppingCreditRepository.GetQueryableAsync())
+                            .Where(x => x.UserId == userId).OrderBy(x => x.CreationTime)
+                            .LastOrDefault();
+
+        if (shoppingCreditType == UserShoppingCreditType.Deduction)
         {
             currentRemainingCredits = (oldCredit?.CurrentRemainingCredits ?? 0) - currentRemainingCredits;
         }
         else
         {
-            currentRemainingCredits = currentRemainingCredits + (oldCredit?.CurrentRemainingCredits ?? 0);
+            currentRemainingCredits += oldCredit?.CurrentRemainingCredits ?? 0;
         }
+
+        if (isJobRunning && currentRemainingCredits < 0)
+        {
+            amount = oldCredit?.CurrentRemainingCredits ?? 0;
+            currentRemainingCredits = 0;
+        }
+
         var userShoppingCredit = new UserShoppingCredit(GuidGenerator.Create(), userId, amount,
-            currentRemainingCredits, transactionDescription, expirationDate, isActive);
+            currentRemainingCredits, transactionDescription, expirationDate, isActive, shoppingCreditType);
 
         await userShoppingCreditRepository.InsertAsync(userShoppingCredit);
 

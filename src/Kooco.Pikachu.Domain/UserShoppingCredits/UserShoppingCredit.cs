@@ -14,6 +14,7 @@ public class UserShoppingCredit : FullAuditedEntity<Guid>, IMultiTenant
     public int CurrentRemainingCredits { get; private set; }
     public string? TransactionDescription { get; private set; }
     public DateTime? ExpirationDate { get; private set; }
+    public UserShoppingCreditType ShoppingCreditType { get; set; }
     public bool IsActive { get; set; }
     public Guid? TenantId { get; set; }
 
@@ -27,7 +28,8 @@ public class UserShoppingCredit : FullAuditedEntity<Guid>, IMultiTenant
         int currentRemainingCredits,
         string? transactionDescription,
         DateTime? expirationDate,
-        bool isActive
+        bool isActive,
+        UserShoppingCreditType shoppingCreditType
         ) : base(id)
     {
         UserId = userId;
@@ -35,7 +37,8 @@ public class UserShoppingCredit : FullAuditedEntity<Guid>, IMultiTenant
         SetTransactionDescription(transactionDescription);
         SetAmount(amount);
         SetCurrentRemainingCredits(currentRemainingCredits);
-        ExpirationDate= expirationDate;
+        ExpirationDate = expirationDate;
+        ShoppingCreditType = shoppingCreditType;
     }
 
     public UserShoppingCredit ChangeAmount(int amount)
@@ -46,7 +49,7 @@ public class UserShoppingCredit : FullAuditedEntity<Guid>, IMultiTenant
 
     private void SetAmount(int amount)
     {
-        Amount = Check.Positive(amount, nameof(amount));
+        Amount = Check.Range(amount, nameof(amount), 0);
     }
 
     public UserShoppingCredit ChangeTransactionDescription(string? transactionDescription)
@@ -69,7 +72,7 @@ public class UserShoppingCredit : FullAuditedEntity<Guid>, IMultiTenant
 
     private void SetCurrentRemainingCredits(int currentRemainingCredits)
     {
-        CurrentRemainingCredits = Check.Positive(currentRemainingCredits, nameof(currentRemainingCredits));
+        CurrentRemainingCredits = Check.Range(currentRemainingCredits, nameof(currentRemainingCredits), 0);
     }
 
     public UserShoppingCredit ChangeExpirationDate(DateTime? expirationDate)

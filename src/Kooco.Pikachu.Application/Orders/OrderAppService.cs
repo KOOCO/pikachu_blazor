@@ -285,7 +285,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                                 else
                                 {
                                     setItem.SaleableQuantity -= item.Quantity;
-                              
+
                                     foreach (var setItemDetail in setItem.SetItemDetails)
                                     {
                                         var detail = await _itemDetailsRepository.FirstOrDefaultAsync(x => x.ItemId == setItemDetail.ItemId
@@ -323,7 +323,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                                 freebie.FreebieAmount -= item.Quantity;
                                 await _freebieRepository.UpdateAsync(freebie);
                             }
-                            else {
+                            else
+                            {
 
                                 insufficientItems.Add("Insufficient Giftable Quantity");
                             }
@@ -432,35 +433,29 @@ public class OrderAppService : ApplicationService, IOrderAppService
             {
                 if (order.cashback_amount > 0)
                 {
-                  
-                        var newcashback = await _userShoppingCreditAppService.RecordShoppingCreditAsync(new RecordUserShoppingCreditDto
-                        {
-                            Amount = (int)order.cashback_amount,
-                            ExpirationDate = null,
-                            IsActive = true,
-                            TransactionDescription = "購物回饋：訂單 #" + order.OrderNo,
-                            UserId = order.UserId.Value
 
+                    var newcashback = await _userShoppingCreditAppService.RecordShoppingCreditAsync(new RecordUserShoppingCreditDto
+                    {
+                        Amount = (int)order.cashback_amount,
+                        ExpirationDate = null,
+                        IsActive = true,
+                        TransactionDescription = "購物回饋：訂單 #" + order.OrderNo,
+                        UserId = order.UserId.Value,
+                        ShoppingCreditType = UserShoppingCreditType.Grant
+                    });
+                    order.cashback_amount = newcashback.Amount;
+                    order.cashback_record_id = newcashback.Id;
 
-                        });
-                        order.cashback_amount = newcashback.Amount;
-                        order.cashback_record_id = newcashback.Id;
-                 
                     var userCumulativeCredits = await _userCumulativeCreditRepository.FirstOrDefaultAsync(x => x.UserId == order.UserId);
                     if (userCumulativeCredits is null)
                     {
                         await _userCumulativeCreditAppService.CreateAsync(new CreateUserCumulativeCreditDto { TotalAmount = (int)order.cashback_amount, TotalDeductions = 0, TotalRefunds = 0, UserId = order.UserId });
-
-
                     }
-                    else {
+                    else
+                    {
                         userCumulativeCredits.ChangeTotalAmount((int)(userCumulativeCredits.TotalAmount + order.cashback_amount));
                         await _userCumulativeCreditRepository.UpdateAsync(userCumulativeCredits);
-
                     }
-                 
-                 
-
                 }
 
             }
@@ -468,32 +463,28 @@ public class OrderAppService : ApplicationService, IOrderAppService
             {
                 if (order.CreditDeductionAmount > 0)
                 {
-                  
-                        var newdeduction = await _userShoppingCreditAppService.RecordShoppingCreditAsync(new RecordUserShoppingCreditDto
-                        {
-                            Amount = (int)order.CreditDeductionAmount,
-                            ExpirationDate = null,
-                            IsActive = true,
-                            TransactionDescription = "購物折抵：訂單 #" + order.OrderNo,
-                            UserId = order.UserId.Value
 
+                    var newdeduction = await _userShoppingCreditAppService.RecordShoppingCreditAsync(new RecordUserShoppingCreditDto
+                    {
+                        Amount = (int)order.CreditDeductionAmount,
+                        ExpirationDate = null,
+                        IsActive = true,
+                        TransactionDescription = "購物折抵：訂單 #" + order.OrderNo,
+                        UserId = order.UserId.Value,
+                        ShoppingCreditType = UserShoppingCreditType.Grant
+                    });
+                    order.CreditDeductionAmount = newdeduction.Amount;
+                    order.CreditDeductionRecordId = newdeduction.Id;
 
-                        });
-                        order.CreditDeductionAmount = newdeduction.Amount;
-                        order.CreditDeductionRecordId = newdeduction.Id;
-                   
                     var userCumulativeCredits = await _userCumulativeCreditRepository.FirstOrDefaultAsync(x => x.UserId == order.UserId);
                     if (userCumulativeCredits is null)
                     {
                         await _userCumulativeCreditAppService.CreateAsync(new CreateUserCumulativeCreditDto { TotalAmount = 0, TotalDeductions = order.CreditDeductionAmount, TotalRefunds = 0, UserId = order.UserId });
-
-
                     }
                     else
                     {
                         userCumulativeCredits.ChangeTotalDeductions((int)(userCumulativeCredits.TotalDeductions + order.CreditDeductionAmount));
                         await _userCumulativeCreditRepository.UpdateAsync(userCumulativeCredits);
-
                     }
                 }
 
@@ -574,7 +565,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         Order ord = await _orderRepository.GetWithDetailsAsync(Ids[0]);
 
         GroupBuy groupBuy = new();
-        List<decimal> DeliveriesCost=new();
+        List<decimal> DeliveriesCost = new();
         using (_dataFilter.Disable<IMultiTenant>())
         {
             groupBuy = await _groupBuyRepository.GetAsync(ord.GroupBuyId);
@@ -590,8 +581,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
                 TotalAmount += order.TotalAmount;
                 TotalQuantity += order.TotalQuantity;
-                if(order.DeliveryCost is not null)
-                DeliveriesCost.Add(order.DeliveryCost.Value);
+                if (order.DeliveryCost is not null)
+                    DeliveriesCost.Add(order.DeliveryCost.Value);
                 foreach (OrderItem item in order.OrderItems)
                 {
                     if (orderItems.Any(x => x.ItemId == item.ItemId && x.FreebieId == null) ||
@@ -715,8 +706,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     item.DeliveryTemperatureCost
                 );
             }
-            if(DeliveriesCost.Count>0)
-            order1.DeliveryCost = DeliveriesCost.Max();
+            if (DeliveriesCost.Count > 0)
+                order1.DeliveryCost = DeliveriesCost.Max();
             await _orderRepository.InsertAsync(order1);
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
@@ -2151,9 +2142,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
     }
     public async Task ExpireOrderAsync(Guid OrderId)
     {
-        using(_dataFilter.Disable<IMultiTenant>())
-        { 
-        var order = await _orderRepository.GetWithDetailsAsync(OrderId);
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            var order = await _orderRepository.GetWithDetailsAsync(OrderId);
             if (order.ShippingStatus == ShippingStatus.WaitingForPayment)
             {
                 order.OrderStatus = OrderStatus.Closed;

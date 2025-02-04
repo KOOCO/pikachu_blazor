@@ -1,4 +1,5 @@
 ﻿@using Kooco.Pikachu.Members
+@using Kooco.Pikachu.UserShoppingCredits
 @inherits PikachuComponentBase
 @inject IMemberAppService MemberAppService
 @inject NavigationManager NavigationManager
@@ -19,7 +20,7 @@
             <Column ColumnSize="ColumnSize.Is6">
                 <PikachuCard Type="warning" Title="@L["Deductions"]" Amount="CumulativeCredits?.TotalDeductions" AmountVisible="true"></PikachuCard>
             </Column>
-        @*     <Column ColumnSize="ColumnSize.Is4">
+            @*     <Column ColumnSize="ColumnSize.Is4">
                 <PikachuCard Type="danger" Title="@L["Refunds"]" Amount="CumulativeCredits?.TotalRefunds" AmountVisible="true"></PikachuCard>
             </Column> *@
         </Row>
@@ -121,7 +122,9 @@
                                 Field="@nameof(MemberCreditRecordDto.Amount)"
                                 Caption="@L["Amount"]">
                     <DisplayTemplate>
-                        +@context.Amount.ToString("N0")
+                        <Span Class="@(context.ShoppingCreditType == UserShoppingCreditType.Grant ? "text-success" : "text-danger")">
+                            <Span>@(context.ShoppingCreditType == UserShoppingCreditType.Grant ? "+" : "-")</Span>@context.Amount.ToString("N0")
+                        </Span>
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="MemberCreditRecordDto"
@@ -130,11 +133,12 @@
                     <DisplayTemplate>
                         @if (context.ExpirationDate.HasValue)
                         {
-                            @context.ExpirationDate?.ToShortDateString() @context.ExpirationDate?.ToShortTimeString()
+                            <Span>@context.ExpirationDate?.ToShortDateString()</Span>
+                            <Span>@context.ExpirationDate?.ToShortTimeString()</Span>
                         }
                         else
                         {
-                            <Span>--</Span>
+                            <Span>- -</Span>
                         }
                     </DisplayTemplate>
                 </DataGridColumn>

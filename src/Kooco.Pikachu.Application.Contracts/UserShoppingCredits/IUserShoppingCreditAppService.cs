@@ -17,5 +17,5 @@ public interface IUserShoppingCreditAppService : IApplicationService
     Task<UserShoppingCreditDto> RecordShoppingCreditAsync(RecordUserShoppingCreditDto input);
     Task<int> GetMemberCurrentShoppingCreditAsync(Guid memberId);
     Task<ShoppingCreditStatDto> GetShoppingCreditStatsAsync();
-
+    Task<int> ExpireCreditsAsync();
 }

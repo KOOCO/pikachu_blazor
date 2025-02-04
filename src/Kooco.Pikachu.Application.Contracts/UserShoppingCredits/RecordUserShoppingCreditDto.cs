@@ -10,8 +10,6 @@ namespace Kooco.Pikachu.UserShoppingCredits
         [Required]
         public Guid UserId { get; set; }
 
-
-
         [Range(0, int.MaxValue)]
         public int Amount { get; set; }
 
@@ -28,5 +26,7 @@ namespace Kooco.Pikachu.UserShoppingCredits
         public DateTime? ExpirationDate { get; set; }
 
         public bool IsActive { get; set; } = true;
+
+        public UserShoppingCreditType? ShoppingCreditType { get; set; }
     }
 }

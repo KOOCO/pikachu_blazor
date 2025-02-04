@@ -261,16 +261,12 @@ public class MemberAppService(IMemberRepository memberRepository, IdentityUserMa
                 IsActive = shoppingCredit.RegistrationBonusEnabled,
                 ExpirationDate = shoppingCredit.RegistrationUsagePeriodType == "NoExpiry" ? null : DateTime.Today.AddDays(shoppingCredit.RegistrationValidDays),
                 TransactionDescription = "獲得註冊禮金",
-
-
-
+                ShoppingCreditType = UserShoppingCreditType.Grant
             });
             var userCumulativeCredit = await userCumulativeCreditRepository.FirstOrDefaultAsync(x => x.UserId == identityUser.Id);
             if (userCumulativeCredit is null)
             {
                 await userCumulativeCreditAppService.CreateAsync(new CreateUserCumulativeCreditDto { TotalAmount = shoppingCredit.RegistrationEarnedPoints, TotalDeductions = 0, TotalRefunds = 0, UserId = identityUser.Id });
-
-
             }
             else
             {

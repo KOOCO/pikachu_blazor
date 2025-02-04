@@ -63,6 +63,7 @@ using Serilog;
 using Serilog.Events;
 using Kooco.Pikachu.PaymentGateways.LinePay;
 using Microsoft.Extensions.Options;
+using Kooco.Pikachu.UserShoppingCredits;
 
 namespace Kooco.Pikachu.Blazor;
 
@@ -487,12 +488,12 @@ public class PikachuBlazorModule : AbpModule
         app.UseConfiguredEndpoints();
 
         context.ServiceProvider
-.GetRequiredService<IBackgroundWorkerManager>()
-.AddAsync(
- context
-     .ServiceProvider
-     .GetRequiredService<PassiveUserBirthdayCheckerWorker>()
-);
+            .GetRequiredService<IBackgroundWorkerManager>()
+            .AddAsync(
+             context
+                 .ServiceProvider
+                 .GetRequiredService<PassiveUserBirthdayCheckerWorker>()
+            );
 
         var backgroundJobManager = context.ServiceProvider.GetRequiredService<IBackgroundJobManager>();
 
@@ -502,10 +503,11 @@ public class PikachuBlazorModule : AbpModule
             "0 1 * * *"                     // Cron expression for 1 AM daily
         );
 
-
-
-
-
+        RecurringJob.AddOrUpdate<UserShoppingCreditExpireBackgroundJob>(
+           "UserShoppingCreditExpire",
+           job => job.ExecuteAsync(0),
+           Cron.Daily()
+        );
     }
 
     // This method is required for the Image Upload in blazor
