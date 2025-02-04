@@ -159,10 +159,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
     }
     public async Task<ResponseResultDto> CreateHomeDeliveryShipmentOrderAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null)
     {
-        using (var uow = UnitOfWorkManager.Begin(
-                  requiresNew: true, isTransactional: false
-              ))
-        {
+        
             ResponseResultDto result = new ResponseResultDto();
             try
             {
@@ -271,40 +268,41 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 {
                     if (result.ResponseCode is "1")
                     {
+                    using (var uow = UnitOfWorkManager.Begin(
+                  requiresNew: true, isTransactional: false
+              ))
+                    {
+                        var newOrderDelivery = await _deliveryRepository.GetAsync(orderDeliveryId);
+                        newOrderDelivery.DeliveryNo = result.ShippingInfo.BookingNote;
 
+                        newOrderDelivery.AllPayLogisticsID = result.ShippingInfo.AllPayLogisticsID;
 
-                        orderDelivery.DeliveryNo = result.ShippingInfo.BookingNote;
-
-                        orderDelivery.AllPayLogisticsID = result.ShippingInfo.AllPayLogisticsID;
-
-                        orderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
+                        newOrderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
 
                         if (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore &&
                             deliveryMethod is not null)
-                            orderDelivery.ActualDeliveryMethod = deliveryMethod;
+                            newOrderDelivery.ActualDeliveryMethod = deliveryMethod;
 
 
 
-                      await  uow.SaveChangesAsync();
+                        await uow.SaveChangesAsync();
                         //order.ShippingStatus = ShippingStatus.ToBeShipped;
                         //order = await _orderRepository.GetAsync(orderId);
 
                         //await _orderRepository.UpdateAsync(order);
 
-
+                    }
 
                         await SendEmailAsync(orderId, orderDelivery.DeliveryNo);
                     }
                 }
-                catch (AbpDbConcurrencyException e)
-                {
+            catch (AbpDbConcurrencyException e)
+            {
+                Logger.LogError(e.Message);
+                Logger.LogWarning("Check");
 
-                    Logger.LogWarning("CatchBlock");
-                    Logger.LogException(e);
-
-
-                }
-                return result;
+            }
+            return result;
             }
             catch (Exception ex)
             {
@@ -313,7 +311,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
                 return result;
             }
-        }
+        
     }
 
     public async Task<string> OnPrintShippingLabel(OrderDto order, OrderDeliveryDto orderDelivery)
@@ -725,10 +723,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
     public async Task<PrintObtResponse?> GenerateDeliveryNumberForTCatDeliveryAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null)
     {
-        using (var uow = UnitOfWorkManager.Begin(
-                requiresNew: true, isTransactional: false
-            ))
-        {
+       
             Order order = await _orderRepository.GetWithDetailsAsync(orderId);
 
             List<OrderDelivery> orderDeliveries = await _deliveryRepository.GetWithDetailsAsync(orderId);
@@ -894,43 +889,47 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             try
             {
-                orderDelivery.SrvTranId = printObtResponse.SrvTranId;
-                orderDelivery.FileNo = printObtResponse.Data.FileNo;
-                orderDelivery.AllPayLogisticsID = printObtResponse.SrvTranId;
-                orderDelivery.LastModificationTime = DateTime.ParseExact(printObtResponse.Data.PrintDateTime,
+            using (var uow = UnitOfWorkManager.Begin(
+               requiresNew: true, isTransactional: false
+           ))
+            {
+                var newOrderDelivery = await _deliveryRepository.GetAsync(orderDeliveryId);
+                newOrderDelivery.SrvTranId = printObtResponse.SrvTranId;
+                newOrderDelivery.FileNo = printObtResponse.Data.FileNo;
+                newOrderDelivery.AllPayLogisticsID = printObtResponse.SrvTranId;
+                newOrderDelivery.LastModificationTime = DateTime.ParseExact(printObtResponse.Data.PrintDateTime,
                                                                          "yyyyMMddHHmmss",
                                                                          System.Globalization.CultureInfo.InvariantCulture);
-                orderDelivery.DeliveryNo = printObtResponse.Data.Orders.First().OBTNumber;
-                orderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
+                newOrderDelivery.DeliveryNo = printObtResponse.Data.Orders.First().OBTNumber;
+                newOrderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
 
                 if (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore &&
                         deliveryMethod is not null)
-                    orderDelivery.ActualDeliveryMethod = deliveryMethod;
+                    newOrderDelivery.ActualDeliveryMethod = deliveryMethod;
 
-              
+
 
                 //order.ShippingStatus = ShippingStatus.ToBeShipped;
-              await  uow.SaveChangesAsync();
+                await uow.SaveChangesAsync();
                 //await _orderRepository.UpdateAsync(order);
 
-
+            }
                 await SendEmailAsync(orderId, orderDelivery.DeliveryNo);
             }
-            catch (DbUpdateConcurrencyException e)
-            {
+        catch (AbpDbConcurrencyException e)
+        {
+            Logger.LogError(e.Message);
+            Logger.LogWarning("Check");
 
-            }
-
-            return printObtResponse;
         }
+
+        return printObtResponse;
+        
     }
 
     public async Task<PrintOBTB2SResponse?> GenerateDeliveryNumberForTCat711DeliveryAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null)
     {
-        using (var uow = UnitOfWorkManager.Begin(
-                requiresNew: true, isTransactional: false
-            ))
-        {
+       
             Order order = await _orderRepository.GetWithDetailsAsync(orderId);
 
             List<OrderDelivery> orderDeliveries = await _deliveryRepository.GetWithDetailsAsync(orderId);
@@ -1018,37 +1017,42 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             try
             {
-                orderDelivery.SrvTranId = printObtB2SResponse.SrvTranId;
-                orderDelivery.FileNo = printObtB2SResponse.Data.FileNo;
-                orderDelivery.AllPayLogisticsID = printObtB2SResponse.Data.Orders.First().OBTNumber;
-                orderDelivery.LastModificationTime = DateTime.ParseExact(printObtB2SResponse.Data.PrintDateTime,
+            using (var uow = UnitOfWorkManager.Begin(
+               requiresNew: true, isTransactional: false
+           ))
+            {
+                var newOrderDelivery = await _deliveryRepository.GetAsync(orderDeliveryId);
+                newOrderDelivery.SrvTranId = printObtB2SResponse.SrvTranId;
+                newOrderDelivery.FileNo = printObtB2SResponse.Data.FileNo;
+                newOrderDelivery.AllPayLogisticsID = printObtB2SResponse.Data.Orders.First().OBTNumber;
+                newOrderDelivery.LastModificationTime = DateTime.ParseExact(printObtB2SResponse.Data.PrintDateTime,
                                                                          "yyyyMMddHHmmss",
                                                                          System.Globalization.CultureInfo.InvariantCulture);
-                orderDelivery.DeliveryNo = printObtB2SResponse.Data.Orders.First().DeliveryId;
-                orderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
+                newOrderDelivery.DeliveryNo = printObtB2SResponse.Data.Orders.First().DeliveryId;
+                newOrderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
 
                 if (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore &&
                         deliveryMethod is not null)
-                    orderDelivery.ActualDeliveryMethod = deliveryMethod;
+                    newOrderDelivery.ActualDeliveryMethod = deliveryMethod;
 
-              
+
 
                 //order.ShippingStatus = ShippingStatus.ToBeShipped;
-              await  uow.SaveChangesAsync();
+                await uow.SaveChangesAsync();
                 //await _orderRepository.UpdateAsync(order);
-
+            }
 
                 await SendEmailAsync(orderId, orderDelivery.DeliveryNo);
             }
-            catch (DbUpdateConcurrencyException e)
+            catch (AbpDbConcurrencyException e)
             {
+            Logger.LogError(e.Message);
+            Logger.LogWarning("Check");
 
-
-
-            }
+        }
 
             return printObtB2SResponse;
-        }
+        
     }
 
     public async Task GenerateDeliveryNumberForSelfPickupAndHomeDeliveryAsync(Guid orderId, Guid orderDeliveryId)
@@ -1157,10 +1161,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
     public async Task<ResponseResultDto> CreateStoreLogisticsOrderAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null)
     {
-        using (var uow = UnitOfWorkManager.Begin(
-                requiresNew: true, isTransactional: false
-            ))
-        {
+      
             ResponseResultDto result = new();
 
             Order order = await _orderRepository.GetWithDetailsAsync(orderId);
@@ -1325,7 +1326,12 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             {
                 if (result.ResponseCode is "1")
                 {
-                    orderDelivery.DeliveryNo = result.ShippingInfo.BookingNote;
+                using (var uow = UnitOfWorkManager.Begin(
+              requiresNew: true, isTransactional: false
+          ))
+                {
+                    var newOrderDelivery = await _deliveryRepository.GetAsync(orderDeliveryId);
+                    newOrderDelivery.DeliveryNo = result.ShippingInfo.BookingNote;
 
                     if (order.DeliveryMethod is DeliveryMethod.SevenToEleven1 ||
                         order.DeliveryMethod is DeliveryMethod.FamilyMart1 ||
@@ -1338,45 +1344,46 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
                         ResponseResultDto responseResultDto = ParseApiResponse(strResponse, true);
 
-                        orderDelivery.DeliveryNo = responseResultDto.ShippingInfo.ShipmentNo;
+                        newOrderDelivery.DeliveryNo = responseResultDto.ShippingInfo.ShipmentNo;
                     }
 
                     if (order.DeliveryMethod is DeliveryMethod.FamilyMartC2C ||
                         deliveryMethod is DeliveryMethod.FamilyMartC2C)
-                        orderDelivery.DeliveryNo = result.ShippingInfo.CVSPaymentNo;
+                        newOrderDelivery.DeliveryNo = result.ShippingInfo.CVSPaymentNo;
 
                     if (order.DeliveryMethod is DeliveryMethod.SevenToElevenC2C ||
                         deliveryMethod is DeliveryMethod.SevenToElevenC2C)
-                        orderDelivery.DeliveryNo = string.Concat(result.ShippingInfo.CVSPaymentNo, result.ShippingInfo.CVSValidationNo);
+                        newOrderDelivery.DeliveryNo = string.Concat(result.ShippingInfo.CVSPaymentNo, result.ShippingInfo.CVSValidationNo);
 
-                    orderDelivery.AllPayLogisticsID = result.ShippingInfo.AllPayLogisticsID;
+                    newOrderDelivery.AllPayLogisticsID = result.ShippingInfo.AllPayLogisticsID;
 
-                    orderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
+                    newOrderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
 
                     if (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore &&
                         deliveryMethod is not null)
-                        orderDelivery.ActualDeliveryMethod = deliveryMethod;
+                        newOrderDelivery.ActualDeliveryMethod = deliveryMethod;
 
-                   
+
 
                     //order.ShippingStatus = ShippingStatus.ToBeShipped;
                     await uow.SaveChangesAsync();
                     // await _orderRepository.UpdateAsync(order);
-
+                }
 
 
                     await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
 
                 }
             }
-            catch (DbUpdateConcurrencyException e)
-            {
+        catch (AbpDbConcurrencyException e)
+        {
+            Logger.LogError(e.Message);
+            Logger.LogWarning("Check");
 
-
-            }
-
-            return result;
         }
+
+        return result;
+        
     }
 
     public async Task<string> FindStatusAsync()
