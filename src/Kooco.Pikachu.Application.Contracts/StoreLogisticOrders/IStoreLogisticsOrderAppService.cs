@@ -12,6 +12,7 @@ namespace Kooco.Pikachu.StoreLogisticOrders
 {
     public interface IStoreLogisticsOrderAppService: IApplicationService
     {
+        Task IssueInvoiceAync(Guid orderId);
         Task<ResponseResultDto> CreateStoreLogisticsOrderAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null);
 
         Task<PrintObtResponse?> GenerateDeliveryNumberForTCatDeliveryAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null);

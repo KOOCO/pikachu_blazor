@@ -1,4 +1,5 @@
-﻿using Blazorise;
+﻿using Azure;
+using Blazorise;
 using Blazorise.DataGrid;
 using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.DeliveryTemperatureCosts;
@@ -1227,14 +1228,21 @@ public partial class OrderDetails
 
         OrderDeliveryId = deliveryOrder.Id;
 
-        if (deliveryOrder.DeliveryMethod is DeliveryMethod.SevenToEleven1 || 
+        if (deliveryOrder.DeliveryMethod is DeliveryMethod.SevenToEleven1 ||
             deliveryOrder.DeliveryMethod is DeliveryMethod.FamilyMart1 ||
-            deliveryOrder.DeliveryMethod is DeliveryMethod.SevenToElevenC2C || 
+            deliveryOrder.DeliveryMethod is DeliveryMethod.SevenToElevenC2C ||
             deliveryOrder.DeliveryMethod is DeliveryMethod.FamilyMartC2C)
         {
             ResponseResultDto result = await _storeLogisticsOrderAppService.CreateStoreLogisticsOrderAsync(Order.Id, deliveryOrder.Id);
-            
-            if (result.ResponseCode is not "1") await _uiMessageService.Error(result.ResponseMessage);
+
+            if (result.ResponseCode is not "1")
+            {
+                await _uiMessageService.Error(result.ResponseMessage);
+            }
+            else if (result.ResponseCode is "1")
+            {
+                await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
+            }
 
             #region Commented Code
             //    var htmlString = await _storeLogisticsOrderAppService.GetStoreAsync(Order.Id);
@@ -1288,16 +1296,30 @@ public partial class OrderDetails
         {
             PrintObtResponse? response = await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCatDeliveryAsync(Order.Id, deliveryOrder.Id);
 
-            if (response is null || response.Data is null) await _uiMessageService.Error(response.Message);
+            if (response is null || response.Data is null)
+            {
+                await _uiMessageService.Error(response.Message);
+            }
+            else if (response.Data is not null)
+            {
+                await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
+            }
         }
-        
+
         else if (deliveryOrder.DeliveryMethod is DeliveryMethod.TCatDeliverySevenElevenNormal ||
                  deliveryOrder.DeliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFreeze ||
                  deliveryOrder.DeliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFrozen)
         {
             PrintOBTB2SResponse? response = await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCat711DeliveryAsync(Order.Id, deliveryOrder.Id);
 
-            if (response is null || response.Data is null) await _uiMessageService.Error(response.Message);
+            if (response is null || response.Data is null)
+            {
+                await _uiMessageService.Error(response.Message);
+            }
+            else if (response.Data is not null)
+            {
+                await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
+            }
         }
 
         else if (deliveryOrder.DeliveryMethod is DeliveryMethod.DeliveredByStore)
@@ -1327,7 +1349,14 @@ public partial class OrderDetails
                 {
                     ResponseResultDto result = await _storeLogisticsOrderAppService.CreateStoreLogisticsOrderAsync(Order.Id, deliveryOrder.Id, deliveryMethod);
 
-                    if (result.ResponseCode is not "1") await _uiMessageService.Error(result.ResponseMessage);
+                    if (result.ResponseCode is not "1")
+                    {
+                        await _uiMessageService.Error(result.ResponseMessage);
+                    }
+                    else if (result.ResponseCode is "1")
+                    {
+                        await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
+                    }
                 }
 
                 else if (logisticProvider is LogisticProviders.GreenWorldLogistics && deliveryMethod is DeliveryMethod.PostOffice ||
@@ -1340,20 +1369,38 @@ public partial class OrderDetails
                         await _uiMessageService.Error(result.ResponseMessage);
                         await loading.Hide();
                     }
+                    else if (result.ResponseCode is "1")
+                    {
+                        await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
+                    }
                 }
 
                 else if (logisticProvider is LogisticProviders.TCat && deliveryMethod is DeliveryMethod.TCatDeliveryNormal)
                 {
                     PrintObtResponse? response = await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCatDeliveryAsync(Order.Id, deliveryOrder.Id, deliveryMethod);
 
-                    if (response is null || response.Data is null) await _uiMessageService.Error(response.Message);
+                    if (response is null || response.Data is null)
+                    {
+                        await _uiMessageService.Error(response.Message);
+                    }
+                    else if (response.Data is not null)
+                    {
+                        await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
+                    }
                 }
 
                 else if (logisticProvider is LogisticProviders.TCat && deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenNormal)
                 {
                     PrintOBTB2SResponse? response = await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCat711DeliveryAsync(Order.Id, deliveryOrder.Id, deliveryMethod);
 
-                    if (response is null || response.Data is null) await _uiMessageService.Error(response.Message);
+                    if (response is null || response.Data is null)
+                    {
+                        await _uiMessageService.Error(response.Message);
+                    }
+                    else if (response.Data is not null)
+                    {
+                        await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
+                    }
                 }
             }
 
@@ -1368,20 +1415,38 @@ public partial class OrderDetails
                         await _uiMessageService.Error(result.ResponseMessage);
                         await loading.Hide();
                     }
+                    else if (result.ResponseCode is "1")
+                    {
+                        await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
+                    }
                 }
 
                 else if (logisticProvider is LogisticProviders.TCat && deliveryMethod is DeliveryMethod.TCatDeliveryFreeze)
                 {
                     PrintObtResponse? response = await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCatDeliveryAsync(Order.Id, deliveryOrder.Id, deliveryMethod);
 
-                    if (response is null || response.Data is null) await _uiMessageService.Error(response.Message);
+                    if (response is null || response.Data is null)
+                    {
+                        await _uiMessageService.Error(response.Message);
+                    }
+                    else if (response.Data is not null)
+                    {
+                        await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
+                    }
                 }
 
                 else if (logisticProvider is LogisticProviders.TCat && deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFreeze)
                 {
                     PrintOBTB2SResponse? response = await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCat711DeliveryAsync(Order.Id, deliveryOrder.Id, deliveryMethod);
 
-                    if (response is null || response.Data is null) await _uiMessageService.Error(response.Message);
+                    if (response is null || response.Data is null)
+                    {
+                        await _uiMessageService.Error(response.Message);
+                    }
+                    else if (response.Data is not null)
+                    {
+                        await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
+                    }
                 }
             }
 
@@ -1391,14 +1456,27 @@ public partial class OrderDetails
                 {
                     PrintObtResponse? response = await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCatDeliveryAsync(Order.Id, deliveryOrder.Id, deliveryMethod);
 
-                    if (response is null || response.Data is null) await _uiMessageService.Error(response.Message);
+                    if (response is null || response.Data is null)
+                    {
+                        await _uiMessageService.Error(response.Message);
+                    }
+                    else if (response.Data is not null)
+                    {
+                        await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
+                    }
                 }
 
                 else if (logisticProvider is LogisticProviders.TCat && deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFrozen)
                 {
                     PrintOBTB2SResponse? response = await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCat711DeliveryAsync(Order.Id, deliveryOrder.Id, deliveryMethod);
 
-                    if (response is null || response.Data is null) await _uiMessageService.Error(response.Message);
+                    if (response is null || response.Data is null)
+
+                    { await _uiMessageService.Error(response.Message); }
+                    else if (response.Data is not null)
+                    {
+                        await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
+                    }
                 }
 
                 else if (logisticProvider is LogisticProviders.GreenWorldLogistics && deliveryMethod is DeliveryMethod.BlackCatFrozen)
@@ -1410,13 +1488,24 @@ public partial class OrderDetails
                         await _uiMessageService.Error(result.ResponseMessage);
                         await loading.Hide();
                     }
+                    else if (result.ResponseCode is "1")
+                    {
+                        await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
+                    }
                 }
 
                 else if (logisticProvider is LogisticProviders.GreenWorldLogistics && deliveryMethod is DeliveryMethod.SevenToElevenFrozen)
                 {
                     ResponseResultDto result = await _storeLogisticsOrderAppService.CreateStoreLogisticsOrderAsync(Order.Id, deliveryOrder.Id, deliveryMethod);
 
-                    if (result.ResponseCode is not "1") await _uiMessageService.Error(result.ResponseMessage);
+                    if (result.ResponseCode is not "1")
+                    {
+                        await _uiMessageService.Error(result.ResponseMessage);
+                    }
+                    else if (result.ResponseCode is "1")
+                    {
+                        await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
+                    }
                 }
             }
         }
@@ -1425,16 +1514,21 @@ public partial class OrderDetails
                        deliveryOrder.DeliveryMethod is EnumValues.DeliveryMethod.HomeDelivery)
         {
             await _storeLogisticsOrderAppService.GenerateDeliveryNumberForSelfPickupAndHomeDeliveryAsync(Order.Id, deliveryOrder.Id);
+            await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
         }
 
         else
         {
             ResponseResultDto result = await _storeLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(Order.Id, OrderDeliveryId);
-            
+
             if (result.ResponseCode is not "1")
             {
                 await _uiMessageService.Error(result.ResponseMessage);
                 await loading.Hide();
+            }
+            else if (result.ResponseCode is "1")
+            {
+                await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
             }
         }
         

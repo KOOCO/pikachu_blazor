@@ -285,6 +285,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                                 else
                                 {
                                     setItem.SaleableQuantity -= item.Quantity;
+                              
                                     foreach (var setItemDetail in setItem.SetItemDetails)
                                     {
                                         var detail = await _itemDetailsRepository.FirstOrDefaultAsync(x => x.ItemId == setItemDetail.ItemId

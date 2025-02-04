@@ -47,6 +47,8 @@ using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 using MudBlazor;
 using static Volo.Abp.Ui.LayoutHooks.LayoutHooks;
 using AntDesign;
+using Azure;
+using AngleSharp.Io;
 
 namespace Kooco.Pikachu.Blazor.Pages.Orders;
 
@@ -980,7 +982,14 @@ public partial class Order
                     {
                         ResponseResultDto result = await _StoreLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(orderId, orderDelivery.Id);
 
-                        if (result.ResponseCode is not "1") AddToDictionary(responseResults, order.OrderNo, result.ResponseMessage);
+                        if (result.ResponseCode is not "1")
+                        {
+                            AddToDictionary(responseResults, order.OrderNo, result.ResponseMessage);
+                        }
+                        else if (result.ResponseCode is "1") {
+                            await _StoreLogisticsOrderAppService.IssueInvoiceAync(orderId);
+                        }
+
                     }
 
                     else if (orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.SevenToEleven1 ||
@@ -991,7 +1000,14 @@ public partial class Order
                     {
                         ResponseResultDto result = await _StoreLogisticsOrderAppService.CreateStoreLogisticsOrderAsync(orderId, orderDelivery.Id);
 
-                        if (result.ResponseCode is not "1") AddToDictionary(responseResults, order.OrderNo, result.ResponseMessage);
+                        if (result.ResponseCode is not "1")
+                        {
+                            AddToDictionary(responseResults, order.OrderNo, result.ResponseMessage);
+                        }
+                        else if (result.ResponseCode is "1")
+                        {
+                            await _StoreLogisticsOrderAppService.IssueInvoiceAync(orderId);
+                        }
                     }
 
                     else if (orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryNormal ||
@@ -1000,7 +1016,14 @@ public partial class Order
                     {
                         PrintObtResponse? response = await _StoreLogisticsOrderAppService.GenerateDeliveryNumberForTCatDeliveryAsync(orderId, orderDelivery.Id);
 
-                        if (response is null || response.Data is null) AddToDictionary(responseResults, order.OrderNo, response.Message);
+                        if (response is null || response.Data is null)
+                        {
+                            AddToDictionary(responseResults, order.OrderNo, response.Message);
+                        }
+                        else if (response.Data is not null)
+                        {
+                            await _StoreLogisticsOrderAppService.IssueInvoiceAync(orderId);
+                        }
                     }
 
                     else if (orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenNormal ||
@@ -1009,7 +1032,14 @@ public partial class Order
                     {
                         PrintOBTB2SResponse? response = await _StoreLogisticsOrderAppService.GenerateDeliveryNumberForTCat711DeliveryAsync(orderId, orderDelivery.Id);
 
-                        if (response is null || response.Data is null) AddToDictionary(responseResults, order.OrderNo, response.Message);
+                        if (response is null || response.Data is null)
+                        {
+                            AddToDictionary(responseResults, order.OrderNo, response.Message);
+                        }
+                        else if (response.Data is not null)
+                        {
+                            await _StoreLogisticsOrderAppService.IssueInvoiceAync(orderId);
+                        }
                     }
 
                     else if (orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.DeliveredByStore)
@@ -1039,7 +1069,14 @@ public partial class Order
                             {
                                 ResponseResultDto result = await _StoreLogisticsOrderAppService.CreateStoreLogisticsOrderAsync(orderId, orderDelivery.Id, deliveryMethod);
 
-                                if (result.ResponseCode is not "1") AddToDictionary(responseResults, order.OrderNo, result.ResponseMessage);
+                                if (result.ResponseCode is not "1")
+                                {
+                                    AddToDictionary(responseResults, order.OrderNo, result.ResponseMessage);
+                                }
+                                else if (result.ResponseCode is  "1")
+                                {
+                                    await _StoreLogisticsOrderAppService.IssueInvoiceAync(orderId);
+                                }
                             }
 
                             else if (logisticProvider is LogisticProviders.GreenWorldLogistics && deliveryMethod is EnumValues.DeliveryMethod.PostOffice ||
@@ -1047,21 +1084,42 @@ public partial class Order
                             {
                                 ResponseResultDto result = await _StoreLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(orderId, orderDelivery.Id, deliveryMethod);
 
-                                if (result.ResponseCode is not "1") AddToDictionary(responseResults, order.OrderNo, result.ResponseMessage);
+                                if (result.ResponseCode is not "1")
+                                {
+                                    AddToDictionary(responseResults, order.OrderNo, result.ResponseMessage);
+                                }
+                                else if (result.ResponseCode is "1")
+                                {
+                                    await _StoreLogisticsOrderAppService.IssueInvoiceAync(orderId);
+                                }
                             }
 
                             else if (logisticProvider is LogisticProviders.TCat && deliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryNormal)
                             {
                                 PrintObtResponse? response = await _StoreLogisticsOrderAppService.GenerateDeliveryNumberForTCatDeliveryAsync(orderId, orderDelivery.Id, deliveryMethod);
 
-                                if (response is null || response.Data is null) AddToDictionary(responseResults, order.OrderNo, response.Message);
+                                if (response is null || response.Data is null)
+                                {
+                                    AddToDictionary(responseResults, order.OrderNo, response.Message);
+                                }
+                                else if (response.Data is not null)
+                                {
+                                    await _StoreLogisticsOrderAppService.IssueInvoiceAync(orderId);
+                                }
                             }
 
                             else if (logisticProvider is LogisticProviders.TCat && deliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenNormal)
                             {
                                 PrintOBTB2SResponse? response = await _StoreLogisticsOrderAppService.GenerateDeliveryNumberForTCat711DeliveryAsync(orderId, orderDelivery.Id, deliveryMethod);
 
-                                if (response is null || response.Data is null) AddToDictionary(responseResults, order.OrderNo, response.Message);
+                                if (response is null || response.Data is null)
+                                {
+                                    AddToDictionary(responseResults, order.OrderNo, response.Message);
+                                }
+                                else if (response.Data is not null)
+                                {
+                                    await _StoreLogisticsOrderAppService.IssueInvoiceAync(orderId);
+                                }
                             }
                         }
 
@@ -1071,21 +1129,43 @@ public partial class Order
                             {
                                 ResponseResultDto result = await _StoreLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(orderId, orderDelivery.Id, deliveryMethod);
 
-                                if (result.ResponseCode is not "1") AddToDictionary(responseResults, order.OrderNo, result.ResponseMessage);
+                                if (result.ResponseCode is not "1")
+
+                                {
+                                    AddToDictionary(responseResults, order.OrderNo, result.ResponseMessage);
+                                }
+                                else if (result.ResponseCode is "1")
+                                {
+                                    await _StoreLogisticsOrderAppService.IssueInvoiceAync(orderId);
+                                }
                             }
 
                             else if (logisticProvider is LogisticProviders.TCat && deliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryFreeze)
                             {
                                 PrintObtResponse? response = await _StoreLogisticsOrderAppService.GenerateDeliveryNumberForTCatDeliveryAsync(orderId, orderDelivery.Id, deliveryMethod);
 
-                                if (response is null || response.Data is null) AddToDictionary(responseResults, order.OrderNo, response.Message);
+                                if (response is null || response.Data is null)
+                                {
+                                    AddToDictionary(responseResults, order.OrderNo, response.Message);
+                                }
+                                else if (response.Data is not null)
+                                {
+                                    await _StoreLogisticsOrderAppService.IssueInvoiceAync(orderId);
+                                }
                             }
 
                             else if (logisticProvider is LogisticProviders.TCat && deliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenFreeze)
                             {
                                 PrintOBTB2SResponse? response = await _StoreLogisticsOrderAppService.GenerateDeliveryNumberForTCat711DeliveryAsync(orderId, orderDelivery.Id, deliveryMethod);
 
-                                if (response is null || response.Data is null) AddToDictionary(responseResults, order.OrderNo, response.Message);
+                                if (response is null || response.Data is null)
+                                {
+                                    AddToDictionary(responseResults, order.OrderNo, response.Message);
+                                }
+                                else if (response.Data is not null)
+                                {
+                                    await _StoreLogisticsOrderAppService.IssueInvoiceAync(orderId);
+                                }
                             }
                         }
 
@@ -1095,28 +1175,56 @@ public partial class Order
                             {
                                 PrintObtResponse? response = await _StoreLogisticsOrderAppService.GenerateDeliveryNumberForTCatDeliveryAsync(orderId, orderDelivery.Id, deliveryMethod);
 
-                                if (response is null || response.Data is null) AddToDictionary(responseResults, order.OrderNo, response.Message);
+                                if (response is null || response.Data is null)
+                                {
+                                    AddToDictionary(responseResults, order.OrderNo, response.Message);
+                                }
+                                else if (response.Data is not null)
+                                {
+                                    await _StoreLogisticsOrderAppService.IssueInvoiceAync(orderId);
+                                }
                             }
 
                             else if (logisticProvider is LogisticProviders.TCat && deliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenFrozen)
                             {
                                 PrintOBTB2SResponse? response = await _StoreLogisticsOrderAppService.GenerateDeliveryNumberForTCat711DeliveryAsync(orderId, orderDelivery.Id, deliveryMethod);
 
-                                if (response is null || response.Data is null) AddToDictionary(responseResults, order.OrderNo, response.Message);
+                                if (response is null || response.Data is null)
+                                {
+                                    AddToDictionary(responseResults, order.OrderNo, response.Message);
+                                }
+                                else if (response.Data is not null)
+                                {
+                                    await _StoreLogisticsOrderAppService.IssueInvoiceAync(orderId);
+                                }
                             }
 
                             else if (logisticProvider is LogisticProviders.GreenWorldLogistics && deliveryMethod is EnumValues.DeliveryMethod.BlackCatFrozen)
                             {
                                 ResponseResultDto result = await _StoreLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(orderId, orderDelivery.Id, deliveryMethod);
 
-                                if (result.ResponseCode is not "1") AddToDictionary(responseResults, order.OrderNo, result.ResponseMessage);
+                                if (result.ResponseCode is not "1")
+                                {
+                                    AddToDictionary(responseResults, order.OrderNo, result.ResponseMessage);
+                                }
+                                else if (result.ResponseCode is "1")
+                                {
+                                    await _StoreLogisticsOrderAppService.IssueInvoiceAync(orderId);
+                                }
                             }
 
                             else if (logisticProvider is LogisticProviders.GreenWorldLogistics && deliveryMethod is EnumValues.DeliveryMethod.SevenToElevenFrozen)
                             {
                                 ResponseResultDto result = await _StoreLogisticsOrderAppService.CreateStoreLogisticsOrderAsync(orderId, orderDelivery.Id, deliveryMethod);
 
-                                if (result.ResponseCode is not "1") AddToDictionary(responseResults, order.OrderNo, result.ResponseMessage);
+                                if (result.ResponseCode is not "1")
+                                {
+                                    AddToDictionary(responseResults, order.OrderNo, result.ResponseMessage);
+                                }
+                                else if (result.ResponseCode is "1")
+                                {
+                                    await _StoreLogisticsOrderAppService.IssueInvoiceAync(orderId);
+                                }
                             }
                         }
                     }
@@ -1125,6 +1233,8 @@ public partial class Order
                              orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.HomeDelivery)
                     {
                         await _StoreLogisticsOrderAppService.GenerateDeliveryNumberForSelfPickupAndHomeDeliveryAsync(orderId, orderDelivery.Id);
+                        await _StoreLogisticsOrderAppService.IssueInvoiceAync(orderId);
+
                     }
                 }
             }

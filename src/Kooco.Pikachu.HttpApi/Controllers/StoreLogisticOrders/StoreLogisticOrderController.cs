@@ -83,4 +83,9 @@ public class StoreLogisticOrderController(
     {
         throw new NotImplementedException();
     }
+    [HttpPost("IssueInvoice")]
+    public Task IssueInvoiceAync(Guid orderId)
+    {
+        throw new NotImplementedException();
+    }
 }
