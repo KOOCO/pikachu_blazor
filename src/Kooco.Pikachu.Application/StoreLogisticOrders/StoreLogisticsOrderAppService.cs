@@ -162,6 +162,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         {
             Logger.LogError(e.Message);
             Logger.LogWarning("Check");
+            return;
 
         }
 
@@ -174,7 +175,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             try
             {
                 var order = await _orderRepository.GetAsync(orderId);
-                await _orderRepository.EnsurePropertyLoadedAsync(order, o => o.GroupBuy);
+                //await _orderRepository.EnsurePropertyLoadedAsync(order, o => o.GroupBuy);
                 var orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
 
                 var orderDelivery = orderDeliverys.FirstOrDefault(f => f.Id == orderDeliveryId);
@@ -310,7 +311,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             {
                 Logger.LogError(e.Message);
                 Logger.LogWarning("Check");
-
+                return result;
             }
             return result;
             }
@@ -734,13 +735,13 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
     public async Task<PrintObtResponse?> GenerateDeliveryNumberForTCatDeliveryAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null)
     {
        
-            Order order = await _orderRepository.GetWithDetailsAsync(orderId);
+            var order = await _orderRepository.GetAsync(orderId);
 
             List<OrderDelivery> orderDeliveries = await _deliveryRepository.GetWithDetailsAsync(orderId);
 
             OrderDelivery orderDelivery = orderDeliveries.First(f => f.Id == orderDeliveryId);
 
-            GroupBuyDto groupBuy = await _GroupBuyAppService.GetAsync(order.GroupBuyId);
+            var groupBuy = await _GroupBuyAppService.GetAsync(order.GroupBuyId);
 
             List<LogisticsProviderSettingsDto> providers = await _logisticsProvidersAppService.GetAllAsync();
 
@@ -940,13 +941,13 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
     public async Task<PrintOBTB2SResponse?> GenerateDeliveryNumberForTCat711DeliveryAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null)
     {
        
-            Order order = await _orderRepository.GetWithDetailsAsync(orderId);
+            var order = await _orderRepository.GetAsync(orderId);
 
             List<OrderDelivery> orderDeliveries = await _deliveryRepository.GetWithDetailsAsync(orderId);
 
             OrderDelivery orderDelivery = orderDeliveries.First(f => f.Id == orderDeliveryId);
 
-            GroupBuyDto groupBuy = await _GroupBuyAppService.GetAsync(order.GroupBuyId);
+            var groupBuy = await _GroupBuyAppService.GetAsync(order.GroupBuyId);
 
             List<LogisticsProviderSettingsDto> providers = await _logisticsProvidersAppService.GetAllAsync();
 
@@ -1058,6 +1059,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             {
             Logger.LogError(e.Message);
             Logger.LogWarning("Check");
+            return printObtB2SResponse;
 
         }
 
@@ -1174,9 +1176,9 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
       
             ResponseResultDto result = new();
 
-            Order order = await _orderRepository.GetWithDetailsAsync(orderId);
-
-            List<OrderDelivery> orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
+            var order = await _orderRepository.GetAsync(orderId);
+        var groupbuy = await _GroupBuyAppService.GetAsync(order.GroupBuyId);
+        List<OrderDelivery> orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
 
             OrderDelivery? orderDelivery = orderDeliverys.Where(x => x.Id == orderDeliveryId).FirstOrDefault();
 
@@ -1247,7 +1249,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             string validatePattern = @"[\^'`!@#%&*+\\\""<>|_\[\]]";
 
-            string goodsName = order.GroupBuy.GroupBuyName;
+            string goodsName = groupbuy.GroupBuyName;
 
             goodsName = Regex.Replace(goodsName, validatePattern, "");
 
@@ -1389,7 +1391,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         {
             Logger.LogError(e.Message);
             Logger.LogWarning("Check");
-
+            return result;
         }
 
         return result;
