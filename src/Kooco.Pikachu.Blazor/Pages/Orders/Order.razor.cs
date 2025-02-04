@@ -1270,7 +1270,7 @@ public partial class Order
         {
             await loading.Hide();
 
-            await _uiMessageService.Error(ex.Message);
+            //await _uiMessageService.Error(ex.Message);
         }
     }
 
