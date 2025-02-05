@@ -48,6 +48,12 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body.Replace("{{OrderNotes}}", order.Remarks);
 
             var tenantSettings = await tenantSettingsAppService.FirstOrDefaultAsync();
+
+            string groupBuyUrl = tenantSettings?.Tenant.GetProperty<string>(Constant.TenantUrl)?.EnsureEndsWith('/') + $"groupBuy/{groupbuy.Id}";
+            string orderUrl = $"{groupBuyUrl}/result/{order.OrderNo}/{order.CustomerEmail}";
+
+            body = body.Replace("{{OrderUrl}}", orderUrl);
+
             body = body.Replace("{{LogoUrl}}", tenantSettings?.LogoUrl);
             body = body.Replace("{{FacebookUrl}}", tenantSettings?.Facebook);
             body = body.Replace("{{InstagramUrl}}", tenantSettings?.Instagram);
@@ -55,19 +61,21 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
 
             body = body.Replace("{{CurrentYear}}", DateTime.Today.ToString("yyyy"));
             body = body.Replace("{{CompanyName}}", tenantSettings?.CompanyName);
-            body = body.Replace("{{GroupBuyUrl}}", tenantSettings?.Tenant.GetProperty<string>(Constant.TenantUrl)?.TrimEnd('/') + "/" + groupbuy.Id);
+            body = body.Replace("{{GroupBuyUrl}}", groupBuyUrl);
 
             await emailSender.SendAsync(order.CustomerEmail, subject, body);
         }
     }
 
-    public async Task SendOrderStatusEmailAsync(Guid id, OrderStatus? orderStatus = null)
+    public async Task SendOrderStatusEmailAsync(Guid id, OrderStatus? orderStatus = null, ShippingStatus? shippingStatus = null)
     {
         using (CultureHelper.Use(CultureInfo.GetCultureInfo("zh-Hant")))
         {
             var order = await orderRepository.GetWithDetailsAsync(id);
             var groupbuy = await groupBuyRepository.GetAsync(g => g.Id == order.GroupBuyId);
-            string status = orderStatus == null ? L[order.ShippingStatus.ToString()] : L[orderStatus.ToString()];
+            string status = orderStatus == null
+                ? shippingStatus.HasValue ? L[shippingStatus.ToString()] : L[order.ShippingStatus.ToString()]
+                : L[orderStatus.ToString()];
 
             string subject = $"{groupbuy.GroupBuyName} 訂單#{order.OrderNo} {status}";
 
@@ -88,7 +96,6 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             }
 
             body = body.Replace("{{GroupBuyName}}", groupbuy.GroupBuyName);
-            body = body.Replace("{{GroupBuyUrl}}", groupbuy.EntryURL);
             body = body.Replace("{{OrderNo}}", order.OrderNo);
             body = body.Replace("{{OrderDate}}", formattedTime);
             body = body.Replace("{{CustomerName}}", order.CustomerName);
@@ -149,6 +156,12 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body.Replace("{{TotalAmount}}", $"${order.TotalAmount:N0}");
 
             var tenantSettings = await tenantSettingsAppService.FirstOrDefaultAsync();
+
+            string groupBuyUrl = tenantSettings?.Tenant.GetProperty<string>(Constant.TenantUrl)?.EnsureEndsWith('/') + $"groupBuy/{groupbuy.Id}";
+            string orderUrl = $"{groupBuyUrl}/result/{order.OrderNo}/{order.CustomerEmail}";
+
+            body = body.Replace("{{OrderUrl}}", orderUrl);
+
             body = body.Replace("{{LogoUrl}}", tenantSettings?.LogoUrl);
             body = body.Replace("{{FacebookUrl}}", tenantSettings?.Facebook);
             body = body.Replace("{{InstagramUrl}}", tenantSettings?.Instagram);
@@ -156,7 +169,7 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
 
             body = body.Replace("{{CurrentYear}}", DateTime.Today.ToString("yyyy"));
             body = body.Replace("{{CompanyName}}", tenantSettings?.CompanyName);
-            body = body.Replace("{{GroupBuyUrl}}", tenantSettings?.Tenant.GetProperty<string>(Constant.TenantUrl)?.TrimEnd('/') + "/" + groupbuy.Id);
+            body = body.Replace("{{GroupBuyUrl}}", groupBuyUrl);
 
             await emailSender.SendAsync(order.CustomerEmail, subject, body);
         }

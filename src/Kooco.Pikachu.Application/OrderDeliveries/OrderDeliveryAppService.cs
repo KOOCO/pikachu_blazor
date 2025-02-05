@@ -2,9 +2,7 @@
 using Kooco.Pikachu.Emails;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
-using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Localization;
-using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.TenantEmailing;
 using Microsoft.Extensions.Localization;
@@ -22,7 +20,6 @@ using Volo.Abp.BackgroundJobs;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
 using Volo.Abp.SettingManagement;
-using static Kooco.Pikachu.Permissions.PikachuPermissions;
 
 namespace Kooco.Pikachu.OrderDeliveries
 {
@@ -47,15 +44,15 @@ namespace Kooco.Pikachu.OrderDeliveries
         {
             _orderDeliveryRepository = orderDeliveryRepository;
             _l = l;
-            _orderRepository= orderRepository;
-            _emailSender= emailSender;
-            _groupBuyRepository= groupBuyRepositor;
-            _settingManager= settingManager;
+            _orderRepository = orderRepository;
+            _emailSender = emailSender;
+            _groupBuyRepository = groupBuyRepositor;
+            _settingManager = settingManager;
             _tenantEmailSettingsRepository = tenantEmailSettingsRepository;
-            _backgroundJobManager= backgroundJobManager;
-            _electronicInvoiceAppService= electronicInvoiceAppService;
-            _electronicInvoiceSettingRepository= electronicInvoiceSettingRepository;
-            _emailAppService= emailAppService;
+            _backgroundJobManager = backgroundJobManager;
+            _electronicInvoiceAppService = electronicInvoiceAppService;
+            _electronicInvoiceSettingRepository = electronicInvoiceSettingRepository;
+            _emailAppService = emailAppService;
         }
         public async Task<List<OrderDeliveryDto>> GetListByOrderAsync(Guid Id)
         {
@@ -78,14 +75,18 @@ namespace Kooco.Pikachu.OrderDeliveries
             order.DeliveryNo = input.ShippingNumber;
 
             await _orderDeliveryRepository.UpdateAsync(order);
-            
+
             await UnitOfWorkManager.Current.SaveChangesAsync();
-            
-            if (!order.DeliveryNo.IsNullOrEmpty()) await SendEmailAsync(order.OrderId, order.Id);
+
+            if (!order.DeliveryNo.IsNullOrEmpty())
+            {
+                //await SendEmailAsync(order.OrderId, order.Id);
+                await _emailAppService.SendLogisticsEmailAsync(order.OrderId, order.DeliveryNo);
+            }
 
             return ObjectMapper.Map<OrderDelivery, OrderDeliveryDto>(order);
         }
-        private async Task SendEmailAsync(Guid id,Guid DeliveryOrderId, OrderStatus? orderStatus = null)
+        private async Task SendEmailAsync(Guid id, Guid DeliveryOrderId, OrderStatus? orderStatus = null)
         {
             var delivers = await _orderDeliveryRepository.GetWithDetailsAsync(id);
             var deliveryOrder = delivers.Where(x => x.Id == DeliveryOrderId).FirstOrDefault();
@@ -133,7 +134,8 @@ namespace Kooco.Pikachu.OrderDeliveries
             {
                 body = body.Replace("{{DeliveryNo}}", deliveryOrder.DeliveryNo);
             }
-            else {
+            else
+            {
                 string pattern = @"<span class=""spacer""></span>\s*<p>貨運號碼</p>\s*<p>\{\{DeliveryNo\}\}</p>";
 
                 // Replace the matched pattern with an empty string
@@ -224,18 +226,18 @@ namespace Kooco.Pikachu.OrderDeliveries
 
                 else if (order.DeliveryMethod is DeliveryMethod.SelfPickup)
                     orderDelivery.DeliveryStatus = DeliveryStatus.Delivered;
-                
+
                 await _orderDeliveryRepository.UpdateAsync(orderDelivery);
             }
 
-            if (order.DeliveryMethod is DeliveryMethod.HomeDelivery && 
+            if (order.DeliveryMethod is DeliveryMethod.HomeDelivery &&
                                         orderDeliveries.All(a => a.DeliveryStatus == DeliveryStatus.Shipped))
                 order.ShippingStatus = ShippingStatus.Shipped;
 
             else if (order.DeliveryMethod is DeliveryMethod.SelfPickup &&
                                         orderDeliveries.All(a => a.DeliveryStatus == DeliveryStatus.Delivered))
                 order.ShippingStatus = ShippingStatus.Delivered;
-          
+
             await _orderRepository.UpdateAsync(order);
         }
 
@@ -252,7 +254,7 @@ namespace Kooco.Pikachu.OrderDeliveries
                 await _orderDeliveryRepository.UpdateAsync(orderDelivery);
             }
 
-            if(orderDeliveries.All(a => a.DeliveryStatus == DeliveryStatus.Delivered))
+            if (orderDeliveries.All(a => a.DeliveryStatus == DeliveryStatus.Delivered))
             {
                 order.ShippingStatus = ShippingStatus.Delivered;
                 await _orderRepository.UpdateAsync(order);
@@ -332,19 +334,19 @@ namespace Kooco.Pikachu.OrderDeliveries
             OrderDelivery delivery = await _orderDeliveryRepository.GetAsync(Id);
 
             delivery.DeliveryStatus = DeliveryStatus.Shipped;
-            
+
             delivery.Editor = CurrentUser.Name ?? string.Empty;
 
             await _orderDeliveryRepository.UpdateAsync(delivery);
 
             List<OrderDelivery> orderDeliveries = [.. (await _orderDeliveryRepository.GetQueryableAsync()).Where(x => x.OrderId == delivery.OrderId)];
 
-            if(!orderDeliveries.Any(a => a.DeliveryStatus != DeliveryStatus.Shipped))
+            if (!orderDeliveries.Any(a => a.DeliveryStatus != DeliveryStatus.Shipped))
             {
                 Order order = await _orderRepository.GetWithDetailsAsync(delivery.OrderId);
 
                 order.ShippingStatus = ShippingStatus.Shipped;
-                
+
                 await _orderRepository.UpdateAsync(order);
                 await _emailAppService.SendLogisticsEmailAsync(delivery.OrderId, delivery.DeliveryNo);
                 await UnitOfWorkManager.Current.SaveChangesAsync();
