@@ -4,6 +4,7 @@ using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Orders;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -68,8 +69,8 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
                 ElectronicInvoiceSetting? setting = await _repository.FirstOrDefaultAsync();
                 //Order order = new Order();
 
-                var order = await _orderRepository.GetWithDetailsAsync(orderId);
-
+                var order = (await _orderRepository.GetQueryableAsync()).Include(x=>x.OrderItems).ThenInclude(x=>x.Item).Include(x=>x.OrderItems).ThenInclude(x=>x.Freebie).FirstOrDefault(x=>x.Id==orderId);
+                
                 if (!order.InvoiceNumber.IsNullOrEmpty()) return "";
 
                 GroupBuy groupBuy = await _groupBuyRepository.GetAsync(order.GroupBuyId);

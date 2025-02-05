@@ -246,7 +246,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 string? domainName = $"{domainRequest?.Scheme}://{domainRequest?.Host.Value}";
 
                 string serverReplyURL = $"{domainName}/api/app/orders/ecpay-logisticsStatus-callback";
-
+            var merchantTrdaeNo = AddNumericSuffix(order.OrderNo);
                 request.AddHeader("Accept", "text/html");
                 request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
                 request.AddParameter("MerchantID", GreenWorld.StoreCode);
@@ -266,10 +266,10 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 request.AddParameter("ServerReplyURL", serverReplyURL);
                 //request.AddParameter("ReceiverStoreID", "123");
                 request.AddParameter("CheckMacValue", GenerateCheckMac(
-                    greenWorld.HashKey, greenWorld.HashIV, GreenWorld.StoreCode, order.OrderNo, marchentDate, "HOME", orderDelivery.DeliveryMethod is DeliveryMethod.PostOffice || deliveryMethod is DeliveryMethod.PostOffice ? "POST" : "TCAT", Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)), PostOffice.Weight, GreenWorld.SenderName, GreenWorld.SenderPhoneNumber,
+                    greenWorld.HashKey, greenWorld.HashIV, GreenWorld.StoreCode, merchantTrdaeNo, marchentDate, "HOME", orderDelivery.DeliveryMethod is DeliveryMethod.PostOffice || deliveryMethod is DeliveryMethod.PostOffice ? "POST" : "TCAT", Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)), PostOffice.Weight, GreenWorld.SenderName, GreenWorld.SenderPhoneNumber,
                     GreenWorld.SenderPostalCode, GreenWorld.SenderAddress, order.RecipientName, order.RecipientPhone, order.PostalCode, receiverAddress, serverReplyURL));
                 //request.AddParameter("IsCollection", "N");
-                request.AddParameter("MerchantTradeNo", order.OrderNo);
+                request.AddParameter("MerchantTradeNo", merchantTrdaeNo);
 
                 RestResponse response = await client.ExecuteAsync(request);
 
@@ -870,8 +870,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                                IsOrderAmountValid(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost) ? "Y" : "N";
 
             DayOfWeek TodaysDay = DateTime.Today.DayOfWeek;
-
-            PrintOBTRequest request = new()
+        var newOrderNo = AddNumericSuffix(order.OrderNo);
+        PrintOBTRequest request = new()
             {
                 CustomerId = TCatLogistics.CustomerId,
                 CustomerToken = TCatLogistics.CustomerToken,
@@ -882,7 +882,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                     new OrderOBT
                 {
                     OBTNumber = string.Empty,
-                    OrderId = order.OrderNo,
+                    OrderId = newOrderNo,
                     Thermosphere = thermosphere,
                     Spec = spec,
                     ReceiptLocation = "01",
@@ -1037,7 +1037,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             int collectionAmount = order.PaymentMethod is PaymentMethods.CashOnDelivery ?
                                     GetCollectionAmount(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost, true) :
                                     0;
-
+        var newOrderNo = AddNumericSuffix(order.OrderNo);
             PrintOBTB2SRequest request = new()
             {
                 CustomerId = TCatLogistics.CustomerId,
@@ -1049,7 +1049,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                     new OrderOBTB2S
                 {
                     OBTNumber = string.Empty,
-                    OrderId = order.OrderNo,
+                    OrderId = newOrderNo,
                     Thermosphere = thermosphere,
                     Spec = "0003",
                     ReceiveStoreId = order.StoreId ?? string.Empty,
@@ -1334,7 +1334,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             string goodsName = groupbuy.GroupBuyName;
 
             goodsName = Regex.Replace(goodsName, validatePattern, "");
-
+        var merchantTrdaeNo = AddNumericSuffix(order.OrderNo);
             HttpRequest? domainRequest = _httpContextAccessor?.HttpContext?.Request;
 
             string? domainName = $"{domainRequest?.Scheme}://{domainRequest?.Host.Value}";
@@ -1402,16 +1402,16 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 deliveryMethod is DeliveryMethod.FamilyMartC2C ||
                 deliveryMethod is DeliveryMethod.SevenToElevenC2C)
             {
-                request.AddParameter("CheckMacValue", GenerateRequestString(GreenWorld.HashKey, GreenWorld.HashIV, GreenWorld.StoreCode, order.OrderNo, marchentDate, "CVS", logisticSubType, Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)), GreenWorld.SenderName, order.RecipientName, order.RecipientPhone,
+                request.AddParameter("CheckMacValue", GenerateRequestString(GreenWorld.HashKey, GreenWorld.HashIV, GreenWorld.StoreCode, merchantTrdaeNo, marchentDate, "CVS", logisticSubType, Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)), GreenWorld.SenderName, order.RecipientName, order.RecipientPhone,
                     serverReplyURL, order.StoreId, goodsName, GreenWorld.SenderPhoneNumber, isCollection: isCollection));
             }
             else
             {
-                request.AddParameter("CheckMacValue", GenerateRequestString(GreenWorld.HashKey, GreenWorld.HashIV, GreenWorld.StoreCode, order.OrderNo, marchentDate, "CVS", logisticSubType, Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)), GreenWorld.SenderName, order.RecipientName, order.RecipientPhone,
+                request.AddParameter("CheckMacValue", GenerateRequestString(GreenWorld.HashKey, GreenWorld.HashIV, GreenWorld.StoreCode, merchantTrdaeNo, marchentDate, "CVS", logisticSubType, Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)), GreenWorld.SenderName, order.RecipientName, order.RecipientPhone,
                         serverReplyURL, order.StoreId, isCollection: isCollection));
             }
 
-            request.AddParameter("MerchantTradeNo", order.OrderNo);
+            request.AddParameter("MerchantTradeNo", merchantTrdaeNo);
 
             RestResponse response = await client.ExecuteAsync(request);
 
@@ -1986,7 +1986,15 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         await _emailSender.SendAsync(order.CustomerEmail, subject, body);
     }
+    private  string AddNumericSuffix(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            throw new ArgumentException("Input cannot be null or empty.");
 
+        Random random = new Random();
+        int suffix = random.Next(100000, 999999); // Generates a 6-digit random number
+        return input + suffix.ToString();
+    }
     private async Task SendEmailAsync(Guid id, string deliveryNo, OrderStatus? orderStatus = null)
     {
         await _emailAppService.SendOrderStatusEmailAsync(id, orderStatus);
