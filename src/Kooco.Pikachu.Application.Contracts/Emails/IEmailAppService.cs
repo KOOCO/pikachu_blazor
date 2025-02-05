@@ -9,4 +9,5 @@ public interface IEmailAppService : IApplicationService
 {
     Task SendLogisticsEmailAsync(Guid orderId, string? deliveryNo = "");
     Task SendOrderStatusEmailAsync(Guid id, OrderStatus? orderStatus = null, ShippingStatus? shippingStatus = null);
+    Task SendOrderUpdateEmailAsync(Guid id);
 }

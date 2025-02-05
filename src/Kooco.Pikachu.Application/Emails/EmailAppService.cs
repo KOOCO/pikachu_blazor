@@ -174,4 +174,99 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             await emailSender.SendAsync(order.CustomerEmail, subject, body);
         }
     }
+
+    public async Task SendOrderUpdateEmailAsync(Guid id)
+    {
+        using (CultureHelper.Use(CultureInfo.GetCultureInfo("zh-Hant")))
+        {
+            var order = await orderRepository.GetWithDetailsAsync(id);
+            var groupbuy = await groupBuyRepository.GetAsync(g => g.Id == order.GroupBuyId);
+            string status = L[order.ShippingStatus.ToString()];
+
+            string subject = $"{groupbuy.GroupBuyName} 訂單#{order.OrderNo} {status}";
+
+            string body = File.ReadAllText("wwwroot/EmailTemplates/order_update.html");
+            DateTime creationTime = order.CreationTime;
+            TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById("China Standard Time"); // UTC+8
+            DateTimeOffset creationTimeInTimeZone = TimeZoneInfo.ConvertTime(creationTime, tz);
+            string formattedTime = creationTimeInTimeZone.ToString("yyyy-MM-dd HH:mm:ss");
+
+            var deliveryCost = (order.DeliveryCost ?? 0) + (order.DeliveryCostForNormal ?? 0) + (order.DeliveryCostForFreeze ?? 0) + (order.DeliveryCostForFrozen ?? 0);
+
+            body = body.Replace("{{GroupBuyName}}", groupbuy.GroupBuyName);
+            body = body.Replace("{{OrderNumber}}", order.OrderNo);
+            //body = body.Replace("{{OrderDate}}", formattedTime);
+            body = body.Replace("{{CustomerName}}", order.CustomerName);
+            body = body.Replace("{{CustomerEmail}}", order.CustomerEmail);
+            body = body.Replace("{{CustomerPhone}}", order.CustomerPhone);
+            body = body.Replace("{{RecipientName}}", order.RecipientName);
+            body = body.Replace("{{RecipientPhone}}", order.RecipientPhone);
+            body = body.Replace("{{PaymentMethod}}", !groupbuy.IsEnterprise ? L[order.PaymentMethod.ToString()] : "");
+            body = body.Replace("{{PaymentStatus}}", L[order.OrderStatus.ToString()]);
+            body = body.Replace("{{ShippingMethod}}", $"{L[order.DeliveryMethod.ToString()]} {order.ShippingNumber}");
+            body = body.Replace("{{DeliveryFee}}", $"${deliveryCost}");
+            body = body.Replace("{{RecipientAddress}}", $"{order.City} {order.AddressDetails}");
+            body = body.Replace("{{ShippingStatus}}", L[order.ShippingStatus.ToString()]);
+            body = body.Replace("{{RecipientComments}}", order.Remarks);
+            body = body.Replace("{{OrderStatus}}", status);
+
+            if (order.OrderItems != null)
+            {
+                StringBuilder sb = new();
+                string orderItemsHtml = File.ReadAllText("wwwroot/EmailTemplates/order_items.html");
+                foreach (var item in order.OrderItems)
+                {
+                    string? itemName = "";
+                    string? imageUrl = "";
+                    if (item.ItemType == ItemType.Item)
+                    {
+                        itemName = item.Item?.ItemName;
+                        imageUrl = item.Item?.Images?.FirstOrDefault()?.ImageUrl;
+                    }
+                    else if (item.ItemType == ItemType.SetItem)
+                    {
+                        itemName = item.SetItem?.SetItemName;
+                        imageUrl = item.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
+                    }
+                    else
+                    {
+                        itemName = item.Freebie?.ItemName;
+                        imageUrl = item.Freebie?.Images?.FirstOrDefault()?.ImageUrl;
+                    }
+
+                    var itemHtml = orderItemsHtml
+                        .Replace("{{ImageUrl}}", imageUrl)
+                        .Replace("{{ItemName}}", itemName)
+                        .Replace("{{ItemDetails}}", item.SKU)
+                        .Replace("{{UnitPrice}}", $"${item.ItemPrice:N0}")
+                        .Replace("{{ItemQuantity}}", item.Quantity.ToString("N0"))
+                        .Replace("{{ItemTotal}}", $"${item.TotalAmount:N0}");
+
+                    sb.Append(itemHtml);
+                }
+
+                body = body.Replace("{{OrderItems}}", sb.ToString());
+            }
+
+            body = body.Replace("{{TotalAmount}}", $"${order.TotalAmount:N0}");
+
+            var tenantSettings = await tenantSettingsAppService.FirstOrDefaultAsync();
+
+            string groupBuyUrl = tenantSettings?.Tenant.GetProperty<string>(Constant.TenantUrl)?.EnsureEndsWith('/') + $"groupBuy/{groupbuy.Id}";
+            string orderUrl = $"{groupBuyUrl}/result/{order.OrderNo}/{order.CustomerEmail}";
+
+            body = body.Replace("{{OrderUrl}}", orderUrl);
+
+            body = body.Replace("{{LogoUrl}}", tenantSettings?.LogoUrl);
+            body = body.Replace("{{FacebookUrl}}", tenantSettings?.Facebook);
+            body = body.Replace("{{InstagramUrl}}", tenantSettings?.Instagram);
+            body = body.Replace("{{LineUrl}}", tenantSettings?.Line);
+
+            body = body.Replace("{{CurrentYear}}", DateTime.Today.ToString("yyyy"));
+            body = body.Replace("{{CompanyName}}", tenantSettings?.CompanyName);
+            body = body.Replace("{{GroupBuyUrl}}", groupBuyUrl);
+
+            await emailSender.SendAsync(order.CustomerEmail, subject, body);
+        }
+    }
 }

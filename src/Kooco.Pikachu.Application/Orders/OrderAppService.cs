@@ -1729,7 +1729,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     }
     private async Task SendEmailAsync(Guid id, OrderStatus? orderStatus = null)
     {
-        await _emailAppService.SendOrderStatusEmailAsync(id, orderStatus);
+        await _emailAppService.SendOrderUpdateEmailAsync(id);
     }
 
     public async Task AddValuesAsync(Guid id, string checkMacValue, string merchantTradeNo, PaymentMethods? paymentMethod = null)
