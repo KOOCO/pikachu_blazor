@@ -253,7 +253,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
                     using (_dataFilter.Disable<IMultiTenant>())
                     {
-                        ItemDetails? details = await _itemDetailsRepository.FirstOrDefaultAsync(x => x.ItemId == item.ItemId && x.ItemName == item.Spec);
+                        ItemDetails? details = await _itemDetailsRepository.FirstOrDefaultAsync(x => x.ItemId == item.ItemId && x.ItemName == item.SKU);
 
                         if (details != null)
                         {
@@ -266,8 +266,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                             else
                             {
                                 // Proceed with updating the stock if sufficient
-                                details.SaleableQuantity -= item.Quantity;
-                                details.StockOnHand -= item.Quantity;
+                                details.SaleableQuantity = details.SaleableQuantity- item.Quantity;
+                                details.StockOnHand = details.StockOnHand- item.Quantity;
 
                                 await _itemDetailsRepository.UpdateAsync(details);
                             }
@@ -284,7 +284,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                                 }
                                 else
                                 {
-                                    setItem.SaleableQuantity -= item.Quantity;
+                                    setItem.SaleableQuantity= setItem.SaleableQuantity- item.Quantity;
 
                                     foreach (var setItemDetail in setItem.SetItemDetails)
                                     {
