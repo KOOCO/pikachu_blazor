@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.EnumValues;
+﻿using Kooco.Pikachu.Emails;
+using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.OrderItems;
@@ -38,6 +39,7 @@ public class RefundAppService : ApplicationService, IRefundAppService
     private readonly IRepository<PaymentGateway, Guid> _paymentGatewayRepository;
     private readonly IPaymentGatewayAppService _PaymentGatewayAppService;
     private readonly IEmailSender _EmailSender;
+    private readonly IEmailAppService _emailAppService;
     GreenWorldLogisticsCreateUpdateDto GreenWorld { get; set; }
 
     private readonly IConfiguration _Configuration;
@@ -50,7 +52,8 @@ public class RefundAppService : ApplicationService, IRefundAppService
         IRepository<PaymentGateway, Guid> paymentGatewayRepository,
         IEmailSender EmailSender,
         IPaymentGatewayAppService PaymentGatewayAppService,
-        IConfiguration Configuration
+        IConfiguration Configuration,
+        IEmailAppService emailAppService
     )
     {
         _refundRepository = refundRepository;
@@ -61,6 +64,7 @@ public class RefundAppService : ApplicationService, IRefundAppService
         _PaymentGatewayAppService = PaymentGatewayAppService;
 
         _Configuration = Configuration;
+        _emailAppService = emailAppService;
     }
     #endregion
 
@@ -377,7 +381,7 @@ public class RefundAppService : ApplicationService, IRefundAppService
                 refund.RefundReview = RefundReviewStatus.Success;
 
                 if (!order.CustomerEmail.IsNullOrEmpty())
-                    await SendEmailForRefundAsync(order.CustomerEmail, order.OrderNo);
+                    await _emailAppService.SendRefundEmailAsync(order.Id, refundAmount);
             }
 
             else refund.RefundReview = RefundReviewStatus.Fail;
@@ -443,7 +447,7 @@ public class RefundAppService : ApplicationService, IRefundAppService
                 refund.RefundReview = RefundReviewStatus.Success;
 
                 if (!order.CustomerEmail.IsNullOrEmpty())
-                    await SendEmailForRefundAsync(order.CustomerEmail, order.OrderNo);
+                    await _emailAppService.SendRefundEmailAsync(order.Id, (double?)refund.Order?.TotalAmount ?? 0);
             }
 
             else refund.RefundReview = RefundReviewStatus.Fail;

@@ -269,4 +269,41 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             await emailSender.SendAsync(order.CustomerEmail, subject, body);
         }
     }
+
+    public async Task SendRefundEmailAsync(Guid id, double amount)
+    {
+        using (CultureHelper.Use(CultureInfo.GetCultureInfo("zh-Hant")))
+        {
+            var order = await orderRepository.GetWithDetailsAsync(id);
+            var groupbuy = await groupBuyRepository.GetAsync(g => g.Id == order.GroupBuyId);
+            string status = L[order.ShippingStatus.ToString()];
+
+            string subject = $"{groupbuy.GroupBuyName} 訂單#{order.OrderNo} {status}";
+
+            string body = File.ReadAllText("wwwroot/EmailTemplates/refund.html");
+
+            body = body.Replace("{{GroupBuyName}}", groupbuy.GroupBuyName);
+            body = body.Replace("{{OrderNumber}}", order.OrderNo);
+            body = body.Replace("{{CustomerName}}", order.CustomerName);
+            body = body.Replace("{{RefundAmount}}", amount.ToString("N0"));
+
+            var tenantSettings = await tenantSettingsAppService.FirstOrDefaultAsync();
+
+            string groupBuyUrl = tenantSettings?.Tenant.GetProperty<string>(Constant.TenantUrl)?.EnsureEndsWith('/') + $"groupBuy/{groupbuy.Id}";
+            string orderUrl = $"{groupBuyUrl}/result/{order.OrderNo}/{order.CustomerEmail}";
+
+            body = body.Replace("{{OrderUrl}}", orderUrl);
+
+            body = body.Replace("{{LogoUrl}}", tenantSettings?.LogoUrl);
+            body = body.Replace("{{FacebookUrl}}", tenantSettings?.Facebook);
+            body = body.Replace("{{InstagramUrl}}", tenantSettings?.Instagram);
+            body = body.Replace("{{LineUrl}}", tenantSettings?.Line);
+
+            body = body.Replace("{{CurrentYear}}", DateTime.Today.ToString("yyyy"));
+            body = body.Replace("{{CompanyName}}", tenantSettings?.CompanyName);
+            body = body.Replace("{{GroupBuyUrl}}", groupBuyUrl);
+
+            await emailSender.SendAsync(order.CustomerEmail, subject, body);
+        }
+    }
 }
