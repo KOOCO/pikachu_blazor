@@ -29,6 +29,8 @@
 
     <PackageReference Include="Blazorise.LoadingIndicator" Version="1.7.3" />
 
+    <PackageReference Include="DinkToPdf" Version="1.0.8" />
+
     <PackageReference Include="Hangfire.Core" Version="1.8.17" />
 
     <PackageReference Include="Hangfire.SqlServer" Version="1.8.17" />
@@ -128,5 +130,9 @@
     <Content Update="wwwroot\EmailTemplates\verification_code.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\libs\DinkToPdf\" />
   </ItemGroup>
 </Project>
