@@ -16,6 +16,9 @@ public class CreateUpdateSetItemDto
     [DisplayName("SetItemSetItemDetails")]
     public List<CreateUpdateSetItemDetailsDto> SetItemDetails { get; set; }
 
+    [MaxLength(4)]
+    public string? SetItemBadge { get; set; } = "";
+
     /// <summary>
     /// 
     /// </summary>

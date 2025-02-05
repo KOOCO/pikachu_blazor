@@ -100,7 +100,25 @@
             </div>
         }
 
-
+              <div class="row mt-2">
+ <div class="col-2">
+                    <fieldLabel>@L["ItemBadge"]</fieldLabel>
+                </div>
+                <div class="col-10">
+                 
+                          <Addons>
+                        <Addon AddonType="AddonType.Body">
+                          <TextEdit @bind-Text="@CreateUpdateSetItemDto.SetItemBadge" MaxLength="@MaxBadgeTextCount" />
+                          </Addon>
+                        <Addon AddonType="AddonType.End">
+                            <AddonLabel Style="background-color: #f5f5f7">
+                                @(string.IsNullOrWhiteSpace(CreateUpdateSetItemDto.SetItemBadge) ? 0 : (CreateUpdateSetItemDto.SetItemBadge.Count()))/@MaxBadgeTextCount
+                            </AddonLabel>
+                        </Addon>
+                    </Addons>
+              
+                    </div>
+            </div>
         <div class="row mt-2">
             <div class="col-2">
                 <fieldLabel>@L["ItemDescription"]</fieldLabel>

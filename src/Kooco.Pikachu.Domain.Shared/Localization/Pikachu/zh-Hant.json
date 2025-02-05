@@ -298,6 +298,7 @@
     //GroupBuy
     "NewGroupBuy": "建立新團購",
     //items
+    "ItemBadge": "商品標籤",
     "NewItem": "建立新商品",
     "NewSetItem": "新商品組",
     "NewTag": "新類別",

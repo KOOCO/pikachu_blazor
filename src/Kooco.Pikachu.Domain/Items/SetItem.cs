@@ -2,6 +2,7 @@ using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Images;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Net.Http.Headers;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
@@ -18,7 +19,8 @@ namespace Kooco.Pikachu.Items
         public string? SetItemDescriptionTitle { get; set; }
         public string? Description { get; set; }
         public string? SetItemMainImageURL { get; set; }
-
+        [MaxLength(4)]
+        public string? SetItemBadge { get; set; }
         public string? SetItemStatus { get; set; }
         public int? SetItemSaleableQuantity { get; set; }
 
@@ -108,6 +110,7 @@ namespace Kooco.Pikachu.Items
             Guid id,
             Guid? tenantId,
             string setItemName,
+            string? setItemBadge,
             string? setItemDescriptionTitle,
             string? description,
             string? setItemMainImageURL,
@@ -123,6 +126,7 @@ namespace Kooco.Pikachu.Items
         {
             TenantId = tenantId;
             SetItemName = setItemName;
+            SetItemBadge = setItemBadge;
             SetItemDescriptionTitle = setItemDescriptionTitle;
             Description = description;
             SetItemMainImageURL = setItemMainImageURL;

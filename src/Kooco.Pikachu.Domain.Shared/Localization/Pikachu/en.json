@@ -78,6 +78,7 @@
     "ActivityEndDateWarning": "Activity end date cannot be less than Activity start date",
     "ActivityStartDateWarning": "Activity start date cannot be greater than activity end date",
     //items
+    "ItemBadge": "Item Badge",
     "NewItem": "New Item",
     "EditItem": "Edit Item",
     "Items": "Item List View",
