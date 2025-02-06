@@ -304,12 +304,12 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
         }
     }
 
-    public async Task SendMergeOrderEmailAsync(List<Guid> orderIds, Guid mergedOrderId)
+    public async Task SendMergeOrderEmailAsync(List<Guid> ordersToMergeIds, Guid mergedOrderId)
     {
         using (CultureHelper.Use(CultureInfo.GetCultureInfo("zh-Hant")))
         {
             var orderNumbers = await (await orderRepository.GetQueryableAsync())
-                .Where(o => orderIds.Contains(o.Id))
+                .Where(o => ordersToMergeIds.Contains(o.Id))
                 .Select(o => o.OrderNo)
                 .Distinct()
                 .ToListAsync();
@@ -345,6 +345,61 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body.Replace("{{MergedOrderUrl}}", $"{groupBuyUrl}/result/{order.OrderNo}/{order.CustomerEmail}");
             body = body.Replace("{{OrderToMerge1Url}}", $"{groupBuyUrl}/result/{orderNumbers.FirstOrDefault()}/{order.CustomerEmail}");
             body = body.Replace("{{OrderToMerge2Url}}", $"{groupBuyUrl}/result/{orderNumbers.LastOrDefault()}/{order.CustomerEmail}");
+
+            body = body.Replace("{{LogoUrl}}", tenantSettings?.LogoUrl);
+            body = body.Replace("{{FacebookUrl}}", tenantSettings?.Facebook);
+            body = body.Replace("{{InstagramUrl}}", tenantSettings?.Instagram);
+            body = body.Replace("{{LineUrl}}", tenantSettings?.Line);
+
+            body = body.Replace("{{CurrentYear}}", DateTime.Today.ToString("yyyy"));
+            body = body.Replace("{{CompanyName}}", tenantSettings?.CompanyName);
+            body = body.Replace("{{GroupBuyUrl}}", groupBuyUrl);
+
+            await emailSender.SendAsync(order.CustomerEmail, subject, body);
+        }
+    }
+
+    public async Task SendSplitOrderEmailAsync(Guid orderToSplitId, List<Guid> splitOrdersIds)
+    {
+        using (CultureHelper.Use(CultureInfo.GetCultureInfo("zh-Hant")))
+        {
+            var orderNumbers = await (await orderRepository.GetQueryableAsync())
+                .Where(o => splitOrdersIds.Contains(o.Id))
+                .Select(o => o.OrderNo)
+                .Distinct()
+                .ToListAsync();
+
+            var order = await orderRepository.GetAsync(orderToSplitId);
+            var groupbuy = await groupBuyRepository.GetAsync(g => g.Id == order.GroupBuyId);
+
+            string subject = $"{groupbuy.GroupBuyName} 訂單#{order.OrderNo} {L[order.ShippingStatus.ToString()]}";
+
+            string body = File.ReadAllText("wwwroot/EmailTemplates/split_order.html");
+
+            body = body.Replace("{{OrderToSplit}}", order.OrderNo);
+            body = body.Replace("{{SplitOrder1}}", orderNumbers.FirstOrDefault());
+            body = body.Replace("{{SplitOrder2}}", orderNumbers.LastOrDefault());
+
+            body = body.Replace("{{CustomerName}}", order.CustomerName);
+            body = body.Replace("{{GroupBuyName}}", groupbuy.GroupBuyName);
+            body = body.Replace("{{ShippingStatus}}", L[order.ShippingStatus.ToString()]);
+            body = body.Replace("{{CustomerEmail}}", order.CustomerEmail);
+            body = body.Replace("{{CustomerPhone}}", order.CustomerPhone);
+            body = body.Replace("{{PaymentMethod}}", L[order.PaymentMethod.ToString()]);
+            body = body.Replace("{{RecipientName}}", order.RecipientName);
+            body = body.Replace("{{RecipientPhone}}", order.RecipientPhone);
+            body = body.Replace("{{RecipientAddress}}", $"{order.City} {order.AddressDetails}");
+            body = body.Replace("{{ShippingMethod}}", $"{L[order.DeliveryMethod.ToString()]} {order.ShippingNumber}");
+            body = body.Replace("{{OrderNotes}}", order.Remarks);
+            body = body.Replace("{{RecipientComments}}", order.Remarks);
+
+            var tenantSettings = await tenantSettingsAppService.FirstOrDefaultAsync();
+
+            string groupBuyUrl = tenantSettings?.Tenant.GetProperty<string>(Constant.TenantUrl)?.EnsureEndsWith('/') + $"groupBuy/{groupbuy.Id}";
+
+            body = body.Replace("{{OrderToSplitUrl}}", $"{groupBuyUrl}/result/{order.OrderNo}/{order.CustomerEmail}");
+            body = body.Replace("{{SplitOrder1Url}}", $"{groupBuyUrl}/result/{orderNumbers.FirstOrDefault()}/{order.CustomerEmail}");
+            body = body.Replace("{{SplitOrder2Url}}", $"{groupBuyUrl}/result/{orderNumbers.LastOrDefault()}/{order.CustomerEmail}");
 
             body = body.Replace("{{LogoUrl}}", tenantSettings?.LogoUrl);
             body = body.Replace("{{FacebookUrl}}", tenantSettings?.Facebook);

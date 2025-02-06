@@ -808,7 +808,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
 
         List<OrderItemsCreateDto> orderItems = [];
-
+        List<Guid> splitOrderIds = [];
         using (CurrentTenant.Change(groupBuy?.TenantId))
         {
             foreach (OrderItem item in ord.OrderItems)
@@ -854,7 +854,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         OrderType.NewSplit,
                         ord.Id
                     );
-
+                    splitOrderIds.Add(order1.Id);
                     order1.ShippingStatus = ord.ShippingStatus;
 
                     _orderManager.AddOrderItem(
@@ -916,6 +916,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
+            await _emailAppService.SendSplitOrderEmailAsync(OrderId, splitOrderIds);
+            
             return ObjectMapper.Map<Order, OrderDto>(ord);
         }
     }
