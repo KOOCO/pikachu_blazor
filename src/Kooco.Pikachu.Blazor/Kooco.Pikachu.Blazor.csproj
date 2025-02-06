@@ -84,7 +84,6 @@
     <Content Remove="Logs\**" />
     <EmbeddedResource Remove="Logs\**" />
     <None Remove="Logs\**" />
-    <Content Remove="wwwroot\order.js" />
     <Content Include="encryption-certificate.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -93,12 +92,6 @@
     </Content>
     <None Remove="openiddict.pfx" />
     <None Remove="Pages\ItemManagement\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="wwwroot\order.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -129,6 +122,9 @@
     </Content>
     <Content Update="wwwroot\EmailTemplates\verification_code.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\order.js">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
