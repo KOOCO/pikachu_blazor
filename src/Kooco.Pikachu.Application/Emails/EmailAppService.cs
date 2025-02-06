@@ -109,7 +109,7 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             }
             body = body.Replace("{{PaymentStatus}}", L[order.OrderStatus.ToString()]);
             body = body.Replace("{{ShippingMethod}}", $"{L[order.DeliveryMethod.ToString()]} {order.ShippingNumber}");
-            body = body.Replace("{{DeliveryFee}}", $"${deliveryCost}");
+            body = body.Replace("{{DeliveryFee}}", $"${deliveryCost:N0}");
             body = body.Replace("{{RecipientAddress}}", $"{order.City} {order.AddressDetails}");
             body = body.Replace("{{ShippingStatus}}", L[order.ShippingStatus.ToString()]);
             body = body.Replace("{{RecipientComments}}", order.Remarks);
@@ -186,16 +186,11 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             string subject = $"{groupbuy.GroupBuyName} 訂單#{order.OrderNo} {status}";
 
             string body = File.ReadAllText("wwwroot/EmailTemplates/order_update.html");
-            DateTime creationTime = order.CreationTime;
-            TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById("China Standard Time"); // UTC+8
-            DateTimeOffset creationTimeInTimeZone = TimeZoneInfo.ConvertTime(creationTime, tz);
-            string formattedTime = creationTimeInTimeZone.ToString("yyyy-MM-dd HH:mm:ss");
 
             var deliveryCost = (order.DeliveryCost ?? 0) + (order.DeliveryCostForNormal ?? 0) + (order.DeliveryCostForFreeze ?? 0) + (order.DeliveryCostForFrozen ?? 0);
 
             body = body.Replace("{{GroupBuyName}}", groupbuy.GroupBuyName);
             body = body.Replace("{{OrderNumber}}", order.OrderNo);
-            //body = body.Replace("{{OrderDate}}", formattedTime);
             body = body.Replace("{{CustomerName}}", order.CustomerName);
             body = body.Replace("{{CustomerEmail}}", order.CustomerEmail);
             body = body.Replace("{{CustomerPhone}}", order.CustomerPhone);
@@ -204,7 +199,7 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body.Replace("{{PaymentMethod}}", !groupbuy.IsEnterprise ? L[order.PaymentMethod.ToString()] : "");
             body = body.Replace("{{PaymentStatus}}", L[order.OrderStatus.ToString()]);
             body = body.Replace("{{ShippingMethod}}", $"{L[order.DeliveryMethod.ToString()]} {order.ShippingNumber}");
-            body = body.Replace("{{DeliveryFee}}", $"${deliveryCost}");
+            body = body.Replace("{{DeliveryFee}}", $"${deliveryCost:N0}");
             body = body.Replace("{{RecipientAddress}}", $"{order.City} {order.AddressDetails}");
             body = body.Replace("{{ShippingStatus}}", L[order.ShippingStatus.ToString()]);
             body = body.Replace("{{RecipientComments}}", order.Remarks);
