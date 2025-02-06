@@ -107,18 +107,20 @@ public class RefundAppService : ApplicationService, IRefundAppService
 
         refund.RefundReview = input;
 
-        if (input is RefundReviewStatus.Proccessing || 
+        if (input is RefundReviewStatus.Proccessing ||
             input is RefundReviewStatus.ReturnedApplication)
         {
             refund.ReviewCompletionTime = DateTime.Now;
 
             refund.Approver = CurrentUser.Name;
         }
-        if (input is RefundReviewStatus.Fail || input is RefundReviewStatus.Success) 
+        if (input is RefundReviewStatus.Fail || input is RefundReviewStatus.Success)
             refund.Refunder = CurrentUser.Name;
 
         await _refundRepository.UpdateAsync(refund);
-        
+
+        await _refundRepository.EnsurePropertyLoadedAsync(refund, r => r.Order);
+        await _emailAppService.SendRefundEmailAsync(refund.OrderId, (double)refund.Order.TotalAmount);
         return ObjectMapper.Map<Refund, RefundDto>(refund);
     }
 
@@ -394,7 +396,7 @@ public class RefundAppService : ApplicationService, IRefundAppService
 
         Order order = await _orderRepository.GetAsync(refund.OrderId);
 
-        PaymentGatewayDto? ecpay = (await _PaymentGatewayAppService.GetAllAsync()).FirstOrDefault(f => f.PaymentIntegrationType is PaymentIntegrationType.EcPay) ?? 
+        PaymentGatewayDto? ecpay = (await _PaymentGatewayAppService.GetAllAsync()).FirstOrDefault(f => f.PaymentIntegrationType is PaymentIntegrationType.EcPay) ??
                                     throw new UserFriendlyException("Please Set Ecpay Setting First"); ;
 
         //PaymentGateway? ecpay = (await _paymentGatewayRepository.GetQueryableAsync()).FirstOrDefault(x => x.PaymentIntegrationType == PaymentIntegrationType.EcPay) ?? 
@@ -402,11 +404,11 @@ public class RefundAppService : ApplicationService, IRefundAppService
 
         string logisticSubType = string.Empty;
 
-        RestClientOptions options = new () { MaxTimeout = -1 };
+        RestClientOptions options = new() { MaxTimeout = -1 };
 
-        RestClient client = new (options);
+        RestClient client = new(options);
 
-        RestRequest request = new ("https://payment.ecpay.com.tw/CreditDetail/DoAction", Method.Post);
+        RestRequest request = new("https://payment.ecpay.com.tw/CreditDetail/DoAction", Method.Post);
 
         string HashKey = ecpay.HashKey ?? string.Empty;
         string HashIV = ecpay.HashIV ?? string.Empty;
@@ -426,12 +428,12 @@ public class RefundAppService : ApplicationService, IRefundAppService
                                                                "R",
                                                                ((int)refund.Order?.TotalAmount).ToString()));
         //request.AddParameter("IsCollection", "N");
-       
+
         RestResponse response = await client.ExecuteAsync(request);
-        
+
         NameValueCollection queryParams = HttpUtility.ParseQueryString(response.Content);
 
-        RefundResponse result = new ()
+        RefundResponse result = new()
         {
             MerchantID = queryParams["MerchantID"] ?? string.Empty,
             MerchantTradeNo = queryParams["MerchantTradeNo"] ?? string.Empty,
@@ -453,7 +455,7 @@ public class RefundAppService : ApplicationService, IRefundAppService
             else refund.RefundReview = RefundReviewStatus.Fail;
         }
     }
-    public string GenerateCheckMac(string HashKey, string HashIV, string merchantID, string merchantTradeNo, string tradeNo,string action,string totalamount)
+    public string GenerateCheckMac(string HashKey, string HashIV, string merchantID, string merchantTradeNo, string tradeNo, string action, string totalamount)
     {
         var parameters = new Dictionary<string, string>
         {
@@ -490,8 +492,9 @@ public class RefundAppService : ApplicationService, IRefundAppService
         return builder.ToString().ToUpper();
     }
 }
-public class RefundResponse {
-   
+public class RefundResponse
+{
+
     public string MerchantID { get; set; }
     public string MerchantTradeNo { get; set; }
     public string TradeNo { get; set; }

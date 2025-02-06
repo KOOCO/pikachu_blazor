@@ -1213,7 +1213,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
             await _refundAppService.CreateAsync(order1.Id);
-            await _emailAppService.SendRefundEmailAsync(order1.Id, amount);
         }
     }
     public async Task<OrderDto> GetWithDetailsAsync(Guid id)
