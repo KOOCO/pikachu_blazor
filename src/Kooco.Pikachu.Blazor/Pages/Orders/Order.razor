@@ -250,8 +250,11 @@
                     </Button>
                 }
             }
-
-            <Button Type="ButtonType.Button" Class="btn btn-sm btn-outline-dark" Clicked="DownloadExcel"><i class="fa fa-arrow-down"></i></Button>
+              <PikachuButton Class="pk-btn-sm pk-btn-primary" Clicked="DownloadExcel">
+                <Icon Name="IconName.FileDownload" Display="Display.InlineBlock"></Icon>
+                @L["ExportAll"]
+            </PikachuButton>
+          
         </div>
 
         @if (SelectedTabName is PikachuResource.ToBeShipped)
@@ -347,6 +350,7 @@
                                   ShowPager="true"
                                   PageSize="PageSize"
                                   RowClicked="ToggleRow"
+                                 
                                   RowDoubleClicked="NavigateToOrderDetails"
                                   SortChanged="OnSortChange">
                             <DataGridColumns>
