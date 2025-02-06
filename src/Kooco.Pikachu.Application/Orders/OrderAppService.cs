@@ -1441,7 +1441,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         if (input.ShouldSendEmail)
         {
             await UnitOfWorkManager.Current.SaveChangesAsync();
-            await SendEmailAsync(order.Id);
+            await _emailAppService.SendOrderUpdateEmailAsync(order.Id);
         }
 
         return ObjectMapper.Map<Order, OrderDto>(order);
@@ -1728,9 +1728,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
         return returnResult;
 
     }
+
     private async Task SendEmailAsync(Guid id, OrderStatus? orderStatus = null)
     {
-        await _emailAppService.SendOrderUpdateEmailAsync(id);
+        await _emailAppService.SendOrderStatusEmailAsync(id);
     }
 
     public async Task AddValuesAsync(Guid id, string checkMacValue, string merchantTradeNo, PaymentMethods? paymentMethod = null)
