@@ -786,6 +786,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
+            await _emailAppService.SendMergeOrderEmailAsync(Ids, order1.Id);
+            
             return ObjectMapper.Map<Order, OrderDto>(order1);
         }
     }

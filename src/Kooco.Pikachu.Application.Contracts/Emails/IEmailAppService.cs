@@ -1,5 +1,6 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 
@@ -11,4 +12,5 @@ public interface IEmailAppService : IApplicationService
     Task SendOrderStatusEmailAsync(Guid id, OrderStatus? orderStatus = null, ShippingStatus? shippingStatus = null);
     Task SendOrderUpdateEmailAsync(Guid id);
     Task SendRefundEmailAsync(Guid id, double amount);
+    Task SendMergeOrderEmailAsync(List<Guid> orderIds, Guid mergedOrderId);
 }
