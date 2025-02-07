@@ -382,8 +382,9 @@ public partial class EditItem
     /// </summary>
     async Task HandleAttributeTagInputConfirm(int id, string tag, KeyboardEventArgs e)
     {
-        if (e.Key is "Enter")
-        {
+        if (e is not null && e.Key != "Enter")
+            return;
+       
             var attribute = Attributes.First(x => x.Id == id);
             if (string.IsNullOrEmpty(tag))
             {
@@ -398,7 +399,7 @@ public partial class EditItem
                 await BindItemDetailList();
             }
             attribute.InputTagValue = "";
-        }
+        
     }
 
     async Task DeleteAttribute(Attributes attribute)

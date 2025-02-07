@@ -254,7 +254,8 @@
                         <div class="input-container">
                             <input type="text" class="tag-input" placeholder="New Tag"
                                    @bind-value="item.InputTagValue"
-                                   @onkeyup="@(async (e) => await HandleAttributeTagInputConfirm(item.Id, item.InputTagValue, e))" />
+                                   @onkeyup="@(async (e) => await HandleAttributeTagInputConfirm(item.Id, item.InputTagValue, e))"
+                                    @onblur="@(async () => await HandleAttributeTagInputConfirm(item.Id, item.InputTagValue, null))"/>
                             <i class="tag-input-placeholder-icon fa fa-plus"></i>
                         </div>
                     </div>
