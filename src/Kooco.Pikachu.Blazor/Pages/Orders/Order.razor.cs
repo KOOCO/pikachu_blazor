@@ -278,7 +278,7 @@ public partial class Order
             await JSRuntime.InvokeVoidAsync("downloadFile", new
             {
                 ByteArray = combinedPdfStream.ToArray(),
-                FileName = "Invoices.pdf",
+                FileName = "ShippingLabels.pdf",
                 ContentType = "application/pdf"
             });
         }
@@ -425,7 +425,7 @@ public partial class Order
             await JSRuntime.InvokeVoidAsync("downloadFile", new
             {
                 ByteArray = combinedPdfStream.ToArray(),
-                FileName = "Invoices.pdf",
+                FileName = "ShippingLabels.pdf",
                 ContentType = "application/pdf"
             });
         }

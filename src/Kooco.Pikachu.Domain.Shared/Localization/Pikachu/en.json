@@ -1125,6 +1125,11 @@
     "OrderValidityUnit": "Order Validity Unit",
     "ValidatePeriod": "Validate Period",
     "PaymentDeadline": "Payment Deadline",
-    "EnterItemStyleDescription": "Enter item style description"
+    "EnterItemStyleDescription": "Enter item style description",
+    "Pikachu:ColorSchemeRequired": "Color scheme is required.",
+    "Pikachu:ProductDetailsDisplayMethodRequired": "Product details display method is required.",
+    "Pikachu:GroupBuyConditionRequired": "Group buy condition is required.",
+    "Pikachu:ExchangePolicyRequired": "Exchange policy is required.",
+    "Pikachu:FreeShippingThresholdRequired": "Free shipping threshold is required."
   }
 }

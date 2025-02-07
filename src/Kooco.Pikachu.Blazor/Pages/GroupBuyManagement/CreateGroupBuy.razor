@@ -26,23 +26,23 @@
 <link href="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.min.css" rel="stylesheet" />
 <style>
     .row {
-        margin-top: 10px;
+    margin-top: 10px;
     }
 
     .drag-drop-span {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
-        max-height: 55px !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    max-height: 55px !important;
     }
 
-        .drag-drop-span i {
-            cursor: pointer;
-        }
+    .drag-drop-span i {
+    cursor: pointer;
+    }
 
     .color-scheme > .b-input-color-picker-preview {
-        height: 9.55rem;
+    height: 9.55rem;
     }
 </style>
 <h3>@L["NewGroupBuy"]</h3>
@@ -73,7 +73,7 @@
             <div class="col-2">
                 <label>
                     @L["ShortCode"]
-                    <span class="text-danger"> </span>
+                    <span class="text-danger"> *</span>
                 </label>
             </div>
             <div class="col-10">
@@ -204,10 +204,10 @@
             <div class="col-10">
                 <Field>
                     <FilePicker FilePickerLocalizer="(key,args)=>LocalizeFilePicker(key,args)"
-                                @ref="LogoPickerCustom"
-                                Changed="OnLogoUploadAsync"
-                                ShowMode="FilePickerShowMode.List"
-                                Accept=".jpg, .png, .svg ,.jpeg,.webp">
+                    @ref="LogoPickerCustom"
+                    Changed="OnLogoUploadAsync"
+                    ShowMode="FilePickerShowMode.List"
+                    Accept=".jpg, .png, .svg ,.jpeg,.webp">
                         <FileTemplate>
                             <Div Flex="Flex.JustifyContent.Between">
                                 <Div>
@@ -337,7 +337,7 @@
             <div class="col-2">@L["FreeShipping"]</div>
             <div class="col-2"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.FreeShipping"></Switch></div>
             <div class="col-1">@L["Threshold"]</div>
-            <div class="col-2">  <InputNumber id="h-threshold" class="form-control" @bind-Value="CreateGroupBuyDto.FreeShippingThreshold" DisplayName="Free Shipping Threshold"></InputNumber></div>
+            <div class="col-2">  <InputNumber id="h-threshold" class="form-control" min="0"  @bind-Value="CreateGroupBuyDto.FreeShippingThreshold" DisplayName="Free Shipping Threshold"></InputNumber></div>
         </div>
         <div class="row">
             <div class="col-2"></div>
@@ -371,16 +371,16 @@
                             {
                                 <label for="@item" class="form-label me-2">
                                     <input type="checkbox"
-                                           class="form-check-input"
-                                           id="@item"
-                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item))"
-                                           checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                           @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                    class="form-check-input"
+                                    id="@item"
+                                    disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise)"
+                                    checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
+                                    @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                     @L[item]
                                 </label>
                             }
                             @if (item == Enum.GetName(DeliveryMethod.FamilyMartC2C)
-                           || item == Enum.GetName(DeliveryMethod.BlackCat1))
+                          || item == Enum.GetName(DeliveryMethod.BlackCat1))
                             {
                                 <br />
                                 <Div Class="mt-1"></Div>
@@ -405,16 +405,16 @@
                             {
                                 <label for="@item" class="form-label me-2">
                                     <input type="checkbox"
-                                           class="form-check-input"
-                                           id="@item"
-                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item))"
-                                           checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                           @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                    class="form-check-input"
+                                    id="@item"
+                                    disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise)"
+                                    checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
+                                    @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                     @L[item]
                                 </label>
                             }
                             @if (item == Enum.GetName(DeliveryMethod.FamilyMartC2C)
-                           || item == Enum.GetName(DeliveryMethod.BlackCat1))
+                          || item == Enum.GetName(DeliveryMethod.BlackCat1))
                             {
                                 <br />
                                 <Div Class="mt-1"></Div>
@@ -436,11 +436,11 @@
                             {
                                 <label for="@item" class="form-label me-2">
                                     <input type="checkbox"
-                                           class="form-check-input"
-                                           id="@item"
-                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item))"
-                                           checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                           @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                    class="form-check-input"
+                                    id="@item"
+                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise)"
+                                    checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
+                                    @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                     @L[item]
                                 </label>
                             }
@@ -459,11 +459,11 @@
                             {
                                 <label for="@item" class="form-label me-2">
                                     <input type="checkbox"
-                                           class="form-check-input"
-                                           id="@item"
-                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item))"
-                                           checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                           @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                    class="form-check-input"
+                                    id="@item"
+                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise)"
+                                    checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
+                                    @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                     @L[item]
                                 </label>
                             }
@@ -484,11 +484,11 @@
                             {
                                 <label for="@item" class="form-label me-2">
                                     <input type="checkbox"
-                                           class="form-check-input"
-                                           id="@item"
-                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item))"
-                                           checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                           @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                    class="form-check-input"
+                                    id="@item"
+                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise)"
+                                    checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
+                                    @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                     @L[item]
                                 </label>
                             }
@@ -508,11 +508,11 @@
                             {
                                 <label for="@item" class="form-label me-2">
                                     <input type="checkbox"
-                                           class="form-check-input"
-                                           id="@item"
-                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item))"
-                                           checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                           @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                    class="form-check-input"
+                                    id="@item"
+                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise)"
+                                    checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
+                                    @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                     @L[item]
                                 </label>
                             }
@@ -530,11 +530,11 @@
                         {
                             <label for="@item" class="form-label me-2">
                                 <input type="checkbox"
-                                       class="form-check-input"
-                                       id="@item"
-                                       disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")"
-                                       checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                class="form-check-input"
+                                id="@item"
+                                disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CreateGroupBuyDto.IsEnterprise"
+                                checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
+                                @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                 @L[item]
                             </label>
                         }
@@ -545,11 +545,11 @@
                     {
                         <label for="@item" class="form-label me-2">
                             <input type="checkbox"
-                                   class="form-check-input"
-                                   id="@item"
-                                   disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")"
-                                   checked="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item))||( item == Enum.GetName(DeliveryMethod.SelfPickup) &&CreateGroupBuyDto.IsEnterprise)))"
-                                   @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                            class="form-check-input"
+                            id="@item"
+                                   disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore"||(CreateGroupBuyDto.IsEnterprise && item == Enum.GetName(DeliveryMethod.DeliveredByStore)) )"
+                            checked="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item))||( item == Enum.GetName(DeliveryMethod.SelfPickup) &&CreateGroupBuyDto.IsEnterprise)))"
+                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                             @L[item]
                         </label>
                     }
@@ -563,14 +563,17 @@
             <div class="col-8">
                 @if (CreateGroupBuyDto.ExcludeShippingMethod != null && CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1"))
                 {
+                  
                     <label class="form-label">@L["BlackCat"] / @L[PikachuResource.TCatDelivery]<span class="text-danger"> </span></label>
                 }
                 else if (CreateGroupBuyDto.ExcludeShippingMethod != null && CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFreeze"))
                 {
+             
                     <label class="form-label">@L["BlackCatFreeze"] / @L[PikachuResource.TCatDelivery]<span class="text-danger"> </span></label>
                 }
                 else if (CreateGroupBuyDto.ExcludeShippingMethod != null && CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFrozen"))
                 {
+                    
                     <label class="form-label">@L["BlackCatFrozen"] / @L[PikachuResource.TCatDelivery]<span class="text-danger"> </span></label>
                 }
                 else
@@ -586,28 +589,33 @@
                     @foreach (string island in DeliveryTimeConts.BlackCat)
                     {
                         @if ((CreateGroupBuyDto.ExcludeShippingMethod is not null) &&
-                       ((CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1")) ||
-                       (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFreeze")) ||
-                       (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFrozen")) ||
-                       (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryNormal")) ||
-                       (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryFreeze")) ||
-                       (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryFrozen")) ||
-                       (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenNormal")) ||
-                       (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenFreeze")) ||
-                       (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenFrozen")) ||
-                       (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))))
+                      ((CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1")) ||
+                      (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFreeze")) ||
+                      (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFrozen")) ||
+                      (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryNormal")) ||
+                      (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryFreeze")) ||
+                      (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryFrozen")) ||
+                      (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenNormal")) ||
+                      (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenFreeze")) ||
+                      (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenFrozen"))))
                         {
+
+                            if (CreateGroupBuyDto.BlackCatDeliveryTime.IsNullOrWhiteSpace() || CreateGroupBuyDto.BlackCatDeliveryTime == "[]") BlackCatDeliveryTimeCheckedChange("Inapplicable", new ChangeEventArgs { Value = true });
+
+                            
                             <label for="@island" class="form-label me-2">
                                 <input type="checkbox"
-                                       class="form-check-input"
-                                       id="@island"
-                                       checked="@(CreateGroupBuyDto.BlackCatDeliveryTime != null && CreateGroupBuyDto.BlackCatDeliveryTime.Contains(island))"
-                                       @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)" />
+                                class="form-check-input"
+                                id="@island"
+                                checked="@(CreateGroupBuyDto.BlackCatDeliveryTime != null && CreateGroupBuyDto.BlackCatDeliveryTime.Contains(island))"
+                                @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)" />
                                 @L[island]
                             </label>
                         }
                         else
                         {
+                            
+                               
                             <label for="@island" class="form-label me-2">
                                 <input disabled
                                        type="checkbox"
@@ -637,6 +645,7 @@
                         @if ((CreateGroupBuyDto.ExcludeShippingMethod is not null) &&
                        (CreateGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery")))
                         {
+                               if(CreateGroupBuyDto.HomeDeliveryDeliveryTime.IsNullOrWhiteSpace()||CreateGroupBuyDto.HomeDeliveryDeliveryTime=="[]") CreateGroupBuyDto.HomeDeliveryDeliveryTime = "Inapplicable";
                             <label for="@(island)_HomeDelivery" class="form-label me-2">
                                 <input type="checkbox"
                                        class="form-check-input"
@@ -652,7 +661,7 @@
                         }
                         else
                         {
-
+                             CreateGroupBuyDto.HomeDeliveryDeliveryTime = null;
                             <label for="@(island)_HomeDelivery" class="form-label me-2">
                                 <input disabled
                                        type="checkbox"
@@ -684,6 +693,7 @@
                         @if ((CreateGroupBuyDto.ExcludeShippingMethod is not null) &&
                        (CreateGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup")))
                         {
+                            if(CreateGroupBuyDto.SelfPickupDeliveryTime.IsNullOrWhiteSpace()||CreateGroupBuyDto.SelfPickupDeliveryTime=="[]") CreateGroupBuyDto.SelfPickupDeliveryTime = "UnableToSpecifyDuringPeakPeriods";
                             <label for="@(island)_SelfPickUp" class="form-label me-2">
                                 <input type="checkbox"
                                        class="form-check-input"
@@ -699,6 +709,7 @@
                         }
                         else
                         {
+                            CreateGroupBuyDto.SelfPickupDeliveryTime = null;
                             <label for="@(island)_SelfPickUp" class="form-label me-2">
                                 <input disabled
                                        type="checkbox"
@@ -728,7 +739,7 @@
                     {
                         @if ((CreateGroupBuyDto.ExcludeShippingMethod is not null) &&
                        (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
-                        {
+                        {if(CreateGroupBuyDto.DeliveredByStoreDeliveryTime.IsNullOrWhiteSpace()||CreateGroupBuyDto.DeliveredByStoreDeliveryTime=="[]") CreateGroupBuyDto.DeliveredByStoreDeliveryTime = "Inapplicable";
                             <label for="@(island)_DeliveredByStore" class="form-label me-2">
                                 <input type="checkbox"
                                        class="form-check-input"
@@ -744,7 +755,7 @@
                         }
                         else
                         {
-
+                           CreateGroupBuyDto.DeliveredByStoreDeliveryTime = null;
                             <label for="@(island)_DeliveredByStore" class="form-label me-2">
                                 <input disabled
                                        type="checkbox"
@@ -952,7 +963,8 @@
         <Divider></Divider>
         <Div Class="row">
             <Div Class="col-2">@L["ColorSchemes"]</Div>
-            <Div Class="col-2">@L["SelectColorTheme"]</Div>
+            <Div Class="col-2">@L["SelectColorTheme"]
+            <Span Class="text-danger"> *</Span></Div>
             <Div Class="col-8">
                 <select class="form-select"
                         @onchange=OnColorSchemeChange>
@@ -1010,7 +1022,7 @@
         <Divider></Divider>
 
         <Div Class="row">
-            <Div Class="col-2">@L["DisplayMethodForProductDetails"]</Div>
+            <Div Class="col-2">@L["DisplayMethodForProductDetails"]<span class="text-danger"> *</span></Div>
             <Div Class="col-8">
                 <select class="form-select"
                         @onchange=OnProductDetailsDisplayMethodChange>
@@ -1898,7 +1910,9 @@
         <Divider></Divider>
         <div class="row">
             <div class="col-2">
-                <fieldLabel>@L["GroupBuyPolicy"]</fieldLabel>
+                <fieldLabel>@L["GroupBuyPolicy"]
+                <span class="text-danger"> *</span>
+                </fieldLabel>
             </div>
             <div class="col-10">
                 <div class="col-12">

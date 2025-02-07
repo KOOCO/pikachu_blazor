@@ -35,6 +35,12 @@ public static class PikachuDomainErrorCodes
     public const string GroupBuyModuleCannotBeEmpty = "Pikachu:GroupBuyModuleCannotBeEmpty";
     public const string CanNotAddMoreThan20Modules = "Pikachu:CanNotAddMoreThan20Modules";
 
+    public const string ColorSchemeRequired = "Pikachu:ColorSchemeRequired";
+    public const string ProductDetailsDisplayMethodRequired = "Pikachu:ProductDetailsDisplayMethodRequired";
+    public const string GroupBuyConditionRequired = "Pikachu:GroupBuyConditionRequired";
+    public const string ExchangePolicyRequired = "Pikachu:ExchangePolicyRequired";
+    public const string FreeShippingThresholdRequired = "Pikachu:FreeShippingThresholdRequired";
+
     public const string RefundForSameOrderAlreadyExists = "Pikachu:RefundForSameOrderAlreadyExists";
     public const string RefundIsOnlyAvailableForCreditCardPayments = "Pikachu:RefundIsOnlyAvailableForCreditCardPayments";
     public const string AtLeastOneDeliveryTimeIsRequiredForBlackCat = "Pikachu:AtLeastOneDeliveryTimeIsRequiredForBlackCat";

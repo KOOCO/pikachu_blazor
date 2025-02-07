@@ -273,6 +273,23 @@ public partial class EditGroupBuy
         {
             IsCashOnDelivery = true; CreditCard = false; BankTransfer = false;
             OnShippingMethodCheckedChange("SelfPickup", new ChangeEventArgs { Value = true });
+            OnShippingMethodCheckedChange("DeliveredByStore", new ChangeEventArgs { Value = false });
+            OnShippingMethodCheckedChange("HomeDelivery", new ChangeEventArgs { Value = false });
+            OnShippingMethodCheckedChange("BlackCat1", new ChangeEventArgs { Value = false });
+            OnShippingMethodCheckedChange("BlackCatFreeze", new ChangeEventArgs { Value = false });
+            OnShippingMethodCheckedChange("BlackCatFrozen", new ChangeEventArgs { Value = false });
+            OnShippingMethodCheckedChange("TCatDeliveryNormal", new ChangeEventArgs { Value = false });
+            OnShippingMethodCheckedChange("TCatDeliveryFreeze", new ChangeEventArgs { Value = false });
+            OnShippingMethodCheckedChange("TCatDeliveryFrozen", new ChangeEventArgs { Value = false });
+            OnShippingMethodCheckedChange("TCatDeliverySevenElevenNormal", new ChangeEventArgs { Value = false });
+            OnShippingMethodCheckedChange("TCatDeliverySevenElevenFreeze", new ChangeEventArgs { Value = false });
+            OnShippingMethodCheckedChange("TCatDeliverySevenElevenFrozen", new ChangeEventArgs { Value = false });
+            OnShippingMethodCheckedChange("SevenToEleven1", new ChangeEventArgs { Value = false });
+            OnShippingMethodCheckedChange("SevenToElevenFrozen", new ChangeEventArgs { Value = false });
+            OnShippingMethodCheckedChange("SevenToElevenC2C", new ChangeEventArgs { Value = false });
+            OnShippingMethodCheckedChange("FamilyMart1", new ChangeEventArgs { Value = false });
+            OnShippingMethodCheckedChange("FamilyMartC2C", new ChangeEventArgs { Value = false });
+            OnShippingMethodCheckedChange("PostOffice", new ChangeEventArgs { Value = false });
         }
     }
 
@@ -1780,7 +1797,10 @@ public partial class EditGroupBuy
             DeliveryMethod.TCatDeliveryFreeze.ToString(),
             DeliveryMethod.TCatDeliverySevenElevenFreeze.ToString(),
             DeliveryMethod.TCatDeliveryFrozen.ToString(),
-            DeliveryMethod.TCatDeliverySevenElevenFrozen.ToString()
+            DeliveryMethod.TCatDeliverySevenElevenFrozen.ToString(),
+            DeliveryMethod.BlackCat1.ToString(),
+            DeliveryMethod.BlackCatFreeze.ToString(),
+            DeliveryMethod.BlackCatFrozen.ToString(),
         };
 
         if (!EditGroupBuyDto.ShippingMethodList.Any(x => blackCat.Contains(x)))
@@ -1797,7 +1817,8 @@ public partial class EditGroupBuy
             DeliveryTimeConts.HomeDelivery.ForEach(item =>
             {
                 HomeDeliveryTimeCheckedChange(item, new ChangeEventArgs { Value = false }, true);
-                JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", item);
+                if (!(EditGroupBuyDto.ShippingMethodList.Any(x => blackCat.Contains(x)) && item == "Inapplicable"))
+                    JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", item);
             });
         }
 
@@ -1806,7 +1827,8 @@ public partial class EditGroupBuy
             DeliveryTimeConts.DeliveredByStore.ForEach(item =>
             {
                 DeliveredByStoreTimeCheckedChange(item, new ChangeEventArgs { Value = false }, true);
-                JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", item);
+                if (!(EditGroupBuyDto.ShippingMethodList.Any(x => blackCat.Contains(x)) && item == "Inapplicable"))
+                    JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", item);
             });
         }
 
@@ -2153,7 +2175,35 @@ public partial class EditGroupBuy
                     return;
                 }
             }
+            if (EditGroupBuyDto.ColorSchemeType == null)
+            {
+                await _uiMessageService.Warn(L[PikachuDomainErrorCodes.ColorSchemeRequired]);
+                await Loading.Hide();
+                return;
 
+            }
+            if (EditGroupBuyDto.ProductDetailsDisplayMethod == null)
+            {
+                await _uiMessageService.Warn(L[PikachuDomainErrorCodes.ProductDetailsDisplayMethodRequired]);
+                await Loading.Hide();
+                return;
+
+            }
+            if (EditGroupBuyDto.GroupBuyConditionDescription.IsNullOrWhiteSpace())
+            {
+                await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyConditionRequired]);
+                await Loading.Hide();
+                return;
+
+            }
+            EditGroupBuyDto.ExchangePolicyDescription = await ExchangePolicyHtml.GetHTML();
+            if (EditGroupBuyDto.ExchangePolicyDescription.IsNullOrWhiteSpace())
+            {
+                await _uiMessageService.Warn(L[PikachuDomainErrorCodes.ExchangePolicyRequired]);
+                await Loading.Hide();
+                return;
+
+            }
             if (GroupPurchaseOverviewModules is { Count: > 0 })
             {
                 foreach (GroupPurchaseOverviewDto groupPurchaseOverview in GroupPurchaseOverviewModules)
@@ -2249,7 +2299,7 @@ public partial class EditGroupBuy
 
             EditGroupBuyDto.NotifyMessage = await NotifyEmailHtml.GetHTML();
             //EditGroupBuyDto.GroupBuyConditionDescription = await GroupBuyHtml.GetHTML();
-            EditGroupBuyDto.ExchangePolicyDescription = await ExchangePolicyHtml.GetHTML();
+
             //EditGroupBuyDto.CustomerInformationDescription = await CustomerInformationHtml.GetHTML();
 
             EditGroupBuyDto.ItemGroups = new List<GroupBuyItemGroupCreateUpdateDto>();
