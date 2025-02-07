@@ -91,7 +91,7 @@ public partial class Order
     private bool isFreeze = false;
     private bool isFrozen = false;
     private Guid? ExpandedOrderId = null;
-
+    bool parentRowExpand = false;
     private bool IsDeliveryNoExists = false;
     private bool FiltersVisible { get; set; } = false;
     #endregion
@@ -104,16 +104,21 @@ public partial class Order
         await GetGroupBuyList();
         await InvokeAsync(StateHasChanged);
     }
+    public void ResetExpandRow(MouseEventArgs e)
+    {
+        parentRowExpand = false;
 
+    }
     public void SelectedTabChanged(string e)
     {
         SelectedTabName = e;
-
+        parentRowExpand = false;
         TotalCount = 0;
         NormalCount = 0;
         FreezeCount = 0;
         FreezeCount = 0;
-        OrdersSelected =new List<OrderDto>();
+        OrdersSelected = new List<OrderDto>();
+        ExpandedRows.Clear();
         StateHasChanged();
     }
 
@@ -147,8 +152,8 @@ public partial class Order
 
         List<Guid> orderIds = Orders.Where(w => w.IsSelected).Select(s => s.OrderId).ToList();
 
-        Dictionary<string, string> AllPayLogisticsIds = new() 
-        { 
+        Dictionary<string, string> AllPayLogisticsIds = new()
+        {
             { "BlackCat1", string.Empty },
             { "BlackCatFrozen", string.Empty },
             { "BlackCatFreeze", string.Empty },
@@ -185,12 +190,12 @@ public partial class Order
         foreach (Guid orderId in orderIds)
         {
             OrderDto order = await _orderAppService.GetAsync(orderId);
-       
+
             List<OrderDeliveryDto> orderDeliveries = await _OrderDeliveryAppService.GetListByOrderAsync(orderId);
 
             foreach (OrderDeliveryDto? delivery in orderDeliveries)
             {
-                if (!string.IsNullOrWhiteSpace(delivery.AllPayLogisticsID) && 
+                if (!string.IsNullOrWhiteSpace(delivery.AllPayLogisticsID) &&
                     (!(delivery.DeliveryMethod is EnumValues.DeliveryMethod.SelfPickup ||
                      delivery.DeliveryMethod is EnumValues.DeliveryMethod.HomeDelivery ||
                      delivery.DeliveryMethod is EnumValues.DeliveryMethod.DeliveredByStore)))
@@ -237,7 +242,7 @@ public partial class Order
                         AllPayLogisticsIds.Add(delivery.DeliveryMethod.ToString(), string.Join(",", AllPayLogisticId));
                     }
 
-                    if (delivery.DeliveryMethod is EnumValues.DeliveryMethod.FamilyMartC2C || 
+                    if (delivery.DeliveryMethod is EnumValues.DeliveryMethod.FamilyMartC2C ||
                         delivery.DeliveryMethod is EnumValues.DeliveryMethod.SevenToElevenC2C ||
                         delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryNormal ||
                         delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryFreeze ||
@@ -466,7 +471,7 @@ public partial class Order
                         Orientation = DinkToPdf.Orientation.Portrait,
                         PaperSize = PaperKind.A4,
                         Out = pdfFilePath,
-                        
+
                     },
                     Objects =
                     {
@@ -479,7 +484,7 @@ public partial class Order
                                 EnableJavascript = true,
                                 DefaultEncoding = "UTF-8",
                                 LoadImages = true,
-                               
+
                             }
                         }
                     }
@@ -914,7 +919,7 @@ public partial class Order
                     }
                 }
 
-    }
+            }
             catch (Exception ex)
             {
                 // Log any errors that occur during PDF generation
@@ -986,7 +991,8 @@ public partial class Order
                         {
                             AddToDictionary(responseResults, order.OrderNo, result.ResponseMessage);
                         }
-                        else if (result.ResponseCode is "1") {
+                        else if (result.ResponseCode is "1")
+                        {
                             await _StoreLogisticsOrderAppService.IssueInvoiceAync(orderId);
                         }
 
@@ -1073,7 +1079,7 @@ public partial class Order
                                 {
                                     AddToDictionary(responseResults, order.OrderNo, result.ResponseMessage);
                                 }
-                                else if (result.ResponseCode is  "1")
+                                else if (result.ResponseCode is "1")
                                 {
                                     await _StoreLogisticsOrderAppService.IssueInvoiceAync(orderId);
                                 }
@@ -1245,7 +1251,7 @@ public partial class Order
                 foreach (Dictionary<string, string> response in responseResults)
                 {
                     if (wholeErrorMessage.IsNullOrEmpty())
-                        wholeErrorMessage = wholeErrorMessage.Insert(i, response.Keys.First() + " -> " + response.Values.First()+"\n");
+                        wholeErrorMessage = wholeErrorMessage.Insert(i, response.Keys.First() + " -> " + response.Values.First() + "\n");
 
                     else
                         wholeErrorMessage = wholeErrorMessage.Insert(i, Environment.NewLine + response.Keys.First() + " -> " + response.Values.First() + "\n");
@@ -1416,9 +1422,9 @@ public partial class Order
         {
             OrdersSelected.Add(order);
 
-            NormalCount = orderDeliveries.Any(x=>x.Items.Any(ai => ai.DeliveryTemperature is ItemStorageTemperature.Normal)) ? NormalCount + 1 : NormalCount;
+            NormalCount = orderDeliveries.Any(x => x.Items.Any(ai => ai.DeliveryTemperature is ItemStorageTemperature.Normal)) ? NormalCount + 1 : NormalCount;
 
-            FreezeCount = orderDeliveries.Any(x => x.Items.Any(ai => ai.DeliveryTemperature is ItemStorageTemperature.Freeze)) ? FreezeCount + 1 : FreezeCount ;
+            FreezeCount = orderDeliveries.Any(x => x.Items.Any(ai => ai.DeliveryTemperature is ItemStorageTemperature.Freeze)) ? FreezeCount + 1 : FreezeCount;
 
             FrozenCount = orderDeliveries.Any(x => x.Items.Any(ai => ai.DeliveryTemperature is ItemStorageTemperature.Frozen)) ? FrozenCount + 1 : FrozenCount;
         }
@@ -1426,9 +1432,9 @@ public partial class Order
 
         {
             OrdersSelected.Remove(order);
-            NormalCount = orderDeliveries.Any(x => x.Items.Any(ai => ai.DeliveryTemperature is ItemStorageTemperature.Normal)) ?  NormalCount - 1 : NormalCount;
-            FreezeCount = orderDeliveries.Any(x => x.Items.Any(ai => ai.DeliveryTemperature is ItemStorageTemperature.Freeze))?FreezeCount - 1 : FreezeCount;
-           FrozenCount= orderDeliveries.Any(x => x.Items.Any(ai => ai.DeliveryTemperature is ItemStorageTemperature.Frozen)) ?  FrozenCount - 1 : FrozenCount;
+            NormalCount = orderDeliveries.Any(x => x.Items.Any(ai => ai.DeliveryTemperature is ItemStorageTemperature.Normal)) ? NormalCount - 1 : NormalCount;
+            FreezeCount = orderDeliveries.Any(x => x.Items.Any(ai => ai.DeliveryTemperature is ItemStorageTemperature.Freeze)) ? FreezeCount - 1 : FreezeCount;
+            FrozenCount = orderDeliveries.Any(x => x.Items.Any(ai => ai.DeliveryTemperature is ItemStorageTemperature.Frozen)) ? FrozenCount - 1 : FrozenCount;
 
 
         }
@@ -1470,7 +1476,7 @@ public partial class Order
         else await LoadTabAsPerNameAsync(SelectedTabName);
     }
 
-   async void HandleSelectAllChange(ChangeEventArgs e)
+    async void HandleSelectAllChange(ChangeEventArgs e)
     {
         await loading.Show();
         IsAllSelected = e.Value != null ? (bool)e.Value : false;
@@ -1481,7 +1487,7 @@ public partial class Order
         {
 
             item.IsSelected = IsAllSelected;
-          
+
             if (item.IsSelected)
             {
                 var orderDeliveries = await _OrderDeliveryAppService.GetListByOrderAsync(item.OrderId);
@@ -1497,11 +1503,11 @@ public partial class Order
 
             {
                 OrdersSelected.Remove(item);
-               
+
 
             }
         }
-     
+
         StateHasChanged();
         await loading.Hide();
     }
@@ -1573,27 +1579,39 @@ public partial class Order
         await UpdateItemList();
     }
 
-    void ToggleRow(DataGridRowMouseEventArgs<OrderDto> e)
+    void ToggleRow(OrderDto e, bool shouldTrigger = false)
     {
-        if (ExpandedOrderId == e.Item.OrderId) ExpandedOrderId = null;
-
-        else ExpandedOrderId = e.Item.OrderId;
-
-        if (ExpandedRows.Contains(e.Item.OrderId))
+        if (!shouldTrigger) return;
+        if (ExpandedOrderId == e.OrderId)
         {
-            ExpandedRows.Remove(e.Item.OrderId);
+            ExpandedOrderId = null;
+            e.ParentRowExpanded = false;
+        }
+
+        else
+        {
+            ExpandedOrderId = e.OrderId;
+            e.ParentRowExpanded = true;
+        }
+
+        if (ExpandedRows.Contains(e.OrderId))
+        {
+            ExpandedRows.Remove(e.OrderId);
         }
         else
         {
-            ExpandedRows.Add(e.Item.OrderId);
+
+            ExpandedRows.Add(e.OrderId);
+
         }
+
     }
 
     public async Task PrepareShipmentCheckboxChanged(bool e, OrderDto order)
     {
         order.IsSelected = e;
 
-        if (order.DeliveryMethod is EnumValues.DeliveryMethod.SelfPickup || 
+        if (order.DeliveryMethod is EnumValues.DeliveryMethod.SelfPickup ||
             order.DeliveryMethod is EnumValues.DeliveryMethod.HomeDelivery)
         {
             List<OrderDeliveryDto> orderDeliveries = await _OrderDeliveryAppService.GetListByOrderAsync(order.OrderId);
@@ -1654,7 +1672,7 @@ public partial class Order
             List<OrderDeliveryDto> orderDeliveries = await _OrderDeliveryAppService.GetListByOrderAsync(selectedOrder.OrderId);
             if (orderDeliveries is { Count: > 0 })
             {
-                foreach(var orderDelivery in orderDeliveries)
+                foreach (var orderDelivery in orderDeliveries)
                     await _OrderDeliveryAppService.UpdateOrderDeliveryStatus(orderDelivery.Id);
             }
         }
@@ -1667,7 +1685,7 @@ public partial class Order
 
         await loading.Hide();
     }
-    private decimal GetDeliveryCost(OrderDto order,ItemStorageTemperature item)
+    private decimal GetDeliveryCost(OrderDto order, ItemStorageTemperature item)
     {
         if (order.DeliveryMethod is EnumValues.DeliveryMethod.DeliveredByStore)
         {
@@ -1775,7 +1793,7 @@ public partial class Order
                     await JSRuntime.InvokeVoidAsync("downloadFile", new
                     {
                         ByteArray = excelData,
-                        FileName = "ReconciliationStatement.xlsx",
+                        FileName = "Orders.xlsx",
                         ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     });
                 }

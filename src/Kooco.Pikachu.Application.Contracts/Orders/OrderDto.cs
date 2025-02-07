@@ -117,4 +117,5 @@ public class OrderDto : FullAuditedEntityDto<Guid>
     public Guid? DiscountCodeId { get; set; }
     public int? DiscountAmount { get; set; }
     public decimal cashback_amount { get; set; }
+    public bool ParentRowExpanded { get; set; }
 }

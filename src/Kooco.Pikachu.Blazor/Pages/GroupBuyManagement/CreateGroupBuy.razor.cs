@@ -1830,6 +1830,7 @@ public partial class CreateGroupBuy
             if (CreateGroupBuyDto.ShortCode.IsNullOrWhiteSpace())
             {
                 await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyShortCodeCannotBeNull]);
+                await Loading.Hide();
                 return;
             }
 

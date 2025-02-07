@@ -423,17 +423,17 @@ public partial class EditItem
     }
     async Task BindItemDetailList()
     {
-        if (ItemDetailsList.Any(a => !a.Image.IsNullOrEmpty()))
-        {
-            bool confirmed = await _uiMessageService.Confirm(L[PikachuDomainErrorCodes.AreYouSureToDeleteImage]);
+        //if (ItemDetailsList.Any(a => !a.Image.IsNullOrEmpty()))
+        //{
+        //    bool confirmed = await _uiMessageService.Confirm(L[PikachuDomainErrorCodes.AreYouSureToDeleteImage]);
 
-            if (!confirmed) return;
+        //    if (!confirmed) return;
 
-            foreach (CreateItemDetailsDto item in ItemDetailsList.Where(w => !w.Image.IsNullOrEmpty()).ToList())
-            {
-                await _imageContainerManager.DeleteAsync(item.Image);
-            }
-        }
+        //    foreach (CreateItemDetailsDto item in ItemDetailsList.Where(w => !w.Image.IsNullOrEmpty()).ToList())
+        //    {
+        //        await _imageContainerManager.DeleteAsync(item.Image);
+        //    }
+        //}
 
         ItemDetailsQuillHtml = []; ItemDetailPickers = [];
 

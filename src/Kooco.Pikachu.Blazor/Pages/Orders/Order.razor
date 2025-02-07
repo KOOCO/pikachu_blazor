@@ -330,10 +330,10 @@
           SelectedTabChanged="SelectedTabChanged"
           Justified="true">
         <Items>
-            <Tab Name="All" TextSize="TextSize.Small">All</Tab>
+            <Tab  Name="All" TextSize="TextSize.Small">All</Tab>
             @foreach (string value in Enum.GetNames(typeof(ShippingStatus)).Where(w => w is not PikachuResource.Exchange && w is not PikachuResource.EnterpricePurchase))
             {
-                <Tab Name="@value" TextSize="TextSize.Small">@L[value]</Tab>
+                <Tab  Name="@value" TextSize="TextSize.Small">@L[value]</Tab>
             }
         </Items>
         <Content>
@@ -345,11 +345,11 @@
                                   @bind-SelectedRow="@SelectedOrder"
                                   ReadData="OnDataGridReadAsync"
                                   TotalItems="TotalCount"
-                                  DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.OrderId == SelectedOrder?.OrderId)"
+                                  DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.OrderId == SelectedOrder?.OrderId && SelectedOrder?.ParentRowExpanded==true)"
                                   Responsive
                                   ShowPager="true"
                                   PageSize="PageSize"
-                                  RowClicked="ToggleRow"
+                                
                                  
                                   RowDoubleClicked="NavigateToOrderDetails"
                                   SortChanged="OnSortChange">
@@ -360,13 +360,21 @@
                                         <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
                                     </DisplayTemplate>
                                 </DataGridColumn>
+                                <DataGridColumn
+                                    Caption="Details"
+                                   
+                                >
+                            <DisplayTemplate>
+                                   @{
+                                            var isExpanded = ExpandedRows.Contains(context.OrderId);
+                                            var chevronClass = isExpanded ? "fa fa-minus" : "fa fa-plus";
+                                        }
+                                       <Button Type="@ButtonType.Button"  @onclick="()=>ToggleRow(context, true)"> <i class="@chevronClass"></i></Button>
+                            </DisplayTemplate>
+                            </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
-                                        @{
-                                            var isExpanded = ExpandedRows.Contains(context.OrderId);
-                                            var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
-                                        }
-                                        <i class="@chevronClass"></i>
+                                     
                                         @L[context.OrderNo]
                                     </DisplayTemplate>
                                 </DataGridColumn>
@@ -535,7 +543,7 @@
                     </CardBody>
                 </Card>
             </TabPanel>
-            <TabPanel Name="WaitingForPayment">
+            <TabPanel  Name="WaitingForPayment">
                 <Card>
                     <CardBody>
                         <DataGrid TItem="OrderDto"
@@ -543,11 +551,11 @@
                                   @bind-SelectedRow="@SelectedOrder"
                                   ReadData="@(async (e) => await OnTabLoadDataGridReadAsync(e, "WaitingForPayment"))"
                                   TotalItems="TotalCount"
-                                  DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.Id == SelectedOrder?.Id)"
+                                  DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.OrderId == SelectedOrder?.OrderId &&   SelectedOrder?.ParentRowExpanded==true)"
                                   Responsive
                                   ShowPager="true"
                                   PageSize="PageSize"
-                                  RowClicked="ToggleRow"
+                                  
                                   RowDoubleClicked="NavigateToOrderDetails"
                                   SortChanged="OnSortChange">
                             <DataGridColumns>
@@ -557,13 +565,21 @@
                                         <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
                                     </DisplayTemplate>
                                 </DataGridColumn>
+                                    <DataGridColumn
+                                    Caption="Details"
+                                   
+                                >
+                            <DisplayTemplate>
+                                   @{
+                                            var isExpanded = ExpandedRows.Contains(context.OrderId);
+                                            var chevronClass = isExpanded ? "fa fa-minus" : "fa fa-plus";
+                                        }
+                                       <Button Type="@ButtonType.Button"  @onclick="()=>ToggleRow(context)"> <i class="@chevronClass"></i></Button>
+                            </DisplayTemplate>
+                            </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
-                                        @{
-                                            var isExpanded = ExpandedRows.Contains(context.OrderId);
-                                            var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
-                                        }
-                                        <i class="@chevronClass"></i>
+                                   
                                         @L[context.OrderNo]
                                     </DisplayTemplate>
                                 </DataGridColumn>
@@ -701,7 +717,7 @@
                     </CardBody>
                 </Card>
             </TabPanel>
-            <TabPanel Name="PrepareShipment">
+            <TabPanel  Name="PrepareShipment">
                 <Card>
                     <CardBody>
                         <DataGrid TItem="OrderDto"
@@ -709,11 +725,11 @@
                                   @bind-SelectedRow="@SelectedOrder"
                                   ReadData="@(async (e) => await OnTabLoadDataGridReadAsync(e, "PrepareShipment"))"
                                   TotalItems="TotalCount"
-                                  DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && IsRowExpanded(e.Item))"
+                                  DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.OrderId == SelectedOrder?.OrderId&& SelectedOrder?.ParentRowExpanded==true)"
                                   Responsive
                                   ShowPager="true"
                                   PageSize="PageSize"
-                                  RowClicked="ToggleRow"
+                                  
                                   RowDoubleClicked="NavigateToOrderDetails"
                                   SortChanged="OnSortChange">
                             <DataGridColumns>
@@ -726,13 +742,21 @@
                                                        ValueChanged="@(async (e) => await PrepareShipmentCheckboxChanged(e, context))" />
                                     </DisplayTemplate>
                                 </DataGridColumn>
+                                    <DataGridColumn
+                                    Caption="Details"
+                                   
+                                >
+                            <DisplayTemplate>
+                                   @{
+                                            var isExpanded = ExpandedRows.Contains(context.OrderId);
+                                            var chevronClass = isExpanded ? "fa fa-minus" : "fa fa-plus";
+                                        }
+                                       <Button Type="@ButtonType.Button" @onclick="()=>ToggleRow(context)"> <i class="@chevronClass"></i></Button>
+                            </DisplayTemplate>
+                            </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
-                                        @{
-                                            var isExpanded = ExpandedRows.Contains(context.OrderId);
-                                            var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
-                                        }
-                                        <i class="@chevronClass"></i>
+                                      
                                         @L[context.OrderNo]
                                     </DisplayTemplate>
                                 </DataGridColumn>
@@ -794,6 +818,7 @@
                                                 <input type="checkbox" class="form-check-input" />
                                             </DisplayTemplate>
                                         </DataGridColumn>
+
                                         <DataGridColumn Caption="@L["Delivery Method"]">
                                             <DisplayTemplate>@L[order.DeliveryMethod.ToString()]</DisplayTemplate>
                                         </DataGridColumn>
@@ -964,7 +989,7 @@
                     </CardBody>
                 </Card>
             </TabPanel>
-            <TabPanel Name="ToBeShipped">
+            <TabPanel  Name="ToBeShipped">
                 <Card>
                     <CardBody>
                         <DataGrid TItem="OrderDto"
@@ -972,11 +997,11 @@
                                   @bind-SelectedRow="@SelectedOrder"
                                   ReadData="@(async (e) => await OnTabLoadDataGridReadAsync(e, "ToBeShipped"))"
                                   TotalItems="TotalCount"
-                                  DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.Id == SelectedOrder?.Id)"
+                                 DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.OrderId == SelectedOrder?.OrderId && SelectedOrder?.ParentRowExpanded==true)"
                                   Responsive
                                   ShowPager="true"
                                   PageSize="PageSize"
-                                  RowClicked="ToggleRow"
+                                  
                                   RowDoubleClicked="NavigateToOrderDetails"
                                   SortChanged="OnSortChange">
                             <DataGridColumns>
@@ -988,14 +1013,22 @@
                                                CheckedChanged=@((e) => OnCheckboxValueChanged(e, context)) />
                                     </DisplayTemplate>
                                 </DataGridColumn>
-                                <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
-                                    <DisplayTemplate>
-                                        @{
-                                            bool isExpanded = ExpandedRows.Contains(context.OrderId);
-
-                                            string chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
+                                      <DataGridColumn
+                                    Caption="Details"
+                                   
+                                >
+                            <DisplayTemplate>
+                                   @{
+                                            var isExpanded = ExpandedRows.Contains(context.OrderId);
+                                            var chevronClass = isExpanded ? "fa fa-minus" : "fa fa-plus";
                                         }
-                                        <i class="@chevronClass"></i>
+                                       <Button Type="@ButtonType.Button"  @onclick="()=>ToggleRow(context)"> <i class="@chevronClass"></i></Button>
+                            </DisplayTemplate>
+                            </DataGridColumn>
+                                <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
+                                  
+                                    <DisplayTemplate>
+                                      
                                         @L[context.OrderNo]
                                     </DisplayTemplate>
                                 </DataGridColumn>
@@ -1228,7 +1261,7 @@
                     </CardBody>
                 </Card>
             </TabPanel>
-            <TabPanel Name="Shipped">
+            <TabPanel  Name="Shipped">
                 <Card>
                     <CardBody>
                         <DataGrid TItem="OrderDto"
@@ -1236,11 +1269,11 @@
                                   @bind-SelectedRow="@SelectedOrder"
                                   ReadData="@(async (e) => await OnTabLoadDataGridReadAsync(e, "Shipped"))"
                                   TotalItems="TotalCount"
-                                  DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.Id == SelectedOrder?.Id)"
+                                  DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.OrderId == SelectedOrder?.OrderId && SelectedOrder?.ParentRowExpanded==true)"
                                   Responsive
                                   ShowPager="true"
                                   PageSize="PageSize"
-                                  RowClicked="ToggleRow"
+                                  
                                   RowDoubleClicked="NavigateToOrderDetails"
                                   SortChanged="OnSortChange">
                             <DataGridColumns>
@@ -1250,13 +1283,21 @@
                                         <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
                                     </DisplayTemplate>
                                 </DataGridColumn>
+                                    <DataGridColumn
+                                    Caption="Details"
+                                   
+                                >
+                            <DisplayTemplate>
+                                   @{
+                                            var isExpanded = ExpandedRows.Contains(context.OrderId);
+                                            var chevronClass = isExpanded ? "fa fa-minus" : "fa fa-plus";
+                                        }
+                                       <Button Type="@ButtonType.Button" @onclick="()=>ToggleRow(context)"> <i class="@chevronClass"></i></Button>
+                            </DisplayTemplate>
+                            </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
-                                        @{
-                                            var isExpanded = ExpandedRows.Contains(context.OrderId);
-                                            var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
-                                        }
-                                        <i class="@chevronClass"></i>
+                                    
                                         @L[context.OrderNo]
                                     </DisplayTemplate>
                                 </DataGridColumn>
@@ -1489,7 +1530,7 @@
                     </CardBody>
                 </Card>
             </TabPanel>
-            <TabPanel Name="Delivered">
+            <TabPanel  Name="Delivered">
                 <Card>
                     <CardBody>
                         <DataGrid TItem="OrderDto"
@@ -1497,11 +1538,11 @@
                                   @bind-SelectedRow="@SelectedOrder"
                                   ReadData="@(async (e) => await OnTabLoadDataGridReadAsync(e, "Delivered"))"
                                   TotalItems="TotalCount"
-                                  DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.Id == SelectedOrder?.Id)"
+                                  DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.OrderId == SelectedOrder?.OrderId && SelectedOrder?.ParentRowExpanded==true)"
                                   Responsive
                                   ShowPager="true"
                                   PageSize="PageSize"
-                                  RowClicked="ToggleRow"
+                                  
                                   RowDoubleClicked="NavigateToOrderDetails"
                                   SortChanged="OnSortChange">
                             <DataGridColumns>
@@ -1511,13 +1552,21 @@
                                         <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
                                     </DisplayTemplate>
                                 </DataGridColumn>
+                                    <DataGridColumn
+                                    Caption="Details"
+                                   
+                                >
+                            <DisplayTemplate>
+                                   @{
+                                            var isExpanded = ExpandedRows.Contains(context.OrderId);
+                                            var chevronClass = isExpanded ? "fa fa-minus" : "fa fa-plus";
+                                        }
+                                       <Button Type="@ButtonType.Button"  @onclick="()=>ToggleRow(context)"> <i class="@chevronClass"></i></Button>
+                            </DisplayTemplate>
+                            </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
-                                        @{
-                                            var isExpanded = ExpandedRows.Contains(context.OrderId);
-                                            var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
-                                        }
-                                        <i class="@chevronClass"></i>
+                                   
                                         @L[context.OrderNo]
                                     </DisplayTemplate>
                                 </DataGridColumn>
@@ -1749,7 +1798,7 @@
                     </CardBody>
                 </Card>
             </TabPanel>
-            <TabPanel Name="Completed">
+            <TabPanel  Name="Completed">
                 <Card>
                     <CardBody>
                         <DataGrid TItem="OrderDto"
@@ -1757,11 +1806,11 @@
                                   @bind-SelectedRow="@SelectedOrder"
                                   ReadData="@(async (e) => await OnTabLoadDataGridReadAsync(e, "Completed"))"
                                   TotalItems="TotalCount"
-                                  DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.Id == SelectedOrder?.Id)"
+                                  DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.OrderId == SelectedOrder?.OrderId && SelectedOrder?.ParentRowExpanded==true)"
                                   Responsive
                                   ShowPager="true"
                                   PageSize="PageSize"
-                                  RowClicked="ToggleRow"
+                                  
                                   RowDoubleClicked="NavigateToOrderDetails"
                                   SortChanged="OnSortChange">
                             <DataGridColumns>
@@ -1771,13 +1820,21 @@
                                         <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
                                     </DisplayTemplate>
                                 </DataGridColumn>
+                                    <DataGridColumn
+                                    Caption="Details"
+                                   
+                                >
+                            <DisplayTemplate>
+                                   @{
+                                            var isExpanded = ExpandedRows.Contains(context.OrderId);
+                                            var chevronClass = isExpanded ? "fa fa-minus" : "fa fa-plus";
+                                        }
+                                       <Button Type="@ButtonType.Button"  @onclick="()=>ToggleRow(context)"> <i class="@chevronClass"></i></Button>
+                            </DisplayTemplate>
+                            </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
-                                        @{
-                                            var isExpanded = ExpandedRows.Contains(context.OrderId);
-                                            var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
-                                        }
-                                        <i class="@chevronClass"></i>
+                                      
                                         @L[context.OrderNo]
                                     </DisplayTemplate>
                                 </DataGridColumn>
@@ -1927,7 +1984,7 @@
                                   Responsive
                                   ShowPager="true"
                                   PageSize="PageSize"
-                                  RowClicked="ToggleRow"
+                                  
                                   RowDoubleClicked="NavigateToOrderDetails"
                                   SortChanged="OnSortChange">
                             <DataGridColumns>
@@ -2081,7 +2138,7 @@
                     </CardBody>
                 </Card>
             </TabPanel> *@
-            <TabPanel Name="Return">
+            <TabPanel  Name="Return">
                 <Card>
                     <CardBody>
                         <DataGrid TItem="OrderDto"
@@ -2089,11 +2146,11 @@
                                   @bind-SelectedRow="@SelectedOrder"
                                   ReadData="@(async (e) => await OnTabLoadDataGridReadAsync(e, "Return"))"
                                   TotalItems="TotalCount"
-                                  DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.Id == SelectedOrder?.Id)"
+                                  DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.OrderId == SelectedOrder?.OrderId && SelectedOrder?.ParentRowExpanded==true)"
                                   Responsive
                                   ShowPager="true"
                                   PageSize="PageSize"
-                                  RowClicked="ToggleRow"
+                                  
                                   RowDoubleClicked="NavigateToOrderDetails"
                                   SortChanged="OnSortChange">
                             <DataGridColumns>
@@ -2103,13 +2160,21 @@
                                         <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
                                     </DisplayTemplate>
                                 </DataGridColumn>
+                                    <DataGridColumn
+                                    Caption="Details"
+                                   
+                                >
+                            <DisplayTemplate>
+                                   @{
+                                            var isExpanded = ExpandedRows.Contains(context.OrderId);
+                                            var chevronClass = isExpanded ? "fa fa-minus" : "fa fa-plus";
+                                        }
+                                       <Button Type="@ButtonType.Button" @onclick="()=>ToggleRow(context)"> <i class="@chevronClass"></i></Button>
+                            </DisplayTemplate>
+                            </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
-                                        @{
-                                            var isExpanded = ExpandedRows.Contains(context.OrderId);
-                                            var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
-                                        }
-                                        <i class="@chevronClass"></i>
+                                    
                                         @L[context.OrderNo]
                                     </DisplayTemplate>
                                 </DataGridColumn>
@@ -2308,7 +2373,7 @@
                     </CardBody>
                 </Card>
             </TabPanel>
-            <TabPanel Name="Closed">
+            <TabPanel  Name="Closed">
                 <Card>
                     <CardBody>
                         <DataGrid TItem="OrderDto"
@@ -2316,11 +2381,11 @@
                                   @bind-SelectedRow="@SelectedOrder"
                                   ReadData="@(async (e) => await OnTabLoadDataGridReadAsync(e, "Closed"))"
                                   TotalItems="TotalCount"
-                                  DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.Id == SelectedOrder?.Id)"
+                                  DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.OrderId == SelectedOrder?.OrderId && SelectedOrder?.ParentRowExpanded==true)"
                                   Responsive
                                   ShowPager="true"
                                   PageSize="PageSize"
-                                  RowClicked="ToggleRow"
+                                  
                                   RowDoubleClicked="NavigateToOrderDetails"
                                   SortChanged="OnSortChange">
                             <DataGridColumns>
@@ -2330,13 +2395,21 @@
                                         <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
                                     </DisplayTemplate>
                                 </DataGridColumn>
+                                    <DataGridColumn
+                                    Caption="Details"
+                                   
+                                >
+                            <DisplayTemplate>
+                                   @{
+                                            var isExpanded = ExpandedRows.Contains(context.OrderId);
+                                            var chevronClass = isExpanded ? "fa fa-minus" : "fa fa-plus";
+                                        }
+                                       <Button Type="@ButtonType.Button" @onclick="()=>ToggleRow(context, true)"> <i class="@chevronClass"></i></Button>
+                            </DisplayTemplate>
+                            </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
-                                        @{
-                                            var isExpanded = ExpandedRows.Contains(context.OrderId);
-                                            var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
-                                        }
-                                        <i class="@chevronClass"></i>
+                                     
                                         @L[context.OrderNo]
                                     </DisplayTemplate>
                                 </DataGridColumn>
