@@ -267,7 +267,8 @@ public class PikachuMenuContributor : IMenuContributor
            name: "SalesReport",
            icon: "fas fa-file-invoice",
            displayName: l["Menu:SalesReport"],
-           url: "/sales-report"
+           url: "/sales-report",
+            requiredPermissionName: PikachuPermissions.SaleReport
            ).RequireAuthenticated()
            );
 

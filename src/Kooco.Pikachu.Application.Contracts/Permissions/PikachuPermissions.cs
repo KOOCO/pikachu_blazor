@@ -31,6 +31,7 @@ public static class PikachuPermissions
     public const string PermissionSetting = "權限管理";
     public const string CashFlowDealerSettings = "CashFlowDealerSettings";
     public const string CashFlowReconciliationStatement = "金流對帳表";
+    public const string SaleReport = "SaleReport";
     public const string EmailSettings = "EmailSettings";
     public const string ReportNotification = "ReportNotification";
     public const string DeliveryTemperatureCost = "DeliveryTemperatureCost";

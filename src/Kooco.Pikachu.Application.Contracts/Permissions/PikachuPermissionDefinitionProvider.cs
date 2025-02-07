@@ -46,6 +46,7 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
         myGroup3.AddPermission(PikachuPermissions.CashFlowDealerSettings, L("Permission:CashFlowDealerSettings"));
         myGroup3.AddPermission(PikachuPermissions.CashFlowReconciliationStatement, L("Permission:CashFlowReconciliationStatement"));
         myGroup3.AddPermission(PikachuPermissions.InvoiceSetting, L("Permission:E-InvoiceSetting"));
+        myGroup3.AddPermission(PikachuPermissions.SaleReport, L("Menu:SalesReport"));
         var myGroup4 = context.AddGroup(PikachuPermissions.LogisticsManagement, L("Permission:LogisticsManagement"));
         myGroup4.AddPermission(PikachuPermissions.LogisticsSetting, L("Permission:LogisticsSetting"));
 
