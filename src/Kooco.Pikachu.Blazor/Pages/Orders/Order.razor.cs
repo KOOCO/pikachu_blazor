@@ -1748,7 +1748,7 @@ public partial class Order
         try
         {
             int skipCount = PageIndex * PageSize;
-            var orderIds = Orders.Where(x => x.IsSelected).Select(x => x.Id).ToList();
+            var orderIds = Orders.Where(x => x.IsSelected).Select(x => x.OrderId).ToList();
             Sorting = Sorting != null ? Sorting : "OrderNo Ascending";
 
             var remoteStreamContent = await _orderAppService.GetListAsExcelFileAsync(new GetOrderListDto
