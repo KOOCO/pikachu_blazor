@@ -304,7 +304,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
                     }
 
-                        await SendEmailAsync(orderId, orderDelivery.DeliveryNo);
+                        await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
                     }
                 }
             catch (AbpDbConcurrencyException e)
@@ -338,7 +338,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
                     }
 
-                    await SendEmailAsync(orderId, orderDelivery.DeliveryNo);
+                    await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
                 }
                
             }
@@ -954,7 +954,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 //await _orderRepository.UpdateAsync(order);
 
             }
-                await SendEmailAsync(orderId, orderDelivery.DeliveryNo);
+                await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
             }
         catch (AbpDbConcurrencyException e)
         {
@@ -985,7 +985,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 //await _orderRepository.UpdateAsync(order);
 
             }
-            await SendEmailAsync(orderId, orderDelivery.DeliveryNo);
+            await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
             return printObtResponse;
 
         }
@@ -1109,7 +1109,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 //await _orderRepository.UpdateAsync(order);
             }
 
-                await SendEmailAsync(orderId, orderDelivery.DeliveryNo);
+                await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
             }
             catch (AbpDbConcurrencyException e)
             {
@@ -1140,7 +1140,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 //await _orderRepository.UpdateAsync(order);
             }
 
-            await SendEmailAsync(orderId, orderDelivery.DeliveryNo);
+            await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
             return printObtB2SResponse;
 
         }
@@ -1171,7 +1171,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             await _orderRepository.UpdateAsync(order);
         }
 
-        await SendEmailAsync(orderId, orderDelivery.DeliveryNo);
+        await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
     }
 
     public bool IsOrderAmountValid(decimal? totalAmount, decimal? deliveryCost)
@@ -1899,10 +1899,6 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         Random random = new Random();
         int suffix = random.Next(100000, 999999); // Generates a 6-digit random number
         return input + suffix.ToString();
-    }
-    private async Task SendEmailAsync(Guid id, string deliveryNo, OrderStatus? orderStatus = null)
-    {
-        await _emailAppService.SendOrderStatusEmailAsync(id, orderStatus);
     }
     #endregion
 }
