@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Data;
+using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
 using Volo.Abp.Localization;
 
@@ -359,15 +360,11 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
         }
     }
 
-    public async Task SendSplitOrderEmailAsync(Guid orderToSplitId, List<Guid> splitOrdersIds)
+    public async Task SendSplitOrderEmailAsync(Guid orderToSplitId, Guid splitOrderId)
     {
         using (CultureHelper.Use(CultureInfo.GetCultureInfo("zh-Hant")))
         {
-            var orderNumbers = await (await orderRepository.GetQueryableAsync())
-                .Where(o => splitOrdersIds.Contains(o.Id))
-                .Select(o => o.OrderNo)
-                .Distinct()
-                .ToListAsync();
+            var splitOrder = await orderRepository.FirstOrDefaultAsync(o => o.Id == splitOrderId);
 
             var order = await orderRepository.GetAsync(orderToSplitId);
             var groupbuy = await groupBuyRepository.GetAsync(g => g.Id == order.GroupBuyId);
@@ -377,8 +374,8 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             string body = File.ReadAllText("wwwroot/EmailTemplates/split_order.html");
 
             body = body.Replace("{{OrderToSplit}}", order.OrderNo);
-            body = body.Replace("{{SplitOrder1}}", orderNumbers.FirstOrDefault());
-            body = body.Replace("{{SplitOrder2}}", orderNumbers.LastOrDefault());
+            body = body.Replace("{{SplitOrder1}}", order.OrderNo);
+            body = body.Replace("{{SplitOrder2}}", splitOrder?.OrderNo);
 
             body = body.Replace("{{CustomerName}}", order.CustomerName);
             body = body.Replace("{{GroupBuyName}}", groupbuy.GroupBuyName);
@@ -398,8 +395,8 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             string groupBuyUrl = tenantSettings?.Tenant.GetProperty<string>(Constant.TenantUrl)?.EnsureEndsWith('/') + $"groupBuy/{groupbuy.Id}";
 
             body = body.Replace("{{OrderToSplitUrl}}", $"{groupBuyUrl}/result/{order.OrderNo}/{order.CustomerEmail}");
-            body = body.Replace("{{SplitOrder1Url}}", $"{groupBuyUrl}/result/{orderNumbers.FirstOrDefault()}/{order.CustomerEmail}");
-            body = body.Replace("{{SplitOrder2Url}}", $"{groupBuyUrl}/result/{orderNumbers.LastOrDefault()}/{order.CustomerEmail}");
+            body = body.Replace("{{SplitOrder1Url}}", $"{groupBuyUrl}/result/{order.OrderNo}/{order.CustomerEmail}");
+            body = body.Replace("{{SplitOrder2Url}}", $"{groupBuyUrl}/result/{splitOrder?.OrderNo}/{order.CustomerEmail}");
 
             body = body.Replace("{{LogoUrl}}", tenantSettings?.LogoUrl);
             body = body.Replace("{{FacebookUrl}}", tenantSettings?.Facebook);

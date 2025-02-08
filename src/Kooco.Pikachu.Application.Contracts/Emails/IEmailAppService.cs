@@ -13,5 +13,5 @@ public interface IEmailAppService : IApplicationService
     Task SendOrderUpdateEmailAsync(Guid id);
     Task SendRefundEmailAsync(Guid id, double amount);
     Task SendMergeOrderEmailAsync(List<Guid> ordersToMergeIds, Guid mergedOrderId);
-    Task SendSplitOrderEmailAsync(Guid orderToSplitId, List<Guid> splitOrdersIds);
+    Task SendSplitOrderEmailAsync(Guid orderToSplitId, Guid splitOrderId);
 }
