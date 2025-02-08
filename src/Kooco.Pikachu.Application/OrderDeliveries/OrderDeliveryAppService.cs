@@ -81,7 +81,7 @@ namespace Kooco.Pikachu.OrderDeliveries
             if (!order.DeliveryNo.IsNullOrEmpty())
             {
                 //await SendEmailAsync(order.OrderId, order.Id);
-                await _emailAppService.SendLogisticsEmailAsync(order.OrderId, order.DeliveryNo);
+                await _emailAppService.SendLogisticsEmailAsync(order.OrderId, order.DeliveryNo, order.DeliveryMethod);
             }
 
             return ObjectMapper.Map<OrderDelivery, OrderDeliveryDto>(order);
@@ -348,7 +348,7 @@ namespace Kooco.Pikachu.OrderDeliveries
                 order.ShippingStatus = ShippingStatus.Shipped;
 
                 await _orderRepository.UpdateAsync(order);
-                await _emailAppService.SendLogisticsEmailAsync(delivery.OrderId, delivery.DeliveryNo);
+                await _emailAppService.SendLogisticsEmailAsync(delivery.OrderId, delivery.DeliveryNo, delivery.DeliveryMethod);
                 await UnitOfWorkManager.Current.SaveChangesAsync();
                 var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
                 if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.Shipped)

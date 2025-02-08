@@ -20,7 +20,7 @@ namespace Kooco.Pikachu.Emails;
 public class EmailAppService(IOrderRepository orderRepository, IGroupBuyRepository groupBuyRepository,
     ITenantSettingsAppService tenantSettingsAppService, IEmailSender emailSender) : PikachuAppService, IEmailAppService
 {
-    public async Task SendLogisticsEmailAsync(Guid orderId, string? deliveryNo = "")
+    public async Task SendLogisticsEmailAsync(Guid orderId, string? deliveryNo = "", DeliveryMethod? deliveryMethod = null)
     {
         using (CultureHelper.Use(CultureInfo.GetCultureInfo("zh-Hant")))
         {
@@ -34,6 +34,21 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById("China Standard Time"); // UTC+8
             DateTimeOffset creationTimeInTimeZone = TimeZoneInfo.ConvertTime(creationTime, tz);
             string formattedTime = creationTimeInTimeZone.ToString("yyyy-MM-dd HH:mm:ss");
+
+            //deliveryMethod = order.DeliveryMethod?.ToString() ?? string.Empty;
+
+            var trackingUrls = new Dictionary<string, string>
+            {
+                { "SevenToEleven", "https://eservice.7-11.com.tw/e-tracking/search.aspx" },
+                { "FamilyMart", "https://fmec.famiport.com.tw/FP_Entrance/QueryBox" },
+                { "TCatDelivery", "https://www.t-cat.com.tw/inquire/trace.aspx" },
+                { "PostOffice", "https://postserv.post.gov.tw/pstmail/" }
+            };
+
+            var trackingUrl = trackingUrls
+                .FirstOrDefault(x => deliveryMethod != null
+                && deliveryMethod.ToString()!.Contains(x.Key, StringComparison.OrdinalIgnoreCase)).Value
+                ?? string.Empty;
 
             body = body.Replace("{{CustomerName}}", order.CustomerName);
             body = body.Replace("{{GroupBuyName}}", groupbuy.GroupBuyName);
@@ -64,7 +79,7 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
 
             body = body.Replace("{{CurrentYear}}", DateTime.Today.ToString("yyyy"));
             body = body.Replace("{{CompanyName}}", tenantSettings?.CompanyName);
-            body = body.Replace("{{GroupBuyUrl}}", groupBuyUrl);
+            body = body.Replace("{{TrackingUrl}}", trackingUrl);
 
             await emailSender.SendAsync(order.CustomerEmail, subject, body);
         }
@@ -276,7 +291,7 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             var groupbuy = await groupBuyRepository.GetAsync(g => g.Id == order.GroupBuyId);
             string status = L[order.ShippingStatus.ToString()];
 
-            string subject = $"{groupbuy.GroupBuyName} 訂單#{order.OrderNo} {status}";
+            string subject = $"{groupbuy.GroupBuyName} 訂單#{order.OrderNo} 退款已完成";
 
             string body = File.ReadAllText("wwwroot/EmailTemplates/refund.html");
 
