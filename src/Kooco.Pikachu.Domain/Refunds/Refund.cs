@@ -1,11 +1,7 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Orders;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
 
@@ -22,6 +18,7 @@ namespace Kooco.Pikachu.Refunds
         [ForeignKey(nameof(OrderId))]
         public Order Order { get; set; }
         public Guid? TenantId { get; set; }
+        public string? RejectReason { get; set; }
 
         public Refund()
         {

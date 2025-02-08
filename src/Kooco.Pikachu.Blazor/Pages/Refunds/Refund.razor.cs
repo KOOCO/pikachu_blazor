@@ -2,8 +2,6 @@
 using Blazorise.DataGrid;
 using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.EnumValues;
-using Kooco.Pikachu.Items.Dtos;
-using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.Refunds;
 using Microsoft.AspNetCore.Authorization;
@@ -11,9 +9,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Volo.Abp.Application.Dtos;
 
 namespace Kooco.Pikachu.Blazor.Pages.Refunds;
 
@@ -29,6 +25,11 @@ public partial class Refund
     string? Filter { get; set; }
     int TotalCount { get; set; }
     private bool CanProcessRefund { get; set; }
+    private RefundDto SelectedRefund { get; set; }
+    private Modal RejectReasonModal;
+    private string? RejectReason { get; set; }
+    private bool ViewRejectReason { get; set; }
+
     #endregion
 
     #region Methods
@@ -42,7 +43,7 @@ public partial class Refund
         await UpdateItemList();
         await InvokeAsync(StateHasChanged);
     }
-  
+
     private async Task UpdateItemList()
     {
         try
@@ -87,11 +88,11 @@ public partial class Refund
         try
         {
             await loading.Show();
-            
+
             await _refundAppService.UpdateRefundReviewAsync(rowData.Id, RefundReviewStatus.Proccessing);
-            
+
             await _refundAppService.CheckStatusAndRequestRefundAsync(rowData.Id);
-            
+
             await UpdateItemList();
         }
         catch (Exception ex)
@@ -105,14 +106,26 @@ public partial class Refund
             await loading.Hide();
         }
     }
-    private async Task RefundReject(RefundDto rowData)
+
+    private async Task OpenRefundRejectModal(RefundDto refund, bool viewRejectReason)
+    {
+        ViewRejectReason = viewRejectReason;
+        SelectedRefund = refund;
+        await RejectReasonModal.Show();
+    }
+
+    private async Task RefundReject()
     {
         try
         {
             await loading.Show();
 
-            await _refundAppService.UpdateRefundReviewAsync(rowData.Id, RefundReviewStatus.ReturnedApplication);
-
+            if (SelectedRefund == null || string.IsNullOrEmpty(RejectReason))
+            {
+                return;
+            }
+            await _refundAppService.UpdateRefundReviewAsync(SelectedRefund.Id, RefundReviewStatus.ReturnedApplication, RejectReason);
+            await RejectReasonModal.Hide();
             await UpdateItemList();
         }
         catch (Exception ex)

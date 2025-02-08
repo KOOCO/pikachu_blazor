@@ -146,9 +146,19 @@
                                         @L["Approve"]
                                     </Button>
                                     <Button Type="ButtonType.Button"
-                                            Clicked="@(e => RefundReject(context))"
+                                            Clicked="@(e => OpenRefundRejectModal(context, false))"
                                             Class="btn btn-sm btn-danger">
                                         @L["Reject"]
+                                    </Button>
+                                </Div>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(context.RejectReason))
+                            {
+                                <Div Class="text-center">
+                                    <Button Type="ButtonType.Button"
+                                            Clicked="@(e => OpenRefundRejectModal(context, true))"
+                                            Class="btn btn-sm btn-danger">
+                                        @L["ViewReason"]
                                     </Button>
                                 </Div>
                             }
@@ -198,8 +208,54 @@
             </DataGrid>
         </CardBody>
     </Card>
+    <Modal @ref="@RejectReasonModal">
+        <ModalContent IsCentered="true">
+            <Form>
+                <ModalHeader>
+                    <ModalTitle>@L["RejectReason"]</ModalTitle>
+                    <CloseButton Clicked="() => RejectReasonModal?.Hide()" />
+                </ModalHeader>
+                <ModalBody>
+                    @if (ViewRejectReason)
+                    {
+                        <pre style="font-size: medium; white-space: pre-wrap;">
+                            @SelectedRefund?.RejectReason
+                        </pre>
+                    }
+                    else
+                    {
+                        <Validation Validator="ValidationRule.IsNotEmpty">
+                            <Field>
+                                <FieldLabel>@L["PleaseSpecifyTheReasonForRejection"]</FieldLabel>
+                                <MemoEdit @bind-Text="@RejectReason" Rows="7">
+                                    <Feedback>
+                                        <ValidationNone>@L["PleaseSpecifyTheReasonForRejection"]:</ValidationNone>
+                                        <ValidationError>@L["ThisFieldIsRequired"]</ValidationError>
+                                    </Feedback>
+                                </MemoEdit>
+                            </Field>
+                        </Validation>
+                    }
+                </ModalBody>
+                <ModalFooter>
+                    <Button Color="Color.Secondary"
+                            Clicked="() => RejectReasonModal?.Hide()">
+                        @L["Cancel"]
+                    </Button>
+                    @if (!ViewRejectReason)
+                    {
+                        <Button Color="Color.Primary"
+                                Type="@ButtonType.Submit"
+                                PreventDefaultOnSubmit="true"
+                                Clicked="RefundReject">
+                            @L["Save"]
+                        </Button>
+                    }
+                </ModalFooter>
+            </Form>
+        </ModalContent>
+    </Modal>
 </LoadingIndicator>
-
 @{
 
 }

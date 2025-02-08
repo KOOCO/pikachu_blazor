@@ -1202,13 +1202,15 @@
     "Monthly": "每月",
     "GroupBuy": "團購名稱",
     "EnterItemStyleDescription": "請輸入商品規格描述",
-    
-      "Pikachu:ColorSchemeRequired": "需要顏色方案。",
-      "Pikachu:ProductDetailsDisplayMethodRequired": "需要產品詳細資訊顯示方式。",
-      "Pikachu:GroupBuyConditionRequired": "需要團購條件。",
-      "Pikachu:ExchangePolicyRequired": "需要換貨政策。",
-      "Pikachu:FreeShippingThresholdRequired": "需要免運門檻。"
-    
 
+    "Pikachu:ColorSchemeRequired": "需要顏色方案。",
+    "Pikachu:ProductDetailsDisplayMethodRequired": "需要產品詳細資訊顯示方式。",
+    "Pikachu:GroupBuyConditionRequired": "需要團購條件。",
+    "Pikachu:ExchangePolicyRequired": "需要換貨政策。",
+    "Pikachu:FreeShippingThresholdRequired": "需要免運門檻。",
+    "ThisFieldIsRequired": "此欄位為必填項目。",
+    "PleaseSpecifyTheReasonForRejection": "請指定拒絕的原因。",
+    "RejectReason": "拒絕原因",
+    "ViewReason": "查看原因"
   }
 }

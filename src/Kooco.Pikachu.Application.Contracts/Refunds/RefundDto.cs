@@ -14,5 +14,6 @@ namespace Kooco.Pikachu.Refunds
         public Guid? TenantId { get; set; }
         public string? Approver { get; set; }
         public string? Refunder { get; set; }
+        public string? RejectReason { get; set; }
     }
 }

@@ -43,7 +43,7 @@ public class RefundController(
     }
 
     [HttpPut("{id}/{input}")]
-    public Task<RefundDto> UpdateRefundReviewAsync(Guid id, RefundReviewStatus input)
+    public Task<RefundDto> UpdateRefundReviewAsync(Guid id, RefundReviewStatus input, string? rejectReason = null)
     {
         return _refundAppService.UpdateRefundReviewAsync(id, input);
     }

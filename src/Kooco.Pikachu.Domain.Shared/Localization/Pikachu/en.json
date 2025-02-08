@@ -1130,6 +1130,10 @@
     "Pikachu:ProductDetailsDisplayMethodRequired": "Product details display method is required.",
     "Pikachu:GroupBuyConditionRequired": "Group buy condition is required.",
     "Pikachu:ExchangePolicyRequired": "Exchange policy is required.",
-    "Pikachu:FreeShippingThresholdRequired": "Free shipping threshold is required."
+    "Pikachu:FreeShippingThresholdRequired": "Free shipping threshold is required.",
+    "ThisFieldIsRequired": "This field is required.",
+    "PleaseSpecifyTheReasonForRejection": "Please specify the reason for rejection.",
+    "RejectReason": "Reject Reason",
+    "ViewReason": "View Reason"
   }
 }

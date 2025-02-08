@@ -101,11 +101,16 @@ public class RefundAppService : ApplicationService, IRefundAppService
         };
     }
 
-    public async Task<RefundDto> UpdateRefundReviewAsync(Guid id, RefundReviewStatus input)
+    public async Task<RefundDto> UpdateRefundReviewAsync(Guid id, RefundReviewStatus input, string? rejectReason = null)
     {
         Refund refund = await _refundRepository.GetAsync(id);
 
         refund.RefundReview = input;
+
+        if (input is RefundReviewStatus.ReturnedApplication && !string.IsNullOrWhiteSpace(rejectReason))
+        {
+            refund.RejectReason = rejectReason;
+        }
 
         if (input is RefundReviewStatus.Proccessing ||
             input is RefundReviewStatus.ReturnedApplication)
