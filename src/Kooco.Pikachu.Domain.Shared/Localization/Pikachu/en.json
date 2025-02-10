@@ -1134,6 +1134,7 @@
     "ThisFieldIsRequired": "This field is required.",
     "PleaseSpecifyTheReasonForRejection": "Please specify the reason for rejection.",
     "RejectReason": "Reject Reason",
-    "ViewReason": "View Reason"
+    "ViewReason": "View Reason",
+    "Pikachu:LogoIsRequired": "Logo is required"
   }
 }

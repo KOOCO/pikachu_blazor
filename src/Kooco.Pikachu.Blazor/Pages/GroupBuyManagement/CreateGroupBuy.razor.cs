@@ -1833,7 +1833,12 @@ public partial class CreateGroupBuy
                 await Loading.Hide();
                 return;
             }
-
+            if (CreateGroupBuyDto.LogoURL.IsNullOrEmpty())
+            {
+                await _uiMessageService.Warn(L[PikachuDomainErrorCodes.LogoIsRequired]);
+                await Loading.Hide();
+                return;
+            }
             string shortCode = CreateGroupBuyDto.ShortCode;
             if (!string.IsNullOrEmpty(shortCode))
             {

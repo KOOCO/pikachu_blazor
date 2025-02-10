@@ -532,7 +532,7 @@
                                 <input type="checkbox"
                                 class="form-check-input"
                                 id="@item"
-                                disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CreateGroupBuyDto.IsEnterprise"
+                                disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))||CreateGroupBuyDto.IsEnterprise"
                                 checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                 @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                 @L[item]
@@ -698,9 +698,7 @@
                                 <input type="checkbox"
                                        class="form-check-input"
                                        id="@island"
-                                       disabled="@(island is not PikachuResource.UnableToSpecifyDuringPeakPeriods ?
-                                                        IsUnableToSpecifyDuringPeakPeriodsForSelfPickups :
-                                                        false)"
+                                      
                                        checked="@(CreateGroupBuyDto.SelfPickupDeliveryTime is not null &&
                                                       CreateGroupBuyDto.SelfPickupDeliveryTime.Contains(island))"
                                        @onchange="(value) => SelfPickupDeliveryTimeCheckedChange(island, value)" />
