@@ -3,6 +3,8 @@ using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.Orders;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Polly;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +27,13 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
             allowShipToOuterTaiwan, allowShipOversea, expectShippingDateFrom, expectShippingDateTo, moneyTransferValidDayBy, moneyTransferValidDays,
             issueInvoice, autoIssueTriplicateInvoice, invoiceNote, protectPrivacyData, inviteCode, profitShare, metaPixelNo, fBID, iGID, lineID, gAID, gTM,
             warningMessage, orderContactInfo, exchangePolicy, notifyMessage, ExcludeShippingMethod, PaymentMethod, IsInviteCode, IsEnterprise, isGroupbuyAvailable);
+        if (!string.IsNullOrWhiteSpace(ExcludeShippingMethod))
+        {
+            var shippingMethod = JsonConvert.DeserializeObject<List<string>>(ExcludeShippingMethod);
+            var newquery = query.AsEnumerable().Where(e => JsonConvert.DeserializeObject<List<string>>(e.ExcludeShippingMethod)
+                .Any(method => shippingMethod.Contains(method)));
+            return newquery.LongCount();
+        }
         return await query.LongCountAsync(GetCancellationToken(cancellationToken));
     }
 
@@ -34,7 +43,23 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
             allowShipToOuterTaiwan, allowShipOversea, expectShippingDateFrom, expectShippingDateTo, moneyTransferValidDayBy, moneyTransferValidDays,
             issueInvoice, autoIssueTriplicateInvoice, invoiceNote, protectPrivacyData, inviteCode, profitShare, metaPixelNo, fBID, iGID, lineID, gAID, gTM,
             warningMessage, orderContactInfo, exchangePolicy, notifyMessage, ExcludeShippingMethod, PaymentMethod, IsInviteCode, IsEnterprise, isGroupbuyAvailable);
-
+        if (!string.IsNullOrWhiteSpace(ExcludeShippingMethod))
+        {
+            var shippingMethod = JsonConvert.DeserializeObject<List<string>>(ExcludeShippingMethod);
+            var newquery = query.AsEnumerable().Where(e => JsonConvert.DeserializeObject<List<string>>(e.ExcludeShippingMethod)
+                  .Any(method => shippingMethod.Contains(method)));
+            newquery = newquery.AsQueryable().OrderBy(string.IsNullOrWhiteSpace(sorting) ? GroupBuyConsts.GetDefaultSorting(false) : sorting).PageBy(skipCount, maxResultCount);
+            var newresult = newquery.AsQueryable().Select(x => new GroupBuyList
+            {
+                Id = x.Id,
+                GroupBuyName = x.GroupBuyName,
+                StartTime = x.StartTime,
+                EndTime = x.EndTime,
+                CreationTime = x.CreationTime,
+                IsGroupBuyAvaliable = x.IsGroupBuyAvaliable
+            }).ToList();
+            return newresult;
+        }
         query = query.OrderBy(string.IsNullOrWhiteSpace(sorting) ? GroupBuyConsts.GetDefaultSorting(false) : sorting).PageBy(skipCount, maxResultCount);
         var result = await query.Select(x => new GroupBuyList
         {
@@ -44,8 +69,6 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
             EndTime = x.EndTime,
             CreationTime = x.CreationTime,
             IsGroupBuyAvaliable = x.IsGroupBuyAvaliable
-
-
         }).ToListAsync();
         return result;
     }
@@ -258,7 +281,11 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
                 .WhereIf(!string.IsNullOrWhiteSpace(orderContactInfo), e => e.OrderContactInfo.Contains(orderContactInfo))
                 .WhereIf(!string.IsNullOrWhiteSpace(exchangePolicy), e => e.ExchangePolicy.Contains(exchangePolicy))
                 .WhereIf(!string.IsNullOrWhiteSpace(notifyMessage), e => e.NotifyMessage.Contains(notifyMessage))
-                .WhereIf(!string.IsNullOrWhiteSpace(ExcludeShippingMethod), e => e.ExcludeShippingMethod.Contains(ExcludeShippingMethod))
+                
+                //.WhereIf(!string.IsNullOrWhiteSpace(ExcludeShippingMethod), e =>
+                //    JsonConvert.DeserializeObject<List<string>>(e.ExcludeShippingMethod)
+                //    .Intersect(JsonConvert.DeserializeObject<List<string>>(ExcludeShippingMethod))
+                //    .Any())
                 .WhereIf(!string.IsNullOrWhiteSpace(PaymentMethod), e => e.PaymentMethod.Contains(PaymentMethod))
                 .WhereIf(issueInvoice.HasValue, e => e.IssueInvoice == issueInvoice)
                 .WhereIf(startTime.HasValue || endTime.HasValue, e => (!startTime.HasValue || e.EndTime.Value.Date >= startTime.Value.Date) &&
