@@ -59,6 +59,7 @@ public partial class EditGroupBuy
     bool CreditCard { get; set; }
     bool BankTransfer { get; set; }
     bool IsCashOnDelivery { get; set; }
+    bool IsLinePay { get; set; }
     public List<string> SelfPickupTimeList = new List<string>();
     public List<string> BlackCateDeliveryTimeList = new List<string>();
     public List<string> HomeDeliveryTimeList = new List<string>();
@@ -226,18 +227,10 @@ public partial class EditGroupBuy
             {
                 string[] payments = GroupBuy.PaymentMethod.Split(" , ");
 
-                if (payments.Length > 1)
-                {
-                    CreditCard = payments.Contains("Credit Card");
-                    BankTransfer = payments.Contains("Bank Transfer");
-                    IsCashOnDelivery = payments.Contains("Cash On Delivery");
-                }
-
-                else if (GroupBuy.PaymentMethod is "Credit Card") CreditCard = true;
-
-                else if (GroupBuy.PaymentMethod is "Bank Transfer") BankTransfer = true;
-
-                else if (GroupBuy.PaymentMethod is "Cash On Delivery") IsCashOnDelivery = true;
+                CreditCard = payments.Contains("Credit Card");
+                BankTransfer = payments.Contains("Bank Transfer");
+                IsCashOnDelivery = payments.Contains("Cash On Delivery");
+                IsLinePay = payments.Contains("LinePay");
             }
 
             EditGroupBuyDto.EntryURL = $"{(await MyTenantAppService.FindTenantUrlAsync(CurrentTenant.Id))?.TrimEnd('/')}/groupBuy/{Id}";
@@ -271,7 +264,7 @@ public partial class EditGroupBuy
 
         if (EditGroupBuyDto.IsEnterprise)
         {
-            IsCashOnDelivery = true; CreditCard = false; BankTransfer = false;
+            IsCashOnDelivery = true; CreditCard = false; BankTransfer = false;IsLinePay = false;
             OnShippingMethodCheckedChange("SelfPickup", new ChangeEventArgs { Value = true });
             OnShippingMethodCheckedChange("DeliveredByStore", new ChangeEventArgs { Value = false });
             OnShippingMethodCheckedChange("HomeDelivery", new ChangeEventArgs { Value = false });
@@ -2104,14 +2097,13 @@ public partial class EditGroupBuy
             //    EditGroupBuyDto.PaymentMethod = string.Join(",", PaymentMethodTags);
             //}
 
-            if (CreditCard && BankTransfer && IsCashOnDelivery) EditGroupBuyDto.PaymentMethod = "Credit Card , Bank Transfer , Cash On Delivery";
+            List<string> paymentMethods = new List<string>();
 
-            else if (CreditCard) EditGroupBuyDto.PaymentMethod = "Credit Card";
-
-            else if (BankTransfer) EditGroupBuyDto.PaymentMethod = "Bank Transfer";
-
-            else if (IsCashOnDelivery) EditGroupBuyDto.PaymentMethod = "Cash On Delivery";
-
+            if (CreditCard) paymentMethods.Add("Credit Card");
+            if (BankTransfer) paymentMethods.Add("Bank Transfer");
+            if (IsCashOnDelivery) paymentMethods.Add("Cash On Delivery");
+            if (IsLinePay) paymentMethods.Add("LinePay");
+            if (paymentMethods.Count > 0) EditGroupBuyDto.PaymentMethod = string.Join(" , ", paymentMethods);
             else EditGroupBuyDto.PaymentMethod = string.Empty;
 
             if (EditGroupBuyDto.ProductType is null)

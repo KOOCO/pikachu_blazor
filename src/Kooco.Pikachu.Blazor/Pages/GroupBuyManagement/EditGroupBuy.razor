@@ -812,6 +812,11 @@
                            @bind-Checked="@BankTransfer">
                         @L["BankTransfer"]
                     </Check>
+                     <Check TValue="bool"
+                           Disabled=@EditGroupBuyDto.IsEnterprise
+                           @bind-Checked="@IsLinePay">
+                        @L["LinePay"]
+                    </Check>
                     <Check TValue="bool"
                            @bind-Checked="@IsCashOnDelivery">
                         @L[PikachuResource.CashOnDelivery]

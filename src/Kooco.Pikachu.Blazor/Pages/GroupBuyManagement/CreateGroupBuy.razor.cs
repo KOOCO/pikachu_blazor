@@ -73,6 +73,7 @@ public partial class CreateGroupBuy
     bool CreditCard { get; set; }
     bool BankTransfer { get; set; }
     bool IsCashOnDelivery { get; set; }
+    bool IsLinePay { get; set; }
     public string _ProductPicture = "Product Picture";
     private FilePicker LogoPickerCustom { get; set; }
     private FilePicker BannerPickerCustom { get; set; }
@@ -490,12 +491,29 @@ public partial class CreateGroupBuy
     public bool isPaymentMethodEnabled()
     {
         var ecpay = PaymentGateways.Where(x => x.PaymentIntegrationType == PaymentIntegrationType.EcPay).FirstOrDefault();
+       
         if (ecpay == null)
         {
             return true;
         }
         else if (!ecpay.IsEnabled) return true;
         else if (ecpay.HashIV.IsNullOrEmpty() || ecpay.HashKey.IsNullOrEmpty() || ecpay.MerchantId.IsNullOrEmpty() || ecpay.TradeDescription.IsNullOrEmpty() || ecpay.CreditCheckCode.IsNullOrEmpty()) return true;
+        else
+        {
+            return false;
+
+        }
+    }
+    public bool isLinePayPaymentMethodEnabled()
+    {
+        var linePay = PaymentGateways.Where(x => x.PaymentIntegrationType == PaymentIntegrationType.LinePay).FirstOrDefault();
+
+        if (linePay == null)
+        {
+            return true;
+        }
+        else if (!linePay.IsEnabled) return true;
+        else if (linePay.ChannelId.IsNullOrEmpty() ||  linePay.ChannelSecretKey.IsNullOrEmpty() ) return true;
         else
         {
             return false;
@@ -1590,7 +1608,7 @@ public partial class CreateGroupBuy
 
         if (CreateGroupBuyDto.IsEnterprise)
         {
-            IsCashOnDelivery = true; CreditCard = false; BankTransfer = false;
+            IsCashOnDelivery = true; CreditCard = false; BankTransfer = false;IsLinePay = false;
             OnShippingMethodCheckedChange("SelfPickup", new ChangeEventArgs { Value = true });
             OnShippingMethodCheckedChange("DeliveredByStore", new ChangeEventArgs { Value = false });
             OnShippingMethodCheckedChange("HomeDelivery", new ChangeEventArgs { Value = false });
@@ -1884,14 +1902,13 @@ public partial class CreateGroupBuy
             //{
             //    CreateGroupBuyDto.PaymentMethod = string.Join(",", PaymentMethodTags);
             //}
-            if (CreditCard && BankTransfer && IsCashOnDelivery) CreateGroupBuyDto.PaymentMethod = "Credit Card , Bank Transfer , Cash On Delivery";
+            List<string> paymentMethods = new List<string>();
 
-            else if (CreditCard) CreateGroupBuyDto.PaymentMethod = "Credit Card";
-
-            else if (BankTransfer) CreateGroupBuyDto.PaymentMethod = "Bank Transfer";
-
-            else if (IsCashOnDelivery) CreateGroupBuyDto.PaymentMethod = "Cash On Delivery";
-
+            if (CreditCard) paymentMethods.Add("Credit Card");
+            if (BankTransfer) paymentMethods.Add("Bank Transfer");
+            if (IsCashOnDelivery) paymentMethods.Add("Cash On Delivery");
+            if (IsLinePay) paymentMethods.Add("LinePay");
+            if(paymentMethods.Count>0) CreateGroupBuyDto.PaymentMethod = string.Join(" , ", paymentMethods);
             else CreateGroupBuyDto.PaymentMethod = string.Empty;
 
             if (CreateGroupBuyDto.ProductType is null)
