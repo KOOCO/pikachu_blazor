@@ -27,7 +27,7 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
             allowShipToOuterTaiwan, allowShipOversea, expectShippingDateFrom, expectShippingDateTo, moneyTransferValidDayBy, moneyTransferValidDays,
             issueInvoice, autoIssueTriplicateInvoice, invoiceNote, protectPrivacyData, inviteCode, profitShare, metaPixelNo, fBID, iGID, lineID, gAID, gTM,
             warningMessage, orderContactInfo, exchangePolicy, notifyMessage, ExcludeShippingMethod, PaymentMethod, IsInviteCode, IsEnterprise, isGroupbuyAvailable);
-        if (!string.IsNullOrWhiteSpace(ExcludeShippingMethod))
+        if (!string.IsNullOrWhiteSpace(ExcludeShippingMethod)&& ExcludeShippingMethod!="[]")
         {
             var shippingMethod = JsonConvert.DeserializeObject<List<string>>(ExcludeShippingMethod);
             var newquery = query.AsEnumerable().Where(e => JsonConvert.DeserializeObject<List<string>>(e.ExcludeShippingMethod)
@@ -43,7 +43,7 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
             allowShipToOuterTaiwan, allowShipOversea, expectShippingDateFrom, expectShippingDateTo, moneyTransferValidDayBy, moneyTransferValidDays,
             issueInvoice, autoIssueTriplicateInvoice, invoiceNote, protectPrivacyData, inviteCode, profitShare, metaPixelNo, fBID, iGID, lineID, gAID, gTM,
             warningMessage, orderContactInfo, exchangePolicy, notifyMessage, ExcludeShippingMethod, PaymentMethod, IsInviteCode, IsEnterprise, isGroupbuyAvailable);
-        if (!string.IsNullOrWhiteSpace(ExcludeShippingMethod))
+        if (!string.IsNullOrWhiteSpace(ExcludeShippingMethod) && ExcludeShippingMethod != "[]")
         {
             var shippingMethod = JsonConvert.DeserializeObject<List<string>>(ExcludeShippingMethod);
             var newquery = query.AsEnumerable().Where(e => JsonConvert.DeserializeObject<List<string>>(e.ExcludeShippingMethod)
@@ -260,6 +260,11 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
         string filterText,
         int? groupBuyNo = null, string? status = null, string? groupBuyName = null, string? entryURL = null, string? entryURL2 = null, string? subjectLine = null, string? shortName = null, string? logoURL = null, string? bannerURL = null, DateTime? startTime = null, DateTime? endTime = null, bool? freeShipping = false, bool? allowShipToOuterTaiwan = false, bool? allowShipOversea = false, DateTime? expectShippingDateFrom = null, DateTime? expectShippingDateTo = null, int? moneyTransferValidDayBy = null, int? moneyTransferValidDays = null, bool? issueInvoice = false, bool? autoIssueTriplicateInvoice = false, string? invoiceNote = null, bool? protectPrivacyData = false, string? inviteCode = null, int? profitShare = null, int? metaPixelNo = null, string? fBID = null, string? iGID = null, string? lineID = null, string? gAID = null, string? gTM = null, string? warningMessage = null, string? orderContactInfo = null, string? exchangePolicy = null, string? notifyMessage = null, string? ExcludeShippingMethod = null, string? PaymentMethod = null, bool? IsInviteCode = null, bool? IsEnterprise = null, bool? isGroupbuyAvailable = null, CancellationToken cancellationToken = default)
     {
+        string[] payment= [];
+        if (!string.IsNullOrWhiteSpace(PaymentMethod))
+        {
+            payment = PaymentMethod.Split(",");
+        }
         return query
                 .WhereIf(!string.IsNullOrWhiteSpace(filterText), e => e.Status.Contains(filterText) || e.GroupBuyName.Contains(filterText) ||
                 e.Id.ToString().Contains(filterText) || e.EntryURL.Contains(filterText) || e.EntryURL2.Contains(filterText) || e.SubjectLine.Contains(filterText) || e.ShortName.Contains(filterText)
@@ -286,7 +291,7 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
                 //    JsonConvert.DeserializeObject<List<string>>(e.ExcludeShippingMethod)
                 //    .Intersect(JsonConvert.DeserializeObject<List<string>>(ExcludeShippingMethod))
                 //    .Any())
-                .WhereIf(!string.IsNullOrWhiteSpace(PaymentMethod), e => e.PaymentMethod.Contains(PaymentMethod))
+                .WhereIf(payment.Any(), e => payment.Any(pm => EF.Functions.Like(e.PaymentMethod, "%" + pm + "%")))
                 .WhereIf(issueInvoice.HasValue, e => e.IssueInvoice == issueInvoice)
                 .WhereIf(startTime.HasValue || endTime.HasValue, e => (!startTime.HasValue || e.EndTime.Value.Date >= startTime.Value.Date) &&
                          (!endTime.HasValue || e.StartTime.Value.Date <= endTime.Value.Date))
