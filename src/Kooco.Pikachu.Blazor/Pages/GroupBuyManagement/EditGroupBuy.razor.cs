@@ -2059,6 +2059,12 @@ public partial class EditGroupBuy
                 await Loading.Hide();
                 return;
             }
+            if (EditGroupBuyDto.ShortCode.IsNullOrWhiteSpace())
+            {
+                await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyShortCodeCannotBeNull]);
+                await Loading.Hide();
+                return;
+            }
             if (EditGroupBuyDto.LogoURL.IsNullOrEmpty())
             {
                 await _uiMessageService.Warn(L[PikachuDomainErrorCodes.LogoIsRequired]);
