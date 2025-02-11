@@ -44,6 +44,7 @@ public partial class GroupBuyList
     bool CreditCard { get; set; }
     bool BankTransfer { get; set; }
     bool IsCashOnDelivery { get; set; }
+    bool IsLinePay { get; set; }
     #endregion
 
     #region Constructor
@@ -187,13 +188,14 @@ public partial class GroupBuyList
             Filters.Sorting = Sorting;
             Filters.MaxResultCount = _pageSize;
             Filters.SkipCount = skipCount;
-            if (CreditCard && BankTransfer && IsCashOnDelivery) Filters.PaymentMethod = "Credit Card , Bank Transfer , Cash On Delivery";
+            List<string> paymentMethods = new List<string>();
 
-            else if (CreditCard) Filters.PaymentMethod = "Credit Card";
+            if (CreditCard) paymentMethods.Add("Credit Card");
+            if (BankTransfer) paymentMethods.Add("Bank Transfer");
+            if (IsCashOnDelivery) paymentMethods.Add("Cash On Delivery");
+            if (IsLinePay) paymentMethods.Add("LinePay");
 
-            else if (BankTransfer) Filters.PaymentMethod = "Bank Transfer";
-
-            else if (IsCashOnDelivery) Filters.PaymentMethod = "Cash On Delivery";
+            Filters.PaymentMethod = string.Join(" , ", paymentMethods);
             PagedResultDto<GroupBuyDto> result = await _groupBuyAppService.GetListAsync(Filters);
 
             GroupBuyListItem = [.. result.Items];
@@ -224,6 +226,7 @@ public partial class GroupBuyList
         Filters = new();
         CreditCard =false;
         IsCashOnDelivery =false;
+        IsLinePay = false;
         BankTransfer = false;
         await UpdateGroupBuyList();
         await InvokeAsync(StateHasChanged);
