@@ -569,7 +569,8 @@ public partial class CreateGroupBuy
 
     private void OnColorSchemeChange(ChangeEventArgs e)
     {
-        string? selectedTheme = e.Value.ToString();
+      
+        string? selectedTheme = e.Value.ToString() != "Choose Color Theme" ? e.Value.ToString() : null;
 
         CreateGroupBuyDto.ColorSchemeType = !selectedTheme.IsNullOrEmpty() ? Enum.Parse<ColorScheme>(selectedTheme) : null;
 

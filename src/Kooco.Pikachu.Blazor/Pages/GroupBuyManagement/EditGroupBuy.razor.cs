@@ -295,8 +295,8 @@ public partial class EditGroupBuy
 
     private void OnColorSchemeChange(ChangeEventArgs e)
     {
-        string? selectedTheme = e.Value.ToString();
-
+        string? selectedTheme = e.Value.ToString()!= "Choose Color Theme"? e.Value.ToString() :null;
+       
         EditGroupBuyDto.ColorSchemeType = !selectedTheme.IsNullOrEmpty() ? Enum.Parse<ColorScheme>(selectedTheme) : null;
 
         IsColorPickerOpen = true;
