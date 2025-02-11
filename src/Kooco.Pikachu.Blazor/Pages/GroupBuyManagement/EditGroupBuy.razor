@@ -649,7 +649,7 @@
                         @if ((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                      (EditGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery")))
                         {
-                            if (EditGroupBuyDto.HomeDeliveryDeliveryTime.IsNullOrWhiteSpace() || EditGroupBuyDto.HomeDeliveryDeliveryTime == "[]") EditGroupBuyDto.HomeDeliveryDeliveryTime = "Inapplicable";
+                            if (EditGroupBuyDto.HomeDeliveryDeliveryTime.IsNullOrWhiteSpace() || EditGroupBuyDto.HomeDeliveryDeliveryTime == "[]") EditGroupBuyDto.HomeDeliveryDeliveryTime = "[\"Inapplicable\"]";
                             <label for="@(island)_HomeDelivery" class="form-label me-2">
                                 <input type="checkbox"
                                 class="form-check-input"
@@ -695,7 +695,7 @@
                     {
                         @if ((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup")))
-                        { if(EditGroupBuyDto.SelfPickupDeliveryTime.IsNullOrWhiteSpace()||EditGroupBuyDto.SelfPickupDeliveryTime=="[]") EditGroupBuyDto.SelfPickupDeliveryTime = "UnableToSpecifyDuringPeakPeriods";
+                        { if(EditGroupBuyDto.SelfPickupDeliveryTime.IsNullOrWhiteSpace()||EditGroupBuyDto.SelfPickupDeliveryTime=="[]") EditGroupBuyDto.SelfPickupDeliveryTime = "[\"UnableToSpecifyDuringPeakPeriods\"]";
                             <label for="@(island)_SelfPickUp" class="form-label me-2">
                                 <input type="checkbox"
                                 class="form-check-input"
@@ -742,7 +742,7 @@
                         @if ((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                        (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
                         {
-                            if(EditGroupBuyDto.DeliveredByStoreDeliveryTime.IsNullOrWhiteSpace()||EditGroupBuyDto.DeliveredByStoreDeliveryTime=="[]") EditGroupBuyDto.DeliveredByStoreDeliveryTime = "Inapplicable";
+                            if(EditGroupBuyDto.DeliveredByStoreDeliveryTime.IsNullOrWhiteSpace()||EditGroupBuyDto.DeliveredByStoreDeliveryTime=="[]") EditGroupBuyDto.DeliveredByStoreDeliveryTime = "[\"Inapplicable\"]";
                             <label for="@(island)_DeliveredByStore" class="form-label me-2">
                                 <input type="checkbox"
                                        class="form-check-input"
