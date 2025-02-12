@@ -35,14 +35,13 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             DateTimeOffset creationTimeInTimeZone = TimeZoneInfo.ConvertTime(creationTime, tz);
             string formattedTime = creationTimeInTimeZone.ToString("yyyy-MM-dd HH:mm:ss");
 
-            //deliveryMethod = order.DeliveryMethod?.ToString() ?? string.Empty;
-
             var trackingUrls = new Dictionary<string, string>
             {
                 { "SevenToEleven", "https://eservice.7-11.com.tw/e-tracking/search.aspx" },
                 { "FamilyMart", "https://fmec.famiport.com.tw/FP_Entrance/QueryBox" },
                 { "TCatDelivery", "https://www.t-cat.com.tw/inquire/trace.aspx" },
-                { "PostOffice", "https://postserv.post.gov.tw/pstmail/" }
+                { "PostOffice", "https://postserv.post.gov.tw/pstmail/" },
+                { "BlackCat", "https://www.t-cat.com.tw/inquire/trace.aspx" }
             };
 
             var trackingUrl = trackingUrls
@@ -50,6 +49,7 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
                 && deliveryMethod.ToString()!.Contains(x.Key, StringComparison.OrdinalIgnoreCase)).Value
                 ?? string.Empty;
 
+            body = body.Replace("{{TrackingUrlDisplay}}", string.IsNullOrEmpty(trackingUrl) ? "none" : "block");
             body = body.Replace("{{CustomerName}}", order.CustomerName);
             body = body.Replace("{{GroupBuyName}}", groupbuy.GroupBuyName);
             body = body.Replace("{{OrderNumber}}", order.OrderNo);
