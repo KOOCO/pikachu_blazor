@@ -87,6 +87,7 @@ public partial class Order
     private int FrozenCount = 0;
     private DeliveryMethod? DeliveryMethod = null;
     private bool isDeliveryCostDisplayed = false;
+    private bool isDetailOpen = false;
     private bool isNormal = false;
     private bool isFreeze = false;
     private bool isFrozen = false;
@@ -111,6 +112,8 @@ public partial class Order
     }
     public void SelectedTabChanged(string e)
     {
+        SelectedOrder = null;
+        isDetailOpen = false;
         SelectedTabName = e;
         parentRowExpand = false;
         TotalCount = 0;
@@ -292,7 +295,10 @@ public partial class Order
 
         await loading.Hide();
     }
-
+    private void ClosePanel()
+    {
+        isDetailOpen = false;
+    }
     public async Task OnPrintShippedLabel10Cm()
     {
         await loading.Show();
@@ -1307,10 +1313,35 @@ public partial class Order
         StateHasChanged();
         await loading.Hide();
     }
+    public async void OnOrderDeliveryDetailAsync(Guid orderId)
+    {
+        await loading.Show();
+        OrderDeliveries = [];
+        OrderDto order = await _orderAppService.GetAsync(orderId);
+        if (order.DeliveryMethod is not EnumValues.DeliveryMethod.SelfPickup &&
+     order.DeliveryMethod is not EnumValues.DeliveryMethod.DeliveredByStore)
+            OrderDeliveryCost = order.DeliveryCost;
+        if (!OrderDeliveriesByOrderId.ContainsKey(orderId))
+        {
+            List<OrderDeliveryDto> orderDeliveries = await _OrderDeliveryAppService.GetListByOrderAsync(orderId);
 
+            OrderDeliveriesByOrderId[orderId] = orderDeliveries;
+        }
+
+        StateHasChanged();
+        await loading.Hide();
+    }
     public List<OrderDeliveryDto> GetOrderDeliveries(Guid orderId)
     {
-        return OrderDeliveriesByOrderId.ContainsKey(orderId) ? OrderDeliveriesByOrderId[orderId] : [];
+        if (OrderDeliveriesByOrderId.ContainsKey(orderId))
+        {
+            return OrderDeliveriesByOrderId[orderId];
+        }
+        else
+        {
+            OnOrderDeliveryDetailAsync(orderId);
+            return OrderDeliveriesByOrderId.ContainsKey(orderId) ? OrderDeliveriesByOrderId[orderId] : [];
+        }
     }
 
     public async Task OnTabLoadDataGridReadAsync(DataGridReadDataEventArgs<OrderDto> e, string tabName)
@@ -1512,11 +1543,11 @@ public partial class Order
         await loading.Hide();
     }
 
-    public async void NavigateToOrderDetails(DataGridRowMouseEventArgs<OrderDto> e)
+    public async void NavigateToOrderDetails(OrderDto e)
     {
         await loading.Show();
 
-        var id = e.Item.OrderId;
+        var id = e.OrderId;
         NavigationManager.NavigateTo($"Orders/OrderDetails/{id}");
 
         await loading.Hide();
@@ -1579,29 +1610,29 @@ public partial class Order
         await UpdateItemList();
     }
 
-    void ToggleRow(OrderDto e, bool shouldTrigger = false)
+    void ToggleRow(DataGridRowMouseEventArgs<OrderDto> e)
     {
-        if (!shouldTrigger) return;
-        if (ExpandedOrderId == e.OrderId)
+       
+        if (ExpandedOrderId == e.Item.OrderId)
         {
             ExpandedOrderId = null;
-            e.ParentRowExpanded = false;
+            isDetailOpen = false;
         }
 
         else
         {
-            ExpandedOrderId = e.OrderId;
-            e.ParentRowExpanded = true;
+            ExpandedOrderId = e.Item.OrderId;
+            isDetailOpen = true;
         }
 
-        if (ExpandedRows.Contains(e.OrderId))
+        if (ExpandedRows.Contains(e.Item.OrderId))
         {
-            ExpandedRows.Remove(e.OrderId);
+            ExpandedRows.Remove(e.Item.OrderId);
         }
         else
         {
 
-            ExpandedRows.Add(e.OrderId);
+            ExpandedRows.Add(e.Item.OrderId);
 
         }
 
