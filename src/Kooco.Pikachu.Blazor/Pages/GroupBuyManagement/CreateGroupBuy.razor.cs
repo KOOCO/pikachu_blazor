@@ -1345,7 +1345,7 @@ public partial class CreateGroupBuy
             else SelfPickupTimeList.Remove(method);
         }
 
-        CreateGroupBuyDto.SelfPickupDeliveryTime = JsonConvert.SerializeObject(SelfPickupTimeList);
+        CreateGroupBuyDto.SelfPickupDeliveryTime = JsonConvert.SerializeObject(SelfPickupTimeList.Distinct());
     }
 
     void BlackCatDeliveryTimeCheckedChange(string method, ChangeEventArgs e)
@@ -1360,7 +1360,7 @@ public partial class CreateGroupBuy
             BlackCateDeliveryTimeList.Remove(method);
         }
 
-        CreateGroupBuyDto.BlackCatDeliveryTime = JsonConvert.SerializeObject(BlackCateDeliveryTimeList);
+        CreateGroupBuyDto.BlackCatDeliveryTime = JsonConvert.SerializeObject(BlackCateDeliveryTimeList.Distinct());
 
     }
     void DeliverdByStoreDeliveryTimeCheckedChange(string method, ChangeEventArgs e, bool clearAll = false)
@@ -1383,7 +1383,7 @@ public partial class CreateGroupBuy
 
         else DeliverdByStoreTimeList.Remove(method);
 
-        CreateGroupBuyDto.DeliveredByStoreDeliveryTime = JsonConvert.SerializeObject(DeliverdByStoreTimeList);
+        CreateGroupBuyDto.DeliveredByStoreDeliveryTime = JsonConvert.SerializeObject(DeliverdByStoreTimeList.Distinct());
 
     }
 
@@ -1421,7 +1421,7 @@ public partial class CreateGroupBuy
             }
         }
 
-        CreateGroupBuyDto.HomeDeliveryDeliveryTime = JsonConvert.SerializeObject(HomeDeliveryTimeList);
+        CreateGroupBuyDto.HomeDeliveryDeliveryTime = JsonConvert.SerializeObject(HomeDeliveryTimeList.Distinct());
     }
 
     void OnShippingMethodCheckedChange(string method, ChangeEventArgs e)

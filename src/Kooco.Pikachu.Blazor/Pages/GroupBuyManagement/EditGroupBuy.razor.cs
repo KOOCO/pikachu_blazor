@@ -1622,6 +1622,7 @@ public partial class EditGroupBuy
         var value = (bool)(e?.Value ?? false);
         if (value)
         {
+            if(!BlackCateDeliveryTimeList.Contains(method))
             BlackCateDeliveryTimeList.Add(method);
         }
         else
@@ -1629,7 +1630,7 @@ public partial class EditGroupBuy
             BlackCateDeliveryTimeList.Remove(method);
         }
 
-        EditGroupBuyDto.BlackCatDeliveryTime = JsonConvert.SerializeObject(BlackCateDeliveryTimeList);
+        EditGroupBuyDto.BlackCatDeliveryTime = JsonConvert.SerializeObject(BlackCateDeliveryTimeList.Distinct());
     }
     void HomeDeliveryTimeCheckedChange(string method, ChangeEventArgs e, bool clearAll = false)
     {
@@ -1665,7 +1666,7 @@ public partial class EditGroupBuy
             else HomeDeliveryTimeList.Remove(method);
         }
 
-        EditGroupBuyDto.HomeDeliveryDeliveryTime = JsonConvert.SerializeObject(HomeDeliveryTimeList);
+        EditGroupBuyDto.HomeDeliveryDeliveryTime = JsonConvert.SerializeObject(HomeDeliveryTimeList.Distinct());
     }
     void DeliveredByStoreTimeCheckedChange(string method, ChangeEventArgs e, bool clearAll = false)
     {
@@ -1687,7 +1688,7 @@ public partial class EditGroupBuy
 
         else DeliveredByStoreTimeList.Remove(method);
 
-        EditGroupBuyDto.DeliveredByStoreDeliveryTime = JsonConvert.SerializeObject(DeliveredByStoreTimeList);
+        EditGroupBuyDto.DeliveredByStoreDeliveryTime = JsonConvert.SerializeObject(DeliveredByStoreTimeList.Distinct());
     }
     void OnShippingMethodCheckedChange(string method, ChangeEventArgs e)
     {
