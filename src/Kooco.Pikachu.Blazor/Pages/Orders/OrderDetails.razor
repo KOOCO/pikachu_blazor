@@ -1522,159 +1522,7 @@
                     </Button>
                 </div>
             </div>
-            <Card>
-                <CardBody>
-                    <div class="row">
-                        <div class="col-12 d-flex justify-content-between">
-                            <p class="fw-bold">@L["Date"]</p>
-                            <p class="fw-bold">@L["Editor"]</p>
-                            <p class="fw-bold">@L["OrderStatus"]</p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        @if (Order?.ShippingStatus == ShippingStatus.WaitingForPayment)
-                        {
-                            <div class="col-12 d-flex justify-content-between">
-                                <p>@Order?.CreationTime.ToShortDateString()</p>
-                                <p></p>
-                                <p>@L[ShippingStatus.WaitingForPayment.ToString()]</p>
-                            </div>
-                        }
-
-                        else if (Order?.ShippingStatus == ShippingStatus.PrepareShipment)
-                        {
-                            <div class="col-12 d-flex justify-content-between">
-                                <p>@Order?.CreationTime.ToShortDateString()</p>
-                                <p></p>
-                                <p>@L[ShippingStatus.WaitingForPayment.ToString()]</p>
-                            </div>
-                            <div class="col-12 d-flex justify-content-between">
-                                <p>@Order?.PaymentDate?.ToShortDateString()</p>
-                                <p>@Order?.PrepareShipmentBy</p>
-                                <p>@L[ShippingStatus.PrepareShipment.ToString()]</p>
-                            </div>
-                        }
-                        else if (Order?.ShippingStatus == ShippingStatus.Shipped)
-                        {
-                            <div class="col-12 d-flex justify-content-between">
-                                <p>@Order?.CreationTime.ToShortDateString()</p>
-                                <p>@L[ShippingStatus.WaitingForPayment.ToString()]</p>
-                            </div>
-                            <div class="col-12 d-flex justify-content-between">
-                                <p>@Order?.PaymentDate?.ToShortDateString()</p>
-                                <p>@Order?.PrepareShipmentBy</p>
-                                <p>@L[ShippingStatus.PrepareShipment.ToString()]</p>
-                            </div>
-                            <div class="col-12 d-flex justify-content-between">
-                                <p>@Order?.ShippingDate?.ToShortDateString()</p>
-                                <p>@Order?.ShippedBy</p>
-                                <p>@L[ShippingStatus.Shipped.ToString()]</p>
-                            </div>
-                        }
-                        else if (Order?.ShippingStatus == ShippingStatus.Completed)
-                        {
-                            <div class="col-12 d-flex justify-content-between">
-                                <p>@Order?.CreationTime.ToShortDateString()</p>
-                                <p>@L[ShippingStatus.WaitingForPayment.ToString()]</p>
-                            </div>
-                            @if (Order?.PaymentDate != null && Order?.PrepareShipmentBy != null)
-                            {
-                                <div class="col-12 d-flex justify-content-between">
-                                    <p>@Order?.PaymentDate?.ToShortDateString()</p>
-                                    <p>@Order?.PrepareShipmentBy</p>
-                                    <p>@L[ShippingStatus.PrepareShipment.ToString()]</p>
-                                </div>
-                            }
-                            @if (Order?.ShippingDate != null && Order?.ShippedBy != null)
-                            {
-                                <div class="col-12 d-flex justify-content-between">
-                                    <p>@Order?.ShippingDate?.ToShortDateString()</p>
-                                    <p>@Order?.ShippedBy</p>
-                                    <p>@L[ShippingStatus.Shipped.ToString()]</p>
-                                </div>
-                            }
-
-                            <div class="col-12 d-flex justify-content-between">
-                                <p>@Order?.CompletionTime?.ToShortDateString()</p>
-                                <p>@Order?.CompletedBy</p>
-                                <p>@L[ShippingStatus.Completed.ToString()]</p>
-                            </div>
-                        }
-                        else if (Order?.ShippingStatus == ShippingStatus.Exchange)
-                        {
-                            <div class="col-12 d-flex justify-content-between">
-                                <p>@Order?.CreationTime.ToShortDateString()</p>
-                                <p>@L[ShippingStatus.WaitingForPayment.ToString()]</p>
-                            </div>
-                            @if (Order?.PaymentDate != null && Order?.PrepareShipmentBy != null)
-                            {
-                                <div class="col-12 d-flex justify-content-between">
-                                    <p>@Order?.PaymentDate?.ToShortDateString()</p>
-                                    <p>@Order?.PrepareShipmentBy</p>
-                                    <p>@L[ShippingStatus.PrepareShipment.ToString()]</p>
-                                </div>
-                            }
-                            @if (Order?.ShippingDate != null && Order?.ShippedBy != null)
-                            {
-                                <div class="col-12 d-flex justify-content-between">
-                                    <p>@Order?.ShippingDate?.ToShortDateString()</p>
-                                    <p>@Order?.ShippedBy</p>
-                                    <p>@L[ShippingStatus.Shipped.ToString()]</p>
-                                </div>
-                            }
-                            @if (Order?.CompletionTime != null && Order?.CompletedBy != null)
-                            {
-                                <div class="col-12 d-flex justify-content-between">
-                                    <p>@Order?.CompletionTime?.ToShortDateString()</p>
-                                    <p>@Order?.CompletedBy</p>
-                                    <p>@L[ShippingStatus.Completed.ToString()]</p>
-                                </div>
-                            }
-                            <div class="col-12 d-flex justify-content-between">
-                                <p>@Order?.ExchangeTime?.ToShortDateString()</p>
-                                <p>@Order?.ExchangeBy</p>
-                                <p>@L[ShippingStatus.Exchange.ToString()]</p>
-                            </div>
-                        }
-                        else if (Order?.ShippingStatus == ShippingStatus.Closed)
-                        {
-                            <div class="col-12 d-flex justify-content-between">
-                                <p>@Order?.CreationTime.ToShortDateString()</p>
-                                <p>@L[ShippingStatus.WaitingForPayment.ToString()]</p>
-                            </div>
-                            @if (Order?.PaymentDate != null && Order?.PrepareShipmentBy != null)
-                            {
-                                <div class="col-12 d-flex justify-content-between">
-                                    <p>@Order?.PaymentDate?.ToShortDateString()</p>
-                                    <p>@Order?.PrepareShipmentBy</p>
-                                    <p>@L[ShippingStatus.PrepareShipment.ToString()]</p>
-                                </div>
-                            }
-                            @if (Order?.ShippingDate != null && Order?.ShippedBy != null)
-                            {
-                                <div class="col-12 d-flex justify-content-between">
-                                    <p>@Order?.ShippingDate?.ToShortDateString()</p>
-                                    <p>@Order?.ShippedBy</p>
-                                    <p>@L[ShippingStatus.Shipped.ToString()]</p>
-                                </div>
-                            }
-                            <div class="col-12 d-flex justify-content-between">
-                                <p>@Order?.CancellationDate?.ToShortDateString()</p>
-                                <p>@Order?.ClosedBy</p>
-                                <p>@L[ShippingStatus.Closed.ToString()]</p>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="col-12 d-flex justify-content-between">
-                                <p>@Order?.LastModificationTime?.ToShortDateString()</p>
-                                <p>@L[Order.ShippingStatus.ToString()]</p>
-                            </div>
-                        }
-
-                    </div>
-                </CardBody>
-            </Card>
+          
             @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
             {
                 <Card>
@@ -1707,6 +1555,186 @@
                     </CardBody>
                 </Card>
             }
+              <Card>
+                <CardBody>
+                    <Table>
+                        <TableHeader >
+                            <TableHeaderCell>@L["Date"]</TableHeaderCell>
+                            <TableHeaderCell>@L["Editor"]</TableHeaderCell>
+                            <TableHeaderCell>@L["OrderStatus"]</TableHeaderCell>
+                            <TableHeaderCell>@L["Action"]</TableHeaderCell>
+                        </TableHeader>
+
+                    <TableBody >
+                        @if (Order?.ShippingStatus == ShippingStatus.WaitingForPayment)
+                        {
+                          <TableRow>
+                                <TableRowCell>@Order?.CreationTime.ToString("dd/MM/yyyy hh:mm:ss tt")</TableRowCell>
+                                <TableRowCell></TableRowCell>
+                                <TableRowCell>@L[ShippingStatus.WaitingForPayment.ToString()]</TableRowCell>
+                                 <TableRowCell></TableRowCell>
+                            </TableRow>
+                        }
+
+                        else if (Order?.ShippingStatus == ShippingStatus.PrepareShipment)
+                        {
+                          <TableRow>
+                                <TableRowCell>@Order?.CreationTime.ToString("dd/MM/yyyy hh:mm:ss tt")</TableRowCell>
+                                <TableRowCell></TableRowCell>
+                                <TableRowCell>@L[ShippingStatus.WaitingForPayment.ToString()]</TableRowCell>
+                                 <TableRowCell></TableRowCell>
+                            </TableRow>
+                          <TableRow>
+                                <TableRowCell>@Order?.PaymentDate?.ToString("dd/MM/yyyy hh:mm:ss tt")</TableRowCell>
+                                <TableRowCell>@Order?.PrepareShipmentBy</TableRowCell>
+                                <TableRowCell>@L[ShippingStatus.PrepareShipment.ToString()]</TableRowCell>
+                                <TableRowCell></TableRowCell>
+                            </TableRow>
+                        }
+                        else if (Order?.ShippingStatus == ShippingStatus.Shipped)
+                        {
+                          <TableRow>
+                                <TableRowCell>@Order?.CreationTime.ToShortDateString()</TableRowCell>
+                                <TableRowCell></TableRowCell>
+                                <TableRowCell>@L[ShippingStatus.WaitingForPayment.ToString()]</TableRowCell>
+                                <TableRowCell></TableRowCell>
+                            </TableRow>
+                          <TableRow>
+                                <TableRowCell>@Order?.PaymentDate?.ToString("dd/MM/yyyy hh:mm:ss tt")</TableRowCell>
+                                <TableRowCell>@Order?.PrepareShipmentBy</TableRowCell>
+                                <TableRowCell>@L[ShippingStatus.PrepareShipment.ToString()]</TableRowCell>
+                                <TableRowCell></TableRowCell>
+                            </TableRow>
+                          <TableRow>
+                                <TableRowCell>@Order?.ShippingDate?.ToString("dd/MM/yyyy hh:mm:ss tt")</TableRowCell>
+                                <TableRowCell>@Order?.ShippedBy</TableRowCell>
+                                <TableRowCell>@L[ShippingStatus.Shipped.ToString()]</TableRowCell>
+                                <TableRowCell></TableRowCell>
+                            </TableRow>
+                        }
+                        else if (Order?.ShippingStatus == ShippingStatus.Completed)
+                        {
+                          <TableRow>
+                                <TableRowCell>@Order?.CreationTime.ToString("dd/MM/yyyy hh:mm:ss tt")</TableRowCell>
+                                <TableRowCell></TableRowCell>
+                                <TableRowCell>@L[ShippingStatus.WaitingForPayment.ToString()]</TableRowCell>
+                                <TableRowCell></TableRowCell>
+                            </TableRow>
+                            @if (Order?.PaymentDate != null && Order?.PrepareShipmentBy != null)
+                            {
+                              <TableRow>
+                                    <TableRowCell>@Order?.PaymentDate?.ToString("dd/MM/yyyy hh:mm:ss tt")</TableRowCell>
+                                    <TableRowCell>@Order?.PrepareShipmentBy</TableRowCell>
+                                    <TableRowCell>@L[ShippingStatus.PrepareShipment.ToString()]</TableRowCell>
+                                    <TableRowCell></TableRowCell>
+                                </TableRow>
+                            }
+                            @if (Order?.ShippingDate != null && Order?.ShippedBy != null)
+                            {
+                              <TableRow>
+                                    <TableRowCell>@Order?.ShippingDate?.ToString("dd/MM/yyyy hh:mm:ss tt")</TableRowCell>
+                                    <TableRowCell>@Order?.ShippedBy</TableRowCell>
+                                    <TableRowCell>@L[ShippingStatus.Shipped.ToString()]</TableRowCell>
+                                    <TableRowCell></TableRowCell>
+                                </TableRow>
+                            }
+
+                          <TableRow>
+                                <TableRowCell>@Order?.CompletionTime?.ToString("dd/MM/yyyy hh:mm:ss tt")</TableRowCell>
+                                <TableRowCell>@Order?.CompletedBy</TableRowCell>
+                                <TableRowCell>@L[ShippingStatus.Completed.ToString()]</TableRowCell>
+                                <TableRowCell></TableRowCell>
+                            </TableRow>
+                        }
+                        else if (Order?.ShippingStatus == ShippingStatus.Exchange)
+                        {
+                          <TableRow>
+                                <TableRowCell>@Order?.CreationTime.ToString("dd/MM/yyyy hh:mm:ss tt")</TableRowCell>
+                                <TableRowCell></TableRowCell>
+                                <TableRowCell>@L[ShippingStatus.WaitingForPayment.ToString()]</TableRowCell>
+                                <TableRowCell></TableRowCell>
+                            </TableRow>
+                            @if (Order?.PaymentDate != null && Order?.PrepareShipmentBy != null)
+                            {
+                                <TableRow >
+                                    <TableRowCell>@Order?.PaymentDate?.ToString("dd/MM/yyyy hh:mm:ss tt")</TableRowCell>
+                                    <TableRowCell>@Order?.PrepareShipmentBy</TableRowCell>
+                                    <TableRowCell>@L[ShippingStatus.PrepareShipment.ToString()]</TableRowCell>
+                                    <TableRowCell></TableRowCell>
+                                </TableRow>
+                            }
+                            @if (Order?.ShippingDate != null && Order?.ShippedBy != null)
+                            {
+                                <TableRow >
+                                    <TableRowCell>@Order?.ShippingDate?.ToString("dd/MM/yyyy hh:mm:ss tt")</TableRowCell>
+                                    <TableRowCell>@Order?.ShippedBy</TableRowCell>
+                                    <TableRowCell>@L[ShippingStatus.Shipped.ToString()]</TableRowCell>
+                                    <TableRowCell></TableRowCell>
+                                </TableRow>
+                            }
+                            @if (Order?.CompletionTime != null && Order?.CompletedBy != null)
+                            {
+                                <TableRow >
+                                    <TableRowCell>@Order?.CompletionTime?.ToString("dd/MM/yyyy hh:mm:ss tt")</TableRowCell>
+                                    <TableRowCell>@Order?.CompletedBy</TableRowCell>
+                                    <TableRowCell>@L[ShippingStatus.Completed.ToString()]</TableRowCell>
+                                    <TableRowCell></TableRowCell>
+                                </TableRow>
+                            }
+                          <TableRow>
+                                <TableRowCell>@Order?.ExchangeTime?.ToString("dd/MM/yyyy hh:mm:ss tt")</TableRowCell>
+                                <TableRowCell>@Order?.ExchangeBy</TableRowCell>
+                                <TableRowCell>@L[ShippingStatus.Exchange.ToString()]</TableRowCell>
+                                <TableRowCell></TableRowCell>
+                            </TableRow>
+                        }
+                        else if (Order?.ShippingStatus == ShippingStatus.Closed)
+                        {
+                          <TableRow>
+                                <TableRowCell>@Order?.CreationTime.ToString("dd/MM/yyyy hh:mm:ss tt")</TableRowCell>
+                                <TableRowCell></TableRowCell>
+                                <TableRowCell>@L[ShippingStatus.WaitingForPayment.ToString()]</TableRowCell>
+                           <TableRowCell></TableRowCell>
+                            </TableRow>
+                            @if (Order?.PaymentDate != null && Order?.PrepareShipmentBy != null)
+                            {
+                              <TableRow>
+                                    <TableRowCell>@Order?.PaymentDate?.ToString("dd/MM/yyyy hh:mm:ss tt")</TableRowCell>
+                                    <TableRowCell>@Order?.PrepareShipmentBy</TableRowCell>
+                                    <TableRowCell>@L[ShippingStatus.PrepareShipment.ToString()]</TableRowCell>
+                                    <TableRowCell></TableRowCell>
+                                </TableRow>
+                            }
+                            @if (Order?.ShippingDate != null && Order?.ShippedBy != null)
+                            {
+                              <TableRow>
+                                    <TableRowCell>@Order?.ShippingDate?.ToString("dd/MM/yyyy hh:mm:ss tt")</TableRowCell>
+                                    <TableRowCell>@Order?.ShippedBy</TableRowCell>
+                                    <TableRowCell>@L[ShippingStatus.Shipped.ToString()]</TableRowCell>
+                                    <TableRowCell></TableRowCell>
+                                </TableRow>
+                            }
+                          <TableRow>
+                                <TableRowCell>@Order?.CancellationDate?.ToString("dd/MM/yyyy hh:mm:ss tt")</TableRowCell>
+                                <TableRowCell>@Order?.ClosedBy</TableRowCell>
+                                <TableRowCell>@L[ShippingStatus.Closed.ToString()]</TableRowCell>
+                                <TableRowCell></TableRowCell>
+                            </TableRow>
+                        }
+                        else
+                        {
+                          <TableRow>
+                                <TableRowCell>@Order?.LastModificationTime?.ToString("dd/MM/yyyy hh:mm:ss tt")</TableRowCell>
+                                <TableRowCell></TableRowCell>
+                                <TableRowCell>@L[Order.ShippingStatus.ToString()]</TableRowCell>
+                                <TableRowCell></TableRowCell>
+                            </TableRow>
+                        }
+
+                    </TableBody>
+                    </Table>
+                </CardBody>
+            </Card>
         </div>
     </div>
 
