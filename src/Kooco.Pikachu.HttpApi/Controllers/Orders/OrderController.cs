@@ -205,11 +205,11 @@ public class OrderController : AbpController, IOrderAppService
 
             foreach (OrderItemDto item in order.OrderItems)
             {
-                if (item.Item is null) continue;
+                if (item.Item is null && item.SetItem is null) continue;
 
                 oPayment.Send.Items.Add(new ECPay.Payment.Integration.Item()
                 {
-                    Name = item.Item.ItemName + " NT$ ",
+                    Name = (item.Item?.ItemName ?? item.SetItem?.SetItemName) + " NT$ ",
                     Price = decimal.TryParse(item.ItemPrice.ToString("G29"), out decimal price) ? price : 0.00M,
                     Currency = string.Empty,
                     Quantity = item.Quantity,
