@@ -97,6 +97,7 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
             CustomerPhone = o.CustomerPhone,
             DeliveryMethod = o.DeliveryMethod,               // Shipping Method
             OrderStatus = o.OrderStatus,
+            DeliveryCost=o.DeliveryCost,
             ShippingStatus = o.ShippingStatus,
             PaymentMethod = o.PaymentMethod,
             City = o.City,

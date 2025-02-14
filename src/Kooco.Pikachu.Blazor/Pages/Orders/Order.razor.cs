@@ -64,6 +64,7 @@ public partial class Order
     private OrderDto SelectedOrder { get; set; }
     private OrderItemDto SelectedOrderItem { get; set; }
     private OrderDeliveryDto SelectedOrderDelivery { get; set; }
+    private DataGrid<OrderDeliveryDto>? myDataGridRef;
     private Guid OrderDeliveryId { get; set; }
     private Guid? GroupBuyFilter { get; set; }
     private int PageIndex { get; set; } = 1;
@@ -75,7 +76,8 @@ public partial class Order
     private string? Filter { get; set; }
     private bool isOrderCombine { get; set; } = false;
     private readonly HashSet<Guid> ExpandedRows = new();
-    private LoadingIndicator loading { get; set; }
+    private bool loading { get; set; } = true;
+    private bool childloading { get; set; } = true;
     private List<KeyValueDto> GroupBuyList { get; set; } = new();
     private List<ShippingStatus> ShippingStatuses { get; set; } = [];
     private List<DeliveryMethod> DeliveryMethods { get; set; } = [];
@@ -127,7 +129,7 @@ public partial class Order
 
     public async Task OnSeparatePrintShippedLabel(MouseEventArgs e)
     {
-        await loading.Show();
+        loading = true;
 
         List<string> allPayLogisticsId = [];
 
@@ -146,12 +148,12 @@ public partial class Order
 
         await JSRuntime.InvokeVoidAsync("PrintTradeDocument", html);
 
-        await loading.Hide();
+        loading = false; ;
     }
 
     public async Task OnPrintShippedLabel(MouseEventArgs e)
     {
-        await loading.Show();
+        loading = true;
 
         List<Guid> orderIds = Orders.Where(w => w.IsSelected).Select(s => s.OrderId).ToList();
 
@@ -293,7 +295,7 @@ public partial class Order
 
         Directory.Delete(Path.Combine(Path.GetTempPath(), "MergeTemp"), true);
 
-        await loading.Hide();
+        loading = false;
     }
     private void ClosePanel()
     {
@@ -301,7 +303,7 @@ public partial class Order
     }
     public async Task OnPrintShippedLabel10Cm()
     {
-        await loading.Show();
+        loading = true;
 
         List<Guid> orderIds = Orders.Where(w => w.IsSelected).Select(s => s.OrderId).ToList();
 
@@ -443,7 +445,7 @@ public partial class Order
 
         Directory.Delete(Path.Combine(Path.GetTempPath(), "MergeTemp"), true);
 
-        await loading.Hide();
+        loading = false;
     }
     public List<string> GeneratePdf(List<string> htmls)
     {
@@ -972,7 +974,7 @@ public partial class Order
     {
         try
         {
-            await loading.Show();
+            loading = true;
 
             List<Guid> orderIds = [.. Orders.Where(w => w.IsSelected).Select(s => s.OrderId)];
 
@@ -1265,14 +1267,14 @@ public partial class Order
                     i++;
                 }
 
-                await loading.Hide();
+                loading = false;
 
                 await _uiMessageService.Error(wholeErrorMessage);
 
                 return;
             }
 
-            await loading.Hide();
+            loading = false;
 
             if (SelectedTabName is "All") await UpdateItemList();
 
@@ -1280,7 +1282,7 @@ public partial class Order
         }
         catch (Exception ex)
         {
-            await loading.Hide();
+            loading = false;
 
             //await _uiMessageService.Error(ex.Message);
         }
@@ -1297,51 +1299,62 @@ public partial class Order
 
     public async Task OnOrderDeliveryDataReadAsync(DataGridReadDataEventArgs<OrderDeliveryDto> e, Guid orderId)
     {
-        await loading.Show();
+        childloading = true;
         OrderDeliveries = [];
-        OrderDto order = await _orderAppService.GetAsync(orderId);
-        if (order.DeliveryMethod is not EnumValues.DeliveryMethod.SelfPickup &&
-     order.DeliveryMethod is not EnumValues.DeliveryMethod.DeliveredByStore)
-            OrderDeliveryCost = order.DeliveryCost;
+        // OrderDto order = await _orderAppService.GetAsync(orderId);
+        if (SelectedOrder.DeliveryMethod is not EnumValues.DeliveryMethod.SelfPickup &&
+     SelectedOrder.DeliveryMethod is not EnumValues.DeliveryMethod.DeliveredByStore)
+            OrderDeliveryCost = SelectedOrder.DeliveryCost;
         if (!OrderDeliveriesByOrderId.ContainsKey(orderId))
         {
             List<OrderDeliveryDto> orderDeliveries = await _OrderDeliveryAppService.GetListByOrderAsync(orderId);
 
             OrderDeliveriesByOrderId[orderId] = orderDeliveries;
         }
-
+        childloading = false;
         StateHasChanged();
-        await loading.Hide();
+
     }
-    public async void OnOrderDeliveryDetailAsync(Guid orderId)
+    public async void OnOrderDeliveryDetailAsync(OrderDto order)
     {
-        await loading.Show();
+        childloading = true;
         OrderDeliveries = [];
-        OrderDto order = await _orderAppService.GetAsync(orderId);
+
         if (order.DeliveryMethod is not EnumValues.DeliveryMethod.SelfPickup &&
      order.DeliveryMethod is not EnumValues.DeliveryMethod.DeliveredByStore)
             OrderDeliveryCost = order.DeliveryCost;
-        if (!OrderDeliveriesByOrderId.ContainsKey(orderId))
+        if (!OrderDeliveriesByOrderId.ContainsKey(order.OrderId))
         {
-            List<OrderDeliveryDto> orderDeliveries = await _OrderDeliveryAppService.GetListByOrderAsync(orderId);
+            OrderDeliveries = await _OrderDeliveryAppService.GetListByOrderAsync(order.OrderId);
 
-            OrderDeliveriesByOrderId[orderId] = orderDeliveries;
+            OrderDeliveriesByOrderId[order.OrderId] = OrderDeliveries;
         }
+        else {
+            OrderDeliveries= OrderDeliveriesByOrderId[order.OrderId] = OrderDeliveries;
 
+
+        }
+        childloading = false;
         StateHasChanged();
-        await loading.Hide();
+
+
     }
     public List<OrderDeliveryDto> GetOrderDeliveries(Guid orderId)
     {
-        if (OrderDeliveriesByOrderId.ContainsKey(orderId))
-        {
-            return OrderDeliveriesByOrderId[orderId];
-        }
-        else
-        {
-            OnOrderDeliveryDetailAsync(orderId);
-            return OrderDeliveriesByOrderId.ContainsKey(orderId) ? OrderDeliveriesByOrderId[orderId] : [];
-        }
+        //if (OrderDeliveriesByOrderId.ContainsKey(orderId))
+        //{
+        childloading = false;
+        return OrderDeliveriesByOrderId.ContainsKey(orderId) ? OrderDeliveriesByOrderId[orderId] : [];
+        //return OrderDeliveriesByOrderId[orderId];
+
+        //}
+        //else
+        //{
+        //    OnOrderDeliveryDetailAsync(orderId);
+        //    childloading = false;
+
+        //    return OrderDeliveriesByOrderId.ContainsKey(orderId) ? OrderDeliveriesByOrderId[orderId] : [];
+        //}
     }
 
     public async Task OnTabLoadDataGridReadAsync(DataGridReadDataEventArgs<OrderDto> e, string tabName)
@@ -1357,9 +1370,9 @@ public partial class Order
 
     private async Task GetGroupBuyList()
     {
-        await loading.Show();
+        loading = true;
         GroupBuyList = await _groupBuyAppService.GetGroupBuyLookupAsync();
-        await loading.Hide();
+        loading = false;
 
     }
 
@@ -1367,7 +1380,7 @@ public partial class Order
     {
         try
         {
-            await loading.Show();
+            loading = true;
             int skipCount = PageIndex * PageSize;
             var result = await _orderAppService.GetListAsync(new GetOrderListDto
             {
@@ -1383,11 +1396,11 @@ public partial class Order
             Orders = result?.Items.ToList() ?? new List<OrderDto>();
             TotalCount = (int?)result?.TotalCount ?? 0;
 
-            await loading.Hide();
+            loading = false;
         }
         catch (Exception ex)
         {
-            await loading.Hide();
+            loading = false;
             await _uiMessageService.Error(ex.GetType().ToString());
             Console.WriteLine(ex.ToString());
         }
@@ -1408,7 +1421,7 @@ public partial class Order
     {
         try
         {
-            await loading.Show();
+            loading = true;
 
             SelectedOrder = null;
 
@@ -1433,11 +1446,11 @@ public partial class Order
 
             TotalCount = (int?)result?.TotalCount ?? 0;
 
-            await loading.Hide();
+            loading = false;
         }
         catch (Exception ex)
         {
-            await loading.Hide();
+            loading = false;
 
             await _uiMessageService.Error(ex.GetType().ToString());
         }
@@ -1509,7 +1522,7 @@ public partial class Order
 
     async void HandleSelectAllChange(ChangeEventArgs e)
     {
-        await loading.Show();
+        loading = true;
         IsAllSelected = e.Value != null ? (bool)e.Value : false;
         NormalCount = 0;
         FreezeCount = 0;
@@ -1540,17 +1553,17 @@ public partial class Order
         }
 
         StateHasChanged();
-        await loading.Hide();
+        loading = false;
     }
 
     public async void NavigateToOrderDetails(OrderDto e)
     {
-        await loading.Show();
+        loading = true;
 
         var id = e.OrderId;
         NavigationManager.NavigateTo($"Orders/OrderDetails/{id}");
 
-        await loading.Hide();
+        loading = false;
     }
 
     bool ShowCombineButton()
@@ -1610,9 +1623,9 @@ public partial class Order
         await UpdateItemList();
     }
 
-    void ToggleRow(DataGridRowMouseEventArgs<OrderDto> e)
+     void ToggleRow(DataGridRowMouseEventArgs<OrderDto> e)
     {
-       
+
         if (ExpandedOrderId == e.Item.OrderId)
         {
             ExpandedOrderId = null;
@@ -1622,6 +1635,10 @@ public partial class Order
         else
         {
             ExpandedOrderId = e.Item.OrderId;
+            if (SelectedTabName == "PrepareShipment" || SelectedTabName == "ToBeShipped" || SelectedTabName == "Shipped" || SelectedTabName == "Delivered" || SelectedTabName == "Refund")
+            {
+                OnOrderDeliveryDetailAsync(e.Item);
+            }
             isDetailOpen = true;
         }
 
@@ -1636,6 +1653,8 @@ public partial class Order
 
         }
 
+       
+       
     }
 
     public async Task PrepareShipmentCheckboxChanged(bool e, OrderDto order)
@@ -1678,7 +1697,7 @@ public partial class Order
 
     public async Task ShippingStatusChange()
     {
-        await loading.Show();
+       loading=true;
 
         List<Guid> orderIds = [.. Orders.Where(w => w.IsSelected).Select(s => s.OrderId)];
 
@@ -1687,7 +1706,7 @@ public partial class Order
             await _OrderDeliveryAppService.ChangeShippingStatus(orderId);
         }
 
-        await loading.Hide();
+        loading=false;
 
         if (SelectedTabName is "All") await UpdateItemList();
 
@@ -1696,7 +1715,7 @@ public partial class Order
 
     private async void OrderItemShipped()
     {
-        await loading.Show();
+       loading=true;
         var selectedOrders = OrdersSelected;
         foreach (var selectedOrder in selectedOrders)
         {
@@ -1714,7 +1733,7 @@ public partial class Order
 
         await InvokeAsync(StateHasChanged);
 
-        await loading.Hide();
+        loading=false;
     }
     private decimal GetDeliveryCost(OrderDto order, ItemStorageTemperature item)
     {
@@ -1735,7 +1754,7 @@ public partial class Order
     }
     private async void OrderItemDelivered()
     {
-        await loading.Show();
+       loading=true;
 
         List<Guid> orderIds = [.. Orders.Where(w => w.IsSelected).Select(s => s.OrderId)];
 
@@ -1744,7 +1763,7 @@ public partial class Order
             await _OrderDeliveryAppService.UpdateDeliveredStatus(orderId);
         }
 
-        await loading.Hide();
+        loading=false;
 
         if (SelectedTabName is "All") await UpdateItemList();
 
@@ -1753,7 +1772,7 @@ public partial class Order
 
     private async void OrderItemPickedUp()
     {
-        await loading.Show();
+       loading=true;
 
         List<Guid> orderIds = [.. Orders.Where(w => w.IsSelected).Select(s => s.OrderId)];
 
@@ -1762,7 +1781,7 @@ public partial class Order
             await _OrderDeliveryAppService.UpdatePickedUpStatus(orderId);
         }
 
-        await loading.Hide();
+        loading=false;
 
         if (SelectedTabName is "All") await UpdateItemList();
 
@@ -1773,10 +1792,10 @@ public partial class Order
     {
         try
         {
-            await loading.Show();
+           loading=true;
             var selectedOrder = Orders.SingleOrDefault(x => x.IsSelected);
             await _electronicInvoiceAppService.CreateInvoiceAsync(selectedOrder.OrderId);
-            await loading.Hide();
+            loading=false;
             await _uiMessageService.Success(L["InvoiceIssueSuccessfully"]);
             await UpdateItemList();
 
@@ -1784,7 +1803,7 @@ public partial class Order
         }
         catch (Exception ex)
         {
-            await loading.Hide();
+            loading=false;
             await _uiMessageService.Error(ex.Message.ToString());
 
 
