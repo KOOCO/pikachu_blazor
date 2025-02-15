@@ -266,8 +266,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                             else
                             {
                                 // Proceed with updating the stock if sufficient
-                                details.SaleableQuantity = details.SaleableQuantity- item.Quantity;
-                                details.StockOnHand = details.StockOnHand- item.Quantity;
+                                details.SaleableQuantity = details.SaleableQuantity - item.Quantity;
+                                details.StockOnHand = details.StockOnHand - item.Quantity;
 
                                 await _itemDetailsRepository.UpdateAsync(details);
                             }
@@ -284,7 +284,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                                 }
                                 else
                                 {
-                                    setItem.SaleableQuantity= setItem.SaleableQuantity- item.Quantity;
+                                    setItem.SaleableQuantity = setItem.SaleableQuantity - item.Quantity;
 
                                     foreach (var setItemDetail in setItem.SetItemDetails)
                                     {
@@ -787,7 +787,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
             await _emailAppService.SendMergeOrderEmailAsync(Ids, order1.Id);
-            
+
             return ObjectMapper.Map<Order, OrderDto>(order1);
         }
     }
@@ -917,7 +917,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
             await _emailAppService.SendSplitOrderEmailAsync(OrderId, splitOrderId);
-            
+
             return ObjectMapper.Map<Order, OrderDto>(ord);
         }
     }
@@ -1832,7 +1832,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
                                       ?? throw new EntityNotFoundException();
                     order = await _orderRepository.GetWithDetailsAsync(order.Id);
                 }
-
+            }
+            using (CurrentTenant.Change(order.TenantId))
+            {
                 order.GWSR = paymentResult.GWSR;
                 order.TradeNo = paymentResult.TradeNo;
                 order.ShippingStatus = ShippingStatus.PrepareShipment;
@@ -1894,8 +1896,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
                 if (order.OrderItems.Any(a => a.SetItemId is not null && a.SetItemId != Guid.Empty))
                 {
-                    if (orderDelivery is not null)
-                        order.UpdateOrderItem([.. order.OrderItems.Where(w => w.SetItemId is not null && w.SetItemId != Guid.Empty)], orderDelivery.Id);
+                    var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order.Id);
+                    OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                    order.UpdateOrderItem([.. order.OrderItems.Where(w => w.SetItemId is not null && w.SetItemId != Guid.Empty)], OrderDelivery.Id);
                 }
 
                 await _orderRepository.UpdateAsync(order);

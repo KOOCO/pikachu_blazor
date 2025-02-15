@@ -175,7 +175,7 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
 
             var tenantSettings = await tenantSettingsAppService.FirstOrDefaultAsync();
 
-            string groupBuyUrl = tenantSettings?.Tenant.GetProperty<string>(Constant.TenantUrl)?.EnsureEndsWith('/') + $"groupBuy/{groupbuy.Id}";
+            string groupBuyUrl = tenantSettings?.Tenant?.GetProperty<string>(Constant.TenantUrl)?.EnsureEndsWith('/') + $"groupBuy/{groupbuy.Id}";
             string orderUrl = $"{groupBuyUrl}/result/{order.OrderNo}/{order.CustomerEmail}";
 
             body = body.Replace("{{OrderUrl}}", orderUrl);
