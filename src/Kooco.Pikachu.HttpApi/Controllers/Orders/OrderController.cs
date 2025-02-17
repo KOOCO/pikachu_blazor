@@ -610,15 +610,22 @@ public class OrderController : AbpController, IOrderAppService
     {
         throw new NotImplementedException();
     }
+
     [HttpPost("order-expire")]
     public Task ExpireOrderAsync(Guid OrderId)
     {
-       return _ordersAppService.ExpireOrderAsync(OrderId);
+        return _ordersAppService.ExpireOrderAsync(OrderId);
     }
 
     public Task<List<OrderHistoryDto>> GetOrderLogsAsync(Guid orderId)
     {
         return _ordersAppService.GetOrderLogsAsync(orderId);
+    }
+
+    [HttpPost("order-deliveries-and-invoice/{orderId}")]
+    public Task CreateOrderDeliveriesAndInvoiceAsync(Guid orderId)
+    {
+        return _ordersAppService.CreateOrderDeliveriesAndInvoiceAsync(orderId);
     }
 
 
