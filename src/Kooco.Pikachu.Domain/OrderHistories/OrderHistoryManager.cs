@@ -16,7 +16,7 @@ namespace Kooco.Pikachu.OrderHistories
             var history = new OrderHistory(Guid.NewGuid(), orderId, actionType, actionDetails, editorUserId, editorUserName);
            ;
 
-            await orderHistoryRepository.InsertAsync(history);
+            await orderHistoryRepository.InsertAsync(history,autoSave:true);
         }
 
         /// <summary>

@@ -137,16 +137,16 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             // await _orderRepository.EnsurePropertyLoadedAsync(order, o => o.GroupBuy);
             var groupbuy = await _GroupBuyRepository.GetAsync(order.GroupBuyId);
-            
-            order.ShippingStatus = ShippingStatus.ToBeShipped;
             var oldShippingStatus = order.ShippingStatus;
+            order.ShippingStatus = ShippingStatus.ToBeShipped;
+           
             // **Get Current User (Editor)**
             var currentUserId = CurrentUser.Id ?? Guid.Empty;
             var currentUserName = CurrentUser.UserName ?? "System";
 
             // **Log Order History for Delivery Update**
             await _orderHistoryManager.AddOrderHistoryAsync(
-                order.OrderId,
+                order.Id,
                  "OrderToBeShipped",
                  $"Order marked as 'To Be Shipped'. Previous shipping status: {oldShippingStatus}, new status: {order.ShippingStatus}. ",
 
@@ -328,8 +328,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                         await _orderHistoryManager.AddOrderHistoryAsync(
                             newOrderDelivery.OrderId,
                             "Generate Delivery Number",
-                            $"Delivery Number Generated.Delivery no: {newOrderDelivery.DeliveryNo}. " +
-                            $"Delivery status changed from {oldDeliveryStatus} to {newOrderDelivery.DeliveryStatus}.",
+                            $"Delivery Number Generated.Delivery no: {newOrderDelivery.DeliveryNo}. ",
                             currentUserId,
                             currentUserName
                         );
@@ -997,8 +996,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 await _orderHistoryManager.AddOrderHistoryAsync(
                     newOrderDelivery.OrderId,
                     "Generate Delivery Number",
-                    $"Delivery Number Generated.Delivery no: {newOrderDelivery.DeliveryNo}. " +
-                    $"Delivery status changed from {oldDeliveryStatus} to {newOrderDelivery.DeliveryStatus}.",
+                    $"Delivery Number Generated.Delivery no: {newOrderDelivery.DeliveryNo}. ",
                     currentUserId,
                     currentUserName
                 );
@@ -1042,8 +1040,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 await _orderHistoryManager.AddOrderHistoryAsync(
                     newOrderDelivery.OrderId,
                     "Generate Delivery Number",
-                    $"Delivery Number Generated.Delivery no: {newOrderDelivery.DeliveryNo}. " +
-                    $"Delivery status changed from {oldDeliveryStatus} to {newOrderDelivery.DeliveryStatus}.",
+                    $"Delivery Number Generated.Delivery no: {newOrderDelivery.DeliveryNo}. ",
                     currentUserId,
                     currentUserName
                 );
@@ -1179,8 +1176,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 await _orderHistoryManager.AddOrderHistoryAsync(
                     newOrderDelivery.OrderId,
                     "Generate Delivery Number",
-                    $"Delivery Number Generated.Delivery no: {newOrderDelivery.DeliveryNo}. " +
-                    $"Delivery status changed from {oldDeliveryStatus} to {newOrderDelivery.DeliveryStatus}.",
+                    $"Delivery Number Generated.Delivery no: {newOrderDelivery.DeliveryNo}. ",
                     currentUserId,
                     currentUserName
                 );
@@ -1224,8 +1220,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 await _orderHistoryManager.AddOrderHistoryAsync(
                     newOrderDelivery.OrderId,
                     "Generate Delivery Number",
-                    $"Delivery Number Generated.Delivery no: {newOrderDelivery.DeliveryNo}. " +
-                    $"Delivery status changed from {oldDeliveryStatus} to {newOrderDelivery.DeliveryStatus}.",
+                    $"Delivery Number Generated.Delivery no: {newOrderDelivery.DeliveryNo}. ",
                     currentUserId,
                     currentUserName
                 );
@@ -1262,8 +1257,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         await _orderHistoryManager.AddOrderHistoryAsync(
             orderDelivery.OrderId,
             "Generate Delivery Number",
-            $"Delivery Number Generated.Delivery no: {orderDelivery.DeliveryNo}. " +
-            $"Delivery status changed from {oldDeliveryStatus} to {orderDelivery.DeliveryStatus}.",
+            $"Delivery Number Generated.Delivery no: {orderDelivery.DeliveryNo}. ",
             currentUserId,
             currentUserName
         );
@@ -1574,8 +1568,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                     await _orderHistoryManager.AddOrderHistoryAsync(
                         newOrderDelivery.OrderId,
                         "Generate Delivery Number",
-                        $"Delivery Number Generated.Delivery no: {newOrderDelivery.DeliveryNo}. " +
-                        $"Delivery status changed from {oldDeliveryStatus} to {newOrderDelivery.DeliveryStatus}.",
+                        $"Delivery Number Generated.Delivery no: {newOrderDelivery.DeliveryNo}. ",
                         currentUserId,
                         currentUserName
                     );
@@ -1645,8 +1638,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                     await _orderHistoryManager.AddOrderHistoryAsync(
                         newOrderDelivery.OrderId,
                         "Generate Delivery Number",
-                        $"Delivery Number Generated.Delivery no: {newOrderDelivery.DeliveryNo}. " +
-                        $"Delivery status changed from {oldDeliveryStatus} to {newOrderDelivery.DeliveryStatus}.",
+                        $"Delivery Number Generated.Delivery no: {newOrderDelivery.DeliveryNo}. ",
                         currentUserId,
                         currentUserName
                     );
