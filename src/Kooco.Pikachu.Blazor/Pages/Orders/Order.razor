@@ -491,10 +491,10 @@
                                        <Button Type="@ButtonType.Button"  @onclick="()=>ToggleRow(context, true)"> <i class="@chevronClass"></i></Button>
                             </DisplayTemplate>
                             </DataGridColumn> *@
-                                <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
+                                <DataGridColumn  Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
                                      
-                                       <Link @onclick="()=>NavigateToOrderDetails(context)" > @L[context.OrderNo]</Link>
+                                       <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)" > @L[context.OrderNo]</Link>
                                     </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />
