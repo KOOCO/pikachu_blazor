@@ -3,6 +3,7 @@ using Kooco.Pikachu.Emails;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.Localization;
+using Kooco.Pikachu.OrderHistories;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.TenantEmailing;
 using Microsoft.Extensions.Localization;
@@ -20,6 +21,7 @@ using Volo.Abp.BackgroundJobs;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
 using Volo.Abp.SettingManagement;
+using Volo.Abp.Users;
 
 namespace Kooco.Pikachu.OrderDeliveries
 {
@@ -36,11 +38,12 @@ namespace Kooco.Pikachu.OrderDeliveries
         private readonly IEmailAppService _emailAppService;
         private readonly IElectronicInvoiceAppService _electronicInvoiceAppService;
         private readonly IElectronicInvoiceSettingRepository _electronicInvoiceSettingRepository;
+        private readonly OrderHistoryManager _orderHistoryManager;
         private readonly IBackgroundJobManager _backgroundJobManager;
         public OrderDeliveryAppService(IOrderDeliveryRepository orderDeliveryRepository, IStringLocalizer<PikachuResource> l, IOrderRepository orderRepository,
             IEmailSender emailSender, IGroupBuyRepository groupBuyRepositor, IRepository<TenantEmailSettings, Guid> tenantEmailSettingsRepository,
               ISettingManager settingManager, IElectronicInvoiceAppService electronicInvoiceAppService, IElectronicInvoiceSettingRepository electronicInvoiceSettingRepository,
-              IBackgroundJobManager backgroundJobManager, IEmailAppService emailAppService)
+              IBackgroundJobManager backgroundJobManager, IEmailAppService emailAppService,OrderHistoryManager orderHistoryManager)
         {
             _orderDeliveryRepository = orderDeliveryRepository;
             _l = l;
@@ -53,6 +56,7 @@ namespace Kooco.Pikachu.OrderDeliveries
             _electronicInvoiceAppService = electronicInvoiceAppService;
             _electronicInvoiceSettingRepository = electronicInvoiceSettingRepository;
             _emailAppService = emailAppService;
+            _orderHistoryManager = orderHistoryManager;
         }
         public async Task<List<OrderDeliveryDto>> GetListByOrderAsync(Guid Id)
         {
@@ -69,6 +73,9 @@ namespace Kooco.Pikachu.OrderDeliveries
         public async Task<OrderDeliveryDto> UpdateShippingDetails(Guid id, CreateOrderDto input)
         {
             OrderDelivery order = await _orderDeliveryRepository.GetAsync(id);
+            // Capture old values before updating
+            var oldDeliveryMethod = order.DeliveryMethod;
+            var oldDeliveryNo = order.DeliveryNo;
 
             order.DeliveryMethod = input.DeliveryMethod.Value;
 
@@ -77,6 +84,32 @@ namespace Kooco.Pikachu.OrderDeliveries
             await _orderDeliveryRepository.UpdateAsync(order);
 
             await UnitOfWorkManager.Current.SaveChangesAsync();
+            List<string> changes = [];
+
+            if (oldDeliveryMethod != order.DeliveryMethod)
+            {
+                changes.Add($"Delivery Method changed from {oldDeliveryMethod} to {order.DeliveryMethod}");
+            }
+
+            if (oldDeliveryNo != order.DeliveryNo)
+            {
+                changes.Add($"Delivery Number changed from {oldDeliveryNo ?? "None"} to {order.DeliveryNo}");
+            }
+            // **Get Current User (Editor)**
+            var currentUserId = CurrentUser.Id ?? Guid.Empty;
+            var currentUserName = CurrentUser.UserName ?? "System";
+            if (changes.Any())
+            {
+                string logMessage = $"Shipping details updated: {string.Join(", ", changes)}. Updated by: {currentUserName}.";
+
+                await _orderHistoryManager.AddOrderHistoryAsync(
+                    order.OrderId,
+                    "OrderShippingUpdated",
+                logMessage,
+                    currentUserId,
+                    currentUserName
+                );
+            }
 
             if (!order.DeliveryNo.IsNullOrEmpty())
             {
@@ -216,7 +249,7 @@ namespace Kooco.Pikachu.OrderDeliveries
         public async Task ChangeShippingStatus(Guid orderId)
         {
             Order order = await _orderRepository.GetWithDetailsAsync(orderId);
-
+            var oldShippingStatus = order.ShippingStatus;
             List<OrderDelivery> orderDeliveries = await _orderDeliveryRepository.GetWithDetailsAsync(orderId);
 
             foreach (OrderDelivery orderDelivery in orderDeliveries)
@@ -239,12 +272,25 @@ namespace Kooco.Pikachu.OrderDeliveries
                 order.ShippingStatus = ShippingStatus.Delivered;
 
             await _orderRepository.UpdateAsync(order);
+            // **Get Current User (Editor)**
+            var currentUserId = CurrentUser.Id ?? Guid.Empty;
+            var currentUserName = CurrentUser.UserName ?? "System";
+
+            // **Log Order History for Shipping Status Change**
+            await _orderHistoryManager.AddOrderHistoryAsync(
+                order.Id,
+                "ShippingStatusChanged",
+                $"Shipping status updated. Previous status: {oldShippingStatus}, new status: {order.ShippingStatus}. " +
+                $"Updated by: {currentUserName}.",
+                currentUserId,
+                currentUserName
+            );
         }
 
         public async Task UpdateDeliveredStatus(Guid orderId)
         {
             Order order = await _orderRepository.GetWithDetailsAsync(orderId);
-
+           var oldShippingStatus = order.ShippingStatus;
             List<OrderDelivery> orderDeliveries = await _orderDeliveryRepository.GetWithDetailsAsync(orderId);
 
             foreach (OrderDelivery orderDelivery in orderDeliveries)
@@ -283,12 +329,25 @@ namespace Kooco.Pikachu.OrderDeliveries
                 await UnitOfWorkManager.Current.SaveChangesAsync();
 
             }
+
+            // **Get Current User (Editor)**
+            var currentUserId = CurrentUser.Id ?? Guid.Empty;
+            var currentUserName = CurrentUser.UserName ?? "System";
+
+            // **Log Order History for Delivery Update**
+            await _orderHistoryManager.AddOrderHistoryAsync(
+                order.Id,
+                "OrderDelivered",
+                $"Order marked as Delivered. Previous shipping status: {oldShippingStatus}, new status: {order.ShippingStatus}. ",
+                currentUserId,
+                currentUserName
+            );
         }
 
         public async Task UpdatePickedUpStatus(Guid orderId)
         {
             Order order = await _orderRepository.GetWithDetailsAsync(orderId);
-
+            var oldShippingStatus = order.ShippingStatus;
             List<OrderDelivery> orderDeliveries = await _orderDeliveryRepository.GetWithDetailsAsync(orderId);
 
             foreach (OrderDelivery orderDelivery in orderDeliveries)
@@ -326,13 +385,25 @@ namespace Kooco.Pikachu.OrderDeliveries
                     }
                 }
                 await UnitOfWorkManager.Current.SaveChangesAsync();
+                // **Get Current User (Editor)**
+                var currentUserId = CurrentUser.Id ?? Guid.Empty;
+                var currentUserName = CurrentUser.UserName ?? "System";
+
+                // **Log Order History for Pickup Completion**
+                await _orderHistoryManager.AddOrderHistoryAsync(
+                    order.Id,
+                    "OrderPickedUp",
+                    $"Order marked as Picked Up. Previous shipping status: {oldShippingStatus}, new status: {order.ShippingStatus}. ",
+                    currentUserId,
+                    currentUserName
+                );
             }
         }
 
         public async Task UpdateOrderDeliveryStatus(Guid Id)
         {
             OrderDelivery delivery = await _orderDeliveryRepository.GetAsync(Id);
-
+            var oldDeliveryStatus = delivery.DeliveryStatus;
             delivery.DeliveryStatus = DeliveryStatus.Shipped;
 
             delivery.Editor = CurrentUser.Name ?? string.Empty;
@@ -344,7 +415,7 @@ namespace Kooco.Pikachu.OrderDeliveries
             if (!orderDeliveries.Any(a => a.DeliveryStatus != DeliveryStatus.Shipped))
             {
                 Order order = await _orderRepository.GetWithDetailsAsync(delivery.OrderId);
-
+                var oldShippingStatus = order.ShippingStatus;
                 order.ShippingStatus = ShippingStatus.Shipped;
 
                 await _orderRepository.UpdateAsync(order);
@@ -370,6 +441,29 @@ namespace Kooco.Pikachu.OrderDeliveries
                         }
                     }
                 }
+                // **Get Current User (Editor)**
+                var currentUserId = CurrentUser.Id ?? Guid.Empty;
+                var currentUserName = CurrentUser.UserName ?? "System";
+
+                // **Log Order History based on whether ShippingStatus changed**
+                string logMessage;
+                if (oldShippingStatus != order.ShippingStatus)
+                {
+                    logMessage = $"Order marked as Shipped. Previous delivery status: {oldDeliveryStatus}, new status: {delivery.DeliveryStatus}. " +
+                                 $"Previous shipping status: {oldShippingStatus}, new shipping status: {order.ShippingStatus}. Updated by: {currentUserName}.";
+                }
+                else
+                {
+                    logMessage = $"Order marked as Shipped. Previous delivery status: {oldDeliveryStatus}, new status: {delivery.DeliveryStatus}.";
+                }
+
+                await _orderHistoryManager.AddOrderHistoryAsync(
+                    order.Id,
+                    "OrderShipped",
+                    logMessage,
+                    currentUserId,
+                    currentUserName
+                );
                 //await SendEmailAsync(order.Id, delivery.DeliveryNo);
             }
 

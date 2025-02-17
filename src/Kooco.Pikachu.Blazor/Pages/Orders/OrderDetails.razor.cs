@@ -52,6 +52,7 @@ public partial class OrderDetails
     private ModificationTrack ModificationTrack = new();
     private Shipments shipments = new();
     private RefundOrder refunds = new();
+    private List<OrderHistoryDto> OrderHistory { get; set; } = new();
     private List<UpdateOrderItemDto> EditingItems { get; set; } = new();
     private IReadOnlyList<OrderMessageDto> CustomerServiceHistory { get; set; }=[];
     private Modal CreateShipmentModal { get; set; }
@@ -115,6 +116,7 @@ public partial class OrderDetails
                 await loading.Show();
                 OrderId = Guid.Parse(id);
                 await GetOrderDetailsAsync();
+               
                 await base.OnInitializedAsync();
                 await loading.Hide();
             }
@@ -178,7 +180,7 @@ public partial class OrderDetails
     async Task GetOrderDetailsAsync()
     {
         Order = await _orderAppService.GetWithDetailsAsync(OrderId) ?? new();
-
+        OrderHistory = await _orderAppService.GetOrderLogsAsync(OrderId);
         if (Order.DeliveryMethod is not DeliveryMethod.SelfPickup &&
             Order.DeliveryMethod is not DeliveryMethod.DeliveredByStore)
                 OrderDeliveryCost = Order.DeliveryCost;

@@ -6,6 +6,7 @@ using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.OrderDeliveries;
+using Kooco.Pikachu.OrderHistories;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Response;
 using Kooco.Pikachu.TenantManagement;
@@ -78,6 +79,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
     private readonly IEmailSender _emailSender;
     private readonly IEmailAppService _emailAppService;
+    private readonly OrderHistoryManager _orderHistoryManager;
     #endregion
 
     #region Constructor
@@ -95,7 +97,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         IGroupBuyRepository GroupBuyRepository,
         IEmailSender emailSender,
         ITenantSettingsAppService tenantSettingsAppService,
-        IEmailAppService emailAppService
+        IEmailAppService emailAppService,
+        OrderHistoryManager orderHistoryManager
     )
     {
         _orderRepository = orderRepository;
@@ -121,6 +124,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         _emailSender = emailSender;
         _tenantSettingsAppService = tenantSettingsAppService;
         _emailAppService = emailAppService;
+        _orderHistoryManager = orderHistoryManager;
     }
     #endregion
 
@@ -133,7 +137,22 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             // await _orderRepository.EnsurePropertyLoadedAsync(order, o => o.GroupBuy);
             var groupbuy = await _GroupBuyRepository.GetAsync(order.GroupBuyId);
+            
             order.ShippingStatus = ShippingStatus.ToBeShipped;
+            var oldShippingStatus = order.ShippingStatus;
+            // **Get Current User (Editor)**
+            var currentUserId = CurrentUser.Id ?? Guid.Empty;
+            var currentUserName = CurrentUser.UserName ?? "System";
+
+            // **Log Order History for Delivery Update**
+            await _orderHistoryManager.AddOrderHistoryAsync(
+                order.OrderId,
+                 "OrderToBeShipped",
+                 $"Order marked as 'To Be Shipped'. Previous shipping status: {oldShippingStatus}, new status: {order.ShippingStatus}. ",
+
+                currentUserId,
+                currentUserName
+            );
             var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
             if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
             {
@@ -283,7 +302,11 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                   requiresNew: true, isTransactional: false
               ))
                     {
+
                         var newOrderDelivery = await _deliveryRepository.GetAsync(orderDeliveryId);
+                        // Capture old delivery details before updating
+                       
+                        var oldDeliveryStatus = newOrderDelivery.DeliveryStatus;
                         newOrderDelivery.DeliveryNo = result.ShippingInfo.BookingNote;
 
                         newOrderDelivery.AllPayLogisticsID = result.ShippingInfo.AllPayLogisticsID;
@@ -297,6 +320,19 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
 
                         await uow.SaveChangesAsync();
+                        // **Get Current User (Editor)**
+                        var currentUserId = CurrentUser.Id ?? Guid.Empty;
+                        var currentUserName = CurrentUser.UserName ?? "System";
+
+                        // **Log Order History for Delivery Update**
+                        await _orderHistoryManager.AddOrderHistoryAsync(
+                            newOrderDelivery.OrderId,
+                            "Generate Delivery Number",
+                            $"Delivery Number Generated.Delivery no: {newOrderDelivery.DeliveryNo}. " +
+                            $"Delivery status changed from {oldDeliveryStatus} to {newOrderDelivery.DeliveryStatus}.",
+                            currentUserId,
+                            currentUserName
+                        );
                         //order.ShippingStatus = ShippingStatus.ToBeShipped;
                         //order = await _orderRepository.GetAsync(orderId);
 
@@ -941,6 +977,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                                                                          "yyyyMMddHHmmss",
                                                                          System.Globalization.CultureInfo.InvariantCulture);
                 newOrderDelivery.DeliveryNo = printObtResponse.Data.Orders.First().OBTNumber;
+                var oldDeliveryStatus = newOrderDelivery.DeliveryStatus;
                 newOrderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
 
                 if (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore &&
@@ -952,6 +989,19 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 //order.ShippingStatus = ShippingStatus.ToBeShipped;
                 await uow.SaveChangesAsync();
                 //await _orderRepository.UpdateAsync(order);
+                // **Get Current User (Editor)**
+                var currentUserId = CurrentUser.Id ?? Guid.Empty;
+                var currentUserName = CurrentUser.UserName ?? "System";
+
+                // **Log Order History for Delivery Update**
+                await _orderHistoryManager.AddOrderHistoryAsync(
+                    newOrderDelivery.OrderId,
+                    "Generate Delivery Number",
+                    $"Delivery Number Generated.Delivery no: {newOrderDelivery.DeliveryNo}. " +
+                    $"Delivery status changed from {oldDeliveryStatus} to {newOrderDelivery.DeliveryStatus}.",
+                    currentUserId,
+                    currentUserName
+                );
 
             }
                 await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
@@ -972,6 +1022,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                                                                          "yyyyMMddHHmmss",
                                                                          System.Globalization.CultureInfo.InvariantCulture);
                 newOrderDelivery.DeliveryNo = printObtResponse.Data.Orders.First().OBTNumber;
+                var oldDeliveryStatus = newOrderDelivery.DeliveryStatus;
                 newOrderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
 
                 if (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore &&
@@ -983,7 +1034,19 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 //order.ShippingStatus = ShippingStatus.ToBeShipped;
                 await uow.SaveChangesAsync();
                 //await _orderRepository.UpdateAsync(order);
+                // **Get Current User (Editor)**
+                var currentUserId = CurrentUser.Id ?? Guid.Empty;
+                var currentUserName = CurrentUser.UserName ?? "System";
 
+                // **Log Order History for Delivery Update**
+                await _orderHistoryManager.AddOrderHistoryAsync(
+                    newOrderDelivery.OrderId,
+                    "Generate Delivery Number",
+                    $"Delivery Number Generated.Delivery no: {newOrderDelivery.DeliveryNo}. " +
+                    $"Delivery status changed from {oldDeliveryStatus} to {newOrderDelivery.DeliveryStatus}.",
+                    currentUserId,
+                    currentUserName
+                );
             }
             await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
             return printObtResponse;
@@ -1097,6 +1160,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                                                                          System.Globalization.CultureInfo.InvariantCulture);
                 newOrderDelivery.DeliveryNo = printObtB2SResponse.Data.Orders.First().DeliveryId;
                 newOrderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
+                var oldDeliveryStatus = newOrderDelivery.DeliveryStatus;
 
                 if (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore &&
                         deliveryMethod is not null)
@@ -1107,6 +1171,19 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 //order.ShippingStatus = ShippingStatus.ToBeShipped;
                 await uow.SaveChangesAsync();
                 //await _orderRepository.UpdateAsync(order);
+                // **Get Current User (Editor)**
+                var currentUserId = CurrentUser.Id ?? Guid.Empty;
+                var currentUserName = CurrentUser.UserName ?? "System";
+
+                // **Log Order History for Delivery Update**
+                await _orderHistoryManager.AddOrderHistoryAsync(
+                    newOrderDelivery.OrderId,
+                    "Generate Delivery Number",
+                    $"Delivery Number Generated.Delivery no: {newOrderDelivery.DeliveryNo}. " +
+                    $"Delivery status changed from {oldDeliveryStatus} to {newOrderDelivery.DeliveryStatus}.",
+                    currentUserId,
+                    currentUserName
+                );
             }
 
                 await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
@@ -1128,6 +1205,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                                                                          System.Globalization.CultureInfo.InvariantCulture);
                 newOrderDelivery.DeliveryNo = printObtB2SResponse.Data.Orders.First().DeliveryId;
                 newOrderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
+                var oldDeliveryStatus = newOrderDelivery.DeliveryStatus;
 
                 if (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore &&
                         deliveryMethod is not null)
@@ -1138,6 +1216,19 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 //order.ShippingStatus = ShippingStatus.ToBeShipped;
                 await uow.SaveChangesAsync();
                 //await _orderRepository.UpdateAsync(order);
+                // **Get Current User (Editor)**
+                var currentUserId = CurrentUser.Id ?? Guid.Empty;
+                var currentUserName = CurrentUser.UserName ?? "System";
+
+                // **Log Order History for Delivery Update**
+                await _orderHistoryManager.AddOrderHistoryAsync(
+                    newOrderDelivery.OrderId,
+                    "Generate Delivery Number",
+                    $"Delivery Number Generated.Delivery no: {newOrderDelivery.DeliveryNo}. " +
+                    $"Delivery status changed from {oldDeliveryStatus} to {newOrderDelivery.DeliveryStatus}.",
+                    currentUserId,
+                    currentUserName
+                );
             }
 
             await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
@@ -1159,10 +1250,23 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         OrderDelivery orderDelivery = orderDeliveries.First(f => f.Id == orderDeliveryId);
 
         orderDelivery.DeliveryNo = order.OrderNo;
-
+    var oldDeliveryStatus = orderDelivery.DeliveryStatus;
         orderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
 
         await _deliveryRepository.UpdateAsync(orderDelivery);
+        // **Get Current User (Editor)**
+        var currentUserId = CurrentUser.Id ?? Guid.Empty;
+        var currentUserName = CurrentUser.UserName ?? "System";
+
+        // **Log Order History for Delivery Update**
+        await _orderHistoryManager.AddOrderHistoryAsync(
+            orderDelivery.OrderId,
+            "Generate Delivery Number",
+            $"Delivery Number Generated.Delivery no: {orderDelivery.DeliveryNo}. " +
+            $"Delivery status changed from {oldDeliveryStatus} to {orderDelivery.DeliveryStatus}.",
+            currentUserId,
+            currentUserName
+        );
 
         if (orderDeliveries.All(a => a.DeliveryStatus == DeliveryStatus.ToBeShipped))
         {
@@ -1426,7 +1530,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 {
                     var newOrderDelivery = await _deliveryRepository.GetAsync(orderDeliveryId);
                     newOrderDelivery.DeliveryNo = result.ShippingInfo.BookingNote;
-
+                    var oldDeliveryStatus = newOrderDelivery.DeliveryStatus;
                     if (order.DeliveryMethod is DeliveryMethod.SevenToEleven1 ||
                         order.DeliveryMethod is DeliveryMethod.FamilyMart1 ||
                         order.DeliveryMethod is DeliveryMethod.SevenToElevenFrozen ||
@@ -1462,6 +1566,20 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                     //order.ShippingStatus = ShippingStatus.ToBeShipped;
                     await uow.SaveChangesAsync();
                     // await _orderRepository.UpdateAsync(order);
+                    // **Get Current User (Editor)**
+                    var currentUserId = CurrentUser.Id ?? Guid.Empty;
+                    var currentUserName = CurrentUser.UserName ?? "System";
+
+                    // **Log Order History for Delivery Update**
+                    await _orderHistoryManager.AddOrderHistoryAsync(
+                        newOrderDelivery.OrderId,
+                        "Generate Delivery Number",
+                        $"Delivery Number Generated.Delivery no: {newOrderDelivery.DeliveryNo}. " +
+                        $"Delivery status changed from {oldDeliveryStatus} to {newOrderDelivery.DeliveryStatus}.",
+                        currentUserId,
+                        currentUserName
+                    );
+
                 }
 
 
@@ -1481,6 +1599,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 {
                     var newOrderDelivery = await _deliveryRepository.GetAsync(orderDeliveryId);
                     newOrderDelivery.DeliveryNo = result.ShippingInfo.BookingNote;
+                    var oldDeliveryStatus = newOrderDelivery.DeliveryStatus;
 
                     if (order.DeliveryMethod is DeliveryMethod.SevenToEleven1 ||
                         order.DeliveryMethod is DeliveryMethod.FamilyMart1 ||
@@ -1517,6 +1636,20 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                     //order.ShippingStatus = ShippingStatus.ToBeShipped;
                     await uow.SaveChangesAsync();
                     // await _orderRepository.UpdateAsync(order);
+
+                    // **Get Current User (Editor)**
+                    var currentUserId = CurrentUser.Id ?? Guid.Empty;
+                    var currentUserName = CurrentUser.UserName ?? "System";
+
+                    // **Log Order History for Delivery Update**
+                    await _orderHistoryManager.AddOrderHistoryAsync(
+                        newOrderDelivery.OrderId,
+                        "Generate Delivery Number",
+                        $"Delivery Number Generated.Delivery no: {newOrderDelivery.DeliveryNo}. " +
+                        $"Delivery status changed from {oldDeliveryStatus} to {newOrderDelivery.DeliveryStatus}.",
+                        currentUserId,
+                        currentUserName
+                    );
                 }
 
 

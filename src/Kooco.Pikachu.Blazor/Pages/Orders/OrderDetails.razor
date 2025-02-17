@@ -35,6 +35,31 @@
             width: 1px;
             white-space: nowrap;
         }
+        .order-history-container {
+    max-height: 500px; /* Adjust height as needed */
+    overflow-y: auto; /* Enables vertical scrolling */
+    border: 1px solid #ddd; /* Optional: Adds a border for visibility */
+}
+
+.order-history-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.order-history-table th,
+.order-history-table td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+/* Sticky Header */
+.order-history-table th {
+    background-color: #f4f4f4;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
 
 </style>
 
@@ -1557,15 +1582,27 @@
             }
               <Card>
                 <CardBody>
-                    <Table>
+                     <div class="order-history-container">  <!-- Scrollable Container -->
+            <Table class="order-history-table">
+                    
                         <TableHeader >
                             <TableHeaderCell>@L["Date"]</TableHeaderCell>
                             <TableHeaderCell>@L["Editor"]</TableHeaderCell>
-                            <TableHeaderCell>@L["OrderStatus"]</TableHeaderCell>
                             <TableHeaderCell>@L["Action"]</TableHeaderCell>
+                            <TableHeaderCell>@L["ActionDetails"]</TableHeaderCell>
                         </TableHeader>
-
-                    <TableBody >
+                        <TableBody>
+                            @foreach(var history in OrderHistory)
+                            {
+                            <TableRow>
+                                <TableRowCell>@history.CreationTime.ToString("dd/MM/yyyy hh:mm:ss tt")</TableRowCell>
+                                <TableRowCell>@history.EditorUserName</TableRowCell>
+                                <TableRowCell>@L[history.ActionType]</TableRowCell>
+                                <TableRowCell>@history.ActionDetails</TableRowCell>
+                            </TableRow>
+                            }
+                        </TableBody>
+                    @* <TableBody >
                         @if (Order?.ShippingStatus == ShippingStatus.WaitingForPayment)
                         {
                           <TableRow>
@@ -1731,8 +1768,9 @@
                             </TableRow>
                         }
 
-                    </TableBody>
+                    </TableBody> *@
                     </Table>
+                    </div>
                 </CardBody>
             </Card>
         </div>

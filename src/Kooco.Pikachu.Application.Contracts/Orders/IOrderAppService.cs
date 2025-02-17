@@ -61,5 +61,6 @@ namespace Kooco.Pikachu.Orders
         Task<OrderDto> OrderToBeShipped(Guid id);
         Task<(decimal PaidAmount, decimal UnpaidAmount, decimal RefundedAmount)> GetOrderStatusAmountsAsync(Guid UserId);
         Task<(int Open, int Exchange, int Return)> GetOrderStatusCountsAsync(Guid userId);
+        Task<List<OrderHistoryDto>> GetOrderLogsAsync(Guid orderId);
     }
 }

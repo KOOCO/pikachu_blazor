@@ -8,6 +8,7 @@ using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.OrderDeliveries;
+using Kooco.Pikachu.OrderHistories;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.Permissions;
@@ -38,9 +39,11 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
+using Volo.Abp.Identity;
 using Volo.Abp.Localization;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Security.Encryption;
+using Volo.Abp.Users;
 using static Kooco.Pikachu.Permissions.PikachuPermissions;
 
 namespace Kooco.Pikachu.Orders;
@@ -76,6 +79,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly ISetItemRepository _setItemRepository;
     private readonly IUserCumulativeCreditAppService _userCumulativeCreditAppService;
     private readonly IUserCumulativeCreditRepository _userCumulativeCreditRepository;
+    private readonly IIdentityUserRepository _userRepository;
+    private readonly OrderHistoryManager _orderHistoryManager;
+    private readonly IOrderHistoryRepository _orderHistoryRepository;
     #endregion
 
     #region Constructor
@@ -106,7 +112,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
         IOrderMessageAppService OrderMessageAppService,
         ISetItemRepository setItemRepository,
         IUserCumulativeCreditAppService userCumulativeCreditAppService,
-        IUserCumulativeCreditRepository userCumulativeCreditRepository
+        IUserCumulativeCreditRepository userCumulativeCreditRepository,
+        IIdentityUserRepository userRepository,
+        OrderHistoryManager orderHistoryManager,
+        IOrderHistoryRepository orderHistoryRepository
     )
     {
         _orderRepository = orderRepository;
@@ -136,6 +145,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _OrderMessageAppService = OrderMessageAppService;
         _setItemRepository = setItemRepository;
         _userCumulativeCreditAppService = userCumulativeCreditAppService;
+        _userRepository = userRepository;
+        _orderHistoryManager = orderHistoryManager;
+        _orderHistoryRepository = orderHistoryRepository;
     }
     #endregion
 
@@ -489,6 +501,17 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 }
 
             }
+            // **ADD ORDER HISTORY LOG**
+            Guid? editorUserId = order.UserId != null && order.UserId != Guid.Empty ? order.UserId : null;
+            string editorUserName = editorUserId != null ? (await _userRepository.GetAsync(editorUserId.Value))?.UserName ?? "System" : "System";
+
+            await _orderHistoryManager.AddOrderHistoryAsync(
+                order.Id,
+                "Order Created",
+                $"Order {order.OrderNo} was created.",
+                editorUserId,
+                editorUserName
+            );
             await _orderRepository.UpdateAsync(order);
             await SendEmailAsync(order.Id);
             var validitySettings = (await _paymentGatewayRepository.GetQueryableAsync()).Where(x => x.PaymentIntegrationType == PaymentIntegrationType.OrderValidatePeriod).FirstOrDefault();
@@ -534,9 +557,20 @@ public class OrderAppService : ApplicationService, IOrderAppService
     public async Task<OrderDto> UpdateOrderPaymentMethodAsync(OrderPaymentMethodRequest request)
     {
         Order order = await _orderRepository.GetAsync(request.OrderId);
-
+        var oldPaymentMethod = order.PaymentMethod;
         order.PaymentMethod = request.PaymentMethod;
+        // Determine EditorUserId (set to null if third-party)
+        Guid? editorUserId = order.UserId != null && order.UserId != Guid.Empty ? order.UserId : null;
+        string editorUserName = editorUserId != null ? (await _userRepository.GetAsync(editorUserId.Value))?.UserName ?? "System" : "System";
 
+        // Log Order History
+        await _orderHistoryManager.AddOrderHistoryAsync(
+            order.Id,
+            "Payment Method Updated",
+            $"Payment method changed from {oldPaymentMethod} to {order.PaymentMethod}.",
+            editorUserId,
+            editorUserName
+        );
         return ObjectMapper.Map<Order, OrderDto>(
             await _orderRepository.UpdateAsync(order)
         );
@@ -545,9 +579,20 @@ public class OrderAppService : ApplicationService, IOrderAppService
     public async Task<OrderDto> UpdateMerchantTradeNoAsync(OrderPaymentMethodRequest request)
     {
         Order order = await _orderRepository.GetAsync(request.OrderId);
-
+       var oldMerchantTradeNo= order.MerchantTradeNo;
         order.MerchantTradeNo = request.MerchantTradeNo;
+        // Determine EditorUserId (set to null if third-party)
+        Guid? editorUserId = order.UserId != null && order.UserId != Guid.Empty ? order.UserId : null;
+        string editorUserName = editorUserId != null ? (await _userRepository.GetAsync(editorUserId.Value))?.UserName ?? "System" : "System";
 
+        // Log Order History
+        await _orderHistoryManager.AddOrderHistoryAsync(
+            order.Id,
+            "Merchant TradeNo Updated",
+            $"Payment method changed from {oldMerchantTradeNo} to {order.MerchantTradeNo}.",
+            editorUserId,
+            editorUserName
+        );
         return ObjectMapper.Map<Order, OrderDto>(
             await _orderRepository.UpdateAsync(order)
         );
@@ -563,7 +608,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         decimal TotalAmount = 0; int TotalQuantity = 0;
 
         Order ord = await _orderRepository.GetWithDetailsAsync(Ids[0]);
-
+        string OrderNo = "";
         GroupBuy groupBuy = new();
         List<decimal> DeliveriesCost = new();
         using (_dataFilter.Disable<IMultiTenant>())
@@ -578,7 +623,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             foreach (Guid id in Ids)
             {
                 Order order = await _orderRepository.GetWithDetailsAsync(id);
-
+                OrderNo+=order.OrderNo + ",";
                 TotalAmount += order.TotalAmount;
                 TotalQuantity += order.TotalQuantity;
                 if (order.DeliveryCost is not null)
@@ -766,7 +811,18 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 await _orderRepository.UpdateAsync(order1);
                 await UnitOfWorkManager.Current.SaveChangesAsync();
             }
-
+            // **Get Current User (Editor)**
+            var currentUserId = CurrentUser.Id ?? Guid.Empty;
+            var currentUserName = CurrentUser.UserName ?? "System";
+            OrderNo = OrderNo.TrimEnd(',');
+            // **Log Order History for Merge**
+            await _orderHistoryManager.AddOrderHistoryAsync(
+                order1.Id,
+                "Order Merge",
+                $"Merged orders: {OrderNo} into new order {order1.OrderNo}.",
+                currentUserId,
+                currentUserName
+            );
             foreach (Guid id in Ids)
             {
                 Order ord1 = await _orderRepository.GetWithDetailsAsync(id);
@@ -782,7 +838,16 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     item.ItemPrice = 0; item.TotalAmount = 0;
                 }
 
+
                 await _orderRepository.UpdateAsync(ord1, autoSave: true);
+                // Log old order closure in OrderHistory
+                await _orderHistoryManager.AddOrderHistoryAsync(
+                    ord1.Id,
+                    "OrderMergedToNew",
+                    $"Order {ord1.OrderNo} was merged into {order1.OrderNo} and closed.",
+                    currentUserId,
+                    currentUserName
+                );
             }
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
@@ -913,6 +978,27 @@ public class OrderAppService : ApplicationService, IOrderAppService
             ord.OrderType = OrderType.SplitToNew;
 
             await _orderRepository.UpdateAsync(ord);
+            // **Get Current User (Editor)**
+            var currentUserId = CurrentUser.Id ?? Guid.Empty;
+            var currentUserName = CurrentUser.UserName ?? "System";
+
+            // **Log Order History for Split Order**
+            await _orderHistoryManager.AddOrderHistoryAsync(
+                splitOrderId,
+                "OrderSplit",
+                $"Order {ord.OrderNo} was split into new order {newOrder.OrderNo}.",
+                currentUserId,
+                currentUserName
+            );
+
+            // **Log Update to Original Order**
+            await _orderHistoryManager.AddOrderHistoryAsync(
+                ord.Id,
+                "OrderSplitFrom",
+                $"Order {ord.OrderNo} was split, moving items to {newOrder.OrderNo}.",
+                currentUserId,
+                currentUserName
+            );
 
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
@@ -1102,14 +1188,35 @@ public class OrderAppService : ApplicationService, IOrderAppService
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
             await _refundAppService.CreateAsync(newOrder.Id);
+            // **Get Current User (Editor)**
+            var currentUserId = CurrentUser.Id ?? Guid.Empty;
+            var currentUserName = CurrentUser.UserName ?? "System";
 
+            // **Log Order History for Refund Request**
+            await _orderHistoryManager.AddOrderHistoryAsync(
+                ord.Id,
+                "RefundRequested",
+                $"Refund requested for items. Refunded amount: {newOrder.TotalAmount:C}.",
+                currentUserId,
+                currentUserName
+            );
+
+            // **Log the creation of the new refunded order**
+            await _orderHistoryManager.AddOrderHistoryAsync(
+                newOrder.Id,
+                "RefundOrderCreated",
+                $"New refund order {newOrder.OrderNo} created for refunded items from {ord.OrderNo}.",
+                currentUserId,
+                currentUserName
+            );
             return ObjectMapper.Map<Order, OrderDto>(ord);
         }
     }
     public async Task<OrderDto> ChangeOrderStatus(Guid id, ShippingStatus status)
     {
         var order = await _orderRepository.GetWithDetailsAsync(id);
-
+        // Store the old status before updating
+        var oldStatus = order.ShippingStatus;
         order.ShippingStatus = status;
         //order.ClosedBy = CurrentUser.Name;
         order.CancellationDate = DateTime.Now;
@@ -1148,6 +1255,18 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 }
             }
         }
+        // **Get Current User (Editor)**
+        var currentUserId = CurrentUser.Id ?? Guid.Empty;
+        var currentUserName = CurrentUser.UserName ?? "System";
+
+        // **Log Order History for Status Change**
+        await _orderHistoryManager.AddOrderHistoryAsync(
+            order.Id,
+            "Status Changed",
+            $"Order status changed from {oldStatus} to {status}.",
+            currentUserId,
+            currentUserName
+        );
         return returnResult;
 
 
@@ -1217,6 +1336,27 @@ public class OrderAppService : ApplicationService, IOrderAppService
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
             await _refundAppService.CreateAsync(order1.Id);
+            // **Get Current User (Editor)**
+            var currentUserId = CurrentUser.Id ?? Guid.Empty;
+            var currentUserName = CurrentUser.UserName ?? "System";
+
+            // **Log Refund Action in Order History**
+            await _orderHistoryManager.AddOrderHistoryAsync(
+                ord.Id,
+                "RefundProcessed",
+                $"A refund of {(decimal)amount:C} was processed for order {ord.OrderNo}.",
+                currentUserId,
+                currentUserName
+            );
+
+            // **Log New Refund Order Creation**
+            await _orderHistoryManager.AddOrderHistoryAsync(
+                order1.Id,
+                "RefundOrderCreated",
+                $"A new refund order {order1.OrderNo} was created for refunded amount {(decimal)amount:C} from order {ord.OrderNo}.",
+                currentUserId,
+                currentUserName
+            );
         }
     }
     public async Task<OrderDto> GetWithDetailsAsync(Guid id)
@@ -1225,7 +1365,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         return ObjectMapper.Map<Order, OrderDto>(order);
     }
+    public async Task<List<OrderHistoryDto>> GetOrderLogsAsync(Guid orderId)
+    { 
+        var result= await _orderHistoryRepository.GetAllHistoryByOrderIdAsync(orderId);
 
+        return ObjectMapper.Map<List<OrderHistory>, List<OrderHistoryDto>>(result);
+
+    }
     public async Task<PagedResultDto<OrderDto>> GetListAsync(GetOrderListDto input, bool hideCredentials = false)
     {
         if (input.Sorting.IsNullOrEmpty()) input.Sorting = $"{nameof(Order.CreationTime)} desc";
@@ -1406,6 +1552,39 @@ public class OrderAppService : ApplicationService, IOrderAppService
     public async Task<OrderDto> UpdateAsync(Guid id, CreateOrderDto input)
     {
         var order = await _orderRepository.GetAsync(id);
+        // Capture changes in order details for logging
+        List<string> changes = new();
+
+        if (order.RecipientName != input.RecipientName)
+            changes.Add($"Recipient Name changed from '{order.RecipientName}' to '{input.RecipientName}'");
+
+        if (order.RecipientPhone != input.RecipientPhone)
+            changes.Add($"Recipient Phone changed from '{order.RecipientPhone}' to '{input.RecipientPhone}'");
+
+        if (order.PostalCode != input.PostalCode)
+            changes.Add($"Postal Code changed from '{order.PostalCode}' to '{input.PostalCode}'");
+
+        if (order.District != input.District)
+            changes.Add($"District changed from '{order.District}' to '{input.District}'");
+
+        if (order.City != input.City)
+            changes.Add($"City changed from '{order.City}' to '{input.City}'");
+
+        if (order.Road != input.Road)
+            changes.Add($"Road changed from '{order.Road}' to '{input.Road}'");
+
+        if (order.AddressDetails != input.AddressDetails)
+            changes.Add($"Address Details changed from '{order.AddressDetails}' to '{input.AddressDetails}'");
+
+        if (order.OrderStatus != input.OrderStatus)
+            changes.Add($"Order Status changed from '{order.OrderStatus}' to '{input.OrderStatus}'");
+
+        if (order.StoreId != input.StoreId)
+            changes.Add($"Store ID changed from '{order.StoreId}' to '{input.StoreId}'");
+
+        if (order.CVSStoreOutSide != input.CVSStoreOutSide)
+            changes.Add($"CVS Store changed from '{order.CVSStoreOutSide}' to '{input.CVSStoreOutSide}'");
+
         order.RecipientName = input.RecipientName;
         order.RecipientPhone = input.RecipientPhone;
         order.PostalCode = input.PostalCode;
@@ -1446,6 +1625,21 @@ public class OrderAppService : ApplicationService, IOrderAppService
             await UnitOfWorkManager.Current.SaveChangesAsync();
             await _emailAppService.SendOrderUpdateEmailAsync(order.Id);
         }
+        // **Get Current User (Editor)**
+        var currentUserId = CurrentUser.Id ?? Guid.Empty;
+        var currentUserName = CurrentUser.UserName ?? "System";
+
+        // **Log Order Update in Order History**
+        if (changes.Count > 0)
+        {
+            await _orderHistoryManager.AddOrderHistoryAsync(
+                order.Id,
+                "OrderUpdated",
+                $"Order updated: {string.Join("; ", changes)}",
+                currentUserId,
+                currentUserName
+            );
+        }
 
         return ObjectMapper.Map<Order, OrderDto>(order);
     }
@@ -1453,6 +1647,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
     public async Task ChangeReturnStatusAsync(Guid id, OrderReturnStatus? orderReturnStatus)
     {
         var order = await _orderRepository.GetAsync(id);
+        // Capture old status before updating
+        var oldReturnStatus = order.ReturnStatus;
         order.ReturnStatus = orderReturnStatus;
         if (orderReturnStatus == OrderReturnStatus.Reject)
         {
@@ -1479,36 +1675,111 @@ public class OrderAppService : ApplicationService, IOrderAppService
             order.ShippingStatus = ShippingStatus.Exchange;
         }
         await _orderRepository.UpdateAsync(order);
+        // **Get Current User (Editor)**
+        var currentUserId = CurrentUser.Id ?? Guid.Empty;
+        var currentUserName = CurrentUser.UserName ?? "System";
+
+        // **Log Order History for Return Status Change**
+        await _orderHistoryManager.AddOrderHistoryAsync(
+            order.Id,
+            "ReturnStatusChanged",
+            $"Return status changed from {oldReturnStatus} to {orderReturnStatus}.",
+            currentUserId,
+            currentUserName
+        );
+
+        // **Log Additional Details for Refund or Exchange**
+        if (orderReturnStatus == OrderReturnStatus.Approve && order.OrderStatus == OrderStatus.Returned)
+        {
+            await _orderHistoryManager.AddOrderHistoryAsync(
+                order.Id,
+                "RefundInitiated",
+                $"Refund process started for order {order.OrderNo}.",
+                currentUserId,
+                currentUserName
+            );
+        }
+
+        if (orderReturnStatus == OrderReturnStatus.Succeeded && order.OrderStatus == OrderStatus.Exchange)
+        {
+            await _orderHistoryManager.AddOrderHistoryAsync(
+                order.Id,
+                "OrderExchanged",
+                $"Order {order.OrderNo} marked as exchanged by {order.ExchangeBy} on {order.ExchangeTime}.",
+                currentUserId,
+                currentUserName
+            );
+        }
     }
 
     public async Task ExchangeOrderAsync(Guid id)
     {
         var order = await _orderRepository.GetAsync(id);
+        // Capture old statuses before updating
+        var oldReturnStatus = order.ReturnStatus;
+        var oldOrderStatus = order.OrderStatus;
         order.ReturnStatus = OrderReturnStatus.Pending;
         order.OrderStatus = OrderStatus.Exchange;
 
         await _orderRepository.UpdateAsync(order);
+        // **Get Current User (Editor)**
+        var currentUserId = CurrentUser.Id ?? Guid.Empty;
+        var currentUserName = CurrentUser.UserName ?? "System";
+
+        // **Log Order History for Exchange**
+        await _orderHistoryManager.AddOrderHistoryAsync(
+            order.Id,
+            "OrderExchangeInitiated",
+            $"Order exchange initiated. Return status changed from {oldReturnStatus} to {order.ReturnStatus}, and order status changed from {oldOrderStatus} to {order.OrderStatus}.",
+            currentUserId,
+            currentUserName
+        );
 
 
     }
     public async Task ReturnOrderAsync(Guid id)
     {
         var order = await _orderRepository.GetAsync(id);
+        // Capture old statuses before updating
+        var oldReturnStatus = order.ReturnStatus;
+        var oldOrderStatus = order.OrderStatus;
         order.ReturnStatus = OrderReturnStatus.Pending;
         order.OrderStatus = OrderStatus.Returned;
 
         await _orderRepository.UpdateAsync(order);
+        // **Get Current User (Editor)**
+        var currentUserId = CurrentUser.Id ?? Guid.Empty;
+        var currentUserName = CurrentUser.UserName ?? "System";
 
+        // **Log Order History for Return**
+        await _orderHistoryManager.AddOrderHistoryAsync(
+            order.Id,
+            "OrderReturnInitiated",
+            $"Order return initiated. Return status changed from {oldReturnStatus} to {order.ReturnStatus}, and order status changed from {oldOrderStatus} to {order.OrderStatus}.",
+            currentUserId,
+            currentUserName
+        );
 
     }
     public async Task UpdateOrderItemsAsync(Guid id, List<UpdateOrderItemDto> orderItems)
     {
         var order = await _orderRepository.GetAsync(id);
         await _orderRepository.EnsureCollectionLoadedAsync(order, o => o.OrderItems);
-
+        List<string> itemChanges = new();
         foreach (var item in orderItems)
         {
             var orderItem = order.OrderItems.First(o => o.Id == item.Id);
+            // Capture changes for logging
+            if (orderItem.Quantity != item.Quantity)
+                itemChanges.Add($"Item {orderItem.Id} quantity changed from {orderItem.Quantity} to {item.Quantity}");
+
+            if (orderItem.ItemPrice != item.ItemPrice)
+                itemChanges.Add($"Item {orderItem.Id} price changed from {orderItem.ItemPrice:C} to {item.ItemPrice:C}");
+
+            if (orderItem.TotalAmount != item.TotalAmount)
+                itemChanges.Add($"Item {orderItem.Id} total amount changed from {orderItem.TotalAmount:C} to {item.TotalAmount:C}");
+
+            // Apply updates
             orderItem.Quantity = item.Quantity;
             orderItem.ItemPrice = item.ItemPrice;
             orderItem.TotalAmount = item.TotalAmount;
@@ -1517,19 +1788,50 @@ public class OrderAppService : ApplicationService, IOrderAppService
         order.TotalQuantity = order.OrderItems.Sum(o => o.Quantity);
         order.TotalAmount = order.OrderItems.Sum(o => o.TotalAmount);
         await _orderRepository.UpdateAsync(order);
+        // **Get Current User (Editor)**
+        var currentUserId = CurrentUser.Id ?? Guid.Empty;
+        var currentUserName = CurrentUser.UserName ?? "System";
+
+        // **Log Order History for Item Updates**
+        if (itemChanges.Count > 0)
+        {
+            await _orderHistoryManager.AddOrderHistoryAsync(
+                order.Id,
+                "OrderItemsUpdated",
+                $"Order items updated: {string.Join("; ", itemChanges)}.",
+                currentUserId,
+                currentUserName
+            );
+        }
     }
     public async Task CancelOrderAsync(Guid id)
     {
         var order = await _orderRepository.GetWithDetailsAsync(id);
+        // Capture the old status before updating
+        var oldOrderStatus = order.OrderStatus;
         order.OrderStatus = OrderStatus.Closed;
         order.CancellationDate = DateTime.Now;
         await _orderRepository.UpdateAsync(order);
         await UnitOfWorkManager.Current.SaveChangesAsync();
         await SendEmailAsync(order.Id, OrderStatus.Closed);
+        // **Get Current User (Editor)**
+        var currentUserId = CurrentUser.Id ?? Guid.Empty;
+        var currentUserName = CurrentUser.UserName ?? "System";
+
+        // **Log Order History for Cancellation**
+        await _orderHistoryManager.AddOrderHistoryAsync(
+            order.Id,
+            "OrderCancelled",
+            $"Order was cancelled. Previous status: {oldOrderStatus}. Cancellation date: {order.CancellationDate}.",
+            currentUserId,
+            currentUserName
+        );
     }
     public async Task VoidInvoice(Guid id, string reason)
     {
         var order = await _orderRepository.GetAsync(id);
+        // Capture old invoice status before voiding
+        var oldInvoiceStatus = order.InvoiceStatus;
         order.IsVoidInvoice = true;
         order.VoidReason = reason;
         order.VoidUser = CurrentUser.Name;
@@ -1539,12 +1841,25 @@ public class OrderAppService : ApplicationService, IOrderAppService
         order.LastModifierId = CurrentUser.Id;
         await _orderRepository.UpdateAsync(order);
         await _electronicInvoiceAppService.CreateVoidInvoiceAsync(id, reason);
+        // **Get Current User (Editor)**
+        var currentUserId = CurrentUser.Id ?? Guid.Empty;
+        var currentUserName = CurrentUser.UserName ?? "System";
+
+        // **Log Order History for Invoice Voiding**
+        await _orderHistoryManager.AddOrderHistoryAsync(
+            order.Id,
+            "InvoiceVoided",
+            $"Invoice was voided. Previous invoice status: {oldInvoiceStatus}. Reason: {reason}. Voided by: {order.VoidUser} on {order.VoidDate}.",
+            currentUserId,
+            currentUserName
+        );
 
     }
     public async Task CreditNoteInvoice(Guid id, string reason)
     {
         Order order = await _orderRepository.GetAsync(id);
-
+        // Capture old invoice status before issuing the credit note
+        var oldInvoiceStatus = order.InvoiceStatus;
         order.IsVoidInvoice = true;
         order.CreditNoteReason = reason;
         order.CreditNoteUser = CurrentUser.Name;
@@ -1554,10 +1869,27 @@ public class OrderAppService : ApplicationService, IOrderAppService
         await _orderRepository.UpdateAsync(order);
 
         await _electronicInvoiceAppService.CreateCreditNoteAsync(id);
+        // **Get Current User (Editor)**
+        var currentUserId = CurrentUser.Id ?? Guid.Empty;
+        var currentUserName = CurrentUser.UserName ?? "System";
+
+        // **Log Order History for Credit Note Issuance**
+        await _orderHistoryManager.AddOrderHistoryAsync(
+            order.Id,
+            "CreditNoteIssued",
+            $"Credit note issued. Previous invoice status: {oldInvoiceStatus}. Reason: {reason}. Issued by: {order.CreditNoteUser} on {order.CreditNoteDate}.",
+            currentUserId,
+            currentUserName
+        );
     }
     public async Task<OrderDto> UpdateShippingDetails(Guid id, CreateOrderDto input)
     {
         var order = await _orderRepository.GetWithDetailsAsync(id);
+
+        // Capture old shipping details before updating
+        var oldDeliveryMethod = order.DeliveryMethod;
+        var oldShippingNumber = order.ShippingNumber;
+        var oldShippingStatus = order.ShippingStatus;
         order.DeliveryMethod = input.DeliveryMethod;
         order.ShippingNumber = input.ShippingNumber;
         order.ShippingStatus = ShippingStatus.Shipped;
@@ -1593,11 +1925,28 @@ public class OrderAppService : ApplicationService, IOrderAppService
         {
             await SendEmailAsync(order.Id);
         }
+        // **Get Current User (Editor)**
+        var currentUserId = CurrentUser.Id ?? Guid.Empty;
+        var currentUserName = CurrentUser.UserName ?? "System";
+
+        // **Log Order History for Shipping Update**
+        await _orderHistoryManager.AddOrderHistoryAsync(
+            order.Id,
+            "ShippingDetailsUpdated",
+            $"Shipping details updated. Previous delivery method: {oldDeliveryMethod}, new delivery method: {order.DeliveryMethod}. " +
+            $"Previous tracking number: {oldShippingNumber}, new tracking number: {order.ShippingNumber}. " +
+            $"Previous shipping status: {oldShippingStatus}, new status: {order.ShippingStatus}. " +
+            $"Shipped by: {order.ShippedBy} on {order.ShippingDate}.",
+            currentUserId,
+            currentUserName
+        );
         return ObjectMapper.Map<Order, OrderDto>(order);
     }
     public async Task<OrderDto> OrderShipped(Guid id)
     {
         var order = await _orderRepository.GetWithDetailsAsync(id);
+        // Capture old shipping status before updating
+        var oldShippingStatus = order.ShippingStatus;
 
         order.ShippingStatus = ShippingStatus.Shipped;
         order.ShippedBy = CurrentUser.Name;
@@ -1633,6 +1982,19 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 }
             }
         }
+        // **Get Current User (Editor)**
+        var currentUserId = CurrentUser.Id ?? Guid.Empty;
+        var currentUserName = CurrentUser.UserName ?? "System";
+
+        // **Log Order History for Shipping**
+        await _orderHistoryManager.AddOrderHistoryAsync(
+            order.Id,
+            "OrderShipped",
+            $"Order marked as shipped. Previous shipping status: {oldShippingStatus}, new status: {order.ShippingStatus}. ",
+            
+            currentUserId,
+            currentUserName
+        );
         return returnOrder;
         // await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
 
@@ -1640,7 +2002,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
     public async Task<OrderDto> OrderToBeShipped(Guid id)
     {
         var order = await _orderRepository.GetWithDetailsAsync(id);
-
+        // Capture old shipping status before updating
+        var oldShippingStatus = order.ShippingStatus;
         order.ShippingStatus = ShippingStatus.ToBeShipped;
         order.ShippedBy = CurrentUser.Name;
         order.ShippingDate = DateTime.Now;
@@ -1674,13 +2037,27 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
         }
         // await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+        // **Get Current User (Editor)**
+        var currentUserId = CurrentUser.Id ?? Guid.Empty;
+        var currentUserName = CurrentUser.UserName ?? "System";
+
+        // **Log Order History for Shipping Status Change**
+        await _orderHistoryManager.AddOrderHistoryAsync(
+            order.Id,
+            "OrderToBeShipped",
+            $"Order marked as 'To Be Shipped'. Previous shipping status: {oldShippingStatus}, new status: {order.ShippingStatus}. ",
+            
+            currentUserId,
+            currentUserName
+        );
         return returnOrder;
 
     }
     public async Task<OrderDto> OrderClosed(Guid id)
     {
         var order = await _orderRepository.GetWithDetailsAsync(id);
-
+        // Capture old shipping status before updating
+        var oldShippingStatus = order.ShippingStatus;
         order.ShippingStatus = ShippingStatus.Closed;
         order.ClosedBy = CurrentUser.Name;
         order.CancellationDate = DateTime.Now;
@@ -1688,12 +2065,25 @@ public class OrderAppService : ApplicationService, IOrderAppService
         await _orderRepository.UpdateAsync(order);
         await UnitOfWorkManager.Current.SaveChangesAsync();
         await SendEmailAsync(order.Id);
+        // **Get Current User (Editor)**
+        var currentUserId = CurrentUser.Id ?? Guid.Empty;
+        var currentUserName = CurrentUser.UserName ?? "System";
+
+        // **Log Order History for Order Closure**
+        await _orderHistoryManager.AddOrderHistoryAsync(
+            order.Id,
+            "OrderClosed",
+            $"Order was closed. Previous shipping status: {oldShippingStatus}, new status: {order.ShippingStatus}. ",
+            currentUserId,
+            currentUserName
+        );
         return ObjectMapper.Map<Order, OrderDto>(order);
     }
     public async Task<OrderDto> OrderComplete(Guid id)
     {
         var order = await _orderRepository.GetWithDetailsAsync(id);
-
+        // Capture old shipping status before updating
+        var oldShippingStatus = order.ShippingStatus;
         order.ShippingStatus = ShippingStatus.Completed;
         order.CompletedBy = CurrentUser.Name;
         order.CompletionTime = DateTime.Now;
@@ -1728,6 +2118,18 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 }
             }
         }
+        // **Get Current User (Editor)**
+        var currentUserId = CurrentUser.Id ?? Guid.Empty;
+        var currentUserName = CurrentUser.UserName ?? "System";
+
+        // **Log Order History for Order Completion**
+        await _orderHistoryManager.AddOrderHistoryAsync(
+            order.Id,
+            "OrderCompleted",
+            $"Order marked as completed. Previous shipping status: {oldShippingStatus}, new status: {order.ShippingStatus}. ",
+            currentUserId,
+            currentUserName
+        );
         return returnResult;
 
     }
@@ -1796,12 +2198,32 @@ public class OrderAppService : ApplicationService, IOrderAppService
     public async Task UpdateLogisticStatusAsync(string merchantTradeNo, string rtnMsg)
     {
         Order order = await _orderRepository.GetOrderByMerchantTradeNoAsync(merchantTradeNo);
+        // Capture old logistics status and shipping status before updating
+        var oldLogisticsStatus = order.EcpayLogisticsStatus;
+        var oldShippingStatus = order.ShippingStatus;
 
         order.EcpayLogisticsStatus = rtnMsg;
-
-        if (order.ShippingStatus < ShippingStatus.ToBeShipped) order.ShippingStatus = ShippingStatus.ToBeShipped;
+        string updateDes = $"Logistic status updated. Previous status: {oldLogisticsStatus}, new status: {order.EcpayLogisticsStatus}. ";
+            
+        if (order.ShippingStatus < ShippingStatus.ToBeShipped)
+        {
+            order.ShippingStatus = ShippingStatus.ToBeShipped;
+            updateDes += $"Shipping status changed from {oldShippingStatus} to {order.ShippingStatus}.";
+        }
 
         await _orderRepository.UpdateAsync(order);
+        // **Get Current User (Editor)**
+        var currentUserId = CurrentUser.Id ?? Guid.Empty;
+        var currentUserName = CurrentUser.UserName ?? "System";
+
+        // **Log Order History for Logistic Status Update**
+        await _orderHistoryManager.AddOrderHistoryAsync(
+            order.Id,
+            "LogisticStatusUpdated",
+            updateDes,
+            currentUserId,
+            currentUserName
+        );
     }
 
     [AllowAnonymous]
@@ -1833,6 +2255,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     order = await _orderRepository.GetWithDetailsAsync(order.Id);
                 }
             }
+            var oldShippingStatus = order.ShippingStatus;
             using (CurrentTenant.Change(order.TenantId))
             {
                 order.GWSR = paymentResult.GWSR;
@@ -1929,9 +2352,23 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         }
                     }
                 }
+                // **Get Current User (Editor)**
+                var currentUserId = CurrentUser.Id ?? Guid.Empty;
+                var currentUserName = CurrentUser.UserName ?? "System";
+
+                // **Log Order History for Payment Processing**
+                await _orderHistoryManager.AddOrderHistoryAsync(
+                    order.Id,
+                    "PaymentProcessed",
+                    $"Payment received. Previous shipping status: {oldShippingStatus}, new status: {order.ShippingStatus}. ",
+                    currentUserId,
+                    currentUserName
+                );
                 return "";
             }
+        
         }
+
         return "";
     }
 
@@ -2155,6 +2592,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
             var order = await _orderRepository.GetWithDetailsAsync(OrderId);
             if (order.ShippingStatus == ShippingStatus.WaitingForPayment)
             {
+                // Capture previous order status before updating
+                var oldOrderStatus = order.OrderStatus;
+                var oldShippingStatus = order.ShippingStatus;
+
                 order.OrderStatus = OrderStatus.Closed;
                 order.ShippingStatus = ShippingStatus.Closed;
 
@@ -2185,6 +2626,20 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 }
 
                 await _orderRepository.UpdateAsync(order);
+                // **Get Current User (Editor)**
+                var currentUserId = CurrentUser.Id ?? Guid.Empty;
+                var currentUserName = CurrentUser.UserName ?? "System";
+
+                // **Log Order History for Order Expiration**
+                await _orderHistoryManager.AddOrderHistoryAsync(
+                    order.Id,
+                    "OrderExpired",
+                    $"Order expired due to non-payment. Previous order status: {oldOrderStatus}, new status: {order.OrderStatus}. " +
+                    $"Previous shipping status: {oldShippingStatus}, new shipping status: {order.ShippingStatus}. " +
+                    $"Stock restored for {order.OrderItems.Count} items.",
+                    currentUserId,
+                    currentUserName
+                );
             }
         }
 

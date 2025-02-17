@@ -3,6 +3,7 @@ using Hangfire.Storage;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
+using Kooco.Pikachu.OrderHistories;
 using Kooco.Pikachu.Orders;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -41,6 +42,7 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
     private readonly IGroupBuyRepository _groupBuyRepository;
     private readonly IElectronicInvoiceSettingRepository _repository;
     private readonly IDataFilter _dataFilter;
+    private readonly OrderHistoryManager _orderHistoryManager;
     #endregion
 
     #region Constructor
@@ -48,14 +50,15 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
                                         IElectronicInvoiceSettingRepository repository,
                                         IRepository<EnumValue, int> enumvalueRepository,
                                         IGroupBuyRepository groupBuyRepository,
-                                        IDataFilter dataFilter)
+                                        IDataFilter dataFilter, OrderHistoryManager orderHistoryManager)
     {
         _configuration = configuration;
         _orderRepository = orderRepository;
         _repository = repository;
-        _enumvalueRepository= enumvalueRepository;
-        _groupBuyRepository= groupBuyRepository;
+        _enumvalueRepository = enumvalueRepository;
+        _groupBuyRepository = groupBuyRepository;
         _dataFilter = dataFilter;
+        _orderHistoryManager = orderHistoryManager;
     }
     #endregion
 
@@ -145,6 +148,9 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
                 request.AddStringBody(body, DataFormat.Json);
                 RestResponse response = await client.ExecuteAsync(request);
                 ApiResponse? response1 = JsonConvert.DeserializeObject<ApiResponse>(response.Content);
+                // **Get Current User (Editor)**
+                var currentUserId = CurrentUser.Id ?? Guid.Empty;
+                var currentUserName = CurrentUser.UserName ?? "System";
                 if (response1?.TransCode == 1)
                 {
                     var result = DecryptStringFromAES(response1.Data, setting.HashKey, setting.HashIV);
@@ -158,7 +164,13 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
                         order.IssueStatus = IssueInvoiceStatus.Failed;
                         await _orderRepository.UpdateAsync(order);
                         await newUnitOfWork.SaveChangesAsync();
-
+                        await _orderHistoryManager.AddOrderHistoryAsync(
+           order.Id,
+           "InvoiceIssueFailed",
+           $"Invoice issuance failed. Reason: {jsonObj.RtnMsg}. ",
+           currentUserId,
+           currentUserName
+       );
 
                         return jsonObj.RtnMsg.ToString();
 
@@ -171,6 +183,14 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
 
                     await _orderRepository.UpdateAsync(order);
                     await newUnitOfWork.SaveChangesAsync();
+
+                    await _orderHistoryManager.AddOrderHistoryAsync(
+                        order.Id,
+                        "InvoiceIssued",
+                        $"Invoice issued successfully. Invoice No: {order.InvoiceNumber}, Date: {order.InvoiceDate}. ",
+                        currentUserId,
+                        currentUserName
+                    );
                 }
                 return "";
             }

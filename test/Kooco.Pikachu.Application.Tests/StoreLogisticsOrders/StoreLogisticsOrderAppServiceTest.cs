@@ -8,6 +8,7 @@ using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.OrderDeliveries;
+using Kooco.Pikachu.OrderHistories;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.StoreLogisticOrders;
@@ -54,6 +55,7 @@ namespace Kooco.Pikachu.StoreLogisticsOrders
         private readonly Mock<IEmailAppService> _emailAppServiceMock;
         private readonly StoreLogisticsOrderAppService _service;
         private readonly IDataFilter<IMultiTenant> _multiTenantFilter;
+        private readonly Mock<OrderHistoryManager> _orderManager;
         public StoreLogisticsOrderAppServiceTest()
         {
             _orderRepositoryMock = new Mock<IOrderRepository>();
@@ -71,6 +73,7 @@ namespace Kooco.Pikachu.StoreLogisticsOrders
             _tenantSettingsAppServiceMock = new Mock<ITenantSettingsAppService>();
             _emailAppServiceMock = new Mock<IEmailAppService>();
             _multiTenantFilter = GetRequiredService<IDataFilter<IMultiTenant>>();
+            _orderManager = new Mock<OrderHistoryManager>();
 
             _service = new StoreLogisticsOrderAppService(
                 _orderDeliveryRepositoryMock.Object,
@@ -86,7 +89,8 @@ namespace Kooco.Pikachu.StoreLogisticsOrders
                 _groupBuyRepositoryMock.Object,
                 _emailSenderMock.Object,
                 _tenantSettingsAppServiceMock.Object,
-                _emailAppServiceMock.Object
+                _emailAppServiceMock.Object,
+                _orderManager.Object
             );
         }
         private void SetProtectedProperty<T>(T obj, string propertyName, object value)

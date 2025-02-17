@@ -616,6 +616,11 @@ public class OrderController : AbpController, IOrderAppService
        return _ordersAppService.ExpireOrderAsync(OrderId);
     }
 
+    public Task<List<OrderHistoryDto>> GetOrderLogsAsync(Guid orderId)
+    {
+        return _ordersAppService.GetOrderLogsAsync(orderId);
+    }
+
 
     #endregion
 }

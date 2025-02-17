@@ -51,6 +51,7 @@ using Kooco.Pikachu.WebsiteManagement.WebsiteBasicSettings;
 using Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
 using Kooco.Pikachu.WebsiteManagement.FooterSettings;
 using Kooco.Pikachu.WebsiteManagement.TopbarSettings;
+using Kooco.Pikachu.OrderHistories;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -153,6 +154,7 @@ public class PikachuDbContext :
     public DbSet<LoginConfiguration> LoginConfigurations { get; set; }
 
     public DbSet<ProductCategory> ProductCategories { get; set; }
+    public DbSet<OrderHistory> OrderHistories { get; set; }
 
     public DbSet<IdentitySession> Sessions { get; set; }
 
@@ -616,7 +618,13 @@ public class PikachuDbContext :
             b.HasOne(x => x.ProductCategory).WithMany(x => x.CategoryProducts).HasForeignKey(x => x.ProductCategoryId);
             b.HasOne(x => x.Item).WithMany(x => x.CategoryProducts).HasForeignKey(x => x.ItemId);
         });
+        builder.Entity<OrderHistory>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "OrderHistories", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
 
+           
+        });
         #region GroupPurchaseOverviews
         builder.Entity<GroupPurchaseOverview>(b =>
         {
