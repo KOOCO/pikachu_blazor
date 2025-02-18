@@ -1330,7 +1330,7 @@ public partial class Order
             OrderDeliveriesByOrderId[order.OrderId] = OrderDeliveries;
         }
         else {
-            OrderDeliveries= OrderDeliveriesByOrderId[order.OrderId] = OrderDeliveries;
+            OrderDeliveries= OrderDeliveriesByOrderId[order.OrderId];
 
 
         }
