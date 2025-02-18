@@ -5,6 +5,7 @@ using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.DeliveryTemperatureCosts;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.OrderDeliveries;
+using Kooco.Pikachu.OrderHistories;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.PaymentGateways;
@@ -15,6 +16,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.Configuration;
 using Microsoft.JSInterop;
+using Newtonsoft.Json;
 using Polly;
 using RestSharp;
 using System;
@@ -133,7 +135,11 @@ public partial class OrderDetails
     {
         IsShowConvenienceStoreDetails = e.Value is not null && e.Value.ToString() is "convenienceStore" ? true : false;
     }
-
+    private string FormatLocalizedDetails(OrderHistoryDto history)
+    {
+        var parameters = JsonConvert.DeserializeObject<object[]>(history.ActionDetails);
+        return L[history.ActionType, parameters]; // Localizes the ActionDetails
+    }
     public void TemperatureControlChange(ChangeEventArgs e)
     {
         SelectedTemperatureControl = Enum.TryParse(e.Value.ToString(), out ItemStorageTemperature temperature) ? temperature : null;
@@ -1610,7 +1616,7 @@ public partial class OrderDetails
 
             RestResponse response = await client.ExecuteAsync(request);
 
-            PaymentStatus? paymentStatus = JsonSerializer.Deserialize<PaymentStatus>(response.Content);
+            PaymentStatus? paymentStatus = System.Text.Json.JsonSerializer.Deserialize<PaymentStatus>(response.Content);
 
             if (paymentStatus is null || paymentStatus.RtnValue?.status is null) return string.Empty;
 

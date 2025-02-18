@@ -1602,8 +1602,8 @@
                             <TableRow>
                                 <TableRowCell>@history.CreationTime.ToString("dd/MM/yyyy hh:mm:ss tt")</TableRowCell>
                                 <TableRowCell>@history.EditorUserName</TableRowCell>
-                                <TableRowCell>@L[history.ActionType]</TableRowCell>
-                                <TableRowCell>@history.ActionDetails</TableRowCell>
+                                <TableRowCell>@L[history.ActionType+"Title"]</TableRowCell>
+                                <TableRowCell>@FormatLocalizedDetails(history)</TableRowCell>
                             </TableRow>
                             }
                         </TableBody>

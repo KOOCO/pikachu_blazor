@@ -520,12 +520,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
             string editorUserName = editorUserId != null ? (await _userRepository.GetAsync(editorUserId.Value))?.UserName ?? "System" : "System";
 
             await _orderHistoryManager.AddOrderHistoryAsync(
-                order.Id,
-                "Order Created",
-                $"Order {order.OrderNo} was created.",
-                editorUserId,
-                editorUserName
-            );
+     order.Id,
+     "OrderCreated", // Localization key instead of hardcoded text
+     new object[] { order.OrderNo }, // Dynamic placeholders
+     editorUserId,
+     editorUserName
+ );
             await _orderRepository.UpdateAsync(order);
             await SendEmailAsync(order.Id);
             var validitySettings = (await _paymentGatewayRepository.GetQueryableAsync()).Where(x => x.PaymentIntegrationType == PaymentIntegrationType.OrderValidatePeriod).FirstOrDefault();
@@ -579,12 +579,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         // Log Order History
         await _orderHistoryManager.AddOrderHistoryAsync(
-            order.Id,
-            "Payment Method Updated",
-            $"Payment method changed from {oldPaymentMethod} to {order.PaymentMethod}.",
-            editorUserId,
-            editorUserName
-        );
+                                    order.Id,
+                                    "PaymentMethodUpdated", // Localization key instead of raw text
+                                    new object[] { oldPaymentMethod, order.PaymentMethod }, // Dynamic placeholders
+                                    editorUserId,
+                                    editorUserName);
+
         return ObjectMapper.Map<Order, OrderDto>(
             await _orderRepository.UpdateAsync(order)
         );
@@ -601,12 +601,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         // Log Order History
         await _orderHistoryManager.AddOrderHistoryAsync(
-            order.Id,
-            "Merchant TradeNo Updated",
-            $"Payment method changed from {oldMerchantTradeNo} to {order.MerchantTradeNo}.",
-            editorUserId,
-            editorUserName
-        );
+    order.Id,
+    "MerchantTradeNoUpdated", // Localization key
+    new object[] { oldMerchantTradeNo, order.MerchantTradeNo }, // Dynamic placeholders
+    editorUserId,
+    editorUserName
+    );
+
         return ObjectMapper.Map<Order, OrderDto>(
             await _orderRepository.UpdateAsync(order)
         );
@@ -831,12 +832,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
             OrderNo = OrderNo.TrimEnd(',');
             // **Log Order History for Merge**
             await _orderHistoryManager.AddOrderHistoryAsync(
-                order1.Id,
-                "Order Merge",
-                $"Merged orders: {OrderNo} into new order {order1.OrderNo}.",
-                currentUserId,
-                currentUserName
-            );
+    order1.Id,
+    "OrderMerge", // Localization key
+    new object[] { OrderNo, order1.OrderNo }, // Dynamic placeholders
+    currentUserId,
+    currentUserName
+);
+
             foreach (Guid id in Ids)
             {
                 Order ord1 = await _orderRepository.GetWithDetailsAsync(id);
@@ -856,12 +858,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 await _orderRepository.UpdateAsync(ord1, autoSave: true);
                 // Log old order closure in OrderHistory
                 await _orderHistoryManager.AddOrderHistoryAsync(
-                    ord1.Id,
-                    "OrderMergedToNew",
-                    $"Order {ord1.OrderNo} was merged into {order1.OrderNo} and closed.",
-                    currentUserId,
-                    currentUserName
-                );
+     ord1.Id,
+     "OrderMergedToNew", // Localization key
+     new object[] { ord1.OrderNo, order1.OrderNo }, // Dynamic placeholders
+     currentUserId,
+     currentUserName
+ );
+
             }
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
@@ -998,18 +1001,18 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             // **Log Order History for Split Order**
             await _orderHistoryManager.AddOrderHistoryAsync(
-                splitOrderId,
-                "OrderSplit",
-                $"Order {ord.OrderNo} was split into new order {newOrder.OrderNo}.",
-                currentUserId,
-                currentUserName
-            );
+     splitOrderId,
+     "OrderSplit", // Localization key
+     new object[] { ord.OrderNo, newOrder.OrderNo }, // Dynamic placeholders
+     currentUserId,
+     currentUserName
+ );
 
             // **Log Update to Original Order**
             await _orderHistoryManager.AddOrderHistoryAsync(
                 ord.Id,
                 "OrderSplitFrom",
-                $"Order {ord.OrderNo} was split, moving items to {newOrder.OrderNo}.",
+                new object[] { ord.OrderNo, newOrder.OrderNo },
                 currentUserId,
                 currentUserName
             );
@@ -1208,21 +1211,22 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             // **Log Order History for Refund Request**
             await _orderHistoryManager.AddOrderHistoryAsync(
-                ord.Id,
-                "RefundRequested",
-                $"Refund requested for items. Refunded amount: {newOrder.TotalAmount:C}.",
-                currentUserId,
-                currentUserName
-            );
+     ord.Id,
+     "RefundRequested", // Localization key
+     new object[] { newOrder.TotalAmount.ToString("C") }, // Format currency correctly before passing
+     currentUserId,
+     currentUserName
+ );
+
 
             // **Log the creation of the new refunded order**
             await _orderHistoryManager.AddOrderHistoryAsync(
-                newOrder.Id,
-                "RefundOrderCreated",
-                $"New refund order {newOrder.OrderNo} created for refunded items from {ord.OrderNo}.",
-                currentUserId,
-                currentUserName
-            );
+       newOrder.Id,
+       "RefundOrderCreated", // Localization key
+       new object[] { newOrder.OrderNo, ord.OrderNo }, // Dynamic placeholders
+       currentUserId,
+       currentUserName
+   );
             return ObjectMapper.Map<Order, OrderDto>(ord);
         }
     }
@@ -1276,8 +1280,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         // **Log Order History for Status Change**
         await _orderHistoryManager.AddOrderHistoryAsync(
             order.Id,
-            "Status Changed",
-            $"Order status changed from {oldStatus} to {status}.",
+            "StatusChanged",
+            new object[] { _l[oldStatus.ToString()]?.Value,_l[status.ToString()]?.Value },
             currentUserId,
             currentUserName
         );
@@ -1356,21 +1360,22 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             // **Log Refund Action in Order History**
             await _orderHistoryManager.AddOrderHistoryAsync(
-                ord.Id,
-                "RefundProcessed",
-                $"A refund of {(decimal)amount:C} was processed for order {ord.OrderNo}.",
-                currentUserId,
-                currentUserName
-            );
+      ord.Id,
+      "RefundProcessed", // Localization key
+      new object[] { ((decimal)amount).ToString("C"), ord.OrderNo }, // Format currency correctly before passing
+      currentUserId,
+      currentUserName
+  );
 
             // **Log New Refund Order Creation**
             await _orderHistoryManager.AddOrderHistoryAsync(
-                order1.Id,
-                "RefundOrderCreated",
-                $"A new refund order {order1.OrderNo} was created for refunded amount {(decimal)amount:C} from order {ord.OrderNo}.",
-                currentUserId,
-                currentUserName
-            );
+       order1.Id,
+       "RefundAmountCreated", // Localization key
+       new object[] { order1.OrderNo, ((decimal)amount).ToString("C"), ord.OrderNo }, // Format currency correctly
+       currentUserId,
+       currentUserName
+   );
+
         }
     }
     public async Task<OrderDto> GetWithDetailsAsync(Guid id)
@@ -1570,34 +1575,34 @@ public class OrderAppService : ApplicationService, IOrderAppService
         List<string> changes = new();
 
         if (order.RecipientName != input.RecipientName)
-            changes.Add($"Recipient Name changed from '{order.RecipientName}' to '{input.RecipientName}'");
+            changes.Add(L["RecipientNameChanged", order.RecipientName, input.RecipientName]);
 
         if (order.RecipientPhone != input.RecipientPhone)
-            changes.Add($"Recipient Phone changed from '{order.RecipientPhone}' to '{input.RecipientPhone}'");
+            changes.Add(L["RecipientPhoneChanged", order.RecipientPhone, input.RecipientPhone]);
 
         if (order.PostalCode != input.PostalCode)
-            changes.Add($"Postal Code changed from '{order.PostalCode}' to '{input.PostalCode}'");
+            changes.Add(L["PostalCodeChanged", order.PostalCode, input.PostalCode]);
 
         if (order.District != input.District)
-            changes.Add($"District changed from '{order.District}' to '{input.District}'");
+            changes.Add(L["DistrictChanged", order.District, input.District]);
 
         if (order.City != input.City)
-            changes.Add($"City changed from '{order.City}' to '{input.City}'");
+            changes.Add(L["CityChanged", order.City, input.City]);
 
         if (order.Road != input.Road)
-            changes.Add($"Road changed from '{order.Road}' to '{input.Road}'");
+            changes.Add(L["RoadChanged", order.Road, input.Road]);
 
         if (order.AddressDetails != input.AddressDetails)
-            changes.Add($"Address Details changed from '{order.AddressDetails}' to '{input.AddressDetails}'");
+            changes.Add(L["AddressDetailsChanged", order.AddressDetails, input.AddressDetails]);
 
         if (order.OrderStatus != input.OrderStatus)
-            changes.Add($"Order Status changed from '{order.OrderStatus}' to '{input.OrderStatus}'");
+            changes.Add(L["OrderStatusChanged", order.OrderStatus, input.OrderStatus]);
 
         if (order.StoreId != input.StoreId)
-            changes.Add($"Store ID changed from '{order.StoreId}' to '{input.StoreId}'");
+            changes.Add(L["StoreIdChanged", order.StoreId, input.StoreId]);
 
         if (order.CVSStoreOutSide != input.CVSStoreOutSide)
-            changes.Add($"CVS Store changed from '{order.CVSStoreOutSide}' to '{input.CVSStoreOutSide}'");
+            changes.Add(L["CVSStoreChanged", order.CVSStoreOutSide, input.CVSStoreOutSide]);
 
         order.RecipientName = input.RecipientName;
         order.RecipientPhone = input.RecipientPhone;
@@ -1647,12 +1652,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
         if (changes.Count > 0)
         {
             await _orderHistoryManager.AddOrderHistoryAsync(
-                order.Id,
-                "OrderUpdated",
-                $"Order updated: {string.Join("; ", changes)}",
-                currentUserId,
-                currentUserName
-            );
+       order.Id,
+       "OrderUpdated", // Localization key for ActionType
+       new object[] { string.Join("; ", changes) }, // Pass localized changes as an array
+       currentUserId,
+       currentUserName
+   );
         }
 
         return ObjectMapper.Map<Order, OrderDto>(order);
@@ -1695,34 +1700,37 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         // **Log Order History for Return Status Change**
         await _orderHistoryManager.AddOrderHistoryAsync(
-            order.Id,
-            "ReturnStatusChanged",
-            $"Return status changed from {oldReturnStatus} to {orderReturnStatus}.",
-            currentUserId,
-            currentUserName
-        );
+     order.Id,
+     "ReturnStatusChanged", // Localization key
+     new object[] {_l[oldReturnStatus.ToString()]?.Value, _l[orderReturnStatus.ToString()]?.Value }, // Dynamic placeholders
+     currentUserId,
+     currentUserName
+ );
+
 
         // **Log Additional Details for Refund or Exchange**
         if (orderReturnStatus == OrderReturnStatus.Approve && order.OrderStatus == OrderStatus.Returned)
         {
             await _orderHistoryManager.AddOrderHistoryAsync(
-                order.Id,
-                "RefundInitiated",
-                $"Refund process started for order {order.OrderNo}.",
-                currentUserId,
-                currentUserName
-            );
+     order.Id,
+     "RefundInitiated", // Localization key
+     new object[] { order.OrderNo }, // Dynamic placeholders
+     currentUserId,
+     currentUserName
+ );
+
         }
 
         if (orderReturnStatus == OrderReturnStatus.Succeeded && order.OrderStatus == OrderStatus.Exchange)
         {
             await _orderHistoryManager.AddOrderHistoryAsync(
-                order.Id,
-                "OrderExchanged",
-                $"Order {order.OrderNo} marked as exchanged by {order.ExchangeBy} on {order.ExchangeTime}.",
-                currentUserId,
-                currentUserName
-            );
+     order.Id,
+     "OrderExchanged", // Localization key
+     new object[] { order.OrderNo }, // Format date properly
+     currentUserId,
+     currentUserName
+ );
+
         }
     }
 
@@ -1742,12 +1750,19 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         // **Log Order History for Exchange**
         await _orderHistoryManager.AddOrderHistoryAsync(
-            order.Id,
-            "OrderExchangeInitiated",
-            $"Order exchange initiated. Return status changed from {oldReturnStatus} to {order.ReturnStatus}, and order status changed from {oldOrderStatus} to {order.OrderStatus}.",
-            currentUserId,
-            currentUserName
-        );
+     order.Id,
+     "OrderExchangeInitiated", // Localization key
+     new object[]
+     {
+        _l[oldReturnStatus.ToString()]?.Value,
+        _l[order.ReturnStatus.ToString()]?.Value,
+        _l[oldOrderStatus.ToString()]?.Value,
+        _l[order.OrderStatus.ToString()]?.Value
+     }, // Dynamic placeholders for localized statuses
+     currentUserId,
+     currentUserName
+ );
+
 
 
     }
@@ -1767,12 +1782,19 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         // **Log Order History for Return**
         await _orderHistoryManager.AddOrderHistoryAsync(
-            order.Id,
-            "OrderReturnInitiated",
-            $"Order return initiated. Return status changed from {oldReturnStatus} to {order.ReturnStatus}, and order status changed from {oldOrderStatus} to {order.OrderStatus}.",
-            currentUserId,
-            currentUserName
-        );
+       order.Id,
+       "OrderReturnInitiated", // Localization key
+       new object[]
+       {
+        _l[oldReturnStatus.ToString()].Value,
+        _l[order.ReturnStatus.ToString()].Value,
+        _l[oldOrderStatus.ToString()].Value,
+        _l[order.OrderStatus.ToString()].Value
+       }, // Dynamic placeholders for localized statuses
+       currentUserId,
+       currentUserName
+   );
+
 
     }
     public async Task UpdateOrderItemsAsync(Guid id, List<UpdateOrderItemDto> orderItems)
@@ -1785,13 +1807,14 @@ public class OrderAppService : ApplicationService, IOrderAppService
             var orderItem = order.OrderItems.First(o => o.Id == item.Id);
             // Capture changes for logging
             if (orderItem.Quantity != item.Quantity)
-                itemChanges.Add($"Item {orderItem.Id} quantity changed from {orderItem.Quantity} to {item.Quantity}");
+                itemChanges.Add(L["ItemQuantityChanged", orderItem.Item?.ItemName, orderItem.Quantity, item.Quantity]);
 
             if (orderItem.ItemPrice != item.ItemPrice)
-                itemChanges.Add($"Item {orderItem.Id} price changed from {orderItem.ItemPrice:C} to {item.ItemPrice:C}");
+                itemChanges.Add(L["ItemPriceChanged", orderItem.Item?.ItemName, orderItem.ItemPrice.ToString("C"), item.ItemPrice.ToString("C")]);
 
             if (orderItem.TotalAmount != item.TotalAmount)
-                itemChanges.Add($"Item {orderItem.Id} total amount changed from {orderItem.TotalAmount:C} to {item.TotalAmount:C}");
+                itemChanges.Add(L["ItemTotalAmountChanged", orderItem.Item?.ItemName, orderItem.TotalAmount.ToString("C"), item.TotalAmount.ToString("C")]);
+
 
             // Apply updates
             orderItem.Quantity = item.Quantity;
@@ -1810,12 +1833,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
         if (itemChanges.Count > 0)
         {
             await _orderHistoryManager.AddOrderHistoryAsync(
-                order.Id,
-                "OrderItemsUpdated",
-                $"Order items updated: {string.Join("; ", itemChanges)}.",
-                currentUserId,
-                currentUserName
-            );
+           order.Id,
+           "OrderItemsUpdated", // Localization key
+           new object[] { string.Join("; ", itemChanges) }, // Join localized changes as a single string
+           currentUserId,
+           currentUserName
+       );
         }
     }
     public async Task CancelOrderAsync(Guid id)
@@ -1834,12 +1857,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         // **Log Order History for Cancellation**
         await _orderHistoryManager.AddOrderHistoryAsync(
-            order.Id,
-            "OrderCancelled",
-            $"Order was cancelled. Previous status: {oldOrderStatus}. Cancellation date: {order.CancellationDate}.",
-            currentUserId,
-            currentUserName
-        );
+     order.Id,
+     "OrderCancelled", // Localization key
+     new object[] { _l[oldOrderStatus.ToString()].Value }, // Localized previous status
+     currentUserId,
+     currentUserName
+ );
+
     }
     public async Task VoidInvoice(Guid id, string reason)
     {
@@ -1861,12 +1885,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         // **Log Order History for Invoice Voiding**
         await _orderHistoryManager.AddOrderHistoryAsync(
-            order.Id,
-            "InvoiceVoided",
-            $"Invoice was voided. Previous invoice status: {oldInvoiceStatus}. Reason: {reason}. Voided by: {order.VoidUser} on {order.VoidDate}.",
-            currentUserId,
-            currentUserName
-        );
+     order.Id,
+     "InvoiceVoided", // Localization key
+     new object[] { _l[oldInvoiceStatus.ToString()].Value, reason }, // Localized invoice status & reason
+     currentUserId,
+     currentUserName
+ );
+
 
     }
     public async Task CreditNoteInvoice(Guid id, string reason)
@@ -1889,12 +1914,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         // **Log Order History for Credit Note Issuance**
         await _orderHistoryManager.AddOrderHistoryAsync(
-            order.Id,
-            "CreditNoteIssued",
-            $"Credit note issued. Previous invoice status: {oldInvoiceStatus}. Reason: {reason}. Issued by: {order.CreditNoteUser} on {order.CreditNoteDate}.",
-            currentUserId,
-            currentUserName
-        );
+     order.Id,
+     "CreditNoteIssued", // Localization key
+     new object[] { _l[oldInvoiceStatus.ToString()].Value, reason }, // Localized previous status & reason
+     currentUserId,
+     currentUserName
+ );
     }
     public async Task<OrderDto> UpdateShippingDetails(Guid id, CreateOrderDto input)
     {
@@ -1945,15 +1970,21 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         // **Log Order History for Shipping Update**
         await _orderHistoryManager.AddOrderHistoryAsync(
-            order.Id,
-            "ShippingDetailsUpdated",
-            $"Shipping details updated. Previous delivery method: {oldDeliveryMethod}, new delivery method: {order.DeliveryMethod}. " +
-            $"Previous tracking number: {oldShippingNumber}, new tracking number: {order.ShippingNumber}. " +
-            $"Previous shipping status: {oldShippingStatus}, new status: {order.ShippingStatus}. " +
-            $"Shipped by: {order.ShippedBy} on {order.ShippingDate}.",
-            currentUserId,
-            currentUserName
-        );
+     order.Id,
+     "ShippingDetailsUpdated", // Localization key
+     new object[]
+     {
+        _l[oldDeliveryMethod.ToString()].Value,
+        _l[order.DeliveryMethod.ToString()].Value,
+        oldShippingNumber,
+        order.ShippingNumber,
+        _l[oldShippingStatus.ToString()].Value,
+        _l[order.ShippingStatus.ToString()].Value
+     }, // Dynamic placeholders for localized statuses and tracking numbers
+     currentUserId,
+     currentUserName
+ );
+
         return ObjectMapper.Map<Order, OrderDto>(order);
     }
     public async Task<OrderDto> OrderShipped(Guid id)
@@ -2002,13 +2033,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         // **Log Order History for Shipping**
         await _orderHistoryManager.AddOrderHistoryAsync(
-            order.Id,
-            "OrderShipped",
-            $"Order marked as shipped. Previous shipping status: {oldShippingStatus}, new status: {order.ShippingStatus}. ",
+      order.Id,
+      "OrderShipped", // Localization key
+      new object[] { _l[oldShippingStatus.ToString()].Value, _l[order.ShippingStatus.ToString()].Value }, // Dynamic placeholders for localized statuses
+      currentUserId,
+      currentUserName
+  );
 
-            currentUserId,
-            currentUserName
-        );
         return returnOrder;
         // await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
 
@@ -2057,13 +2088,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         // **Log Order History for Shipping Status Change**
         await _orderHistoryManager.AddOrderHistoryAsync(
-            order.Id,
-            "OrderToBeShipped",
-            $"Order marked as 'To Be Shipped'. Previous shipping status: {oldShippingStatus}, new status: {order.ShippingStatus}. ",
+     order.Id,
+     "OrderToBeShipped", // Localization key
+     new object[] { _l[oldShippingStatus.ToString()].Value, _l[order.ShippingStatus.ToString()].Value }, // Localized placeholders
+     currentUserId,
+     currentUserName
+ );
 
-            currentUserId,
-            currentUserName
-        );
         return returnOrder;
 
     }
@@ -2085,12 +2116,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         // **Log Order History for Order Closure**
         await _orderHistoryManager.AddOrderHistoryAsync(
-            order.Id,
-            "OrderClosed",
-            $"Order was closed. Previous shipping status: {oldShippingStatus}, new status: {order.ShippingStatus}. ",
-            currentUserId,
-            currentUserName
-        );
+     order.Id,
+     "OrderClosed", // Localization key
+     new object[] { _l[oldShippingStatus.ToString()].Value, _l[order.ShippingStatus.ToString()].Value }, // Localized placeholders
+     currentUserId,
+     currentUserName
+ );
+
         return ObjectMapper.Map<Order, OrderDto>(order);
     }
     public async Task<OrderDto> OrderComplete(Guid id)
@@ -2138,12 +2170,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         // **Log Order History for Order Completion**
         await _orderHistoryManager.AddOrderHistoryAsync(
-            order.Id,
-            "OrderCompleted",
-            $"Order marked as completed. Previous shipping status: {oldShippingStatus}, new status: {order.ShippingStatus}. ",
-            currentUserId,
-            currentUserName
-        );
+     order.Id,
+     "OrderCompleted", // Localization key
+     new object[] { _l[oldShippingStatus.ToString()].Value, _l[order.ShippingStatus.ToString()].Value }, // Localized placeholders
+     currentUserId,
+     currentUserName
+ );
+
         return returnResult;
 
     }
@@ -2217,12 +2250,15 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var oldShippingStatus = order.ShippingStatus;
 
         order.EcpayLogisticsStatus = rtnMsg;
-        string updateDes = $"Logistic status updated. Previous status: {oldLogisticsStatus}, new status: {order.EcpayLogisticsStatus}. ";
+        var updateDesList = new List<string>
+{
+    L["LogisticStatusUpdated", oldLogisticsStatus, order.EcpayLogisticsStatus] // Localized logistics status update
+};
 
         if (order.ShippingStatus < ShippingStatus.ToBeShipped)
         {
             order.ShippingStatus = ShippingStatus.ToBeShipped;
-            updateDes += $"Shipping status changed from {oldShippingStatus} to {order.ShippingStatus}.";
+            updateDesList.Add(L["ShippingStatusChanged", _l[oldShippingStatus.ToString()].Value, _l[order.ShippingStatus.ToString()].Value]); // Localized shipping status change
         }
 
         await _orderRepository.UpdateAsync(order);
@@ -2232,12 +2268,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         // **Log Order History for Logistic Status Update**
         await _orderHistoryManager.AddOrderHistoryAsync(
-            order.Id,
-            "LogisticStatusUpdated",
-            updateDes,
-            currentUserId,
-            currentUserName
-        );
+     order.Id,
+     "LogisticStatusUpdated", // Localization key
+     new object[] { string.Join(" ", updateDesList) }, // Combine updates
+     currentUserId,
+     currentUserName
+ );
     }
 
     [AllowAnonymous]
@@ -2384,12 +2420,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
                 // **Log Order History for Payment Processing**
                 await _orderHistoryManager.AddOrderHistoryAsync(
-                    order.Id,
-                    "PaymentProcessed",
-                    $"Payment received. Previous shipping status: {oldShippingStatus}, new status: {order.ShippingStatus}. ",
-                    currentUserId,
-                    currentUserName
-                );
+      order.Id,
+      "PaymentProcessed", // Localization key
+      new object[] { _l[oldShippingStatus.ToString()].Value, _l[order.ShippingStatus.ToString()].Value }, // Localized placeholders
+      currentUserId,
+      currentUserName
+  );
+
                 return "";
             }
 
@@ -2659,14 +2696,20 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
                 // **Log Order History for Order Expiration**
                 await _orderHistoryManager.AddOrderHistoryAsync(
-                    order.Id,
-                    "OrderExpired",
-                    $"Order expired due to non-payment. Previous order status: {oldOrderStatus}, new status: {order.OrderStatus}. " +
-                    $"Previous shipping status: {oldShippingStatus}, new shipping status: {order.ShippingStatus}. " +
-                    $"Stock restored for {order.OrderItems.Count} items.",
-                    currentUserId,
-                    currentUserName
-                );
+    order.Id,
+    "OrderExpired", // Localization key
+    new object[]
+    {
+        _l[oldOrderStatus.ToString()].Value,
+        _l[order.OrderStatus.ToString()].Value,
+        _l[oldShippingStatus.ToString()].Value,
+        _l[order.ShippingStatus.ToString()].Value,
+        order.OrderItems.Count
+    }, // Dynamic placeholders
+    currentUserId,
+    currentUserName
+);
+
             }
         }
 

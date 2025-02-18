@@ -162,16 +162,17 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
                         order.VoidUser = CurrentUser.Name;
                         order.IssueStatus = IssueInvoiceStatus.Failed;
                         await _orderRepository.UpdateAsync(order);
-                        
-                        await _orderHistoryManager.AddOrderHistoryAsync(
-           order.Id,
-           "InvoiceIssueFailed",
-           $"Invoice issuance failed. Reason: {jsonObj.RtnMsg}. ",
-           currentUserId,
-           currentUserName
-       );
 
-                        return jsonObj.RtnMsg.ToString();
+                    await _orderHistoryManager.AddOrderHistoryAsync(
+   order.Id,
+   "InvoiceIssueFailed", // Localization key
+   new object[] { jsonObj.RtnMsg }, // Dynamic placeholder for the failure reason
+   currentUserId,
+   currentUserName
+);
+
+
+                    return jsonObj.RtnMsg.ToString();
 
                     }
                     order.InvoiceNumber = jsonObj.InvoiceNo;
@@ -181,17 +182,18 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
                     order.VoidUser = CurrentUser.Name;
 
                     await _orderRepository.UpdateAsync(order);
-                  
 
-                    await _orderHistoryManager.AddOrderHistoryAsync(
-                        order.Id,
-                        "InvoiceIssued",
-                        $"Invoice issued successfully. Invoice No: {order.InvoiceNumber}, Date: {order.InvoiceDate}. ",
-                        currentUserId,
-                        currentUserName
-                    );
-                }
-                return "";
+
+                await _orderHistoryManager.AddOrderHistoryAsync(
+ order.Id,
+ "InvoiceIssued", // Localization key
+ new object[] { order.InvoiceNumber }, // Dynamic placeholders for invoice details
+ currentUserId,
+ currentUserName
+);
+
+            }
+            return "";
             }
         
     }

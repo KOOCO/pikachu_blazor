@@ -84,32 +84,35 @@ namespace Kooco.Pikachu.OrderDeliveries
             await _orderDeliveryRepository.UpdateAsync(order);
 
             await UnitOfWorkManager.Current.SaveChangesAsync();
-            List<string> changes = [];
+            var changes = new List<string>();
 
             if (oldDeliveryMethod != order.DeliveryMethod)
             {
-                changes.Add($"Delivery Method changed from {oldDeliveryMethod} to {order.DeliveryMethod}");
+                changes.Add(L["DeliveryMethodChanged", _l[oldDeliveryMethod.ToString()].Value, _l[order.DeliveryMethod.ToString()].Value]); // Localized message
             }
 
             if (oldDeliveryNo != order.DeliveryNo)
             {
-                changes.Add($"Delivery Number changed from {oldDeliveryNo ?? "None"} to {order.DeliveryNo}");
+                changes.Add(L["DeliveryNumberChanged", oldDeliveryNo ?? "None", order.DeliveryNo]); // Localized message
             }
+
             // **Get Current User (Editor)**
             var currentUserId = CurrentUser.Id ?? Guid.Empty;
             var currentUserName = CurrentUser.UserName ?? "System";
+
             if (changes.Any())
             {
-                string logMessage = $"Shipping details updated: {string.Join(", ", changes)}. Updated by: {currentUserName}.";
+                string logMessage = string.Join(", ", changes); // Combine localized messages
 
                 await _orderHistoryManager.AddOrderHistoryAsync(
                     order.OrderId,
-                    "OrderShippingUpdated",
-                logMessage,
+                    "OrderShippingUpdated", // Localization key
+                    new object[] { logMessage, currentUserName }, // Pass changes and editor
                     currentUserId,
                     currentUserName
                 );
             }
+
 
             if (!order.DeliveryNo.IsNullOrEmpty())
             {
@@ -279,12 +282,12 @@ namespace Kooco.Pikachu.OrderDeliveries
             // **Log Order History for Shipping Status Change**
             await _orderHistoryManager.AddOrderHistoryAsync(
                 order.Id,
-                "ShippingStatusChanged",
-                $"Shipping status updated. Previous status: {oldShippingStatus}, new status: {order.ShippingStatus}. " +
-                $"Updated by: {currentUserName}.",
+                "ShippingStatusChanged", // Localization key
+                new object[] { _l[oldShippingStatus.ToString()].Value, _l[order.ShippingStatus.ToString()].Value }, // Localized placeholders
                 currentUserId,
                 currentUserName
             );
+
         }
 
         public async Task UpdateDeliveredStatus(Guid orderId)
@@ -336,12 +339,13 @@ namespace Kooco.Pikachu.OrderDeliveries
 
             // **Log Order History for Delivery Update**
             await _orderHistoryManager.AddOrderHistoryAsync(
-                order.Id,
-                "OrderDelivered",
-                $"Order marked as Delivered. Previous shipping status: {oldShippingStatus}, new status: {order.ShippingStatus}. ",
-                currentUserId,
-                currentUserName
-            );
+    order.Id,
+    "OrderDelivered", // Localization key
+    new object[] { _l[oldShippingStatus.ToString()].Value, _l[order.ShippingStatus.ToString()].Value }, // Localized placeholders
+    currentUserId,
+    currentUserName
+);
+
         }
 
         public async Task UpdatePickedUpStatus(Guid orderId)
@@ -391,12 +395,13 @@ namespace Kooco.Pikachu.OrderDeliveries
 
                 // **Log Order History for Pickup Completion**
                 await _orderHistoryManager.AddOrderHistoryAsync(
-                    order.Id,
-                    "OrderPickedUp",
-                    $"Order marked as Picked Up. Previous shipping status: {oldShippingStatus}, new status: {order.ShippingStatus}. ",
-                    currentUserId,
-                    currentUserName
-                );
+     order.Id,
+     "OrderPickedUp", // Localization key
+     new object[] { _l[oldShippingStatus.ToString()].Value, _l[order.ShippingStatus.ToString()].Value }, // Localized placeholders
+     currentUserId,
+     currentUserName
+ );
+
             }
         }
 
@@ -449,21 +454,24 @@ namespace Kooco.Pikachu.OrderDeliveries
                 string logMessage;
                 if (oldShippingStatus != order.ShippingStatus)
                 {
-                    logMessage = $"Order marked as Shipped. Previous delivery status: {oldDeliveryStatus}, new status: {delivery.DeliveryStatus}. " +
-                                 $"Previous shipping status: {oldShippingStatus}, new shipping status: {order.ShippingStatus}. Updated by: {currentUserName}.";
+                    logMessage = L["OrderShippedWithShippingChange",
+                                   _l[oldDeliveryStatus.ToString()].Value, _l[delivery.DeliveryStatus.ToString()].Value,
+                                   _l[oldShippingStatus.ToString()].Value, _l[order.ShippingStatus.ToString()].Value];
                 }
                 else
                 {
-                    logMessage = $"Order marked as Shipped. Previous delivery status: {oldDeliveryStatus}, new status: {delivery.DeliveryStatus}.";
+                    logMessage = L["OrderShippedWithoutShippingChange",
+                                   _l[oldDeliveryStatus.ToString()].Value, _l[delivery.DeliveryStatus.ToString()].Value];
                 }
 
                 await _orderHistoryManager.AddOrderHistoryAsync(
                     order.Id,
-                    "OrderShipped",
-                    logMessage,
+                    "OrderShipped", // Localization key
+                    new object[] { logMessage }, // Pass localized log message
                     currentUserId,
                     currentUserName
                 );
+
                 //await SendEmailAsync(order.Id, delivery.DeliveryNo);
             }
 

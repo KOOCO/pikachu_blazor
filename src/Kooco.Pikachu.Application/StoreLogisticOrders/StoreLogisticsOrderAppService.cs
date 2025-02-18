@@ -146,13 +146,13 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             // **Log Order History for Delivery Update**
             await _orderHistoryManager.AddOrderHistoryAsync(
-                order.Id,
-                 "OrderToBeShipped",
-                 $"Order marked as 'To Be Shipped'. Previous shipping status: {oldShippingStatus}, new status: {order.ShippingStatus}. ",
+      order.Id,
+      "OrderToBeShipped", // Localization key
+      new object[] { _L[oldShippingStatus.ToString()].Value, _L[order.ShippingStatus.ToString()].Value }, // Localized placeholders
+      currentUserId,
+      currentUserName
+  );
 
-                currentUserId,
-                currentUserName
-            );
             var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
             if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
             {
@@ -326,12 +326,13 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
                         // **Log Order History for Delivery Update**
                         await _orderHistoryManager.AddOrderHistoryAsync(
-                            newOrderDelivery.OrderId,
-                            "Generate Delivery Number",
-                            $"Delivery Number Generated.Delivery no: {newOrderDelivery.DeliveryNo}. ",
-                            currentUserId,
-                            currentUserName
-                        );
+     newOrderDelivery.OrderId,
+     "GenerateDeliveryNumberLog", // Localization key
+     new object[] { newOrderDelivery.DeliveryNo }, // Dynamic placeholder for delivery number
+     currentUserId,
+     currentUserName
+ );
+
                         //order.ShippingStatus = ShippingStatus.ToBeShipped;
                         //order = await _orderRepository.GetAsync(orderId);
 
@@ -339,7 +340,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
                     }
 
-                        await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
+                    await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
                     }
                 }
             catch (AbpDbConcurrencyException e)
@@ -994,12 +995,12 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
                 // **Log Order History for Delivery Update**
                 await _orderHistoryManager.AddOrderHistoryAsync(
-                    newOrderDelivery.OrderId,
-                    "Generate Delivery Number",
-                    $"Delivery Number Generated.Delivery no: {newOrderDelivery.DeliveryNo}. ",
-                    currentUserId,
-                    currentUserName
-                );
+      newOrderDelivery.OrderId,
+      "GenerateDeliveryNumber", // Localization key
+      new object[] { newOrderDelivery.DeliveryNo }, // Dynamic placeholder for delivery number
+      currentUserId,
+      currentUserName
+  );
 
             }
                 await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
@@ -1038,12 +1039,12 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
                 // **Log Order History for Delivery Update**
                 await _orderHistoryManager.AddOrderHistoryAsync(
-                    newOrderDelivery.OrderId,
-                    "Generate Delivery Number",
-                    $"Delivery Number Generated.Delivery no: {newOrderDelivery.DeliveryNo}. ",
-                    currentUserId,
-                    currentUserName
-                );
+     newOrderDelivery.OrderId,
+     "GenerateDeliveryNumber", // Localization key
+     new object[] { newOrderDelivery.DeliveryNo }, // Dynamic placeholder for delivery number
+     currentUserId,
+     currentUserName
+ );
             }
             await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
             return printObtResponse;
@@ -1174,12 +1175,12 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
                 // **Log Order History for Delivery Update**
                 await _orderHistoryManager.AddOrderHistoryAsync(
-                    newOrderDelivery.OrderId,
-                    "Generate Delivery Number",
-                    $"Delivery Number Generated.Delivery no: {newOrderDelivery.DeliveryNo}. ",
-                    currentUserId,
-                    currentUserName
-                );
+    newOrderDelivery.OrderId,
+    "GenerateDeliveryNumber", // Localization key
+    new object[] { newOrderDelivery.DeliveryNo }, // Dynamic placeholder for delivery number
+    currentUserId,
+    currentUserName
+);
             }
 
                 await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
@@ -1218,12 +1219,12 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
                 // **Log Order History for Delivery Update**
                 await _orderHistoryManager.AddOrderHistoryAsync(
-                    newOrderDelivery.OrderId,
-                    "Generate Delivery Number",
-                    $"Delivery Number Generated.Delivery no: {newOrderDelivery.DeliveryNo}. ",
-                    currentUserId,
-                    currentUserName
-                );
+    newOrderDelivery.OrderId,
+    "GenerateDeliveryNumber", // Localization key
+    new object[] { newOrderDelivery.DeliveryNo }, // Dynamic placeholder for delivery number
+    currentUserId,
+    currentUserName
+);
             }
 
             await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
@@ -1255,12 +1256,12 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         // **Log Order History for Delivery Update**
         await _orderHistoryManager.AddOrderHistoryAsync(
-            orderDelivery.OrderId,
-            "Generate Delivery Number",
-            $"Delivery Number Generated.Delivery no: {orderDelivery.DeliveryNo}. ",
-            currentUserId,
-            currentUserName
-        );
+     orderDelivery.OrderId,
+     "GenerateDeliveryNumber", // Localization key
+     new object[] { orderDelivery.DeliveryNo }, // Dynamic placeholder for delivery number
+     currentUserId,
+     currentUserName
+ );
 
         if (orderDeliveries.All(a => a.DeliveryStatus == DeliveryStatus.ToBeShipped))
         {
@@ -1566,12 +1567,12 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
                     // **Log Order History for Delivery Update**
                     await _orderHistoryManager.AddOrderHistoryAsync(
-                        newOrderDelivery.OrderId,
-                        "Generate Delivery Number",
-                        $"Delivery Number Generated.Delivery no: {newOrderDelivery.DeliveryNo}. ",
-                        currentUserId,
-                        currentUserName
-                    );
+     newOrderDelivery.OrderId,
+     "GenerateDeliveryNumber", // Localization key
+     new object[] { newOrderDelivery.DeliveryNo }, // Dynamic placeholder for delivery number
+     currentUserId,
+     currentUserName
+ );
 
                 }
 
@@ -1636,12 +1637,12 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
                     // **Log Order History for Delivery Update**
                     await _orderHistoryManager.AddOrderHistoryAsync(
-                        newOrderDelivery.OrderId,
-                        "Generate Delivery Number",
-                        $"Delivery Number Generated.Delivery no: {newOrderDelivery.DeliveryNo}. ",
-                        currentUserId,
-                        currentUserName
-                    );
+    newOrderDelivery.OrderId,
+    "GenerateDeliveryNumber", // Localization key
+    new object[] { newOrderDelivery.DeliveryNo }, // Dynamic placeholder for delivery number
+    currentUserId,
+    currentUserName
+);
                 }
 
 

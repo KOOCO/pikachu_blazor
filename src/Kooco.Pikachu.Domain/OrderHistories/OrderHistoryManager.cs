@@ -1,4 +1,5 @@
 ﻿using Kooco.Pikachu.AddOnProducts;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +12,9 @@ namespace Kooco.Pikachu.OrderHistories
 {
     public class OrderHistoryManager(IOrderHistoryRepository orderHistoryRepository) : DomainService
     {
-        public async Task AddOrderHistoryAsync(Guid orderId, string actionType, string actionDetails, Guid? editorUserId = null, string? editorUserName = null)
+        public async Task AddOrderHistoryAsync(Guid orderId, string actionType, object[] parameters, Guid? editorUserId = null, string? editorUserName = null)
         {
-            var history = new OrderHistory(Guid.NewGuid(), orderId, actionType, actionDetails, editorUserId, editorUserName);
+            var history = new OrderHistory(Guid.NewGuid(), orderId, actionType, JsonConvert.SerializeObject(parameters), editorUserId, editorUserName);
            ;
 
             await orderHistoryRepository.InsertAsync(history,autoSave:true);
