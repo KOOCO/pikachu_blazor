@@ -1,5 +1,4 @@
 ﻿using Kooco.Pikachu.EnumValues;
-using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.Response;
@@ -12,7 +11,7 @@ using Volo.Abp.Content;
 
 namespace Kooco.Pikachu.Orders
 {
-    public interface IOrderAppService: IApplicationService
+    public interface IOrderAppService : IApplicationService
     {
         Task AddValuesAsync(Guid id, string checkMacValue, string merchantTradeNo, PaymentMethods? paymentMethod = null);
         string GenerateMerchantTradeNo(string orderNo);
@@ -24,7 +23,7 @@ namespace Kooco.Pikachu.Orders
         Task<OrderDto> GetAsync(Guid id);
         Task<PagedResultDto<OrderDto>> GetListAsync(GetOrderListDto input, bool hideCredentials = false);
         Task<OrderDto> CreateAsync(CreateUpdateOrderDto input);
-        Task<OrderDto> UpdateAsync(Guid id,CreateOrderDto input);
+        Task<OrderDto> UpdateAsync(Guid id, CreateOrderDto input);
         Task<OrderDto> UpdateShippingDetails(Guid id, CreateOrderDto input);
         Task<OrderDto> GetWithDetailsAsync(Guid id);
         Task AddStoreCommentAsync(Guid id, string comment);
@@ -56,11 +55,12 @@ namespace Kooco.Pikachu.Orders
         Task<OrderDto> ChangeOrderStatus(Guid id, ShippingStatus status);
 
         Task UpdateOrdersIfIsEnterpricePurchaseAsync(Guid groupBuyId);
-       Task ExpireOrderAsync(Guid OrderId);
+        Task ExpireOrderAsync(Guid OrderId);
         Task<(int normalCount, int freezeCount, int frozenCount)> GetTotalDeliveryTemperatureCountsAsync();
         Task<OrderDto> OrderToBeShipped(Guid id);
         Task<(decimal PaidAmount, decimal UnpaidAmount, decimal RefundedAmount)> GetOrderStatusAmountsAsync(Guid UserId);
         Task<(int Open, int Exchange, int Return)> GetOrderStatusCountsAsync(Guid userId);
+        Task CreateOrderDeliveriesAndInvoiceAsync(Guid orderId);
         Task<List<OrderHistoryDto>> GetOrderLogsAsync(Guid orderId);
     }
 }
