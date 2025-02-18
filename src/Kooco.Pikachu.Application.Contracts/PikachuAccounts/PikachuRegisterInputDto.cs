@@ -21,6 +21,10 @@ public class PikachuRegisterInputDto
 
     public virtual DateTime? Birthday { get; set; }
 
+    public virtual string? MobileNumber { get; set; }
+
+    public virtual string? Gender { get; set; }
+
     [DataType(DataType.Password)]
     public virtual string? Password { get; set; }
 

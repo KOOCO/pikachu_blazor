@@ -617,6 +617,7 @@ public class OrderController : AbpController, IOrderAppService
         return _ordersAppService.ExpireOrderAsync(OrderId);
     }
 
+    [HttpGet("order-logs")]
     public Task<List<OrderHistoryDto>> GetOrderLogsAsync(Guid orderId)
     {
         return _ordersAppService.GetOrderLogsAsync(orderId);

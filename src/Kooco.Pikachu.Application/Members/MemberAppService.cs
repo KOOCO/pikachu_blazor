@@ -8,6 +8,7 @@ using Kooco.Pikachu.UserAddresses;
 using Kooco.Pikachu.UserCumulativeCredits;
 using Kooco.Pikachu.UserCumulativeFinancials;
 using Kooco.Pikachu.UserCumulativeOrders;
+using Kooco.Pikachu.Users;
 using Kooco.Pikachu.UserShoppingCredits;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -33,7 +34,7 @@ public class MemberAppService(IMemberRepository memberRepository, IdentityUserMa
     UserCumulativeFinancialManager userCumulativeFinancialManager,
     IUserShoppingCreditAppService userShoppingCreditAppService,
     IShoppingCreditEarnSettingAppService shoppingCreditEarnSettingAppService,
-    IPikachuAccountAppService pikachuAccountAppService, IUserAddressRepository userAddressRepository,IUserCumulativeCreditAppService userCumulativeCreditAppService,IUserCumulativeCreditRepository userCumulativeCreditRepository) : PikachuAppService, IMemberAppService
+    IPikachuAccountAppService pikachuAccountAppService, IUserAddressRepository userAddressRepository, IUserCumulativeCreditAppService userCumulativeCreditAppService, IUserCumulativeCreditRepository userCumulativeCreditRepository) : PikachuAppService, IMemberAppService
 {
     public async Task<MemberDto> GetAsync(Guid id)
     {
@@ -84,8 +85,9 @@ public class MemberAppService(IMemberRepository memberRepository, IdentityUserMa
         (await identityUserManager.SetEmailAsync(member, input.Email)).CheckErrors();
         (await identityUserManager.SetPhoneNumberAsync(member, input.PhoneNumber)).CheckErrors();
 
-        member.ExtraProperties.Remove(Constant.Birthday);
-        member.ExtraProperties.TryAdd(Constant.Birthday, input.Birthday);
+        member.SetBirthday(input.Birthday);
+        member.SetMobileNumber(input.MobileNumber);
+        member.SetGender(input.Gender);
 
         (await identityUserManager.UpdateAsync(member)).CheckErrors();
 

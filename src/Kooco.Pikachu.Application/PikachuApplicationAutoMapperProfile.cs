@@ -37,6 +37,7 @@ using Kooco.Pikachu.UserAddresses;
 using Kooco.Pikachu.UserCumulativeCredits;
 using Kooco.Pikachu.UserCumulativeFinancials;
 using Kooco.Pikachu.UserCumulativeOrders;
+using Kooco.Pikachu.Users;
 using Kooco.Pikachu.UserShoppingCredits;
 using Kooco.Pikachu.WebsiteManagement;
 using Kooco.Pikachu.WebsiteManagement.FooterSettings;
@@ -173,9 +174,15 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<GroupBuyItemGroupDetailsDto, GroupBuyItemGroupDetailCreateUpdateDto>().ReverseMap();
 
         CreateMap<IdentityUser, MemberDto>()
-            .ForMember(dest => dest.Birthday, opt => opt.MapFrom(src => src.ExtraProperties.GetValueOrDefault(Constant.Birthday)));
+            .ForMember(dest => dest.Birthday, opt => opt.MapFrom(src => src.GetBirthday()))
+            .ForMember(dest => dest.MobileNumber, opt => opt.MapFrom(src => src.GetMobileNumber()))
+            .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.GetGender()));
+        
         CreateMap<IdentityUserDto, MemberDto>()
-            .ForMember(dest => dest.Birthday, opt => opt.MapFrom(src => src.ExtraProperties.GetValueOrDefault(Constant.Birthday)));
+            .ForMember(dest => dest.Birthday, opt => opt.MapFrom(src => src.GetBirthday()))
+            .ForMember(dest => dest.MobileNumber, opt => opt.MapFrom(src => src.GetMobileNumber()))
+            .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.GetGender()));
+
         CreateMap<MemberDto, UpdateMemberDto>();
         CreateMap<MemberModel, MemberDto>();
         CreateMap<MemberOrderInfoModel, MemberOrderInfoDto>();

@@ -28,4 +28,8 @@ public class UpdateMemberDto
 
     [Required]
     public string Address { get; set; }
+
+    public string? MobileNumber { get; set; }
+
+    public string? Gender { get; set; }
 }

@@ -2,6 +2,7 @@
 using Kooco.Pikachu.Identity;
 using Kooco.Pikachu.PikachuAccounts.ExternalUsers;
 using Kooco.Pikachu.TenantManagement;
+using Kooco.Pikachu.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
@@ -185,10 +186,10 @@ public class PikachuAccountAppService(IConfiguration configuration, IdentityUser
         {
             identityUser.SetPhoneNumber(input.PhoneNumber, false);
         }
-        if (input.Birthday.HasValue)
-        {
-            identityUser.SetProperty(Constant.Birthday, input.Birthday);
-        }
+
+        identityUser.SetBirthday(input.Birthday);
+        identityUser.SetMobileNumber(input.MobileNumber);
+        identityUser.SetGender(input.Gender);
 
         if (!input.Role.IsNullOrWhiteSpace())
         {

@@ -78,6 +78,32 @@
                             <Column ColumnSize="ColumnSize.Is12.Is6.OnFullHD">
                                 <Validation MessageLocalizer="@LH.Localize">
                                     <Field>
+                                        <FieldLabel>@L["MobileNumber"] *</FieldLabel>
+                                        <TextEdit @bind-Text="@EditingMember.MobileNumber">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </TextEdit>
+                                    </Field>
+                                </Validation>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is12.Is6.OnFullHD">
+                                <Validation MessageLocalizer="@LH.Localize">
+                                    <Field>
+                                        <FieldLabel>@L["Gender"] *</FieldLabel>
+                                        <Select TValue="string" @bind-SelectedValue="EditingMember.Gender">
+                                            <SelectItem Value="(string?)null" selected Disabled></SelectItem>
+                                            @foreach (var gender in Constant.Genders)
+                                            {
+                                                <SelectItem Value="@gender">@gender</SelectItem>
+                                            }
+                                        </Select>
+                                    </Field>
+                                </Validation>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is12.Is6.OnFullHD">
+                                <Validation MessageLocalizer="@LH.Localize">
+                                    <Field>
                                         <FieldLabel>@L["Birthday"] *</FieldLabel>
                                         <DateEdit TValue="DateTime?" @bind-Date="@EditingMember.Birthday">
                                             <Feedback>

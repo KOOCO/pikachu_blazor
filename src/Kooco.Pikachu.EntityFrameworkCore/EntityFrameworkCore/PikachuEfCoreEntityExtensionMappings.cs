@@ -98,11 +98,25 @@ public static class PikachuEfCoreEntityExtensionMappings
                 });
 
             ObjectExtensionManager.Instance
-            .MapEfCoreProperty<IdentityUser, string?>(Constant.LineId,
-            (entityBuilder, propertyBuilder) =>
-            {
-                propertyBuilder.HasMaxLength(100);
-            });
+                .MapEfCoreProperty<IdentityUser, string?>(Constant.LineId,
+                (entityBuilder, propertyBuilder) =>
+                {
+                    propertyBuilder.HasMaxLength(100);
+                });
+
+            ObjectExtensionManager.Instance
+                .MapEfCoreProperty<IdentityUser, string?>(Constant.MobileNumber,
+                (entityBuilder, propertyBuilder) =>
+                {
+                    propertyBuilder.HasMaxLength(100);
+                });
+
+            ObjectExtensionManager.Instance
+                .MapEfCoreProperty<IdentityUser, string?>(Constant.Gender,
+                (entityBuilder, propertyBuilder) =>
+                {
+                    propertyBuilder.HasMaxLength(20);
+                });
             #endregion
         });
     }

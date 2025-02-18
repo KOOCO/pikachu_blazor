@@ -25,11 +25,15 @@ namespace Kooco.Pikachu
         public const string FacebookId = "FacebookId";
         public const string LineId = "LineId";
         public const string GoogleId = "GoogleId";
+        public const string MobileNumber = "MobileNumber";
+        public const string Gender = "Gender";
+
 
         public const int MaxImageSizeInBytes = 512000;
         public static readonly List<string> ValidImageExtensions = [".jpg", ".png", ".svg", ".jpeg", ".webp"];
         public static readonly List<string> ValidFaviconExtensions = [".ico"];
 
         public static readonly List<string> TenantContactTitles = ["Mr.", "Ms."];
+        public static IReadOnlyList<string> Genders = ["Male", "Female", "Other"];
     }
 }
