@@ -108,7 +108,7 @@ public class LinePayAppService : PikachuAppService, ILinePayAppService
 
             if (response.IsSuccessful && responseDto.ReturnCode == _apiOptions.SuccessReturnCode)
             {
-                order.TradeNo = responseDto.Info?.TransactionId.GetString();
+                order.TradeNo = responseDto.Info?.TransactionId.ToString();
                 order.ShippingStatus = ShippingStatus.PrepareShipment;
                 order.PrepareShipmentBy = CurrentUser.Name ?? "System";
                 order.PaymentDate = DateTime.Now;
