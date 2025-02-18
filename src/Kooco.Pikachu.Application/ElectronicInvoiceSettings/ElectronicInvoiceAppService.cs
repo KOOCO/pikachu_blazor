@@ -65,8 +65,7 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
     #region Methods
     public async Task<string> CreateInvoiceAsync(Guid orderId)
     {
-        using (var newUnitOfWork = UnitOfWorkManager.Begin(requiresNew:true))
-        {
+       
             using (_dataFilter.Disable<IMultiTenant>())
             {
                 ElectronicInvoiceSetting? setting = await _repository.FirstOrDefaultAsync();
@@ -163,7 +162,7 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
                         order.VoidUser = CurrentUser.Name;
                         order.IssueStatus = IssueInvoiceStatus.Failed;
                         await _orderRepository.UpdateAsync(order);
-                        await newUnitOfWork.SaveChangesAsync();
+                        
                         await _orderHistoryManager.AddOrderHistoryAsync(
            order.Id,
            "InvoiceIssueFailed",
@@ -182,7 +181,7 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
                     order.VoidUser = CurrentUser.Name;
 
                     await _orderRepository.UpdateAsync(order);
-                    await newUnitOfWork.SaveChangesAsync();
+                  
 
                     await _orderHistoryManager.AddOrderHistoryAsync(
                         order.Id,
@@ -194,7 +193,7 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
                 }
                 return "";
             }
-        }
+        
     }
     public async Task CreateCreditNoteAsync(Guid orderId)
     {
