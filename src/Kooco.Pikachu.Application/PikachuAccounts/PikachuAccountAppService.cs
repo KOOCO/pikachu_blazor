@@ -15,6 +15,7 @@ using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Account;
 using Volo.Abp.Data;
 using Volo.Abp.Emailing;
 using Volo.Abp.Identity;
@@ -455,6 +456,13 @@ public class PikachuAccountAppService(IConfiguration configuration, IdentityUser
         {
             ResetToken = resetToken,
         };
+    }
+
+    public async Task<GenericResponseDto> ChangePasswordAsync(Guid id, ChangePasswordInput input)
+    {
+        var user = await identityUserRepository.GetAsync(id);
+        (await identityUserManager.ChangePasswordAsync(user, input.CurrentPassword, input.NewPassword)).CheckErrors();
+        return new GenericResponseDto(true);
     }
 
     public async Task<GenericResponseDto> ResetPasswordAsync(PikachuResetPasswordDto input)

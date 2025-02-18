@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Account;
 using Volo.Abp.Application.Dtos;
 
 namespace Kooco.Pikachu.Controllers.Members;
@@ -141,6 +142,12 @@ public class MemberController(IMemberAppService memberAppService, IPikachuAccoun
     public Task<VerifyCodeResponseDto> VerifyPasswordResetCodeAsync(string email, string code)
     {
         return pikachuAccountAppService.VerifyPasswordResetCodeAsync(email, code);
+    }
+
+    [HttpPost("change-password/{id}")]
+    public Task<GenericResponseDto> ChangePasswordAsync(Guid id, ChangePasswordInput input)
+    {
+        return pikachuAccountAppService.ChangePasswordAsync(id, input);
     }
 
     [HttpPost("reset-password")]

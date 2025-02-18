@@ -1,5 +1,7 @@
 ﻿using Kooco.Pikachu.EnumValues;
+using System;
 using System.Threading.Tasks;
+using Volo.Abp.Account;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Identity;
 
@@ -13,6 +15,7 @@ public interface IPikachuAccountAppService : IApplicationService
     Task<VerifyCodeResponseDto> VerifyEmailCodeAsync(string email, string code);
     Task<GenericResponseDto> SendPasswordResetCodeAsync(string email);
     Task<VerifyCodeResponseDto> VerifyPasswordResetCodeAsync(string email, string code);
+    Task<GenericResponseDto> ChangePasswordAsync(Guid id, ChangePasswordInput input);
     Task<GenericResponseDto> ResetPasswordAsync(PikachuResetPasswordDto input);
     Task<GenericResponseDto> FindByTokenAsync(LoginMethod method, string thirdPartyToken);
 }
