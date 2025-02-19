@@ -1241,10 +1241,14 @@
     "OrderDelivered": "Order marked as delivered. Previous shipping status: {0}, new status: {1}.",
     "OrderPickedUpTitle": "Order Picked Up",
     "OrderPickedUp": "Order marked as picked up. Previous shipping status: {0}, new status: {1}.",
+    "OrderShippedWithShippingChangeTitle": "Order marked as shipped",
+    "OrderShippedWithoutShippingChangeTitle": "Order delivery marked as shipped.",
     "OrderShippedWithShippingChange": "Order marked as shipped. Previous delivery status: {0}, new status: {1}. Previous shipping status: {2}, new shipping status: {3}.",
     "OrderShippedWithoutShippingChange": "Order marked as shipped. Previous delivery status: {0}, new status: {1}.",
     "GenerateDeliveryNumberLogTitle": "Delivery Number Generated",
     "GenerateDeliveryNumberLog": "Delivery number generated. Delivery No: {0}.",
-    "MobileNumber": "Mobile Number"
+    "MobileNumber": "Mobile Number",
+    "PickingCompleted": "Picking Completed",
+    "OrderCreated1": "Order Created"
   }
 }

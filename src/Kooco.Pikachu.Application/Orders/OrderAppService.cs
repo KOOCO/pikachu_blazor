@@ -1213,7 +1213,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             await _orderHistoryManager.AddOrderHistoryAsync(
      ord.Id,
      "RefundRequested", // Localization key
-     new object[] { newOrder.TotalAmount.ToString("C") }, // Format currency correctly before passing
+     new object[] { newOrder.TotalAmount.ToString("C", new CultureInfo("en-US")) }, // Format currency correctly before passing
      currentUserId,
      currentUserName
  );
@@ -1362,7 +1362,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             await _orderHistoryManager.AddOrderHistoryAsync(
       ord.Id,
       "RefundProcessed", // Localization key
-      new object[] { ((decimal)amount).ToString("C"), ord.OrderNo }, // Format currency correctly before passing
+      new object[] { ((decimal)amount).ToString("C", new CultureInfo("en-US")), ord.OrderNo }, // Format currency correctly before passing
       currentUserId,
       currentUserName
   );
@@ -1371,7 +1371,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             await _orderHistoryManager.AddOrderHistoryAsync(
        order1.Id,
        "RefundAmountCreated", // Localization key
-       new object[] { order1.OrderNo, ((decimal)amount).ToString("C"), ord.OrderNo }, // Format currency correctly
+       new object[] { order1.OrderNo, ((decimal)amount).ToString("C", new CultureInfo("en-US")), ord.OrderNo }, // Format currency correctly
        currentUserId,
        currentUserName
    );
@@ -1892,6 +1892,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     {
         var order = await _orderRepository.GetAsync(id);
         await _orderRepository.EnsureCollectionLoadedAsync(order, o => o.OrderItems);
+       
         // **Get Current User (Editor)**
         var currentUserId = CurrentUser.Id ?? Guid.Empty;
         var currentUserName = CurrentUser.UserName ?? "System";
@@ -1917,7 +1918,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 await _orderHistoryManager.AddOrderHistoryAsync(
                   order.Id,
                   "ItemPriceChanged", // Localization key
-                  new object[] { orderItem.Item?.ItemName, orderItem.ItemPrice.ToString("C"), item.ItemPrice.ToString("C") }, // Join localized changes as a single string
+                  new object[] { orderItem.Item?.ItemName, orderItem.ItemPrice.ToString("C", new CultureInfo("en-US")), item.ItemPrice.ToString("C", new CultureInfo("en-US")) }, // Join localized changes as a single string
                   currentUserId,
                   currentUserName
               );
@@ -1929,7 +1930,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 await _orderHistoryManager.AddOrderHistoryAsync(
                   order.Id,
                   "ItemTotalAmountChanged", // Localization key
-                  new object[] { orderItem.Item?.ItemName, orderItem.TotalAmount.ToString("C"), item.TotalAmount.ToString("C") }, // Join localized changes as a single string
+                  new object[] { orderItem.Item?.ItemName, orderItem.TotalAmount.ToString("C", new CultureInfo("en-US")), item.TotalAmount.ToString("C", new CultureInfo("en-US")) }, // Join localized changes as a single string
                   currentUserId,
                   currentUserName
               );

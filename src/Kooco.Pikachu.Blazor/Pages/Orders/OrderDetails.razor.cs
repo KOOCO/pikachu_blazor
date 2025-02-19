@@ -36,6 +36,7 @@ using Volo.Abp;
 using Volo.Abp.Http.Modeling;
 using Volo.Abp.ObjectMapping;
 using static Kooco.Pikachu.Permissions.PikachuPermissions;
+using static Volo.Abp.UI.Navigation.DefaultMenuNames.Application;
 
 
 namespace Kooco.Pikachu.Blazor.Pages.Orders;
@@ -109,6 +110,21 @@ public partial class OrderDetails
     #endregion
 
     #region Methods
+    string selectedStep = "step1";
+
+    private void UpdateStepByShippingStatus(ShippingStatus status)
+    {
+        selectedStep = status switch
+        {
+            ShippingStatus.WaitingForPayment or ShippingStatus.EnterpricePurchase => "step1",
+            ShippingStatus.PrepareShipment => "step2",
+            ShippingStatus.ToBeShipped => "step3",
+            ShippingStatus.Shipped => "step4",
+            ShippingStatus.Delivered or ShippingStatus.Return or ShippingStatus.Exchange => "step5",
+            ShippingStatus.Completed or ShippingStatus.Closed => "step6",
+            _ => "step1" // Default to first step if status is unknown
+        };
+    }
     protected async override Task OnAfterRenderAsync(bool isFirstRender)
     {
         if (isFirstRender)
@@ -199,10 +215,34 @@ public partial class OrderDetails
 
         else entity.TotalAmount = 0.00m;
     }
+    private bool NavigationAllowed(StepNavigationContext context)
+    {
+        // Determine the expected step based on the current order status
+        string expectedStep = GetStepByShippingStatus(Order.ShippingStatus);
+
+        // Allow navigation ONLY if the new step matches the expected step
+        return context.NextStepName == expectedStep;
+    }
+
+    // 🚀 Helper method to get step name based on `ShippingStatus`
+    private string GetStepByShippingStatus(ShippingStatus status)
+    {
+        return status switch
+        {
+            ShippingStatus.WaitingForPayment or ShippingStatus.EnterpricePurchase => "step1",
+            ShippingStatus.PrepareShipment => "step2",
+            ShippingStatus.ToBeShipped => "step3",
+            ShippingStatus.Shipped => "step4",
+            ShippingStatus.Delivered or ShippingStatus.Return or ShippingStatus.Exchange => "step5",
+            ShippingStatus.Completed or ShippingStatus.Closed => "step6",
+            _ => "step1"
+        };
+    }
 
     async Task GetOrderDetailsAsync()
     {
         Order = await _orderAppService.GetWithDetailsAsync(OrderId) ?? new();
+        UpdateStepByShippingStatus(Order.ShippingStatus);
         OrderHistory = await _orderAppService.GetOrderLogsAsync(OrderId);
         if (Order.DeliveryMethod is not DeliveryMethod.SelfPickup &&
             Order.DeliveryMethod is not DeliveryMethod.DeliveredByStore)
