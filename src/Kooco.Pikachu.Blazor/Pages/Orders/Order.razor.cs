@@ -1381,6 +1381,7 @@ public partial class Order
         try
         {
             loading = true;
+            StateHasChanged();
             int skipCount = PageIndex * PageSize;
             var result = await _orderAppService.GetListAsync(new GetOrderListDto
             {
@@ -1679,9 +1680,23 @@ public partial class Order
 
     private async void MergeOrders()
     {
-        var orderIds = Orders.Where(x => x.IsSelected).Select(x => x.OrderId).ToList();
-        await _orderAppService.MergeOrdersAsync(orderIds);
-        await UpdateItemList();
+        try
+        {
+            loading = true;
+            StateHasChanged();
+            var orderIds = Orders.Where(x => x.IsSelected).Select(x => x.OrderId).ToList();
+            await _orderAppService.MergeOrdersAsync(orderIds);
+            await UpdateItemList();
+        }
+        catch (Exception ex)
+        {
+            await _uiMessageService.Error(ex.Message);
+        }
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
     }
 
     public async Task NavigateToOrderPrint()
