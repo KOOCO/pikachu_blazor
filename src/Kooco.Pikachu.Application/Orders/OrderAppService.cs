@@ -1088,6 +1088,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
             order1.GWSR = ord.GWSR;
             order1.TradeNo = ord.TradeNo;
             order1.OrderRefundType = OrderRefundType.PartialRefund;
+
+            foreach (var extraProp in ord.ExtraProperties ?? [])
+            {
+                order1.SetProperty(extraProp.Key, extraProp.Value);
+            }
+
             //order1.OrderStatus = OrderStatus.Returned;
             foreach (var item in ord.OrderItems)
             {
@@ -1281,7 +1287,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         await _orderHistoryManager.AddOrderHistoryAsync(
             order.Id,
             "StatusChanged",
-            new object[] { _l[oldStatus.ToString()]?.Value,_l[status.ToString()]?.Value },
+            new object[] { _l[oldStatus.ToString()]?.Value, _l[status.ToString()]?.Value },
             currentUserId,
             currentUserName
         );
@@ -1346,6 +1352,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
             order1.GWSR = ord.GWSR;
             order1.TradeNo = ord.TradeNo;
             order1.OrderRefundType = OrderRefundType.PartialRefund;
+            
+            foreach (var extraProp in ord.ExtraProperties ?? [])
+            {
+                order1.SetProperty(extraProp.Key, extraProp.Value);
+            }
 
             await _orderRepository.InsertAsync(order1);
 
@@ -1601,7 +1612,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 );
 
         }
-     
+
 
         if (order.PostalCode != input.PostalCode)
         {
@@ -1614,7 +1625,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 );
 
         }
-        
+
 
         if (order.District != input.District)
         {
@@ -1627,7 +1638,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 );
 
         }
-        
+
 
         if (order.City != input.City)
         {
@@ -1640,7 +1651,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 );
 
         }
-      
+
 
         if (order.Road != input.Road)
         {
@@ -1653,7 +1664,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 );
 
         }
-       
+
 
         if (order.AddressDetails != input.AddressDetails)
         {
@@ -1666,7 +1677,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 );
 
         }
-      
+
 
         if (order.OrderStatus != input.OrderStatus)
         {
@@ -1679,7 +1690,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 );
 
         }
-      
+
 
         if (order.StoreId != input.StoreId)
         {
@@ -1692,7 +1703,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 );
 
         }
-      
+
 
         if (order.CVSStoreOutSide != input.CVSStoreOutSide)
         {
@@ -1705,7 +1716,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 );
 
         }
-       
+
 
         order.RecipientName = input.RecipientName;
         order.RecipientPhone = input.RecipientPhone;
@@ -1747,9 +1758,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
             await UnitOfWorkManager.Current.SaveChangesAsync();
             await _emailAppService.SendOrderUpdateEmailAsync(order.Id);
         }
-       
 
-       
+
+
 
         return ObjectMapper.Map<Order, OrderDto>(order);
     }
@@ -1793,7 +1804,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         await _orderHistoryManager.AddOrderHistoryAsync(
      order.Id,
      "ReturnStatusChanged", // Localization key
-     new object[] {_l[oldReturnStatus.ToString()]?.Value, _l[orderReturnStatus.ToString()]?.Value }, // Dynamic placeholders
+     new object[] { _l[oldReturnStatus.ToString()]?.Value, _l[orderReturnStatus.ToString()]?.Value }, // Dynamic placeholders
      currentUserId,
      currentUserName
  );
@@ -1892,7 +1903,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     {
         var order = await _orderRepository.GetAsync(id);
         await _orderRepository.EnsureCollectionLoadedAsync(order, o => o.OrderItems);
-       
+
         // **Get Current User (Editor)**
         var currentUserId = CurrentUser.Id ?? Guid.Empty;
         var currentUserName = CurrentUser.UserName ?? "System";
@@ -1923,7 +1934,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                   currentUserName
               );
             }
-               
+
 
             if (orderItem.TotalAmount != item.TotalAmount)
             {
@@ -1935,7 +1946,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                   currentUserName
               );
             }
-            
+
 
 
             // Apply updates
@@ -1945,11 +1956,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
 
         order.TotalQuantity = order.OrderItems.Sum(o => o.Quantity);
-        order.TotalAmount = (order.OrderItems.Sum(o => o.TotalAmount)+(decimal)order.DeliveryCost);
+        order.TotalAmount = (order.OrderItems.Sum(o => o.TotalAmount) + (decimal)order.DeliveryCost);
         await _orderRepository.UpdateAsync(order);
-       
 
-   
+
+
     }
     public async Task CancelOrderAsync(Guid id)
     {
@@ -2377,7 +2388,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         if (order.ShippingStatus < ShippingStatus.ToBeShipped)
         {
             order.ShippingStatus = ShippingStatus.ToBeShipped;
-           
+
             await _orderHistoryManager.AddOrderHistoryAsync(
         order.Id,
         "OrderToBeShipped", // Localization key
@@ -2388,7 +2399,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
 
         await _orderRepository.UpdateAsync(order);
-   
+
     }
 
     [AllowAnonymous]
