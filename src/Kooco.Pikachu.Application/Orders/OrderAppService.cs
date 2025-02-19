@@ -1934,7 +1934,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                   currentUserName
               );
             }
-            itemChanges.Add(L["ItemTotalAmountChanged", orderItem.Item?.ItemName, orderItem.TotalAmount.ToString("C"), item.TotalAmount.ToString("C")]);
+            
 
 
             // Apply updates
@@ -1944,7 +1944,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
 
         order.TotalQuantity = order.OrderItems.Sum(o => o.Quantity);
-        order.TotalAmount = order.OrderItems.Sum(o => o.TotalAmount);
+        order.TotalAmount = (order.OrderItems.Sum(o => o.TotalAmount)+(decimal)order.DeliveryCost);
         await _orderRepository.UpdateAsync(order);
        
 
