@@ -996,7 +996,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 // **Log Order History for Delivery Update**
                 await _orderHistoryManager.AddOrderHistoryAsync(
       newOrderDelivery.OrderId,
-      "GenerateDeliveryNumber", // Localization key
+      "GenerateDeliveryNumberLog", // Localization key
       new object[] { newOrderDelivery.DeliveryNo }, // Dynamic placeholder for delivery number
       currentUserId,
       currentUserName
@@ -1040,7 +1040,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 // **Log Order History for Delivery Update**
                 await _orderHistoryManager.AddOrderHistoryAsync(
      newOrderDelivery.OrderId,
-     "GenerateDeliveryNumber", // Localization key
+     "GenerateDeliveryNumberLog", // Localization key
      new object[] { newOrderDelivery.DeliveryNo }, // Dynamic placeholder for delivery number
      currentUserId,
      currentUserName

@@ -1892,19 +1892,49 @@ public class OrderAppService : ApplicationService, IOrderAppService
     {
         var order = await _orderRepository.GetAsync(id);
         await _orderRepository.EnsureCollectionLoadedAsync(order, o => o.OrderItems);
+        // **Get Current User (Editor)**
+        var currentUserId = CurrentUser.Id ?? Guid.Empty;
+        var currentUserName = CurrentUser.UserName ?? "System";
         List<string> itemChanges = new();
         foreach (var item in orderItems)
         {
             var orderItem = order.OrderItems.First(o => o.Id == item.Id);
             // Capture changes for logging
             if (orderItem.Quantity != item.Quantity)
-                itemChanges.Add(L["ItemQuantityChanged", orderItem.Item?.ItemName, orderItem.Quantity, item.Quantity]);
+            {
+                await _orderHistoryManager.AddOrderHistoryAsync(
+                  order.Id,
+                  "ItemQuantityChanged", // Localization key
+                  new object[] { orderItem.Item?.ItemName, orderItem.Quantity, item.Quantity }, // Join localized changes as a single string
+                  currentUserId,
+                  currentUserName
+              );
+            }
+
 
             if (orderItem.ItemPrice != item.ItemPrice)
-                itemChanges.Add(L["ItemPriceChanged", orderItem.Item?.ItemName, orderItem.ItemPrice.ToString("C"), item.ItemPrice.ToString("C")]);
+            {
+                await _orderHistoryManager.AddOrderHistoryAsync(
+                  order.Id,
+                  "ItemPriceChanged", // Localization key
+                  new object[] { orderItem.Item?.ItemName, orderItem.ItemPrice.ToString("C"), item.ItemPrice.ToString("C") }, // Join localized changes as a single string
+                  currentUserId,
+                  currentUserName
+              );
+            }
+               
 
             if (orderItem.TotalAmount != item.TotalAmount)
-                itemChanges.Add(L["ItemTotalAmountChanged", orderItem.Item?.ItemName, orderItem.TotalAmount.ToString("C"), item.TotalAmount.ToString("C")]);
+            {
+                await _orderHistoryManager.AddOrderHistoryAsync(
+                  order.Id,
+                  "ItemTotalAmountChanged", // Localization key
+                  new object[] { orderItem.Item?.ItemName, orderItem.TotalAmount.ToString("C"), item.TotalAmount.ToString("C") }, // Join localized changes as a single string
+                  currentUserId,
+                  currentUserName
+              );
+            }
+            itemChanges.Add(L["ItemTotalAmountChanged", orderItem.Item?.ItemName, orderItem.TotalAmount.ToString("C"), item.TotalAmount.ToString("C")]);
 
 
             // Apply updates
@@ -1916,21 +1946,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
         order.TotalQuantity = order.OrderItems.Sum(o => o.Quantity);
         order.TotalAmount = order.OrderItems.Sum(o => o.TotalAmount);
         await _orderRepository.UpdateAsync(order);
-        // **Get Current User (Editor)**
-        var currentUserId = CurrentUser.Id ?? Guid.Empty;
-        var currentUserName = CurrentUser.UserName ?? "System";
+       
 
-        // **Log Order History for Item Updates**
-        if (itemChanges.Count > 0)
-        {
-            await _orderHistoryManager.AddOrderHistoryAsync(
-           order.Id,
-           "OrderItemsUpdated", // Localization key
-           new object[] { string.Join("; ", itemChanges) }, // Join localized changes as a single string
-           currentUserId,
-           currentUserName
-       );
-        }
+   
     }
     public async Task CancelOrderAsync(Guid id)
     {
@@ -2341,18 +2359,6 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var oldShippingStatus = order.ShippingStatus;
 
         order.EcpayLogisticsStatus = rtnMsg;
-        var updateDesList = new List<string>
-{
-    L["LogisticStatusUpdated", oldLogisticsStatus, order.EcpayLogisticsStatus] // Localized logistics status update
-};
-
-        if (order.ShippingStatus < ShippingStatus.ToBeShipped)
-        {
-            order.ShippingStatus = ShippingStatus.ToBeShipped;
-            updateDesList.Add(L["ShippingStatusChanged", _l[oldShippingStatus.ToString()].Value, _l[order.ShippingStatus.ToString()].Value]); // Localized shipping status change
-        }
-
-        await _orderRepository.UpdateAsync(order);
         // **Get Current User (Editor)**
         var currentUserId = CurrentUser.Id ?? Guid.Empty;
         var currentUserName = CurrentUser.UserName ?? "System";
@@ -2361,10 +2367,27 @@ public class OrderAppService : ApplicationService, IOrderAppService
         await _orderHistoryManager.AddOrderHistoryAsync(
      order.Id,
      "LogisticStatusUpdated", // Localization key
-     new object[] { string.Join(" ", updateDesList) }, // Combine updates
+     new object[] { oldLogisticsStatus, order.EcpayLogisticsStatus }, // Combine updates
      currentUserId,
      currentUserName
  );
+
+
+        if (order.ShippingStatus < ShippingStatus.ToBeShipped)
+        {
+            order.ShippingStatus = ShippingStatus.ToBeShipped;
+           
+            await _orderHistoryManager.AddOrderHistoryAsync(
+        order.Id,
+        "OrderToBeShipped", // Localization key
+        new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name }, // Combine updates
+        currentUserId,
+        currentUserName
+    );
+        }
+
+        await _orderRepository.UpdateAsync(order);
+   
     }
 
     [AllowAnonymous]

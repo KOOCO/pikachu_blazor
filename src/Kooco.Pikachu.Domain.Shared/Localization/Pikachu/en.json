@@ -1198,7 +1198,9 @@
     "OrderReturnInitiated": "Order return initiated. Return status changed from {0} to {1}, and order status changed from {2} to {3}.",
     "OrderItemsUpdatedTitle": "Order Items Updated",
     "OrderItemsUpdated": "Order items updated: {0}.",
-
+    "ItemQuantityChangedTitle": "Item Quantity Changed",
+    "ItemPriceChangedTitle": "Item Price Changed",
+    "ItemTotalAmountChangedTitle": "Item TotalAmount Changed",
     "ItemQuantityChanged": "Item {0} quantity changed from {1} to {2}",
     "ItemPriceChanged": "Item {0} price changed from {1} to {2}",
     "ItemTotalAmountChanged": "Item {0} total amount changed from {1} to {2}",

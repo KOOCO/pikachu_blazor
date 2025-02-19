@@ -1320,7 +1320,10 @@
     "AddressDetailsChangedTitle": "訂單地址詳情已更改",
     "OrderStatusChangedTitle": "訂單狀態已更改",
     "StoreIdChangedTitle": "訂單商店 ID 已更改",
-    "CVSStoreChangedTitle": "訂單超商門市已更改"
+    "CVSStoreChangedTitle": "訂單超商門市已更改",
+    "ItemQuantityChangedTitle": "商品數量已更改",
+    "ItemPriceChangedTitle": "商品價格已更改",
+    "ItemTotalAmountChangedTitle": "商品總金額已更改"
 
   }
 }
