@@ -300,13 +300,14 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
                                     foreach (var setItemDetail in setItem.SetItemDetails)
                                     {
+                                        var totalOrderQuantity = setItemDetail.Quantity * item.Quantity;
                                         var detail = await _itemDetailsRepository.FirstOrDefaultAsync(x => x.ItemId == setItemDetail.ItemId
                                                     && x.Attribute1Value == setItemDetail.Attribute1Value && x.Attribute2Value == setItemDetail.Attribute2Value
                                                     && x.Attribute3Value == setItemDetail.Attribute3Value);
                                         if (detail != null)
                                         {
                                             // Check if the available quantity is sufficient
-                                            if (detail.SaleableQuantity < item.Quantity)
+                                            if (detail.SaleableQuantity < totalOrderQuantity)
                                             {
                                                 // Add item to insufficientItems list
                                                 insufficientItems.Add($"Item: {detail.ItemName}, Requested: {item.Quantity}, Available: {detail.SaleablePreOrderQuantity},Details:{JsonConvert.SerializeObject(detail)}");
@@ -314,8 +315,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
                                             else
                                             {
                                                 // Proceed with updating the stock if sufficient
-                                                detail.SaleableQuantity -= item.Quantity;
-                                                detail.StockOnHand -= item.Quantity;
+                                                detail.SaleableQuantity -= totalOrderQuantity;
+                                                detail.StockOnHand -= totalOrderQuantity;
 
                                                 await _itemDetailsRepository.UpdateAsync(detail);
                                             }
