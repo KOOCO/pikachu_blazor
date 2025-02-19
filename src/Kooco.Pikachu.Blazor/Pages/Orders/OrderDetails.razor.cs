@@ -137,8 +137,25 @@ public partial class OrderDetails
     }
     private string FormatLocalizedDetails(OrderHistoryDto history)
     {
-        var parameters = JsonConvert.DeserializeObject<object[]>(history.ActionDetails);
-        return L[history.ActionType, parameters]; // Localizes the ActionDetails
+        try
+        {
+            if (string.IsNullOrEmpty(history.ActionDetails))
+            {
+                return L[history.ActionType]; // No details, just return action type
+            }
+
+            var parameters = JsonConvert.DeserializeObject<object[]>(history.ActionDetails);
+            if (parameters == null || parameters.Length == 0)
+            {
+                return L[history.ActionType]; // Avoid passing empty params
+            }
+
+            return L[history.ActionType, parameters]; // Localize properly
+        }
+        catch (Exception e)
+        {
+            return history.ActionDetails; // Debugging purpose
+        }
     }
     public void TemperatureControlChange(ChangeEventArgs e)
     {

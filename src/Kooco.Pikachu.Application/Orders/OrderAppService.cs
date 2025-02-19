@@ -1571,38 +1571,141 @@ public class OrderAppService : ApplicationService, IOrderAppService
     public async Task<OrderDto> UpdateAsync(Guid id, CreateOrderDto input)
     {
         var order = await _orderRepository.GetAsync(id);
+        // **Get Current User (Editor)**
+        var currentUserId = CurrentUser.Id ?? Guid.Empty;
+        var currentUserName = CurrentUser.UserName ?? "System";
         // Capture changes in order details for logging
         List<string> changes = new();
 
         if (order.RecipientName != input.RecipientName)
-            changes.Add(L["RecipientNameChanged", order.RecipientName, input.RecipientName]);
+        {
+            await _orderHistoryManager.AddOrderHistoryAsync(
+ order.Id,
+ "RecipientNameChanged", // Localization key for ActionType
+ new object[] { order.RecipientName, input.RecipientName }, // Pass localized changes as an array
+ currentUserId,
+ currentUserName
+);
+
+        }
+
 
         if (order.RecipientPhone != input.RecipientPhone)
-            changes.Add(L["RecipientPhoneChanged", order.RecipientPhone, input.RecipientPhone]);
+        {
+            await _orderHistoryManager.AddOrderHistoryAsync(
+ order.Id,
+ "RecipientPhoneChanged", // Localization key for ActionType
+ new object[] { order.RecipientPhone, input.RecipientPhone }, // Pass localized changes as an array
+ currentUserId,
+ currentUserName
+);
+
+        }
+     
 
         if (order.PostalCode != input.PostalCode)
-            changes.Add(L["PostalCodeChanged", order.PostalCode, input.PostalCode]);
+        {
+            await _orderHistoryManager.AddOrderHistoryAsync(
+ order.Id,
+ "PostalCodeChanged", // Localization key for ActionType
+ new object[] { order.PostalCode, input.PostalCode }, // Pass localized changes as an array
+ currentUserId,
+ currentUserName
+);
+
+        }
+        
 
         if (order.District != input.District)
-            changes.Add(L["DistrictChanged", order.District, input.District]);
+        {
+            await _orderHistoryManager.AddOrderHistoryAsync(
+ order.Id,
+ "DistrictChanged", // Localization key for ActionType
+ new object[] { order.District, input.District }, // Pass localized changes as an array
+ currentUserId,
+ currentUserName
+);
+
+        }
+        
 
         if (order.City != input.City)
-            changes.Add(L["CityChanged", order.City, input.City]);
+        {
+            await _orderHistoryManager.AddOrderHistoryAsync(
+ order.Id,
+ "CityChanged", // Localization key for ActionType
+ new object[] { order.City, input.City }, // Pass localized changes as an array
+ currentUserId,
+ currentUserName
+);
+
+        }
+      
 
         if (order.Road != input.Road)
-            changes.Add(L["RoadChanged", order.Road, input.Road]);
+        {
+            await _orderHistoryManager.AddOrderHistoryAsync(
+ order.Id,
+ "RoadChanged", // Localization key for ActionType
+ new object[] { order.Road, input.Road }, // Pass localized changes as an array
+ currentUserId,
+ currentUserName
+);
+
+        }
+       
 
         if (order.AddressDetails != input.AddressDetails)
-            changes.Add(L["AddressDetailsChanged", order.AddressDetails, input.AddressDetails]);
+        {
+            await _orderHistoryManager.AddOrderHistoryAsync(
+ order.Id,
+ "AddressDetailsChanged", // Localization key for ActionType
+ new object[] { order.AddressDetails, input.AddressDetails }, // Pass localized changes as an array
+ currentUserId,
+ currentUserName
+);
+
+        }
+      
 
         if (order.OrderStatus != input.OrderStatus)
-            changes.Add(L["OrderStatusChanged", order.OrderStatus, input.OrderStatus]);
+        {
+            await _orderHistoryManager.AddOrderHistoryAsync(
+ order.Id,
+ "OrderStatusChanged", // Localization key for ActionType
+ new object[] { order.OrderStatus, input.OrderStatus }, // Pass localized changes as an array
+ currentUserId,
+ currentUserName
+);
+
+        }
+      
 
         if (order.StoreId != input.StoreId)
-            changes.Add(L["StoreIdChanged", order.StoreId, input.StoreId]);
+        {
+            await _orderHistoryManager.AddOrderHistoryAsync(
+ order.Id,
+ "StoreIdChanged", // Localization key for ActionType
+ new object[] { order.StoreId, input.StoreId }, // Pass localized changes as an array
+ currentUserId,
+ currentUserName
+);
+
+        }
+      
 
         if (order.CVSStoreOutSide != input.CVSStoreOutSide)
-            changes.Add(L["CVSStoreChanged", order.CVSStoreOutSide, input.CVSStoreOutSide]);
+        {
+            await _orderHistoryManager.AddOrderHistoryAsync(
+ order.Id,
+ "CVSStoreChanged", // Localization key for ActionType
+ new object[] { order.CVSStoreOutSide, input.CVSStoreOutSide }, // Pass localized changes as an array
+ currentUserId,
+ currentUserName
+);
+
+        }
+       
 
         order.RecipientName = input.RecipientName;
         order.RecipientPhone = input.RecipientPhone;
@@ -1644,21 +1747,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
             await UnitOfWorkManager.Current.SaveChangesAsync();
             await _emailAppService.SendOrderUpdateEmailAsync(order.Id);
         }
-        // **Get Current User (Editor)**
-        var currentUserId = CurrentUser.Id ?? Guid.Empty;
-        var currentUserName = CurrentUser.UserName ?? "System";
+       
 
-        // **Log Order Update in Order History**
-        if (changes.Count > 0)
-        {
-            await _orderHistoryManager.AddOrderHistoryAsync(
-       order.Id,
-       "OrderUpdated", // Localization key for ActionType
-       new object[] { string.Join("; ", changes) }, // Pass localized changes as an array
-       currentUserId,
-       currentUserName
-   );
-        }
+       
 
         return ObjectMapper.Map<Order, OrderDto>(order);
     }

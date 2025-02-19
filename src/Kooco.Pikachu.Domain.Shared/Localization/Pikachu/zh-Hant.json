@@ -1217,7 +1217,7 @@
     "ActionDetails": "操作詳情",
     "OrderCreatedTitle": "訂單已建立",
 
-    "OrderCreated": "Order {0} was created.",
+    "OrderCreated": "訂單 {0} 已建立。",
     "PaymentUpdatedTitle": "付款已更新",
     "PaymentUpdated": "Payment method changed from {0} to {1}.",
     "MerchantTradeNoUpdatedTitle": "商戶交易號已更新",
@@ -1308,6 +1308,19 @@
     "OrderShippedWithShippingChange": "訂單已標記為發貨。先前的配送狀態: {0}，新狀態: {1}。先前的運輸狀態: {2}，新的運輸狀態: {3}。",
     "OrderShippedWithoutShippingChange": "訂單已標記為發貨。先前的配送狀態: {0}，新狀態: {1}。",
     "GenerateDeliveryNumberLogTitle": "已生成配送編號",
-    "GenerateDeliveryNumberLog": "已生成配送編號。配送號碼: {0}。"
+    "GenerateDeliveryNumberLog": "已生成配送編號。配送號碼: {0}。",
+    "OrderShippedWithoutShippingChangeTitle": "訂單交付標記為已出貨",
+    "OrderShippedWithShippingChangeTitle": "訂單標記為已出貨",
+    "RecipientNameChangedTitle": "訂單收件人姓名已更改",
+    "RecipientPhoneChangedTitle": "訂單收件人電話已更改",
+    "PostalCodeChangedTitle": "訂單郵遞區號已更改",
+    "DistrictChangedTitle": "訂單行政區已更改",
+    "CityChangedTitle": "訂單城市已更改",
+    "RoadChangedTitle": "訂單道路已更改",
+    "AddressDetailsChangedTitle": "訂單地址詳情已更改",
+    "OrderStatusChangedTitle": "訂單狀態已更改",
+    "StoreIdChangedTitle": "訂單商店 ID 已更改",
+    "CVSStoreChangedTitle": "訂單超商門市已更改"
+
   }
 }

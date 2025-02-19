@@ -7,6 +7,9 @@ using Kooco.Pikachu.OrderHistories;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.TenantEmailing;
 using Microsoft.Extensions.Localization;
+using Newtonsoft.Json;
+using PdfSharp.Logging;
+using Scriban.Parsing;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -85,33 +88,38 @@ namespace Kooco.Pikachu.OrderDeliveries
 
             await UnitOfWorkManager.Current.SaveChangesAsync();
             var changes = new List<string>();
-
+            // **Get Current User (Editor)**
+            var currentUserId = CurrentUser.Id ?? Guid.Empty;
+            var currentUserName = CurrentUser.UserName ?? "System";
             if (oldDeliveryMethod != order.DeliveryMethod)
             {
-                changes.Add(L["DeliveryMethodChanged", _l[oldDeliveryMethod.ToString()].Value, _l[order.DeliveryMethod.ToString()].Value]); // Localized message
+                
+                await _orderHistoryManager.AddOrderHistoryAsync(
+                        order.OrderId,
+                        "DeliveryMethodChanged", // Localization key
+                new object[] { _l[oldDeliveryMethod.ToString()], _l[order.DeliveryMethod.ToString()] }, // Pass changes and editor
+                        currentUserId,
+                        currentUserName
+                    );
+
             }
 
             if (oldDeliveryNo != order.DeliveryNo)
             {
-                changes.Add(L["DeliveryNumberChanged", oldDeliveryNo ?? "None", order.DeliveryNo]); // Localized message
-            }
-
-            // **Get Current User (Editor)**
-            var currentUserId = CurrentUser.Id ?? Guid.Empty;
-            var currentUserName = CurrentUser.UserName ?? "System";
-
-            if (changes.Any())
-            {
-                string logMessage = string.Join(", ", changes); // Combine localized messages
+                
 
                 await _orderHistoryManager.AddOrderHistoryAsync(
-                    order.OrderId,
-                    "OrderShippingUpdated", // Localization key
-                    new object[] { logMessage, currentUserName }, // Pass changes and editor
-                    currentUserId,
-                    currentUserName
-                );
+                      order.OrderId,
+                      "DeliveryNumberChanged", // Localization key
+                new object[] { oldDeliveryNo?? "None", order.DeliveryNo }, // Pass changes and editor
+                      currentUserId,
+                      currentUserName
+                  );
             }
+
+         
+
+        
 
 
             if (!order.DeliveryNo.IsNullOrEmpty())
@@ -454,23 +462,37 @@ namespace Kooco.Pikachu.OrderDeliveries
                 string logMessage;
                 if (oldShippingStatus != order.ShippingStatus)
                 {
-                    logMessage = L["OrderShippedWithShippingChange",
-                                   _l[oldDeliveryStatus.ToString()].Value, _l[delivery.DeliveryStatus.ToString()].Value,
-                                   _l[oldShippingStatus.ToString()].Value, _l[order.ShippingStatus.ToString()].Value];
+                   
+                    await _orderHistoryManager.AddOrderHistoryAsync(
+         order.Id,
+         "OrderShippedWithShippingChange", // Store only the localization key in ActionType
+         new object[] {
+        _l[oldDeliveryStatus.ToString()],
+        _l[delivery.DeliveryStatus.ToString()],
+        _l[oldShippingStatus.ToString()],
+        _l[order.ShippingStatus.ToString()]
+         }, // Store only parameters in ActionDetails
+         currentUserId,
+         currentUserName
+     );
+
                 }
                 else
                 {
-                    logMessage = L["OrderShippedWithoutShippingChange",
-                                   _l[oldDeliveryStatus.ToString()].Value, _l[delivery.DeliveryStatus.ToString()].Value];
+                    await _orderHistoryManager.AddOrderHistoryAsync(
+order.Id,
+"OrderShippedWithOutShippingChange", // Store only the localization key in ActionType
+new object[] {
+        _l[oldDeliveryStatus.ToString()],
+        _l[delivery.DeliveryStatus.ToString()],
+       
+}, // Store only parameters in ActionDetails
+currentUserId,
+currentUserName
+);
                 }
 
-                await _orderHistoryManager.AddOrderHistoryAsync(
-                    order.Id,
-                    "OrderShipped", // Localization key
-                    new object[] { logMessage }, // Pass localized log message
-                    currentUserId,
-                    currentUserName
-                );
+              
 
                 //await SendEmailAsync(order.Id, delivery.DeliveryNo);
             }
