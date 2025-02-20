@@ -1877,10 +1877,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
        "OrderReturnInitiated", // Localization key
        new object[]
        {
-        _l[oldReturnStatus.ToString()].Value,
-        _l[order.ReturnStatus.ToString()].Value,
-        _l[oldOrderStatus.ToString()].Value,
-        _l[order.OrderStatus.ToString()].Value
+        _l[oldReturnStatus.ToString()].Name,
+        _l[order.ReturnStatus.ToString()].Name,
+        _l[oldOrderStatus.ToString()].Name,
+        _l[order.OrderStatus.ToString()].Name
        }, // Dynamic placeholders for localized statuses
        currentUserId,
        currentUserName
@@ -1969,7 +1969,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         await _orderHistoryManager.AddOrderHistoryAsync(
      order.Id,
      "OrderCancelled", // Localization key
-     new object[] { _l[oldOrderStatus.ToString()].Value }, // Localized previous status
+     new object[] { _l[oldOrderStatus.ToString()].Name }, // Localized previous status
      currentUserId,
      currentUserName
  );
@@ -1997,7 +1997,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         await _orderHistoryManager.AddOrderHistoryAsync(
      order.Id,
      "InvoiceVoided", // Localization key
-     new object[] { _l[oldInvoiceStatus.ToString()].Value, reason }, // Localized invoice status & reason
+     new object[] { _l[oldInvoiceStatus.ToString()].Name, reason }, // Localized invoice status & reason
      currentUserId,
      currentUserName
  );
@@ -2026,7 +2026,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         await _orderHistoryManager.AddOrderHistoryAsync(
      order.Id,
      "CreditNoteIssued", // Localization key
-     new object[] { _l[oldInvoiceStatus.ToString()].Value, reason }, // Localized previous status & reason
+     new object[] { _l[oldInvoiceStatus.ToString()].Name, reason }, // Localized previous status & reason
      currentUserId,
      currentUserName
  );
@@ -2084,12 +2084,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
      "ShippingDetailsUpdated", // Localization key
      new object[]
      {
-        _l[oldDeliveryMethod.ToString()].Value,
-        _l[order.DeliveryMethod.ToString()].Value,
+        _l[oldDeliveryMethod.ToString()].Name,
+        _l[order.DeliveryMethod.ToString()].Name,
         oldShippingNumber,
         order.ShippingNumber,
-        _l[oldShippingStatus.ToString()].Value,
-        _l[order.ShippingStatus.ToString()].Value
+        _l[oldShippingStatus.ToString()].Name,
+        _l[order.ShippingStatus.ToString()].Name
      }, // Dynamic placeholders for localized statuses and tracking numbers
      currentUserId,
      currentUserName
@@ -2145,7 +2145,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         await _orderHistoryManager.AddOrderHistoryAsync(
       order.Id,
       "OrderShipped", // Localization key
-      new object[] { _l[oldShippingStatus.ToString()].Value, _l[order.ShippingStatus.ToString()].Value }, // Dynamic placeholders for localized statuses
+      new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name }, // Dynamic placeholders for localized statuses
       currentUserId,
       currentUserName
   );
@@ -2200,7 +2200,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         await _orderHistoryManager.AddOrderHistoryAsync(
      order.Id,
      "OrderToBeShipped", // Localization key
-     new object[] { _l[oldShippingStatus.ToString()].Value, _l[order.ShippingStatus.ToString()].Value }, // Localized placeholders
+     new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name }, // Localized placeholders
      currentUserId,
      currentUserName
  );
@@ -2226,9 +2226,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         // **Log Order History for Order Closure**
         await _orderHistoryManager.AddOrderHistoryAsync(
-     order.Id,
+     order.Id, 
      "OrderClosed", // Localization key
-     new object[] { _l[oldShippingStatus.ToString()].Value, _l[order.ShippingStatus.ToString()].Value }, // Localized placeholders
+     new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name }, // Localized placeholders
      currentUserId,
      currentUserName
  );
@@ -2282,7 +2282,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         await _orderHistoryManager.AddOrderHistoryAsync(
      order.Id,
      "OrderCompleted", // Localization key
-     new object[] { _l[oldShippingStatus.ToString()].Value, _l[order.ShippingStatus.ToString()].Value }, // Localized placeholders
+     new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name }, // Localized placeholders
      currentUserId,
      currentUserName
  );
@@ -2537,7 +2537,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 await _orderHistoryManager.AddOrderHistoryAsync(
       order.Id,
       "PaymentProcessed", // Localization key
-      new object[] { _l[oldShippingStatus.ToString()].Value, _l[order.ShippingStatus.ToString()].Value }, // Localized placeholders
+      new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name }, // Localized placeholders
       currentUserId,
       currentUserName
   );
@@ -2815,10 +2815,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
     "OrderExpired", // Localization key
     new object[]
     {
-        _l[oldOrderStatus.ToString()].Value,
-        _l[order.OrderStatus.ToString()].Value,
-        _l[oldShippingStatus.ToString()].Value,
-        _l[order.ShippingStatus.ToString()].Value,
+        _l[oldOrderStatus.ToString()].Name,
+        _l[order.OrderStatus.ToString()].Name,
+        _l[oldShippingStatus.ToString()].Name,
+        _l[order.ShippingStatus.ToString()].Name,
         order.OrderItems.Count
     }, // Dynamic placeholders
     currentUserId,

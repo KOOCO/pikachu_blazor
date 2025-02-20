@@ -148,7 +148,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             await _orderHistoryManager.AddOrderHistoryAsync(
       order.Id,
       "OrderToBeShipped", // Localization key
-      new object[] { _L[oldShippingStatus.ToString()].Value, _L[order.ShippingStatus.ToString()].Value }, // Localized placeholders
+      new object[] { _L[oldShippingStatus.ToString()].Name, _L[order.ShippingStatus.ToString()].Name }, // Localized placeholders
       currentUserId,
       currentUserName
   );
@@ -258,7 +258,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
                 string marchentDate = DateTime.Now.ToString("yyyy/MM/dd");
 
-                string receiverAddress = string.Concat(_L[order.City].Value, order.AddressDetails);
+                string receiverAddress = string.Concat(_L[order.City].Name, order.AddressDetails);
 
                 HttpRequest? domainRequest = _httpContextAccessor?.HttpContext?.Request;
 

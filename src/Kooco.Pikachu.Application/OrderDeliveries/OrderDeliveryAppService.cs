@@ -97,7 +97,7 @@ namespace Kooco.Pikachu.OrderDeliveries
                 await _orderHistoryManager.AddOrderHistoryAsync(
                         order.OrderId,
                         "DeliveryMethodChanged", // Localization key
-                new object[] { _l[oldDeliveryMethod.ToString()], _l[order.DeliveryMethod.ToString()] }, // Pass changes and editor
+                new object[] { _l[oldDeliveryMethod.ToString()].Name, _l[order.DeliveryMethod.ToString()].Name }, // Pass changes and editor
                         currentUserId,
                         currentUserName
                     );
@@ -291,7 +291,7 @@ namespace Kooco.Pikachu.OrderDeliveries
             await _orderHistoryManager.AddOrderHistoryAsync(
                 order.Id,
                 "ShippingStatusChanged", // Localization key
-                new object[] { _l[oldShippingStatus.ToString()].Value, _l[order.ShippingStatus.ToString()].Value }, // Localized placeholders
+                new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name }, // Localized placeholders
                 currentUserId,
                 currentUserName
             );
@@ -349,7 +349,7 @@ namespace Kooco.Pikachu.OrderDeliveries
             await _orderHistoryManager.AddOrderHistoryAsync(
     order.Id,
     "OrderDelivered", // Localization key
-    new object[] { _l[oldShippingStatus.ToString()].Value, _l[order.ShippingStatus.ToString()].Value }, // Localized placeholders
+    new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name }, // Localized placeholders
     currentUserId,
     currentUserName
 );
@@ -405,7 +405,7 @@ namespace Kooco.Pikachu.OrderDeliveries
                 await _orderHistoryManager.AddOrderHistoryAsync(
      order.Id,
      "OrderPickedUp", // Localization key
-     new object[] { _l[oldShippingStatus.ToString()].Value, _l[order.ShippingStatus.ToString()].Value }, // Localized placeholders
+     new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name }, // Localized placeholders
      currentUserId,
      currentUserName
  );
@@ -467,10 +467,10 @@ namespace Kooco.Pikachu.OrderDeliveries
          order.Id,
          "OrderShippedWithShippingChange", // Store only the localization key in ActionType
          new object[] {
-        _l[oldDeliveryStatus.ToString()],
-        _l[delivery.DeliveryStatus.ToString()],
-        _l[oldShippingStatus.ToString()],
-        _l[order.ShippingStatus.ToString()]
+        _l[oldDeliveryStatus.ToString()].Name,
+        _l[delivery.DeliveryStatus.ToString()].Name,
+        _l[oldShippingStatus.ToString()].Name,
+        _l[order.ShippingStatus.ToString()].Name
          }, // Store only parameters in ActionDetails
          currentUserId,
          currentUserName
@@ -483,8 +483,8 @@ namespace Kooco.Pikachu.OrderDeliveries
 order.Id,
 "OrderShippedWithOutShippingChange", // Store only the localization key in ActionType
 new object[] {
-        _l[oldDeliveryStatus.ToString()],
-        _l[delivery.DeliveryStatus.ToString()],
+        _l[oldDeliveryStatus.ToString()].Name,
+        _l[delivery.DeliveryStatus.ToString()].Name,
        
 }, // Store only parameters in ActionDetails
 currentUserId,

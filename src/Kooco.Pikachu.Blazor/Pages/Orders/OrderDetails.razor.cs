@@ -166,6 +166,14 @@ public partial class OrderDetails
                 return L[history.ActionType]; // Avoid passing empty params
             }
 
+            // Localize parameters if they are string keys that require translation
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                if (parameters[i] is string paramKey)
+                {
+                    parameters[i] = L[paramKey]; // Localizing the parameter if it's a string
+                }
+            }
             return L[history.ActionType, parameters]; // Localize properly
         }
         catch (Exception e)
