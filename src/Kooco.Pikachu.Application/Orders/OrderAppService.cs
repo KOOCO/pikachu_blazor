@@ -2456,6 +2456,18 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 order.GWSR = paymentResult.GWSR;
                 order.TradeNo = paymentResult.TradeNo;
                 order.ShippingStatus = ShippingStatus.PrepareShipment;
+                // **Get Current User (Editor)**
+                var currentUserId = CurrentUser.Id ?? Guid.Empty;
+                var currentUserName = CurrentUser.UserName ?? "System";
+
+                // **Log Order History for Payment Processing**
+                await _orderHistoryManager.AddOrderHistoryAsync(
+      order.Id,
+      "PaymentProcessed", // Localization key
+      new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name }, // Localized placeholders
+      currentUserId,
+      currentUserName
+  );
                 order.PrepareShipmentBy = CurrentUser.Name ?? "System";
                 _ = DateTime.TryParse(paymentResult.PaymentDate, out DateTime parsedDate);
                 order.PaymentDate = paymentResult.OrderId == null ? parsedDate : DateTime.Now;
@@ -2559,18 +2571,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         }
                     }
                 }
-                // **Get Current User (Editor)**
-                var currentUserId = CurrentUser.Id ?? Guid.Empty;
-                var currentUserName = CurrentUser.UserName ?? "System";
-
-                // **Log Order History for Payment Processing**
-                await _orderHistoryManager.AddOrderHistoryAsync(
-      order.Id,
-      "PaymentProcessed", // Localization key
-      new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name }, // Localized placeholders
-      currentUserId,
-      currentUserName
-  );
+              
 
                 return "";
             }
