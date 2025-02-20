@@ -2016,6 +2016,7 @@ public partial class OrderDetails
                 await _refundAppService.CreateAsync(OrderId);
                 
                 await GetOrderDetailsAsync();
+                await InvokeAsync(StateHasChanged);
             }
         }
         catch(BusinessException ex)
