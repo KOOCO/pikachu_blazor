@@ -125,7 +125,12 @@ public class RefundAppService : ApplicationService, IRefundAppService
         await _refundRepository.UpdateAsync(refund);
 
         await _refundRepository.EnsurePropertyLoadedAsync(refund, r => r.Order);
-        await _emailAppService.SendRefundEmailAsync(refund.OrderId, (double)refund.Order.TotalAmount);
+
+        if (input is RefundReviewStatus.Success)
+        {
+            await _emailAppService.SendRefundEmailAsync(refund.OrderId, (double)refund.Order.TotalAmount);
+        }
+
         return ObjectMapper.Map<Refund, RefundDto>(refund);
     }
 
@@ -387,8 +392,8 @@ public class RefundAppService : ApplicationService, IRefundAppService
             {
                 refund.RefundReview = RefundReviewStatus.Success;
 
-                if (!order.CustomerEmail.IsNullOrEmpty())
-                    await _emailAppService.SendRefundEmailAsync(order.Id, refundAmount);
+                //if (!order.CustomerEmail.IsNullOrEmpty())
+                //await _emailAppService.SendRefundEmailAsync(order.Id, refundAmount);
             }
 
             else refund.RefundReview = RefundReviewStatus.Fail;
@@ -453,8 +458,8 @@ public class RefundAppService : ApplicationService, IRefundAppService
             {
                 refund.RefundReview = RefundReviewStatus.Success;
 
-                if (!order.CustomerEmail.IsNullOrEmpty())
-                    await _emailAppService.SendRefundEmailAsync(order.Id, (double?)refund.Order?.TotalAmount ?? 0);
+                //if (!order.CustomerEmail.IsNullOrEmpty())
+                //    await _emailAppService.SendRefundEmailAsync(order.Id, (double?)refund.Order?.TotalAmount ?? 0);
             }
 
             else refund.RefundReview = RefundReviewStatus.Fail;

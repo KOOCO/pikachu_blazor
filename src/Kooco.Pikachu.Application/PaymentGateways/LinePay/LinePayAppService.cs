@@ -1,9 +1,14 @@
-﻿using Kooco.Pikachu.EnumValues;
+﻿using Kooco.Pikachu.Emails;
+using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.Refunds;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RestSharp;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -20,18 +25,25 @@ public class LinePayAppService : PikachuAppService, ILinePayAppService
     private readonly IOrderRepository _orderRepository;
     private readonly IOrderAppService _orderAppService;
     private readonly IPaymentGatewayAppService _paymentGatewayAppService;
+    private readonly IRefundRepository _refundRepository;
     private readonly IDataFilter<IMultiTenant> _multiTenantFilter;
+    private readonly IEmailAppService _emailAppService;
+    private readonly IRefundAppService _refundAppService;
     private readonly LinePayConfiguration _apiOptions;
     private readonly RestClient _restClient;
 
     public LinePayAppService(IOrderRepository orderRepository, IOrderAppService orderAppService,
         IPaymentGatewayAppService paymentGatewayAppService, IDataFilter<IMultiTenant> multiTenantFilter,
-        IOptions<LinePayConfiguration> linePayConfiguration)
+        IEmailAppService emailAppService, IRefundAppService refundAppService,
+        IRefundRepository refundRepository, IOptions<LinePayConfiguration> linePayConfiguration)
     {
         _orderRepository = orderRepository;
         _orderAppService = orderAppService;
         _paymentGatewayAppService = paymentGatewayAppService;
+        _refundRepository = refundRepository;
         _multiTenantFilter = multiTenantFilter;
+        _emailAppService = emailAppService;
+        _refundAppService = refundAppService;
         _apiOptions = linePayConfiguration.Value;
         _restClient = new RestClient(_apiOptions.ApiBaseUrl);
     }
@@ -124,25 +136,39 @@ public class LinePayAppService : PikachuAppService, ILinePayAppService
         }
     }
 
-    public async Task<LinePayResponseDto<LinePayRefundResponseInfoDto>> ProcessRefund(Guid orderId)
+    public async Task<LinePayResponseDto<LinePayRefundResponseInfoDto>> ProcessRefund(Guid refundId)
     {
-        Order order;
+        Refund refund;
         using (_multiTenantFilter.Disable())
         {
-            order = await _orderRepository.GetAsync(orderId);
+            refund = await _refundRepository.GetAsync(refundId);
         }
 
-        using (CurrentTenant.Change(order.TenantId))
+        using (CurrentTenant.Change(refund.TenantId))
         {
+            var order = await _orderRepository.GetAsync(refund.OrderId);
+
             var linePay = await _paymentGatewayAppService.GetLinePayAsync(true)
                         ?? throw new EntityNotFoundException(typeof(PaymentGateway));
 
             var confirmPaymentResponse = order.GetConfirmPaymentResponse()
                         ?? throw new UserFriendlyException("Payment does not exist against this order.");
 
+            int deliveryCost = order.ShippingStatus switch
+            {
+                ShippingStatus.Shipped or
+                ShippingStatus.Delivered or
+                ShippingStatus.Completed or
+                ShippingStatus.Return or
+                ShippingStatus.Closed => (int)(order.DeliveryCost ?? 0),
+                _ => 0
+            };
+
+            int refundAmount = (int)(order.TotalAmount - deliveryCost);
+
             var body = JsonSerializer.Serialize(new
             {
-                refundAmount = (int)order.TotalAmount
+                refundAmount = refundAmount
             });
 
             var nonce = Guid.NewGuid().ToString();
@@ -159,10 +185,64 @@ public class LinePayAppService : PikachuAppService, ILinePayAppService
 
             if (response.IsSuccessful && responseDto.ReturnCode == _apiOptions.SuccessReturnCode)
             {
-                order.RefundAmount = order.TotalAmount;
-                order.IsRefunded = true;
-                order.OrderStatus = OrderStatus.Refund;
-                order.OrderRefundType = OrderRefundType.FullRefund;
+                RefundDto refundDto = await _refundAppService.UpdateRefundReviewAsync(refundId, RefundReviewStatus.Success);
+
+                if (refundDto.RefundReview is RefundReviewStatus.Success)
+                {
+                    Order OriginalOrder = new();
+
+                    if (order.SplitFromId is null || order.SplitFromId == Guid.Empty) OriginalOrder = order;
+
+                    else OriginalOrder = await _orderRepository.GetWithDetailsAsync((Guid)order.SplitFromId);
+
+                    if (
+                        order.ShippingStatus is ShippingStatus.WaitingForPayment ||
+                        order.ShippingStatus is ShippingStatus.PrepareShipment ||
+                        order.ShippingStatus is ShippingStatus.ToBeShipped ||
+                        order.ShippingStatus is ShippingStatus.EnterpricePurchase
+                    )
+                        OriginalOrder.TotalAmount -= order.TotalAmount;
+
+                    else if (
+                        order.ShippingStatus is ShippingStatus.Shipped ||
+                        order.ShippingStatus is ShippingStatus.Delivered ||
+                        order.ShippingStatus is ShippingStatus.Completed ||
+                        order.ShippingStatus is ShippingStatus.Return ||
+                        order.ShippingStatus is ShippingStatus.Closed
+                    )
+                        OriginalOrder.TotalAmount -= order.TotalAmount - (order.DeliveryCost ?? 0);
+
+                    foreach (OrderItem orderItem in OriginalOrder.OrderItems)
+                    {
+                        if (!OriginalOrder.ReturnedOrderItemIds.IsNullOrEmpty())
+                        {
+                            List<Guid> returnedOrderItemGuids = [];
+
+                            List<string>? returnedOrderItemIds = [.. OriginalOrder.ReturnedOrderItemIds.Split(',')];
+
+                            if (returnedOrderItemIds is { Count: > 0 })
+                            {
+                                foreach (string item in returnedOrderItemIds)
+                                {
+                                    returnedOrderItemGuids.Add(Guid.Parse(item));
+                                }
+
+                                if (returnedOrderItemGuids.Any(a => a == orderItem.Id))
+                                {
+                                    orderItem.TotalAmount -= orderItem.TotalAmount;
+
+                                    orderItem.ItemPrice -= orderItem.ItemPrice;
+
+                                    orderItem.Quantity -= orderItem.Quantity;
+                                }
+                            }
+                        }
+                    }
+
+                    await _orderRepository.UpdateAsync(OriginalOrder);
+                }
+
+                //await _emailAppService.SendRefundEmailAsync(order.Id, refundAmount);
             }
             else
             {

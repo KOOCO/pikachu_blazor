@@ -25,9 +25,9 @@ public class LinePayController(ILinePayAppService linePayAppService) : PikachuCo
         return linePayAppService.ConfirmPayment(transactionId, orderNo);
     }
 
-    [HttpPost("refund/{orderId}")]
-    public Task<LinePayResponseDto<LinePayRefundResponseInfoDto>> ProcessRefund(Guid orderId)
+    [HttpPost("refund/{refundId}")]
+    public Task<LinePayResponseDto<LinePayRefundResponseInfoDto>> ProcessRefund(Guid refundId)
     {
-        return linePayAppService.ProcessRefund(orderId);
+        return linePayAppService.ProcessRefund(refundId);
     }
 }

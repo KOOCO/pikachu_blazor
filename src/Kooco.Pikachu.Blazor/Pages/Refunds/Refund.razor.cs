@@ -90,8 +90,14 @@ public partial class Refund
             await loading.Show();
 
             await _refundAppService.UpdateRefundReviewAsync(rowData.Id, RefundReviewStatus.Proccessing);
-
-            await _refundAppService.CheckStatusAndRequestRefundAsync(rowData.Id);
+            if (rowData.Order?.PaymentMethod == PaymentMethods.LinePay)
+            {
+                await LinePayAppService.ProcessRefund(rowData.Id);
+            }
+            else
+            {
+                await _refundAppService.CheckStatusAndRequestRefundAsync(rowData.Id);
+            }
 
             await UpdateItemList();
         }

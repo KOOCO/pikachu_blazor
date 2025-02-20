@@ -3,6 +3,7 @@
 @using Kooco.Pikachu.EnumValues;
 @using Kooco.Pikachu.Localization;
 @using Kooco.Pikachu.Orders;
+@using Kooco.Pikachu.PaymentGateways.LinePay
 @using Kooco.Pikachu.Refunds;
 @using Microsoft.Extensions.Localization;
 @using Blazorise;
@@ -16,6 +17,7 @@
 @inject IStringLocalizer<PikachuResource> L;
 @inject IUiMessageService _uiMessageService;
 @inject IJSRuntime JSRunTime;
+@inject ILinePayAppService LinePayAppService
 
 <LoadingIndicator @ref="loading" FullScreen FadeIn>
 
