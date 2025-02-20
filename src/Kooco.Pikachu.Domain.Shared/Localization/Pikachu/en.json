@@ -1140,6 +1140,7 @@
     "Action": "Action",
     "ActionDetails": "Action Details",
     "OrderCreatedTitle": "Order Created",
+    "OrderCreatedLog": "Order Created",
     "OrderCreated": "Order {0} was created.",
     "PaymentUpdatedTitle": "Payment Updated",
     "PaymentUpdated": "Payment method changed from {0} to {1}.",

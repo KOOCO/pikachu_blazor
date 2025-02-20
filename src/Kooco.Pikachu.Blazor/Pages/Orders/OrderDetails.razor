@@ -1595,6 +1595,72 @@
             <Card>
                 <CardBody>
                     <Steps SelectedStep="@selectedStep" NavigationAllowed="NavigationAllowed">
+                        <Items>
+                            <Step Name="step1" Class="@((IsStepActive("step1") ? "step-active" : ""))">
+                                <Marker>
+                                    <Icon style="font-size: 27px;" class="fas fa-file-alt" /> <!-- Order Created -->
+                                </Marker>
+                                <Caption>
+                                    @L["OrderCreatedLog"]
+                                </Caption>
+                            </Step>
+
+                            <Step Name="step2" Class="@((IsStepActive("step2") ? "step-active" : ""))">
+                                <Marker>
+                                    <Icon style="font-size: 27px;" class="fas fa-cogs" />  <!-- Processing -->
+                                </Marker>
+                                <Caption>
+                                    @L["Processing"]
+                                </Caption>
+                            </Step>
+
+                            <Step Name="step3" Class="@((IsStepActive("step3") ? "step-active" : ""))">
+                                <Marker>
+                                    <Icon style="font-size: 27px;" class="fas fa-box" />  <!-- Picking Completed -->
+                                </Marker>
+                                <Caption>
+                                    @L["PickingCompleted"]
+                                </Caption>
+                            </Step>
+
+                            <Step Name="step4" Class="@((IsStepActive("step4") ? "step-active" : ""))">
+                                <Marker>
+                                    <Icon style="font-size: 27px;" class="fas fa-truck" />  <!-- Shipped -->
+                                </Marker>
+                                <Caption>
+                                    @L["Shipped"]
+                                </Caption>
+                            </Step>
+
+                            <Step Name="step5" Class="@((IsStepActive("step5") ? "step-active" : ""))">
+                                <Marker>
+                                    <Icon style="font-size: 27px;" class="fas fa-check-circle" />  <!-- Delivered -->
+                                </Marker>
+                                <Caption>
+                                    @L["Delivered"]
+                                </Caption>
+                            </Step>
+
+                            <Step Name="step6" Class="@((IsStepActive("step6") ? "step-active" : ""))">
+                                <Marker>
+                                    <Icon style="font-size: 27px;" class="fas fa-flag-checkered" /> <!-- Closed -->
+                                </Marker>
+                                <Caption>
+                                    @L["Closed"]
+                                </Caption>
+                            </Step>
+                        </Items>
+                        <Content>
+                            <StepPanel Name="step1"></StepPanel>
+                            <StepPanel Name="step2"></StepPanel>
+                            <StepPanel Name="step3"></StepPanel>
+                            <StepPanel Name="step4"></StepPanel>
+                            <StepPanel Name="step5"></StepPanel>
+                            <StepPanel Name="step6"></StepPanel>
+                        </Content>
+                    </Steps>
+
+                    @* <Steps SelectedStep="@selectedStep" NavigationAllowed="NavigationAllowed">
     <Items>
         <Step Name="step1">
             <Marker>
@@ -1658,7 +1724,7 @@
          <StepPanel Name="step5"></StepPanel>
          <StepPanel Name="step6"></StepPanel>
         </Content>
-</Steps>
+</Steps> *@
 </CardBody>
 
 </Card>

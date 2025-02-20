@@ -1216,6 +1216,7 @@
     "Action": "操作",
     "ActionDetails": "操作詳情",
     "OrderCreatedTitle": "訂單已建立",
+    "OrderCreatedLog": "訂單已建立",
 
     "OrderCreated": "訂單 {0} 已建立。",
     "PaymentUpdatedTitle": "付款已更新",

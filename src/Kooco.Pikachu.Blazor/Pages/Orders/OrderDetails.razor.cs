@@ -111,6 +111,15 @@ public partial class OrderDetails
 
     #region Methods
     string selectedStep = "step1";
+    private Dictionary<string, int> stepOrder = new()
+    {
+        { "step1", 1 },
+        { "step2", 2 },
+        { "step3", 3 },
+        { "step4", 4 },
+        { "step5", 5 },
+        { "step6", 6 }
+    };
 
     private void UpdateStepByShippingStatus(ShippingStatus status)
     {
@@ -120,8 +129,8 @@ public partial class OrderDetails
             ShippingStatus.PrepareShipment => "step2",
             ShippingStatus.ToBeShipped => "step3",
             ShippingStatus.Shipped => "step4",
-            ShippingStatus.Delivered or ShippingStatus.Return or ShippingStatus.Exchange => "step5",
-            ShippingStatus.Completed or ShippingStatus.Closed => "step6",
+            ShippingStatus.Delivered or ShippingStatus.Return or ShippingStatus.Completed  or ShippingStatus.Exchange => "step5",
+            ShippingStatus.Closed => "step6",
             _ => "step1" // Default to first step if status is unknown
         };
     }
@@ -241,8 +250,8 @@ public partial class OrderDetails
             ShippingStatus.PrepareShipment => "step2",
             ShippingStatus.ToBeShipped => "step3",
             ShippingStatus.Shipped => "step4",
-            ShippingStatus.Delivered or ShippingStatus.Return or ShippingStatus.Exchange => "step5",
-            ShippingStatus.Completed or ShippingStatus.Closed => "step6",
+            ShippingStatus.Delivered or ShippingStatus.Completed or ShippingStatus.Return or ShippingStatus.Exchange => "step5",
+             ShippingStatus.Closed => "step6",
             _ => "step1"
         };
     }
@@ -267,6 +276,11 @@ public partial class OrderDetails
         CustomerServiceHistory = result.Items;
         
         await InvokeAsync(StateHasChanged);
+    }
+
+     bool IsStepActive(string step)
+    {
+        return stepOrder[step] <= stepOrder[selectedStep];
     }
 
     async Task SubmitStoreCommentsAsync()
