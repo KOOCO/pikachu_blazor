@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Blazored.TextEditor;
 using Blazorise;
-using Blazorise.AntDesign.Components;
 using Blazorise.Components;
 using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.AzureStorage.Image;
@@ -437,24 +436,45 @@ public partial class EditItem
 
         ItemDetailsQuillHtml = []; ItemDetailPickers = [];
 
-        ItemDetailsList = new List<CreateItemDetailsDto>();
-        if (!Attributes.Any())
-            return;
-
-        List<List<string>> permutations = GeneratePermutations(Attributes.Select(x => x.ItemTags.Any() ? x.ItemTags : new List<string> { "" }).ToList());
-        int sortNo = 1;
-        foreach (List<string> permutation in permutations)
+        ItemDetailsList ??= [];
+        if (Attributes.Count == 0)
         {
-            ItemDetailsList.Add(new CreateItemDetailsDto
-            {
-                ItemName = string.Join("/", permutation).TrimEnd('/'),
-                Status = true,
-                SortNo=sortNo
-            });
-            sortNo = sortNo + 1;
-            ItemDetailsQuillHtml.Add(new());
+            ItemDetailsList.Clear(); // If no attributes exist, clear the list
+            return;
+        }
 
-            ItemDetailPickers.Add(new());
+        // Generate all valid permutations based on current attributes
+        List<List<string>> permutations = GeneratePermutations(Attributes
+            .Select(x => x.ItemTags.Count != 0 ? x.ItemTags : [""])
+            .ToList());
+
+        HashSet<string> validItemNames = permutations
+            .Select(permutation => string.Join("/", permutation).TrimEnd('/'))
+            .ToHashSet();
+
+        // Remove items that are no longer valid
+        ItemDetailsList.RemoveAll(x => !validItemNames.Contains(x.ItemName));
+
+        // Set sortNo based on the updated list
+        int sortNo = ItemDetailsList.Count != 0 ? ItemDetailsList.Max(x => x.SortNo) + 1 : 1;
+
+        foreach (string itemName in validItemNames)
+        {
+            // Add new items that don't already exist
+            if (!ItemDetailsList.Any(x => x.ItemName == itemName))
+            {
+                ItemDetailsList.Add(new CreateItemDetailsDto
+                {
+                    ItemName = itemName,
+                    Status = true,
+                    StockOnHand = 0,
+                    SortNo = sortNo
+                });
+                sortNo++;
+
+                ItemDetailsQuillHtml.Add(new());
+                ItemDetailPickers.Add(new());
+            }
         }
     }
 
@@ -552,23 +572,36 @@ public partial class EditItem
     {
         int attributeCount = Attributes.Count;
         var customFields = Attributes.ToArray();
-        // Generate all combinations of ItemTags
+
+        var validItemNames = new Dictionary<string, List<string>>();
         var allCombinations = new List<List<string>>();
+
         for (int i = 0; i < attributeCount; i++)
         {
-            if (customFields[i].ItemTags.Any()) // Check if ItemTags is not empty
+            if (customFields[i].ItemTags.Any())
             {
                 allCombinations.Add(customFields[i].ItemTags);
             }
         }
+
         var combinations = GenerateCombinations(allCombinations);
 
-        for (int i = 0; i < ItemDetailsList.Count; i++)
+        // Create a mapping of itemName → attribute combination
+        foreach (var combination in combinations)
         {
-            var combination = combinations[i];
-            ItemDetailsList[i].Attribute1Value = combination.Count > 0 ? combination[0] : null;
-            ItemDetailsList[i].Attribute2Value = combination.Count > 1 ? combination[1] : null;
-            ItemDetailsList[i].Attribute3Value = combination.Count > 2 ? combination[2] : null;
+            string itemName = string.Join("/", combination).TrimEnd('/');
+            validItemNames[itemName] = combination;
+        }
+
+        // Assign attributes correctly based on item names
+        foreach (var item in ItemDetailsList)
+        {
+            if (validItemNames.TryGetValue(item.ItemName, out var combination))
+            {
+                item.Attribute1Value = combination.Count > 0 ? combination[0] : null;
+                item.Attribute2Value = combination.Count > 1 ? combination[1] : null;
+                item.Attribute3Value = combination.Count > 2 ? combination[2] : null;
+            }
         }
 
         // Set AttributeNames in CreateItemDto
