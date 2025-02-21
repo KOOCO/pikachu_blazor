@@ -1,8 +1,11 @@
 ﻿using Kooco.Pikachu.Emails;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Localization;
+using Kooco.Pikachu.OrderHistories;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Refunds;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RestSharp;
@@ -31,11 +34,15 @@ public class LinePayAppService : PikachuAppService, ILinePayAppService
     private readonly IRefundAppService _refundAppService;
     private readonly LinePayConfiguration _apiOptions;
     private readonly RestClient _restClient;
+    private readonly OrderHistoryManager _orderHistoryManager;
+    private readonly IStringLocalizer<PikachuResource> _l;
+
 
     public LinePayAppService(IOrderRepository orderRepository, IOrderAppService orderAppService,
         IPaymentGatewayAppService paymentGatewayAppService, IDataFilter<IMultiTenant> multiTenantFilter,
         IEmailAppService emailAppService, IRefundAppService refundAppService,
-        IRefundRepository refundRepository, IOptions<LinePayConfiguration> linePayConfiguration)
+        IRefundRepository refundRepository, IOptions<LinePayConfiguration> linePayConfiguration,
+        OrderHistoryManager orderHistoryManager, IStringLocalizer<PikachuResource> l)
     {
         _orderRepository = orderRepository;
         _orderAppService = orderAppService;
@@ -81,10 +88,21 @@ public class LinePayAppService : PikachuAppService, ILinePayAppService
                 await _orderRepository.UpdateAsync(order);
                 return responseDto;
             }
-
+            var oldShippingStatus = order.ShippingStatus;
             order.OrderStatus = OrderStatus.Closed;
             order.ShippingStatus = ShippingStatus.Closed;
+            // **Get Current User (Editor)**
+            var currentUserId = CurrentUser.Id ?? Guid.Empty;
+            var currentUserName = CurrentUser.UserName ?? "System";
 
+            // **Log Order History for Order Closure**
+            await _orderHistoryManager.AddOrderHistoryAsync(
+         order.Id,
+         "OrderClosed", // Localization key
+         new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name }, // Localized placeholders
+         currentUserId,
+         currentUserName
+     );
             Logger.LogError(@"Error in Line Pay Payment Request: {response}", response.ToString());
             return responseDto;
         }
@@ -117,20 +135,47 @@ public class LinePayAppService : PikachuAppService, ILinePayAppService
             order.ExtraProperties.TryAdd(PaymentGatewayConsts.ConfirmPaymentResponse, response.Content);
 
             var responseDto = LinePayExtensionService.Deserialize<LinePayConfirmResponseInfoDto>(response);
+            var oldShippingStatus = order.ShippingStatus;
+            var currentUserId = CurrentUser.Id ?? Guid.Empty;
+            var currentUserName = CurrentUser.UserName ?? "System";
 
             if (response.IsSuccessful && responseDto.ReturnCode == _apiOptions.SuccessReturnCode)
             {
                 order.TradeNo = responseDto.Info?.TransactionId.ToString();
+             
                 order.ShippingStatus = ShippingStatus.PrepareShipment;
                 order.PrepareShipmentBy = CurrentUser.Name ?? "System";
                 order.PaymentDate = DateTime.Now;
+               
+
+                // **Log Order History for Payment Processing**
+                await _orderHistoryManager.AddOrderHistoryAsync(
+      order.Id,
+      "PaymentProcessed", // Localization key
+      new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name }, // Localized placeholders
+      currentUserId,
+      currentUserName
+  );
                 await _orderAppService.CreateOrderDeliveriesAndInvoiceAsync(order.Id);
                 return responseDto;
             }
 
+
             order.OrderStatus = OrderStatus.Closed;
             order.ShippingStatus = ShippingStatus.Closed;
+          
+            order.PaymentDate = DateTime.Now;
+            // **Get Current User (Editor)**
 
+
+            // **Log Order History for Payment Processing**
+            await _orderHistoryManager.AddOrderHistoryAsync(
+  order.Id,
+  "PaymentProcessed", // Localization key
+  new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name }, // Localized placeholders
+  currentUserId,
+  currentUserName
+);
             Logger.LogError(@"Error in Line Pay Confirm Payment Request: {response}", response.ToString());
             return responseDto;
         }
