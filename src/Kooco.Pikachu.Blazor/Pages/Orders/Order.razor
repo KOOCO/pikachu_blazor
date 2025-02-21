@@ -182,7 +182,7 @@
                 @if ((Orders.Where(x => x.IsSelected).Count() < 1))
                 {
                     <Dropdown Disabled>
-                        <Button Size="Size.ExtraSmall" Disabled class="btn btn-sm btn-primary" @onclick="OnPrintShippedLabel">@L["PrintShippedLabel"]</Button>
+                        <Button Size="Size.ExtraSmall" Disabled class="btn btn-sm btn-primary" @onclick="OnPrintShippedLabel">@L["StandardPrinting"]</Button>
                         <DropdownToggle Size="Size.ExtraSmall" Class="btn-sm" Color="Color.Primary" Split />
                         <DropdownMenu>
                             <DropdownItem>Action</DropdownItem>
@@ -192,10 +192,10 @@
                 else
                 {
                     <Dropdown>
-                        <Button Size="Size.ExtraSmall" class="btn btn-sm btn-primary" Clicked="OnPrintShippedLabel">@L["PrintShippedLabel"]</Button>
+                        <Button Size="Size.ExtraSmall" class="btn btn-sm btn-primary" Clicked="OnPrintShippedLabel">@L["StandardPrinting"]</Button>
                         <DropdownToggle Size="Size.ExtraSmall" Class="btn-sm" Color="Color.Primary" Split />
                         <DropdownMenu>
-                            <DropdownItem Clicked="OnPrintShippedLabel10Cm">@L["PrintShippedLabel10cm"]</DropdownItem>
+                            <DropdownItem Clicked="OnPrintShippedLabel10Cm">@L["ThermalPrinting"]</DropdownItem>
                         </DropdownMenu>
                     </Dropdown>
                 }

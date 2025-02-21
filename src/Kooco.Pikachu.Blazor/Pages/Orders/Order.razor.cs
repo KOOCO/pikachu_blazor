@@ -579,6 +579,7 @@ public partial class Order
                                         ColorMode = ColorMode.Color,
                                         Orientation = DinkToPdf.Orientation.Portrait,
                                         PaperSize = PaperKind.A6,
+                                        
                                         Margins = new MarginSettings { Top = 3, Left = 0, Bottom = 5, Right = 0 },
                                         Out = pdfFilePath
                                     },
@@ -587,7 +588,8 @@ public partial class Order
                                     new ObjectSettings
                                     {
                                         Page = htmlFilePath,
-                                        LoadSettings = new LoadSettings { JSDelay = 5000 },
+                                        LoadSettings = new LoadSettings { JSDelay = 5000,ZoomFactor=1.5 },
+                                        
                                         WebSettings = new WebSettings
                                         {
                                             EnableJavascript = true,
@@ -661,7 +663,7 @@ public partial class Order
                             new ObjectSettings
                             {
                                 Page = htmlFilePath,
-                                LoadSettings = new LoadSettings { JSDelay = 5000 },
+                                LoadSettings = new LoadSettings { JSDelay = 5000,ZoomFactor=1.5 },
                                 WebSettings = new WebSettings
                                 {
                                     EnableJavascript = true,
@@ -703,7 +705,7 @@ public partial class Order
                                 {
                                     ColorMode = ColorMode.Color,
                                     Orientation = DinkToPdf.Orientation.Portrait,
-                                    PaperSize = PaperKind.A4,
+                                    PaperSize = PaperKind.A6,
                                     Out = pdfFilePath
                                 },
                                 Objects =
@@ -711,7 +713,7 @@ public partial class Order
                             new ObjectSettings
                             {
                                 Page = htmlFilePath,
-                                LoadSettings = new LoadSettings { JSDelay = 5000 },
+                                 LoadSettings = new LoadSettings { JSDelay = 5000,ZoomFactor=1.5 },
                                 WebSettings = new WebSettings
                                 {
                                     EnableJavascript = true,
@@ -793,7 +795,7 @@ public partial class Order
                                 new ObjectSettings
                                 {
                                     Page = htmlFilePath,
-                                    LoadSettings = new LoadSettings { JSDelay = 5000 },
+                                     LoadSettings = new LoadSettings { JSDelay = 5000,ZoomFactor=1.5 },
                                     WebSettings = new WebSettings
                                     {
                                         EnableJavascript = true,
@@ -832,7 +834,7 @@ public partial class Order
                                 {
                                     ColorMode = ColorMode.Color,
                                     Orientation = DinkToPdf.Orientation.Portrait,
-                                    PaperSize = PaperKind.A4,
+                                    PaperSize = PaperKind.A6,
                                     Out = pdfFilePath
                                 },
                                 Objects =
@@ -840,7 +842,7 @@ public partial class Order
                             new ObjectSettings
                             {
                                 Page = htmlFilePath,
-                                LoadSettings = new LoadSettings { JSDelay = 5000 },
+                                 LoadSettings = new LoadSettings { JSDelay = 5000,ZoomFactor=1.5 },
                                 WebSettings = new WebSettings
                                 {
                                     EnableJavascript = true,
@@ -907,7 +909,7 @@ public partial class Order
                             new ObjectSettings
                             {
                                 Page = htmlFilePath,
-                                LoadSettings = new LoadSettings { JSDelay = 5000 },
+                                LoadSettings = new LoadSettings { JSDelay = 5000,ZoomFactor=1.5 },
                                 WebSettings = new WebSettings
                                 {
                                     EnableJavascript = true,

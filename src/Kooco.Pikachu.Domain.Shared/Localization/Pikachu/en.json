@@ -1254,6 +1254,8 @@
     "PickingCompleted": "Picking Completed",
     "OrderCreated1": "Order Created",
     "OrderApplyForRefund": "Order {0} has applied for a refund.",
-    "OrderApplyForRefundTitle": "Refund Applied"
+    "OrderApplyForRefundTitle": "Refund Applied",
+    "StandardPrinting": "Standard Printing (A4)",
+    "ThermalPrinting": "Thermal Printing (A6)"
   }
 }

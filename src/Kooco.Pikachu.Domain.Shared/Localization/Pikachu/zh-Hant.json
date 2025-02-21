@@ -1330,6 +1330,8 @@
     "PickingCompleted": "已撿貨",
     "OrderCreated1": "訂單成立",
     "OrderApplyForRefund": "訂單 {0} 已申請退款。",
-    "OrderApplyForRefundTitle": "已申請退款"
+    "OrderApplyForRefundTitle": "已申請退款",
+    "StandardPrinting": "一般列印 (A4)",
+    "ThermalPrinting": "熱感列印 (A6)"
   }
 }
