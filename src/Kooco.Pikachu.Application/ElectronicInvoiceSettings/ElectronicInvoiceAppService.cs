@@ -113,7 +113,7 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
                 };
                 if (order.InvoiceType == InvoiceType.BusinessInvoice)
                 {
-                    parameters.CustomerIdentifier = order.CarrierId;
+                    parameters.CustomerIdentifier = order.UniformNumber;
 
                 }
                 foreach (var item in order?.OrderItems)
