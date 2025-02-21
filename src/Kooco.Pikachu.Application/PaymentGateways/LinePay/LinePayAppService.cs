@@ -53,6 +53,8 @@ public class LinePayAppService : PikachuAppService, ILinePayAppService
         _refundAppService = refundAppService;
         _apiOptions = linePayConfiguration.Value;
         _restClient = new RestClient(_apiOptions.ApiBaseUrl);
+        _orderHistoryManager = orderHistoryManager;
+        _l = l;
     }
 
     public async Task<LinePayResponseDto<LinePayPaymentResponseInfoDto>> PaymentRequest(Guid orderId, LinePayPaymentRequestRedirectUrlDto input)

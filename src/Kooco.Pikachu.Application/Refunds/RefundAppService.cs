@@ -1,7 +1,9 @@
 ﻿using Kooco.Pikachu.Emails;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.OrderDeliveries;
+using Kooco.Pikachu.OrderHistories;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.PaymentGateways;
@@ -9,6 +11,7 @@ using Kooco.Pikachu.Permissions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using RestSharp;
 using System;
@@ -26,6 +29,7 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
+using Volo.Abp.Users;
 
 namespace Kooco.Pikachu.Refunds;
 
@@ -43,6 +47,8 @@ public class RefundAppService : ApplicationService, IRefundAppService
     GreenWorldLogisticsCreateUpdateDto GreenWorld { get; set; }
 
     private readonly IConfiguration _Configuration;
+    private readonly OrderHistoryManager _orderHistoryManager;
+    private readonly IStringLocalizer<PikachuResource> _l;
     #endregion
 
     #region Constructor
@@ -53,7 +59,8 @@ public class RefundAppService : ApplicationService, IRefundAppService
         IEmailSender EmailSender,
         IPaymentGatewayAppService PaymentGatewayAppService,
         IConfiguration Configuration,
-        IEmailAppService emailAppService
+        IEmailAppService emailAppService,
+        OrderHistoryManager orderHistoryManager, IStringLocalizer<PikachuResource> l
     )
     {
         _refundRepository = refundRepository;
@@ -65,6 +72,9 @@ public class RefundAppService : ApplicationService, IRefundAppService
 
         _Configuration = Configuration;
         _emailAppService = emailAppService;
+        _l = l;
+        _orderHistoryManager = orderHistoryManager;
+
     }
     #endregion
 
@@ -80,6 +90,17 @@ public class RefundAppService : ApplicationService, IRefundAppService
         await _refundRepository.InsertAsync(refund);
         var order = await _orderRepository.GetAsync(orderId);
         order.IsRefunded = true;
+        // **Get Current User (Editor)**
+        var currentUserId = CurrentUser.Id ?? Guid.Empty;
+        var currentUserName = CurrentUser.UserName ?? "System";
+        // **Log the creation of the new refunded order**
+        await _orderHistoryManager.AddOrderHistoryAsync(
+   order.Id,
+   "OrderApplyForRefund", // Localization key
+   new object[] { order.OrderNo }, // Dynamic placeholders
+   currentUserId,
+   currentUserName
+);
         await _orderRepository.UpdateAsync(order);
 
         /// ToDo: Send Refund Email Here, and also change status for order

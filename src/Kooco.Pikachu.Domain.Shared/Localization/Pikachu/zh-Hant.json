@@ -1328,6 +1328,8 @@
     "ItemPriceChangedTitle": "商品價格已更改",
     "ItemTotalAmountChangedTitle": "商品總金額已更改",
     "PickingCompleted": "已撿貨",
-    "OrderCreated1": "訂單成立"
+    "OrderCreated1": "訂單成立",
+    "OrderApplyForRefund": "訂單 {0} 已申請退款。",
+    "OrderApplyForRefundTitle": "已申請退款"
   }
 }
