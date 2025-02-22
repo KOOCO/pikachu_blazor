@@ -33,7 +33,7 @@ using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Kooco.Pikachu.ElectronicInvoiceSettings;
 
-public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoiceAppService
+public class ElectronicInvoiceAppService : PikachuAppService, IElectronicInvoiceAppService
 {
     #region Inject
     private readonly IConfiguration _configuration;
@@ -87,7 +87,9 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
                 RestClient client = new(options);
 
                 RestRequest request = new(_configuration["EcPay:InvoiceApi"], Method.Post);
-
+                
+                var totalAmount = Convert.ToInt32(order.TotalAmount);
+            
                 Parameters parameters = new()
                 {
                     MerchantID = setting?.StoreCode ?? string.Empty,
@@ -98,39 +100,34 @@ public class ElectronicInvoiceAppService : ApplicationService, IElectronicInvoic
                     CustomerEmail = order.CustomerEmail,
                     ClearanceMark = "1",
                     InvoiceRemark = setting?.DisplayInvoiceName ?? string.Empty,
-
-
                     CarrierNum = CarrierNumber,
                     CarrierType = CarrierType,
-
                     Print = print,
                     Donation = "0",
                     TaxType = "1", //groupBuy.TaxType==TaxType.Taxable?"1":groupBuy.TaxType==TaxType.NonTaxable?"3":"9",
-                    SalesAmount = order.OrderItems.Sum(x => x.TotalAmount),
+                    SalesAmount = totalAmount,
                     InvType = "07",
                     vat = "1",
-                    Items = new List<myItem>()
+                    Items =
+                    [
+                        new myItem
+                        {
+                            ItemSeq = 1,
+                            ItemName = L["Total"],
+                            ItemCount = 1,
+                            ItemWord = "1",
+                            ItemPrice = totalAmount,
+                            ItemTaxType = 1,
+                            ItemAmount = totalAmount,
+                            ItemRemark = ""
+                        }
+                    ]
                 };
                 if (order.InvoiceType == InvoiceType.BusinessInvoice)
                 {
                     parameters.CustomerIdentifier = order.UniformNumber;
 
                 }
-                foreach (var item in order?.OrderItems)
-                {
-                    myItem orderitem = new();
-                    orderitem.ItemSeq = 1;
-                    orderitem.ItemName = item.Item?.ItemName ?? item.Freebie.ItemName;
-                    orderitem.ItemCount = 1;
-                    orderitem.ItemWord = "1";
-                    orderitem.ItemPrice = item.ItemPrice;
-                    orderitem.ItemTaxType = 1;//(await _enumvalueRepository.FirstOrDefaultAsync(x=>x.Id==item.Item.TaxTypeId)).Text=="Taxable"?1:3;
-                    orderitem.ItemAmount = item.TotalAmount;
-                    orderitem.ItemRemark = "";
-                    parameters.Items.Add(orderitem);
-
-                }
-
 
                 string json = JsonConvert.SerializeObject(parameters);
                 //var json = "{\"MerchantID\": \"2000132\",\"RelateNumber\": ,\"CustomerName\": \"SomiKayani\",\"CustomerAddr\": \"Abcxyz street 123\",\"CustomerPhone\": \"0912345678\",\"CustomerEmail\": \"kiani_mujahid@yahoo.com\",\"ClearanceMark\": \"1\",\"Print\": \"1\",\"Donation\": \"0\",\"TaxType\": \"1\",\"SalesAmount\": 70,\"InvType\": \"07\",\"vat\": \"1\",\"Items\": [{\"ItemSeq\": 1,\"ItemName\": \"item01\",\"ItemCount\": 1,\"ItemWord\": \"Test\",\"ItemPrice\": 50,\"ItemTaxType\": \"1\",\"ItemAmount\": 50,\"ItemRemark\": \"item01_desc\"},{\"ItemSeq\": 2,\"ItemName\": \"item02\",\"ItemCount\": 1,\"ItemWord\": \"Test2\",\"ItemPrice\": 20,\"ItemTaxType\": \"1\",\"ItemAmount\": 20,\"ItemRemark\": \"item02_desc\"}]}";
