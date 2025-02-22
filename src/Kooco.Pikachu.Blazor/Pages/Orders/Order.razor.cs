@@ -1825,7 +1825,11 @@ public partial class Order
 
 
         }
-
+        finally
+        {
+            loading = false;
+            StateHasChanged();
+        }
     }
 
     async Task DownloadExcel()
