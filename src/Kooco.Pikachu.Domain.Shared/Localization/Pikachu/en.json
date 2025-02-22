@@ -506,7 +506,7 @@
     "ZeroTax": "Zero Tax",
     "Threshold": "Threshold",
     "DeliveryTimePreference": "Delivery Time Preference",
-    "SelectGroupBuy": "Select GroupBuy",
+    "SelectGroupBuy": "Select Group Buy",
     "Shipped": "Shipped",
     "ManualStatusUpdate": "Manual Status Update",
     "Completed": "Picked Up",
@@ -1259,6 +1259,9 @@
     "ThermalPrinting": "Thermal Printing (A6)",
     "OrderNumber": "Order Number",
     "InvoiceType": "Invoice Type",
-    "InvoiceTitle": "Invoice Title"
+    "InvoiceTitle": "Invoice Title",
+    "EmailSubject": "Email Subject",
+    "SendDateRange": "Send Date Range",
+    "SendFrequency": "Send Frequency"
   }
 }

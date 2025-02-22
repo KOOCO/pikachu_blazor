@@ -3,6 +3,7 @@ using Kooco.Pikachu.AutomaticEmails;
 using Kooco.Pikachu.EnumValues;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
@@ -28,6 +29,12 @@ public class AutomaticEmailController(
     public Task<AutomaticEmailDto> GetAsync(Guid id)
     {
         return _automaticEmailAppService.GetAsync(id);
+    }
+
+    [HttpGet("group-buy-names")]
+    public Task<List<string>> GetGroupBuyNamesAsync(List<Guid>? groupBuyIds)
+    {
+        return _automaticEmailAppService.GetGroupBuyNamesAsync(groupBuyIds);
     }
 
     [HttpGet]

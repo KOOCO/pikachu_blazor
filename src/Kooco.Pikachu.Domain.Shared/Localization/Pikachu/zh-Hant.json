@@ -465,7 +465,7 @@
     "Search": "搜尋",
     "Select": "選取",
     "SelectAll": "全選",
-    "SelectGroupBuy": "請選擇團購",
+    "SelectGroupBuy": "選擇團購",
     "SelectGroupBuys": "選擇團購",
     "SelectGroupsBuys": "選擇團購",
     "SelectItem": "選取商品",
@@ -1335,6 +1335,9 @@
     "ThermalPrinting": "熱感列印 (A6)",
     "OrderNumber": "訂單號碼",
     "InvoiceType": "發票類型",
-    "InvoiceTitle": "發票抬頭"
+    "InvoiceTitle": "發票抬頭",
+    "EmailSubject": "電子郵件主旨",
+    "SendDateRange": "發送日期範圍",
+    "SendFrequency": "發送頻率"
   }
 }

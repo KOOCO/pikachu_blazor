@@ -35,12 +35,15 @@ namespace Kooco.Pikachu.AutomaticEmails
         public override async Task ExecuteAsync(Guid id)
         {
             var args = await _automaticEmailAppService.GetWithDetailsByIdAsync(id);
-            if(!DateTime.Now.IsBetween(args.StartDate, args.EndDate))
+
+            if (!DateTime.Now.IsBetween(args.StartDate, args.EndDate))
             {
                 return;
             }
             try
             {
+                var groupBuyNames = await _automaticEmailAppService.GetGroupBuyNamesAsync(args.GroupBuys?.Select(g => g.GroupBuyId).ToList());
+
                 var attachments = new List<Attachment>();
                 if (args?.GroupBuys != null)
                 {
@@ -69,7 +72,7 @@ namespace Kooco.Pikachu.AutomaticEmails
                     var mailMessage = new MailMessage
                     {
                         Subject = args.TradeName,
-                        Body = $"Start Date: {args.StartDate:dd-MM-yyyy}<br/>End Date: {args.EndDate:dd-MM-yyyy}<br/>Send Time: {formattedTime}",
+                        Body = $"您好，<br />這是 [{string.Join(", ", groupBuyNames)}] 的團購報表，請查收附件中的報表文件",
                         IsBodyHtml = true
                     };
 

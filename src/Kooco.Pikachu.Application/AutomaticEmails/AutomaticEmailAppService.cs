@@ -1,5 +1,7 @@
 ﻿using Hangfire;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Groupbuys;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -19,13 +21,17 @@ namespace Kooco.Pikachu.AutomaticEmails
     {
         private readonly IAutomaticEmailRepository _automaticEmailRepository;
         private readonly IDataFilter _dataFilter;
+        private readonly IGroupBuyRepository _groupBuyRepository;
+
         public AutomaticEmailAppService(
             IAutomaticEmailRepository automaticEmailRepository,
-            IDataFilter dataFilter
+            IDataFilter dataFilter,
+            IGroupBuyRepository groupBuyRepository
             )
         {
             _automaticEmailRepository = automaticEmailRepository;
             _dataFilter = dataFilter;
+            _groupBuyRepository = groupBuyRepository;
         }
         public async Task CreateAsync(AutomaticEmailCreateUpdateDto input)
         {
@@ -49,7 +55,7 @@ namespace Kooco.Pikachu.AutomaticEmails
             }
 
             await _automaticEmailRepository.InsertAsync(automaticEmail);
-            
+
             var dto = ObjectMapper.Map<AutomaticEmail, AutomaticEmailDto>(automaticEmail);
 
             DateTime utcTime = dto.SendTimeUTC;
@@ -66,6 +72,17 @@ namespace Kooco.Pikachu.AutomaticEmails
             var automaticEmail = await _automaticEmailRepository.GetAsync(id);
             await _automaticEmailRepository.EnsureCollectionLoadedAsync(automaticEmail, a => a.GroupBuys);
             return ObjectMapper.Map<AutomaticEmail, AutomaticEmailDto>(automaticEmail);
+        }
+
+        public async Task<List<string>> GetGroupBuyNamesAsync(List<Guid>? groupBuyIds)
+        {
+            groupBuyIds ??= [];
+            var groupBuyNames = await (await _groupBuyRepository.GetQueryableAsync())
+                .Where(g => groupBuyIds.Contains(g.Id))
+                .Select(g => g.GroupBuyName)
+                .ToListAsync();
+
+            return groupBuyNames ?? [];
         }
 
         public async Task<PagedResultDto<AutomaticEmailDto>> GetListAsync(GetAutomaticEmailListDto input)
@@ -121,7 +138,7 @@ namespace Kooco.Pikachu.AutomaticEmails
             {
                 foreach (var groupBuyId in input.GroupBuyIds)
                 {
-                    if(!automaticEmail.GroupBuys.Select(x => x.GroupBuyId).Contains(groupBuyId))
+                    if (!automaticEmail.GroupBuys.Select(x => x.GroupBuyId).Contains(groupBuyId))
                     {
                         automaticEmail.AddGroupBuy(GuidGenerator.Create(), groupBuyId);
                     }
