@@ -13,7 +13,7 @@
 @using Volo.Abp.Users;
 @using Blazorise.LoadingIndicator;
 @using Kooco.Pikachu.LogisticsProviders;
-
+@attribute [Authorize]
 @inject IJSRuntime JSRuntime;
 @inject IStringLocalizer<PikachuResource> L;
 @inject NavigationManager NavigationManager;
@@ -35,43 +35,41 @@
             width: 1px;
             white-space: nowrap;
         }
-        .order-history-container {
-    max-height: 263px; /* Adjust height as needed */
-    overflow-y: auto; /* Enables vertical scrolling */
-    border: 1px solid #ddd; /* Optional: Adds a border for visibility */
-}
 
-.order-history-table {
-    width: 100%;
-    border-collapse: collapse;
-}
+    .order-history-container {
+        max-height: 263px; /* Adjust height as needed */
+        overflow-y: auto; /* Enables vertical scrolling */
+        border: 1px solid #ddd; /* Optional: Adds a border for visibility */
+    }
 
-.order-history-table th,
-.order-history-table td {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-    text-align: left;
-}
+    .order-history-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
 
-/* Sticky Header */
-.order-history-table th {
-    background-color: #f4f4f4;
-    position: sticky;
-    top: 0;
-    z-index: 2;
-}
+        .order-history-table th,
+        .order-history-table td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
 
-.step-circle {
-  
-    width: 3.5rem!important;
-    height: 3.5rem!important;
-    
+        /* Sticky Header */
+        .order-history-table th {
+            background-color: #f4f4f4;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
 
-}
-.step-container {
-   
-    padding-right: 3rem!important;
-}
+    .step-circle {
+        width: 3.5rem !important;
+        height: 3.5rem !important;
+    }
+
+    .step-container {
+        padding-right: 3rem !important;
+    }
 
 </style>
 
@@ -92,7 +90,7 @@
                                             <td>@Order.GroupBuy?.GroupBuyName</td>
                                         </tr>
                                         <tr>
-                                            <td>@L["OrderInformation"]</td>
+                                            <td>@L["OrderNumber"]</td>
                                             <td>@Order.OrderNo</td>
                                         </tr>
                                         <tr>
@@ -115,26 +113,6 @@
                                             </tr>
                                         }
                                         <tr>
-                                            <td>@L["Invoice"]</td>
-                                            <td>@Order.InvoiceNumber</td>
-                                        </tr>
-                                        <tr>
-                                            <td>@L["CarrierNumber"]</td>
-                                            <td>@(Order.CarrierId != "/" ? Order.CarrierId : "")</td>
-                                        </tr>
-                                        <tr>
-                                            <td>@L["TaxTitle"]</td>
-                                            <td>@Order.TaxTitle</td>
-                                        </tr>
-                                        <tr>
-                                            <td>@L["TaxNumber"]</td>
-                                            <td>@(Order.UniformNumber != "/" ? Order.UniformNumber : "")</td>
-                                        </tr>
-                                        <tr>
-                                            <td>@L["InvoiceCarrier"]</td>
-                                            <td>@L[Order.InvoiceType.ToString()]</td>
-                                        </tr>
-                                        <tr>
                                             <td>@L["ShippingMethod"]</td>
                                             <td>@L[Order.DeliveryMethod.ToString()] @Order.ShippingNumber </td>
                                         </tr>
@@ -142,27 +120,36 @@
                                 </table>
                             </div>
                         </div>
-                        @*   <div class="row">
-                    <div class="col-12 text-end"> *@
-                        @*   <Button Type="ButtonType.Button" @onclick="OpenShipmentModal" Class="btn btn-sm btn-primary me-1">
-                    @L["ShipmentNotify"]
-                    </Button> *@
-                        @*  @if (Order.PaymentMethod == PaymentMethods.CreditCard && Order.IsRefunded == false)
-                    {
-                    <Button Type="ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="ApplyRefund">
-                    @L["ApplyRefund"]
-                    </Button>
-                    }
-                    else
-                    {
-                    <Button Type="ButtonType.Button" Disabled Class="btn btn-sm btn-danger" Clicked="ApplyRefund">
-                    @L["ApplyRefund"]
-                    </Button>
-                    }
-                    </div>
-                    </div>  *@
                         <Divider></Divider>
-
+                        <div class="row">
+                            <div class="col-12">
+                                <table class="w-100">
+                                    <tbody>
+                                        <tr>
+                                            <td>@L["InvoiceType"]</td>
+                                            <td>@L[Order.InvoiceType.ToString()]</td>
+                                        </tr>
+                                        <tr>
+                                            <td>@L["InvoiceNumber"]</td>
+                                            <td>@Order.InvoiceNumber</td>
+                                        </tr>
+                                        <tr>
+                                            <td>@L["CarrierNumber"]</td>
+                                            <td>@(Order.CarrierId != "/" ? Order.CarrierId : "")</td>
+                                        </tr>
+                                        <tr>
+                                            <td>@L["InvoiceTitle"]</td>
+                                            <td>@Order.TaxTitle</td>
+                                        </tr>
+                                        <tr>
+                                            <td>@L["TaxNumber"]</td>
+                                            <td>@(Order.UniformNumber != "/" ? Order.UniformNumber : "")</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <Divider></Divider>
                         @if (Order.DeliveryMethod is not DeliveryMethod.DeliveredByStore)
                         {
                             <div class="row">
@@ -1559,7 +1546,7 @@
                     </Button>
                 </div>
             </div>
-          
+
             @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
             {
                 <Card>
@@ -1725,37 +1712,38 @@
          <StepPanel Name="step6"></StepPanel>
         </Content>
 </Steps> *@
-</CardBody>
+                </CardBody>
 
-</Card>
-              <Card>
+            </Card>
+            <Card>
                 <CardBody>
                     <div class="row">
-                            <div class="col-12 d-flex justify-content-between">
-                                <p class="fw-bold">@L["OrderHistory"]</p>
-                            </div>
+                        <div class="col-12 d-flex justify-content-between">
+                            <p class="fw-bold">@L["OrderHistory"]</p>
                         </div>
-                     <div class="order-history-container">  <!-- Scrollable Container -->
-            <Table class="order-history-table">
-                    
-                        <TableHeader >
-                            <TableHeaderCell>@L["Date"]</TableHeaderCell>
-                            <TableHeaderCell>@L["Editor"]</TableHeaderCell>
-                            <TableHeaderCell>@L["Action"]</TableHeaderCell>
-                            <TableHeaderCell>@L["ActionDetails"]</TableHeaderCell>
-                        </TableHeader>
-                        <TableBody>
-                            @foreach(var history in OrderHistory)
-                            {
-                            <TableRow>
-                                <TableRowCell>@history.CreationTime.ToString("dd/MM/yyyy hh:mm:ss tt")</TableRowCell>
-                                <TableRowCell>@history.EditorUserName</TableRowCell>
-                                <TableRowCell>@L[history.ActionType+"Title"]</TableRowCell>
-                                <TableRowCell>@FormatLocalizedDetails(history)</TableRowCell>
-                            </TableRow>
-                            }
-                        </TableBody>
-                    @* <TableBody >
+                    </div>
+                    <div class="order-history-container">
+                        <!-- Scrollable Container -->
+                        <Table class="order-history-table">
+
+                            <TableHeader>
+                                <TableHeaderCell>@L["Date"]</TableHeaderCell>
+                                <TableHeaderCell>@L["Editor"]</TableHeaderCell>
+                                <TableHeaderCell>@L["Action"]</TableHeaderCell>
+                                <TableHeaderCell>@L["ActionDetails"]</TableHeaderCell>
+                            </TableHeader>
+                            <TableBody>
+                                @foreach (var history in OrderHistory)
+                                {
+                                    <TableRow>
+                                        <TableRowCell>@history.CreationTime.ToString("dd/MM/yyyy hh:mm:ss tt")</TableRowCell>
+                                        <TableRowCell>@history.EditorUserName</TableRowCell>
+                                        <TableRowCell>@L[history.ActionType + "Title"]</TableRowCell>
+                                        <TableRowCell>@FormatLocalizedDetails(history)</TableRowCell>
+                                    </TableRow>
+                                }
+                            </TableBody>
+                            @* <TableBody >
                         @if (Order?.ShippingStatus == ShippingStatus.WaitingForPayment)
                         {
                           <TableRow>
@@ -1922,7 +1910,7 @@
                         }
 
                     </TableBody> *@
-                    </Table>
+                        </Table>
                     </div>
                 </CardBody>
             </Card>

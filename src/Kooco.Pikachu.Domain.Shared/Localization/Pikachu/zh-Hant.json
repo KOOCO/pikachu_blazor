@@ -486,7 +486,7 @@
     "ShareProfit": "分潤比例",
     "ShipmentNotify": "物流通知",
     "Shipped": "已出貨",
-    "ShippingMethod": "運費類型",
+    "ShippingMethod": "運送方式",
     "ShippingNumber": "派送單號",
     "ShippingStatus": "物流狀態",
     "ShortCode": "轉址編號",
@@ -1332,6 +1332,9 @@
     "OrderApplyForRefund": "訂單 {0} 已申請退款。",
     "OrderApplyForRefundTitle": "已申請退款",
     "StandardPrinting": "一般列印 (A4)",
-    "ThermalPrinting": "熱感列印 (A6)"
+    "ThermalPrinting": "熱感列印 (A6)",
+    "OrderNumber": "訂單號碼",
+    "InvoiceType": "發票類型",
+    "InvoiceTitle": "發票抬頭"
   }
 }

@@ -1256,6 +1256,9 @@
     "OrderApplyForRefund": "Order {0} has applied for a refund.",
     "OrderApplyForRefundTitle": "Refund Applied",
     "StandardPrinting": "Standard Printing (A4)",
-    "ThermalPrinting": "Thermal Printing (A6)"
+    "ThermalPrinting": "Thermal Printing (A6)",
+    "OrderNumber": "Order Number",
+    "InvoiceType": "Invoice Type",
+    "InvoiceTitle": "Invoice Title"
   }
 }
