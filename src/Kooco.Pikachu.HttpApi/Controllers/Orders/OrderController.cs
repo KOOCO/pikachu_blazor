@@ -344,7 +344,7 @@ public class OrderController : AbpController, IOrderAppService
                 CheckMacValue = Request.Form["CheckMacValue"],
             };
 
-            await _ordersAppService.UpdateLogisticStatusAsync(ecpayRequest.MerchantTradeNo!, ecpayRequest.RtnMsg!);
+            await _ordersAppService.UpdateLogisticStatusAsync(ecpayRequest.MerchantTradeNo!, ecpayRequest.RtnMsg!, ecpayRequest.RtnCode);
 
             return Ok("1|OK");
         }
@@ -588,7 +588,7 @@ public class OrderController : AbpController, IOrderAppService
     }
 
     [HttpPost("update-logisticsStatus")]
-    public Task UpdateLogisticStatusAsync(string merchantTradeNo, string rtnMsg)
+    public Task UpdateLogisticStatusAsync(string merchantTradeNo, string rtnMsg, int rtnCode = 0)
     {
         return _ordersAppService.UpdateLogisticStatusAsync(merchantTradeNo, rtnMsg);
     }
@@ -627,6 +627,12 @@ public class OrderController : AbpController, IOrderAppService
     public Task CreateOrderDeliveriesAndInvoiceAsync(Guid orderId)
     {
         return _ordersAppService.CreateOrderDeliveriesAndInvoiceAsync(orderId);
+    }
+
+    [HttpPost("close-order/{orderId}")]
+    public Task CloseOrderAsync(Guid orderId)
+    {
+        return _ordersAppService.CloseOrderAsync(orderId);
     }
 
 

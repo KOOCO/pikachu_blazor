@@ -1353,7 +1353,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             order1.GWSR = ord.GWSR;
             order1.TradeNo = ord.TradeNo;
             order1.OrderRefundType = OrderRefundType.PartialRefund;
-            
+
             foreach (var extraProp in ord.ExtraProperties ?? [])
             {
                 order1.SetProperty(extraProp.Key, extraProp.Value);
@@ -1903,7 +1903,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     public async Task UpdateOrderItemsAsync(Guid id, List<UpdateOrderItemDto> orderItems)
     {
         var order = await _orderRepository.GetWithDetailsAsync(id);
-     
+
 
         // **Get Current User (Editor)**
         var currentUserId = CurrentUser.Id ?? Guid.Empty;
@@ -1911,9 +1911,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
         List<string> itemChanges = new();
         foreach (var item in orderItems)
         {
-           
+
             var orderItem = order.OrderItems.First(o => o.Id == item.Id);
-            string itemName="";
+            string itemName = "";
             if (orderItem.ItemType is ItemType.Item)
             {
                 itemName = orderItem.Item?.ItemName;
@@ -1930,8 +1930,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
 
             }
-                // Capture changes for logging
-                if (orderItem.Quantity != item.Quantity)
+            // Capture changes for logging
+            if (orderItem.Quantity != item.Quantity)
             {
                 await _orderHistoryManager.AddOrderHistoryAsync(
                   order.Id,
@@ -2256,7 +2256,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         // **Log Order History for Order Closure**
         await _orderHistoryManager.AddOrderHistoryAsync(
-     order.Id, 
+     order.Id,
      "OrderClosed", // Localization key
      new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name }, // Localized placeholders
      currentUserId,
@@ -2382,7 +2382,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         return string.Concat(orderNo, randomNumeric);
     }
 
-    public async Task UpdateLogisticStatusAsync(string merchantTradeNo, string rtnMsg)
+    public async Task UpdateLogisticStatusAsync(string merchantTradeNo, string rtnMsg, int rtnCode = 0)
     {
         Order order = await _orderRepository.GetOrderByMerchantTradeNoAsync(merchantTradeNo);
         // Capture old logistics status and shipping status before updating
@@ -2396,12 +2396,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         // **Log Order History for Logistic Status Update**
         await _orderHistoryManager.AddOrderHistoryAsync(
-     order.Id,
-     "LogisticStatusUpdated", // Localization key
-     new object[] { oldLogisticsStatus, order.EcpayLogisticsStatus }, // Combine updates
-     currentUserId,
-     currentUserName
- );
+             order.Id,
+             "LogisticStatusUpdated", // Localization key
+             new object[] { oldLogisticsStatus, order.EcpayLogisticsStatus }, // Combine updates
+             currentUserId,
+             currentUserName
+         );
 
 
         if (order.ShippingStatus < ShippingStatus.ToBeShipped)
@@ -2409,16 +2409,63 @@ public class OrderAppService : ApplicationService, IOrderAppService
             order.ShippingStatus = ShippingStatus.ToBeShipped;
 
             await _orderHistoryManager.AddOrderHistoryAsync(
-        order.Id,
-        "OrderToBeShipped", // Localization key
-        new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name }, // Combine updates
-        currentUserId,
-        currentUserName
-    );
+                order.Id,
+                "OrderToBeShipped", // Localization key
+                new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name }, // Combine updates
+                currentUserId,
+                currentUserName
+            );
         }
 
         await _orderRepository.UpdateAsync(order);
 
+        if (rtnCode != 0)
+        {
+            if ((order.DeliveryMethod == DeliveryMethod.HomeDelivery && rtnCode == 320)
+                || (order.DeliveryMethod == DeliveryMethod.FamilyMartC2C && rtnCode == 2078))
+            {
+                await _backgroundJobManager
+                    .EnqueueAsync(new CloseOrderBackgroundJobArgs { OrderId = order.Id }, delay: TimeSpan.FromDays(7));
+            }
+        }
+    }
+
+    public async Task CloseOrderAsync(Guid orderId)
+    {
+        Order order;
+        using (_dataFilter.Disable<IMultiTenant>())
+        {
+            order = await _orderRepository.GetAsync(orderId);
+        }
+        using (CurrentTenant.Change(order.TenantId))
+        {
+            var logs = await _orderHistoryRepository.GetListAsync(o => o.OrderId == order.Id);
+
+            if (!logs.Any(l => l.CreationTime.Date >= DateTime.Today.AddDays(-7)))
+            {
+                var oldOrderStatus = order.OrderStatus;
+                var oldShippingStatus = order.ShippingStatus;
+
+                order.OrderStatus = OrderStatus.Closed;
+                order.ShippingStatus = ShippingStatus.Closed;
+
+                await _orderHistoryManager.AddOrderHistoryAsync(
+                    order.Id,
+                    "OrderCompleted",
+                    new object[] { _l[oldOrderStatus.ToString()].Name, _l[order.OrderStatus.ToString()].Name },
+                    CurrentUser?.Id,
+                    CurrentUser?.UserName ?? "System"
+                );
+
+                await _orderHistoryManager.AddOrderHistoryAsync(
+                    order.Id,
+                    "OrderCompleted",
+                    new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name },
+                    CurrentUser?.Id,
+                    CurrentUser?.UserName ?? "System"
+                );
+            }
+        }
     }
 
     [AllowAnonymous]
@@ -2571,7 +2618,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         }
                     }
                 }
-              
+
 
                 return "";
             }
