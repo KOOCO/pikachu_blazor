@@ -522,7 +522,7 @@ public partial class CreateGroupBuy
     }
     public bool IsInvoiceEnable()
     {
-        return ElectronicInvoiceSetting.IsEnable;
+        return !ElectronicInvoiceSetting.IsEnable;
 
 
     }
