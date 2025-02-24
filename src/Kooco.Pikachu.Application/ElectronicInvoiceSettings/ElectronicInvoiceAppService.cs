@@ -80,7 +80,7 @@ public class ElectronicInvoiceAppService : PikachuAppService, IElectronicInvoice
                 string print = setting.IsEnable ? "0" : "1";
                 string? CarrierType = setting.IsEnable ? "1" : null;
                 CarrierType = (order.InvoiceType == InvoiceType.CellphoneInvoice) ? "3" : (order.InvoiceType == InvoiceType.BusinessInvoice ? "1" : null);
-                string? CarrierNumber = CarrierType == "3" ? order.UniformNumber : null;
+                string? CarrierNumber = CarrierType == "3" ? order.CarrierId : null;
                 string CustomerAddress = order.AddressDetails.IsNullOrEmpty() ? order.CustomerEmail : order.AddressDetails;
                 RestClientOptions options = new() { MaxTimeout = -1 };
 
