@@ -1262,6 +1262,7 @@
     "InvoiceTitle": "Invoice Title",
     "EmailSubject": "Email Subject",
     "SendDateRange": "Send Date Range",
-    "SendFrequency": "Send Frequency"
+    "SendFrequency": "Send Frequency",
+    "ReportNotification": "Report Notification"
   }
 }
