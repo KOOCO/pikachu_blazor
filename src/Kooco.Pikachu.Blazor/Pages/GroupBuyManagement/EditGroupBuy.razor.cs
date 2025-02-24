@@ -1,4 +1,5 @@
-﻿using Blazored.TextEditor;
+﻿using AntDesign.JsInterop;
+using Blazored.TextEditor;
 using Blazorise;
 using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.AzureStorage.Image;
@@ -27,6 +28,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
+using Volo.Abp.Data;
 using Volo.Abp.ObjectMapping;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
@@ -2407,7 +2409,10 @@ public partial class EditGroupBuy
             }
             await Loading.Show();
 
-            GroupBuyDto result = await _groupBuyAppService.UpdateAsync(Id, EditGroupBuyDto);
+            try
+            {
+                GroupBuyDto result = await _groupBuyAppService.UpdateAsync(Id, EditGroupBuyDto);
+           
 
             if (EditGroupBuyDto.IsEnterprise) await _OrderAppService.UpdateOrdersIfIsEnterpricePurchaseAsync(Id);
 
@@ -2526,6 +2531,12 @@ public partial class EditGroupBuy
                         });
                     }
                 }
+            }
+            }
+            catch (AbpDbConcurrencyException e)
+            {
+                await Loading.Hide();
+                NavigationManager.NavigateTo("/GroupBuyManagement/GroupBuyList/Edit/" + id);
             }
 
             await Loading.Hide();

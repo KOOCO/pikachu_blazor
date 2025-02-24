@@ -19,6 +19,7 @@ using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.Orders;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Tokens;
 using MiniExcelLibs;
@@ -36,6 +37,7 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectMapping;
+using Volo.Abp.Uow;
 using Volo.Abp.Validation.Localization;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -61,6 +63,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     private readonly IDeliveryTemperatureCostAppService _DeliveryTemperatureCostAppService;
     private readonly IImageAppService _ImageAppService;
     private readonly IGroupBuyProductRankingAppService _groupBuyProductRankingAppService;
+    private readonly UnitOfWorkManager _unitOfWorkManager;
+
     #endregion
 
     #region Constructor
@@ -80,7 +84,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         IGroupBuyOrderInstructionAppService GroupBuyOrderInstructionAppService,
         IDeliveryTemperatureCostAppService DeliveryTemperatureCostAppService,
         IImageAppService ImageAppService,
-        IGroupBuyProductRankingAppService groupBuyProductRankingAppService
+        IGroupBuyProductRankingAppService groupBuyProductRankingAppService,
+        UnitOfWorkManager unitOfWorkManager
     )
     {
         _groupBuyManager = groupBuyManager;
@@ -99,6 +104,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         _DeliveryTemperatureCostAppService = DeliveryTemperatureCostAppService;
         _ImageAppService = ImageAppService;
         _groupBuyProductRankingAppService = groupBuyProductRankingAppService;
+        _unitOfWorkManager = unitOfWorkManager;
     }
     #endregion
 
@@ -163,86 +169,132 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
     public async Task<GroupBuyDto> UpdateAsync(Guid id, GroupBuyUpdateDto input)
     {
-        try
+        using (var uow = _unitOfWorkManager.Begin(requiresNew: true, isTransactional: false))
         {
-            bool sameName = await _groupBuyRepository.AnyAsync(x => x.GroupBuyName == input.GroupBuyName && x.Id != id);
-
-            if (sameName) throw new BusinessException(PikachuDomainErrorCodes.ItemWithSameNameAlreadyExists);
-
-            GroupBuy groupBuy = await _groupBuyRepository.GetWithDetailsAsync(id);
-
-            groupBuy = ObjectMapper.Map<GroupBuyUpdateDto, GroupBuy>(input);
-
-            if (input?.ItemGroups is { Count: > 0 })
+            try
             {
-                foreach (GroupBuyItemGroupCreateUpdateDto group in input.ItemGroups)
+                bool sameName = await _groupBuyRepository.AnyAsync(x => x.GroupBuyName == input.GroupBuyName && x.Id != id);
+                if (sameName) throw new BusinessException(PikachuDomainErrorCodes.ItemWithSameNameAlreadyExists);
+
+                var groupBuy = await _groupBuyRepository.GetAsync(id);
+                await _groupBuyRepository.EnsureCollectionLoadedAsync(groupBuy, x => x.ItemGroups);
+
+                ObjectMapper.Map(input, groupBuy);
+
+                await ProcessItemGroups(groupBuy, input.ItemGroups.ToList());
+
+                groupBuy.ItemGroups.RemoveAll(w => w.Id == Guid.Empty);
+
+                await _groupBuyRepository.UpdateAsync(groupBuy, true);
+
+                await uow.CompleteAsync(); // Commit unit of work
+
+                return ObjectMapper.Map<GroupBuy, GroupBuyDto>(groupBuy);
+            }
+            catch (AbpDbConcurrencyException)
+            {
+                uow.Dispose(); // Dispose current unit of work
+                return await HandleConcurrencyAsync(id, input); // Retry update in new UOW
+            }
+            catch (Exception)
+            {
+                uow.Dispose(); // Ensure rollback on failure
+                throw;
+            }
+        }
+    }
+
+    private async Task<GroupBuyDto> HandleConcurrencyAsync(Guid id, GroupBuyUpdateDto input)
+    {
+        using (var retryUow = _unitOfWorkManager.Begin(requiresNew: true, isTransactional: false))
+        {
+            try
+            {
+                var groupBuy = await _groupBuyRepository.GetAsync(id);
+                await _groupBuyRepository.EnsureCollectionLoadedAsync(groupBuy, x => x.ItemGroups);
+
+                ObjectMapper.Map(input, groupBuy);
+
+                await ProcessItemGroups(groupBuy, input.ItemGroups.ToList());
+
+                groupBuy.ItemGroups.RemoveAll(w => w.Id == Guid.Empty);
+
+                await _groupBuyRepository.UpdateAsync(groupBuy);
+
+                await retryUow.CompleteAsync(); // Commit new UOW
+
+                return ObjectMapper.Map<GroupBuy, GroupBuyDto>(groupBuy);
+            }
+            catch (Exception)
+            {
+                retryUow.Dispose(); // Ensure rollback if retry fails
+                throw;
+            }
+        }
+    }
+
+
+    private async Task ProcessItemGroups(GroupBuy groupBuy, List<GroupBuyItemGroupCreateUpdateDto> itemGroups)
+    {
+        if (itemGroups is { Count: > 0 })
+        {
+            foreach (GroupBuyItemGroupCreateUpdateDto group in itemGroups)
+            {
+                if (group.Id.HasValue)
                 {
-                    if (group.Id.HasValue)
+                    GroupBuyItemGroup? itemGroup = groupBuy.ItemGroups.FirstOrDefault(x => x.Id == group.Id);
+                    if (itemGroup is not null)
                     {
-                        GroupBuyItemGroup? itemGroup = groupBuy.ItemGroups.FirstOrDefault(x => x.Id == group.Id);
-
-                        if (itemGroup is not null)
-                        {
-                            itemGroup.SortOrder = group.SortOrder;
-                            itemGroup.GroupBuyModuleType = group.GroupBuyModuleType;
-                            itemGroup.AdditionalInfo = group.AdditionalInfo;
-                            itemGroup.ProductGroupModuleTitle = group.ProductGroupModuleTitle;
-                            itemGroup.ProductGroupModuleImageSize = group.ProductGroupModuleImageSize;
-                            itemGroup.ModuleNumber = group.ModuleNumber;
-                            itemGroup.TenantId = CurrentTenant.Id;
-
-                            if (group.ItemDetails.Count is 0) groupBuy.ItemGroups.Remove(itemGroup);
-
-                            await _GroupBuyItemGroupsRepository.UpdateAsync(itemGroup);
-
-                            if (group.ItemDetails is { Count: > 0 })
-                                await _GroupBuyItemGroupDetailsRepository.DeleteAsync(d => d.GroupBuyItemGroupId == itemGroup.Id);
-
-                            ProcessItemDetails(itemGroup, group.ItemDetails);
-
-                            foreach (GroupBuyItemGroupDetails itemGroupDetails in itemGroup.ItemGroupDetails)
-                            {
-                                await _GroupBuyItemGroupDetailsRepository.UpdateAsync(itemGroupDetails);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        GroupBuyItemGroup itemGroup = _groupBuyManager.AddItemGroup(
-                                groupBuy,
-                                group.SortOrder,
-                                group.GroupBuyModuleType,
-                                group.AdditionalInfo,
-                                group.ProductGroupModuleTitle,
-                                group.ProductGroupModuleImageSize
-                        );
-
+                        itemGroup.SortOrder = group.SortOrder;
+                        itemGroup.GroupBuyModuleType = group.GroupBuyModuleType;
+                        itemGroup.AdditionalInfo = group.AdditionalInfo;
+                        itemGroup.ProductGroupModuleTitle = group.ProductGroupModuleTitle;
+                        itemGroup.ProductGroupModuleImageSize = group.ProductGroupModuleImageSize;
                         itemGroup.ModuleNumber = group.ModuleNumber;
+                        itemGroup.TenantId = CurrentTenant.Id;
 
-                        await _GroupBuyItemGroupsRepository.InsertAsync(itemGroup);
+                        if (group.ItemDetails.Count is 0) groupBuy.ItemGroups.Remove(itemGroup);
+
+                        await _GroupBuyItemGroupsRepository.UpdateAsync(itemGroup);
+
+                        if (group.ItemDetails is { Count: > 0 })
+                            await _GroupBuyItemGroupDetailsRepository.DeleteAsync(d => d.GroupBuyItemGroupId == itemGroup.Id);
 
                         ProcessItemDetails(itemGroup, group.ItemDetails);
 
                         foreach (GroupBuyItemGroupDetails itemGroupDetails in itemGroup.ItemGroupDetails)
                         {
-                            await _GroupBuyItemGroupDetailsRepository.InsertAsync(itemGroupDetails);
+                            await _GroupBuyItemGroupDetailsRepository.UpdateAsync(itemGroupDetails);
                         }
                     }
                 }
+                else
+                {
+                    GroupBuyItemGroup itemGroup = _groupBuyManager.AddItemGroup(
+                        groupBuy,
+                        group.SortOrder,
+                        group.GroupBuyModuleType,
+                        group.AdditionalInfo,
+                        group.ProductGroupModuleTitle,
+                        group.ProductGroupModuleImageSize
+                    );
+
+                    itemGroup.ModuleNumber = group.ModuleNumber;
+
+                    await _GroupBuyItemGroupsRepository.InsertAsync(itemGroup);
+
+                    ProcessItemDetails(itemGroup, group.ItemDetails);
+
+                    foreach (GroupBuyItemGroupDetails itemGroupDetails in itemGroup.ItemGroupDetails)
+                    {
+                        await _GroupBuyItemGroupDetailsRepository.InsertAsync(itemGroupDetails);
+                    }
+                }
             }
-
-            groupBuy.ItemGroups.RemoveAll(w => w.Id == Guid.Empty);
-
-            await _groupBuyRepository.UpdateAsync(groupBuy);
-
-            return ObjectMapper.Map<GroupBuy, GroupBuyDto>(groupBuy);
-        }
-        catch (Exception ex)
-        {
-
-            throw;
         }
     }
+
+
     public async Task<GroupBuyDto> CopyAsync(Guid Id)
     {
         var query = await _groupBuyRepository.GetQueryableAsync();
