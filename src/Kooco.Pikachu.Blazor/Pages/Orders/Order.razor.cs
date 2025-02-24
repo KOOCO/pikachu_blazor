@@ -49,6 +49,7 @@ using static Volo.Abp.Ui.LayoutHooks.LayoutHooks;
 using AntDesign;
 using Azure;
 using AngleSharp.Io;
+using Blazorise.Extensions;
 
 namespace Kooco.Pikachu.Blazor.Pages.Orders;
 
@@ -588,7 +589,7 @@ public partial class Order
                                     new ObjectSettings
                                     {
                                         Page = htmlFilePath,
-                                        LoadSettings = new LoadSettings { JSDelay = 5000,ZoomFactor=1.5 },
+                                        LoadSettings = new LoadSettings { JSDelay = 5000 },
                                         
                                         WebSettings = new WebSettings
                                         {
@@ -842,7 +843,7 @@ public partial class Order
                             new ObjectSettings
                             {
                                 Page = htmlFilePath,
-                                 LoadSettings = new LoadSettings { JSDelay = 5000,ZoomFactor=1.5 },
+                                LoadSettings = new LoadSettings { JSDelay = 5000 },
                                 WebSettings = new WebSettings
                                 {
                                     EnableJavascript = true,
@@ -909,7 +910,7 @@ public partial class Order
                             new ObjectSettings
                             {
                                 Page = htmlFilePath,
-                                LoadSettings = new LoadSettings { JSDelay = 5000,ZoomFactor=1.5 },
+                                LoadSettings = new LoadSettings { JSDelay = 5000 },
                                 WebSettings = new WebSettings
                                 {
                                     EnableJavascript = true,
@@ -1810,10 +1811,24 @@ public partial class Order
         try
         {
            loading=true;
-            var selectedOrder = Orders.SingleOrDefault(x => x.IsSelected);
-            await _electronicInvoiceAppService.CreateInvoiceAsync(selectedOrder.OrderId);
+            var messages = new List<string>();
+            var selectedOrders = Orders.Where(x => x.IsSelected).ToList();
+
+            foreach (var selectedOrder in selectedOrders)
+            {
+             var msg = await _electronicInvoiceAppService.CreateInvoiceAsync(selectedOrder.OrderId);
+                if (!msg.IsNullOrEmpty())
+                {
+                    messages.Add($"Order No: {selectedOrder.OrderNo} - {msg}");
+                }
+                else {
+                    messages.Add($"Order No: {selectedOrder.OrderNo} - {L["InvoiceIssueSuccessfully"]}");
+
+                }
+            }
             loading=false;
-            await _uiMessageService.Success(L["InvoiceIssueSuccessfully"]);
+            // Show a single message with all order numbers and their respective messages
+            await _uiMessageService.Info(string.Join("\n", messages));
             await UpdateItemList();
 
 
