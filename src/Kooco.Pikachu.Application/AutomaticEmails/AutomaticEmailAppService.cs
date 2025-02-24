@@ -76,13 +76,16 @@ namespace Kooco.Pikachu.AutomaticEmails
 
         public async Task<List<string>> GetGroupBuyNamesAsync(List<Guid>? groupBuyIds)
         {
-            groupBuyIds ??= [];
-            var groupBuyNames = await (await _groupBuyRepository.GetQueryableAsync())
-                .Where(g => groupBuyIds.Contains(g.Id))
-                .Select(g => g.GroupBuyName)
-                .ToListAsync();
+            using (_dataFilter.Disable<IMultiTenant>())
+            {
+                groupBuyIds ??= [];
+                var groupBuyNames = await (await _groupBuyRepository.GetQueryableAsync())
+                    .Where(g => groupBuyIds.Contains(g.Id))
+                    .Select(g => g.GroupBuyName)
+                    .ToListAsync();
 
-            return groupBuyNames ?? [];
+                return groupBuyNames ?? [];
+            }
         }
 
         public async Task<PagedResultDto<AutomaticEmailDto>> GetListAsync(GetAutomaticEmailListDto input)
