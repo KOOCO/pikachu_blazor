@@ -78,24 +78,24 @@
                         <table class="w-100">
                             <tbody>
                                 <tr>
-                                    <td>@L["OrderQuantityPaid/TotalOrderQuantity"]</td>
+                                    <td>@L["OrderQuantityPaid/TotalOrderQuantity"]:</td>
                                     <td class="text-end">@ReportDetails.OrderQuantityPaid.ToString("N0") / @ReportDetails.TotalOrderQuantity.ToString("N0")</td>
                                 </tr>
                                 <tr>
-                                    <td>@L["SalesAmount/SalesAmountExcludingShipping"]</td>
-                                    <td class="text-end">@ReportDetails.SalesAmount.ToString("N0") / @ReportDetails.SalesAmountExclShipping.ToString("N0")</td>
+                                    <td>@L["SalesAmount/SalesAmountExcludingShipping"]:</td>
+                                    <td class="text-end">$@ReportDetails.SalesAmountExclShipping.ToString("N0")/$@ReportDetails.SalesAmount.ToString("N0")</td>
                                 </tr>
                                 <tr>
-                                    <td>@L["AmountReceived/AmountReceivedExcludingShipping"]</td>
-                                    <td class="text-end">@ReportDetails.AmountReceived.ToString("N0") / @ReportDetails.AmountReceivedExclShipping.ToString("N0")</td>
+                                    <td>@L["AmountReceived/AmountReceivedExcludingShipping"]:</td>
+                                    <td class="text-end">$@ReportDetails.AmountReceivedExclShipping.ToString("N0")/$@ReportDetails.AmountReceived.ToString("N0") </td>
                                 </tr>
                                 <tr>
-                                    <td>@L["SalesAmountMinusShippingCosts"]</td>
-                                    <td class="text-end">@ReportDetails.SalesAmountMinusShipping.ToString("N0")</td>
+                                    <td>@L["SalesAmountMinusShippingCosts"]:</td>
+                                    <td class="text-end">$@ReportDetails.SalesAmountMinusShipping.ToString("N0")</td>
                                 </tr>
                                 <tr>
-                                    <td>@L["BloggersShareProfit"]</td>
-                                    <td class="text-end">@ReportDetails.BloggersProfit.ToString("N1")</td>
+                                    <td>@L["BloggersShareProfit"]:</td>
+                                    <td class="text-end">$@ReportDetails.BloggersProfit.ToString("N1")</td>
                                 </tr>
                             </tbody>
                         </table>
