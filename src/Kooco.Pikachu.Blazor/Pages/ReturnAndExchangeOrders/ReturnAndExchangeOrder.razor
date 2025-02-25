@@ -18,205 +18,206 @@
 
 <LoadingIndicator @ref="loading" FullScreen FadeIn>
 
-<div class="row">
-    <div class="col-3">
-        <h3>@L["訂單管理-退換貨列表"]</h3>
-    </div>
-    <div class="col-9 text-lg-end">
-        <div class="d-inline-block me-1">
-            <div class="input-group">
-                <InputText class="form-control form-control-sm search-bar" @bind-Value="@Filter" placeholder="@L["Search"]"></InputText>
-                <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="OnSearch">
-                    <i class="fa fa-search"></i>
-                </Button>
+    <div class="row">
+        <div class="col-3">
+            <h3>@L["訂單管理-退換貨列表"]</h3>
+        </div>
+        <div class="col-9 text-lg-end">
+            <div class="d-inline-block me-1">
+                <div class="input-group">
+                    <InputText class="form-control form-control-sm search-bar" @bind-Value="@Filter" placeholder="@L["Search"]"></InputText>
+                    <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="OnSearch">
+                        <i class="fa fa-search"></i>
+                    </Button>
+                </div>
             </div>
         </div>
     </div>
-</div>
     <Card>
-         <CardBody>
-             <DataGrid TItem="OrderDto"
-                       Data="@Orders"
-                       @bind-SelectedRow="@SelectedOrder"
-                       ReadData="OnDataGridReadAsync"
-                       TotalItems="TotalCount"
-                       Responsive
-                       ShowPager="true"
-                       PageSize="PageSize"
-                       RowDoubleClicked="NavigateToOrderDetails"
-                       SortChanged="OnSortChange">
-                 <DataGridColumns>
-                     <DataGridCommandColumn />
-                     <DataGridColumn Caption="@L["Select"]" Width="30px">
-                         <DisplayTemplate>
-                             <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
-                         </DisplayTemplate>
-                     </DataGridColumn>
-                      <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
-                          <DisplayTemplate>
-                             @L[context.OrderNo]
-                         </DisplayTemplate>
-                     </DataGridColumn>
-                     <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />
-                     <DataGridColumn Field="@nameof(OrderDto.CustomerName)" Caption="@L["CustomerName"]" />
-                     <DataGridColumn   Field="@nameof(OrderDto.ReturnStatus)" Caption="@L["ReturnStatus"]">
-                        <DisplayTemplate>  
-                             @if (context.ReturnStatus == OrderReturnStatus.Pending && CanProcessRefund)
-                             {
-                                 <Select TValue="OrderReturnStatus" Class="form-select form-select-sm"
-                                 SelectedValue="@context.ReturnStatus"
-                                 SelectedValueChanged="@(e => ReturnStatusChanged(e, context))">
-                                     
-                                     @foreach (var enumValue in Enum.GetValues(typeof(OrderReturnStatus)))
-                                     { 
-                                         @if(enumValue.ToString()=="Approve"||enumValue.ToString()=="Pending"||enumValue.ToString()=="Reject")
-                                         {
-                                             @if (enumValue.ToString() == "Succeeded")
-                                             {
-                                                 var str = enumValue.ToString() + " in return";
+        <CardBody>
+            <DataGrid TItem="OrderDto"
+                      Data="@Orders"
+                      @bind-SelectedRow="@SelectedOrder"
+                      ReadData="OnDataGridReadAsync"
+                      TotalItems="TotalCount"
+                      Responsive
+                      ShowPager="true"
+                      PageSize="PageSize"
+                      SortChanged="OnSortChange"
+                      Hoverable>
+                <DataGridColumns>
+                    <DataGridCommandColumn />
+                    <DataGridColumn Caption="@L["Select"]" Width="30px">
+                        <DisplayTemplate>
+                            <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
+                        <DisplayTemplate>
+                            <Button Class="btn-link hyperlink" Clicked="() => NavigateToOrderDetails(context)">@context.OrderNo</Button>
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />
+                    <DataGridColumn Field="@nameof(OrderDto.CustomerName)" Caption="@L["CustomerName"]" />
+                    <DataGridColumn Field="@nameof(OrderDto.ReturnStatus)" Caption="@L["ReturnStatus"]">
+                        <DisplayTemplate>
+                            @if (context.ReturnStatus == OrderReturnStatus.Pending && CanProcessRefund)
+                            {
+                                <Select TValue="OrderReturnStatus" Class="form-select form-select-sm"
+                                        SelectedValue="@context.ReturnStatus"
+                                        SelectedValueChanged="@(e => ReturnStatusChanged(e, context))">
+
+                                    @foreach (var enumValue in Enum.GetValues(typeof(OrderReturnStatus)))
+                                    {
+                                        @if (enumValue.ToString() == "Approve" || enumValue.ToString() == "Pending" || enumValue.ToString() == "Reject")
+                                        {
+                                            @if (enumValue.ToString() == "Succeeded")
+                                            {
+                                                var str = enumValue.ToString() + " in return";
 
 
-                                                 <SelectItem Value="@enumValue">@L[str]</SelectItem>
+                                                <SelectItem Value="@enumValue">@L[str]</SelectItem>
 
-                                             }
-                                             else
-                                             {
-                                                 <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
-                                             }
-                                         }
-                                     }
-                                 </Select>
-                             }
-                          
-                            else if (context.ReturnStatus == OrderReturnStatus.Processing )
-                             {
-                                 <Select  TValue="OrderReturnStatus" Class="form-select form-select-sm"
-                                 SelectedValue="@context.ReturnStatus"
-                                 SelectedValueChanged="@(e => ReturnStatusChanged(e, context))">
-                                     
-                                     @foreach (var enumValue in Enum.GetValues(typeof(OrderReturnStatus)))
-                                     { 
-                                         @if(enumValue.ToString()=="Processing"||enumValue.ToString()=="Succeeded")
-                                         {
-                                             @if (enumValue.ToString() == "Succeeded")
-                                             {
-                                                 var str = enumValue.ToString() + " in return";
-                                                
-                                                 
-                                                 <SelectItem Value="@enumValue">@L[str]</SelectItem>
+                                            }
+                                            else
+                                            {
+                                                <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                            }
+                                        }
+                                    }
+                                </Select>
+                            }
 
-                                             }
-                                             else
-                                             {
-                                                 <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
-                                             }
-                                        
-                                         }
-                                     }
-                                 </Select>
-                             }
-                                   else if (context.ReturnStatus == OrderReturnStatus.Succeeded )
-                             {
-                                 <Select Disabled  TValue="OrderReturnStatus" Class="form-select form-select-sm"
-                                 SelectedValue="@context.ReturnStatus"
-                                 SelectedValueChanged="@(e => ReturnStatusChanged(e, context))">
-                                     
-                                     @foreach (var enumValue in Enum.GetValues(typeof(OrderReturnStatus)))
-                                     {
-                                         @if (enumValue.ToString() == "Succeeded")
-                                         {
-                                             var str = enumValue.ToString() + " in return";
+                            else if (context.ReturnStatus == OrderReturnStatus.Processing)
+                            {
+                                <Select TValue="OrderReturnStatus" Class="form-select form-select-sm"
+                                        SelectedValue="@context.ReturnStatus"
+                                        SelectedValueChanged="@(e => ReturnStatusChanged(e, context))">
+
+                                    @foreach (var enumValue in Enum.GetValues(typeof(OrderReturnStatus)))
+                                    {
+                                        @if (enumValue.ToString() == "Processing" || enumValue.ToString() == "Succeeded")
+                                        {
+                                            @if (enumValue.ToString() == "Succeeded")
+                                            {
+                                                var str = enumValue.ToString() + " in return";
 
 
-                                             <SelectItem Value="@enumValue">@L[str]</SelectItem>
+                                                <SelectItem Value="@enumValue">@L[str]</SelectItem>
 
-                                         }
-                                         else
-                                         {
-                                             <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
-                                         }
-                                         
-                                     }
-                                 </Select>
-                             }
-                              else if (context.ReturnStatus == OrderReturnStatus.Reject)
-                             {
-                                 <Select Disabled TValue="OrderReturnStatus" Class="form-select form-select-sm"
-                                 SelectedValue="@context.ReturnStatus"
-                                 SelectedValueChanged="@(e => ReturnStatusChanged(e, context))">
-                                     
-                                     @foreach (var enumValue in Enum.GetValues(typeof(OrderReturnStatus)))
-                                     {
-                                         @if (enumValue.ToString() == "Succeeded")
-                                         {
-                                             var str = enumValue.ToString() + " in return";
+                                            }
+                                            else
+                                            {
+                                                <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                            }
 
+                                        }
+                                    }
+                                </Select>
+                            }
+                            else if (context.ReturnStatus == OrderReturnStatus.Succeeded)
+                            {
+                                <Select Disabled TValue="OrderReturnStatus" Class="form-select form-select-sm"
+                                        SelectedValue="@context.ReturnStatus"
+                                        SelectedValueChanged="@(e => ReturnStatusChanged(e, context))">
 
-                                             <SelectItem Value="@enumValue">@L[str]</SelectItem>
-
-                                         }
-                                         else
-                                         {
-                                             <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
-                                         }
-                                         
-                                     }
-                                 </Select>
-                             }
-                             else{
-                               <Select Disabled TValue="OrderReturnStatus" Class="form-select form-select-sm"
-                                 SelectedValue="@context.ReturnStatus"
-                                 SelectedValueChanged="@(e => ReturnStatusChanged(e, context))">
-                                     
-                                     @foreach (var enumValue in Enum.GetValues(typeof(OrderReturnStatus)))
-                                     {
-                                         @if (enumValue.ToString() == "Succeeded")
-                                         {
-                                             var str = enumValue.ToString() + " in return";
+                                    @foreach (var enumValue in Enum.GetValues(typeof(OrderReturnStatus)))
+                                    {
+                                        @if (enumValue.ToString() == "Succeeded")
+                                        {
+                                            var str = enumValue.ToString() + " in return";
 
 
-                                             <SelectItem Value="@enumValue">@L[str]</SelectItem>
+                                            <SelectItem Value="@enumValue">@L[str]</SelectItem>
 
-                                         }
-                                         else
-                                         {
-                                             <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
-                                         }
-                                         
-                                     }
-                                 </Select>
-                             
-                             }
-  
-                         </DisplayTemplate>
-                         </DataGridColumn>
-                     <DataGridColumn Field="@nameof(OrderDto.OrderStatus)" Caption="@L["OrderStatus"]">
-                         <DisplayTemplate>
-                             @L[context.OrderStatus.ToString()]
-                         </DisplayTemplate>
-                     </DataGridColumn>
-                     <DataGridColumn Field="@nameof(OrderDto.ShippingStatus)" Caption="@L["ShippingStatus"]">
-                         <DisplayTemplate>
-                             @L[context.ShippingStatus.ToString()]
-                         </DisplayTemplate>
-                     </DataGridColumn>
-                     <DataGridColumn Field="@nameof(OrderDto.PaymentMethod)" Caption="@L["PaymentMethod"]">
-                         <DisplayTemplate>
-                             @L[context.PaymentMethod.ToString()]
-                         </DisplayTemplate>
-                     </DataGridColumn>
-                     <DataGridColumn TextAlignment="TextAlignment.Center" Field="@nameof(OrderDto.TotalAmount)" Caption="@L["CheckoutAmount"]">
-                         <DisplayTemplate>
-                             $ @context.TotalAmount.ToString("N2")
-                         </DisplayTemplate>
-                     </DataGridColumn>
-                 </DataGridColumns>
-                 <FirstPageButtonTemplate>@L[PikachuResource.FirstPage]</FirstPageButtonTemplate>
-                 <PreviousPageButtonTemplate>@L[PikachuResource.PrevPage]</PreviousPageButtonTemplate>
-                 <NextPageButtonTemplate>@L[PikachuResource.NextPage]</NextPageButtonTemplate>
-                 <LastPageButtonTemplate>@L[PikachuResource.LastPage]</LastPageButtonTemplate>
-             </DataGrid>
-         </CardBody>
+                                        }
+                                        else
+                                        {
+                                            <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                        }
+
+                                    }
+                                </Select>
+                            }
+                            else if (context.ReturnStatus == OrderReturnStatus.Reject)
+                            {
+                                <Select Disabled TValue="OrderReturnStatus" Class="form-select form-select-sm"
+                                        SelectedValue="@context.ReturnStatus"
+                                        SelectedValueChanged="@(e => ReturnStatusChanged(e, context))">
+
+                                    @foreach (var enumValue in Enum.GetValues(typeof(OrderReturnStatus)))
+                                    {
+                                        @if (enumValue.ToString() == "Succeeded")
+                                        {
+                                            var str = enumValue.ToString() + " in return";
+
+
+                                            <SelectItem Value="@enumValue">@L[str]</SelectItem>
+
+                                        }
+                                        else
+                                        {
+                                            <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                        }
+
+                                    }
+                                </Select>
+                            }
+                            else
+                            {
+                                <Select Disabled TValue="OrderReturnStatus" Class="form-select form-select-sm"
+                                        SelectedValue="@context.ReturnStatus"
+                                        SelectedValueChanged="@(e => ReturnStatusChanged(e, context))">
+
+                                    @foreach (var enumValue in Enum.GetValues(typeof(OrderReturnStatus)))
+                                    {
+                                        @if (enumValue.ToString() == "Succeeded")
+                                        {
+                                            var str = enumValue.ToString() + " in return";
+
+
+                                            <SelectItem Value="@enumValue">@L[str]</SelectItem>
+
+                                        }
+                                        else
+                                        {
+                                            <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                        }
+
+                                    }
+                                </Select>
+
+                            }
+
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn Field="@nameof(OrderDto.OrderStatus)" Caption="@L["OrderStatus"]">
+                        <DisplayTemplate>
+                            @L[context.OrderStatus.ToString()]
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn Field="@nameof(OrderDto.ShippingStatus)" Caption="@L["ShippingStatus"]">
+                        <DisplayTemplate>
+                            @L[context.ShippingStatus.ToString()]
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn Field="@nameof(OrderDto.PaymentMethod)" Caption="@L["PaymentMethod"]">
+                        <DisplayTemplate>
+                            @L[context.PaymentMethod.ToString()]
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn TextAlignment="TextAlignment.Center" Field="@nameof(OrderDto.TotalAmount)" Caption="@L["CheckoutAmount"]">
+                        <DisplayTemplate>
+                            $ @context.TotalAmount.ToString("N2")
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                </DataGridColumns>
+                <FirstPageButtonTemplate>@L[PikachuResource.FirstPage]</FirstPageButtonTemplate>
+                <PreviousPageButtonTemplate>@L[PikachuResource.PrevPage]</PreviousPageButtonTemplate>
+                <NextPageButtonTemplate>@L[PikachuResource.NextPage]</NextPageButtonTemplate>
+                <LastPageButtonTemplate>@L[PikachuResource.LastPage]</LastPageButtonTemplate>
+            </DataGrid>
+        </CardBody>
     </Card>
 </LoadingIndicator>
 
