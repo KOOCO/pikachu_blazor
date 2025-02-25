@@ -49,7 +49,7 @@ public class ItemDetailsAppService : CrudAppService<ItemDetails, ItemDetailsDto,
 
     public async Task<IRemoteStreamContent> GetListAsExcelFileAsync(InventroyExcelDownloadDto input)
     {
-        var items = await _repository.GetInventroyListAsync(input.SkipCount, int.MaxValue, input.Sorting, input.FilterText);
+        var items = await _repository.GetInventroyListAsync(0, int.MaxValue, input.Sorting, input.FilterText);
 
         // Create a dictionary for localized headers
         var headers = new Dictionary<string, string>
