@@ -255,168 +255,210 @@
             }
         </CardBody>
     </Card>
-    <Card>
-        <CardBody>
-            <DataGrid TItem="OrderDto"
-                      Data="@Orders"
-                      @bind-SelectedRow="@SelectedOrder"
-                      ReadData="@(async (e) => await OnTabLoadDataGridReadAsync(e, "EnterpricePurchase"))"
-                      TotalItems="TotalCount"
-                      DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.Id == SelectedOrder?.Id)"
-                      Responsive
-                      ShowPager="true"
-                      PageSize="PageSize"
-                      RowClicked="ToggleRow"
-                      RowDoubleClicked="NavigateToOrderDetails"
-                      SortChanged="OnSortChange">
-                <DataGridColumns>
-                    <DataGridCommandColumn />
-                    <DataGridColumn Caption="@L["Select"]" Width="30px">
-                        <DisplayTemplate>
-                            <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
-                        </DisplayTemplate>
-                    </DataGridColumn>
-                    <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
-                        <DisplayTemplate>
-                            @{
-                                var isExpanded = ExpandedRows.Contains(context.Id);
-                                var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
-                            }
-                            <i class="@chevronClass"></i>
-                            @L[context.OrderNo]
-                        </DisplayTemplate>
-                    </DataGridColumn>
-                    <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />
-                    <DataGridColumn Field="@nameof(OrderDto.CustomerName)" Caption="@L["CustomerName"]" />
-                    <DataGridColumn Field="@nameof(OrderDto.CustomerEmail)" Caption="@L["Email"]" />
-                    <DataGridColumn Field="@nameof(OrderDto.OrderStatus)" Caption="@L["OrderStatus"]">
-                        <DisplayTemplate>
-                            @L[context.OrderStatus.ToString()]
-                        </DisplayTemplate>
-                    </DataGridColumn>
-                    <DataGridColumn Field="@nameof(OrderDto.ShippingStatus)" Caption="@L["ShippingStatus"]">
-                        <DisplayTemplate>
-                            @L[context.ShippingStatus.ToString()]
-                        </DisplayTemplate>
-                    </DataGridColumn>
-                    <DataGridColumn Field="@nameof(OrderDto.PaymentMethod)" Caption="@L["PaymentMethod"]">
-                        <DisplayTemplate>
-                            @L[context.PaymentMethod.ToString()]
-                        </DisplayTemplate>
-                    </DataGridColumn>
-                    <DataGridColumn TextAlignment="TextAlignment.Center" Field="@nameof(OrderDto.TotalAmount)" Caption="@L["CheckoutAmount"]">
-                        <DisplayTemplate>
-                            $ @context.TotalAmount.ToString("N2")
-                        </DisplayTemplate>
-                    </DataGridColumn>
-                    <DataGridColumn TextAlignment="TextAlignment.Center" Field="@nameof(OrderDto.OrderType)">
-                        <DisplayTemplate>
-                            @if (context.OrderType == OrderType.MargeToNew || context.OrderType == OrderType.SplitToNew)
-                            {
-                                @L["Orignal"]
-                                ;
-                            }
-                            @if (context.OrderType == OrderType.NewSplit)
-                            {
-                                @L["Split"]
-                                ;
-                            }
-                            @if (context.OrderType == OrderType.NewMarge)
-                            {
-                                @L["Combined"]
-                                ;
-                            }
-                        </DisplayTemplate>
-                    </DataGridColumn>
-                </DataGridColumns>
-                <DetailRowTemplate>
-                    @{
-                        var orderItems = (context as OrderDto).OrderItems;
-                        <div class="mx-2 px-3 py-2 border">
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <td>@L["RecipientInformation"]</td>
-                                        <td>@context.CustomerName / @context.CustomerPhone</td>
-                                    </tr>
-                                    <tr>
-                                        <td>@L["ShippingMethod"]</td>
-                                        <td>@L[context.DeliveryMethod.ToString()]</td>
-                                    </tr>
-                                    <tr>
-                                        <td>@L["PostalCode"]</td>
+    <Row>
+        <Column ColumnSize="SelectedOrder != null ? ColumnSize.Is8 : ColumnSize.Is12">
+            <Card>
+                <CardBody>
+                    <DataGrid TItem="OrderDto"
+                              Data="@Orders"
+                              @bind-SelectedRow="@SelectedOrder"
+                              ReadData="@(async (e) => await OnTabLoadDataGridReadAsync(e, "EnterpricePurchase"))"
+                              TotalItems="TotalCount"
+                              Responsive
+                              ShowPager="true"
+                              PageSize="PageSize"
+                              RowClicked="ToggleRow"
+                              SortChanged="OnSortChange"
+                              Hoverable>
+                        <DataGridColumns>
+                            <DataGridCommandColumn />
+                            <DataGridColumn Caption="@L["Select"]" Width="30px">
+                                <DisplayTemplate>
+                                    <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
+                                </DisplayTemplate>
+                            </DataGridColumn>
+                            <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
+                                <DisplayTemplate>
+                                    <Button Class="btn-link hyperlink" Clicked="() => NavigateToOrderDetails(context)">@context.OrderNo</Button>
+                                </DisplayTemplate>
+                            </DataGridColumn>
+                            <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />
+                            <DataGridColumn Field="@nameof(OrderDto.CustomerName)" Caption="@L["CustomerName"]" />
+                            <DataGridColumn Field="@nameof(OrderDto.CustomerEmail)" Caption="@L["Email"]" />
+                            <DataGridColumn Field="@nameof(OrderDto.OrderStatus)" Caption="@L["OrderStatus"]">
+                                <DisplayTemplate>
+                                    @L[context.OrderStatus.ToString()]
+                                </DisplayTemplate>
+                            </DataGridColumn>
+                            <DataGridColumn Field="@nameof(OrderDto.ShippingStatus)" Caption="@L["ShippingStatus"]">
+                                <DisplayTemplate>
+                                    @L[context.ShippingStatus.ToString()]
+                                </DisplayTemplate>
+                            </DataGridColumn>
+                            <DataGridColumn Field="@nameof(OrderDto.PaymentMethod)" Caption="@L["PaymentMethod"]">
+                                <DisplayTemplate>
+                                    @L[context.PaymentMethod.ToString()]
+                                </DisplayTemplate>
+                            </DataGridColumn>
+                            <DataGridColumn TextAlignment="TextAlignment.Center" Field="@nameof(OrderDto.TotalAmount)" Caption="@L["CheckoutAmount"]">
+                                <DisplayTemplate>
+                                    $ @context.TotalAmount.ToString("N2")
+                                </DisplayTemplate>
+                            </DataGridColumn>
+                            <DataGridColumn TextAlignment="TextAlignment.Center" Field="@nameof(OrderDto.OrderType)">
+                                <DisplayTemplate>
+                                    @if (context.OrderType == OrderType.MargeToNew || context.OrderType == OrderType.SplitToNew)
+                                    {
+                                        @L["Orignal"]
+                                    }
+                                    @if (context.OrderType == OrderType.NewSplit)
+                                    {
+                                        @L["Split"]
+                                    }
+                                    @if (context.OrderType == OrderType.NewMarge)
+                                    {
+                                        @L["Combined"]
+                                    }
+                                </DisplayTemplate>
+                            </DataGridColumn>
+                        </DataGridColumns>
+                        <FirstPageButtonTemplate>@L[PikachuResource.FirstPage]</FirstPageButtonTemplate>
+                        <PreviousPageButtonTemplate>@L[PikachuResource.PrevPage]</PreviousPageButtonTemplate>
+                        <NextPageButtonTemplate>@L[PikachuResource.NextPage]</NextPageButtonTemplate>
+                        <LastPageButtonTemplate>@L[PikachuResource.LastPage]</LastPageButtonTemplate>
+                    </DataGrid>
+                </CardBody>
+            </Card>
+        </Column>
+        @if (SelectedOrder != null)
+        {
+            <Column ColumnSize="ColumnSize.Is4">
+                <Card>
+                    <CardHeader style="display: flex;justify-content: space-between;">
+                        <h5>Order Details - @SelectedOrder?.OrderNo</h5>
+                        <CloseButton Clicked="() => SelectedOrder = null" />
+                    </CardHeader>
 
-                                        <td>@context.PostalCode</td>
-                                    </tr>
-                                    <tr>
-                                        <td>@L["City"]</td>
+                    <CardBody>
+                        @if (SelectedOrder != null)
+                        {
+                            var orderItems = SelectedOrder.OrderItems;
+                            <div class="mx-2 px-3 py-2 border">
+                                <Table Responsive>
+                                    <TableBody>
+                                        <TableRow>
 
-                                        <td>@context.City</td>
-                                    </tr>
-                                    <tr>
-                                        <td>@L["Address"]</td>
-                                        <td class="d-none">@context.AddressDetails</td>
-                                        <td>@context.AddressDetails</td>
-                                    </tr>
-                                    <tr>
-                                        <td>@L["Remarks"]</td>
-                                        <td>@context.Remarks</td>
-                                    </tr>
-                                    <tr>
-                                        <td>@L["MerchantRemarks"]</td>
-                                        <td>
-                                            @foreach (var item in context.StoreComments.OrderByDescending(x => x.CreationTime))
+                                            <TableRowHeader>@L["RecipientInformation"]</TableRowHeader>
+
+                                            @if (SelectedOrder.DeliveryMethod is not EnumValues.DeliveryMethod.DeliveredByStore)
                                             {
-                                                if (context.StoreComments.Count > 1)
-                                                {
-                                                    <span> @item.Comment /</span>
-                                                }
-                                                else
-                                                {
-                                                    <span> @item.Comment</span>
-                                                }
+                                                <TableRowCell>@SelectedOrder.RecipientName / @SelectedOrder.RecipientPhone</TableRowCell>
                                             }
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>@L["OrderItems"]</td>
-                                        <td>
-                                            @foreach (var item in orderItems)
+
+                                            else
                                             {
-                                                @if (item.ItemType == ItemType.Item)
-                                                {
-                                                    <div mb-1>
-                                                        <span>@item.Spec</span>
-                                                        <span>@item.Item?.ItemName x @item.Quantity</span>
-                                                    </div>
-                                                }
-                                                @if (item.ItemType == ItemType.SetItem)
-                                                {
-                                                    <div mb-1>
-                                                        <span>@item.Spec</span>
-                                                        <span>@item.SetItem?.SetItemName x @item.Quantity</span>
-                                                    </div>
-                                                }
-                                                @if (item.ItemType == ItemType.Freebie)
-                                                {
-                                                    <div mb-1>
-                                                        <span>@item.Spec</span>
-                                                        <span>@item.Freebie?.ItemName x @item.Quantity</span>
-                                                    </div>
-                                                }
+                                                <TableRowCell>
+                                                    <span>@L["Normal"] :- @SelectedOrder.RecipientNameDbsNormal / @SelectedOrder.RecipientPhoneDbsNormal</span>
+                                                    <hr />
+                                                    <span>@L["Freeze"] :- @SelectedOrder.RecipientNameDbsFreeze / @SelectedOrder.RecipientPhoneDbsFreeze</span>
+                                                    <hr />
+                                                    <span>@L["Frozen"] :- @SelectedOrder.RecipientNameDbsFrozen / @SelectedOrder.RecipientPhoneDbsFrozen</span>
+                                                </TableRowCell>
                                             }
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    }
-                </DetailRowTemplate>
-                <FirstPageButtonTemplate>@L[PikachuResource.FirstPage]</FirstPageButtonTemplate>
-                <PreviousPageButtonTemplate>@L[PikachuResource.PrevPage]</PreviousPageButtonTemplate>
-                <NextPageButtonTemplate>@L[PikachuResource.NextPage]</NextPageButtonTemplate>
-                <LastPageButtonTemplate>@L[PikachuResource.LastPage]</LastPageButtonTemplate>
-            </DataGrid>
-        </CardBody>
-    </Card>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableRowHeader>@L["ShippingMethod"]</TableRowHeader>
+                                            <TableRowCell>@L[SelectedOrder.DeliveryMethod.ToString()]</TableRowCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableRowHeader>@L["PostalCode"]</TableRowHeader>
+
+                                            <TableRowCell>@SelectedOrder.PostalCode</TableRowCell>
+                                        </TableRow>
+
+                                        <TableRow>
+                                            <TableRowHeader>@L["City"]</TableRowHeader>
+
+                                            <TableRowCell>@SelectedOrder.City</TableRowCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableRowHeader>@L["Address"]</TableRowHeader>
+                                            <TableRowCell class="d-none">@SelectedOrder.AddressDetails</TableRowCell>
+                                            <TableRowCell>@SelectedOrder.AddressDetails</TableRowCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableRowHeader>@L["Remarks"]</TableRowHeader>
+                                            <TableRowCell>@SelectedOrder.Remarks</TableRowCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableRowHeader>@L["MerchantRemarks"]</TableRowHeader>
+                                            <TableRowCell>
+                                                @foreach (var item in SelectedOrder.StoreComments.OrderByDescending(x => x.CreationTime))
+                                                {
+                                                    if (SelectedOrder.StoreComments.Count > 1)
+                                                    {
+                                                        <span> @item.Comment /</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span> @item.Comment</span>
+                                                    }
+                                                }
+                                            </TableRowCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <TableRowHeader>@L["OrderItems"]</TableRowHeader>
+                                            <TableRowCell Style="border-bottom: 1px solid #e7e9ec !important;">
+                                                @foreach (OrderItemDto item in orderItems.OrderBy(o => o.ItemType).ToList())
+                                                {
+                                                    @if (item.ItemType is ItemType.Item)
+                                                    {
+                                                        <div mb-1>
+                                                            <span>@item.Spec</span>
+                                                            <span>@item.Item?.ItemName x @item.Quantity</span>
+                                                        </div>
+                                                    }
+                                                    @if (item.ItemType is ItemType.SetItem)
+                                                    {
+                                                        <div mb-1>
+                                                            <span>@item.Spec</span>
+                                                            <span>- @item.SetItem?.SetItemName x @item.Quantity</span>
+                                                        </div>
+
+                                                        <div mb-1>
+                                                            <span>@item.SetItem?.SetItemName x @item.Quantity</span>
+                                                            <br />
+
+                                                            @{
+                                                                List<string> setItemNames = (item.Spec != null ? [.. item.Spec.Split(", ")] : []);
+                                                            }
+
+                                                            @foreach (string setItemName in setItemNames)
+                                                            {
+                                                                <span>- @setItemName</span>
+
+                                                                <br />
+                                                            }
+                                                        </div>
+                                                    }
+                                                    @if (item.ItemType is ItemType.Freebie)
+                                                    {
+                                                        <div mb-1>
+                                                            <span>@item.Spec</span>
+                                                            <span>@item.Freebie?.ItemName x @item.Quantity</span>
+                                                        </div>
+                                                    }
+                                                }
+                                            </TableRowCell>
+                                        </TableRow>
+                                    </TableBody>
+                                </Table>
+                            </div>
+                        }
+
+                    </CardBody>
+                </Card>
+            </Column>
+        }
+    </Row>
 </LoadingIndicator>

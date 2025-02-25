@@ -27,7 +27,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         private List<OrderDeliveryDto> OrderDeliveries { get; set; }
         private List<OrderDto> Orders { get; set; } = new();
         private int TotalCount { get; set; }
-        private OrderDto SelectedOrder { get; set; }
+        private OrderDto? SelectedOrder { get; set; }
         private OrderItemDto SelectedOrderItem { get; set; }
         private OrderDeliveryDto SelectedOrderDelivery { get; set; }
         private Guid? GroupBuyFilter { get; set; }
@@ -255,11 +255,11 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
             StateHasChanged();
         }
 
-        public async void NavigateToOrderDetails(DataGridRowMouseEventArgs<OrderDto> e)
+        public async void NavigateToOrderDetails(OrderDto e)
         {
             await loading.Show();
 
-            var id = e.Item.OrderId;
+            var id = e.OrderId;
             NavigationManager.NavigateTo($"Orders/OrderDetails/{id}");
 
             await loading.Hide();
@@ -324,18 +324,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
 
         void ToggleRow(DataGridRowMouseEventArgs<OrderDto> e)
         {
-            if (ExpandedOrderId == e.Item.Id) ExpandedOrderId = null;
-
-            else ExpandedOrderId = e.Item.Id;
-
-            if (ExpandedRows.Contains(e.Item.Id))
-            {
-                ExpandedRows.Remove(e.Item.Id);
-            }
-            else
-            {
-                ExpandedRows.Add(e.Item.Id);
-            }
+            SelectedOrder = e.Item;
         }
 
         private bool IsRowExpanded(OrderDto order)
