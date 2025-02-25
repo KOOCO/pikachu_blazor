@@ -43,14 +43,16 @@
                       TotalItems="TotalCount"
                       ShowPager="true"
                       PageSize="PageSize"
-                      RowDoubleClicked="NavigateToOrderDetails"
                       Responsive="true"
-                      SortChanged="OnSortChange">
+                      SortChanged="OnSortChange"
+                      Hoverable>
                 <DataGridColumns>
                     <DataGridColumn TItem="RefundDto"
                                     Caption="@L["OrderNo"]">
                         <DisplayTemplate>
-                            @context.Order.OrderNo
+                            <Button Class="btn-link hyperlink" Clicked="() => NavigateToOrderDetails(context)">
+                                @context.Order.OrderNo
+                            </Button>
                         </DisplayTemplate>
                     </DataGridColumn>
                     <DataGridColumn TItem="RefundDto"

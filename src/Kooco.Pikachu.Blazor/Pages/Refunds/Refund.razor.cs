@@ -74,11 +74,11 @@ public partial class Refund
             await loading.Hide();
         }
     }
-    public async void NavigateToOrderDetails(DataGridRowMouseEventArgs<RefundDto> e)
+    public async void NavigateToOrderDetails(RefundDto e)
     {
         await loading.Show();
 
-        var id = e.Item.OrderId;
+        var id = e.OrderId;
         NavigationManager.NavigateTo($"Orders/OrderDetails/{id}");
 
         await loading.Hide();
