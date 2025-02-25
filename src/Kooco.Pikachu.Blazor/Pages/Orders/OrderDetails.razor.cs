@@ -1907,7 +1907,7 @@ public partial class OrderDetails
         var orderItemIds = Order?.OrderItems.Where(x => x.IsSelected).Select(x => x.Id).ToList();
         if (orderItemIds.Count == Order?.OrderItems.Count)
         {
-            await _uiMessageService.Error("Youcannotsplittheorder");
+            await _uiMessageService.Error(L["Youcannotsplittheorder"]);
             return;
         
         }
