@@ -558,7 +558,11 @@
 }
 
 .b-table .btn-link.hyperlink {
-    font-size: 1rem !important;
     padding: 0 !important;
     font-weight: 500;
+    font-size: 0.85rem !important;
 }
+
+    .b-table .btn-link.hyperlink.fs-large {
+        font-size: 1rem !important;
+    }
