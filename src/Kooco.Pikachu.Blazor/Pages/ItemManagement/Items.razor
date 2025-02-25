@@ -16,36 +16,36 @@
 @inject IJSRuntime JSRuntime;
 
 <LoadingIndicator @ref="Loading" FullScreen></LoadingIndicator>
- <div class="row">
-     <div class="col-4">
-         <h3>@L["Items"]</h3>
+<div class="row">
+    <div class="col-4">
+        <h3>@L["Items"]</h3>
     </div>
     <div class="col-8 text-lg-end">
         <Div Class="d-inline-block">
             <Span>@L["Display"]</Span>
-                <Div Class="d-inline-block">
-                    <Select TValue="int" SelectedValue="@Filters.MaxResultCount" SelectedValueChanged="@OnPageSizeChanged" Class="form-select-sm bg-white">
-                        <SelectItem TValue="int" Value="10">10</SelectItem>
-                        <SelectItem TValue="int" Value="25">25</SelectItem>
-                        <SelectItem TValue="int" Value="50">50</SelectItem>
-                        <SelectItem TValue="int" Value="100">100</SelectItem>
-                    </Select>
-                </Div>
-                <Span>@L["Results"]</Span>
+            <Div Class="d-inline-block">
+                <Select TValue="int" SelectedValue="@Filters.MaxResultCount" SelectedValueChanged="@OnPageSizeChanged" Class="form-select-sm bg-white">
+                    <SelectItem TValue="int" Value="10">10</SelectItem>
+                    <SelectItem TValue="int" Value="25">25</SelectItem>
+                    <SelectItem TValue="int" Value="50">50</SelectItem>
+                    <SelectItem TValue="int" Value="100">100</SelectItem>
+                </Select>
             </Div>
-            <div class="custom-check-group me-1">
-                <input type="checkbox" class="form-check-input" checked="@IsAllSelected" @onchange="HandleSelectAllChange"></input>
-                <Label Class="form-label">@L["SelectAll"]</Label>
-            </div>
-            <Button Type="@ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="CreateNewItem">
-                <i class="fa fa-plus"></i>
-                @L["NewItem"]
+            <Span>@L["Results"]</Span>
+        </Div>
+        <div class="custom-check-group me-1">
+            <input type="checkbox" class="form-check-input" checked="@IsAllSelected" @onchange="HandleSelectAllChange"></input>
+            <Label Class="form-label">@L["SelectAll"]</Label>
+        </div>
+        <Button Type="@ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="CreateNewItem">
+            <i class="fa fa-plus"></i>
+            @L["NewItem"]
         </Button>
         <Button Color="Color.Secondary" Size="Size.Small" Clicked="CopyAsync" Disabled="@(ItemList.Count(x => x.IsSelected) != 1)">
             @L["CopyItem"]
         </Button>
-            <Button Type="@ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="DeleteSelectedAsync">
-                @L["DeleteSelected"]
+        <Button Type="@ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="DeleteSelectedAsync">
+            @L["DeleteSelected"]
         </Button>
     </div>
 </div>
@@ -53,51 +53,51 @@
     <CardBody>
         <Div Class="form-group">
             <Label Class="form-label">@L["EnterItemName"]</Label>
-                <Autocomplete TItem="KeyValueDto"
-                              TValue="Guid?"
-                              Data="@ItemLookup"
-                              TextField="@(( item ) => item.Name)"
-                              ValueField="@(( item ) => item.Id)"
-                              Placeholder="@L["Search"]"
-                              Filter="AutocompleteFilter.StartsWith"
-                              CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
-                              Immediate="true"
-                              @bind-SelectedValue="Filters.ItemId"
-                              @ref="Autocomplete">
-                    <NotFoundContent> @L["NotFound"] </NotFoundContent>
+            <Autocomplete TItem="KeyValueDto"
+                          TValue="Guid?"
+                          Data="@ItemLookup"
+                          TextField="@(( item ) => item.Name)"
+                          ValueField="@(( item ) => item.Id)"
+                          Placeholder="@L["Search"]"
+                          Filter="AutocompleteFilter.StartsWith"
+                          CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                          Immediate="true"
+                          @bind-SelectedValue="Filters.ItemId"
+                          @ref="Autocomplete">
+                <NotFoundContent> @L["NotFound"] </NotFoundContent>
             </Autocomplete>
         </Div>
         <Div Class="row">
             <Div Class="col-3">
                 <Label Class="form-label">@L["MinAvailableTime"]</Label>
-                    <InputDate class="form-control form-control-sm" @bind-Value="Filters.MinAvailableTime"></InputDate>
-                </Div>
-                <Div Class="col-3">
-                    <Label Class="form-label">@L["MaxAvailableTime"]</Label>
-                    <InputDate class="form-control form-control-sm" @bind-Value="Filters.MaxAvailableTime"></InputDate>
-                </Div>
-                <Div Class="col-2">
-                    <Label Class="form-label">@L["FreeShipping"]</Label>
-                    <Select TValue="bool?" @bind-SelectedValue="Filters.IsFreeShipping" Class="form-select form-select-sm">
-                        <SelectItem TValue="bool?" Value="null"></SelectItem>
-                        <SelectItem TValue="bool?" Value="true">@L["Yes"]</SelectItem>
-                        <SelectItem TValue="bool?" Value="false">@L["No"]</SelectItem>
-                    </Select>
-                </Div>
-                <Div Class="col-2">
-                    <Label Class="form-label">@L["Availability"]</Label>
-                    <Select TValue="bool?" 
-                            @bind-SelectedValue="Filters.IsAvailable" 
-                            Class="form-select form-select-sm">
-                        <SelectItem TValue="bool?" Value="null"></SelectItem>
-                        <SelectItem TValue="bool?" Value="true">@L["Yes"]</SelectItem>
-                        <SelectItem TValue="bool?" Value="false">@L["No"]</SelectItem>
-                    </Select>
-                </Div>
-                <Div Class="col-2 d-flex align-items-end">
-                    <Button Class="btn btn-sm btn-primary me-1" Clicked="FilterAsync">
-                        <i class="fas fa-filter"></i>
-                        @L["Filter"]
+                <InputDate class="form-control form-control-sm" @bind-Value="Filters.MinAvailableTime"></InputDate>
+            </Div>
+            <Div Class="col-3">
+                <Label Class="form-label">@L["MaxAvailableTime"]</Label>
+                <InputDate class="form-control form-control-sm" @bind-Value="Filters.MaxAvailableTime"></InputDate>
+            </Div>
+            <Div Class="col-2">
+                <Label Class="form-label">@L["FreeShipping"]</Label>
+                <Select TValue="bool?" @bind-SelectedValue="Filters.IsFreeShipping" Class="form-select form-select-sm">
+                    <SelectItem TValue="bool?" Value="null"></SelectItem>
+                    <SelectItem TValue="bool?" Value="true">@L["Yes"]</SelectItem>
+                    <SelectItem TValue="bool?" Value="false">@L["No"]</SelectItem>
+                </Select>
+            </Div>
+            <Div Class="col-2">
+                <Label Class="form-label">@L["Availability"]</Label>
+                <Select TValue="bool?"
+                        @bind-SelectedValue="Filters.IsAvailable"
+                        Class="form-select form-select-sm">
+                    <SelectItem TValue="bool?" Value="null"></SelectItem>
+                    <SelectItem TValue="bool?" Value="true">@L["Yes"]</SelectItem>
+                    <SelectItem TValue="bool?" Value="false">@L["No"]</SelectItem>
+                </Select>
+            </Div>
+            <Div Class="col-2 d-flex align-items-end">
+                <Button Class="btn btn-sm btn-primary me-1" Clicked="FilterAsync">
+                    <i class="fas fa-filter"></i>
+                    @L["Filter"]
                 </Button>
                 <Button Class="btn btn-sm btn-outline-primary" Clicked="ResetAsync">
                     <i class="fas fa-undo"></i>
@@ -115,22 +115,25 @@
                   TotalItems="Total"
                   ShowPager="true"
                   PageSize="Filters.MaxResultCount"
-                  RowDoubleClicked="OnEditItem"
-                  SortChanged="OnSortChange">
+                  SortChanged="OnSortChange"
+                  Hoverable>
             <DataGridColumns>
                 <DataGridColumn Caption="@L["Select"]" Width="30px">
                     <DisplayTemplate>
-                        <InputCheckbox class="form-check-input" 
+                        <InputCheckbox class="form-check-input"
                                        @bind-Value="@context.IsSelected" />
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn Field="@nameof(ItemListDto.ItemName)"
                                 Caption="@L["ItemName"]">
+                    <DisplayTemplate>
+                        <Button Class="btn-link hyperlink" Clicked="() => OnEditItem(context)">@context.ItemName</Button>
+                    </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn Field="@nameof(ItemListDto.ItemDescriptionTitle)"
                                 Caption="@L["ItemDescription"]">
                 </DataGridColumn>
-             @*    <DataGridColumn Caption="@L["TimeLimitPeriod"]"
+                @*    <DataGridColumn Caption="@L["TimeLimitPeriod"]"
                                 Sortable="false">
                     <DisplayTemplate>
                         @context.LimitAvaliableTimeStart.ToShortDateString() - @context.LimitAvaliableTimeEnd.ToShortDateString()
@@ -161,8 +164,8 @@
                 <DataGridColumn Field="@nameof(ItemListDto.IsItemAvaliable)"
                                 Caption="@L["Availability"]">
                     <DisplayTemplate>
-                        <Switch TValue="bool" 
-                                Checked="@context.IsItemAvaliable" 
+                        <Switch TValue="bool"
+                                Checked="@context.IsItemAvaliable"
                                 CheckedChanged="@(() => OnItemAvaliablityChange(context.Id))" />
                     </DisplayTemplate>
                 </DataGridColumn>
