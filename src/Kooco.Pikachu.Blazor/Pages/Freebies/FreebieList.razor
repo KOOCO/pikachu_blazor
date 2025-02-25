@@ -38,8 +38,8 @@
                   TotalItems="Total"
                   ShowPager="true"
                   PageSize="PageSize"
-                  RowDoubleClicked="OnEditItem"
-                  SortChanged="OnSortChange">
+                  SortChanged="OnSortChange"
+                  Hoverable>
             <DataGridColumns>
                 <DataGridColumn TItem="FreebieDto" Caption="@L["Select"]" Width="30px">
                     <DisplayTemplate>
@@ -49,6 +49,9 @@
                 <DataGridColumn TItem="FreebieDto"
                                 Field="@nameof(FreebieDto.ItemName)"
                                 Caption="@L["ItemName"]">
+                    <DisplayTemplate>
+                        <Button Class="btn-link hyperlink" Clicked="() => OnEditItem(context)">@context.ItemName</Button>
+                    </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="FreebieDto"
                                 Caption="@L["ActivityTimePeriod"]">
