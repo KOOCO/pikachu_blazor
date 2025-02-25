@@ -1338,6 +1338,7 @@
     "InvoiceTitle": "發票抬頭",
     "EmailSubject": "電子郵件主旨",
     "SendDateRange": "發送日期範圍",
-    "SendFrequency": "發送頻率"
+    "SendFrequency": "發送頻率",
+    "Youcannotsplittheorder": "所選商品和數量與原訂單一致，無法進行拆分"
   }
 }

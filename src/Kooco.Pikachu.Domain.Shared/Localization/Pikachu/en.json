@@ -1263,6 +1263,7 @@
     "EmailSubject": "Email Subject",
     "SendDateRange": "Send Date Range",
     "SendFrequency": "Send Frequency",
-    "ReportNotification": "Report Notification"
+    "ReportNotification": "Report Notification",
+    "Youcannotsplittheorder": "You cannot split the order as the items and quantities match the original order."
   }
 }

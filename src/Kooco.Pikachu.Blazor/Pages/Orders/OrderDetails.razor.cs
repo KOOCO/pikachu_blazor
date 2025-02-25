@@ -1905,6 +1905,12 @@ public partial class OrderDetails
     private async void SplitOrder()
     {
         var orderItemIds = Order?.OrderItems.Where(x => x.IsSelected).Select(x => x.Id).ToList();
+        if (orderItemIds.Count == Order?.OrderItems.Count)
+        {
+            await _uiMessageService.Error("Youcannotsplittheorder");
+            return;
+        
+        }
         await _orderAppService.SplitOrderAsync(orderItemIds, Order.Id);
         NavigationManager.NavigateTo("Orders");
 
