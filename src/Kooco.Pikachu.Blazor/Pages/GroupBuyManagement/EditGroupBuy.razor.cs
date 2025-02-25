@@ -2709,7 +2709,11 @@ public partial class EditGroupBuy
 
                 //BannerModules.RemoveAll(r => r.Any(w => w.ModuleNumber == moduleNumber));
             }
-
+            else if (item.GroupBuyModuleType is GroupBuyModuleType.OrderInstruction)
+            {
+                await _groupBuyAppService.GroupBuyItemModuleNoReindexingAsync(Id, GroupBuyModuleType.OrderInstruction);
+                GroupBuyOrderInstructionModules = [];
+            }
             CollapseItem = [];
 
             await LoadItemGroups(true);
