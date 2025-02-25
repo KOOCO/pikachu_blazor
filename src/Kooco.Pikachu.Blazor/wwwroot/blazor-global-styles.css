@@ -556,3 +556,9 @@
 .input-group.search-group > .btn {
     border-radius: 0 0.5rem 0.5rem 0 !important;
 }
+
+.b-table .btn-link.hyperlink {
+    font-size: 1rem !important;
+    padding: 0 !important;
+    font-weight: 500;
+}
