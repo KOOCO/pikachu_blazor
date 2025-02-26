@@ -18,7 +18,7 @@
 
         <div class="row">
             <div class="col-2">
-                <label>@L["ItemName"]</label>
+                <label>@L["ItemName"]<span class="text-danger">*</span></label>
             </div>
             <div class="col-10">
                 <Addons>
@@ -41,6 +41,7 @@
             <div class="col-10">
                 <Field>
                     <FilePicker @ref="FilePicker"
+                        FilePickerLocalizer="(key,args)=>LocalizeFilePicker(key,args)"
                                 Multiple
                                 Changed="OnFileUploadAsync"
                                 ShowMode="FilePickerShowMode.List"
@@ -127,7 +128,7 @@
                 <div class="col-12">
                     <Addons>
                         <Addon AddonType="AddonType.Body">
-                            <TextEdit Placeholder="@L["ItemDescriptionTitle"]" @bind-Text="@CreateUpdateSetItemDto.SetItemDescriptionTitle" />
+                            <TextEdit MaxLength="60" Placeholder="@L["ItemDescriptionTitle"]" @bind-Text="@CreateUpdateSetItemDto.SetItemDescriptionTitle" />
                         </Addon>
                         <Addon AddonType="AddonType.End">
                             <AddonLabel Style="background-color: #f5f5f7">
@@ -177,7 +178,7 @@
         </div>
         <div class="row mt-2">
             <div class="col-2">
-                <label class="pt-2">@L["ItemTemperature"]</label>
+                <label class="pt-2">@L["ItemTemperature"]<span class="text-danger">*</span></label>
             </div>
             <div class="col-10">
                 <Select TValue="ItemStorageTemperature?"

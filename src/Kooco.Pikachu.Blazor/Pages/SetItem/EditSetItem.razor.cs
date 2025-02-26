@@ -215,7 +215,10 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
                 await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
             }
         }
-
+        private string LocalizeFilePicker(string key, object[] args)
+        {
+            return L[key];
+        }
         async Task DeleteImageAsync(string blobImageName)
         {
             try
