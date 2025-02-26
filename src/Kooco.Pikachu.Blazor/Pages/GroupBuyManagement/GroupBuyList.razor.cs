@@ -352,9 +352,9 @@ public partial class GroupBuyList
         NavigationManager.NavigateTo("/GroupBuyManagement/GroupBuyList/New");
     }
 
-    public void OnEditItem(DataGridRowMouseEventArgs<GroupBuyDto> e)
+    public void OnEditItem(GroupBuyDto e)
     {
-        var id = e.Item.Id;
+        var id = e.Id;
         NavigationManager.NavigateTo("/GroupBuyManagement/GroupBuyList/Edit/" + id);
     }
 

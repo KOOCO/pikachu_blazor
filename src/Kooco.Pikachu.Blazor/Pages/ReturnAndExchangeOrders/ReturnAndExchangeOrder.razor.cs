@@ -83,11 +83,11 @@ namespace Kooco.Pikachu.Blazor.Pages.ReturnAndExchangeOrders
             StateHasChanged();
         }
 
-        public async void NavigateToOrderDetails(DataGridRowMouseEventArgs<OrderDto> e)
+        public async void NavigateToOrderDetails(OrderDto e)
         {
             await loading.Show();
 
-            var id = e.Item.Id;
+            var id = e.Id;
             NavigationManager.NavigateTo($"Orders/OrderDetails/{id}");
 
             await loading.Hide();

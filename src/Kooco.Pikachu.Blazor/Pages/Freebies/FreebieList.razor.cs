@@ -62,9 +62,9 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
             }
         }
 
-        public void OnEditItem(DataGridRowMouseEventArgs<FreebieDto> e)
+        public void OnEditItem(FreebieDto e)
         {
-            var id = e.Item.Id;
+            var id = e.Id;
             NavigationManager.NavigateTo($"Freebie/Edit/{id}");
         }
 

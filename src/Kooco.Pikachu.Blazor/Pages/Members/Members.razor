@@ -50,7 +50,6 @@
                   Hoverable
                   Narrow
                   Responsive
-                  Striped
                   @bind-SelectedRow="@SelectedMember"
                   SelectionMode="DataGridSelectionMode.Multiple"
                   @bind-SelectedRows="SelectedMembers"
@@ -63,12 +62,14 @@
                                 Caption="@L["Name"]">
                     <DisplayTemplate>
                         <Div Class="d-flex align-items-center gap-1">
-                            <Div Class="cursor-pointer" @ondblclick="() => EditMember(context)">
+                            <Div>
                                 <img class="img-fluid rounded-circle" style="height: 40px;" src="https://e7.pngegg.com/pngimages/799/987/png-clipart-computer-icons-avatar-icon-design-avatar-heroes-computer-wallpaper-thumbnail.png" alt="Alternate Text" />
                             </Div>
                             <Div>
-                                <h6 class="text-dark m-0 cursor-pointer" @ondblclick="() => EditMember(context)">@context.UserName</h6>
-                                <Span Class="cursor-pointer" @ondblclick="() => EditMember(context)">@context.Email</Span>
+                                <Div>
+                                    <Button Class="btn-link hyperlink fs-large" Clicked="() => EditMember(context)">@context.UserName</Button>
+                                </Div>
+                                <Span>@context.Email</Span>
                             </Div>
                         </Div>
                     </DisplayTemplate>

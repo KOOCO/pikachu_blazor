@@ -33,8 +33,8 @@
                   TotalItems="Total"
                   ShowPager="true"
                   PageSize="PageSize"
-                  RowDoubleClicked="OnEditItem"
-                  SortChanged="OnSortChange">
+                  SortChanged="OnSortChange"
+                  Hoverable>
             <DataGridColumns>
                 <DataGridColumn TItem="SetItemDto" Caption="@L["Select"]" Width="30px">
                     <DisplayTemplate>
@@ -44,6 +44,9 @@
                 <DataGridColumn TItem="SetItemDto"
                                 Field="@nameof(SetItemDto.SetItemName)"
                                 Caption="@L["ItemName"]">
+                    <DisplayTemplate>
+                        <Button Class="btn-link hyperlink" Clicked="() => OnEditItem(context)">@context.SetItemName</Button>
+                    </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="SetItemDto"
                                 Field="@nameof(SetItemDto.SetItemDescriptionTitle)"

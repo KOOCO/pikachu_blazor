@@ -237,8 +237,8 @@
                       TotalItems="Total"
                       ShowPager="true"
                       PageSize="_pageSize"
-                      RowDoubleClicked="OnEditItem"
-                      SortChanged="OnSortChange">
+                      SortChanged="OnSortChange"
+                      Hoverable>
                 <DataGridColumns>
 
                     <DataGridColumn TItem="GroupBuyDto" Caption="@L["Select"]" Width="30px">
@@ -249,6 +249,9 @@
                     <DataGridColumn TItem="GroupBuyDto"
                                     Field="@nameof(GroupBuyDto.GroupBuyName)"
                                     Caption="@L["GroupBuyName"]">
+                        <DisplayTemplate>
+                            <Button Class="btn-link hyperlink" Clicked="() => OnEditItem(context)">@context.GroupBuyName</Button>
+                        </DisplayTemplate>
                     </DataGridColumn>
                     <DataGridColumn TItem="GroupBuyDto"
                                     Field="@nameof(GroupBuyDto.StartTime)"

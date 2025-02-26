@@ -59,9 +59,9 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
             }
         }
 
-        public void OnEditItem(DataGridRowMouseEventArgs<SetItemDto> e)
+        public void OnEditItem(SetItemDto e)
         {
-            var id = e.Item.Id;
+            var id = e.Id;
             NavigationManager.NavigateTo($"SetItem/Edit/{id}");
         }
 

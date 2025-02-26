@@ -556,3 +556,14 @@
 .input-group.search-group > .btn {
     border-radius: 0 0.5rem 0.5rem 0 !important;
 }
+
+.b-table .btn-link.hyperlink {
+    padding: 0 !important;
+    font-weight: 500;
+    font-size: 0.85rem !important;
+    text-align: left;
+}
+
+    .b-table .btn-link.hyperlink.fs-large {
+        font-size: 1rem !important;
+    }
