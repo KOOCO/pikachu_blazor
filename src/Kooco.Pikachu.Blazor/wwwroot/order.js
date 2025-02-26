@@ -107,3 +107,100 @@ function submitForm() {
             console.error('Error calling Blazor method:', error);
         });
 }
+
+window.attachResizerListeners = function () {
+    console.log("Re-attaching resizer event listeners...");
+
+    const resizer = document.getElementById("resizer");
+    const gridContainer = document.getElementById("gridContainer");
+    const detailPanel = document.getElementById("detailPanel");
+
+    if (!resizer || !gridContainer || !detailPanel) {
+        console.error("One or more elements are missing!");
+        return;
+    }
+
+    let isResizing = false;
+    let startX = 0;
+    let initialGridWidth = 0;
+    let initialDetailWidth = 0;
+
+    resizer.addEventListener("mousedown", function (e) {
+        if (e.button !== 0) return; // Left-click only
+
+        console.log("Left mouse button pressed on resizer!");
+        isResizing = true;
+        startX = e.clientX;
+        initialGridWidth = gridContainer.offsetWidth;
+        initialDetailWidth = detailPanel.offsetWidth;
+
+        // Prevent text selection during resize
+        document.body.style.userSelect = "none";
+
+        document.addEventListener("mousemove", resizePanels);
+        document.addEventListener("mouseup", stopResize);
+    });
+
+    function resizePanels(e) {
+        if (!isResizing) return;
+
+        let deltaX = e.clientX - startX;
+        let newGridWidth = initialGridWidth + deltaX;
+        let newDetailWidth = initialDetailWidth - deltaX;
+
+        // Set minimum and maximum width constraints
+        const minGridWidth = 300; // Minimum width for the grid
+        const minDetailWidth = 300; // Minimum width for detail panel
+        const maxGridWidth = window.innerWidth - minDetailWidth;
+        const maxDetailWidth = window.innerWidth - minGridWidth;
+
+        // Constrain the cursor movement
+        if (newGridWidth < minGridWidth) {
+            newGridWidth = minGridWidth;
+            newDetailWidth = window.innerWidth - minGridWidth;
+        } else if (newDetailWidth < minDetailWidth) {
+            newDetailWidth = minDetailWidth;
+            newGridWidth = window.innerWidth - minDetailWidth;
+        }
+
+        gridContainer.style.width = `${newGridWidth}px`;
+        detailPanel.style.width = `${newDetailWidth}px`;
+
+        console.log(`Resizing: Grid ${newGridWidth}px, Detail ${newDetailWidth}px`);
+    }
+
+    function stopResize() {
+        if (!isResizing) return;
+        console.log("Resizing stopped!");
+
+        isResizing = false;
+        document.body.style.userSelect = ""; // Re-enable text selection
+        document.removeEventListener("mousemove", resizePanels);
+        document.removeEventListener("mouseup", stopResize);
+    }
+};
+window.updatePanelVisibility = function (isOpen) {
+    const gridContainer = document.getElementById("gridContainer");
+    const detailPanel = document.getElementById("detailPanel");
+    const resizer = document.getElementById("resizer");
+
+    if (isOpen) {
+        detailPanel.classList.add("open");
+        detailPanel.classList.remove("closed");
+        resizer.style.display = "block";
+
+        gridContainer.style.width = "60%";  // Default width when opening
+        detailPanel.style.width = "40%";
+    } else {
+        detailPanel.classList.remove("open");
+        detailPanel.classList.add("closed");
+        resizer.style.display = "none"; // Hide the resizer when panel is closed
+
+        gridContainer.style.width = "100%"; // Expand grid to full width
+        detailPanel.style.width = "0"; // Set panel width to 0 when closed
+    }
+};
+
+
+
+

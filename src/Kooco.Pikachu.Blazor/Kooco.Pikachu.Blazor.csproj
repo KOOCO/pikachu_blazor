@@ -29,6 +29,8 @@
 
     <PackageReference Include="Blazorise.LoadingIndicator" Version="1.7.3" />
 
+    <PackageReference Include="Blazorise.Splitter" Version="1.7.3" />
+
     <PackageReference Include="DinkToPdf" Version="1.0.8" />
 
     <PackageReference Include="Hangfire.Core" Version="1.8.17" />
@@ -124,7 +126,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="wwwroot\order.js">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 

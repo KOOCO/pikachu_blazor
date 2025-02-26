@@ -127,7 +127,12 @@ public partial class Order
         ExpandedRows.Clear();
         StateHasChanged();
     }
-
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+      
+            await JSRuntime.InvokeVoidAsync("attachResizerListeners");
+        
+    }
     public async Task OnSeparatePrintShippedLabel(MouseEventArgs e)
     {
         loading = true;
@@ -298,9 +303,11 @@ public partial class Order
 
         loading = false;
     }
-    private void ClosePanel()
+    private async void ClosePanel()
     {
         isDetailOpen = false;
+        StateHasChanged();
+        await JSRuntime.InvokeVoidAsync("updatePanelVisibility", isDetailOpen);
     }
     public async Task OnPrintShippedLabel10Cm()
     {
@@ -1627,7 +1634,7 @@ public partial class Order
         await UpdateItemList();
     }
 
-     void ToggleRow(DataGridRowMouseEventArgs<OrderDto> e)
+    async void ToggleRow(DataGridRowMouseEventArgs<OrderDto> e)
     {
 
         if (ExpandedOrderId == e.Item.OrderId)
@@ -1656,9 +1663,9 @@ public partial class Order
             ExpandedRows.Add(e.Item.OrderId);
 
         }
+        await JSRuntime.InvokeVoidAsync("updatePanelVisibility", isDetailOpen);
 
-       
-       
+
     }
 
     public async Task PrepareShipmentCheckboxChanged(bool e, OrderDto order)

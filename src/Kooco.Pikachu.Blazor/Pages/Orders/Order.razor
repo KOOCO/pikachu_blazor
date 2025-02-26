@@ -26,17 +26,19 @@
 @inject IDeliveryTemperatureCostAppService _DeliveryTemperatureCostAppService;
 @using Microsoft.JSInterop;
 @inject IJSRuntime JSRuntime;
+
 <style>
     .order-container {
     display: flex;
     width: 100%;
     height: 100vh;
-    overflow: hidden;
+    overflow: auto;
 }
 
 .grid-container {
     flex-grow: 1;
     transition: width 0.3s ease;
+   
 }
 
 .grid-container.grid-collapsed {
@@ -58,6 +60,19 @@
 
 .detail-panel.closed {
     width: 0;
+}
+.resizer {
+    width: 20px;
+    cursor: col-resize;
+    background: #aaa;
+    height: 100%;
+    position: relative;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==);
+    z-index: 1;
+        background-color: #eee;
+    background-repeat: no-repeat;
+    background-position: 50%;
+    
 }
 </style>
 @* <LoadingIndicator @ref="loading" FullScreen FadeIn> *@
@@ -458,7 +473,7 @@
                     <CardBody>
                         <div class="order-container">
                         <!-- Left side: Data Grid -->
-                    <div class="grid-container @(isDetailOpen ? "grid-collapsed" : "")">
+                    <div id="gridContainer" class="grid-container @(isDetailOpen ? "grid-collapsed" : "")">
                         <DataGrid TItem="OrderDto"
                                   Data="@Orders"
                                   @bind-SelectedRow="@SelectedOrder"
@@ -547,9 +562,10 @@
                             <LastPageButtonTemplate>@L[PikachuResource.LastPage]</LastPageButtonTemplate>
                         </DataGrid>
                         </div>
-
+                         <!-- Draggable Resizer -->
+    <div class="resizer" id="resizer" style="display:@(isDetailOpen ? "block" : "none");"></div>
     <!-- Right side: Order Details Panel -->
-    <div class="detail-panel @(isDetailOpen ? "open" : "closed")">
+    <div id="detailPanel" class="detail-panel @(isDetailOpen ? "open" : "closed")">
         <Card>
         <CardHeader  style="display: flex;justify-content: space-between;">
             <h5>Order Details - @SelectedOrder?.OrderNo</h5>
@@ -685,7 +701,7 @@
                     <CardBody>
                             <div class="order-container">
                         <!-- Left side: Data Grid -->
-                    <div class="grid-container @(isDetailOpen ? "grid-collapsed" : "")">
+                    <div id="gridContainer" class="grid-container @(isDetailOpen ? "grid-collapsed" : "")">
                         <DataGrid TItem="OrderDto"
                                   Data="@Orders"
                                   @bind-SelectedRow="@SelectedOrder"
@@ -773,9 +789,10 @@
                             <LastPageButtonTemplate>@L[PikachuResource.LastPage]</LastPageButtonTemplate>
                         </DataGrid>
                           </div>
-
+                            <!-- Draggable Resizer -->
+                          <div class="resizer" id="resizer" style="display:@(isDetailOpen ? "block" : "none");"></div>
     <!-- Right side: Order Details Panel -->
-    <div class="detail-panel @(isDetailOpen ? "open" : "closed")">
+    <div id="detailPanel" class="detail-panel @(isDetailOpen ? "open" : "closed")">
        <Card>
         <CardHeader  style="display: flex;justify-content: space-between;">
             <h5>Order Details - @SelectedOrder?.OrderNo</h5>
@@ -911,7 +928,7 @@
                     <CardBody>
                          <div class="order-container">
                         <!-- Left side: Data Grid -->
-                    <div class="grid-container @(isDetailOpen ? "grid-collapsed" : "")">
+                    <div id="gridContainer" class="grid-container @(isDetailOpen ? "grid-collapsed" : "")">
                         <DataGrid TItem="OrderDto"
                                   Data="@Orders"
                                   @bind-SelectedRow="@SelectedOrder"
@@ -1002,9 +1019,10 @@
                             <LastPageButtonTemplate>@L[PikachuResource.LastPage]</LastPageButtonTemplate>
                         </DataGrid>
                           </div>
-
+  <!-- Draggable Resizer -->
+                          <div class="resizer" id="resizer" style="display:@(isDetailOpen ? "block" : "none");"></div>
     <!-- Right side: Order Details Panel -->
-    <div class="detail-panel @(isDetailOpen ? "open" : "closed")">
+    <div id="detailPanel" class="detail-panel @(isDetailOpen ? "open" : "closed")">
        <Card>
         <CardHeader  style="display: flex;justify-content: space-between;">
             <h5>Order Details - @SelectedOrder?.OrderNo</h5>
@@ -1213,7 +1231,7 @@
                     <CardBody>
                              <div class="order-container">
                         <!-- Left side: Data Grid -->
-                    <div class="grid-container @(isDetailOpen ? "grid-collapsed" : "")">
+                    <div id="gridContainer" class="grid-container @(isDetailOpen ? "grid-collapsed" : "")">
                         <DataGrid TItem="OrderDto"
                                   Data="@Orders"
                                   @bind-SelectedRow="@SelectedOrder"
@@ -1293,8 +1311,10 @@
                             <LastPageButtonTemplate>@L[PikachuResource.LastPage]</LastPageButtonTemplate>
                         </DataGrid>
                           </div>
+                            <!-- Draggable Resizer -->
+                          <div class="resizer" id="resizer" style="display:@(isDetailOpen ? "block" : "none");"></div>
                           <!-- Right side: Order Details Panel -->
-    <div class="detail-panel @(isDetailOpen ? "open" : "closed")">
+    <div id="detailPanel" class="detail-panel @(isDetailOpen ? "open" : "closed")">
        <Card>
         <CardHeader  style="display: flex;justify-content: space-between;">
             <h5>Order Details - @SelectedOrder?.OrderNo</h5>
@@ -1500,7 +1520,7 @@
                     <CardBody>
                             <div class="order-container">
                         <!-- Left side: Data Grid -->
-                    <div class="grid-container @(isDetailOpen ? "grid-collapsed" : "")">
+                    <div id="gridContainer" class="grid-container @(isDetailOpen ? "grid-collapsed" : "")">
                         <DataGrid TItem="OrderDto"
                                   Data="@Orders"
                                   @bind-SelectedRow="@SelectedOrder"
@@ -1577,8 +1597,10 @@
                             <LastPageButtonTemplate>@L[PikachuResource.LastPage]</LastPageButtonTemplate>
                         </DataGrid>
                          </div>
+                           <!-- Draggable Resizer -->
+                          <div class="resizer" id="resizer" style="display:@(isDetailOpen ? "block" : "none");"></div>
                           <!-- Right side: Order Details Panel -->
-    <div class="detail-panel @(isDetailOpen ? "open" : "closed")">
+    <div id="detailPanel" class="detail-panel @(isDetailOpen ? "open" : "closed")">
        <Card>
         <CardHeader  style="display: flex;justify-content: space-between;">
             <h5>Order Details - @SelectedOrder?.OrderNo</h5>
@@ -1783,7 +1805,7 @@
                     <CardBody>
                            <div class="order-container">
                         <!-- Left side: Data Grid -->
-                    <div class="grid-container @(isDetailOpen ? "grid-collapsed" : "")">
+                    <div id="gridContainer" class="grid-container @(isDetailOpen ? "grid-collapsed" : "")">
                         <DataGrid TItem="OrderDto"
                                   Data="@Orders"
                                   @bind-SelectedRow="@SelectedOrder"
@@ -1861,8 +1883,10 @@
                             <LastPageButtonTemplate>@L[PikachuResource.LastPage]</LastPageButtonTemplate>
                         </DataGrid>
                         </div>
+                          <!-- Draggable Resizer -->
+                          <div class="resizer" id="resizer" style="display:@(isDetailOpen ? "block" : "none");"></div>
                           <!-- Right side: Order Details Panel -->
-    <div class="detail-panel @(isDetailOpen ? "open" : "closed")">
+    <div id="detailPanel" class="detail-panel @(isDetailOpen ? "open" : "closed")">
        <Card>
         <CardHeader  style="display: flex;justify-content: space-between;">
             <h5>Order Details - @SelectedOrder?.OrderNo</h5>
@@ -2067,7 +2091,7 @@
                     <CardBody>
                              <div class="order-container">
                         <!-- Left side: Data Grid -->
-                    <div class="grid-container @(isDetailOpen ? "grid-collapsed" : "")">
+                    <div id="gridContainer" class="grid-container @(isDetailOpen ? "grid-collapsed" : "")">
                         <DataGrid TItem="OrderDto"
                                   Data="@Orders"
                                   @bind-SelectedRow="@SelectedOrder"
@@ -2143,9 +2167,11 @@
                             <LastPageButtonTemplate>@L[PikachuResource.LastPage]</LastPageButtonTemplate>
                         </DataGrid>
                           </div>
+                            <!-- Draggable Resizer -->
+                          <div class="resizer" id="resizer" style="display:@(isDetailOpen ? "block" : "none");"></div>
 
     <!-- Right side: Order Details Panel -->
-    <div class="detail-panel @(isDetailOpen ? "open" : "closed")">
+    <div id="detailPanel" class="detail-panel @(isDetailOpen ? "open" : "closed")">
        <Card>
         <CardHeader  style="display: flex;justify-content: space-between;">
             <h5>Order Details - @SelectedOrder?.OrderNo</h5>
@@ -2282,7 +2308,7 @@
                     <CardBody>
                          <div class="order-container">
                         <!-- Left side: Data Grid -->
-                    <div class="grid-container @(isDetailOpen ? "grid-collapsed" : "")">
+                    <div id="gridContainer" class="grid-container @(isDetailOpen ? "grid-collapsed" : "")">
                         <DataGrid TItem="OrderDto"
                                   Data="@Orders"
                                   @bind-SelectedRow="@SelectedOrder"
@@ -2370,9 +2396,11 @@
                             <LastPageButtonTemplate>@L[PikachuResource.LastPage]</LastPageButtonTemplate>
                         </DataGrid>
                                             </div>
+                                              <!-- Draggable Resizer -->
+                          <div class="resizer" id="resizer" style="display:@(isDetailOpen ? "block" : "none");"></div>
 
     <!-- Right side: Order Details Panel -->
-    <div class="detail-panel @(isDetailOpen ? "open" : "closed")">
+    <div id="detailPanel" class="detail-panel @(isDetailOpen ? "open" : "closed")">
        <Card>
         <CardHeader  style="display: flex;justify-content: space-between;">
             <h5>Order Details - @SelectedOrder?.OrderNo</h5>
@@ -2578,7 +2606,7 @@
                     <CardBody>
                              <div class="order-container">
                         <!-- Left side: Data Grid -->
-                    <div class="grid-container @(isDetailOpen ? "grid-collapsed" : "")">
+                    <div id="gridContainer" class="grid-container @(isDetailOpen ? "grid-collapsed" : "")">
                         <DataGrid TItem="OrderDto"
                                   Data="@Orders"
                                   @bind-SelectedRow="@SelectedOrder"
@@ -2666,9 +2694,10 @@
                             <LastPageButtonTemplate>@L[PikachuResource.LastPage]</LastPageButtonTemplate>
                         </DataGrid>
                                             </div>
-
+                                              <!-- Draggable Resizer -->
+                          <div class="resizer" id="resizer" style="display:@(isDetailOpen ? "block" : "none");"></div>
     <!-- Right side: Order Details Panel -->
-    <div class="detail-panel @(isDetailOpen ? "open" : "closed")">
+    <div id="detailPanel" class="detail-panel @(isDetailOpen ? "open" : "closed")">
        <Card>
         <CardHeader  style="display: flex;justify-content: space-between;">
             <h5>Order Details - @SelectedOrder?.OrderNo</h5>
