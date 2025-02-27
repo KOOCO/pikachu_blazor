@@ -316,14 +316,15 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         {
             foreach (var group in input.ItemGroups)
             {
+              
                 var itemGroup = _groupBuyManager.AddItemGroup(
-                    result,
-                    group.SortOrder,
-                    group.GroupBuyModuleType,
-                    group.AdditionalInfo,
-                    group.ProductGroupModuleTitle,
-                    group.ProductGroupModuleImageSize
-                );
+                   result,
+                   group.SortOrder,
+                   group.GroupBuyModuleType,
+                   group.AdditionalInfo,
+                   group.ProductGroupModuleTitle,
+                   group.ProductGroupModuleImageSize
+               );
 
                 itemGroup.ModuleNumber = group.ModuleNumber;
 
@@ -353,7 +354,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
             newImage = ObjectMapper.Map<ImageDto, CreateImageDto>(image);
 
-            newImage.Id = Guid.Empty;
+            newImage.Id = GuidGenerator.Create();
 
             newImage.TargetId = result.Id;
 
@@ -361,6 +362,52 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         }
 
         await _groupBuyRepository.InsertAsync(result);
+       
+        var GroupPurchaseOverviewModules = await _GroupPurchaseOverviewAppService.GetListByGroupBuyIdAsync(Id);
+        if (GroupPurchaseOverviewModules is { Count: > 0 })
+        {
+            foreach (GroupPurchaseOverviewDto groupPurchaseOverview in GroupPurchaseOverviewModules)
+            {
+              
+                    groupPurchaseOverview.GroupBuyId = result.Id;
+                groupPurchaseOverview.Id = Guid.Empty;
+                    await _GroupPurchaseOverviewAppService.CreateGroupPurchaseOverviewAsync(groupPurchaseOverview);
+               
+            }
+        }
+        var  GroupBuyOrderInstructionModules= await _GroupBuyOrderInstructionAppService.GetListByGroupBuyIdAsync(Id);
+
+        if (GroupBuyOrderInstructionModules is { Count: > 0 })
+        {
+            foreach (GroupBuyOrderInstructionDto groupBuyOrderInstruction in GroupBuyOrderInstructionModules)
+            {
+                
+                    groupBuyOrderInstruction.GroupBuyId = result.Id;
+                    groupBuyOrderInstruction.Id = Guid.Empty;
+
+                    await _GroupBuyOrderInstructionAppService.CreateGroupBuyOrderInstructionAsync(groupBuyOrderInstruction);
+                
+            }
+        }
+        var ProductRankingCarouselModules= await _groupBuyProductRankingAppService.GetListByGroupBuyIdAsync(Id);
+        if (ProductRankingCarouselModules is { Count: > 0 })
+        {
+            foreach (var productRankingCarouselModule in ProductRankingCarouselModules)
+            {
+                
+
+               
+                    await _groupBuyProductRankingAppService.CreateGroupBuyProductRankingAsync(new()
+                    {
+                        GroupBuyId = result.Id,
+                        Title = productRankingCarouselModule.Title,
+                        SubTitle = productRankingCarouselModule.SubTitle,
+                        Content = productRankingCarouselModule.Content,
+                        ModuleNumber = ProductRankingCarouselModules.IndexOf(productRankingCarouselModule) + 1
+                    });
+            
+            }
+        }
 
         return ObjectMapper.Map<GroupBuy, GroupBuyDto>(result);
     }
