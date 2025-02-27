@@ -2392,42 +2392,107 @@ public class OrderAppService : ApplicationService, IOrderAppService
         order.EcpayLogisticsStatus = rtnMsg;
         // **Get Current User (Editor)**
         var currentUserId = CurrentUser.Id ?? Guid.Empty;
-        var currentUserName = CurrentUser.UserName ?? "System";
+        var currentUserName = CurrentUser.UserName ?? "EcPay Logistic Update";
 
         // **Log Order History for Logistic Status Update**
         await _orderHistoryManager.AddOrderHistoryAsync(
              order.Id,
-             "LogisticStatusUpdated", // Localization key
-             new object[] { oldLogisticsStatus, order.EcpayLogisticsStatus }, // Combine updates
+             "LogisticStatusUpdated",
+             new object[] { oldLogisticsStatus, order.EcpayLogisticsStatus },
              currentUserId,
              currentUserName
          );
 
-
-        if (order.ShippingStatus < ShippingStatus.ToBeShipped)
+        if (rtnCode != 0 && order.DeliveryMethod.HasValue)
         {
-            order.ShippingStatus = ShippingStatus.ToBeShipped;
+            var toBeShippedCodes = new Dictionary<DeliveryMethod, int[]>
+            {
+                { DeliveryMethod.PostOffice, new[] { 320 } }
+            };
+
+            var shippedCodes = new Dictionary<DeliveryMethod, int[]>
+            {
+                { DeliveryMethod.SevenToEleven1, new[] { 2063 } },
+                { DeliveryMethod.SevenToElevenC2C, new[] { 2063 } },
+                { DeliveryMethod.SevenToElevenFrozen, new[] { 2063 } },
+                { DeliveryMethod.FamilyMart1, new[] { 3018 } },
+                { DeliveryMethod.FamilyMartC2C, new[] { 3018 } },
+                { DeliveryMethod.PostOffice, new[] { 3301 } },
+                { DeliveryMethod.BlackCat1, new[] { 3006 } },
+                { DeliveryMethod.BlackCatFreeze, new[] { 3006 } },
+                { DeliveryMethod.BlackCatFrozen, new[] { 3006 } }
+            };
+
+            var deliveredCodes = new Dictionary<DeliveryMethod, int[]>
+            {
+                { DeliveryMethod.SevenToEleven1, new[] { 2001, 2024 } },
+                { DeliveryMethod.SevenToElevenC2C, new[] { 2001, 2024 } },
+                { DeliveryMethod.SevenToElevenFrozen, new[] { 2001, 2024 } },
+                { DeliveryMethod.FamilyMart1, new[] { 3029 } },
+                { DeliveryMethod.FamilyMartC2C, new[] { 3029 } },
+                { DeliveryMethod.PostOffice, new[] { 3308 } }
+            };
+
+            var completedCodes = new Dictionary<DeliveryMethod, int[]>
+            {
+                { DeliveryMethod.SevenToEleven1, new[] { 2067 } },
+                { DeliveryMethod.SevenToElevenC2C, new[] { 2067 } },
+                { DeliveryMethod.SevenToElevenFrozen, new[] { 2067 } },
+                { DeliveryMethod.FamilyMart1, new[] { 3022 } },
+                { DeliveryMethod.FamilyMartC2C, new[] { 3022 } },
+                { DeliveryMethod.PostOffice, new[] { 3309 } },
+                { DeliveryMethod.BlackCat1, new[] { 311 } },
+                { DeliveryMethod.BlackCatFreeze, new[] { 311 } },
+                { DeliveryMethod.BlackCatFrozen, new[] { 311 } }
+            };
+
+            var returnedCodes = new Dictionary<DeliveryMethod, int[]>
+            {
+                { DeliveryMethod.SevenToEleven1, new[] { 2065, 2074 } },
+                { DeliveryMethod.SevenToElevenC2C, new[] { 2065, 2074 } },
+                { DeliveryMethod.SevenToElevenFrozen, new[] { 2065, 2074 } },
+                { DeliveryMethod.FamilyMart1, new[] { 3020 } },
+                { DeliveryMethod.FamilyMartC2C, new[] { 3020 } },
+                { DeliveryMethod.PostOffice, new[] { 3310 } },
+                { DeliveryMethod.BlackCat1, new[] { 325 } },
+                { DeliveryMethod.BlackCatFreeze, new[] { 325 } },
+                { DeliveryMethod.BlackCatFrozen, new[] { 325 } }
+            };
+
+            var deliveryMethod = order.DeliveryMethod.Value;
+
+            if ((deliveryMethod != DeliveryMethod.PostOffice && rtnCode == 300) ||
+                (toBeShippedCodes.TryGetValue(deliveryMethod, out var toBeShippedRtnCodes) && toBeShippedRtnCodes.Contains(rtnCode)))
+            {
+                order.ShippingStatus = ShippingStatus.ToBeShipped;
+            }
+            else if (shippedCodes.TryGetValue(deliveryMethod, out var shippedRtnCodes) && shippedRtnCodes.Contains(rtnCode))
+            {
+                order.ShippingStatus = ShippingStatus.Shipped;
+            }
+            else if (deliveredCodes.TryGetValue(deliveryMethod, out var deliveredRtnCodes) && deliveredRtnCodes.Contains(rtnCode))
+            {
+                order.ShippingStatus = ShippingStatus.Delivered;
+            }
+            else if (completedCodes.TryGetValue(deliveryMethod, out var completedRtnCodes) && completedRtnCodes.Contains(rtnCode))
+            {
+                order.ShippingStatus = ShippingStatus.Completed;
+            }
+            else if (returnedCodes.TryGetValue(deliveryMethod, out var returnedRtnCodes) && returnedRtnCodes.Contains(rtnCode))
+            {
+                order.ShippingStatus = ShippingStatus.Return;
+            }
 
             await _orderHistoryManager.AddOrderHistoryAsync(
                 order.Id,
-                "OrderToBeShipped", // Localization key
-                new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name }, // Combine updates
+                "ShippingStatusUpdated", // Localization key
+                new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name },
                 currentUserId,
                 currentUserName
             );
         }
 
         await _orderRepository.UpdateAsync(order);
-
-        if (rtnCode != 0)
-        {
-            if ((order.DeliveryMethod == DeliveryMethod.HomeDelivery && rtnCode == 320)
-                || (order.DeliveryMethod == DeliveryMethod.FamilyMartC2C && rtnCode == 2078))
-            {
-                await _backgroundJobManager
-                    .EnqueueAsync(new CloseOrderBackgroundJobArgs { OrderId = order.Id }, delay: TimeSpan.FromDays(7));
-            }
-        }
     }
 
     public async Task CloseOrderAsync(Guid orderId)
