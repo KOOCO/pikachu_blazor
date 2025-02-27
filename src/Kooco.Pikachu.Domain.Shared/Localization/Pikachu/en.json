@@ -1267,6 +1267,7 @@
     "SendDateRange": "Send Date Range",
     "SendFrequency": "Send Frequency",
     "ReportNotification": "Report Notification",
-    "Youcannotsplittheorder": "You cannot split the order as the items and quantities match the original order."
+    "Youcannotsplittheorder": "You cannot split the order as the items and quantities match the original order.",
+    "Pikachu:ItemDescriptionIsRequired": "Item description is required"
   }
 }

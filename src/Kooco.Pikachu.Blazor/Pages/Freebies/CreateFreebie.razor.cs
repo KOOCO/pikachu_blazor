@@ -155,6 +155,11 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
             try
             {
                 FreebieCreateDto.ItemDescription = await ItemDescription.GetHTML();
+                if (FreebieCreateDto.ItemDescription.IsNullOrWhiteSpace() || FreebieCreateDto.ItemDescription == "<p><br></p>")
+                {
+                    await _uiMessageService.Error(L[PikachuDomainErrorCodes.ItemDescriptionIsRequired]);
+                    return;
+                }    
                 ValidateForm();
 
                 FreebieCreateDto.Images = ImageList;

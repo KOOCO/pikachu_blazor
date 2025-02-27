@@ -217,6 +217,11 @@ public partial class EditFreebie
             UpdateFreebieDto.FreebieAmount = freebieAmount;
 
             UpdateFreebieDto.ItemDescription = await ItemDescription.GetHTML();
+            if (UpdateFreebieDto.ItemDescription.IsNullOrWhiteSpace() || UpdateFreebieDto.ItemDescription == "<p><br></p>")
+            {
+                await _uiMessageService.Error(L[PikachuDomainErrorCodes.ItemDescriptionIsRequired]);
+                return;
+            }
 
             ValidateForm();
 
