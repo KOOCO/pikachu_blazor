@@ -3,8 +3,10 @@ using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Members;
+using Kooco.Pikachu.OrderHistories;
 using Kooco.Pikachu.OrderItems;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,12 +36,12 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
                                        DeliveryMethod? deliveryMethod = null)
     {
         return await ApplyFilters(
-            (await GetQueryableAsync()).Include(o => o.GroupBuy), 
-            filter, 
-            groupBuyId, 
-            null, 
-            startDate, 
-            endDate, 
+            (await GetQueryableAsync()).Include(o => o.GroupBuy),
+            filter,
+            groupBuyId,
+            null,
+            startDate,
+            endDate,
             orderStatus,
             shippingStatus,
             deliveryMethod
@@ -54,7 +56,7 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
     {
         return await ApplyFiltersNew((await GetQueryableAsync()).Include(o => o.GroupBuy), filter, groupBuyId, null, startDate, endDate, orderStatus).CountAsync();
     }
-    
+
     public async Task<List<Order>> GetListAsync(int skipCount,
                                                 int maxResultCount,
                                                 string? sorting,
@@ -69,7 +71,7 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
     {
         PikachuDbContext dbContext = await GetDbContextAsync();
 
-        var result =  ApplyFilters(await GetQueryableAsync(),
+        var result = ApplyFilters(await GetQueryableAsync(),
                                        filter,
                                        groupBuyId,
                                        orderId,
@@ -97,7 +99,7 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
             CustomerPhone = o.CustomerPhone,
             DeliveryMethod = o.DeliveryMethod,               // Shipping Method
             OrderStatus = o.OrderStatus,
-            DeliveryCost=o.DeliveryCost,
+            DeliveryCost = o.DeliveryCost,
             ShippingStatus = o.ShippingStatus,
             PaymentMethod = o.PaymentMethod,
             City = o.City,
@@ -148,16 +150,16 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
     }
     public async Task<List<Order>> GetReconciliationListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId, List<Guid> orderId, DateTime? startDate = null, DateTime? endDate = null)
     {
-        var query =  ApplyReconciliationFilters(await GetQueryableAsync(), filter, groupBuyId, orderId, startDate, endDate);
-         query= query.OrderBy(sorting)
-            .PageBy(skipCount, maxResultCount)
+        var query = ApplyReconciliationFilters(await GetQueryableAsync(), filter, groupBuyId, orderId, startDate, endDate);
+        query = query.OrderBy(sorting)
+           .PageBy(skipCount, maxResultCount)
 
-            .Include(o => o.OrderItems)
+           .Include(o => o.OrderItems)
 
-            .ThenInclude(oi => oi.Freebie);
+           .ThenInclude(oi => oi.Freebie);
         return await query.Select(o => new Order
         {
-            OrderId=o.Id,
+            OrderId = o.Id,
             OrderNo = o.OrderNo,                      // Order No
             LastModificationTime = o.LastModificationTime, // Last Updated Date
             IssueStatus = o.IssueStatus,       // Invoice Issue Status
@@ -168,10 +170,10 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
             DeliveryMethod = o.DeliveryMethod,               // Shipping Method
             AddressDetails = o.AddressDetails, // Address
             Remarks = o.Remarks,                      // Remarks
-               VoidUser=o.VoidUser,                                       // Merchant Remarks
+            VoidUser = o.VoidUser,                                       // Merchant Remarks
             OrderItems = o.OrderItems.Select(oi => new OrderItem
             {
-                OrderId= oi.OrderId,
+                OrderId = oi.OrderId,
                 Spec = oi.Spec,
                 Quantity = oi.Quantity,
                 ItemType = oi.ItemType,
@@ -240,7 +242,7 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
             .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate.Value.Date)
             .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
             .WhereIf(orderStatus.HasValue, x => x.OrderStatus == orderStatus);
-            //.Where(x => x.IsRefunded == false);
+        //.Where(x => x.IsRefunded == false);
         //.Where(x => x.OrderType != OrderType.MargeToNew);
     }
 
@@ -290,7 +292,7 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
             .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate.Value.Date)
             .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
             .WhereIf(orderStatus.HasValue, x => x.OrderStatus == orderStatus)
-            .Where(x=>x.OrderStatus==OrderStatus.Returned||x.OrderStatus==OrderStatus.Exchange|| x.IsRefunded == true)
+            .Where(x => x.OrderStatus == OrderStatus.Returned || x.OrderStatus == OrderStatus.Exchange || x.IsRefunded == true)
             ;
         //.Where(x => x.OrderType != OrderType.MargeToNew);
     }
@@ -311,8 +313,8 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
             .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate.Value.Date)
             .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
             //.Where(x => x.ShippingStatus == ShippingStatus.Shipped)
-            .Where(x=>x.IsVoidInvoice==false && x.IssueStatus!=null);
-            //.Where(x => x.OrderType != OrderType.MargeToNew);
+            .Where(x => x.IsVoidInvoice == false && x.IssueStatus != null);
+        //.Where(x => x.OrderType != OrderType.MargeToNew);
     }
     private static IQueryable<Order> ApplyVoidFilters(IQueryable<Order> queryable,
                                                       string? filter,
@@ -332,7 +334,7 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
             .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
             //.Where(x => x.ShippingStatus == ShippingStatus.Shipped)
             //.Where(x => x.OrderType != OrderType.MargeToNew)
-            .Where(x=>x.IsVoidInvoice==true);
+            .Where(x => x.IsVoidInvoice == true);
     }
     #endregion
 
@@ -369,7 +371,7 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
     public async Task<Order> GetOrderByMerchantTradeNoAsync(string merchantTradeNo)
     {
         return await (await GetQueryableAsync())
-                        .FirstOrDefaultAsync(w => w.OrderNo == merchantTradeNo || 
+                        .FirstOrDefaultAsync(w => w.OrderNo == merchantTradeNo ||
                                                   w.MerchantTradeNo == merchantTradeNo);
     }
 
@@ -420,8 +422,8 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
         return await (await GetQueryableAsync())
             .Where(w => w.GroupBuyId == groupBuyId)
             .Where(w => w.OrderNo == orderNo)
-            .Where(w => w.CustomerEmail == extraInfo || 
-                        w.CustomerName == extraInfo || 
+            .Where(w => w.CustomerEmail == extraInfo ||
+                        w.CustomerName == extraInfo ||
                         w.CustomerPhone == extraInfo)
             //.Include(o => o.GroupBuy)
             .Include(o => o.OrderItems)
@@ -477,9 +479,34 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
 
     public async Task<string> GetOrderNoByOrderId(Guid OrderId)
     {
-      return (await GetQueryableAsync())
-                     .Where(w => w.Id == OrderId)
-                     .Select(s => s.OrderNo)
-                     .FirstOrDefault();
+        return (await GetQueryableAsync())
+                       .Where(w => w.Id == OrderId)
+                       .Select(s => s.OrderNo)
+                       .FirstOrDefault();
+    }
+
+    public async Task<List<Order>> GetOrdersToCloseAsync()
+    {
+        var dbContext = await GetDbContextAsync();
+
+        var ordersToClose = await dbContext.Orders
+            .Where(o => o.CreationTime < DateTime.Today.AddDays(-7) && (o.ShippingStatus == ShippingStatus.Completed || o.ShippingStatus == ShippingStatus.Return))
+            .GroupJoin(
+                dbContext.OrderHistories,
+                order => order.Id,
+                history => history.OrderId,
+                (order, histories) => new { order, histories }
+            )
+            .SelectMany(
+                x => x.histories.DefaultIfEmpty(),
+                (x, history) => new { Order = x.order, History = history }
+            )
+            .GroupBy(g => g.Order)
+            .Where(g => !g.Any(l => l.History != null && l.History.CreationTime.Date >= DateTime.Today.AddDays(-7)))
+            .Select(g => g.Key)
+            .OrderBy(o => o.CreationTime)
+            .ToListAsync();
+
+        return ordersToClose;
     }
 }

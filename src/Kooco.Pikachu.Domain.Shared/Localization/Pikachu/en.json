@@ -1268,6 +1268,9 @@
     "SendFrequency": "Send Frequency",
     "ReportNotification": "Report Notification",
     "Youcannotsplittheorder": "You cannot split the order as the items and quantities match the original order.",
-    "Pikachu:ItemDescriptionIsRequired": "Item description is required"
+    "Pikachu:ItemDescriptionIsRequired": "Item description is required",
+    "CloseOrderJob": "Close Order Job",
+    "OrderClosedDueToInActivityTitle": "Order Closed",
+    "OrderClosedDueToInActivity": "Order Closed due to inactivity: {0} Status changed from '{1}' to '{2}'"
   }
 }

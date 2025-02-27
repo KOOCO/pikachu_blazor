@@ -19,6 +19,7 @@ using Kooco.Pikachu.UserCumulativeCredits;
 using Kooco.Pikachu.UserShoppingCredits;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using MiniExcelLibs;
 using Newtonsoft.Json;
 using System;
@@ -2495,41 +2496,40 @@ public class OrderAppService : ApplicationService, IOrderAppService
         await _orderRepository.UpdateAsync(order);
     }
 
-    public async Task CloseOrderAsync(Guid orderId)
+    [AllowAnonymous]
+    public async Task CloseOrdersAsync()
     {
-        Order order;
         using (_dataFilter.Disable<IMultiTenant>())
         {
-            order = await _orderRepository.GetAsync(orderId);
-        }
-        using (CurrentTenant.Change(order.TenantId))
-        {
-            var logs = await _orderHistoryRepository.GetListAsync(o => o.OrderId == order.Id);
+            var ordersToClose = await _orderRepository.GetOrdersToCloseAsync();
+            Logger.LogInformation("{BackgroundJob}: Found {orderCount} orders that need to be closed.", nameof(CloseOrderBackgroundJob), ordersToClose.Count);
 
-            if (!logs.Any(l => l.CreationTime.Date >= DateTime.Today.AddDays(-7)))
+            List<OrderHistory> orderHistoryList = [];
+
+            foreach (var order in ordersToClose)
             {
-                var oldOrderStatus = order.OrderStatus;
-                var oldShippingStatus = order.ShippingStatus;
+                Logger.LogInformation("{BackgroundJob}: Closing Order #: {orderNo}, Id: {orderId}, Order Status: {orderStatus}, Shipping Status: {shippingStatus}",
+                    nameof(CloseOrderBackgroundJob), order.OrderNo, order.Id, order.OrderStatus, order.ShippingStatus);
 
-                order.OrderStatus = OrderStatus.Closed;
-                order.ShippingStatus = ShippingStatus.Closed;
 
-                await _orderHistoryManager.AddOrderHistoryAsync(
-                    order.Id,
-                    "OrderCompleted",
-                    new object[] { _l[oldOrderStatus.ToString()].Name, _l[order.OrderStatus.ToString()].Name },
-                    CurrentUser?.Id,
-                    CurrentUser?.UserName ?? "System"
-                );
+                if (order.ShippingStatus != ShippingStatus.Closed)
+                {
+                    var oldShippingStatus = order.ShippingStatus;
+                    order.ShippingStatus = ShippingStatus.Closed;
+                    var shippingStatusHistory = new OrderHistory(Guid.NewGuid(), order.Id, "OrderClosedDueToInActivity", JsonConvert.SerializeObject(new object[] { "Shipping", oldShippingStatus.ToString(), order.ShippingStatus.ToString() }), null, "CloseOrderJob");
+                    orderHistoryList.Add(shippingStatusHistory);
+                }
 
-                await _orderHistoryManager.AddOrderHistoryAsync(
-                    order.Id,
-                    "OrderCompleted",
-                    new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name },
-                    CurrentUser?.Id,
-                    CurrentUser?.UserName ?? "System"
-                );
+                if (order.OrderStatus != OrderStatus.Closed)
+                {
+                    var oldOrderStatus = order.OrderStatus;
+                    order.OrderStatus = OrderStatus.Closed;
+                    var orderStatusHistory = new OrderHistory(Guid.NewGuid(), order.Id, "OrderClosedDueToInActivity", JsonConvert.SerializeObject(new object[] { "Order", oldOrderStatus.ToString(), order.OrderStatus.ToString() }), null, "CloseOrderJob");
+                    orderHistoryList.Add(orderStatusHistory);
+                }
             }
+
+            await _orderHistoryRepository.InsertManyAsync(orderHistoryList);
         }
     }
 

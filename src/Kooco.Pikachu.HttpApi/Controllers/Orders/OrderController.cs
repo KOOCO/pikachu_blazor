@@ -629,10 +629,10 @@ public class OrderController : AbpController, IOrderAppService
         return _ordersAppService.CreateOrderDeliveriesAndInvoiceAsync(orderId);
     }
 
-    [HttpPost("close-order/{orderId}")]
-    public Task CloseOrderAsync(Guid orderId)
+    [HttpPost("close-orders")]
+    public Task CloseOrdersAsync()
     {
-        return _ordersAppService.CloseOrderAsync(orderId);
+        return _ordersAppService.CloseOrdersAsync();
     }
 
 

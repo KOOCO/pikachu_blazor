@@ -64,6 +64,7 @@ using Serilog.Events;
 using Kooco.Pikachu.PaymentGateways.LinePay;
 using Microsoft.Extensions.Options;
 using Kooco.Pikachu.UserShoppingCredits;
+using Kooco.Pikachu.Orders;
 
 namespace Kooco.Pikachu.Blazor;
 
@@ -507,6 +508,12 @@ public class PikachuBlazorModule : AbpModule
            "UserShoppingCreditExpire",
            job => job.ExecuteAsync(0),
            Cron.Daily()
+        );
+
+        RecurringJob.AddOrUpdate<CloseOrderBackgroundJob>(
+            "CloseOrderBackgroundJob",
+            job => job.ExecuteAsync(new CloseOrderBackgroundJobArgs()),
+            Cron.Daily(1)
         );
     }
 

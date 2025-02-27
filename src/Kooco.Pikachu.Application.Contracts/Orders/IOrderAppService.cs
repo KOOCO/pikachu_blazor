@@ -62,6 +62,6 @@ namespace Kooco.Pikachu.Orders
         Task<(int Open, int Exchange, int Return)> GetOrderStatusCountsAsync(Guid userId);
         Task CreateOrderDeliveriesAndInvoiceAsync(Guid orderId);
         Task<List<OrderHistoryDto>> GetOrderLogsAsync(Guid orderId);
-        Task CloseOrderAsync(Guid orderId);
+        Task CloseOrdersAsync();
     }
 }

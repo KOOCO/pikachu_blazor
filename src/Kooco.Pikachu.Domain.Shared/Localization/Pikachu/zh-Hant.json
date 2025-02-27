@@ -1343,6 +1343,10 @@
     "SendDateRange": "發送日期範圍",
     "SendFrequency": "發送頻率",
     "Youcannotsplittheorder": "所選商品和數量與原訂單一致，無法進行拆分",
-    "Pikachu:ItemDescriptionIsRequired": "商品敘述不能為空值"
+    "Pikachu:ItemDescriptionIsRequired": "商品敘述不能為空值",
+    "CloseOrderJob": "關閉訂單任務",
+    "OrderClosedDueToInActivityTitle": "訂單已關閉",
+    "OrderClosedDueToInActivity": "訂單因長時間未活動而被關閉：{0} 狀態已從 '{1}' 變更為 '{2}'"
+
   }
 }

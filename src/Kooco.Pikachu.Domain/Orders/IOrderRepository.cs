@@ -65,5 +65,6 @@ namespace Kooco.Pikachu.Orders
 
         Task<Order> GetOrderByMerchantTradeNoAsync(string merchantTradeNo);
         Task<string> GetOrderNoByOrderId(Guid OrderId);
+        Task<List<Order>> GetOrdersToCloseAsync();
     }
 }
