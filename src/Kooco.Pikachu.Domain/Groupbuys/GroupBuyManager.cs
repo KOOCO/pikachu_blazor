@@ -93,7 +93,7 @@ public class GroupBuyManager : DomainService
     {
         GroupBuy? sameName = await _groupBuyRepository.FirstOrDefaultAsync(x => x.GroupBuyName == groupBuyName);
 
-        if (sameName is not null) throw new BusinessException(PikachuDomainErrorCodes.ItemWithSameNameAlreadyExists);
+        if (sameName is not null) throw new BusinessException(PikachuDomainErrorCodes.GroupBuyWithSameNameAlreadyExists);
 
         return new GroupBuy(GuidGenerator.Create(), groupBuyNo, status, groupBuyName, entryURL, entryURL2, subjectLine, shortName, logoURL, bannerURL, startTime, endTime, freeShipping,
             allowShipToOuterTaiwan, allowShipOversea, expectShippingDateFrom, expectShippingDateTo, moneyTransferValidDayBy, moneyTransferValidDays,

@@ -174,7 +174,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
             try
             {
                 bool sameName = await _groupBuyRepository.AnyAsync(x => x.GroupBuyName == input.GroupBuyName && x.Id != id);
-                if (sameName) throw new BusinessException(PikachuDomainErrorCodes.ItemWithSameNameAlreadyExists);
+                if (sameName) throw new BusinessException(PikachuDomainErrorCodes.GroupBuyWithSameNameAlreadyExists);
 
                 var groupBuy = await _groupBuyRepository.GetAsync(id);
                 await _groupBuyRepository.EnsureCollectionLoadedAsync(groupBuy, x => x.ItemGroups);
