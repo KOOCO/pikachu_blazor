@@ -1,5 +1,6 @@
 ﻿@page "/Items/Edit/{id}"
 
+@using Kooco.Pikachu.Blazor.Pages.Components.Icons
 @using Kooco.Pikachu.EnumValues;
 @using Kooco.Pikachu.Items.Dtos;
 @using Kooco.Pikachu.ProductCategories
@@ -22,16 +23,13 @@
         margin-top: 10px;
     }
 
-    .drag-drop-span i {
-        cursor: pointer;
+    .draggable-row {
+        cursor: grab;
     }
-        .draggable-row {
-    cursor: grab;
-}
 
-.draggable-row:active {
-    cursor: grabbing;
-}
+        .draggable-row:active {
+            cursor: grabbing;
+        }
 </style>
 
 <LoadingIndicator @ref="Loading" FullScreen></LoadingIndicator>
@@ -64,7 +62,7 @@
             <div class="col-10">
                 <Field>
                     <FilePicker @ref="FilePickerCustom"
-                           FilePickerLocalizer="(key,args)=>LocalizeFilePicker(key,args)"
+                                FilePickerLocalizer="(key,args)=>LocalizeFilePicker(key,args)"
                                 Multiple
                                 Changed="OnFileUploadAsync"
                                 ShowMode="FilePickerShowMode.List"
@@ -116,20 +114,22 @@
                     <div class="image-list-container" ondragover="event.preventDefault();">
                         @foreach (var image in UpdateItemDto.Images)
                         {
-                            <div class="d-flex flex-column align-items-center justify-content-center mb-2">
-                                <div class="image-container">
-                                    <Image class="blur-image" Source="@image.ImageUrl" Text="Item Image" Fluid />
-                                    <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName)">
-                                        <i class="fa fa-trash"></i>
-                                    </button>
-                                </div>
-                                <div class="w-100 text-center"
-                                     draggable="true"
-                                     @ondrop="@(()=> Drop(image))"
-                                     @ondrag="@(()=> StartDrag(image))">
-                                    <span class="drag-drop-span pb-2">
-                                        <i class="fa-solid fa-bars fa-xl"></i>
-                                    </span>
+                            <div draggable="true"
+                                 @ondrop="@(()=> Drop(image))"
+                                 @ondrag="@(()=> StartDrag(image))"
+                                 class="draggable">
+                                <div class="d-flex flex-column align-items-center justify-content-center">
+                                    <div class="image-container">
+                                        <Image class="blur-image" Source="@image.ImageUrl" Text="Item Image" Fluid />
+                                        <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName)">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </div>
+                                    <div class="text-center">
+                                        <span class="drag-drop-span">
+                                            <GripDotSvg></GripDotSvg>
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         }
@@ -137,7 +137,7 @@
                 </div>
             </div>
         }
-               <div class="row">
+        <div class="row">
             <div class="col-2">
                 <label>@L["ItemBadge"]</label>
             </div>
@@ -255,7 +255,7 @@
                             <input type="text" class="tag-input" placeholder="New Tag"
                                    @bind-value="item.InputTagValue"
                                    @onkeyup="@(async (e) => await HandleAttributeTagInputConfirm(item.Id, item.InputTagValue, e))"
-                                    @onblur="@(async () => await HandleAttributeTagInputConfirm(item.Id, item.InputTagValue, null))"/>
+                                   @onblur="@(async () => await HandleAttributeTagInputConfirm(item.Id, item.InputTagValue, null))" />
                             <i class="tag-input-placeholder-icon fa fa-plus"></i>
                         </div>
                     </div>
@@ -307,7 +307,7 @@
                                         @L["CopyToAll"]
                                     </Span>
                                 </TableHeaderCell>
-                                 <TableHeaderCell Class="text-center">
+                                <TableHeaderCell Class="text-center">
                                     @L["ItemCost"]
                                     <Span Class="d-block pt-1 text-primary cursor-pointer"
                                           @onclick="() => CopyToAll(nameof(CreateItemDetailsDto.Cost))">
@@ -315,7 +315,7 @@
                                     </Span>
                                 </TableHeaderCell>
                                 <TableHeaderCell Class="text-center">@L["InventoryAccount"]</TableHeaderCell>
-                                   <TableHeaderCell Class="text-center">
+                                <TableHeaderCell Class="text-center">
                                     @L["CurrentStock"]
                                     <Span Class="d-block pt-1 text-primary cursor-pointer"
                                           @onclick="() => CopyToAll(nameof(CreateItemDetailsDto.StockOnHand))">
@@ -329,7 +329,7 @@
                                         @L["CopyToAll"]
                                     </Span>
                                 </TableHeaderCell>
-                               
+
                                 <TableHeaderCell Class="text-center">
                                     @L["PreorderQuantity"]
                                     <Span Class="d-block pt-1 text-primary cursor-pointer"
@@ -354,19 +354,19 @@
                                 <TableHeaderCell Class="text-center">
                                     @L["Status"]
                                 </TableHeaderCell>
-                                    <TableHeaderCell Class="text-center">
-                                      
-                                    </TableHeaderCell>
+                                <TableHeaderCell Class="text-center">
+
+                                </TableHeaderCell>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            @foreach (CreateItemDetailsDto item in ItemDetailsList.OrderBy(x=>x.SortNo))
+                            @foreach (CreateItemDetailsDto item in ItemDetailsList.OrderBy(x => x.SortNo))
                             {
                                 <TableRow Class="text-center align-items-center draggable-row"
-                                 Draggable=true
-                                 DragStart="(e) => OnDragStart(e, item)"
-                                 DragOver="(e) => OnDragOver(e)"
-                                 Drop="(e) => OnDrop(e, item)">                            
+                                          Draggable=true
+                                          DragStart="(e) => OnDragStart(e, item)"
+                                          DragOver="(e) => OnDragOver(e)"
+                                          Drop="(e) => OnDrop(e, item)">
                                     <TableRowCell>
                                         <i class="fas fa-caret-@(item.IsExpanded ? "up" : "down")" @onclick="@(() => ToggleExpanded(item))" />
                                     </TableRowCell>
@@ -380,7 +380,7 @@
                                     <TableRowCell>
                                         <NumericEdit Class="form-control form-control-sm" style="min-width: 100px;" @bind-Value="@item.GroupBuyPrice"></NumericEdit>
                                     </TableRowCell>
-                                     <TableRowCell>
+                                    <TableRowCell>
                                         <NumericEdit Class="form-control form-control-sm" style="min-width: 100px;" @bind-Value="@item.Cost"></NumericEdit>
                                     </TableRowCell>
                                     <TableRowCell>
@@ -400,7 +400,7 @@
                                             <div class="text-danger">@ValidationErrors[item]</div>
                                         }
                                     </TableRowCell>
-                                   
+
                                     <TableRowCell>
                                         <NumericEdit Class="form-control form-control-sm" @bind-Value="@item.PreOrderableQuantity"></NumericEdit>
                                     </TableRowCell>
@@ -413,9 +413,9 @@
                                     <TableRowCell>
                                         <Switch @bind-Checked="@item.Status" />
                                     </TableRowCell>
-                                       <TableRowCell>
-                                              <i class="fa-solid fa-bars fa-2xl"></i>
-                                        </TableRowCell>
+                                    <TableRowCell>
+                                        <i class="fa-solid fa-bars fa-2xl"></i>
+                                    </TableRowCell>
                                 </TableRow>
 
                                 @if (item.IsExpanded)
@@ -432,7 +432,7 @@
                                                 <Div Class="col-12">
                                                     <Field>
                                                         <FilePicker @ref="ItemDetailPickers[ItemDetailsList.IndexOf(item)]"
-                                                         FilePickerLocalizer="(key,args)=>LocalizeFilePicker(key,args)"
+                                                                    FilePickerLocalizer="(key,args)=>LocalizeFilePicker(key,args)"
                                                                     Changed="@(async (e) => await OnImageUploadAsync(e,
                                                                                                                      item,
                                                                                                                      ItemDetailPickers[ItemDetailsList.IndexOf(item)]))"
@@ -673,7 +673,7 @@
         <Button Color="Color.Danger" Type="ButtonType.Link" To="Items">
             @L["Cancel"]
         </Button>
-        <Button Disabled=@(ValidationErrors.Count > 0)  Color="Color.Primary" Type="@ButtonType.Submit" PreventDefaultOnSubmit="true" Clicked="UpdateEntityAsync">
+        <Button Disabled=@(ValidationErrors.Count > 0) Color="Color.Primary" Type="@ButtonType.Submit" PreventDefaultOnSubmit="true" Clicked="UpdateEntityAsync">
             <i class="fa fa-check"></i>
             @L["Save"]
         </Button>
