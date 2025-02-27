@@ -359,7 +359,14 @@ public partial class EditWebsiteSettings
                 }
             }
 
-            EditingEntity.ArticleHtml = await ArticlePageHtml?.GetHTML();
+            if (ArticlePageHtml != null)
+            {
+                EditingEntity.ArticleHtml = await ArticlePageHtml.GetHTML();
+            }
+            else
+            {
+                EditingEntity.ArticleHtml = null;
+            }
             await WebsiteSettingsAppService.UpdateAsync(Id, EditingEntity);
 
             NavigateToWebsiteSettings();
