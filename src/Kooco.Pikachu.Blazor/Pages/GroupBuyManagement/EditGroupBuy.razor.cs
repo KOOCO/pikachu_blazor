@@ -2049,7 +2049,12 @@ public partial class EditGroupBuy
         try
         {
             await Loading.Show();
-
+            if (EditGroupBuyDto.GroupBuyName.IsNullOrWhiteSpace())
+            {
+                await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyNameCannotBeNull]);
+                await Loading.Hide();
+                return;
+            }
             if (CollapseItem.Any(a => a.IsWarnedForInCompatible))
             {
                 await _uiMessageService.Warn(L[PikachuDomainErrorCodes.InCompatibleModule]);
