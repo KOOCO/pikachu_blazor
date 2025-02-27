@@ -2391,6 +2391,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var oldShippingStatus = order.ShippingStatus;
 
         order.EcpayLogisticsStatus = rtnMsg;
+        order.EcpayLogisticRtnCode = rtnCode;
+
         // **Get Current User (Editor)**
         var currentUserId = CurrentUser.Id ?? Guid.Empty;
         var currentUserName = CurrentUser.UserName ?? "EcPay Logistic Update";

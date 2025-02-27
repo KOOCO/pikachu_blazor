@@ -110,7 +110,7 @@ public class OrderDto : FullAuditedEntityDto<Guid>
     public ReceivingTime? ReceivingTimeFreeze { get; set; }
     public ReceivingTime? ReceivingTimeFrozen { get; set; }
     public string? EcpayLogisticsStatus { get; set; }
-
+    public int EcpayLogisticRtnCode { get; set; }
     public string InvoiceMsg { get; set; }
 
     public int CreditDeductionAmount { get; set; }

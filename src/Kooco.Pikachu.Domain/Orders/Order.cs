@@ -111,7 +111,7 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public Guid? UserId { get; set; }
     public Guid? DiscountCodeId { get; set; }
     public int? DiscountAmount { get; set; }
-    
+
     [ForeignKey(nameof(UserId))]
     public IdentityUser? User { get; set; }
     [ForeignKey(nameof(DiscountCodeId))]
@@ -145,6 +145,7 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public ReceivingTime? ReceivingTimeFreeze { get; set; }
     public ReceivingTime? ReceivingTimeFrozen { get; set; }
     public string? EcpayLogisticsStatus { get; set; }
+    public int EcpayLogisticRtnCode { get; set; }
     public string? ReturnedOrderItemIds { get; set; }
     public byte[] RowVersion { get; set; } // Concurrency token
     public Order() { }
