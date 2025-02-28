@@ -19,6 +19,7 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
         int PageIndex = 1;
         int PageSize = 10;
         int Total = 0;
+        private bool loading { get; set; } = true;
         private string Sorting = nameof(SetItemDto.SetItemName);
 
         private readonly IUiMessageService _uiMessageService;
@@ -33,15 +34,18 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
 
         private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<SetItemDto> e)
         {
+            loading = true;
             PageIndex = e.Page - 1;
             await UpdateItemList();
             await InvokeAsync(StateHasChanged);
+            loading = false;
         }
 
         private async Task UpdateItemList()
         {
             try
             {
+                loading = true;
                 int skipCount = PageIndex * PageSize;
                 var result = await _setItemAppService.GetListAsync(new PagedAndSortedResultRequestDto
                 {
@@ -51,9 +55,11 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
                 });
                 SetItemList = result.Items.ToList();
                 Total = (int)result.TotalCount;
+                loading = false;
             }
             catch (Exception ex)
             {
+                loading = false;
                 await _uiMessageService.Error(ex.GetType().ToString());
                 Console.WriteLine(ex.ToString());
             }
@@ -90,14 +96,17 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
                     var confirmed = await _uiMessageService.Confirm(L["AreYouSureToDeleteSelectedItem"]);
                     if (confirmed)
                     {
+                        loading = true;
                         await _setItemAppService.DeleteManyItemsAsync(itemIds);
                         await UpdateItemList();
                         IsAllSelected = false;
+                        loading = false;
                     }
                 }
             }
             catch (Exception ex)
             {
+                loading = false;
                 await _uiMessageService.Error(ex.GetType()?.ToString());
                 Console.WriteLine(ex.ToString());
             }
