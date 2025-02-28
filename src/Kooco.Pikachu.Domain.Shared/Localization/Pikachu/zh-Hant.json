@@ -394,7 +394,7 @@
     "Pikachu:ItemWithSameNameAlreadyExists": "商品名稱不能重複",
     "Pikachu:GroupBuyWithSameNameAlreadyExists": "團購名稱已存在，無法重複新增",
     "Pikachu:ItemWithSKUAlreadyExists": "商品SKU不能重複",
-    "Pikachu:ItemStyleKeyCannotBeNull": "商品樣式鍵不能為空",
+    "Pikachu:ItemStyleKeyCannotBeNull": "商品規格不能為空值",
     "Pikachu:ItemStyleKeyCannotBeDuplicate": "商品樣式名稱不可重複",
     //Refund
     "Pikachu:RefundForSameOrderAlreadyExists": "同一訂單已存在退款",
