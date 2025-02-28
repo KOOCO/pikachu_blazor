@@ -470,6 +470,7 @@
     "Mazu": "連江縣",
     "AreYouSureToUpdateGreenWorld?": "Are You Sure To Update Green World Logistics?",
     "AreYouSureToUpdateHomeDelivery?": "Are You Sure To Update Home Delivery?",
+    "AreYouSureToUpdateGreenWorldC2C?": "Are You Sure To Update Green World C2C?",
     "ShortCode": "Short Code",
     "Search": "Search",
     "MinAvailableTime": "Minimum Available Time",
@@ -1271,6 +1272,20 @@
     "Pikachu:ItemDescriptionIsRequired": "Item description is required",
     "CloseOrderJob": "Close Order Job",
     "OrderClosedDueToInActivityTitle": "Order Closed",
-    "OrderClosedDueToInActivity": "Order Closed due to inactivity: {0} Status changed from '{1}' to '{2}'"
+    "OrderClosedDueToInActivity": "Order Closed due to inactivity: {0} Status changed from '{1}' to '{2}'",
+    "AreYouSureToUpdatePostOffice?": "Are You Sure To Update Post Office ?",
+    "AreYouSureToUpdate7-11?": "Are You Sure To Update 7-11 ?",
+    "AreYouSureToUpdate7-11C2C?": "Are You Sure To Update 7-11 C2C ?",
+    "AreYouSureToUpdate7-11Frozen?": "Are You Sure To Update 7-11 Frozen ?",
+    "AreYouSureToUpdate7-11Normal?": "Are You Sure To Update 7-11 Normal ?",
+    "AreYouSureToUpdate7-11Freeze?": "Are You Sure To Update 7-11 Freeze ?",
+    "AreYouSureToUpdateFamilyMart?": "Are You Sure To Update Family Mart ?",
+    "AreYouSureToUpdateFamilyMartC2C?": "Are You Sure To Update Family Mart C2C ?",
+    "AreYouSureToUpdateBNormal?": "Are You Sure To Update B-Normal ?",
+    "AreYouSureToUpdateTCatNormal?": "Are You Sure To Update T-Cat Normal ?",
+    "AreYouSureToUpdateTCatFreeze?": "Are You Sure To Update T-Cat Freeze ?",
+    "AreYouSureToUpdateTCatFrozen?": "Are You Sure To Update T-Cat Frozen ?",
+    "AreYouSureToUpdateBFreeze?": "Are You Sure To Update B-Freeze ?",
+    "AreYouSureToUpdateBNFrozen?": "Are You Sure To Update B-Frozen ?"
   }
 }

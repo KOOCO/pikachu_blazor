@@ -42,8 +42,10 @@
     "AreYouSureToCancelOrder?": "你確定要取消訂單?",
     "AreYouSureToDeleteSelectedItem": "請確認是否要刪除已選擇商品?",
     "AreYouSureToRefundThisOrder?": "您確定要對訂單退款嗎？",
-    "AreYouSureToUpdateGreenWorld?": "你確定要更新綠界物流設定?",
-    "AreYouSureToUpdateHomeDelivery?": "Are You Sure To Update Home Delivery?",
+    "AreYouSureToUpdateGreenWorld?": "您確定要更新綠界物流B2C嗎?",
+    "AreYouSureToUpdateHomeDelivery?": "您確定要更新親送嗎?",
+
+    "AreYouSureToUpdateGreenWorldC2C?": "您確定要更新綠界物流C2C嗎?",
     "AreYouSureToUpdateSortOrder": "你確定你要更新排列順序?",
     "AutoIssueTriplicateInvoice": "自動開立三聯式電子發票",
     "AutomaticEmailing": "自動發信",
@@ -1346,7 +1348,25 @@
     "Pikachu:ItemDescriptionIsRequired": "商品敘述不能為空值",
     "CloseOrderJob": "關閉訂單任務",
     "OrderClosedDueToInActivityTitle": "訂單已關閉",
-    "OrderClosedDueToInActivity": "訂單因長時間未活動而被關閉：{0} 狀態已從 '{1}' 變更為 '{2}'"
+    "OrderClosedDueToInActivity": "訂單因長時間未活動而被關閉：{0} 狀態已從 '{1}' 變更為 '{2}'",
+
+    "AreYouSureToUpdatePostOffice?": "您確定要更新綠界 | 中華郵政嗎？",
+    "AreYouSureToUpdate7-11?": "您確定要更新7-11嗎?",
+    "AreYouSureToUpdate7-11C2C?": "您確定要更新7-11C2C嗎?",
+    "AreYouSureToUpdate7-11Frozen?": "您確定要更新7-11冷凍嗎?",
+    "AreYouSureToUpdate7-11Normal?": "您確定要更新7-11常溫嗎？",
+    "AreYouSureToUpdate7-11Freeze?": "您確定要更新7-11冷藏嗎？",
+    "AreYouSureToUpdateFamilyMart?": "您確定要更新全家嗎？",
+    "AreYouSureToUpdateFamilyMartC2C?": "您確定要更新全家 C2C嗎？",
+    "AreYouSureToUpdateBNormal?": "您確定要更新黑貓常溫嗎？",
+    "AreYouSureToUpdateTCatNormal?": "您確定要更新黑貓宅急便嗎？",
+    "AreYouSureToUpdateTCatFreeze?": "您確定要更新黑貓冷藏嗎？",
+    "AreYouSureToUpdateTCatFrozen?": "您確定要更新黑貓冷凍嗎？",
+    "AreYouSureToUpdateBFreeze?": "您確定要更新黑貓冷藏嗎？",
+    "AreYouSureToUpdateBNFrozen?": "您確定要更新黑貓冷凍嗎？",
+
+
+   
 
   }
 }
