@@ -20,7 +20,46 @@
 @inject IConfiguration _Configuration
 @inject IJSRuntime _JSRuntime
 
-<LoadingIndicator @ref="loading" FullScreen FadeIn>
+
+     @if(loading)
+    {
+     <div class="row">
+        <div class="col-4">
+             <SkeletonItem ColumnSize="ColumnSize.Is4" Class="mb-2" />
+        </div>
+        <div class="col-8 text-end">
+           <SkeletonItem ColumnSize="ColumnSize.Is1" Class="mb-2" />
+            <SkeletonItem ColumnSize="ColumnSize.Is1" Class="mb-2" />
+             <SkeletonItem ColumnSize="ColumnSize.Is1" Class="mb-2" />
+              <SkeletonItem ColumnSize="ColumnSize.Is1" Class="mb-2" />
+        </div>
+    </div> 
+    <Card>
+        <CardBody>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is10">
+                    <SkeletonItem ColumnSize="ColumnSize.Is10" Class="mb-2" />
+                </Column>
+                <Column ColumnSize="ColumnSize.Is2">
+                     <SkeletonItem ColumnSize="ColumnSize.Is4" Class="mb-2" />
+                </Column>
+            </Row>
+            
+           
+
+        </CardBody>
+
+    </Card>
+    <Card>
+        <CardBody>
+            <Skeleton Animation="SkeletonAnimation.Pulse">
+        <!-- For example, 5 horizontal bars to represent the table rows -->
+      <SkeletonTable Rows="10" Columns="7" />
+    </Skeleton>
+        </CardBody>
+    </Card>
+    }
+    <div style="@($"display: {(loading ? "none" : "block")};" )">
     <div class="row">
         <div class="col-4">
             <h3>@L["GroupBuyList"]</h3>
@@ -300,7 +339,7 @@
             </DataGrid>
         </CardBody>
     </Card>
-</LoadingIndicator>
+    </div>
 
 @code {
 }

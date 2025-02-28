@@ -36,7 +36,7 @@ public partial class GroupBuyList
     int Total = 0;
     public DateTime? CreatedDate { get; set; }
     private string Sorting = nameof(GroupBuy.GroupBuyName);
-    private LoadingIndicator loading { get; set; } = new();
+    private bool loading { get; set; } = true;
     private Autocomplete<KeyValueDto, Guid?> AutocompleteField { get; set; }
     private GetGroupBuyInput Filters { get; set; }
     private List<KeyValueDto> ItemsList { get; set; } = new();
@@ -184,6 +184,7 @@ public partial class GroupBuyList
     {
         try
         {
+            loading = true;
             int skipCount = _pageIndex * _pageSize;
             Filters.Sorting = Sorting;
             Filters.MaxResultCount = _pageSize;
@@ -208,6 +209,7 @@ public partial class GroupBuyList
             }
 
             Total = (int)result.TotalCount;
+            loading = false;
             //ItemsLookup = await _groupBuyAppService.GetAllGroupBuyLookupAsync();
         }
         catch (Exception ex)
@@ -290,17 +292,17 @@ public partial class GroupBuyList
                 var confirmed = await _uiMessageService.Confirm(L["AreYouSureToDeleteSelectedItem"]);
                 if (confirmed)
                 {
-                    await loading.Show();
+                    loading = false;
                     await _groupBuyAppService.DeleteManyGroupBuyItemsAsync(groupBuyItemsids);
                     await UpdateGroupBuyList();
                     IsAllSelected = false;
-                    await loading.Hide();
+                    loading = false;
                 }
             }
         }
         catch (Exception ex)
         {
-            await loading.Hide();
+             loading=false;
             await _uiMessageService.Error(ex.Message.ToString());
             Console.WriteLine(ex.ToString());
         }
@@ -309,23 +311,23 @@ public partial class GroupBuyList
     {
         try
         {
-            await loading.Show();
+             loading=true;
             var freebie = GroupBuyListItem.Where(x => x.Id == id).First();
             freebie.IsGroupBuyAvaliable = !freebie.IsGroupBuyAvaliable;
             await _groupBuyAppService.ChangeGroupBuyAvailability(id);
             await UpdateGroupBuyList();
             await InvokeAsync(StateHasChanged);
-            await loading.Hide();
+             loading=false;
         }
         catch (BusinessException ex)
         {
-            await loading.Hide();
+            loading = false;
             await _uiMessageService.Error(ex.Code.ToString());
             Console.WriteLine(ex.ToString());
         }
         catch (Exception ex)
         {
-            await loading.Hide();
+            loading =false;
             await _uiMessageService.Error(ex.GetType().ToString());
             Console.WriteLine(ex.ToString());
         }
@@ -334,15 +336,15 @@ public partial class GroupBuyList
     {
         try
         {
-            await loading.Show();
+            loading =false;
             _pageIndex = e.Page - 1;
             await UpdateGroupBuyList();
             await InvokeAsync(StateHasChanged);
-            await loading.Hide();
+            loading =false;
         }
         catch (Exception ex)
         {
-            await loading.Hide();
+            loading = false;
             Console.WriteLine(ex.ToString());
         }
     }
@@ -360,10 +362,10 @@ public partial class GroupBuyList
 
     async void OnSortChange(DataGridSortChangedEventArgs e)
     {
-        await loading.Show();
+        loading = false;
         Sorting = e.FieldName + " " + (e.SortDirection != SortDirection.Default ? e.SortDirection : "");
         await UpdateGroupBuyList();
-        await loading.Hide();
+        loading = false;
     }
 
     private async Task CopyLinkToClipboard(string? entryUrl)
