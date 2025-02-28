@@ -122,7 +122,10 @@ public partial class EditFreebie
         await Task.Delay(5);
         await ItemDescription.LoadHTMLContent(ExistingItem.ItemDescription);
     }
-
+    private string LocalizeFilePicker(string key, object[] args)
+    {
+        return L[key];
+    }
     async Task OnImageUploadAsync(FileChangedEventArgs e)
     {
         if (e.Files.Length > TotalMaxAllowedFiles)

@@ -53,6 +53,7 @@
                 <div class="col-10">
                     <Field>
                         <FilePicker @ref="FilePicker"
+                            FilePickerLocalizer="(key,args)=>LocalizeFilePicker(key,args)"
                                     Multiple
                                     Changed="OnImageUploadAsync"
                                     ShowMode="FilePickerShowMode.List"

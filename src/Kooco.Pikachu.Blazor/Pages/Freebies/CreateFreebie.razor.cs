@@ -63,7 +63,10 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
                 Console.WriteLine(ex.Message);
             }
         }
-
+        private string LocalizeFilePicker(string key, object[] args)
+        {
+            return L[key];
+        }
         async Task OnImageUploadAsync(FileChangedEventArgs e)
         {
             if (e.Files.Length > TotalMaxAllowedFiles)
