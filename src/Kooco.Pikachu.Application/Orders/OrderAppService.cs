@@ -235,6 +235,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
             );
 
             order.StoreId = input.StoreId;
+            order.StoreName = input.StoreName;
+            order.StoreAddress = input.StoreAddress;
             order.CVSStoreOutSide = input.CVSStoreOutSide;
             order.ShippingStatus = groupBuy!.IsEnterprise ? ShippingStatus.EnterpricePurchase : input.ShippingStatus;
             order.DeliveryCostForNormal = input.DeliveryCostForNormal;
@@ -1082,6 +1084,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
             order1.ShippingStatus = ord.ShippingStatus;
             order1.MerchantTradeNo = ord.MerchantTradeNo;
             order1.StoreId = ord.StoreId;
+            order1.StoreName = ord.StoreName;
+            order1.StoreAddress = ord.StoreAddress;
             order1.CVSStoreOutSide = ord.CVSStoreOutSide;
             order1.DeliveryCostForNormal = ord.DeliveryCostForNormal;
             order1.DeliveryCostForFreeze = ord.DeliveryCostForFreeze;
@@ -1346,6 +1350,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
             order1.ShippingStatus = ord.ShippingStatus;
             order1.MerchantTradeNo = ord.MerchantTradeNo;
             order1.StoreId = ord.StoreId;
+            order1.StoreName = ord.StoreName;
+            order1.StoreAddress = ord.StoreAddress;
             order1.CVSStoreOutSide = ord.CVSStoreOutSide;
             order1.DeliveryCostForNormal = ord.DeliveryCostForNormal;
             order1.DeliveryCostForFreeze = ord.DeliveryCostForFreeze;
@@ -1729,6 +1735,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         order.AddressDetails = input.AddressDetails;
         order.OrderStatus = input.OrderStatus;
         order.StoreId = input.StoreId;
+        order.StoreName = input.StoreName;
+        order.StoreAddress = input.StoreAddress;
         order.CVSStoreOutSide = input.CVSStoreOutSide;
 
         order.RecipientNameDbsNormal = input.RecipientNameDbsNormal;
