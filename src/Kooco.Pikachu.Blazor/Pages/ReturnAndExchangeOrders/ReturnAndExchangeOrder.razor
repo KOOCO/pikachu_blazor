@@ -16,8 +16,30 @@
 @inject IUiMessageService _uiMessageService;
 @inject IOrderAppService _orderAppService;
 
-<LoadingIndicator @ref="loading" FullScreen FadeIn>
 
+     @if(loading)
+    {
+        <div class="row">
+            <div class="col-3">
+                <SkeletonItem ColumnSize="ColumnSize.Is3" Class="mb-2" />
+            </div>
+            <div class="col-9 text-lg-end">
+                
+                        <SkeletonItem ColumnSize="ColumnSize.Is2" Class="mb-2" />
+                        <SkeletonItem ColumnSize="ColumnSize.Is1" Class="mb-2" />
+                  
+            </div>
+        </div>
+        <Card>
+            <CardBody>
+                <Skeleton Animation="SkeletonAnimation.Pulse">
+                    <!-- For example, 5 horizontal bars to represent the table rows -->
+                    <SkeletonTable Rows="10" Columns="9" />
+                </Skeleton>
+            </CardBody>
+        </Card>
+    }
+    <div style="@($"display: {(loading ? "none" : "block")};" )">
     <div class="row">
         <div class="col-3">
             <h3>@L["訂單管理-退換貨列表"]</h3>
@@ -219,7 +241,7 @@
             </DataGrid>
         </CardBody>
     </Card>
-</LoadingIndicator>
+    </div>
 
 @code {
 

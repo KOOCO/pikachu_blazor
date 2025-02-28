@@ -27,7 +27,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ReturnAndExchangeOrders
         private string? Filter { get; set; }
 
         private readonly HashSet<Guid> ExpandedRows = new();
-        private LoadingIndicator loading { get; set; }
+        private bool loading { get; set; } = true;
         private bool CanProcessRefund { get; set; }
         protected override async Task OnInitializedAsync()
         {
@@ -45,7 +45,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ReturnAndExchangeOrders
         {
             try
             {
-                await loading.Show();
+                loading=true;
                 int skipCount = PageIndex * PageSize;
                 var result = await _orderAppService.GetReturnListAsync(new GetOrderListDto
                 {
@@ -57,11 +57,11 @@ namespace Kooco.Pikachu.Blazor.Pages.ReturnAndExchangeOrders
                 Orders = result?.Items.ToList() ?? new List<OrderDto>();
                 TotalCount = (int?)result?.TotalCount ?? 0;
 
-                await loading.Hide();
+                 loading=false;
             }
             catch (Exception ex)
             {
-                await loading.Hide();
+                loading= false;
                 await _uiMessageService.Error(ex.GetType().ToString());
                 Console.WriteLine(ex.ToString());
             }
@@ -85,12 +85,12 @@ namespace Kooco.Pikachu.Blazor.Pages.ReturnAndExchangeOrders
 
         public async void NavigateToOrderDetails(OrderDto e)
         {
-            await loading.Show();
+             loading=true;
 
             var id = e.Id;
             NavigationManager.NavigateTo($"Orders/OrderDetails/{id}");
 
-            await loading.Hide();
+             loading=false;
         }
 
         async void OnSortChange(DataGridSortChangedEventArgs e)
@@ -119,7 +119,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ReturnAndExchangeOrders
         {
             try
             {
-                await loading.Show();
+                loading = true;
                 await _orderAppService.ChangeReturnStatusAsync(rowData.Id, selectedValue);
                 await UpdateItemList();
             }
@@ -130,7 +130,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ReturnAndExchangeOrders
             }
             finally
             {
-                await loading.Hide();
+                loading = false;
             }
 
         }
