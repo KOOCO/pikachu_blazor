@@ -2187,14 +2187,14 @@ public partial class EditGroupBuy
                     return;
                 }
             }
-            if (EditGroupBuyDto.ColorSchemeType == null)
+            if (EditGroupBuyDto.ColorSchemeType == null || EditGroupBuyDto.ColorSchemeType == 0)
             {
                 await _uiMessageService.Warn(L[PikachuDomainErrorCodes.ColorSchemeRequired]);
                 await Loading.Hide();
                 return;
 
             }
-            if (EditGroupBuyDto.ProductDetailsDisplayMethod == null)
+            if (EditGroupBuyDto.ProductDetailsDisplayMethod == null || EditGroupBuyDto.ProductDetailsDisplayMethod==0)
             {
                 await _uiMessageService.Warn(L[PikachuDomainErrorCodes.ProductDetailsDisplayMethodRequired]);
                 await Loading.Hide();

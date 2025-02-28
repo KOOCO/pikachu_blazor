@@ -1983,14 +1983,14 @@ public partial class CreateGroupBuy
                 await Loading.Hide();
                 return;
             }
-            if (CreateGroupBuyDto.ColorSchemeType == null)
+            if (CreateGroupBuyDto.ColorSchemeType == null|| CreateGroupBuyDto.ColorSchemeType ==0)
             {
                 await _uiMessageService.Warn(L[PikachuDomainErrorCodes.ColorSchemeRequired]);
                 await Loading.Hide();
                 return;
 
             }
-            if (CreateGroupBuyDto.ProductDetailsDisplayMethod == null)
+            if (CreateGroupBuyDto.ProductDetailsDisplayMethod == null || CreateGroupBuyDto.ProductDetailsDisplayMethod == 0)
             {
                 await _uiMessageService.Warn(L[PikachuDomainErrorCodes.ProductDetailsDisplayMethodRequired]);
                 await Loading.Hide();
