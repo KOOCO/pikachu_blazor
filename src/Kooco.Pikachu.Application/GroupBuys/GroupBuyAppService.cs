@@ -177,13 +177,15 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                 if (sameName) throw new BusinessException(PikachuDomainErrorCodes.GroupBuyWithSameNameAlreadyExists);
 
                 var groupBuy = await _groupBuyRepository.GetAsync(id);
+
                 await _groupBuyRepository.EnsureCollectionLoadedAsync(groupBuy, x => x.ItemGroups);
-
                 ObjectMapper.Map(input, groupBuy);
-
+               
                 await ProcessItemGroups(groupBuy, input.ItemGroups.ToList());
 
-                groupBuy.ItemGroups.RemoveAll(w => w.Id == Guid.Empty);
+                
+                    groupBuy.ItemGroups.RemoveAll(w => w.Id == Guid.Empty);
+                
 
                 await _groupBuyRepository.UpdateAsync(groupBuy, true);
 
@@ -196,7 +198,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                 uow.Dispose(); // Dispose current unit of work
                 return await HandleConcurrencyAsync(id, input); // Retry update in new UOW
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 uow.Dispose(); // Ensure rollback on failure
                 throw;

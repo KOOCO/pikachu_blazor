@@ -46,6 +46,7 @@ using Kooco.Pikachu.WebsiteManagement.WebsiteBasicSettings;
 using Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
 using System.Collections.Generic;
 using System.Linq;
+using Volo.Abp.AutoMapper;
 using Volo.Abp.Identity;
 
 namespace Kooco.Pikachu;
@@ -158,7 +159,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<OrderDelivery, OrderDeliveryDto>();
         //CreateMap<GroupBuyUpdateDto, GroupBuy>().ReverseMap();
         CreateMap<GroupBuyUpdateDto, GroupBuy>()
-            .ForMember(dest => dest.ItemGroups, opt => opt.MapFrom(src => src.ItemGroups));
+            .Ignore(dest => dest.ItemGroups);
 
         CreateMap<GroupBuyItemGroupCreateUpdateDto, GroupBuyItemGroup>()
             .ForMember(dest => dest.ItemGroupDetails, opt => opt.MapFrom(src => src.ItemDetails));
