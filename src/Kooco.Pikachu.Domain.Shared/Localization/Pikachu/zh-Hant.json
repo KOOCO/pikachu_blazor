@@ -1364,9 +1364,10 @@
     "AreYouSureToUpdateTCatFrozen?": "您確定要更新黑貓冷凍嗎？",
     "AreYouSureToUpdateBFreeze?": "您確定要更新黑貓冷藏嗎？",
     "AreYouSureToUpdateBNFrozen?": "您確定要更新黑貓冷凍嗎？",
+    "PleaseSelectOrderItem": "請先選擇訂單項目，才能進行編輯."
 
 
-   
+
 
   }
 }

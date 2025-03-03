@@ -1986,7 +1986,7 @@ public partial class OrderDetails
     {
         EditingItems = new();
         var selectedItems = Order.OrderItems.Where(x => x.IsSelected).ToList();
-        if(selectedItems.Count > 0)
+        if (selectedItems.Count > 0)
         {
             selectedItems.ForEach(item =>
             {
@@ -2000,6 +2000,10 @@ public partial class OrderDetails
             });
             IsItemsEditMode = true;
             await InvokeAsync(StateHasChanged);
+        }
+        else { 
+        await _uiMessageService.Info(L["PleaseSelectOrderItem"]);
+
         }
     }
 

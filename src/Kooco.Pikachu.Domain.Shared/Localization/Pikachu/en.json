@@ -1286,6 +1286,7 @@
     "AreYouSureToUpdateTCatFreeze?": "Are You Sure To Update T-Cat Freeze ?",
     "AreYouSureToUpdateTCatFrozen?": "Are You Sure To Update T-Cat Frozen ?",
     "AreYouSureToUpdateBFreeze?": "Are You Sure To Update B-Freeze ?",
-    "AreYouSureToUpdateBNFrozen?": "Are You Sure To Update B-Frozen ?"
+    "AreYouSureToUpdateBNFrozen?": "Are You Sure To Update B-Frozen ?",
+    "PleaseSelectOrderItem": "Please select a Order Items before editing."
   }
 }
