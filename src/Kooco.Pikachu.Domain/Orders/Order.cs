@@ -3,6 +3,7 @@ using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.OrderItems;
+using Kooco.Pikachu.OrderTransactions;
 using Kooco.Pikachu.StoreComments;
 using Kooco.Pikachu.UserShoppingCredits;
 using System;
@@ -150,6 +151,9 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public int EcpayLogisticRtnCode { get; set; }
     public string? ReturnedOrderItemIds { get; set; }
     public byte[] RowVersion { get; set; } // Concurrency token
+
+    public ICollection<OrderTransaction> OrderTransactions { get; set; } = new List<OrderTransaction>();
+
     public Order() { }
 
     public Order(

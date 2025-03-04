@@ -23,6 +23,7 @@ using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.OrderHistories;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.OrderTransactions;
 using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.PikachuAccounts;
 using Kooco.Pikachu.ProductCategories;
@@ -339,5 +340,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<Image, ImageWithLinkDto>();
 
         CreateMap<OrderHistory, OrderHistoryDto>();
+
+        CreateMap<OrderTransaction, OrderTransactionDto>();
     }
 }

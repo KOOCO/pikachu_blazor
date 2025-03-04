@@ -10,6 +10,7 @@ using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.OrderHistories;
 using Kooco.Pikachu.OrderItems;
+using Kooco.Pikachu.OrderTransactions;
 using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.Refunds;
@@ -83,6 +84,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IIdentityUserRepository _userRepository;
     private readonly OrderHistoryManager _orderHistoryManager;
     private readonly IOrderHistoryRepository _orderHistoryRepository;
+    private readonly OrderTransactionManager _orderTransactionManager;
+
     #endregion
 
     #region Constructor
@@ -116,7 +119,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         IUserCumulativeCreditRepository userCumulativeCreditRepository,
         IIdentityUserRepository userRepository,
         OrderHistoryManager orderHistoryManager,
-        IOrderHistoryRepository orderHistoryRepository
+        IOrderHistoryRepository orderHistoryRepository,
+        OrderTransactionManager orderTransactionManager
     )
     {
         _orderRepository = orderRepository;
@@ -149,6 +153,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _userRepository = userRepository;
         _orderHistoryManager = orderHistoryManager;
         _orderHistoryRepository = orderHistoryRepository;
+        _orderTransactionManager = orderTransactionManager;
     }
     #endregion
 
@@ -1799,12 +1804,20 @@ public class OrderAppService : ApplicationService, IOrderAppService
             var refund = (await _refundRepository.GetQueryableAsync()).Where(x => x.OrderId == order.Id).FirstOrDefault();
             await _refundAppService.UpdateRefundReviewAsync(refund.Id, RefundReviewStatus.Proccessing);
             await _refundAppService.SendRefundRequestAsync(refund.Id);
+
+            var orderTransaction = new OrderTransaction(GuidGenerator.Create(), order.Id, order.OrderNo,
+                order.TotalAmount, TransactionType.Returned, TransactionStatus.Successful, order.PaymentMethod?.GetPaymentChannel());
+            await _orderTransactionManager.CreateAsync(orderTransaction);
         }
         if (orderReturnStatus == OrderReturnStatus.Succeeded && order.OrderStatus == OrderStatus.Exchange)
         {
             order.ExchangeBy = CurrentUser.UserName;
             order.ExchangeTime = DateTime.Now;
             order.ShippingStatus = ShippingStatus.Exchange;
+
+            var orderTransaction = new OrderTransaction(GuidGenerator.Create(), order.Id, order.OrderNo,
+                order.TotalAmount, TransactionType.Exchange, TransactionStatus.Successful, order.PaymentMethod?.GetPaymentChannel());
+            await _orderTransactionManager.CreateAsync(orderTransaction);
         }
         await _orderRepository.UpdateAsync(order);
         // **Get Current User (Editor)**
@@ -1825,25 +1838,24 @@ public class OrderAppService : ApplicationService, IOrderAppService
         if (orderReturnStatus == OrderReturnStatus.Approve && order.OrderStatus == OrderStatus.Returned)
         {
             await _orderHistoryManager.AddOrderHistoryAsync(
-     order.Id,
-     "RefundInitiated", // Localization key
-     new object[] { order.OrderNo }, // Dynamic placeholders
-     currentUserId,
-     currentUserName
- );
+                 order.Id,
+                 "RefundInitiated", // Localization key
+                 new object[] { order.OrderNo }, // Dynamic placeholders
+                 currentUserId,
+                 currentUserName
+             );
 
         }
 
         if (orderReturnStatus == OrderReturnStatus.Succeeded && order.OrderStatus == OrderStatus.Exchange)
         {
             await _orderHistoryManager.AddOrderHistoryAsync(
-     order.Id,
-     "OrderExchanged", // Localization key
-     new object[] { order.OrderNo }, // Format date properly
-     currentUserId,
-     currentUserName
- );
-
+                 order.Id,
+                 "OrderExchanged", // Localization key
+                 new object[] { order.OrderNo }, // Format date properly
+                 currentUserId,
+                 currentUserName
+             );
         }
     }
 
@@ -2585,15 +2597,20 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
                 // **Log Order History for Payment Processing**
                 await _orderHistoryManager.AddOrderHistoryAsync(
-      order.Id,
-      "PaymentProcessed", // Localization key
-      new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name }, // Localized placeholders
-      currentUserId,
-      currentUserName
-  );
+                      order.Id,
+                      "PaymentProcessed", // Localization key
+                      new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name }, // Localized placeholders
+                      currentUserId,
+                      currentUserName
+                  );
                 order.PrepareShipmentBy = CurrentUser.Name ?? "System";
                 _ = DateTime.TryParse(paymentResult.PaymentDate, out DateTime parsedDate);
                 order.PaymentDate = paymentResult.OrderId == null ? parsedDate : DateTime.Now;
+
+                var orderTransaction = new OrderTransaction(GuidGenerator.Create(), order.Id, order.OrderNo,
+                    order.TotalAmount, TransactionType.Payment, TransactionStatus.Successful, PaymentChannel.EcPay);
+                await _orderTransactionManager.CreateAsync(orderTransaction);
+
                 if (order.OrderItems.Any(x => x.Item?.IsFreeShipping == true))
                 {
                     if (order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Normal && (x.Item != null || x.Item?.IsFreeShipping == true)).Any())

@@ -3,6 +3,7 @@
 @using Kooco.Pikachu.Items
 @using Kooco.Pikachu.Localization;
 @using Kooco.Pikachu.OrderItems;
+@using Kooco.Pikachu.OrderTransactions
 @using Kooco.Pikachu.Orders;
 @using Kooco.Pikachu.ElectronicInvoiceSettings;
 @using Microsoft.Extensions.Localization;
@@ -10,7 +11,8 @@
 @using Volo.Abp.AspNetCore.Components.Messages;
 @using Blazorise.LoadingIndicator;
 
-@inject IStringLocalizer<PikachuResource> L;
+@inherits PikachuComponentBase
+@inject IOrderTransactionAppService OrderTransactionAppService
 @inject NavigationManager NavigationManager;
 @inject IUiMessageService _uiMessageService;
 @inject IOrderAppService _orderAppService;
@@ -18,79 +20,90 @@
 @inject IItemAppService _ItemAppService;
 @inject IJSRuntime JSRuntime;
 
-<LoadingIndicator @ref="loading" FullScreen FadeIn>
-    <div class="row">
-        <div class="col-3">
-            <h3>@L["金流對帳表"]</h3>
-        </div>
-        <div class="col-9 text-lg-end">
-            <div class="d-inline-block me-1">
-                <div class="input-group">
-                    <InputText class="form-control form-control-sm search-bar" @bind-Value="@Filter" placeholder="@L["Search"]"></InputText>
-                    <Button Type="ButtonType.Button" Class="btn btn-sm btn-primary" Clicked="OnSearch">
-                        <i class="fa fa-search"></i>
-                    </Button>
-                </div>
-                
-            </div> 
-            @if (Orders.Where(x => x.IsSelected).Count() != 1|| Orders.Any(x => x.IsSelected && x.IsVoidInvoice &&x.CreditNoteReason!=null) )
-            {
-                <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
-                    <i class="fa fa-print"></i>
-                    @L["IssueCreditNote"]
-                </Button>
-            }
-            else
-            {
-                <Button Type="@ButtonType.Button" Clicked="() => OpenCreditReasonModal()" Class="ms-1 btn btn-sm btn-primary">
-                    <i class="fa fa-print"></i>
-                    @L["IssueCreditNote"]
-                </Button>
-            }
-
-            @if (Orders.Where(x => x.IsSelected).Count() != 1 || Orders.Any(x => x.IsSelected && x.IsVoidInvoice))
-            {
-                <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
-                    <i class="fa fa-print"></i>
-                    @L["VoidInvoice"]
-                </Button>
-            }
-            else
-            {
-                <Button Type="@ButtonType.Button" Clicked="() => OpenVoidReasonModal()" Class="ms-1 btn btn-sm btn-primary">
-                    <i class="fa fa-print"></i>
-                    @L["VoidInvoice"]
-                </Button>
-            }
-            <Button Type="ButtonType.Button" Class="btn btn-sm btn-outline-dark" Clicked="DownloadExcel"><i class="fa fa-arrow-down"></i></Button>
-           
-
-        </div>
+<div class="row">
+    <div class="col-6">
+        <h3>@L["CashFlowReconciliation"]</h3>
     </div>
+    <div class="col-6 text-lg-end">
+        @if (Orders.Where(x => x.IsSelected).Count() != 1 || Orders.Any(x => x.IsSelected && x.IsVoidInvoice && x.CreditNoteReason != null))
+        {
+            <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
+                <i class="fa fa-print"></i>
+                @L["IssueCreditNote"]
+            </Button>
+        }
+        else
+        {
+            <Button Type="@ButtonType.Button" Clicked="() => OpenCreditReasonModal()" Class="ms-1 btn btn-sm btn-primary">
+                <i class="fa fa-print"></i>
+                @L["IssueCreditNote"]
+            </Button>
+        }
+
+        @if (Orders.Where(x => x.IsSelected).Count() != 1 || Orders.Any(x => x.IsSelected && x.IsVoidInvoice))
+        {
+            <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
+                <i class="fa fa-print"></i>
+                @L["VoidInvoice"]
+            </Button>
+        }
+        else
+        {
+            <Button Type="@ButtonType.Button" Clicked="() => OpenVoidReasonModal()" Class="ms-1 btn btn-sm btn-primary">
+                <i class="fa fa-print"></i>
+                @L["VoidInvoice"]
+            </Button>
+        }
+        <Button Type="ButtonType.Button" Class="btn btn-sm btn-outline-dark" Clicked="DownloadExcel"><i class="fa fa-arrow-down"></i></Button>
+
+
+    </div>
+</div>
+<Card>
+    <CardBody>
+        <Addons>
+            <Addon AddonType="AddonType.Body">
+                <TextEdit @bind-Text="@Filter" placeholder="@L["Search"]"></TextEdit>
+            </Addon>
+            <Addon AddonType="AddonType.End">
+                <Button Type="ButtonType.Button" Class="btn-primary" Clicked="OnSearch">
+                    <i class="fa fa-search"></i>
+                </Button>
+            </Addon>
+        </Addons>
+    </CardBody>
+</Card>
+
+@if (IsLoading)
+{
+    <Skeleton Animation="SkeletonAnimation.Pulse">
+        <SkeletonTable Rows="5" Columns="8" />
+    </Skeleton>
+}
+@{
+    var style = $"display: {(IsLoading ? "none" : "block")};";
+}
+<div style="@style">
     <Card>
         <CardBody>
-            <DataGrid TItem="OrderDto"
+            @* <DataGrid TItem="OrderDto"
                       Data="@Orders"
-            @bind-SelectedRow="@SelectedOrder"
                       ReadData="OnDataGridReadAsync"
                       TotalItems="TotalCount"
-                      DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.Id == SelectedOrder?.OrderId)"
                       Responsive
-                       ShowPager="true"
-                       PageSize="PageSize"
-                       RowClicked="ToggleRow"
-                       RowDoubleClicked="NavigateToOrderDetails"
-                       SortChanged="OnSortChange">
-                 <DataGridColumns>
-                     <DataGridCommandColumn />
-                     <DataGridColumn Caption="@L["Select"]" Width="30px">
-                         <DisplayTemplate>
-                             <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
-                         </DisplayTemplate>
-                     </DataGridColumn>
-                     <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
-                         <DisplayTemplate>
-                             @{
+                      ShowPager="true"
+                      PageSize="PageSize"
+                      Hoverable>
+                <DataGridColumns>
+                    <DataGridCommandColumn />
+                    <DataGridColumn Caption="@L["Select"]" Width="30px">
+                        <DisplayTemplate>
+                            <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
+                        <DisplayTemplate>
+                            @{
                                 var isExpanded = ExpandedRows.Contains(context.OrderId);
                                 var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
                             }
@@ -99,31 +112,29 @@
                         </DisplayTemplate>
                     </DataGridColumn>
                     <DataGridColumn Field="@nameof(OrderDto.LastModificationTime)" Caption="@L["LastUpdatedDate"]" />
-                  @*   <DataGridColumn Field="@nameof(OrderDto.CustomerName)" Caption="@L["CustomerName"]" />
-                    <DataGridColumn Field="@nameof(OrderDto.CustomerEmail)" Caption="@L["Email"]" /> *@
                     <DataGridColumn Field="@nameof(OrderDto.IssueStatus)" Caption="@L["InvoiceIssueStatus"]">
                         <DisplayTemplate>
-                            @if(context.IssueStatus.ToString() == "Succeeded")
+                            @if (context.IssueStatus.ToString() == "Succeeded")
                             {
                                 var str = context.IssueStatus.ToString() + " cash flow";
-                                @L[str];
+                                @L[str]
+                                ;
 
                             }
-                            else{
+                            else
+                            {
                                 @L[context.IssueStatus.ToString()]
                                 if (context.IssueStatus == IssueInvoiceStatus.Failed)
                                 {
-
                                     <Button Class="btn-white"
-                                        Clicked="@((e) => IssueInvoice(context.OrderId))">
-                                    >
+                                            Clicked="@((e) => IssueInvoice(context.OrderId))">
                                         <i class="fas fa-rotate" />
                                     </Button>
                                 }
                             }
                         </DisplayTemplate>
                     </DataGridColumn>
-                    
+
                     <DataGridColumn Field="@nameof(OrderDto.InvoiceNumber)" Caption="@L["InvoiceNumber"]">
                         <DisplayTemplate>
                             @context.InvoiceNumber
@@ -141,65 +152,150 @@
                     </DataGridColumn>
                 </DataGridColumns>
                 <DetailRowTemplate>
-                @{
-                    <div class="mx-2 px-3 py-2 border">
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td>@L["RecipientInformation"]</td>
-                                    <td>@context.CustomerName / @context.CustomerPhone</td>
-                                </tr>
-                                <tr>
-                                    <td>@L["ShippingMethod"]</td>
-                                    <td>@L[context.DeliveryMethod.ToString()]</td>
-                                </tr>
-                                <tr>
-                                    <td>@L["Address"]</td>
-                                    <td class="d-none">@context.AddressDetails, @context.Road, @context.District, @context.City</td>
-                                    <td>@context.AddressDetails</td>
-                                </tr>
-                                <tr>
-                                    <td>@L["Remarks"]</td>
-                                    <td>@context.Remarks</td>
-                                </tr>
-                                <tr>
-                                    <td>@L["MerchantRemarks"]</td>
-                                    <td>@context.Remarks</td>
-                                </tr>
-                                <tr>
-                                    <td>@L["OrderItems"]</td>
-                                    <td>
-                                        @foreach (OrderItemDto item in (context as OrderDto).OrderItems)
-                                        {
-                                            @if (item.ItemType == ItemType.Item)
+                    @{
+                        <div class="mx-2 px-3 py-2 border">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td>@L["RecipientInformation"]</td>
+                                        <td>@context.CustomerName / @context.CustomerPhone</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@L["ShippingMethod"]</td>
+                                        <td>@L[context.DeliveryMethod.ToString()]</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@L["Address"]</td>
+                                        <td class="d-none">@context.AddressDetails, @context.Road, @context.District, @context.City</td>
+                                        <td>@context.AddressDetails</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@L["Remarks"]</td>
+                                        <td>@context.Remarks</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@L["MerchantRemarks"]</td>
+                                        <td>@context.Remarks</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@L["OrderItems"]</td>
+                                        <td>
+                                            @foreach (OrderItemDto item in (context as OrderDto).OrderItems)
                                             {
-                                                <div mb-1>
-                                                    <span>@item.Spec</span>
-                                                    <span>@item.Item?.ItemName x @item.Quantity</span>
-                                                </div>
+                                                @if (item.ItemType == ItemType.Item)
+                                                {
+                                                    <div mb-1>
+                                                        <span>@item.Spec</span>
+                                                        <span>@item.Item?.ItemName x @item.Quantity</span>
+                                                    </div>
+                                                }
+                                                @if (item.ItemType == ItemType.SetItem)
+                                                {
+                                                    <div mb-1>
+                                                        <span>@item.Spec</span>
+                                                        <span>@item.SetItem?.SetItemName x @item.Quantity</span>
+                                                    </div>
+                                                }
+                                                @if (item.ItemType == ItemType.Freebie)
+                                                {
+                                                    <div mb-1>
+                                                        <span>@item.Spec</span>
+                                                        <span>@item.Freebie?.ItemName x @item.Quantity</span>
+                                                    </div>
+                                                }
                                             }
-                                            @if (item.ItemType == ItemType.SetItem)
-                                            {
-                                                <div mb-1>
-                                                    <span>@item.Spec</span>
-                                                    <span>@item.SetItem?.SetItemName x @item.Quantity</span>
-                                                </div>
-                                            }
-                                            @if (item.ItemType == ItemType.Freebie)
-                                            {
-                                                <div mb-1>
-                                                    <span>@item.Spec</span>
-                                                    <span>@item.Freebie?.ItemName x @item.Quantity</span>
-                                                </div>
-                                            }
-                                        }
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                }
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    }
                 </DetailRowTemplate>
+                <FirstPageButtonTemplate>@L[PikachuResource.FirstPage]</FirstPageButtonTemplate>
+                <PreviousPageButtonTemplate>@L[PikachuResource.PrevPage]</PreviousPageButtonTemplate>
+                <NextPageButtonTemplate>@L[PikachuResource.NextPage]</NextPageButtonTemplate>
+                <LastPageButtonTemplate>@L[PikachuResource.LastPage]</LastPageButtonTemplate>
+            </DataGrid> *@
+            <DataGrid TItem="OrderTransactionDto"
+                      Data="OrderTransactions"
+                      ReadData="OnDataGridReadAsync"
+                      TotalItems="TotalCount"
+                      ShowPager="true"
+                      PageSize="PageSize"
+                      Responsive
+                      Hoverable>
+                <DataGridColumns>
+                    <DataGridCommandColumn />
+                    <DataGridColumn Caption="@L["Select"]" Width="30px">
+                        <DisplayTemplate>
+                            <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn TItem="OrderTransactionDto"
+                                    Field="@nameof(OrderTransactionDto.OrderNo)"
+                                    Caption="@L["OrderNo"]">
+                        <DisplayTemplate>
+                            <Button Class="btn-link hyperlink" Clicked="@(() => NavigationManager.NavigateTo("Orders/OrderDetails/" + context.OrderId))">@context.OrderNo</Button>
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn Sortable="false" Caption="@L["LastUpdatedDate"]">
+                        <DisplayTemplate>
+                            @context.Order?.LastModificationTime?.ToString("dd/MM/yyyy hh:mm:ss tt")
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn Sortable="false" Caption="@L["InvoiceIssueStatus"]">
+                        <DisplayTemplate>
+                            @{
+                                var str = context.Order?.IssueStatus.ToString() == "Succeeded"
+                                ? context.Order?.IssueStatus.ToString() + " cash flow"
+                                : context.Order?.IssueStatus.ToString();
+                            }
+                            @L[str]
+                            @if (context.Order?.IssueStatus == IssueInvoiceStatus.Failed)
+                            {
+                                <Button Class="btn-white"
+                                        Clicked="@((e) => IssueInvoice(context.OrderId))">
+                                    <i class="fas fa-rotate" />
+                                </Button>
+                            }
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn Sortable="false" Caption="@L["InvoiceNumber"]">
+                        <DisplayTemplate>
+                            @context.Order?.InvoiceNumber
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn Field="@nameof(OrderTransactionDto.TransactionType)" Caption="@L["TransactionType"]">
+                        <DisplayTemplate>
+                            @L[$"Enum:TransactionType.{(int)context.TransactionType}"]
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn Field="@nameof(OrderTransactionDto.TransactionStatus)" Caption="@L["TransactionStatus"]">
+                        <DisplayTemplate>
+                            @L[$"Enum:TransactionStatus.{(int)context.TransactionStatus}"]
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn Field="@nameof(OrderTransactionDto.PaymentChannel)" Caption="@L["PaymentChannel"]">
+                        <DisplayTemplate>
+                            @if (context.PaymentChannel.HasValue)
+                            {
+                                @L[$"Enum:PaymentChannel.{(int)context.PaymentChannel}"]
+                            }
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn TextAlignment="TextAlignment.End" Field="@nameof(OrderTransactionDto.Amount)" Caption="@L["CheckoutAmount"]">
+                        <DisplayTemplate>
+                            <Div Class="text-nowrap">
+                                $ @context.Amount.ToString("N2")
+                            </Div>
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn Sortable="false" Caption="@L["Editor"]">
+                        <DisplayTemplate>
+                            @context.Order?.VoidUser
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                </DataGridColumns>
                 <FirstPageButtonTemplate>@L[PikachuResource.FirstPage]</FirstPageButtonTemplate>
                 <PreviousPageButtonTemplate>@L[PikachuResource.PrevPage]</PreviousPageButtonTemplate>
                 <NextPageButtonTemplate>@L[PikachuResource.NextPage]</NextPageButtonTemplate>
@@ -207,76 +303,77 @@
             </DataGrid>
         </CardBody>
     </Card>
-      <Modal @ref="CreateVoidReasonModal">
-      
-        <ModalContent IsCentered="true">
-            <EditForm Model="@VoidReason" OnValidSubmit="ApplyVoidReasonAsync">
-                <ModalHeader>
-                    <ModalTitle>@L["VoidReason"]</ModalTitle>
-                        <CloseButton Clicked="CloseVoidReasonModal"  />
-                    </ModalHeader>
-                    <ModalBody>
+</div>
 
-                        <DataAnnotationsValidator />
-                    
-                    <div class="row my-2">
-                        <label class="form-label">@L["VoidReason"]</label>
-                        <div class="col-12 mb-2">
-                            <InputText class="form-control" @bind-Value="@VoidReason.Reason"></InputText>
-                            <ValidationMessage For="@(() => VoidReason.Reason)" />
-                        </div>
+
+<Modal @ref="CreateVoidReasonModal">
+
+    <ModalContent IsCentered="true">
+        <EditForm Model="@VoidReason" OnValidSubmit="ApplyVoidReasonAsync">
+            <ModalHeader>
+                <ModalTitle>@L["VoidReason"]</ModalTitle>
+                <CloseButton Clicked="CloseVoidReasonModal" />
+            </ModalHeader>
+            <ModalBody>
+
+                <DataAnnotationsValidator />
+
+                <div class="row my-2">
+                    <label class="form-label">@L["VoidReason"]</label>
+                    <div class="col-12 mb-2">
+                        <InputText class="form-control" @bind-Value="@VoidReason.Reason"></InputText>
+                        <ValidationMessage For="@(() => VoidReason.Reason)" />
                     </div>
-                </ModalBody>
-                <ModalFooter>
-                    <Button Color="Color.Danger"
-                            Clicked="CloseVoidReasonModal">
-                        @L["Cancel"]
-                    </Button>
-                    <Button Type="ButtonType.Submit" Class="btn btn-primary">
-                        <i class="fa fa-check"></i>
-                        @L["Save"]
-                    </Button>
-                </ModalFooter>
-            </EditForm>
-        </ModalContent>
-    </Modal>
-      <Modal @ref="CreateCreditNoteReasonModal">
-      
-        <ModalContent IsCentered="true">
-            <EditForm Model="@CreditReason" OnValidSubmit="ApplyCreditReasonAsync">
-                <ModalHeader>
-                    <ModalTitle>@L["CreditNoteReason"]</ModalTitle>
-                        <CloseButton Clicked="CloseCreditReasonModal"  />
-                    </ModalHeader>
-                    <ModalBody>
+                </div>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Danger"
+                        Clicked="CloseVoidReasonModal">
+                    @L["Cancel"]
+                </Button>
+                <Button Type="ButtonType.Submit" Class="btn btn-primary">
+                    <i class="fa fa-check"></i>
+                    @L["Save"]
+                </Button>
+            </ModalFooter>
+        </EditForm>
+    </ModalContent>
+</Modal>
 
-                        <DataAnnotationsValidator />
-                    
-                    <div class="row my-2">
-                        <label class="form-label">@L["CreditNoteReason"]</label>
-                        <div class="col-12 mb-2">
-                            <InputText class="form-control" @bind-Value="@CreditReason.Reason"></InputText>
-                            <ValidationMessage For="@(() => CreditReason.Reason)" />
-                        </div>
+<Modal @ref="CreateCreditNoteReasonModal">
+
+    <ModalContent IsCentered="true">
+        <EditForm Model="@CreditReason" OnValidSubmit="ApplyCreditReasonAsync">
+            <ModalHeader>
+                <ModalTitle>@L["CreditNoteReason"]</ModalTitle>
+                <CloseButton Clicked="CloseCreditReasonModal" />
+            </ModalHeader>
+            <ModalBody>
+
+                <DataAnnotationsValidator />
+
+                <div class="row my-2">
+                    <label class="form-label">@L["CreditNoteReason"]</label>
+                    <div class="col-12 mb-2">
+                        <InputText class="form-control" @bind-Value="@CreditReason.Reason"></InputText>
+                        <ValidationMessage For="@(() => CreditReason.Reason)" />
                     </div>
-                </ModalBody>
-                <ModalFooter>
-                    <Button Color="Color.Danger"
-                            Clicked="CloseCreditReasonModal">
-                        @L["Cancel"]
-                    </Button>
-                    <Button Type="ButtonType.Submit" Class="btn btn-primary">
-                        <i class="fa fa-check"></i>
-                        @L["Save"]
-                    </Button>
-                </ModalFooter>
-            </EditForm>
-        </ModalContent>
-    </Modal>
-</LoadingIndicator>
-@code {
+                </div>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Danger"
+                        Clicked="CloseCreditReasonModal">
+                    @L["Cancel"]
+                </Button>
+                <Button Type="ButtonType.Submit" Class="btn btn-primary">
+                    <i class="fa fa-check"></i>
+                    @L["Save"]
+                </Button>
+            </ModalFooter>
+        </EditForm>
+    </ModalContent>
+</Modal>
 
-}
 <script>
     window.downloadFile = function (data) {
         debugger;

@@ -52,6 +52,7 @@ using Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
 using Kooco.Pikachu.WebsiteManagement.FooterSettings;
 using Kooco.Pikachu.WebsiteManagement.TopbarSettings;
 using Kooco.Pikachu.OrderHistories;
+using Kooco.Pikachu.OrderTransactions;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -155,6 +156,7 @@ public class PikachuDbContext :
 
     public DbSet<ProductCategory> ProductCategories { get; set; }
     public DbSet<OrderHistory> OrderHistories { get; set; }
+    public DbSet<OrderTransaction> OrderTransactions { get; set; }
 
     public DbSet<IdentitySession> Sessions { get; set; }
 
@@ -277,6 +279,8 @@ public class PikachuDbContext :
             b.Property(p => p.RefundAmount).HasColumnType("decimal(18,2)");
             b.Property(p => p.cashback_amount).HasColumnType("decimal(18,2)");
             b.Property(o => o.RowVersion).IsRowVersion();
+
+            b.HasMany(x => x.OrderTransactions).WithOne(x => x.Order).HasForeignKey(x => x.OrderId);
         });
         builder.Entity<OrderDelivery>(b =>
         {
@@ -623,8 +627,18 @@ public class PikachuDbContext :
             b.ToTable(PikachuConsts.DbTablePrefix + "OrderHistories", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
 
-           
+
         });
+
+        builder.Entity<OrderTransaction>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "OrderTransactions", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.Property(x => x.Amount).HasColumnType("money");
+            b.HasOne(x => x.Order).WithMany(x => x.OrderTransactions).HasForeignKey(x => x.OrderId);
+        });
+
         #region GroupPurchaseOverviews
         builder.Entity<GroupPurchaseOverview>(b =>
         {
