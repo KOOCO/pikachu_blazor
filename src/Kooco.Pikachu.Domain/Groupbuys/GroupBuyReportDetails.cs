@@ -22,4 +22,5 @@ public class GroupBuyReportDetails
     public GroupBuy GroupBuy { get; set; }
     public List<OrderItem> OrderItems { get; set; }
     public List<OrderItem> OrderItemsPaid { get; set; }
+    public List<OrderItem> OrderItemsPaidAndDeliverd { get; set; }
 }

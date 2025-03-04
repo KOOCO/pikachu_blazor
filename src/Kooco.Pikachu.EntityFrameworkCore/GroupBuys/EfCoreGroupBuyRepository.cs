@@ -332,14 +332,88 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
                       .CountAsync();
     }
 
+    //public async Task<GroupBuyReportDetails> GetGroupBuyReportDetailsAsync(Guid id, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null)
+    //{
+    //    var dbContext = await GetDbContextAsync();
+    //    var query = await (from order in dbContext.Orders
+    //                       .Include(x => x.OrderItems).ThenInclude(x => x.Item)
+    //                .WhereIf(startDate.HasValue, x => x.CreationTime >= startDate)
+    //                .WhereIf(endDate.HasValue, x => x.CreationTime < endDate)
+    //                .WhereIf(orderStatus.HasValue, x => x.OrderStatus == orderStatus)
+    //                       join groupbuy in dbContext.GroupBuys.Where(g => g.Id == id) on order.GroupBuyId equals groupbuy.Id
+    //                       group order by order.GroupBuyId into groupedOrders
+    //                       select new GroupBuyReportDetails
+    //                       {
+    //                           GroupBuyName = groupedOrders.First().GroupBuy.GroupBuyName,
+    //                           StartDate = startDate ?? groupedOrders.First().GroupBuy.CreationTime,
+    //                           EndDate = endDate ?? DateTime.Now,
+    //                           OrderItems = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Distinct().SelectMany(o => o.OrderItems).ToList(),
+    //                           OrderItemsPaid = groupedOrders.Where(order => (order.PaymentMethod == PaymentMethods.CashOnDelivery && order.ShippingStatus != ShippingStatus.PrepareShipment && order.ShippingStatus != ShippingStatus.ToBeShipped) || (order.PaymentMethod != PaymentMethods.CashOnDelivery && order.OrderStatus == OrderStatus.Open && order.ShippingStatus != ShippingStatus.WaitingForPayment)).Distinct().SelectMany(o => o.OrderItems).ToList(),
+    //                           OrderQuantityPaid = groupedOrders.Where(order => (order.PaymentMethod == PaymentMethods.CashOnDelivery && order.ShippingStatus != ShippingStatus.PrepareShipment && order.ShippingStatus != ShippingStatus.ToBeShipped) || (order.PaymentMethod != PaymentMethods.CashOnDelivery && order.OrderStatus == OrderStatus.Open && order.ShippingStatus != ShippingStatus.WaitingForPayment)).Count() - (groupedOrders.Where(order => order.IsRefunded).Count()),
+    //                           TotalOrderQuantity = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Count(),
+    //                           SalesAmount = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Distinct().Sum(order => order.TotalAmount),
+    //                           //SalesAmountExclShipping = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open && order.ShippingStatus == ShippingStatus.PrepareShipment).Sum(order => order.TotalAmount) ,
+    //                           AmountReceived = groupedOrders.Where(x => (x.PaymentMethod == PaymentMethods.CashOnDelivery && x.ShippingStatus != ShippingStatus.PrepareShipment && x.ShippingStatus != ShippingStatus.ToBeShipped) || (x.PaymentMethod != PaymentMethods.CashOnDelivery && x.OrderStatus == OrderStatus.Open && x.ShippingStatus != ShippingStatus.WaitingForPayment)).Distinct().Sum(order => order.TotalAmount),
+    //                           GroupBuy = groupedOrders.First().GroupBuy,
+    //                           // SalesAmountMinusShipping = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(order => order.TotalAmount) - groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(x => x.TotalAmount - x.OrderItems.Sum(y => y.ItemPrice)),
+    //                           //BloggersProfit = (groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open && order.ShippingStatus==ShippingStatus.PrepareShipment).Sum(order => order.TotalAmount) - groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open && order.ShippingStatus == ShippingStatus.PrepareShipment).Count() * 200) * (groupedOrders.First().GroupBuy.ProfitShare / 100.0M)
+    //                       }).FirstOrDefaultAsync();
+    //    if (query != null)
+    //    {
+    //        query.SalesAmountExclShipping = query.OrderItems.Sum(order => order.TotalAmount) - query.OrderItems.Sum(x => x.TotalAmount - (x.ItemPrice * x.Quantity));
+    //        query.SalesAmountMinusShipping = query.SalesAmountExclShipping;
+    //        query.AmountReceivedExclShipping = query.OrderItemsPaid.Sum(x => x.TotalAmount);
+    //        var groupbuyProfit = query.AmountReceivedExclShipping * ((query.GroupBuy.ProfitShare) / 100.0M);
+    //        var itemWithShareProfit = query.OrderItemsPaid.Where(x => x.Item != null && x.Item.ShareProfit > 0).ToList();
+    //        decimal profit = 0;
+    //        foreach (var item in itemWithShareProfit)
+    //        {
+    //            profit += ((decimal)(query.GroupBuy.ProfitShare - item.Item.ShareProfit) / 100.0M) * item.TotalAmount;
+
+    //        }
+    //        if (groupbuyProfit < profit)
+    //        {
+    //            query.BloggersProfit = groupbuyProfit - profit;
+    //            query.BloggersProfit = -1 * query.BloggersProfit;
+    //        }
+    //        else
+    //        {
+    //            query.BloggersProfit = (decimal)(groupbuyProfit - profit);
+    //        }
+    //    }
+    //    //query.BloggersProfit = (query.OrderItems
+    //    //      .Where(item => item.Item.ShareProfit > 0)
+    //    //      .Sum(item => item.ItemPrice)
+    //    //      * (query.GroupBuy.ProfitShare / 100.0M))
+    //    //   +
+    //    //   (query.OrderItems
+    //    //      .Where(item => item.Item.ShareProfit > 0)
+    //    //      .Select(item => item.Quantity)
+    //    //      .Distinct()
+    //    //      .Count()
+    //    //      * (query.GroupBuy.ProfitShare / 100.0M));
+    //    if (query == null)
+    //    {
+    //        var groupBuy = await dbContext.GroupBuys.FirstOrDefaultAsync(x => x.Id == id);
+    //        query = new GroupBuyReportDetails
+    //        {
+    //            GroupBuyName = groupBuy?.GroupBuyName,
+    //            StartDate = startDate,
+    //            EndDate = endDate
+    //        };
+    //    }
+
+    //    return query;
+    //}
     public async Task<GroupBuyReportDetails> GetGroupBuyReportDetailsAsync(Guid id, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null)
     {
         var dbContext = await GetDbContextAsync();
+
         var query = await (from order in dbContext.Orders
-                           .Include(x => x.OrderItems).ThenInclude(x => x.Item)
-                    .WhereIf(startDate.HasValue, x => x.CreationTime >= startDate)
-                    .WhereIf(endDate.HasValue, x => x.CreationTime < endDate)
-                    .WhereIf(orderStatus.HasValue, x => x.OrderStatus == orderStatus)
+                            .Include(x => x.OrderItems).ThenInclude(x => x.Item)
+                            .WhereIf(startDate.HasValue, x => x.CreationTime >= startDate)
+                            .WhereIf(endDate.HasValue, x => x.CreationTime < endDate)
+                            .WhereIf(orderStatus.HasValue && orderStatus != OrderStatus.Open, x => x.OrderStatus == orderStatus) // Apply filter only when status is not Open
                            join groupbuy in dbContext.GroupBuys.Where(g => g.Id == id) on order.GroupBuyId equals groupbuy.Id
                            group order by order.GroupBuyId into groupedOrders
                            select new GroupBuyReportDetails
@@ -347,51 +421,38 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
                                GroupBuyName = groupedOrders.First().GroupBuy.GroupBuyName,
                                StartDate = startDate ?? groupedOrders.First().GroupBuy.CreationTime,
                                EndDate = endDate ?? DateTime.Now,
-                               OrderItems = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Distinct().SelectMany(o => o.OrderItems).ToList(),
+                               OrderItems = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open || (orderStatus.HasValue && order.OrderStatus == orderStatus)).Distinct().SelectMany(o => o.OrderItems).ToList(),
                                OrderItemsPaid = groupedOrders.Where(order => (order.PaymentMethod == PaymentMethods.CashOnDelivery && order.ShippingStatus != ShippingStatus.PrepareShipment && order.ShippingStatus != ShippingStatus.ToBeShipped) || (order.PaymentMethod != PaymentMethods.CashOnDelivery && order.OrderStatus == OrderStatus.Open && order.ShippingStatus != ShippingStatus.WaitingForPayment)).Distinct().SelectMany(o => o.OrderItems).ToList(),
+                               OrderItemsPaidAndDeliverd = groupedOrders.Where(order => (order.PaymentMethod == PaymentMethods.CashOnDelivery && order.ShippingStatus == ShippingStatus.Delivered) || (order.PaymentMethod != PaymentMethods.CashOnDelivery && order.OrderStatus == OrderStatus.Open && order.ShippingStatus == ShippingStatus.Delivered)).Distinct().SelectMany(o => o.OrderItems).ToList(),
                                OrderQuantityPaid = groupedOrders.Where(order => (order.PaymentMethod == PaymentMethods.CashOnDelivery && order.ShippingStatus != ShippingStatus.PrepareShipment && order.ShippingStatus != ShippingStatus.ToBeShipped) || (order.PaymentMethod != PaymentMethods.CashOnDelivery && order.OrderStatus == OrderStatus.Open && order.ShippingStatus != ShippingStatus.WaitingForPayment)).Count() - (groupedOrders.Where(order => order.IsRefunded).Count()),
-                               TotalOrderQuantity = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Count(),
-                               SalesAmount = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Distinct().Sum(order => order.TotalAmount),
-                               //SalesAmountExclShipping = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open && order.ShippingStatus == ShippingStatus.PrepareShipment).Sum(order => order.TotalAmount) ,
+                               TotalOrderQuantity = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open || (orderStatus.HasValue && order.OrderStatus == orderStatus)).Count(),
+                               SalesAmount = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open || (orderStatus.HasValue && order.OrderStatus == orderStatus)).Distinct().Sum(order => order.TotalAmount),
                                AmountReceived = groupedOrders.Where(x => (x.PaymentMethod == PaymentMethods.CashOnDelivery && x.ShippingStatus != ShippingStatus.PrepareShipment && x.ShippingStatus != ShippingStatus.ToBeShipped) || (x.PaymentMethod != PaymentMethods.CashOnDelivery && x.OrderStatus == OrderStatus.Open && x.ShippingStatus != ShippingStatus.WaitingForPayment)).Distinct().Sum(order => order.TotalAmount),
                                GroupBuy = groupedOrders.First().GroupBuy,
-                               // SalesAmountMinusShipping = groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(order => order.TotalAmount) - groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open).Sum(x => x.TotalAmount - x.OrderItems.Sum(y => y.ItemPrice)),
-                               //BloggersProfit = (groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open && order.ShippingStatus==ShippingStatus.PrepareShipment).Sum(order => order.TotalAmount) - groupedOrders.Where(order => order.OrderStatus == OrderStatus.Open && order.ShippingStatus == ShippingStatus.PrepareShipment).Count() * 200) * (groupedOrders.First().GroupBuy.ProfitShare / 100.0M)
                            }).FirstOrDefaultAsync();
+
         if (query != null)
         {
             query.SalesAmountExclShipping = query.OrderItems.Sum(order => order.TotalAmount) - query.OrderItems.Sum(x => x.TotalAmount - (x.ItemPrice * x.Quantity));
             query.SalesAmountMinusShipping = query.SalesAmountExclShipping;
             query.AmountReceivedExclShipping = query.OrderItemsPaid.Sum(x => x.TotalAmount);
+            var AmountReceivedExclShippingForProfit= query.OrderItemsPaidAndDeliverd.Sum(x => x.TotalAmount);
             var groupbuyProfit = query.AmountReceivedExclShipping * ((query.GroupBuy.ProfitShare) / 100.0M);
-            var itemWithShareProfit = query.OrderItemsPaid.Where(x => x.Item != null && x.Item.ShareProfit > 0).ToList();
+            var itemWithShareProfit = query.OrderItemsPaidAndDeliverd.Where(x => x.Item != null && x.Item.ShareProfit > 0).ToList();
             decimal profit = 0;
+
             foreach (var item in itemWithShareProfit)
             {
                 profit += ((decimal)(query.GroupBuy.ProfitShare - item.Item.ShareProfit) / 100.0M) * item.TotalAmount;
+            }
 
-            }
-            if (groupbuyProfit < profit)
-            {
-                query.BloggersProfit = groupbuyProfit - profit;
-                query.BloggersProfit = -1 * query.BloggersProfit;
-            }
-            else
-            {
-                query.BloggersProfit = (decimal)(groupbuyProfit - profit);
-            }
+            query.BloggersProfit = groupbuyProfit < profit ? -1 * (groupbuyProfit - profit) : (decimal)(groupbuyProfit - profit);
         }
-        //query.BloggersProfit = (query.OrderItems
-        //      .Where(item => item.Item.ShareProfit > 0)
-        //      .Sum(item => item.ItemPrice)
-        //      * (query.GroupBuy.ProfitShare / 100.0M))
-        //   +
-        //   (query.OrderItems
-        //      .Where(item => item.Item.ShareProfit > 0)
-        //      .Select(item => item.Quantity)
-        //      .Distinct()
-        //      .Count()
-        //      * (query.GroupBuy.ProfitShare / 100.0M));
+        if (query?.OrderQuantityPaid < 0)
+        {
+            query.OrderQuantityPaid = 0;
+        }
+
         if (query == null)
         {
             var groupBuy = await dbContext.GroupBuys.FirstOrDefaultAsync(x => x.Id == id);
@@ -405,4 +466,5 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
 
         return query;
     }
+
 }
