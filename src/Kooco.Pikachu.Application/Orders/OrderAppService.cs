@@ -1775,7 +1775,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         return ObjectMapper.Map<Order, OrderDto>(order);
     }
 
-    public async Task ChangeReturnStatusAsync(Guid id, OrderReturnStatus? orderReturnStatus)
+    public async Task ChangeReturnStatusAsync(Guid id, OrderReturnStatus? orderReturnStatus, bool isRefund)
     {
         var order = await _orderRepository.GetAsync(id);
         // Capture old status before updating
@@ -1790,14 +1790,15 @@ public class OrderAppService : ApplicationService, IOrderAppService
         if (orderReturnStatus == OrderReturnStatus.Approve)
         {
 
-            if (order.OrderStatus == OrderStatus.Returned)
-            {
-                await _refundAppService.CreateAsync(id);
-                var refund = (await _refundRepository.GetQueryableAsync()).Where(x => x.OrderId == order.Id).FirstOrDefault();
-                await _refundAppService.UpdateRefundReviewAsync(refund.Id, RefundReviewStatus.Proccessing);
-                await _refundAppService.SendRefundRequestAsync(refund.Id);
-            }
+           
             order.ReturnStatus = OrderReturnStatus.Processing;
+        }
+        if (orderReturnStatus == OrderReturnStatus.Succeeded && order.OrderStatus == OrderStatus.Returned && isRefund)
+        {
+            await _refundAppService.CreateAsync(id);
+            var refund = (await _refundRepository.GetQueryableAsync()).Where(x => x.OrderId == order.Id).FirstOrDefault();
+            await _refundAppService.UpdateRefundReviewAsync(refund.Id, RefundReviewStatus.Proccessing);
+            await _refundAppService.SendRefundRequestAsync(refund.Id);
         }
         if (orderReturnStatus == OrderReturnStatus.Succeeded && order.OrderStatus == OrderStatus.Exchange)
         {

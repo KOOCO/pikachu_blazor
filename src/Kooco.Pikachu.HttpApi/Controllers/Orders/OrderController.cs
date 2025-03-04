@@ -457,9 +457,9 @@ public class OrderController : AbpController, IOrderAppService
     }
 
     [HttpPut("update-return-status/{id}/{orderReturnStatus}")]
-    public Task ChangeReturnStatusAsync(Guid id, OrderReturnStatus? orderReturnStatus)
+    public Task ChangeReturnStatusAsync(Guid id, OrderReturnStatus? orderReturnStatus, bool isRefund)
     {
-        return _ordersAppService.ChangeReturnStatusAsync(id, orderReturnStatus);
+        return _ordersAppService.ChangeReturnStatusAsync(id, orderReturnStatus,isRefund);
     }
 
     [HttpGet("get-list-as-excel")]

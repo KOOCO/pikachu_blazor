@@ -33,7 +33,7 @@ namespace Kooco.Pikachu.Orders
         Task UpdateOrderItemsAsync(Guid id, List<UpdateOrderItemDto> orderItems);
         Task CancelOrderAsync(Guid id);
         Task<PagedResultDto<OrderDto>> GetReturnListAsync(GetOrderListDto input);
-        Task ChangeReturnStatusAsync(Guid id, OrderReturnStatus? orderReturnStatus);
+        Task ChangeReturnStatusAsync(Guid id, OrderReturnStatus? orderReturnStatus,bool isRefund);
         Task<IRemoteStreamContent> GetListAsExcelFileAsync(GetOrderListDto input);
         Task<PaymentGatewayDto> GetPaymentGatewayConfigurationsAsync(Guid id);
         Task<OrderDto> MergeOrdersAsync(List<Guid> Ids);

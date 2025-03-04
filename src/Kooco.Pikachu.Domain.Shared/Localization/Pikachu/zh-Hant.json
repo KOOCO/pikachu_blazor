@@ -1364,7 +1364,11 @@
     "AreYouSureToUpdateTCatFrozen?": "您確定要更新黑貓冷凍嗎？",
     "AreYouSureToUpdateBFreeze?": "您確定要更新黑貓冷藏嗎？",
     "AreYouSureToUpdateBNFrozen?": "您確定要更新黑貓冷凍嗎？",
-    "PleaseSelectOrderItem": "請先選擇訂單項目，才能進行編輯."
+    "PleaseSelectOrderItem": "請先選擇訂單項目，才能進行編輯.",
+    "DoYouApprovetheRefund": "是否同意退款？",
+    "RefundApprovel": "退款 通過",
+    "Wouldyouliketoproceedwiththerefund": "是否進行退款?",
+    "Areyousureyouwanttoreturnthisorder": "此訂單是否要進行退貨？"
 
 
 

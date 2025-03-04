@@ -1,4 +1,5 @@
-﻿using Azure;
+﻿using AntDesign.TableModels;
+using Azure;
 using Blazorise;
 using Blazorise.DataGrid;
 using Blazorise.LoadingIndicator;
@@ -2009,7 +2010,11 @@ public partial class OrderDetails
 
     async void ReturnOrder()
     {
-
+        var confirmed = await _uiMessageService.Confirm(L["Areyousureyouwanttoreturnthisorder"]);
+        if (!confirmed)
+        {
+            return;
+        }
         await _orderAppService.ReturnOrderAsync(Order.Id);
         NavigationManager.NavigateTo("Orders");
 

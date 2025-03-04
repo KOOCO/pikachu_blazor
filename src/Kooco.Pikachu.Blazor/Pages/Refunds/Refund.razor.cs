@@ -87,8 +87,14 @@ public partial class Refund
     {
         try
         {
+            
+            var confirmed = await _uiMessageService.Confirm(L["Doyouapprovetherefund"]);
+            if (!confirmed)
+            {
+                
+                return;
+            }
             await loading.Show();
-
             await _refundAppService.UpdateRefundReviewAsync(rowData.Id, RefundReviewStatus.Proccessing);
             if (rowData.Order?.PaymentMethod == PaymentMethods.LinePay)
             {

@@ -120,7 +120,24 @@ namespace Kooco.Pikachu.Blazor.Pages.ReturnAndExchangeOrders
             try
             {
                 loading = true;
-                await _orderAppService.ChangeReturnStatusAsync(rowData.Id, selectedValue);
+                if (selectedValue == OrderReturnStatus.Succeeded)
+                {
+                    var confirmed = await _uiMessageService.Confirm(L["Wouldyouliketoproceedwiththerefund"]);
+                    if (confirmed)
+                    {
+                        await _orderAppService.ChangeReturnStatusAsync(rowData.Id, selectedValue, true);
+                    }
+                    else
+                    {
+                        await _orderAppService.ChangeReturnStatusAsync(rowData.Id, selectedValue, false);
+                    }
+                }
+                else
+                {
+                   
+                        await _orderAppService.ChangeReturnStatusAsync(rowData.Id, selectedValue, false);
+                   
+                }
                 await UpdateItemList();
             }
             catch (Exception ex)

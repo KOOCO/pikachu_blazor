@@ -1287,6 +1287,10 @@
     "AreYouSureToUpdateTCatFrozen?": "Are You Sure To Update T-Cat Frozen ?",
     "AreYouSureToUpdateBFreeze?": "Are You Sure To Update B-Freeze ?",
     "AreYouSureToUpdateBNFrozen?": "Are You Sure To Update B-Frozen ?",
-    "PleaseSelectOrderItem": "Please select a Order Items before editing."
+    "PleaseSelectOrderItem": "Please select a Order Items before editing.",
+    "DoYouApprovetheRefund": "Do you approve the refund?",
+    "RefundApprovel": "Refund Approvel",
+    "Wouldyouliketoproceedwiththerefund": "Would you like to proceed with the refund ?",
+    "Areyousureyouwanttoreturnthisorder": "Are You Sure You Want To Return This Order ?"
   }
 }
