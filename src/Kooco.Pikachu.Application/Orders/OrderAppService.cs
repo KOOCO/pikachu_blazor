@@ -1148,12 +1148,14 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     //item.TotalAmount = item.TotalAmount - item.TotalAmount;
                     //item.ItemPrice = item.ItemPrice - item.ItemPrice;
                     item.Quantity = item.Quantity - item.Quantity;
-                    await _orderRepository.InsertAsync(order1);
-                    await _orderRepository.UpdateAsync(ord);
-                    await UnitOfWorkManager.Current.SaveChangesAsync();
-                    newOrder = order1;
                 }
             }
+
+            await _orderRepository.InsertAsync(order1);
+            await _orderRepository.UpdateAsync(ord);
+            await UnitOfWorkManager.Current.SaveChangesAsync();
+            newOrder = order1;
+
             newOrder.TotalAmount = newOrder.OrderItems.Sum(x => x.TotalAmount);
             newOrder.TotalQuantity = newOrder.OrderItems.Sum(x => x.Quantity);
             var OrderDelivery1 = await _orderDeliveryRepository.FirstOrDefaultAsync(x => x.OrderId == ord.Id);
