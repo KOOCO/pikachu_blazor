@@ -25,7 +25,7 @@
         <h3>@L["CashFlowReconciliation"]</h3>
     </div>
     <div class="col-6 text-lg-end">
-        @if (Orders.Where(x => x.IsSelected).Count() != 1 || Orders.Any(x => x.IsSelected && x.IsVoidInvoice && x.CreditNoteReason != null))
+        @if (OrderTransactions.Where(x => x.IsSelected).Count() != 1 || OrderTransactions.Any(x => x.IsSelected && x.Order != null && x.Order.IsVoidInvoice && x.Order.CreditNoteReason != null))
         {
             <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
                 <i class="fa fa-print"></i>
@@ -40,7 +40,7 @@
             </Button>
         }
 
-        @if (Orders.Where(x => x.IsSelected).Count() != 1 || Orders.Any(x => x.IsSelected && x.IsVoidInvoice))
+        @if (OrderTransactions.Where(x => x.IsSelected).Count() != 1 || OrderTransactions.Any(x => x.IsSelected && x.Order != null && x.Order.IsVoidInvoice))
         {
             <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
                 <i class="fa fa-print"></i>
@@ -86,144 +86,14 @@
 <div style="@style">
     <Card>
         <CardBody>
-            @* <DataGrid TItem="OrderDto"
-                      Data="@Orders"
-                      ReadData="OnDataGridReadAsync"
-                      TotalItems="TotalCount"
-                      Responsive
-                      ShowPager="true"
-                      PageSize="PageSize"
-                      Hoverable>
-                <DataGridColumns>
-                    <DataGridCommandColumn />
-                    <DataGridColumn Caption="@L["Select"]" Width="30px">
-                        <DisplayTemplate>
-                            <InputCheckbox class="form-check-input" @bind-Value="@context.IsSelected"></InputCheckbox>
-                        </DisplayTemplate>
-                    </DataGridColumn>
-                    <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
-                        <DisplayTemplate>
-                            @{
-                                var isExpanded = ExpandedRows.Contains(context.OrderId);
-                                var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
-                            }
-                            <i class="@chevronClass"></i>
-                            @L[context.OrderNo]
-                        </DisplayTemplate>
-                    </DataGridColumn>
-                    <DataGridColumn Field="@nameof(OrderDto.LastModificationTime)" Caption="@L["LastUpdatedDate"]" />
-                    <DataGridColumn Field="@nameof(OrderDto.IssueStatus)" Caption="@L["InvoiceIssueStatus"]">
-                        <DisplayTemplate>
-                            @if (context.IssueStatus.ToString() == "Succeeded")
-                            {
-                                var str = context.IssueStatus.ToString() + " cash flow";
-                                @L[str]
-                                ;
-
-                            }
-                            else
-                            {
-                                @L[context.IssueStatus.ToString()]
-                                if (context.IssueStatus == IssueInvoiceStatus.Failed)
-                                {
-                                    <Button Class="btn-white"
-                                            Clicked="@((e) => IssueInvoice(context.OrderId))">
-                                        <i class="fas fa-rotate" />
-                                    </Button>
-                                }
-                            }
-                        </DisplayTemplate>
-                    </DataGridColumn>
-
-                    <DataGridColumn Field="@nameof(OrderDto.InvoiceNumber)" Caption="@L["InvoiceNumber"]">
-                        <DisplayTemplate>
-                            @context.InvoiceNumber
-                        </DisplayTemplate>
-                    </DataGridColumn>
-                    <DataGridColumn TextAlignment="TextAlignment.Center" Field="@nameof(OrderDto.TotalAmount)" Caption="@L["CheckoutAmount"]">
-                        <DisplayTemplate>
-                            $ @context.TotalAmount.ToString("N2")
-                        </DisplayTemplate>
-                    </DataGridColumn>
-                    <DataGridColumn Field="@nameof(OrderDto.LastModifierId)" Caption="@L["Editor"]">
-                        <DisplayTemplate>
-                            @context.VoidUser
-                        </DisplayTemplate>
-                    </DataGridColumn>
-                </DataGridColumns>
-                <DetailRowTemplate>
-                    @{
-                        <div class="mx-2 px-3 py-2 border">
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <td>@L["RecipientInformation"]</td>
-                                        <td>@context.CustomerName / @context.CustomerPhone</td>
-                                    </tr>
-                                    <tr>
-                                        <td>@L["ShippingMethod"]</td>
-                                        <td>@L[context.DeliveryMethod.ToString()]</td>
-                                    </tr>
-                                    <tr>
-                                        <td>@L["Address"]</td>
-                                        <td class="d-none">@context.AddressDetails, @context.Road, @context.District, @context.City</td>
-                                        <td>@context.AddressDetails</td>
-                                    </tr>
-                                    <tr>
-                                        <td>@L["Remarks"]</td>
-                                        <td>@context.Remarks</td>
-                                    </tr>
-                                    <tr>
-                                        <td>@L["MerchantRemarks"]</td>
-                                        <td>@context.Remarks</td>
-                                    </tr>
-                                    <tr>
-                                        <td>@L["OrderItems"]</td>
-                                        <td>
-                                            @foreach (OrderItemDto item in (context as OrderDto).OrderItems)
-                                            {
-                                                @if (item.ItemType == ItemType.Item)
-                                                {
-                                                    <div mb-1>
-                                                        <span>@item.Spec</span>
-                                                        <span>@item.Item?.ItemName x @item.Quantity</span>
-                                                    </div>
-                                                }
-                                                @if (item.ItemType == ItemType.SetItem)
-                                                {
-                                                    <div mb-1>
-                                                        <span>@item.Spec</span>
-                                                        <span>@item.SetItem?.SetItemName x @item.Quantity</span>
-                                                    </div>
-                                                }
-                                                @if (item.ItemType == ItemType.Freebie)
-                                                {
-                                                    <div mb-1>
-                                                        <span>@item.Spec</span>
-                                                        <span>@item.Freebie?.ItemName x @item.Quantity</span>
-                                                    </div>
-                                                }
-                                            }
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    }
-                </DetailRowTemplate>
-                <FirstPageButtonTemplate>@L[PikachuResource.FirstPage]</FirstPageButtonTemplate>
-                <PreviousPageButtonTemplate>@L[PikachuResource.PrevPage]</PreviousPageButtonTemplate>
-                <NextPageButtonTemplate>@L[PikachuResource.NextPage]</NextPageButtonTemplate>
-                <LastPageButtonTemplate>@L[PikachuResource.LastPage]</LastPageButtonTemplate>
-            </DataGrid> *@
             <DataGrid TItem="OrderTransactionDto"
-                      Data="OrderTransactions"
-                      ReadData="OnDataGridReadAsync"
-                      TotalItems="TotalCount"
-                      ShowPager="true"
-                      PageSize="PageSize"
-                      Responsive
-                      Hoverable>
+            Data="OrderTransactions"
+            ReadData="OnDataGridReadAsync"
+            TotalItems="TotalCount"
+            ShowPager="true"
+            PageSize="PageSize"
+            Responsive
+            Hoverable>
                 <DataGridColumns>
                     <DataGridCommandColumn />
                     <DataGridColumn Caption="@L["Select"]" Width="30px">
@@ -232,8 +102,8 @@
                         </DisplayTemplate>
                     </DataGridColumn>
                     <DataGridColumn TItem="OrderTransactionDto"
-                                    Field="@nameof(OrderTransactionDto.OrderNo)"
-                                    Caption="@L["OrderNo"]">
+                    Field="@nameof(OrderTransactionDto.OrderNo)"
+                    Caption="@L["OrderNo"]">
                         <DisplayTemplate>
                             <Button Class="btn-link hyperlink" Clicked="@(() => NavigationManager.NavigateTo("Orders/OrderDetails/" + context.OrderId))">@context.OrderNo</Button>
                         </DisplayTemplate>
@@ -254,7 +124,7 @@
                             @if (context.Order?.IssueStatus == IssueInvoiceStatus.Failed)
                             {
                                 <Button Class="btn-white"
-                                        Clicked="@((e) => IssueInvoice(context.OrderId))">
+                                Clicked="@((e) => IssueInvoice(context.OrderId))">
                                     <i class="fas fa-rotate" />
                                 </Button>
                             }
@@ -270,9 +140,14 @@
                             @L[$"Enum:TransactionType.{(int)context.TransactionType}"]
                         </DisplayTemplate>
                     </DataGridColumn>
-                    <DataGridColumn Field="@nameof(OrderTransactionDto.TransactionStatus)" Caption="@L["TransactionStatus"]">
+                    <DataGridColumn Field="@nameof(OrderTransactionDto.TransactionStatus)" Caption="@L["TransactionStatus"]" TextAlignment="TextAlignment.Center">
                         <DisplayTemplate>
-                            @L[$"Enum:TransactionStatus.{(int)context.TransactionStatus}"]
+                            @{
+                                var color = context.TransactionStatus == TransactionStatus.Pending
+                                ? Color.Warning
+                                : (context.TransactionStatus == TransactionStatus.Successful ? Color.Success : Color.Danger);
+                            }
+                            <Badge Color="@color">@L[$"Enum:TransactionStatus.{(int)context.TransactionStatus}"]</Badge>
                         </DisplayTemplate>
                     </DataGridColumn>
                     <DataGridColumn Field="@nameof(OrderTransactionDto.PaymentChannel)" Caption="@L["PaymentChannel"]">

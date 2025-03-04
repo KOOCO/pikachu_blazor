@@ -1369,6 +1369,19 @@
     "DoYouApprovetheRefund": "是否同意退款？",
     "RefundApprovel": "退款 通過",
     "Wouldyouliketoproceedwiththerefund": "是否進行退款?",
-    "Areyousureyouwanttoreturnthisorder": "此訂單是否要進行退貨？"
+    "Areyousureyouwanttoreturnthisorder": "此訂單是否要進行退貨？",
+    "Enum:TransactionType.0": "付款",
+    "Enum:TransactionType.1": "退款",
+    "Enum:TransactionType.2": "退貨",
+    "Enum:TransactionType.3": "換貨",
+    "Enum:TransactionStatus.0": "待處理",
+    "Enum:TransactionStatus.1": "成功",
+    "Enum:TransactionStatus.2": "失敗",
+    "Enum:PaymentChannel.0": "Ec Pay",
+    "Enum:PaymentChannel.1": "Line Pay",
+    "Enum:PaymentChannel.2": "貨到付款",
+    "TransactionType": "交易類型",
+    "TransactionStatus": "交易狀態",
+    "PaymentChannel": "付款管道"
   }
 }

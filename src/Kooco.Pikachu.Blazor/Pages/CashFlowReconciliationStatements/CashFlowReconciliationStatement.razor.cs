@@ -19,16 +19,14 @@ public partial class CashFlowReconciliationStatement
     #region Inject
     private bool IsLoading { get; set; } = false;
     private bool IsAllSelected { get; set; } = false;
-    private List<OrderDto> Orders { get; set; } = new();
     private int TotalCount { get; set; }
-    private OrderDto SelectedOrder { get; set; }
     private int PageIndex { get; set; } = 1;
     private int PageSize { get; set; } = 10;
     private string? Sorting { get; set; }
     private string? Filter { get; set; }
     private Modal CreateVoidReasonModal { get; set; }
     private VoidReason VoidReason { get; set; } = new();
-    private readonly HashSet<Guid> ExpandedRows = new();
+    private readonly HashSet<Guid> ExpandedRows = [];
     private Modal CreateCreditNoteReasonModal { get; set; }
     private CreditReason CreditReason { get; set; } = new();
     private IReadOnlyList<OrderTransactionDto> OrderTransactions { get; set; } = [];
@@ -96,11 +94,11 @@ public partial class CashFlowReconciliationStatement
 
     void HandleSelectAllChange(ChangeEventArgs e)
     {
-        IsAllSelected = e.Value != null ? (bool)e.Value : false;
-        Orders.ForEach(item =>
+        IsAllSelected = e.Value != null && (bool)e.Value;
+        foreach (var item in OrderTransactions)
         {
             item.IsSelected = IsAllSelected;
-        });
+        }
         StateHasChanged();
     }
 
@@ -130,7 +128,7 @@ public partial class CashFlowReconciliationStatement
 
     public void NavigateToOrderPrint()
     {
-        var selectedOrder = Orders.SingleOrDefault(x => x.IsSelected);
+        var selectedOrder = OrderTransactions.SingleOrDefault(x => x.IsSelected);
         NavigationManager.NavigateTo($"Orders/OrderShippingDetails/{selectedOrder.OrderId}");
     }
 
@@ -139,8 +137,8 @@ public partial class CashFlowReconciliationStatement
         try
         {
             int skipCount = PageIndex * PageSize;
-            Sorting = Sorting != null ? Sorting : "OrderNo Ascending";
-            var selectedOrder = Orders.Where(x => x.IsSelected).Select(x => x.Id).ToList();
+            Sorting ??= "OrderNo Ascending";
+            var selectedOrder = OrderTransactions.Where(x => x.IsSelected).Select(x => x.OrderId).ToList();
             var remoteStreamContent = await _orderAppService.GetReconciliationListAsExcelFileAsync(new GetOrderListDto
             {
                 Sorting = Sorting,
@@ -172,11 +170,8 @@ public partial class CashFlowReconciliationStatement
         }
         catch (Exception e)
         {
-
             throw e;
         }
-
-
     }
 
     private void CloseVoidReasonModal()
@@ -186,7 +181,7 @@ public partial class CashFlowReconciliationStatement
 
     private async Task ApplyVoidReasonAsync()
     {
-        var selectedOrder = Orders.SingleOrDefault(x => x.IsSelected);
+        var selectedOrder = OrderTransactions.SingleOrDefault(x => x.IsSelected);
         await _orderAppService.VoidInvoice(selectedOrder.OrderId, VoidReason.Reason);
         await CreateVoidReasonModal.Hide();
         await UpdateItemList();
@@ -204,7 +199,7 @@ public partial class CashFlowReconciliationStatement
 
     private async Task ApplyCreditReasonAsync()
     {
-        OrderDto? selectedOrder = Orders.SingleOrDefault(x => x.IsSelected);
+        var selectedOrder = OrderTransactions.SingleOrDefault(x => x.IsSelected);
 
         await _orderAppService.CreditNoteInvoice(selectedOrder.OrderId, CreditReason.Reason);
 
