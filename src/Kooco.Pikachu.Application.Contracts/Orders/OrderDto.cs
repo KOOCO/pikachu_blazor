@@ -70,7 +70,6 @@ public class OrderDto : FullAuditedEntityDto<Guid>
     public DateTime? ExchangeTime { get; set; }
     public IssueInvoiceStatus? IssueStatus { get; set; }
     public string? StoreId { get; set; }
-    public string? StoreName { get; set; }
     public string? StoreAddress { get; set; }
     public string? CVSStoreOutSide { get; set; }
     public string MerchantTradeNo { get; set; }
