@@ -159,20 +159,6 @@ public class RefundAppService : ApplicationService, IRefundAppService
         return ObjectMapper.Map<Refund, RefundDto>(refund);
     }
 
-    public async Task SendEmailForRefundAsync(string to, string orderNo)
-    {
-        string subject = $"Refund For Order #{orderNo}";
-
-        string body = $"Refund has been approved for order #{orderNo}";
-
-        await SendEmailAsync(to, subject, body);
-    }
-
-    public async Task SendEmailAsync(string to, string subject, string body)
-    {
-        await _EmailSender.SendAsync(to, subject, body);
-    }
-
     public async Task CheckStatusAndRequestRefundAsync(Guid id)
     {
         Refund refund = await _refundRepository.GetAsync(id);
