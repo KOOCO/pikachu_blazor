@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.DependencyInjection;
 
 namespace Kooco.Pikachu.Controllers.UserCumulativeCredits;
 
@@ -18,6 +19,11 @@ public class UserCumulativeCreditController(IUserCumulativeCreditAppService user
     public Task<UserCumulativeCreditDto> CreateAsync(CreateUserCumulativeCreditDto input)
     {
         return userCumulativeCreditAppService.CreateAsync(input);
+    }
+    [ApiExplorerSettings(IgnoreApi =true)]
+    public Task<UserCumulativeCreditDto> CreateMemberRegisterAsync(CreateUserCumulativeCreditDto input)
+    {
+        return userCumulativeCreditAppService.CreateMemberRegisterAsync(input);
     }
 
     [HttpDelete("{id}")]
