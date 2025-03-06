@@ -156,13 +156,16 @@
                                 <div class="col-12">
                                     <table class="w-100">
                                         <tbody>
-                                            <Div Width="Width.Max100">
-                                                <select class="form-select form-select" @onchange=ChangeStore>
-                                                    <option value="homeDelivery">@L["OrderDetailsHomeDelivery"]</option>
-                                                    <option value="convenienceStore">@L["ConvenienceStore"]</option>
-                                                </select>
-                                            </Div>
-                                            <br />
+                                            <tr>
+                                                <td colspan="2">
+                                                    <Div Width="Width.Max100">
+                                                        <select class="form-select form-select" @onchange=ChangeStore>
+                                                            <option value="homeDelivery">@L["OrderDetailsHomeDelivery"]</option>
+                                                            <option value="convenienceStore">@L["ConvenienceStore"]</option>
+                                                        </select>
+                                                    </Div>
+                                                </td>
+                                            </tr>
                                             <tr>
                                                 <td>@L["Recipient"]</td>
                                                 @if (ModificationTrack.IsNameInputVisible)
@@ -424,32 +427,6 @@
                                                     @if (ModificationTrack.IsAddressInputVisible)
                                                     {
                                                         <td>
-                                                            @* <div class="row mb-1">
-                                            <div class="col-4">
-                                            <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewRoad">
-                                            <option disabled="disabled" selected="selected">選擇城市</option>
-                                            <option value="臺北市">臺北市</option>
-                                            <option value="桃園市">桃園市</option>
-                                            <option value="嘉義市">嘉義市</option>
-                                            </InputSelect>
-                                            </div>
-                                            <div class="col-4">
-                                            <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewDistrict">
-                                            <option disabled="disabled" selected="selected">選擇地區</option>
-                                            <option value="石碇區">石碇區</option>
-                                            <option value="坪林區">坪林區</option>
-                                            <option value="烏來區">烏來區</option>
-                                            </InputSelect>
-                                            </div>
-                                            <div class="col-4">
-                                            <InputSelect class="form-select form-select-sm" @bind-Value="@ModificationTrack.NewCity">
-                                            <option disabled="disabled" selected="selected">選擇城市</option>
-                                            <option value="臺北市">臺北市</option>
-                                            <option value="桃園市">桃園市</option>
-                                            <option value="嘉義市">嘉義市</option>
-                                            </InputSelect>
-                                            </div>
-                                            </div> *@
                                                             <div class="row">
                                                                 <div class="col-12">
                                                                     <div class="input-group">

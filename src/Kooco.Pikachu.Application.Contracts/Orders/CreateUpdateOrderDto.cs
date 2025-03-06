@@ -66,7 +66,6 @@ public class CreateUpdateOrderDto
     public string? CVSStoreOutSideFreeze { get; set; }
     public string? CVSStoreOutSideFrozen { get; set; }
     public string? StoreId { get; set; }
-    public string? StoreName { get; set; }
     public string? StoreAddress { get; set; }
     public string? CVSStoreOutSide { get; set; }
     public ShippingStatus ShippingStatus { get; set; }

@@ -4,6 +4,7 @@ using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.OrderHistories;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.OrderTransactions;
 using Kooco.Pikachu.Refunds;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -36,13 +37,14 @@ public class LinePayAppService : PikachuAppService, ILinePayAppService
     private readonly RestClient _restClient;
     private readonly OrderHistoryManager _orderHistoryManager;
     private readonly IStringLocalizer<PikachuResource> _l;
+    private readonly OrderTransactionManager _orderTransactionManager;
 
 
     public LinePayAppService(IOrderRepository orderRepository, IOrderAppService orderAppService,
         IPaymentGatewayAppService paymentGatewayAppService, IDataFilter<IMultiTenant> multiTenantFilter,
         IEmailAppService emailAppService, IRefundAppService refundAppService,
         IRefundRepository refundRepository, IOptions<LinePayConfiguration> linePayConfiguration,
-        OrderHistoryManager orderHistoryManager, IStringLocalizer<PikachuResource> l)
+        OrderHistoryManager orderHistoryManager, IStringLocalizer<PikachuResource> l, OrderTransactionManager orderTransactionManager)
     {
         _orderRepository = orderRepository;
         _orderAppService = orderAppService;
@@ -55,6 +57,7 @@ public class LinePayAppService : PikachuAppService, ILinePayAppService
         _restClient = new RestClient(_apiOptions.ApiBaseUrl);
         _orderHistoryManager = orderHistoryManager;
         _l = l;
+        _orderTransactionManager = orderTransactionManager;
     }
 
     public async Task<LinePayResponseDto<LinePayPaymentResponseInfoDto>> PaymentRequest(Guid orderId, LinePayPaymentRequestRedirectUrlDto input)
@@ -135,50 +138,49 @@ public class LinePayAppService : PikachuAppService, ILinePayAppService
             var response = await _restClient.Post(apiPath, body, nonce, linePay.ChannelId, signature);
 
             order.ExtraProperties.TryAdd(PaymentGatewayConsts.ConfirmPaymentResponse, response.Content);
+            order.PaymentDate = DateTime.Now;
 
             var responseDto = LinePayExtensionService.Deserialize<LinePayConfirmResponseInfoDto>(response);
             var oldShippingStatus = order.ShippingStatus;
             var currentUserId = CurrentUser.Id ?? Guid.Empty;
             var currentUserName = CurrentUser.UserName ?? "System";
 
+            var orderTransaction = new OrderTransaction(GuidGenerator.Create(), order.Id, order.OrderNo,
+                order.TotalAmount, TransactionType.Payment, TransactionStatus.Successful, PaymentChannel.LinePay);
+
             if (response.IsSuccessful && responseDto.ReturnCode == _apiOptions.SuccessReturnCode)
             {
                 order.TradeNo = responseDto.Info?.TransactionId.ToString();
-             
+
                 order.ShippingStatus = ShippingStatus.PrepareShipment;
                 order.PrepareShipmentBy = CurrentUser.Name ?? "System";
-                order.PaymentDate = DateTime.Now;
-               
 
-                // **Log Order History for Payment Processing**
-                await _orderHistoryManager.AddOrderHistoryAsync(
-      order.Id,
-      "PaymentProcessed", // Localization key
-      new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name }, // Localized placeholders
-      currentUserId,
-      currentUserName
-  );
                 await _orderAppService.CreateOrderDeliveriesAndInvoiceAsync(order.Id);
                 return responseDto;
             }
 
+            else
+            {
+                order.OrderStatus = OrderStatus.Closed;
+                order.ShippingStatus = ShippingStatus.Closed;
 
-            order.OrderStatus = OrderStatus.Closed;
-            order.ShippingStatus = ShippingStatus.Closed;
-          
-            order.PaymentDate = DateTime.Now;
-            // **Get Current User (Editor)**
+                orderTransaction.TransactionStatus = TransactionStatus.Failed;
+                orderTransaction.FailedReason = responseDto.ReturnMessage;
 
+                Logger.LogError(@"Error in Line Pay Confirm Payment Request: {response}", response.ToString());
+            }
+
+            await _orderTransactionManager.CreateAsync(orderTransaction);
 
             // **Log Order History for Payment Processing**
             await _orderHistoryManager.AddOrderHistoryAsync(
-  order.Id,
-  "PaymentProcessed", // Localization key
-  new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name }, // Localized placeholders
-  currentUserId,
-  currentUserName
-);
-            Logger.LogError(@"Error in Line Pay Confirm Payment Request: {response}", response.ToString());
+                  order.Id,
+                  "PaymentProcessed",
+                  new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name },
+                  currentUserId,
+                  currentUserName
+                );
+
             return responseDto;
         }
     }
@@ -229,6 +231,9 @@ public class LinePayAppService : PikachuAppService, ILinePayAppService
             order.ExtraProperties.TryAdd(PaymentGatewayConsts.RefundResponse, response.Content);
 
             var responseDto = LinePayExtensionService.Deserialize<LinePayRefundResponseInfoDto>(response);
+
+            var orderTransaction = new OrderTransaction(GuidGenerator.Create(), order.Id, order.OrderNo,
+                refundAmount, TransactionType.Refund, TransactionStatus.Successful, PaymentChannel.LinePay);
 
             if (response.IsSuccessful && responseDto.ReturnCode == _apiOptions.SuccessReturnCode)
             {
@@ -288,13 +293,16 @@ public class LinePayAppService : PikachuAppService, ILinePayAppService
 
                     await _orderRepository.UpdateAsync(OriginalOrder);
                 }
-
-                //await _emailAppService.SendRefundEmailAsync(order.Id, refundAmount);
             }
             else
             {
+                orderTransaction.TransactionStatus = TransactionStatus.Failed;
+                orderTransaction.FailedReason = responseDto.ReturnMessage;
+
                 Logger.LogError(@"Error in Line Pay Refund Request: {response}", response.ToString());
             }
+
+            await _orderTransactionManager.CreateAsync(orderTransaction);
             return responseDto;
         }
     }

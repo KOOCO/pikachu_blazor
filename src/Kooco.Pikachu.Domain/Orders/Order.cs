@@ -3,6 +3,7 @@ using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.OrderItems;
+using Kooco.Pikachu.OrderTransactions;
 using Kooco.Pikachu.StoreComments;
 using Kooco.Pikachu.UserShoppingCredits;
 using System;
@@ -82,8 +83,11 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public string? CreditNoteUser { get; set; }
     public OrderType? OrderType { get; set; }
     public string? StoreId { get; set; }
-    public string? StoreName { get; set; }
     public string? StoreAddress { get; set; }
+
+    /// <summary>
+    /// Convenience Store Name
+    /// </summary>
     public string? CVSStoreOutSide { get; set; }
     public string? TradeNo { get; set; }
     public string? MerchantTradeNo { get; set; }
@@ -150,6 +154,9 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public int EcpayLogisticRtnCode { get; set; }
     public string? ReturnedOrderItemIds { get; set; }
     public byte[] RowVersion { get; set; } // Concurrency token
+
+    public ICollection<OrderTransaction> OrderTransactions { get; set; } = new List<OrderTransaction>();
+
     public Order() { }
 
     public Order(

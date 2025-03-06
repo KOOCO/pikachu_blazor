@@ -6,6 +6,7 @@ using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.OrderHistories;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.OrderTransactions;
 using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.Permissions;
 using Microsoft.AspNetCore.Authorization;
@@ -49,6 +50,8 @@ public class RefundAppService : ApplicationService, IRefundAppService
     private readonly IConfiguration _Configuration;
     private readonly OrderHistoryManager _orderHistoryManager;
     private readonly IStringLocalizer<PikachuResource> _l;
+    private readonly OrderTransactionManager _orderTransactionManager;
+
     #endregion
 
     #region Constructor
@@ -60,7 +63,8 @@ public class RefundAppService : ApplicationService, IRefundAppService
         IPaymentGatewayAppService PaymentGatewayAppService,
         IConfiguration Configuration,
         IEmailAppService emailAppService,
-        OrderHistoryManager orderHistoryManager, IStringLocalizer<PikachuResource> l
+        OrderHistoryManager orderHistoryManager, IStringLocalizer<PikachuResource> l,
+        OrderTransactionManager orderTransactionManager
     )
     {
         _refundRepository = refundRepository;
@@ -74,7 +78,7 @@ public class RefundAppService : ApplicationService, IRefundAppService
         _emailAppService = emailAppService;
         _l = l;
         _orderHistoryManager = orderHistoryManager;
-
+        _orderTransactionManager = orderTransactionManager;
     }
     #endregion
 
@@ -155,20 +159,6 @@ public class RefundAppService : ApplicationService, IRefundAppService
         return ObjectMapper.Map<Refund, RefundDto>(refund);
     }
 
-    public async Task SendEmailForRefundAsync(string to, string orderNo)
-    {
-        string subject = $"Refund For Order #{orderNo}";
-
-        string body = $"Refund has been approved for order #{orderNo}";
-
-        await SendEmailAsync(to, subject, body);
-    }
-
-    public async Task SendEmailAsync(string to, string subject, string body)
-    {
-        await _EmailSender.SendAsync(to, subject, body);
-    }
-
     public async Task CheckStatusAndRequestRefundAsync(Guid id)
     {
         Refund refund = await _refundRepository.GetAsync(id);
@@ -183,7 +173,9 @@ public class RefundAppService : ApplicationService, IRefundAppService
         if (status.IsNullOrEmpty())
         {
             await UpdateRefundReviewAsync(id, RefundReviewStatus.Fail);
-
+            var orderTransaction = new OrderTransaction(GuidGenerator.Create(), order.Id, order.OrderNo,
+                order.TotalAmount, TransactionType.Refund, TransactionStatus.Failed, PaymentChannel.EcPay);
+            await _orderTransactionManager.CreateAsync(orderTransaction);
             return;
         }
 
@@ -407,6 +399,9 @@ public class RefundAppService : ApplicationService, IRefundAppService
             RtnCode = int.Parse(queryParams["RtnCode"])
         };
 
+        var orderTransaction = new OrderTransaction(GuidGenerator.Create(), order.Id, order.OrderNo,
+                refundAmount, TransactionType.Refund, TransactionStatus.Successful, PaymentChannel.EcPay);
+
         if (result is not null && sendEmail)
         {
             if (result.RtnCode is 1)
@@ -417,7 +412,15 @@ public class RefundAppService : ApplicationService, IRefundAppService
                 //await _emailAppService.SendRefundEmailAsync(order.Id, refundAmount);
             }
 
-            else refund.RefundReview = RefundReviewStatus.Fail;
+            else
+            {
+                refund.RefundReview = RefundReviewStatus.Fail;
+
+                orderTransaction.TransactionStatus = TransactionStatus.Failed;
+                orderTransaction.FailedReason = result.RtnMsg;
+            }
+
+            await _orderTransactionManager.CreateAsync(orderTransaction);
         }
     }
 
@@ -473,6 +476,9 @@ public class RefundAppService : ApplicationService, IRefundAppService
             RtnCode = int.Parse(queryParams["RtnCode"])
         };
 
+        var orderTransaction = new OrderTransaction(GuidGenerator.Create(), order.Id, order.OrderNo,
+                (int)refund.Order?.TotalAmount, TransactionType.Refund, TransactionStatus.Successful, PaymentChannel.EcPay);
+
         if (result is not null)
         {
             if (result.RtnCode is 1)
@@ -483,7 +489,15 @@ public class RefundAppService : ApplicationService, IRefundAppService
                 //    await _emailAppService.SendRefundEmailAsync(order.Id, (double?)refund.Order?.TotalAmount ?? 0);
             }
 
-            else refund.RefundReview = RefundReviewStatus.Fail;
+            else
+            {
+                refund.RefundReview = RefundReviewStatus.Fail;
+
+                orderTransaction.TransactionStatus = TransactionStatus.Failed;
+                orderTransaction.FailedReason = result.RtnMsg;
+            }
+
+            await _orderTransactionManager.CreateAsync(orderTransaction);
         }
     }
     public string GenerateCheckMac(string HashKey, string HashIV, string merchantID, string merchantTradeNo, string tradeNo, string action, string totalamount)

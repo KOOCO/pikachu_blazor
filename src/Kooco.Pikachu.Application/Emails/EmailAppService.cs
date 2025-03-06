@@ -3,6 +3,9 @@ using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.TenantManagement;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -10,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp.BackgroundJobs;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
@@ -18,7 +22,8 @@ using Volo.Abp.Localization;
 namespace Kooco.Pikachu.Emails;
 
 public class EmailAppService(IOrderRepository orderRepository, IGroupBuyRepository groupBuyRepository,
-    ITenantSettingsAppService tenantSettingsAppService, IEmailSender emailSender) : PikachuAppService, IEmailAppService
+    ITenantSettingsAppService tenantSettingsAppService, IEmailSender emailSender, IBackgroundJobManager backgroundJobManager,
+    IConfiguration configuration) : PikachuAppService, IEmailAppService
 {
     public async Task SendLogisticsEmailAsync(Guid orderId, string? deliveryNo = "", DeliveryMethod? deliveryMethod = null)
     {
@@ -59,9 +64,9 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body.Replace("{{CustomerEmail}}", order.CustomerEmail);
             body = body.Replace("{{CustomerPhone}}", order.CustomerPhone);
             body = body.Replace("{{PaymentMethod}}", L[order.PaymentMethod.ToString()]);
-            body = body.Replace("{{RecipientName}}", order.RecipientName);
+            body = body.Replace("{{RecipientName}}", order.CVSStoreOutSide ?? order.RecipientName);
             body = body.Replace("{{RecipientPhone}}", order.RecipientPhone);
-            body = body.Replace("{{RecipientAddress}}", $"{order.City} {order.AddressDetails}");
+            body = body.Replace("{{RecipientAddress}}", order.StoreAddress ?? $"{order.City} {order.AddressDetails}");
             body = body.Replace("{{ShippingMethod}}", $"{L[order.DeliveryMethod.ToString()]} {order.ShippingNumber}");
             body = body.Replace("{{OrderNotes}}", order.Remarks);
 
@@ -81,7 +86,7 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body.Replace("{{CompanyName}}", tenantSettings?.CompanyName);
             body = body.Replace("{{TrackingUrl}}", trackingUrl);
 
-            await emailSender.SendAsync(order.CustomerEmail, subject, body);
+            await SendAsync(order.CustomerEmail, subject, body);
         }
     }
 
@@ -119,7 +124,7 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body.Replace("{{CustomerName}}", order.CustomerName);
             body = body.Replace("{{CustomerEmail}}", order.CustomerEmail);
             body = body.Replace("{{CustomerPhone}}", order.CustomerPhone);
-            body = body.Replace("{{RecipientName}}", order.RecipientName);
+            body = body.Replace("{{RecipientName}}", order.CVSStoreOutSide ?? order.RecipientName);
             body = body.Replace("{{RecipientPhone}}", order.RecipientPhone);
             if (!groupbuy.IsEnterprise)
             {
@@ -128,7 +133,7 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body.Replace("{{PaymentStatus}}", L[order.OrderStatus.ToString()]);
             body = body.Replace("{{ShippingMethod}}", $"{L[order.DeliveryMethod.ToString()]} {order.ShippingNumber}");
             body = body.Replace("{{DeliveryFee}}", $"${deliveryCost:N0}");
-            body = body.Replace("{{RecipientAddress}}", $"{order.City} {order.AddressDetails}");
+            body = body.Replace("{{RecipientAddress}}", order.StoreAddress ?? $"{order.City} {order.AddressDetails}");
             body = body.Replace("{{ShippingStatus}}", L[order.ShippingStatus.ToString()]);
             body = body.Replace("{{RecipientComments}}", order.Remarks);
             body = body.Replace("{{OrderStatus}}", status);
@@ -189,7 +194,7 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body.Replace("{{CompanyName}}", tenantSettings?.CompanyName);
             body = body.Replace("{{GroupBuyUrl}}", groupBuyUrl);
 
-            await emailSender.SendAsync(order.CustomerEmail, subject, body);
+            await SendAsync(order.CustomerEmail, subject, body);
         }
     }
 
@@ -212,13 +217,13 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body.Replace("{{CustomerName}}", order.CustomerName);
             body = body.Replace("{{CustomerEmail}}", order.CustomerEmail);
             body = body.Replace("{{CustomerPhone}}", order.CustomerPhone);
-            body = body.Replace("{{RecipientName}}", order.RecipientName);
+            body = body.Replace("{{RecipientName}}", order.CVSStoreOutSide ?? order.RecipientName);
             body = body.Replace("{{RecipientPhone}}", order.RecipientPhone);
             body = body.Replace("{{PaymentMethod}}", !groupbuy.IsEnterprise ? L[order.PaymentMethod.ToString()] : "");
             body = body.Replace("{{PaymentStatus}}", L[order.OrderStatus.ToString()]);
             body = body.Replace("{{ShippingMethod}}", $"{L[order.DeliveryMethod.ToString()]} {order.ShippingNumber}");
             body = body.Replace("{{DeliveryFee}}", $"${deliveryCost:N0}");
-            body = body.Replace("{{RecipientAddress}}", $"{order.City} {order.AddressDetails}");
+            body = body.Replace("{{RecipientAddress}}", order.StoreAddress ?? $"{order.City} {order.AddressDetails}");
             body = body.Replace("{{ShippingStatus}}", L[order.ShippingStatus.ToString()]);
             body = body.Replace("{{RecipientComments}}", order.Remarks);
             body = body.Replace("{{OrderStatus}}", status);
@@ -279,7 +284,7 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body.Replace("{{CompanyName}}", tenantSettings?.CompanyName);
             body = body.Replace("{{GroupBuyUrl}}", groupBuyUrl);
 
-            await emailSender.SendAsync(order.CustomerEmail, subject, body);
+            await SendAsync(order.CustomerEmail, subject, body);
         }
     }
 
@@ -316,7 +321,7 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body.Replace("{{CompanyName}}", tenantSettings?.CompanyName);
             body = body.Replace("{{GroupBuyUrl}}", groupBuyUrl);
 
-            await emailSender.SendAsync(order.CustomerEmail, subject, body);
+            await SendAsync(order.CustomerEmail, subject, body);
         }
     }
 
@@ -347,9 +352,9 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body.Replace("{{CustomerEmail}}", order.CustomerEmail);
             body = body.Replace("{{CustomerPhone}}", order.CustomerPhone);
             body = body.Replace("{{PaymentMethod}}", L[order.PaymentMethod.ToString()]);
-            body = body.Replace("{{RecipientName}}", order.RecipientName);
+            body = body.Replace("{{RecipientName}}", order.CVSStoreOutSide ?? order.RecipientName);
             body = body.Replace("{{RecipientPhone}}", order.RecipientPhone);
-            body = body.Replace("{{RecipientAddress}}", $"{order.City} {order.AddressDetails}");
+            body = body.Replace("{{RecipientAddress}}", order.StoreAddress ?? $"{order.City} {order.AddressDetails}");
             body = body.Replace("{{ShippingMethod}}", $"{L[order.DeliveryMethod.ToString()]} {order.ShippingNumber}");
             body = body.Replace("{{OrderNotes}}", order.Remarks);
             body = body.Replace("{{RecipientComments}}", order.Remarks);
@@ -371,7 +376,7 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body.Replace("{{CompanyName}}", tenantSettings?.CompanyName);
             body = body.Replace("{{GroupBuyUrl}}", groupBuyUrl);
 
-            await emailSender.SendAsync(order.CustomerEmail, subject, body);
+            await SendAsync(order.CustomerEmail, subject, body);
         }
     }
 
@@ -398,9 +403,9 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body.Replace("{{CustomerEmail}}", order.CustomerEmail);
             body = body.Replace("{{CustomerPhone}}", order.CustomerPhone);
             body = body.Replace("{{PaymentMethod}}", L[order.PaymentMethod.ToString()]);
-            body = body.Replace("{{RecipientName}}", order.RecipientName);
+            body = body.Replace("{{RecipientName}}", order.CVSStoreOutSide ?? order.RecipientName);
             body = body.Replace("{{RecipientPhone}}", order.RecipientPhone);
-            body = body.Replace("{{RecipientAddress}}", $"{order.City} {order.AddressDetails}");
+            body = body.Replace("{{RecipientAddress}}", order.StoreAddress ?? $"{order.City} {order.AddressDetails}");
             body = body.Replace("{{ShippingMethod}}", $"{L[order.DeliveryMethod.ToString()]} {order.ShippingNumber}");
             body = body.Replace("{{OrderNotes}}", order.Remarks);
             body = body.Replace("{{RecipientComments}}", order.Remarks);
@@ -422,7 +427,35 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body.Replace("{{CompanyName}}", tenantSettings?.CompanyName);
             body = body.Replace("{{GroupBuyUrl}}", groupBuyUrl);
 
-            await emailSender.SendAsync(order.CustomerEmail, subject, body);
+            await SendAsync(order.CustomerEmail, subject, body);
+        }
+    }
+
+    private async Task SendAsync(string email, string subject, string body)
+    {
+        try
+        {
+            await emailSender.SendAsync(email, subject, body);
+        }
+        catch (Exception ex)
+        {
+            if (!ex.Message.Contains("This mail account has sent too many messages"))
+            {
+                throw;
+            }
+
+            Logger.LogException(ex);
+
+            await backgroundJobManager.EnqueueAsync(new BackgroundEmailSendingJobArgs
+            {
+                To = email,
+                Subject = subject,
+                Body = body
+            }, delay: TimeSpan.FromHours(1));
+
+            var restClient = new RestClient(configuration["App:EmailQuotaExceededNotifyUrl"]);
+            var restRequest = new RestRequest("", Method.Get);
+            await restClient.ExecuteAsync(restRequest);
         }
     }
 }
