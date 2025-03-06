@@ -1102,10 +1102,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     public async Task<IRemoteStreamContent> GetListAsExcelFileAsync(Guid id, DateTime? startDate = null, DateTime? endDate = null,OrderStatus? orderStatus = null, bool isChinese = false)
     {
         var groupBuy = await _groupBuyRepository.FirstOrDefaultAsync(x => x.Id == id);
-        var items = await _orderRepository.GetListAsync(x => x.GroupBuyId == id
-                        && (!startDate.HasValue || startDate.Value <= x.CreationTime)
-                        && (!endDate.HasValue || endDate.Value > x.CreationTime)
-                        &&(!orderStatus.HasValue ||orderStatus==x.OrderStatus ));
+       var items= await _orderRepository.GetAllListAsync(0, int.MaxValue, "CreationTime desc", null, id, null, startDate, endDate, orderStatus);
         var data = ObjectMapper.Map<List<Order>, List<OrderDto>>(items);
 
         if (groupBuy.ProtectPrivacyData)
