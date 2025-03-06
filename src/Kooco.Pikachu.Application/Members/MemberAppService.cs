@@ -268,7 +268,7 @@ public class MemberAppService(IMemberRepository memberRepository, IdentityUserMa
             var userCumulativeCredit = await userCumulativeCreditRepository.FirstOrDefaultAsync(x => x.UserId == identityUser.Id);
             if (userCumulativeCredit is null)
             {
-                await userCumulativeCreditAppService.CreateAsync(new CreateUserCumulativeCreditDto { TotalAmount = shoppingCredit.RegistrationEarnedPoints, TotalDeductions = 0, TotalRefunds = 0, UserId = identityUser.Id });
+                await userCumulativeCreditAppService.CreateMemberRegisterAsync(new CreateUserCumulativeCreditDto { TotalAmount = shoppingCredit.RegistrationEarnedPoints, TotalDeductions = 0, TotalRefunds = 0, UserId = identityUser.Id });
             }
             else
             {

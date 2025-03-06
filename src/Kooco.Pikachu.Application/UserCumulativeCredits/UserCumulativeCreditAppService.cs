@@ -21,7 +21,16 @@ public class UserCumulativeCreditAppService(UserCumulativeCreditManager userCumu
             input.TotalAmount, input.TotalDeductions, input.TotalRefunds);
         return ObjectMapper.Map<UserCumulativeCredit, UserCumulativeCreditDto>(userCumulativeCredit);
     }
+    [AllowAnonymous]
+    public async Task<UserCumulativeCreditDto> CreateMemberRegisterAsync(CreateUserCumulativeCreditDto input)
+    {
+        Check.NotNull(input, nameof(input));
+        Check.NotDefaultOrNull(input.UserId, nameof(input.UserId));
 
+        var userCumulativeCredit = await userCumulativeCreditManager.CreateAsync(input.UserId!.Value,
+            input.TotalAmount, input.TotalDeductions, input.TotalRefunds);
+        return ObjectMapper.Map<UserCumulativeCredit, UserCumulativeCreditDto>(userCumulativeCredit);
+    }
     public async Task DeleteAsync(Guid id)
     {
         var userCumulativeCredit = await userCumulativeCreditRepository.GetAsync(id);
@@ -64,4 +73,5 @@ public class UserCumulativeCreditAppService(UserCumulativeCreditManager userCumu
             input.TotalAmount, input.TotalDeductions, input.TotalRefunds);
         return ObjectMapper.Map<UserCumulativeCredit, UserCumulativeCreditDto>(userCumulativeCredit);
     }
+   
 }
