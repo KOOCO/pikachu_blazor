@@ -449,6 +449,11 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
     {
         return await ApplyReturnFilters((await GetQueryableAsync()).Include(o => o.GroupBuy), filter, groupBuyId, null).Where(x => x.OrderStatus == OrderStatus.Returned || x.OrderStatus == OrderStatus.Exchange).CountAsync();
     }
+    public async Task<long> ReturnOrderNotificationCountAsync()
+    {
+        return await ApplyReturnFilters((await GetQueryableAsync()).Include(o => o.GroupBuy),null,null,null).Where(x => (x.OrderStatus == OrderStatus.Returned || x.OrderStatus == OrderStatus.Exchange)&&x.ReturnStatus==OrderReturnStatus.Pending).CountAsync();
+    }
+
     public async Task<List<Order>> GetReturnListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId)
     {
         return await ApplyReturnFilters(await GetQueryableAsync(), filter, groupBuyId, null)

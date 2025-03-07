@@ -1,7 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.MultiTenancy;
+using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Permissions;
+using Microsoft.Extensions.DependencyInjection;
 using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Identity.Blazor;
 using Volo.Abp.SettingManagement;
@@ -13,13 +15,17 @@ namespace Kooco.Pikachu.Blazor.Menus;
 
 public class PikachuMenuContributor : IMenuContributor
 {
+  
     public async Task ConfigureMenuAsync(MenuConfigurationContext context)
     {
         if (context.Menu.Name == StandardMenus.Main)
         {
             await ConfigureMainMenuAsync(context);
+          
         }
+
     }
+
 
     private async Task ConfigureMainMenuAsync(MenuConfigurationContext context)
     {
@@ -147,14 +153,31 @@ public class PikachuMenuContributor : IMenuContributor
             requiredPermissionName: PikachuPermissions.Orders.Default
             )
             );
-        orderMangment.AddItem(new ApplicationMenuItem(
-        name: "FreebieManagement",
-        icon: "fas fa-truck-loading",
-        displayName: l["Menu:ReturnAndExchangeOrder"],
-        //displayName: "退換貨列表",
-        url: "/Orders/ReturnAndExchangeOrder",
-         requiredPermissionName: PikachuPermissions.ReturnExchangeOrder)
-        );
+       
+        string displayName = l["Menu:ReturnAndExchangeOrder"];
+        //if (returnExchangeOrderCount > 0)
+        //{
+        //   displayName += $" <span class='notification-badge'>{returnExchangeOrderCount}</span>"; ; // Append the count
+        //}
+        var returnAndExchangeMenu = new ApplicationMenuItem(
+             name: "return",
+             icon: "fas fa-truck-loading",
+             displayName: l["Menu:ReturnAndExchangeOrder"],
+             url: "/Orders/ReturnAndExchangeOrder",
+             requiredPermissionName: PikachuPermissions.ReturnExchangeOrder
+         );
+        using (var scope = context.ServiceProvider.CreateScope())
+        {
+            var orderAppService = scope.ServiceProvider.GetRequiredService<IOrderAppService>();
+
+            // Fetch notification count
+            int returnExchangeOrderCount = (int)await orderAppService.GetReturnOrderNotificationCount();
+
+            // Store count as an HTML attribute (JavaScript will use this)
+            returnAndExchangeMenu.CustomData["data-notification-count"] = returnExchangeOrderCount.ToString();
+        }
+
+        orderMangment.AddItem(returnAndExchangeMenu);
         orderMangment.AddItem(new ApplicationMenuItem(
         name: "Refund",
         icon: "fas fa-stamp",

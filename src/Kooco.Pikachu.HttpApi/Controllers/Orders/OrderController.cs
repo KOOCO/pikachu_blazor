@@ -634,6 +634,11 @@ public class OrderController : AbpController, IOrderAppService
     {
         return _ordersAppService.CloseOrdersAsync();
     }
+    [HttpGet("return-notification-count")]
+    public Task<long> GetReturnOrderNotificationCount()
+    {
+        return _ordersAppService.GetReturnOrderNotificationCount();
+    }
 
 
     #endregion

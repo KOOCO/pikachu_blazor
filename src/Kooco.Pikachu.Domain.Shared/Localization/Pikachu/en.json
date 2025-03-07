@@ -41,7 +41,7 @@
     "Menu:PaymentManagement": "Payment Management",
     "Menu:LogisticsManagement": "Logistics Management",
     "Menu:InventoryReport": "Inventory Report",
-    "Menu:ReturnAndExchangeOrder": "Return & Exchange Order",
+    "Menu:ReturnAndExchangeOrder": "Return & Exchange",
     "Menu:ElectronicInvoiceSetting": "Electronic Invoice Settings",
     "Menu:CashFlowReconciliationStatement": "Cash Flow Reconciliation Statement",
     "Menu:LogisticsProviderSettings": "Logistics Provider Settings",

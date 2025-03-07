@@ -1,4 +1,5 @@
-﻿using AntDesign.TableModels;
+﻿using AntDesign.JsInterop;
+using AntDesign.TableModels;
 using Azure;
 using Blazorise;
 using Blazorise.DataGrid;
@@ -2017,6 +2018,9 @@ public partial class OrderDetails
         }
         await _orderAppService.ReturnOrderAsync(Order.Id);
         NavigationManager.NavigateTo("Orders");
+        await JSRuntime.InvokeVoidAsync("reloadOrderPage");
+
+
 
     }
     async void ExchangeOrder()

@@ -1518,6 +1518,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
     }
 
+    public async Task<long> GetReturnOrderNotificationCount()
+    {
+        var totalCount = await _orderRepository.ReturnOrderNotificationCountAsync();
+        return totalCount;
+    }
     public async Task<PagedResultDto<OrderDto>> GetReturnListAsync(GetOrderListDto input)
     {
         if (input.Sorting.IsNullOrEmpty())

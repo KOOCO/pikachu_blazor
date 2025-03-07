@@ -3,7 +3,10 @@
         if (element) {
             element.classList.remove("form-select");
         }
-    };
+};
+window.reloadOrderPage = function () {
+    window.location.reload();
+};
     window.removeInputClass = function (elementId) {
         var element = document.getElementById(elementId);
         if (element) {
