@@ -6,6 +6,7 @@ using Kooco.Pikachu.Extensions;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.ProductCategories;
 using Microsoft.Extensions.Logging;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -40,6 +41,7 @@ public partial class CreateProductCategory
         {
             try
             {
+                await JSRuntime.InvokeVoidAsync("updateDropText");
                 ItemsLookup = await ItemAppService.GetItemsLookupAsync();
                 StateHasChanged();
             }

@@ -6,6 +6,7 @@ using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.ProductCategories;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -59,6 +60,7 @@ public partial class EditProductCategory
         {
             try
             {
+                await JSRuntime.InvokeVoidAsync("updateDropText");
                 Selected = await ProductCategoryAppService.GetAsync(Id, true);
                 EditingEntity = ObjectMapper.Map<ProductCategoryDto, UpdateProductCategoryDto>(Selected);
                 ItemsLookup = await ItemAppService.GetItemsLookupAsync();
@@ -104,6 +106,7 @@ public partial class EditProductCategory
     {
         return L[key];
     }
+
     async Task OnFileUploadAsync(FileChangedEventArgs e)
     {
         if (e?.Files == null)

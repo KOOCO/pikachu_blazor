@@ -10,8 +10,9 @@
 @using System.ComponentModel
 @using Blazorise.Components;
 
+@inherits PikachuComponentBase
 @inject NavigationManager NavigationManager
-@inject IStringLocalizer<PikachuResource> L
+@inject IJSRuntime JSRuntime
 
 <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
 <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
@@ -58,49 +59,17 @@
                     </label>
                 </div>
                 <div class="col-10">
-                    <Field>
-                        <FilePicker @ref="FilePicker"
-                            FilePickerLocalizer="(key,args)=>LocalizeFilePicker(key,args)"
-                                    Multiple
-                                    Changed="OnImageUploadAsync"
-                                    ShowMode="FilePickerShowMode.List"
-                                    Accept=".jpg, .png, .svg">
-                            <FileTemplate>
-                                <Div Flex="Flex.JustifyContent.Between">
-                                    <Div>
-                                        <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
-                                        <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
-                                    </Div>
-                                    <Div Class="ps-2">
-                                        <Div>
-                                            @if (context.File.Status == FileEntryStatus.Ready)
-                                            {
-                                                <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
-                                            }
-                                            else if (context.File.Status == FileEntryStatus.Uploading)
-                                            {
-                                                <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
-                                            }
-                                            else if (context.File.Status == FileEntryStatus.Uploaded)
-                                            {
-                                                <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
-                                            }
-                                            else if (context.File.Status == FileEntryStatus.Error)
-                                            {
-                                                <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
-                                            }
-                                        </Div>
-                                        <Div>
-                                            <Icon TextColor="TextColor.Danger" Name="IconName.Delete" class="cursor-pointer" Clicked="context.RemoveFile" />
-                                        </Div>
-                                    </Div>
-                                </Div>
-                            </FileTemplate>
-                            <ButtonsTemplate>
-                                <Progress Value="@FilePicker.GetProgressPercentage()" />
-                            </ButtonsTemplate>
-                        </FilePicker>
-                    </Field>
+                    <Div Class="@((UpdateFreebieDto?.Images?.Count > 0 ? "has-images" : "") + " container-less-filepicker filepicker-sm")">
+                        <Field>
+                            <FilePicker @ref="FilePicker"
+                                        FilePickerLocalizer="(key,args)=>LocalizeFilePicker(key,args)"
+                                        Multiple
+                                        Changed="OnImageUploadAsync"
+                                        ShowMode="FilePickerShowMode.List"
+                                        Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
+                            </FilePicker>
+                        </Field>
+                    </Div>
                 </div>
                 @if (UpdateFreebieDto?.Images != null && UpdateFreebieDto.Images.Count > 0)
                 {
@@ -109,11 +78,13 @@
                         <div class="image-list-container">
                             @foreach (var image in UpdateFreebieDto.Images)
                             {
-                                <div class="image-container">
-                                    <Image class="blur-image" Source="@image.ImageUrl" Text="Item Image" Fluid />
-                                    <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName)">
-                                        <i class="fa fa-trash"></i>
-                                    </button>
+                                <div>
+                                    <div class="image-container">
+                                        <Image class="blur-image" Source="@image.ImageUrl" Text="Item Image" Fluid />
+                                        <button class="delete-button" style="padding: 7px" @onclick="() => DeleteImageAsync(image.BlobImageName)">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             }
                         </div>

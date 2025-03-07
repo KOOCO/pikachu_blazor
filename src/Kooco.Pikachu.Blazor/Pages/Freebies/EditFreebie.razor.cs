@@ -18,6 +18,7 @@ using Blazored.TextEditor;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.EnumValues;
+using Microsoft.JSInterop;
 
 namespace Kooco.Pikachu.Blazor.Pages.Freebies;
 
@@ -67,6 +68,7 @@ public partial class EditFreebie
         {
             try
             {
+                await JSRuntime.InvokeVoidAsync("updateDropText");
                 EditingId = Guid.Parse(Id);
 
                 ExistingItem = await _freebieAppService.GetAsync(EditingId, true);

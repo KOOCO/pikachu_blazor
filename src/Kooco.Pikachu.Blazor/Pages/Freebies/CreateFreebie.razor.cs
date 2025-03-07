@@ -1,14 +1,13 @@
 ﻿using Blazorise;
-using Blazorise.Components;
 using Kooco.Pikachu.AzureStorage.Image;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Freebies.Dtos;
-using Kooco.Pikachu.FreeBies.Dtos;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -63,6 +62,15 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
                 Console.WriteLine(ex.Message);
             }
         }
+
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                await JSRuntime.InvokeVoidAsync("updateDropText");
+            }
+        }
+
         private string LocalizeFilePicker(string key, object[] args)
         {
             return L[key];

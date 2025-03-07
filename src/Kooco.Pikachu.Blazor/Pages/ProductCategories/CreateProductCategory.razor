@@ -2,6 +2,7 @@
 @using Blazored.TextEditor
 @using Blazorise.Components
 @using Kooco.Pikachu.AzureStorage.Image
+@using Kooco.Pikachu.Blazor.Pages.Components.Icons
 @using Kooco.Pikachu.Items
 @using Kooco.Pikachu.Items.Dtos
 @using Kooco.Pikachu.Permissions
@@ -18,6 +19,7 @@
 @inject IProductCategoryAppService ProductCategoryAppService
 @inject ImageContainerManager ImageContainerManager
 @inject IItemAppService ItemAppService
+@inject IJSRuntime JSRuntime
 
 <Div Class="rounded-cards">
     <PikachuButton Clicked="NavigateToProductCategory">
@@ -26,7 +28,7 @@
     </PikachuButton>
 </Div>
 
-<Div Class="rounded-cards website-settings">
+<Div Class="rounded-cards">
     <Card>
         <CardBody>
             <Validations @ref="@ValidationsRef" Model="@NewEntity" ValidateOnLoad="false">
@@ -91,16 +93,14 @@
                         <h4>@L["CarousalImages"]</h4>
                     </Column>
                     <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                        <Div Class="container-less-filepicker">
+                        <Div Class="@((NewEntity.ProductCategoryImages.Count > 0 ? "has-images" : "") + " container-less-filepicker")">
                             <Field>
                                 <FilePicker Changed="@OnFileUploadAsync"
-                                    FilePickerLocalizer="(key,args)=>LocalizeFilePicker(key,args)"
+                                            FilePickerLocalizer="(key,args)=>LocalizeFilePicker(key,args)"
                                             ShowMode="FilePickerShowMode.List"
                                             Multiple
                                             @ref="FilePicker"
                                             Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
-                                    <FileTemplate></FileTemplate>
-                                    <ButtonsTemplate></ButtonsTemplate>
                                 </FilePicker>
                             </Field>
                         </Div>
@@ -109,20 +109,22 @@
                             <div class="image-list-container" ondragover="event.preventDefault();">
                                 @foreach (var image in NewEntity.ProductCategoryImages.OrderBy(x => x.SortNo))
                                 {
-                                    <div class="d-flex flex-column align-items-center justify-content-center mb-2">
-                                        <div class="image-container">
-                                            <Image class="blur-image" Source="@("data:image/png;base64," + image.Base64)" Text="Item Image" Fluid />
-                                            <button class="delete-button" @onclick="() => DeleteImage(image)">
-                                                <i class="fa fa-trash"></i>
-                                            </button>
-                                        </div>
-                                        <div class="w-100 text-center"
-                                             draggable="true"
-                                             @ondrop="@(()=> Drop(image))"
-                                             @ondrag="@(()=> StartDrag(image))">
-                                            <span class="drag-drop-span pb-2">
-                                                <i class="fa-solid fa-bars fa-xl"></i>
-                                            </span>
+                                    <div class="draggable"
+                                         draggable="true"
+                                         @ondrop="@(()=> Drop(image))"
+                                         @ondrag="@(()=> StartDrag(image))">
+                                        <div class="d-flex flex-column align-items-center justify-content-center">
+                                            <div class="image-container">
+                                                <Image Class="blur-image" Source="@("data:image/png;base64," + image.Base64)" Text="Item Image" Fluid />
+                                                <button class="delete-button" @onclick="() => DeleteImage(image)">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </div>
+                                            <div class="text-center">
+                                                <span class="drag-drop-span">
+                                                    <GripDotSvg></GripDotSvg>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 }
@@ -184,7 +186,7 @@
                                                 <TableRowCell TextAlignment="TextAlignment.Center" Style="width: 150px"
                                                               Clicked="@(() => RemoveCategoryProduct(categoryProduct))">
                                                     <PikachuButton Class="pk-btn-sm pk-btn-outline-danger">
-                                                        <i class="fas fa-trash"></i>
+                                                        <i class="fa fa-trash"></i>
                                                         @L["Remove"]
                                                     </PikachuButton>
                                                 </TableRowCell>

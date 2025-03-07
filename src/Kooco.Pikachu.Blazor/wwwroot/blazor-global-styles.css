@@ -192,7 +192,7 @@
     position: absolute;
     top: 48px;
     right: 0px;
-    height: 190px;
+    height: 191px;
     width: 280px;
     padding: 15px 10px;
 }
@@ -489,10 +489,6 @@
     padding-left: 50px;
     background: url('https://cdn-icons-png.flaticon.com/512/54/54481.png') no-repeat 15px center;
     background-size: 20px 20px;
-}
-
-.rounded-cards .b-file-picker .b-text-drop {
-    background-color: #fafafa;
 }
 
 .container-less-filepicker {
