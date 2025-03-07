@@ -7,6 +7,7 @@ using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -55,6 +56,14 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
         protected override async Task OnInitializedAsync()
         {
             ItemsList = await _itemAppService.GetItemsLookupAsync();
+        }
+
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                await JSRuntime.InvokeVoidAsync("updateDropText");
+            }
         }
 
         async Task OnFileUploadAsync(FileChangedEventArgs e)

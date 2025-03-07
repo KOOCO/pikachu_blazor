@@ -201,6 +201,26 @@ window.updatePanelVisibility = function (isOpen) {
     }
 };
 
+function updateFilePickerText() {
+    let dropTextElements = document.querySelectorAll(".b-text-drop");
 
+    dropTextElements.forEach(dropText => {
+        dropText.innerHTML = "";
 
+        let line1 = document.createElement("span");
+        line1.innerHTML = "Only Accepts <br />[JPG, JPEG, PNG, WEBP, SVG]";
 
+        let line2 = document.createElement("span");
+        line2.textContent = "Max Image Size: 10MB";
+
+        dropText.appendChild(line1);
+        dropText.appendChild(line2);
+    });
+}
+window.updateDropText = () => {
+    updateFilePickerText();
+
+    window.setTimeout(() => {
+        updateFilePickerText();
+    }, 100)
+};

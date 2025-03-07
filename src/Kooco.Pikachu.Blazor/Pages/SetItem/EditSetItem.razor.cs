@@ -8,6 +8,7 @@ using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -64,6 +65,7 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
             {
                 try
                 {
+                    await JSRuntime.InvokeVoidAsync("updateDropText");
                     var result = Guid.TryParse(Id, out Guid editingId);
                     if (result)
                     {

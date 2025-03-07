@@ -110,6 +110,7 @@ public partial class CreateItem
         {
             try
             {
+                await JS.InvokeVoidAsync("updateDropText");
                 ProductCategoryLookup = await ProductCategoryAppService.GetProductCategoryLookupAsync();
                 await InvokeAsync(StateHasChanged);
             }
@@ -906,11 +907,11 @@ public partial class CreateItem
         }
     }
 
-    public void ToggleExpanded(CreateItemDetailsDto item)
+    public async Task ToggleExpanded(CreateItemDetailsDto item)
     {
         item.IsExpanded = !item.IsExpanded;
-
         StateHasChanged();
+        await JS.InvokeVoidAsync("updateDropText");
     }
 
     private async Task OnSelectedValueChanged(Guid? id)

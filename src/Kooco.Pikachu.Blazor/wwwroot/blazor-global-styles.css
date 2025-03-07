@@ -110,16 +110,16 @@
     padding: 20px;
     box-sizing: border-box;
     display: flex;
-    flex-wrap: wrap;
-    border-radius: 0.5rem;
     border: 1px dashed rgb(150, 113, 36);
     gap: 10px;
+    overflow-x: scroll;
+    margin-right: 287px;
 }
 
 .image-container {
     position: relative;
     height: 100px;
-    width: auto;
+    width: 100px;
     border-radius: 0.5rem;
 }
 
@@ -164,12 +164,42 @@
 }
 
 .b-file-picker .b-text-drop {
-    padding: 60px !important;
-    text-transform: capitalize;
     font-size: large;
     font-weight: bolder;
     color: #000;
     background-color: #fffcea;
+}
+
+    .b-file-picker .b-text-drop::before {
+        content: "\f302";
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        font-size: 50px;
+        display: block;
+    }
+
+    .b-file-picker .b-text-drop span {
+        display: block;
+        font-size: 14px;
+    }
+
+        .b-file-picker .b-text-drop span:last-child {
+            font-size: 12px;
+            margin: 10px 0;
+        }
+
+.has-images .b-text-drop {
+    position: absolute;
+    top: 48px;
+    right: 0px;
+    height: 190px;
+    width: 280px;
+    padding: 15px 10px;
+}
+
+.filepicker-sm .b-text-drop {
+    height: 157px;
+    padding: 0;
 }
 
 .no-spinners::-webkit-inner-spin-button,
@@ -465,9 +495,13 @@
     background-color: #fafafa;
 }
 
-.container-less-filepicker .b-file-picker-files-container {
-    display: none;
+.container-less-filepicker {
+    position: relative;
 }
+
+    .container-less-filepicker .b-file-picker-files-container {
+        display: none;
+    }
 
 .tenant-settings .image-thumbnail,
 .rounded-cards .image-thumbnail {

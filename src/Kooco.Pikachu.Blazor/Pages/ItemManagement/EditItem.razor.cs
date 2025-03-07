@@ -97,6 +97,7 @@ public partial class EditItem
             try
             {
                 await Loading.Show();
+                await JS.InvokeVoidAsync("updateDropText");
                 EditingId = Guid.Parse(Id);
                 ExistingItem = await _itemAppService.GetAsync(EditingId, true);
 
@@ -915,13 +916,14 @@ public partial class EditItem
         }
     }
 
-    public void ToggleExpanded(CreateItemDetailsDto item)
+    public async Task ToggleExpanded(CreateItemDetailsDto item)
     {
         item.IsExpanded = !item.IsExpanded;
 
         _isRenderComplete = item.IsExpanded;
 
         StateHasChanged();
+        await JS.InvokeVoidAsync("updateDropText");
     }
 
     public async Task OnImageUploadAsync(

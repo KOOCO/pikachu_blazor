@@ -64,54 +64,20 @@
                     <label>@L["ItemImage"]</label>
                 </div>
                 <div class="col-10">
-                    <Field>
-                        <FilePicker @ref="FilePickerCustom"
-                                    FilePickerLocalizer="(key,args)=>LocalizeFilePicker(key,args)"
-                                    Multiple
-                                    Changed="OnFileUploadAsync"
-                                    ShowMode="FilePickerShowMode.List"
-                                    Accept=".jpg, .png, .svg,.jpeg,.webp">
-                            <FileTemplate>
-                                <Div Flex="Flex.JustifyContent.Between">
-                                    <Div>
-                                        <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
-                                        <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
-                                    </Div>
-                                    <Div Class="ps-2">
-                                        <Div>
-                                            @if (context.File.Status == FileEntryStatus.Ready)
-                                            {
-                                                <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
-                                            }
-                                            else if (context.File.Status == FileEntryStatus.Uploading)
-                                            {
-                                                <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
-                                            }
-                                            else if (context.File.Status == FileEntryStatus.Uploaded)
-                                            {
-                                                <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
-                                            }
-                                            else if (context.File.Status == FileEntryStatus.Error)
-                                            {
-                                                <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
-                                            }
-                                        </Div>
-                                        <Div>
-                                            <Icon TextColor="TextColor.Danger" Name="IconName.Delete" class="cursor-pointer" Clicked="context.RemoveFile" />
-                                        </Div>
-                                    </Div>
-                                </Div>
-                            </FileTemplate>
-                            <ButtonsTemplate>
-                                <Progress Value="@FilePickerCustom.GetProgressPercentage()" />
-                            </ButtonsTemplate>
-                        </FilePicker>
-                    </Field>
+                    <Div Class="@((CreateItemDto.ItemImages.Count > 0 ? "has-images" : "") + " container-less-filepicker")">
+                        <Field>
+                            <FilePicker @ref="FilePickerCustom"
+                                        FilePickerLocalizer="(key, args) => LocalizeFilePicker(key, args)"
+                                        Multiple
+                                        Changed="OnFileUploadAsync"
+                                        ShowMode="FilePickerShowMode.List"
+                                        Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
+                            </FilePicker>
+                        </Field>
+                    </Div>
                 </div>
-            </div>
-            @if (CreateItemDto.ItemImages.Count > 0)
-            {
-                <div Class="row">
+                @if (CreateItemDto.ItemImages.Count > 0)
+                {
                     <div class="col-2"></div>
                     <div class="col-10">
                         <div class="image-list-container" ondragover="event.preventDefault();">
@@ -139,8 +105,8 @@
 
                         </div>
                     </div>
-                </div>
-            }
+                }
+            </div>
             <div class="row">
                 <div class="col-2">
                     <fieldLabel>@L["ItemBadge"]</fieldLabel>
@@ -439,53 +405,18 @@
                                                     </Div>
                                                     <br />
                                                     <Div Class="col-12">
-                                                        <Field>
-                                                            <FilePicker @ref="ItemDetailPickers[ItemDetailsList.IndexOf(item)]"
-                                                                        FilePickerLocalizer="(key,args)=>LocalizeFilePicker(key,args)"
-                                                                        Changed="@(async (e) => await OnImageUploadAsync(e,
+                                                        <Div Class="@((!item.Image.IsNullOrEmpty() ? "has-images" : "") + " container-less-filepicker filepicker-sm")">
+                                                            <Field>
+                                                                <FilePicker @ref="ItemDetailPickers[ItemDetailsList.IndexOf(item)]"
+                                                                            FilePickerLocalizer="(key,args)=>LocalizeFilePicker(key,args)"
+                                                                            Changed="@(async (e) => await OnImageUploadAsync(e,
                                                                                                                          item,
                                                                                                                          ItemDetailPickers[ItemDetailsList.IndexOf(item)]))"
-                                                                        ShowMode="FilePickerShowMode.List"
-                                                                        Accept=".jpg, .png, .svg ,.jpeg,.webp">
-                                                                <FileTemplate>
-                                                                    <Div Flex="Flex.JustifyContent.Between">
-                                                                        <Div>
-                                                                            <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
-                                                                            <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
-                                                                        </Div>
-                                                                        <Div Class="ps-2">
-                                                                            <Div>
-                                                                                @if (context.File.Status is FileEntryStatus.Ready)
-                                                                                {
-                                                                                    <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
-                                                                                }
-                                                                                else if (context.File.Status is FileEntryStatus.Uploading)
-                                                                                {
-                                                                                    <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
-                                                                                }
-                                                                                else if (context.File.Status is FileEntryStatus.Uploaded)
-                                                                                {
-                                                                                    <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
-                                                                                }
-                                                                                else if (context.File.Status is FileEntryStatus.Error)
-                                                                                {
-                                                                                    <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
-                                                                                }
-                                                                            </Div>
-                                                                            <Div>
-                                                                                <Icon TextColor="TextColor.Danger"
-                                                                                      Name="IconName.Delete"
-                                                                                      Class="cursor-pointer"
-                                                                                      Clicked="context.RemoveFile" />
-                                                                            </Div>
-                                                                        </Div>
-                                                                    </Div>
-                                                                </FileTemplate>
-                                                                <ButtonsTemplate>
-                                                                    <Progress Value="@ItemDetailPickers[ItemDetailsList.IndexOf(item)].GetProgressPercentage()" />
-                                                                </ButtonsTemplate>
-                                                            </FilePicker>
-                                                        </Field>
+                                                                            ShowMode="FilePickerShowMode.List"
+                                                                            Accept="@(string.Join(",", Constant.ValidImageExtensions))">
+                                                                </FilePicker>
+                                                            </Field>
+                                                        </Div>
                                                         @if (!item.Image.IsNullOrEmpty())
                                                         {
                                                             <Div Class="row">
@@ -494,10 +425,10 @@
                                                                     <Div Class="image-list-container">
                                                                         <Div Class="image-container">
                                                                             <Image Class="blur-image" Source="@item.Image" Text="Logo Image" Fluid />
-                                                                            <Button Class="delete-button"
-                                                                                    Clicked="@(async (e) => await DeleteImageAsync(e, item))">
+                                                                            <button class="delete-button"
+                                                                                    @onclick="@(async (e) => await DeleteImageAsync(e, item))">
                                                                                 <i class="fa fa-trash" />
-                                                                            </Button>
+                                                                            </button>
                                                                         </Div>
                                                                     </Div>
                                                                 </Div>

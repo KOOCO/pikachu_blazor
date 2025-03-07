@@ -7,9 +7,10 @@
 @using Microsoft.Extensions.Localization;
 @using Blazorise.Components;
 
-@inject NavigationManager NavigationManager;
-@inject IStringLocalizer<PikachuResource> L;
+@inherits PikachuComponentBase
+@inject NavigationManager NavigationManager
 @inject IItemAppService ItemAppService
+@inject IJSRuntime JSRuntime
 
 <h3>@L["EditSetItem"]</h3>
 
@@ -39,46 +40,17 @@
                 <label>@L["ItemImage"]</label>
             </div>
             <div class="col-10">
-                <Field>
-                    <FilePicker @ref="FilePicker"
-                        FilePickerLocalizer="(key,args)=>LocalizeFilePicker(key,args)"
-                                Multiple
-                                Changed="OnFileUploadAsync"
-                                ShowMode="FilePickerShowMode.List"
-                                Accept=".jpg, .png, .svg, ,.jpeg,.webp">
-                        <FileTemplate>
-                            <Div Flex="Flex.JustifyContent.Between">
-                                <Div>
-                                    <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
-                                    <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
-                                </Div>
-                                <Div Class="ps-2">
-                                    <Div>
-                                        @if (context.File.Status == FileEntryStatus.Ready)
-                                        {
-                                            <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
-                                        }
-                                        else if (context.File.Status == FileEntryStatus.Uploading)
-                                        {
-                                            <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
-                                        }
-                                        else if (context.File.Status == FileEntryStatus.Uploaded)
-                                        {
-                                            <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
-                                        }
-                                        else if (context.File.Status == FileEntryStatus.Error)
-                                        {
-                                            <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
-                                        }
-                                    </Div>
-                                </Div>
-                            </Div>
-                        </FileTemplate>
-                        <ButtonsTemplate>
-                            <Progress Value="@FilePicker.GetProgressPercentage()" />
-                        </ButtonsTemplate>
-                    </FilePicker>
-                </Field>
+                <Div Class="@((CreateUpdateSetItemDto.Images.Count > 0 ? "has-images" : "") + " container-less-filepicker filepicker-sm")">
+                    <Field>
+                        <FilePicker @ref="FilePicker"
+                                    FilePickerLocalizer="(key,args)=>LocalizeFilePicker(key,args)"
+                                    Multiple
+                                    Changed="OnFileUploadAsync"
+                                    ShowMode="FilePickerShowMode.List"
+                                    Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
+                        </FilePicker>
+                    </Field>
+                </Div>
             </div>
         </div>
         @if (CreateUpdateSetItemDto.Images.Count > 0)
@@ -89,11 +61,13 @@
                     <div class="image-list-container">
                         @foreach (var image in CreateUpdateSetItemDto.Images)
                         {
-                            <div class="image-container">
-                                <Image class="blur-image" Source="@image.ImageUrl" Text="Item Image" Fluid />
-                                <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName)">
-                                    <i class="fa fa-trash"></i>
-                                </button>
+                            <div>
+                                <div class="image-container">
+                                    <Image class="blur-image" Source="@image.ImageUrl" Text="Item Image" Fluid />
+                                    <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName)">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </div>
                             </div>
                         }
                     </div>
@@ -101,25 +75,25 @@
             </div>
         }
 
-              <div class="row mt-2">
- <div class="col-2">
-                    <fieldLabel>@L["ItemBadge"]</fieldLabel>
-                </div>
-                <div class="col-10">
-                 
-                          <Addons>
-                        <Addon AddonType="AddonType.Body">
-                          <TextEdit @bind-Text="@CreateUpdateSetItemDto.SetItemBadge" MaxLength="@MaxBadgeTextCount" />
-                          </Addon>
-                        <Addon AddonType="AddonType.End">
-                            <AddonLabel Style="background-color: #f5f5f7">
-                                @(string.IsNullOrWhiteSpace(CreateUpdateSetItemDto.SetItemBadge) ? 0 : (CreateUpdateSetItemDto.SetItemBadge.Count()))/@MaxBadgeTextCount
-                            </AddonLabel>
-                        </Addon>
-                    </Addons>
-              
-                    </div>
+        <div class="row mt-2">
+            <div class="col-2">
+                <fieldLabel>@L["ItemBadge"]</fieldLabel>
             </div>
+            <div class="col-10">
+
+                <Addons>
+                    <Addon AddonType="AddonType.Body">
+                        <TextEdit @bind-Text="@CreateUpdateSetItemDto.SetItemBadge" MaxLength="@MaxBadgeTextCount" />
+                    </Addon>
+                    <Addon AddonType="AddonType.End">
+                        <AddonLabel Style="background-color: #f5f5f7">
+                            @(string.IsNullOrWhiteSpace(CreateUpdateSetItemDto.SetItemBadge) ? 0 : (CreateUpdateSetItemDto.SetItemBadge.Count()))/@MaxBadgeTextCount
+                        </AddonLabel>
+                    </Addon>
+                </Addons>
+
+            </div>
+        </div>
         <div class="row mt-2">
             <div class="col-2">
                 <fieldLabel>@L["ItemDescription"]</fieldLabel>
