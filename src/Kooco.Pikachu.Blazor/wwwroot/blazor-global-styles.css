@@ -116,6 +116,10 @@
     margin-right: 287px;
 }
 
+    .image-list-container .btn-sm {
+        --bs-btn-padding-y: 0.23rem;
+    }
+
 .image-container {
     position: relative;
     height: 100px;

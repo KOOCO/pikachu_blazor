@@ -535,6 +535,7 @@ public partial class EditGroupBuy
         {
             try
             {
+                await JSRuntime.InvokeVoidAsync("updateDropText");
                 await Loading.Show();
                 await OnInitializedAsync();
                 //await LoadHtmlContent();
@@ -2800,5 +2801,9 @@ public partial class EditGroupBuy
         }
     }
 
+    async Task CollapseToggled()
+    {
+        await JSRuntime.InvokeVoidAsync("updateDropText");
+    }
     #endregion
 }

@@ -28,23 +28,23 @@
 
 <style>
     .row {
-    margin-top: 10px;
+        margin-top: 10px;
     }
 
     .drag-drop-span {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    max-height: 55px !important;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        max-height: 55px !important;
     }
 
-    .drag-drop-span i {
-    cursor: pointer;
-    }
+        .drag-drop-span i {
+            cursor: pointer;
+        }
 
     .color-scheme > .b-input-color-picker-preview {
-    height: 9.55rem;
+        height: 9.55rem;
     }
 </style>
 <h3>@L["EditGroupBuy"]</h3>
@@ -205,59 +205,29 @@
                 </label>
             </div>
             <div class="col-10">
-                <Field>
-                    <FilePicker @ref="LogoPickerCustom"
-                    FilePickerLocalizer="(key,args)=>LocalizeFilePicker(key,args)"
-                    Changed="OnLogoUploadAsync"
-                    ShowMode="FilePickerShowMode.List"
-                    Accept=".jpg, .png, .svg,.jpeg,.webp">
-                        <FileTemplate>
-                            <Div Flex="Flex.JustifyContent.Between">
-                                <Div>
-                                    <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
-                                    <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
-                                </Div>
-                                <Div Class="ps-2">
-                                    <Div>
-                                        @if (context.File.Status == FileEntryStatus.Ready)
-                                        {
-                                            <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
-                                        }
-                                        else if (context.File.Status == FileEntryStatus.Uploading)
-                                        {
-                                            <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
-                                        }
-                                        else if (context.File.Status == FileEntryStatus.Uploaded)
-                                        {
-                                            <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
-                                        }
-                                        else if (context.File.Status == FileEntryStatus.Error)
-                                        {
-                                            <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
-                                        }
-                                    </Div>
-                                    <Div>
-                                        <Icon TextColor="TextColor.Danger" Name="IconName.Delete" class="cursor-pointer" Clicked="context.RemoveFile" />
-                                    </Div>
-                                </Div>
-                            </Div>
-                        </FileTemplate>
-                        <ButtonsTemplate>
-                            <Progress Value="@LogoPickerCustom.GetProgressPercentage()" />
-                        </ButtonsTemplate>
-                    </FilePicker>
-                </Field>
+                <Div Class="@((EditGroupBuyDto.LogoURL != null ? "has-images" : "") + " container-less-filepicker filepicker-sm")">
+                    <Field>
+                        <FilePicker @ref="LogoPickerCustom"
+                                    FilePickerLocalizer="(key,args)=>LocalizeFilePicker(key,args)"
+                                    Changed="OnLogoUploadAsync"
+                                    ShowMode="FilePickerShowMode.List"
+                                    Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
+                        </FilePicker>
+                    </Field>
+                </Div>
             </div>
             @if (EditGroupBuyDto.LogoURL != null)
             {
                 <div class="col-2"></div>
                 <div class="col-10">
                     <div class="image-list-container">
-                        <div class="image-container">
-                            <Image class="blur-image" Source="@EditGroupBuyDto.LogoURL" Text="Logo Image" Fluid />
-                            <button class="delete-button" @onclick="() => DeleteLogoAsync(EditGroupBuyDto.BannerURL)">
-                                <i class="fa fa-trash"></i>
-                            </button>
+                        <div>
+                            <div class="image-container">
+                                <Image class="blur-image" Source="@EditGroupBuyDto.LogoURL" Text="Logo Image" Fluid />
+                                <button class="delete-button" @onclick="() => DeleteLogoAsync(EditGroupBuyDto.BannerURL)">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -367,17 +337,17 @@
                             {
                                 <label for="@item" class="form-label me-2">
                                     <input type="checkbox"
-                                    class="form-check-input"
-                                    id="@item"
-                                    disabled="@(EditGroupBuyDto.IsEnterprise)"
-                                    checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                           class="form-check-input"
+                                           id="@item"
+                                           disabled="@(EditGroupBuyDto.IsEnterprise)"
+                                           checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                       (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                    @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                           @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                     @L[item]
                                 </label>
                             }
                             @if (item == Enum.GetName(DeliveryMethod.FamilyMartC2C)
-                         || item == Enum.GetName(DeliveryMethod.BlackCat1))
+                           || item == Enum.GetName(DeliveryMethod.BlackCat1))
                             {
                                 <br />
                                 <Div Class="mt-1"></Div>
@@ -402,19 +372,19 @@
                             {
                                 <label for="@item" class="form-label me-2">
                                     <input type="checkbox"
-                                    class="form-check-input"
-                                    id="@item"
-                                    disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                           class="form-check-input"
+                                           id="@item"
+                                           disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                    (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) &&
                                                    item is not "DeliveredByStore"||EditGroupBuyDto.IsEnterprise)"
-                                    checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                           checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                   (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                    @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                           @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                     @L[item]
                                 </label>
                             }
                             @if (item == Enum.GetName(DeliveryMethod.FamilyMartC2C)
-                         || item == Enum.GetName(DeliveryMethod.BlackCat1))
+                           || item == Enum.GetName(DeliveryMethod.BlackCat1))
                             {
                                 <br />
                                 <Div Class="mt-1"></Div>
@@ -436,12 +406,12 @@
                             {
                                 <label for="@item" class="form-label me-2">
                                     <input type="checkbox"
-                                    class="form-check-input"
-                                    id="@item"
-                                    disabled="@(EditGroupBuyDto.IsEnterprise)"
-                                    checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                           class="form-check-input"
+                                           id="@item"
+                                           disabled="@(EditGroupBuyDto.IsEnterprise)"
+                                           checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                   (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                    @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                           @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                     @L[item]
                                 </label>
                             }
@@ -460,14 +430,14 @@
                             {
                                 <label for="@item" class="form-label me-2">
                                     <input type="checkbox"
-                                    class="form-check-input"
-                                    id="@item"
-                                    disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                           class="form-check-input"
+                                           id="@item"
+                                           disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                        (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) &&
                                                        item is not "DeliveredByStore"||EditGroupBuyDto.IsEnterprise)"
-                                    checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                           checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                       (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                    @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                           @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                     @L[item]
                                 </label>
                             }
@@ -488,12 +458,12 @@
                             {
                                 <label for="@item" class="form-label me-2">
                                     <input type="checkbox"
-                                    class="form-check-input"
-                                    disabled="@(EditGroupBuyDto.IsEnterprise)"
-                                    id="@item"
-                                    checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                           class="form-check-input"
+                                           disabled="@(EditGroupBuyDto.IsEnterprise)"
+                                           id="@item"
+                                           checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                   (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                    @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                           @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                     @L[item]
                                 </label>
                             }
@@ -513,14 +483,14 @@
                             {
                                 <label for="@item" class="form-label me-2">
                                     <input type="checkbox"
-                                    class="form-check-input"
-                                    id="@item"
-                                    disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                           class="form-check-input"
+                                           id="@item"
+                                           disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                        (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) &&
                                                        item is not "DeliveredByStore"||EditGroupBuyDto.IsEnterprise)"
-                                    checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                           checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                       (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                    @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                           @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                     @L[item]
                                 </label>
                             }
@@ -538,12 +508,12 @@
                         {
                             <label for="@item" class="form-label me-2">
                                 <input type="checkbox"
-                                class="form-check-input"
-                                id="@item"
-                                disabled="@(EditGroupBuyDto.IsEnterprise)"
-                                checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                       class="form-check-input"
+                                       id="@item"
+                                       disabled="@(EditGroupBuyDto.IsEnterprise)"
+                                       checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                           (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                 @L[item]
                             </label>
                         }
@@ -553,14 +523,14 @@
                     {
                         <label for="@item" class="form-label me-2">
                             <input type="checkbox"
-                            class="form-check-input"
-                            id="@item"
-                            disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                   class="form-check-input"
+                                   id="@item"
+                                   disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) &&
                                                item is not "DeliveredByStore"||(EditGroupBuyDto.IsEnterprise && item == Enum.GetName(DeliveryMethod.DeliveredByStore)))"
-                            checked="@(((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                   checked="@(((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                               (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))||( item == Enum.GetName(DeliveryMethod.SelfPickup) && EditGroupBuyDto.IsEnterprise))"
-                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                   @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                             @L[item]
                         </label>
                     }
@@ -597,23 +567,23 @@
                     @foreach (string island in DeliveryTimeConts.BlackCat)
                     {
                         @if ((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
-                     ((EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1")) ||
-                     (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFreeze")) ||
-                     (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFrozen")) ||
-                     (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryNormal")) ||
-                     (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryFreeze")) ||
-                     (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryFrozen")) ||
-                     (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenNormal")) ||
-                     (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenFreeze")) ||
-                     (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenFrozen"))))
+                       ((EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1")) ||
+                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFreeze")) ||
+                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFrozen")) ||
+                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryNormal")) ||
+                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryFreeze")) ||
+                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryFrozen")) ||
+                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenNormal")) ||
+                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenFreeze")) ||
+                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenFrozen"))))
                         {
                             if (EditGroupBuyDto.BlackCatDeliveryTime.IsNullOrWhiteSpace() || EditGroupBuyDto.BlackCatDeliveryTime == "[]") BlackCatDeliveryTimeCheckedChange("Inapplicable", new ChangeEventArgs { Value = true });
                             <label for="@island" class="form-label me-2">
                                 <input type="checkbox"
-                                class="form-check-input"
-                                id="@island"
-                                checked="@(EditGroupBuyDto.BlackCatDeliveryTime is not null && EditGroupBuyDto.BlackCatDeliveryTime.Contains(island))"
-                                @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)" />
+                                       class="form-check-input"
+                                       id="@island"
+                                       checked="@(EditGroupBuyDto.BlackCatDeliveryTime is not null && EditGroupBuyDto.BlackCatDeliveryTime.Contains(island))"
+                                       @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)" />
                                 @L[island]
                             </label>
                         }
@@ -621,11 +591,11 @@
                         {
                             <label for="@island" class="form-label me-2">
                                 <input disabled
-                                type="checkbox"
-                                class="form-check-input"
-                                id="@island"
-                                checked="@(EditGroupBuyDto.BlackCatDeliveryTime is not null && EditGroupBuyDto.BlackCatDeliveryTime.Contains(island))"
-                                @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)" />
+                                       type="checkbox"
+                                       class="form-check-input"
+                                       id="@island"
+                                       checked="@(EditGroupBuyDto.BlackCatDeliveryTime is not null && EditGroupBuyDto.BlackCatDeliveryTime.Contains(island))"
+                                       @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)" />
                                 @L[island]
                             </label>
 
@@ -647,19 +617,19 @@
                     @foreach (string island in DeliveryTimeConts.HomeDelivery)
                     {
                         @if ((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
-                     (EditGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery")))
+                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery")))
                         {
                             if (EditGroupBuyDto.HomeDeliveryDeliveryTime.IsNullOrWhiteSpace() || EditGroupBuyDto.HomeDeliveryDeliveryTime == "[]") EditGroupBuyDto.HomeDeliveryDeliveryTime = "[\"Inapplicable\"]";
                             <label for="@(island)_HomeDelivery" class="form-label me-2">
                                 <input type="checkbox"
-                                class="form-check-input"
-                                id="@island"
-                                disabled="@(island is not PikachuResource.UnableToSpecifyDuringPeakPeriods ?
+                                       class="form-check-input"
+                                       id="@island"
+                                       disabled="@(island is not PikachuResource.UnableToSpecifyDuringPeakPeriods ?
                                                     IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery :
                                                     false)"
-                                checked="@(EditGroupBuyDto.HomeDeliveryDeliveryTime is not null &&
+                                       checked="@(EditGroupBuyDto.HomeDeliveryDeliveryTime is not null &&
                                                       EditGroupBuyDto.HomeDeliveryDeliveryTime.Contains(island))"
-                                @onchange="(value) => HomeDeliveryTimeCheckedChange(island, value)" />
+                                       @onchange="(value) => HomeDeliveryTimeCheckedChange(island, value)" />
                                 @L[island]
                             </label>
                         }
@@ -668,12 +638,12 @@
                             EditGroupBuyDto.HomeDeliveryDeliveryTime = null;
                             <label for="@(island)_HomeDelivery" class="form-label me-2">
                                 <input disabled
-                                type="checkbox"
-                                class="form-check-input"
-                                id="@island"
-                                checked="@(EditGroupBuyDto.HomeDeliveryDeliveryTime is not null &&
+                                       type="checkbox"
+                                       class="form-check-input"
+                                       id="@island"
+                                       checked="@(EditGroupBuyDto.HomeDeliveryDeliveryTime is not null &&
                                                          EditGroupBuyDto.HomeDeliveryDeliveryTime.Contains(island))"
-                                @onchange="(value) => HomeDeliveryTimeCheckedChange(island, value)" />
+                                       @onchange="(value) => HomeDeliveryTimeCheckedChange(island, value)" />
                                 @L[island]
                             </label>
 
@@ -694,18 +664,19 @@
                     @foreach (string island in DeliveryTimeConts.SelfPickUp)
                     {
                         @if ((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
-                      (EditGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup")))
-                        { if(EditGroupBuyDto.SelfPickupDeliveryTime.IsNullOrWhiteSpace()||EditGroupBuyDto.SelfPickupDeliveryTime=="[]") EditGroupBuyDto.SelfPickupDeliveryTime = "[\"UnableToSpecifyDuringPeakPeriods\"]";
+                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup")))
+                        {
+                            if (EditGroupBuyDto.SelfPickupDeliveryTime.IsNullOrWhiteSpace() || EditGroupBuyDto.SelfPickupDeliveryTime == "[]") EditGroupBuyDto.SelfPickupDeliveryTime = "[\"UnableToSpecifyDuringPeakPeriods\"]";
                             <label for="@(island)_SelfPickUp" class="form-label me-2">
                                 <input type="checkbox"
-                                class="form-check-input"
-                                id="@island"
-                                disabled="@(island is not PikachuResource.UnableToSpecifyDuringPeakPeriods ?
+                                       class="form-check-input"
+                                       id="@island"
+                                       disabled="@(island is not PikachuResource.UnableToSpecifyDuringPeakPeriods ?
                                                         IsUnableToSpecifyDuringPeakPeriodsForSelfPickups :
                                                         false)"
-                                checked="@(EditGroupBuyDto.SelfPickupDeliveryTime is not null &&
+                                       checked="@(EditGroupBuyDto.SelfPickupDeliveryTime is not null &&
                                                       EditGroupBuyDto.SelfPickupDeliveryTime.Contains(island))"
-                                @onchange="(value) => SelfPickupDeliveryTimeCheckedChange(island, value)" />
+                                       @onchange="(value) => SelfPickupDeliveryTimeCheckedChange(island, value)" />
                                 @L[island]
                             </label>
                         }
@@ -742,7 +713,7 @@
                         @if ((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                        (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
                         {
-                            if(EditGroupBuyDto.DeliveredByStoreDeliveryTime.IsNullOrWhiteSpace()||EditGroupBuyDto.DeliveredByStoreDeliveryTime=="[]") EditGroupBuyDto.DeliveredByStoreDeliveryTime = "[\"Inapplicable\"]";
+                            if (EditGroupBuyDto.DeliveredByStoreDeliveryTime.IsNullOrWhiteSpace() || EditGroupBuyDto.DeliveredByStoreDeliveryTime == "[]") EditGroupBuyDto.DeliveredByStoreDeliveryTime = "[\"Inapplicable\"]";
                             <label for="@(island)_DeliveredByStore" class="form-label me-2">
                                 <input type="checkbox"
                                        class="form-check-input"
@@ -812,7 +783,7 @@
                            @bind-Checked="@BankTransfer">
                         @L["BankTransfer"]
                     </Check>
-                     <Check TValue="bool"
+                    <Check TValue="bool"
                            Disabled=@EditGroupBuyDto.IsEnterprise
                            @bind-Checked="@IsLinePay">
                         @L["LinePay"]
@@ -1048,7 +1019,8 @@
                 @if (CollapseItem.Count < 20)
                 {
                     <Select TValue="GroupBuyTemplateType"
-                            @onchange="@((e) => SelectTemplate(e))">
+                            @onchange="@((e) => SelectTemplate(e))"
+                            Style="min-width: 300px;">
                         <option value="">@L["SelectTemplate"]</option>
                         @foreach (GroupBuyTemplateType type in TemplateTypes.Where(w => w != GroupBuyTemplateType.PikachuOne))
                         {
@@ -1100,7 +1072,7 @@
                         <Accordion>
                             <Collapse VisibleChanged="(e) => OnCollapseVisibleChanged(module, e)">
                                 <CollapseHeader>
-                                    <AccordionToggle>
+                                    <AccordionToggle Clicked="CollapseToggled">
                                         <i class="fa fa-trash text-danger me-2" @onclick="@(()=>RemoveCollapseItem(@module.Index))"></i>
                                         @L[module.GroupBuyModuleType.ToString()]
 
@@ -1156,111 +1128,70 @@
                                                     </label>
                                                 </div>
                                                 <div class="col-10 ">
-                                                    <Field>
-                                                        <FilePicker @ref="CarouselFilePickers[carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1]"
-                                                                    Disabled="carouselImages.Count >= 5"
-                                                                    Multiple
-                                                                    Changed="@(async (e) => await OnImageModuleUploadAsync(e,
+                                                    <Div Class="@(((carouselImages.Count > 0 && carouselImages.Any(a => !a.ImageUrl.IsNullOrEmpty())) ? "has-images" : "") + " container-less-filepicker")">
+                                                        <Field>
+                                                            <FilePicker @ref="CarouselFilePickers[carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1]"
+                                                                        Disabled="carouselImages.Count >= 5"
+                                                                        Multiple
+                                                                        Changed="@(async (e) => await OnImageModuleUploadAsync(e,
                                                                                                                            carouselImages,
                                                                                                                            carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value,
                                                                                                                            CarouselFilePickers[carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1],
                                                                                                                            ImageType.GroupBuyCarouselImage))"
-                                                                    ShowMode="FilePickerShowMode.List"
-                                                                    Accept=".jpg, .png, .svg, .jpeg, .webp">
-                                                            <FileTemplate>
-                                                                <Div Flex="Flex.JustifyContent.Between">
-                                                                    <Div>
-                                                                        <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
-                                                                        <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
-                                                                    </Div>
-                                                                    <Div Class="ps-2">
-                                                                        <Div>
-                                                                            @if (context.File.Status is FileEntryStatus.Ready)
-                                                                            {
-                                                                                <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
-                                                                            }
-                                                                            else if (context.File.Status is FileEntryStatus.Uploading)
-                                                                            {
-                                                                                <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
-                                                                            }
-                                                                            else if (context.File.Status is FileEntryStatus.Uploaded)
-                                                                            {
-                                                                                <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
-                                                                            }
-                                                                            else if (context.File.Status is FileEntryStatus.Error)
-                                                                            {
-                                                                                <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
-                                                                            }
-                                                                        </Div>
-                                                                        <Div>
-                                                                            <Icon TextColor="TextColor.Danger" Name="IconName.Delete" class="cursor-pointer" Clicked="context.RemoveFile" />
-                                                                        </Div>
-                                                                    </Div>
-                                                                </Div>
-                                                            </FileTemplate>
-                                                            <ButtonsTemplate>
-                                                                <Progress Value="@CarouselFilePickers[carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1].GetProgressPercentage()" />
-                                                            </ButtonsTemplate>
-                                                        </FilePicker>
-                                                    </Field>
+                                                                        ShowMode="FilePickerShowMode.List"
+                                                                        Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
+                                                            </FilePicker>
+                                                        </Field>
+                                                    </Div>
                                                 </div>
                                                 @if (carouselImages.Count > 0 && carouselImages.Any(a => !a.ImageUrl.IsNullOrEmpty()))
                                                 {
-                                                    <Div Class="row">
-                                                        <Div Class="col-2"></Div>
-                                                        <Div Class="col-10">
-                                                            <Div Class="image-list-container d-block flex-nowrap">
-                                                                <Div Class="d-flex flex-wrap">
-                                                                    @foreach (CreateImageDto image in carouselImages.Where(w => !w.ImageUrl.IsNullOrEmpty()).ToList())
-                                                                    {
-                                                                        <Div Class="image-container">
-                                                                            <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image" Fluid />
-                                                                            <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName,
+                                                    <Div Class="col-2"></Div>
+                                                    <Div Class="col-10">
+                                                        <Div Class="image-list-container">
+                                                            @foreach (CreateImageDto image in carouselImages.Where(w => !w.ImageUrl.IsNullOrEmpty()).ToList())
+                                                            {
+                                                                <Div Class="d-flex flex-column align-items-center justify-content-center">
+                                                                    <Div Class="image-container">
+                                                                        <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image" Fluid />
+                                                                        <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName,
                                                                                                                                            carouselImages,
                                                                                                                                            ImageType.GroupBuyCarouselImage)">
-                                                                                <i class="fa fa-trash"></i>
-                                                                            </button>
-                                                                        </Div>
-                                                                    }
-                                                                </Div>
-
-                                                                @foreach (CreateImageDto createImageDto in carouselImages.Where(w => !w.ImageUrl.IsNullOrEmpty()).ToList())
-                                                                {
+                                                                            <i class="fa fa-trash"></i>
+                                                                        </button>
+                                                                    </Div>
                                                                     <button type="button"
-                                                                            class="btn btn-primary @(carouselImages.IndexOf(createImageDto) > 0 ? "mx-1" : "")"
-                                                                            @onclick="() => OpenAddLinkModal(createImageDto)">
+                                                                            class="btn btn-sm btn-primary mt-1"
+                                                                            @onclick="() => OpenAddLinkModal(image)">
                                                                         @L["AddLink"]
                                                                     </button>
-                                                                }
-                                                            </Div>
+                                                                </Div>
+                                                            }
                                                         </Div>
                                                     </Div>
                                                 }
-                                                <Div class="row">
-                                                    <Div class="col-2 pt-2 pb-4">
-                                                        <label>@L["Style"]</label>
-                                                    </Div>
-                                                    <Div class="col-10 pt-2 pb-4">
-                                                        <select class="form-select form-select"
-                                                                @onchange=@((e) => OnStyleCarouselChange(e, carouselImages, carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value))>
-                                                            <option>Select Style</option>
-                                                            @foreach (object? enumValue in Enum.GetValues(typeof(StyleForCarouselImages)))
+                                                <Div class="col-2 pt-2 pb-4">
+                                                    <label>@L["Style"]</label>
+                                                </Div>
+                                                <Div class="col-10 pt-2 pb-4">
+                                                    <select class="form-select form-select"
+                                                            @onchange=@((e) => OnStyleCarouselChange(e, carouselImages, carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value))>
+                                                        <option>Select Style</option>
+                                                        @foreach (object? enumValue in Enum.GetValues(typeof(StyleForCarouselImages)))
+                                                        {
+                                                            if (enumValue is not null && carouselImages.Any(a => a.CarouselStyle == (StyleForCarouselImages)enumValue))
                                                             {
-                                                                if (enumValue is not null && carouselImages.Any(a => a.CarouselStyle == (StyleForCarouselImages)enumValue))
-                                                                {
-                                                                    <option value="@enumValue" selected>@L[enumValue.ToString()]</option>
-                                                                }
-
-                                                                else
-                                                                {
-                                                                    <option value="@enumValue">@L[enumValue.ToString()]</option>
-                                                                }
+                                                                <option value="@enumValue" selected>@L[enumValue.ToString()]</option>
                                                             }
-                                                        </select>
-                                                    </Div>
+
+                                                            else
+                                                            {
+                                                                <option value="@enumValue">@L[enumValue.ToString()]</option>
+                                                            }
+                                                        }
+                                                    </select>
                                                 </Div>
                                             </div>
-                                            <Divider />
                                         }
                                     }
 
@@ -1280,82 +1211,44 @@
                                                         </Span>
                                                     </label>
                                                 </div>
-                                                <div class="col-10 ">
-                                                    <Field>
-                                                        <FilePicker @ref="BannerFilePickers[bannerImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1]"
-                                                                    Changed="@(async (e) => await OnBannerImageModuleUploadAsync(e,
+                                                <div class="col-10">
+                                                    <Div Class="@(((bannerImages.Count > 0 && bannerImages.Any(a => !a.ImageUrl.IsNullOrEmpty())) ? "has-images" : "") + " container-less-filepicker")">
+                                                        <Field>
+                                                            <FilePicker @ref="BannerFilePickers[bannerImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1]"
+                                                                        Changed="@(async (e) => await OnBannerImageModuleUploadAsync(e,
                                                                                                                            bannerImages,
                                                                                                                            bannerImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value,
                                                                                                                            BannerFilePickers[bannerImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1],
                                                                                                                            ImageType.GroupBuyBannerImage))"
-                                                                    ShowMode="FilePickerShowMode.List"
-                                                                    Accept=".jpg, .png, .svg, .jpeg, .webp">
-                                                            <FileTemplate>
-                                                                <Div Flex="Flex.JustifyContent.Between">
-                                                                    <Div>
-                                                                        <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
-                                                                        <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
-                                                                    </Div>
-                                                                    <Div Class="ps-2">
-                                                                        <Div>
-                                                                            @if (context.File.Status is FileEntryStatus.Ready)
-                                                                            {
-                                                                                <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
-                                                                            }
-                                                                            else if (context.File.Status is FileEntryStatus.Uploading)
-                                                                            {
-                                                                                <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
-                                                                            }
-                                                                            else if (context.File.Status is FileEntryStatus.Uploaded)
-                                                                            {
-                                                                                <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
-                                                                            }
-                                                                            else if (context.File.Status is FileEntryStatus.Error)
-                                                                            {
-                                                                                <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
-                                                                            }
-                                                                        </Div>
-                                                                        <Div>
-                                                                            <Icon TextColor="TextColor.Danger" Name="IconName.Delete" class="cursor-pointer" Clicked="context.RemoveFile" />
-                                                                        </Div>
-                                                                    </Div>
-                                                                </Div>
-                                                            </FileTemplate>
-                                                            <ButtonsTemplate>
-                                                                <Progress Value="@BannerFilePickers[bannerImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1].GetProgressPercentage()" />
-                                                            </ButtonsTemplate>
-                                                        </FilePicker>
-                                                    </Field>
+                                                                        ShowMode="FilePickerShowMode.List"
+                                                                        Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
+                                                            </FilePicker>
+                                                        </Field>
+                                                    </Div>
                                                 </div>
                                                 @if (bannerImages.Count > 0 && bannerImages.Any(a => !a.ImageUrl.IsNullOrEmpty()))
                                                 {
-                                                    <Div Class="row">
-                                                        <Div Class="col-2"></Div>
-                                                        <Div Class="col-10">
-                                                            <Div Class="image-list-container d-block flex-nowrap">
-                                                                <Div Class="d-flex flex-wrap">
-                                                                    @foreach (CreateImageDto image in bannerImages.Where(w => !w.ImageUrl.IsNullOrEmpty()).ToList())
-                                                                    {
-                                                                        <Div Class="image-container">
-                                                                            <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image" Fluid />
-                                                                            <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName,
+                                                    <Div Class="col-2"></Div>
+                                                    <Div Class="col-10">
+                                                        <Div Class="image-list-container">
+                                                            @foreach (CreateImageDto image in bannerImages.Where(w => !w.ImageUrl.IsNullOrEmpty()).ToList())
+                                                            {
+                                                                <Div Class="d-flex flex-column align-items-center justify-content-center">
+                                                                    <Div Class="image-container">
+                                                                        <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image" Fluid />
+                                                                        <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName,
                                                                                                                                             bannerImages,
                                                                                                                                             ImageType.GroupBuyBannerImage)">
-                                                                                <i class="fa fa-trash"></i>
-                                                                            </button>
-                                                                        </Div>
-                                                                    }
-                                                                </Div>
-
-                                                                @foreach (CreateImageDto createImageDto in bannerImages.Where(w => !w.ImageUrl.IsNullOrEmpty()).ToList())
-                                                                {
+                                                                            <i class="fa fa-trash"></i>
+                                                                        </button>
+                                                                    </Div>
                                                                     <button type="button"
-                                                                            class="btn btn-primary @(bannerImages.IndexOf(createImageDto) > 0 ? "mx-1" : "")"
-                                                                            @onclick="() => OpenAddLinkModal(createImageDto)">
+                                                                            class="btn btn-sm btn-primary mt-1"
+                                                                            @onclick="() => OpenAddLinkModal(image)">
                                                                         @L["AddLink"]
                                                                     </button>
-                                                                }
-                                                            </Div>
+                                                                </Div>
+                                                            }
                                                         </Div>
                                                     </Div>
                                                 }
@@ -1372,78 +1265,41 @@
                                                     <Div Class="col-2 pb-1">
                                                         <Label>@L["Image"] <Span Class="text-danger">*</Span></Label>
                                                     </Div>
-                                                    <Field>
-                                                        <FilePicker @ref="GroupPurchaseOverviewFilePickers[GroupPurchaseOverviewModules.IndexOf(module)]"
-                                                                    Changed="@(async (e) => await OnImageUploadAsync(e,
+                                                    <Div Class="@((!module.Image.IsNullOrEmpty() ? "has-images" : "") + " container-less-filepicker filepicker-sm")">
+                                                        <Field>
+                                                            <FilePicker @ref="GroupPurchaseOverviewFilePickers[GroupPurchaseOverviewModules.IndexOf(module)]"
+                                                                        Changed="@(async (e) => await OnImageUploadAsync(e,
                                                                                                                      module,
                                                                                                                      GroupPurchaseOverviewFilePickers[GroupPurchaseOverviewModules.IndexOf(module)]))"
-                                                                    ShowMode="FilePickerShowMode.List"
-                                                                    Accept=".jpg, .png, .svg ,.jpeg,.webp">
-                                                            <FileTemplate>
-                                                                <Div Flex="Flex.JustifyContent.Between">
-                                                                    <Div>
-                                                                        <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
-                                                                        <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
-                                                                    </Div>
-                                                                    <Div Class="ps-2">
-                                                                        <Div>
-                                                                            @if (context.File.Status is FileEntryStatus.Ready)
-                                                                            {
-                                                                                <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
-                                                                            }
-                                                                            else if (context.File.Status is FileEntryStatus.Uploading)
-                                                                            {
-                                                                                <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
-                                                                            }
-                                                                            else if (context.File.Status is FileEntryStatus.Uploaded)
-                                                                            {
-                                                                                <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
-                                                                            }
-                                                                            else if (context.File.Status is FileEntryStatus.Error)
-                                                                            {
-                                                                                <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
-                                                                            }
-                                                                        </Div>
-                                                                        <Div>
-                                                                            <Icon TextColor="TextColor.Danger"
-                                                                                  Name="IconName.Delete"
-                                                                                  Class="cursor-pointer"
-                                                                                  Clicked="context.RemoveFile" />
-                                                                        </Div>
-                                                                    </Div>
-                                                                </Div>
-                                                            </FileTemplate>
-                                                            <ButtonsTemplate>
-                                                                <Progress Value="@GroupPurchaseOverviewFilePickers[GroupPurchaseOverviewModules.IndexOf(module)].GetProgressPercentage()" />
-                                                            </ButtonsTemplate>
-                                                        </FilePicker>
-                                                    </Field>
+                                                                        ShowMode="FilePickerShowMode.List"
+                                                                        Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
+                                                            </FilePicker>
+                                                        </Field>
+                                                    </Div>
                                                     @if (!module.Image.IsNullOrEmpty())
                                                     {
-                                                        <Div Class="row">
-                                                            <Div Class="col-2"></Div>
-                                                            <Div Class="col-12">
-                                                                <Div Class="image-list-container">
-                                                                    <Div Class="image-container">
-                                                                        <Image Class="blur-image" Source="@module.Image" Text="Logo Image" Fluid />
-                                                                        <Button Class="delete-button"
-                                                                                Clicked="@(async (e) => await DeleteImageAsync(e, module))">
-                                                                            <i class="fa fa-trash" />
-                                                                        </Button>
-                                                                    </Div>
+                                                        <Div Class="col-2"></Div>
+                                                        <Div Class="col-12">
+                                                            <Div Class="image-list-container">
+                                                                <Div Class="image-container">
+                                                                    <Image Class="blur-image" Source="@module.Image" Text="Logo Image" Fluid />
+                                                                    <button class="delete-button"
+                                                                            @onclick="@(async (e) => await DeleteImageAsync(e, module))">
+                                                                        <i class="fa fa-trash" />
+                                                                    </button>
                                                                 </Div>
                                                             </Div>
                                                         </Div>
                                                     }
                                                 </Div>
                                                 <Div Class="col-6">
-                                                    <Div Class="col-2 pb-1">
+                                                    <Div Class="col-12 pb-1">
                                                         <Label>@L["Title"] <Span Class="text-danger">*</Span></Label>
                                                     </Div>
                                                     <Div Class="col-12 pb-1">
                                                         <TextEdit @bind-Text="module.Title" />
                                                     </Div>
-                                                    <Div Class="col-2 pb-1">
+                                                    <Div Class="col-12 pb-1">
                                                         <Label>@L["SubTitle"]</Label>
                                                     </Div>
                                                     <Div Class="col-12 pb-1">
@@ -1490,64 +1346,31 @@
                                                     <Div Class="col-2 pb-1">
                                                         <Label>@L["Image"] <Span Class="text-danger">*</Span></Label>
                                                     </Div>
-                                                    <Field>
-                                                        <FilePicker @ref="GroupBuyOrderInstructionPickers[GroupBuyOrderInstructionModules.IndexOf(module)]"
-                                                                    Changed="@(async (e) => await OnImageUploadAsync(e,
+                                                    <Div Class="@((!module.Image.IsNullOrEmpty() ? "has-images" : "") + " container-less-filepicker filepicker-sm")">
+                                                        <Field>
+                                                            <FilePicker @ref="GroupBuyOrderInstructionPickers[GroupBuyOrderInstructionModules.IndexOf(module)]"
+                                                                        Changed="@(async (e) => await OnImageUploadAsync(e,
                                                                                                                      module,
                                                                                                                      GroupBuyOrderInstructionPickers[GroupBuyOrderInstructionModules.IndexOf(module)]))"
-                                                                    ShowMode="FilePickerShowMode.List"
-                                                                    Accept=".jpg, .png, .svg ,.jpeg,.webp">
-                                                            <FileTemplate>
-                                                                <Div Flex="Flex.JustifyContent.Between">
-                                                                    <Div>
-                                                                        <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
-                                                                        <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
-                                                                    </Div>
-                                                                    <Div Class="ps-2">
-                                                                        <Div>
-                                                                            @if (context.File.Status is FileEntryStatus.Ready)
-                                                                            {
-                                                                                <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
-                                                                            }
-                                                                            else if (context.File.Status is FileEntryStatus.Uploading)
-                                                                            {
-                                                                                <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
-                                                                            }
-                                                                            else if (context.File.Status is FileEntryStatus.Uploaded)
-                                                                            {
-                                                                                <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
-                                                                            }
-                                                                            else if (context.File.Status is FileEntryStatus.Error)
-                                                                            {
-                                                                                <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
-                                                                            }
-                                                                        </Div>
-                                                                        <Div>
-                                                                            <Icon TextColor="TextColor.Danger"
-                                                                                  Name="IconName.Delete"
-                                                                                  Class="cursor-pointer"
-                                                                                  Clicked="context.RemoveFile" />
-                                                                        </Div>
-                                                                    </Div>
-                                                                </Div>
-                                                            </FileTemplate>
-                                                            <ButtonsTemplate>
-                                                                <Progress Value="@GroupBuyOrderInstructionPickers[GroupBuyOrderInstructionModules.IndexOf(module)].GetProgressPercentage()" />
-                                                            </ButtonsTemplate>
-                                                        </FilePicker>
-                                                    </Field>
+                                                                        ShowMode="FilePickerShowMode.List"
+                                                                        Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
+                                                            </FilePicker>
+                                                        </Field>
+                                                    </Div>
                                                     @if (!module.Image.IsNullOrEmpty())
                                                     {
                                                         <Div Class="row">
                                                             <Div Class="col-2"></Div>
                                                             <Div Class="col-12">
                                                                 <Div Class="image-list-container">
-                                                                    <Div Class="image-container">
-                                                                        <Image Class="blur-image" Source="@module.Image" Text="Logo Image" Fluid />
-                                                                        <Button Class="delete-button"
-                                                                                Clicked="@(async (e) => await DeleteImageAsync(e, module))">
-                                                                            <i class="fa fa-trash" />
-                                                                        </Button>
+                                                                    <Div>
+                                                                        <Div Class="image-container">
+                                                                            <Image Class="blur-image" Source="@module.Image" Text="Logo Image" Fluid />
+                                                                            <button class="delete-button"
+                                                                                    @onclick="@(async (e) => await DeleteImageAsync(e, module))">
+                                                                                <i class="fa fa-trash" />
+                                                                            </button>
+                                                                        </Div>
                                                                     </Div>
                                                                 </Div>
                                                             </Div>
@@ -1555,13 +1378,13 @@
                                                     }
                                                 </Div>
                                                 <Div Class="col-6">
-                                                    <Div Class="col-2 pb-1">
+                                                    <Div Class="col-12 pb-1">
                                                         <Label>@L["Title"] <Span Class="text-danger">*</Span></Label>
                                                     </Div>
                                                     <Div Class="col-12 pb-1">
                                                         <TextEdit @bind-Text="module.Title" />
                                                     </Div>
-                                                    <Div Class="col-2 pb-1">
+                                                    <Div Class="col-12 pb-1">
                                                         <Label>@L["BodyText"]</Label>
                                                     </Div>
                                                     <Div Class="col-12 pb-1">
@@ -1694,62 +1517,30 @@
                                                             <Div Class="col-2 pb-1">
                                                                 <Label>@L["Carousel"] <Span Class="text-danger">*</Span></Label>
                                                             </Div>
-                                                            <Field>
-                                                                <FilePicker @ref="ProductRankingCarouselPickers[ProductRankingCarouselModules.IndexOf(productModule)]"
-                                                                            Disabled="productModule.Images.Count >= 5"
-                                                                            Multiple
-                                                                            Changed="@(async (e) => await OnImageModuleUploadAsync(e,
+                                                            <Div Class="@((productModule.Images.Count > 0 ? "has-images" : "") + " container-less-filepicker filepicker-sm")">
+                                                                <Field>
+                                                                    <FilePicker @ref="ProductRankingCarouselPickers[ProductRankingCarouselModules.IndexOf(productModule)]"
+                                                                                Disabled="productModule.Images.Count >= 5"
+                                                                                Multiple
+                                                                                Changed="@(async (e) => await OnImageModuleUploadAsync(e,
                                                                                                                                    productModule.Images,
                                                                                                                                    ProductRankingCarouselModules.IndexOf(productModule) + 1,
                                                                                                                                    ProductRankingCarouselPickers[ProductRankingCarouselModules.IndexOf(productModule)],
                                                                                                                                    ImageType.GroupBuyProductRankingCarousel))"
-                                                                            ShowMode="FilePickerShowMode.List"
-                                                                            Accept=".jpg, .png, .svg, .jpeg, .webp">
-                                                                    <FileTemplate>
-                                                                        <Div Flex="Flex.JustifyContent.Between">
-                                                                            <Div>
-                                                                                <Heading Size="HeadingSize.Is6">@context.File.Name</Heading>
-                                                                                <Paragraph>@FilePicker.GetFileSizeReadable(context.File)</Paragraph>
-                                                                            </Div>
-                                                                            <Div Class="ps-2">
-                                                                                <Div>
-                                                                                    @if (context.File.Status is FileEntryStatus.Ready)
-                                                                                    {
-                                                                                        <Icon TextColor="TextColor.Primary" Name="IconName.FileUpload" />
-                                                                                    }
-                                                                                    else if (context.File.Status is FileEntryStatus.Uploading)
-                                                                                    {
-                                                                                        <Icon TextColor="TextColor.Warning" Name="IconName.Bolt" />
-                                                                                    }
-                                                                                    else if (context.File.Status is FileEntryStatus.Uploaded)
-                                                                                    {
-                                                                                        <Icon TextColor="TextColor.Success" Name="IconName.CheckCircle" />
-                                                                                    }
-                                                                                    else if (context.File.Status is FileEntryStatus.Error)
-                                                                                    {
-                                                                                        <Icon TextColor="TextColor.Danger" Name="IconName.TimesCircle" />
-                                                                                    }
-                                                                                </Div>
-                                                                                <Div>
-                                                                                    <Icon TextColor="TextColor.Danger" Name="IconName.Delete" class="cursor-pointer" Clicked="context.RemoveFile" />
-                                                                                </Div>
-                                                                            </Div>
-                                                                        </Div>
-                                                                    </FileTemplate>
-                                                                    <ButtonsTemplate>
-                                                                        <Progress Value="@ProductRankingCarouselPickers[ProductRankingCarouselModules.IndexOf(productModule)].GetProgressPercentage()" />
-                                                                    </ButtonsTemplate>
-                                                                </FilePicker>
-                                                            </Field>
+                                                                                ShowMode="FilePickerShowMode.List"
+                                                                                Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
+                                                                    </FilePicker>
+                                                                </Field>
+                                                            </Div>
+
                                                             @if (productModule.Images.Count > 0)
                                                             {
                                                                 <Div Class="row">
                                                                     <Div Class="col-12">
-                                                                        <Div Class="image-list-container d-block flex-nowrap">
-                                                                            <Div Class="d-flex flex-wrap">
-
-                                                                                @foreach (CreateImageDto image in productModule.Images)
-                                                                                {
+                                                                        <Div Class="image-list-container">
+                                                                            @foreach (CreateImageDto image in productModule.Images)
+                                                                            {
+                                                                                <Div>
                                                                                     <Div Class="image-container">
                                                                                         <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image" Fluid />
                                                                                         <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName,
@@ -1758,14 +1549,14 @@
                                                                                             <i class="fa fa-trash"></i>
                                                                                         </button>
                                                                                     </Div>
-                                                                                }
-                                                                            </Div>
+                                                                                </Div>
+                                                                            }
                                                                         </Div>
                                                                     </Div>
                                                                 </Div>
                                                             }
                                                         </Div>
-                                                        <Div Class="col-12">
+                                                        <Div Class="col-12 mt-2">
                                                             <Div Class="col-2 pb-1">
                                                                 <Label>@L["Title"] <Span Class="text-danger">*</Span></Label>
                                                             </Div>

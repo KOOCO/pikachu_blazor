@@ -199,6 +199,21 @@ public partial class CreateGroupBuy
         PaymentGateways = await _paymentGatewayAppService.GetAllAsync();
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("updateDropText");
+            }
+            catch (Exception ex)
+            {
+                await HandleErrorAsync(ex);
+            }
+        }
+    }
+
     private void SelectTemplate(ChangeEventArgs e)
     {
         SelectedTemplate = Enum.Parse<GroupBuyTemplateType>(e.Value.ToString());
@@ -2438,6 +2453,11 @@ public partial class CreateGroupBuy
             }
             StateHasChanged();
         }
+    }
+
+    async Task CollapseToggled()
+    {
+        await JSRuntime.InvokeVoidAsync("updateDropText");
     }
     #endregion
 }
