@@ -538,23 +538,26 @@ public class OrderAppService : ApplicationService, IOrderAppService
             await SendEmailAsync(order.Id);
             var validitySettings = (await _paymentGatewayRepository.GetQueryableAsync()).Where(x => x.PaymentIntegrationType == PaymentIntegrationType.OrderValidatePeriod).FirstOrDefault();
             DateTime expirationTime = DateTime.Now.AddMinutes(10);
+            if (validitySettings is not null)
+            {
+                if (validitySettings.Unit == "Days")
+                {
+                    expirationTime = order.CreationTime.AddDays(validitySettings.Period.Value);
+                }
+                else if (validitySettings.Unit == "Hours")
+                {
+                    expirationTime = order.CreationTime.AddHours(validitySettings.Period.Value);
+                }
+                else if (validitySettings.Unit == "Minutes")
+                {
+                    expirationTime = order.CreationTime.AddMinutes(validitySettings.Period.Value);
+                }
 
-            if (validitySettings.Unit == "Days")
-            {
-                expirationTime = order.CreationTime.AddDays(validitySettings.Period.Value);
+                ExpireOrderBackgroundJobArgs args = new ExpireOrderBackgroundJobArgs { OrderId = order.Id };
+                var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, (expirationTime - order.CreationTime));
             }
-            else if (validitySettings.Unit == "Hours")
-            {
-                expirationTime = order.CreationTime.AddHours(validitySettings.Period.Value);
-            }
-            else if (validitySettings.Unit == "Minutes")
-            {
-                expirationTime = order.CreationTime.AddMinutes(validitySettings.Period.Value);
-            }
-
-            ExpireOrderBackgroundJobArgs args = new ExpireOrderBackgroundJobArgs { OrderId = order.Id };
-            var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, (expirationTime - order.CreationTime));
             return ObjectMapper.Map<Order, OrderDto>(order);
+
         }
     }
 
@@ -1798,7 +1801,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         if (orderReturnStatus == OrderReturnStatus.Approve)
         {
 
-           
+
             order.ReturnStatus = OrderReturnStatus.Processing;
         }
         if (orderReturnStatus == OrderReturnStatus.Succeeded && order.OrderStatus == OrderStatus.Returned && isRefund)
