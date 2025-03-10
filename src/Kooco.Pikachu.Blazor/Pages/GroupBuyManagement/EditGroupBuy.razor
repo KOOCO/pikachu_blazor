@@ -1,5 +1,6 @@
 ﻿@page "/GroupBuyManagement/GroupBuyList/Edit/{id}"
 
+@using Kooco.Pikachu.Blazor.Pages.Components.Icons
 @using Kooco.Pikachu.EnumValues;
 @using Kooco.Pikachu.GroupBuyOrderInstructions
 @using Kooco.Pikachu.GroupBuys;
@@ -1731,13 +1732,11 @@
                             </Collapse>
                         </Accordion>
                     </div>
-                    <div class="py-2"
+                    <div class="py-2 draggable"
                          draggable="true"
                          @ondrop="@(()=> Drop(module))"
                          @ondrag="@(()=> StartDrag(module))">
-                        <span class="drag-drop-span">
-                            <i class="fa-solid fa-bars fa-2xl"></i>
-                        </span>
+                        <GripDotSvg Height="48" Width="48"></GripDotSvg>
                     </div>
                 </div>
             }

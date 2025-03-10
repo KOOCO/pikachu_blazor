@@ -14,6 +14,7 @@ using Kooco.Pikachu.WebsiteManagement.WebsiteBasicSettings;
 using Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -67,6 +68,7 @@ public partial class AddWebsiteSettings
         {
             try
             {
+                await JSRuntime.InvokeVoidAsync("updateDropText");
                 SetItemList = await SetItemAppService.GetItemsLookupAsync();
                 ItemsList = await ItemAppService.GetItemsLookupAsync();
                 ItemsList.AddRange(SetItemList);
@@ -79,6 +81,11 @@ public partial class AddWebsiteSettings
                 await HandleErrorAsync(ex);
             }
         }
+    }
+
+    async Task CollapseToggled()
+    {
+        await JSRuntime.InvokeVoidAsync("updateDropText");
     }
 
     void NavigateToWebsiteSettings()

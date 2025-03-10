@@ -1,4 +1,5 @@
 ﻿@page "/GroupBuyManagement/GroupBuyList/New"
+@using Kooco.Pikachu.Blazor.Pages.Components.Icons
 @using Kooco.Pikachu.EnumValues;
 @using Kooco.Pikachu.GroupBuyOrderInstructions
 @using Kooco.Pikachu.GroupBuys;
@@ -1128,9 +1129,7 @@
                                                                     <Div Class="image-container">
                                                                         <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image"
                                                                                Fluid />
-                                                                        <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName,
-                                                                                                                                        carouselImages,
-                                                                                                                                        ImageType.GroupBuyCarouselImage)">
+                                                                        <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName, carouselImages, ImageType.GroupBuyCarouselImage)">
                                                                             <i class="fa fa-trash"></i>
                                                                         </button>
                                                                     </Div>
@@ -1178,8 +1177,9 @@
                                             <div class="row">
                                                 <div class="col-2">
                                                     <label>
-                                                        @L["BannerImages"]<Span>
-                                                            <Tooltip Text="@L["uploadUpto5Images"]">
+                                                        @L["BannerImages"]
+                                                        <Span>
+                                                            <Tooltip Class="d-inline-block" Text="@L["uploadUpto5Images"]">
                                                                 <Icon class="fa-question-circle" />
                                                             </Tooltip>
                                                         </Span>
@@ -1683,13 +1683,11 @@
                             </Collapse>
                         </Accordion>
                     </div>
-                    <div class="py-2"
+                    <div class="py-2 draggable"
                          draggable="true"
                          @ondrop="@(()=> Drop(module))"
                          @ondrag="@(()=> StartDrag(module))">
-                        <span class="drag-drop-span">
-                            <i class="fa-solid fa-bars fa-2xl"></i>
-                        </span>
+                        <GripDotSvg Height="48" Width="48"></GripDotSvg>
                     </div>
                 </div>
             }

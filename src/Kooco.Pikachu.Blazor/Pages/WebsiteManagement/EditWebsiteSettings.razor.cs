@@ -15,6 +15,7 @@ using Kooco.Pikachu.WebsiteManagement;
 using Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -82,6 +83,7 @@ public partial class EditWebsiteSettings
         {
             try
             {
+                await JSRuntime.InvokeVoidAsync("updateDropText");
                 var websiteSettings = await WebsiteSettingsAppService.GetAsync(Id, true);
                 EditingEntity = ObjectMapper.Map<WebsiteSettingsDto, UpdateWebsiteSettingsDto>(websiteSettings);
                 SetItemList = await SetItemAppService.GetItemsLookupAsync();
@@ -105,6 +107,11 @@ public partial class EditWebsiteSettings
         await Task.Delay(8);
         ArticlePageHtml?.LoadHTMLContent(EditingEntity.ArticleHtml);
         await InvokeAsync(StateHasChanged);
+    }
+
+    async Task CollapseToggled()
+    {
+        await JSRuntime.InvokeVoidAsync("updateDropText");
     }
 
     async Task UpdateAsync()
