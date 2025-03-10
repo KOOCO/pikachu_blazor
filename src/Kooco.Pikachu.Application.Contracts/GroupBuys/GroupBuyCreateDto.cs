@@ -61,12 +61,12 @@ namespace Kooco.Pikachu.GroupBuys
         /// <summary>
         /// 團購開始時間 StartTime
         /// </summary>
-        public DateTime? StartTime { get; set; }
+        public DateTime? StartTime { get; set; } = DateTime.Today;
 
         /// <summary>
         /// 團購結束時間 EndTime
         /// </summary>
-        public DateTime? EndTime { get; set; }
+        public DateTime? EndTime { get; set; } = DateTime.Today.AddMonths(1);
 
         /// <summary>
         /// 免運費 FreeShipping
