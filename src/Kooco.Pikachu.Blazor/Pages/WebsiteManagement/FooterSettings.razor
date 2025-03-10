@@ -17,7 +17,7 @@
 
 <style>
     .filepicker-sm .b-text-drop {
-        width: 60%;
+        width: 216px;
     }
 </style>
 <h3 class="text-dark text-center">@L["FooterSettings"]</h3>
@@ -132,11 +132,9 @@
                                                                 </Collapse>
                                                             </Accordion>
                                                         </Div>
-                                                        <Div Class="py-2 mt-2" draggable="true"
+                                                        <Div Class="py-2 mt-2 draggable" draggable="true"
                                                              @ondrop="@(()=> LinkDrop(section, link))" @ondrag="@(()=> StartLinkDrag(section, link))">
-                                                            <Span Class="drag-drop-span">
-                                                                <i class="fa-solid fa-bars fa-2xl"></i>
-                                                            </Span>
+                                                            <GripDotSvg Height="48" Width="48"></GripDotSvg>
                                                         </Div>
                                                     </Div>
                                                 </Column>

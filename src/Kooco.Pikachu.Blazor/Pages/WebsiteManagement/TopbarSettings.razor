@@ -162,11 +162,9 @@
                                                 </Collapse>
                                             </Accordion>
                                         </Div>
-                                        <Div Class="py-2 mt-2" draggable="true"
+                                        <Div Class="py-2 mt-2 draggable" draggable="true"
                                              @ondrop="@(()=> LinkDrop(link))" @ondrag="@(()=> StartLinkDrag(link))">
-                                            <Span Class="drag-drop-span">
-                                                <i class="fa-solid fa-bars fa-2xl"></i>
-                                            </Span>
+                                            <GripDotSvg Height="48" Width="48"></GripDotSvg>
                                         </Div>
                                     </Div>
                                 </Column>
@@ -249,11 +247,9 @@
                                                         </Collapse>
                                                     </Accordion>
                                                 </Div>
-                                                <Div Class="py-2 mt-2" draggable="true"
+                                                <Div Class="py-2 mt-2 draggable" draggable="true"
                                                      @ondrop="@(()=> CategoryOptionDrop(link, categoryOption))" @ondrag="@(()=> StartCategoryOptionDrag(link, categoryOption))">
-                                                    <Span Class="drag-drop-span">
-                                                        <i class="fa-solid fa-bars fa-2xl"></i>
-                                                    </Span>
+                                                    <GripDotSvg Height="48" Width="48"></GripDotSvg>
                                                 </Div>
                                             </Div>
                                         </Column>
