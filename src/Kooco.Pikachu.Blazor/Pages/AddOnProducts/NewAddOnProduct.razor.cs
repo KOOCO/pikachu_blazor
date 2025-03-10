@@ -23,7 +23,7 @@ namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
         private EditContext? editContext;
         string itemimageUrl = "";
         private AddOnProductDto AddOnProduct { get; set; }
-       
+        public string ButtonName { get; set; }
         private CreateUpdateAddOnProductDto CreateAddOnProduct { get; set; }
         private IReadOnlyList<GroupBuyDto> Groupbuys { get; set; }
         private IReadOnlyList<KeyValueDto> Products { get; set; }
