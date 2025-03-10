@@ -2,6 +2,7 @@ using Blazorise;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Extensions;
 using Kooco.Pikachu.WebsiteManagement.WebsiteBasicSettings;
+using Microsoft.JSInterop;
 using System;
 using System.IO;
 using System.Linq;
@@ -26,6 +27,21 @@ public partial class WebsiteBasicSettings
     protected override Task OnInitializedAsync()
     {
         return ResetAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("updateDropText");
+            }
+            catch (Exception ex)
+            {
+                await HandleErrorAsync(ex);
+            }
+        }
     }
 
     async Task UpdateAsync()

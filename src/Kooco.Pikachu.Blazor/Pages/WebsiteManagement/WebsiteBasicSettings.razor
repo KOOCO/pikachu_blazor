@@ -12,6 +12,7 @@
 @inject IWebsiteBasicSettingAppService WebsiteBasicSettingAppService
 @inject IImageAppService ImageAppService
 @inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
+@inject IJSRuntime JSRuntime
 
 <h3 class="text-dark text-center">@L["WebsiteBasicSettings"]</h3>
 
@@ -78,27 +79,13 @@
                 <Row>
                     <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
                         <h4>@L["Logo"]</h4>
-                        @if (LogoBase64 != null)
-                        {
-                            <Div Class="image-thumbnail">
-                                <img src="@("data:image/png;base64," + LogoBase64)" class="img-fluid" />
-                            </Div>
-                        }
-                        else if (Entity.LogoUrl != null)
-                        {
-                            <Div Class="image-thumbnail">
-                                <img src="@Entity.LogoUrl" class="img-fluid" />
-                            </Div>
-                        }
                     </Column>
                     <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                        <Div Class="container-less-filepicker">
+                        <Div Class="@((!string.IsNullOrEmpty(LogoBase64) || !string.IsNullOrEmpty(Entity.LogoUrl) ? "has-images" : "") + " container-less-filepicker filepicker-sm")">
                             <Field>
                                 <FilePicker Changed="@OnFileUploadAsync"
                                             ShowMode="FilePickerShowMode.List"
                                             Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
-                                    <FileTemplate></FileTemplate>
-                                    <ButtonsTemplate></ButtonsTemplate>
                                 </FilePicker>
                                 <Validation MessageLocalizer="@LH.Localize">
                                     <TextEdit @bind-Text="@Entity.LogoName" Class="invisible-input">
@@ -109,6 +96,13 @@
                                 </Validation>
                             </Field>
                         </Div>
+                        <div class="image-list-container">
+                            <div>
+                                <div class="image-container">
+                                    <Image class="blur-image" Source="@(LogoBase64 != null ? "data:image/png;base64," + LogoBase64 : Entity.LogoUrl)" Text="Logo Image" Fluid />
+                                </div>
+                            </div>
+                        </div>
                     </Column>
                 </Row>
                 <Divider></Divider>

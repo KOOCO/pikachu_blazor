@@ -13,7 +13,13 @@
 @inject ITenantSettingsAppService TenantSettingsAppService
 @inject IFooterSettingAppService FooterSettingAppService
 @inject IImageAppService ImageAppService
+@inject IJSRuntime JSRuntime
 
+<style>
+    .filepicker-sm .b-text-drop {
+        width: 60%;
+    }
+</style>
 <h3 class="text-dark text-center">@L["FooterSettings"]</h3>
 
 <Div Class="rounded-cards">
@@ -38,7 +44,14 @@
                             <Validation MessageLocalizer="@LH.Localize">
                                 <Field>
                                     <FieldLabel>@L["SelectType"] *</FieldLabel>
-                                    <Select TValue="FooterSettingsType?" @bind-SelectedValue="section.FooterSettingsType">
+                                    <Select TValue="FooterSettingsType?" SelectedValue="section.FooterSettingsType" SelectedValueChanged="(e) => OnTypeChanged(section, e)">
+                                        <SelectItem Value="(FooterSettingsType?)null"></SelectItem>
+                                        @foreach (FooterSettingsType type in Enum.GetValues(typeof(FooterSettingsType)))
+                                        {
+                                            <SelectItem Value="type">@L["Enum:FooterSettingsType." + (int)type]</SelectItem>
+                                        }
+                                    </Select>
+                                    <Select TValue="FooterSettingsType?" @bind-SelectedValue="section.FooterSettingsType" Class="invisible-input">
                                         <Feedback>
                                             <ValidationError />
                                         </Feedback>
@@ -134,13 +147,11 @@
                             }
                             @if (section.FooterSettingsType == FooterSettingsType.Image)
                             {
-                                <Div Class="container-less-filepicker">
+                                <Div Class="@((!string.IsNullOrEmpty(section.ImageBase64) || !string.IsNullOrEmpty(section.ImageUrl) ? "has-images" : "") + " container-less-filepicker filepicker-sm")">
                                     <Field>
                                         <FilePicker Changed="@((e) => OnFileUploadAsync(e, section))"
                                                     ShowMode="FilePickerShowMode.List"
                                                     Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
-                                            <FileTemplate></FileTemplate>
-                                            <ButtonsTemplate></ButtonsTemplate>
                                         </FilePicker>
                                         <Validation MessageLocalizer="@LH.Localize">
                                             <TextEdit @bind-Text="@(section.ImageName)" Class="invisible-input">
@@ -151,16 +162,13 @@
                                         </Validation>
                                     </Field>
                                 </Div>
-                                <Div Class="text-center">
-                                    @if (section.ImageBase64 != null)
-                                    {
-                                        <img class="img-fluid" src="@("data:image/png;base64," + section.ImageBase64)" style="max-height: 300px;" />
-                                    }
-                                    else if (section.ImageUrl != null)
-                                    {
-                                        <img class="img-fluid" src="@(section.ImageUrl)" style="max-height: 300px;" />
-                                    }
-                                </Div>
+                                <div class="image-list-container" style="margin-right: 218px;">
+                                    <div>
+                                        <div class="image-container">
+                                            <Image class="blur-image" Source="@(section.ImageBase64 != null ? "data:image/png;base64," + section.ImageBase64 : section.ImageUrl)" Text="Logo Image" Fluid />
+                                        </div>
+                                    </div>
+                                </div>
                             }
                             @if (section.FooterSettingsType == FooterSettingsType.CompanyAndCustomerServiceInformation)
                             {

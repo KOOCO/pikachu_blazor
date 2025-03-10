@@ -1,6 +1,7 @@
 using Blazorise;
 using Kooco.Pikachu.Extensions;
 using Kooco.Pikachu.WebsiteManagement.FooterSettings;
+using Microsoft.JSInterop;
 using System;
 using System.IO;
 using System.Linq;
@@ -21,7 +22,7 @@ public partial class FooterSettings
     public FooterSettings()
     {
         Entity = new();
-        Enum.GetValues(typeof(FooterSettingsPosition)).ToDynamicList().ForEach(enumValue =>
+        Enum.GetValues<FooterSettingsPosition>().ToDynamicList().ForEach(enumValue =>
         {
             Entity.Sections.Add(new(enumValue));
         });
@@ -75,6 +76,8 @@ public partial class FooterSettings
             if (footerSetting is not null)
             {
                 Entity = ObjectMapper.Map<FooterSettingDto, UpdateFooterSettingDto>(footerSetting);
+                StateHasChanged();
+                await JSRuntime.InvokeVoidAsync("updateDropText");
             }
         }
         catch (Exception ex)
@@ -167,5 +170,21 @@ public partial class FooterSettings
             StateHasChanged();
         }
         return Task.CompletedTask;
+    }
+
+    async Task OnTypeChanged(UpdateFooterSettingSectionDto section, FooterSettingsType? footerSettingsType)
+    {
+        section.FooterSettingsType = footerSettingsType;
+        if (footerSettingsType == FooterSettingsType.Image)
+        {
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("updateDropText");
+            }
+            catch (Exception ex)
+            {
+                await HandleErrorAsync(ex);
+            }
+        }
     }
 }
