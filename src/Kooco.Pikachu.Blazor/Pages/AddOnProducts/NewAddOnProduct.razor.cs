@@ -132,9 +132,11 @@ namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
             {
                 CreateAddOnProduct.GroupBuyIds = SelectedGroupBuy.ToList();
             }
+            await JSRuntime.InvokeVoidAsync("console.log", "ClickedHandler called!");
             // Custom validation logic
             if (CreateAddOnProduct.ProductId==Guid.Empty)
             {
+                await JSRuntime.InvokeVoidAsync("console.log", "productId empty");
                 messageStore?.Add(() => CreateAddOnProduct.ItemId, "Select at least one.");
                 IsUpdating = false;
                 return;
@@ -147,6 +149,7 @@ namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
             }
             if (CreateAddOnProduct.GroupBuyIds.Count == 0)
             {
+                await JSRuntime.InvokeVoidAsync("console.log", "groupbuy empty");
                 messageStore?.Add(() => CreateAddOnProduct.GroupBuyIds, "Select at least one.");
                 IsUpdating = false;
                 return;
@@ -156,10 +159,11 @@ namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
             {
                 if (Id == Guid.Empty)
                 {
+                    await JSRuntime.InvokeVoidAsync("console.log", "ClickedHandler called!");
                     await AddOnProductAppService.CreateAsync(CreateAddOnProduct);
                 }
                 else {
-
+                    await JSRuntime.InvokeVoidAsync("console.log", "updating");
                     await AddOnProductAppService.UpdateAsync(Id, CreateAddOnProduct);
                 }
                 IsUpdating = false;
@@ -174,8 +178,8 @@ namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
           
           await InvokeAsync(StateHasChanged);
         }
-        void NavigateToAddOnProducts() {
-
+      async  void NavigateToAddOnProducts() {
+            await JSRuntime.InvokeVoidAsync("console.log", "navigating");
             NavigationManager.NavigateTo("/add-on-products");
         }
     }
