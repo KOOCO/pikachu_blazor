@@ -66,7 +66,9 @@ namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
                         CreateAddOnProduct = ObjectMapper.Map<AddOnProductDto, CreateUpdateAddOnProductDto>(addon);
                         CreateAddOnProduct.GroupBuyIds = addon.AddOnProductSpecificGroupbuys.Select(x => x.GroupbuyId).ToList();
                     SelectedGroupBuy= addon.AddOnProductSpecificGroupbuys.Select(x => x.GroupbuyId);
+                        await JSRuntime.InvokeVoidAsync("console.log", CreateAddOnProduct.ProductId);
                         ItemDetail = await _itemDetailService.GetAsync(CreateAddOnProduct.ProductId);
+                        await JSRuntime.InvokeVoidAsync("console.log", ItemDetail.ItemId);
                         CreateAddOnProduct.ItemId = ItemDetail.ItemId;
                         ItemDetails = await _itemDetailService.GetItemDetailByItemId(CreateAddOnProduct.ItemId);
                     }
@@ -134,7 +136,7 @@ namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
             }
             await JSRuntime.InvokeVoidAsync("console.log", "ClickedHandler called!");
             // Custom validation logic
-            if (CreateAddOnProduct.ProductId==Guid.Empty)
+            if (CreateAddOnProduct.ItemId == Guid.Empty)
             {
                 await JSRuntime.InvokeVoidAsync("console.log", "productId empty");
                 messageStore?.Add(() => CreateAddOnProduct.ItemId, "Select at least one.");
