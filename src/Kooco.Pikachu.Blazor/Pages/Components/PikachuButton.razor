@@ -27,8 +27,10 @@
 
     private async Task ClickedHandler()
     {
+        
         if (!Disabled && !Loading)
         {
+             
             await Clicked.InvokeAsync();
         }
     }

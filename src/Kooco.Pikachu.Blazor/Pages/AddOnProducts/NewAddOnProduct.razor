@@ -11,6 +11,7 @@
 @using Volo.Abp.AspNetCore.Components.Web
 
 @inherits PikachuComponentBase
+@inject IJSRuntime JSRuntime;
 @inject GroupBuyAppService GroupBuyAppService
 @inject AddOnProductAppService AddOnProductAppService
 @inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
@@ -337,9 +338,11 @@
     <PikachuButton Class="pk-btn-light" Disabled="IsUpdating" Clicked="NavigateToAddOnProducts">
         @L["Cancel"]
     </PikachuButton>
-    <PikachuButton Class="pk-btn-primary" Loading="IsUpdating" Clicked="HandleValidSubmit">@ButtonName</PikachuButton>
+    @if (Id != Guid.Empty)
+    { 
+     <PikachuButton Class="pk-btn-primary" Loading="IsUpdating" Clicked="HandleValidSubmit">@L["Update"]</PikachuButton>
+    }
+    else{
+        <PikachuButton Class="pk-btn-primary" Loading="IsUpdating" Clicked="HandleValidSubmit">@L["Create"]</PikachuButton>
+    }
     </Div>
-    @{
-    ButtonName = Id != Guid.Empty ? L["Update"] : L["Create"];
-
-}

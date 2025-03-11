@@ -227,3 +227,6 @@ window.updateDropText = () => {
         updateFilePickerText();
     }, 100)
 };
+window.logToConsole = (message) => {
+    console.log(message);
+};

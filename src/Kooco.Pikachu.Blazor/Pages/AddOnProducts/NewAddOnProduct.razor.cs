@@ -7,6 +7,7 @@ using Kooco.Pikachu.Members;
 using Kooco.Pikachu.UserAddresses;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -119,6 +120,8 @@ namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
         }
         private async Task HandleValidSubmit()
         {
+            await JSRuntime.InvokeVoidAsync("console.log", "ClickedHandler called!");
+            System.Diagnostics.Debugger.Break();
             messageStore?.Clear();
             IsUpdating = true;
             if (CreateAddOnProduct.GroupbuysScope == "AllGroupbuys")
