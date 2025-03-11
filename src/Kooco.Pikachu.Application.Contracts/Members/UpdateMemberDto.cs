@@ -20,13 +20,10 @@ public class UpdateMemberDto
     [DataType(DataType.DateTime)]
     public DateTime? Birthday { get; set; }
 
-    [Required]
     public Guid? DefaultAddressId { get; set; }
 
-    [Required]
     public string City { get; set; }
 
-    [Required]
     public string Address { get; set; }
 
     public string? MobileNumber { get; set; }

@@ -76,7 +76,6 @@ public class MemberAppService(IMemberRepository memberRepository, IdentityUserMa
     public async Task<MemberDto> UpdateAsync(Guid id, UpdateMemberDto input)
     {
         Check.NotNull(input, nameof(input));
-        Check.NotDefaultOrNull(input.DefaultAddressId, nameof(input.DefaultAddressId));
 
         var member = await memberRepository.GetAsync(id);
 
@@ -91,7 +90,11 @@ public class MemberAppService(IMemberRepository memberRepository, IdentityUserMa
 
         (await identityUserManager.UpdateAsync(member)).CheckErrors();
 
-        await userAddressManager.SetIsDefaultAsync(input.DefaultAddressId.Value, true);
+        if (input.DefaultAddressId.HasValue)
+        {
+            await userAddressManager.SetIsDefaultAsync(input.DefaultAddressId.Value, true);
+        }
+
         return ObjectMapper.Map<IdentityUser, MemberDto>(member);
     }
 
