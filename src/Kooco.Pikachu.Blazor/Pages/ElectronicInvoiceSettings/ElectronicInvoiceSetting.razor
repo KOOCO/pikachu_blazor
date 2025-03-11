@@ -15,26 +15,26 @@
 
 <style>
     .row {
-        margin-top: 10px;
+    margin-top: 10px;
     }
 
     .site-tag-plus {
-        background: #fff;
-        border-style: dashed;
+    background: #fff;
+    border-style: dashed;
     }
     /* you can make up upload button and sample style by using stylesheets */
     .ant-upload-select-picture-card i {
-        color: #999;
-        font-size: 32px;
+    color: #999;
+    font-size: 32px;
     }
 
     .ant-upload-select-picture-card .ant-upload-text {
-        margin-top: 8px;
-        color: #666;
+    margin-top: 8px;
+    color: #666;
     }
 
     .anticon {
-        vertical-align: 0.1em !important
+    vertical-align: 0.1em !important
     }
 
 </style>
@@ -56,16 +56,16 @@
                         <Switch TValue="bool" Disabled="@(!CanSave)" @bind-Checked="@CreateUpdateElectronicInvoiceDto.IsEnable"></Switch>
                         @if (!CanSave)
                         {
-                               <AntDesign.Alert Type="@AntDesign.AlertType.Error"
-                                         Message="@L["Error"]"
-                                         Description="@L["PleaseFillInTheRequiredInformation."]"
-                                         ShowIcon="true" /> 
+                            <AntDesign.Alert Type="@AntDesign.AlertType.Error"
+                            Message="@L["Error"]"
+                            Description="@L["PleaseFillInTheRequiredInformation."]"
+                            ShowIcon="true" /> 
                         }
                         else{
-                        <AntDesign.Alert Type="@AntDesign.AlertType.Info"
-                                         Message="@L["Info"]"
-                                         Description="@L["Ifthissettingisturnedoff,pleaseprinttheinvoiceforthecustomer"]"
-                                         ShowIcon="true" />
+                            <AntDesign.Alert Type="@AntDesign.AlertType.Info"
+                            Message="@L["Info"]"
+                            Description="@L["Ifthissettingisturnedoff,pleaseprinttheinvoiceforthecustomer"]"
+                            ShowIcon="true" />
                         }
                     </div>
                 </div>
@@ -78,7 +78,7 @@
                     <div class="col-9">
                         <Validation>
                             <TextEdit class="form-control"
-                                      @bind-Text="@CreateUpdateElectronicInvoiceDto.StoreCode">
+                            @bind-Text="@CreateUpdateElectronicInvoiceDto.StoreCode">
                                 <Feedback>
                                     <ValidationError></ValidationError>
                                 </Feedback>
@@ -95,7 +95,7 @@
                     <div class="col-9">
                         <Validation>
                             <TextEdit class="form-control"
-                                      @bind-Text="@CreateUpdateElectronicInvoiceDto.HashKey">
+                            @bind-Text="@CreateUpdateElectronicInvoiceDto.HashKey">
                                 <Feedback>
                                     <ValidationError></ValidationError>
                                 </Feedback>
@@ -112,7 +112,7 @@
                     <div class="col-9">
                         <Validation>
                             <TextEdit class="form-control"
-                                      @bind-Text="@CreateUpdateElectronicInvoiceDto.HashIV">
+                            @bind-Text="@CreateUpdateElectronicInvoiceDto.HashIV">
                                 <Feedback>
                                     <ValidationError></ValidationError>
                                 </Feedback>
@@ -129,7 +129,7 @@
                     <div class="col-9">
                         <Validation>
                             <TextEdit class="form-control"
-                                      @bind-Text="@CreateUpdateElectronicInvoiceDto.DisplayInvoiceName">
+                            @bind-Text="@CreateUpdateElectronicInvoiceDto.DisplayInvoiceName">
                                 <Feedback>
                                     <ValidationError></ValidationError>
                                 </Feedback>
@@ -146,10 +146,10 @@
                     <div class="col-9">
                         <Validation>
                             <NumericEdit TValue="int"
-                                         Min="0"
-                                         Max="90"
-                                         class="form-control"
-                                         @bind-Value="@CreateUpdateElectronicInvoiceDto.DaysAfterShipmentGenerateInvoice">
+                            Min="0"
+                            Max="90"
+                            class="form-control"
+                            @bind-Value="@CreateUpdateElectronicInvoiceDto.DaysAfterShipmentGenerateInvoice">
                                 <Feedback>
                                     <ValidationError></ValidationError>
                                 </Feedback>
@@ -166,8 +166,8 @@
                     <div class="col-9">
                         <Validation>
                             <Select TValue="DeliveryStatus"
-                                    class="form-control"
-                                    @bind-SelectedValue="@CreateUpdateElectronicInvoiceDto.StatusOnInvoiceIssue">
+                            class="form-control"
+                            @bind-SelectedValue="@CreateUpdateElectronicInvoiceDto.StatusOnInvoiceIssue">
                                 @foreach (var status in Enum.GetValues<DeliveryStatus>())
                                 {
                                     <SelectItem Value="@status">@L[status.ToString()]</SelectItem>
@@ -187,9 +187,9 @@
 <div class="row">
     <div class="col-12 text-lg-end">
         <Button Type="@ButtonType.Button"
-                class="btn btn-primary"
-                Clicked="CreateEntityAsync"
-                Disabled="@(!CanSave)">
+        class="btn btn-primary"
+        Clicked="CreateEntityAsync"
+        Disabled="@(!CanSave)">
             <i class="fa fa-check"></i>
             @L["Save"]
         </Button>
@@ -197,17 +197,22 @@
 </div>
 
 @code {
-    private bool CanSave => CreateUpdateElectronicInvoiceDto.IsEnable && IsValid();
+    private bool CanSave =>  IsValid();
 
     private bool IsValid()
     {
         // Ensure all required fields are not null or empty and match validation rules.
-        return !string.IsNullOrWhiteSpace(CreateUpdateElectronicInvoiceDto.StoreCode)
+        var result= !string.IsNullOrWhiteSpace(CreateUpdateElectronicInvoiceDto.StoreCode)
             && !string.IsNullOrWhiteSpace(CreateUpdateElectronicInvoiceDto.HashKey)
             && !string.IsNullOrWhiteSpace(CreateUpdateElectronicInvoiceDto.HashIV)
             && !string.IsNullOrWhiteSpace(CreateUpdateElectronicInvoiceDto.DisplayInvoiceName)
             && CreateUpdateElectronicInvoiceDto.DaysAfterShipmentGenerateInvoice > -1
             && Enum.IsDefined(typeof(DeliveryStatus), CreateUpdateElectronicInvoiceDto.StatusOnInvoiceIssue);
+        if (!result)
+        {
+            CreateUpdateElectronicInvoiceDto.IsEnable = false;
+        }
+        return result;
     }
 }
 
