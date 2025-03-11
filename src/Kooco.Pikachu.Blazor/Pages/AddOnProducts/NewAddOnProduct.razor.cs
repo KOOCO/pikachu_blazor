@@ -122,8 +122,7 @@ namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
         }
         private async Task HandleValidSubmit()
         {
-            await JSRuntime.InvokeVoidAsync("console.log", "ClickedHandler called!");
-            System.Diagnostics.Debugger.Break();
+          
             messageStore?.Clear();
             IsUpdating = true;
             if (CreateAddOnProduct.GroupbuysScope == "AllGroupbuys")
