@@ -12,7 +12,7 @@
 @using Blazorise.LoadingIndicator;
 @using Kooco.Pikachu.Items.Dtos;
 @inject IStringLocalizer<PikachuResource> L;
-
+@attribute [Authorize]
 @inject NavigationManager NavigationManager;
 @inject IUiMessageService _uiMessageService;
 @inject IElectronicInvoiceAppService _electronicInvoiceAppService;

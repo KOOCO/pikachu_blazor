@@ -13,6 +13,8 @@
 @inject IUiMessageService _uiMessageService;
 @inject IOrderAppService _orderAppService;
 @inject IJSRuntime JSRuntime;
+@attribute [Authorize]
+
 <LoadingIndicator @ref="loading" FullScreen FadeIn>
     <div class="row">
         <div class="col-3">

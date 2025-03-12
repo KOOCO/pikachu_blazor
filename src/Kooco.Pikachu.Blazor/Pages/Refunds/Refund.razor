@@ -18,6 +18,7 @@
 @inject IUiMessageService _uiMessageService;
 @inject IJSRuntime JSRunTime;
 @inject ILinePayAppService LinePayAppService
+@attribute [Authorize]
 
 <LoadingIndicator @ref="loading" FullScreen FadeIn>
 

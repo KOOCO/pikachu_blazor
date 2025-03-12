@@ -12,7 +12,7 @@
 @inject IJSRuntime JSRuntime;
 @inject IObjectMapper ObjectMapper;
 @inject IStringLocalizer<PikachuResource> L;
-
+@attribute [Authorize]
 <h3>@L["EmailSettings"]</h3>
 <LoadingIndicator @ref="Loading" FullScreen></LoadingIndicator>
 

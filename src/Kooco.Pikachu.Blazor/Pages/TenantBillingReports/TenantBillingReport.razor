@@ -18,7 +18,7 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime;
 @inject IConfiguration _configuration;
-
+@attribute [Authorize]
 <LoadingIndicator @ref="loading" FullScreen FadeIn>
 </LoadingIndicator>
 

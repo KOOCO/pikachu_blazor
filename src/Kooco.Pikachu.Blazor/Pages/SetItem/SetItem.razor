@@ -5,7 +5,7 @@
 @using Blazorise.Components;
 @inject IStringLocalizer<PikachuResource> L;
 @inject NavigationManager NavigationManager;
-
+@attribute [Authorize]
  @if(loading)
     {
      <div class="row">

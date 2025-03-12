@@ -19,7 +19,7 @@
 @inject IElectronicInvoiceAppService _electronicInvoiceAppService;
 @inject IItemAppService _ItemAppService;
 @inject IJSRuntime JSRuntime;
-
+@attribute [Authorize]
 <div class="row">
     <div class="col-6">
         <h3>@L["CashFlowReconciliation"]</h3>
