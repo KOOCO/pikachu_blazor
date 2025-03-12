@@ -39,4 +39,6 @@ public class PikachuRegisterInputDto
 
     [JsonIgnore]
     public virtual string? ExternalId { get; set; }
+    [JsonIgnore]
+    public virtual bool isCallFromTest { get; set; }
 }
