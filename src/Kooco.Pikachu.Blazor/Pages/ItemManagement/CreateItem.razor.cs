@@ -477,6 +477,7 @@ public partial class CreateItem
             CreateItemDto.ItemDescription = await QuillHtml.GetHTML();
 
             if (ItemTags.Any()) CreateItemDto.ItemTags = string.Join(",", ItemTags);
+            CreateItemDto.IsItemAvaliable = true;
 
             await _itemAppService.CreateAsync(CreateItemDto);
 
