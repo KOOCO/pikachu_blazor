@@ -15,15 +15,14 @@
 @using Kooco.Pikachu.LogisticsProviders;
 @attribute [Authorize]
 @inject IJSRuntime JSRuntime;
-@inject IStringLocalizer<PikachuResource> L;
 @inject NavigationManager NavigationManager;
 @inject IUiMessageService _uiMessageService;
 @inject IOrderAppService _orderAppService;
 @inject IRefundAppService _refundAppService;
 @inject IOrderDeliveryAppService _orderDeliveryAppService;
 @inject IStoreLogisticsOrderAppService _storeLogisticsOrderAppService;
-@inject ICurrentUser CurrentUser;
 @inject IModalService ModalService;
+@inherits PikachuComponentBase
 <style>
 
     table tr td {

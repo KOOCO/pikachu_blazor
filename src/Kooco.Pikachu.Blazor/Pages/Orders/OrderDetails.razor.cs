@@ -152,8 +152,7 @@ public partial class OrderDetails
             catch (Exception ex)
             {
                 await loading.Hide();
-                await _uiMessageService.Error(ex.GetType().ToString());
-                await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+                await HandleErrorAsync(ex);
             }
         }
     }
@@ -309,17 +308,10 @@ public partial class OrderDetails
             await GetOrderDetailsAsync();
             await loading.Hide();
         }
-        catch (BusinessException ex)
-        {
-            await loading.Hide();
-            await _uiMessageService.Error(L[ex.Code]);
-            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
-        }
         catch (Exception ex)
         {
             await loading.Hide();
-            await _uiMessageService.Error(ex.GetType().ToString());
-            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            await HandleErrorAsync(ex);
         }
     }
 
@@ -361,17 +353,10 @@ public partial class OrderDetails
             await loading.Hide();
             StateHasChanged();
         }
-        catch (BusinessException ex)
-        {
-            await loading.Hide();
-            await _uiMessageService.Error(L[ex.Code]);
-            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
-        }
         catch (Exception ex)
         {
             await loading.Hide();
-            await _uiMessageService.Error(ex.GetType().ToString());
-            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            await HandleErrorAsync(ex);
         }
     }
     void EditCVSStoreId()
@@ -1229,17 +1214,10 @@ public partial class OrderDetails
             await InvokeAsync(StateHasChanged);
             await loading.Hide();
         }
-        catch (BusinessException ex)
-        {
-            await loading.Hide();
-            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
-            await _uiMessageService.Error(L[ex.Code?.ToString()]);
-        }
         catch (Exception ex)
         {
             await loading.Hide();
-            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
-            await _uiMessageService.Error(ex.GetType().ToString());
+            await HandleErrorAsync(ex);
         }
 
     }
@@ -1273,8 +1251,7 @@ public partial class OrderDetails
         catch (Exception ex)
         {
             await loading.Hide();
-            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
-            await _uiMessageService.Error(ex.GetType().ToString());
+            await HandleErrorAsync(ex);
         }
     }
 
@@ -1840,8 +1817,7 @@ public partial class OrderDetails
         }
         catch (Exception ex)
         {
-            await _uiMessageService.Error(ex.GetType().ToString());
-            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            await HandleErrorAsync(ex);
             await loading.Hide();
         }
         finally
@@ -1895,9 +1871,7 @@ public partial class OrderDetails
         }
         catch (Exception ex)
         {
-            await _uiMessageService.Error(ex.GetType().ToString());
-            
-            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            await HandleErrorAsync(ex);
         }
         finally
         {
@@ -2052,15 +2026,9 @@ public partial class OrderDetails
                 await InvokeAsync(StateHasChanged);
             }
         }
-        catch(BusinessException ex)
-        {
-            await _uiMessageService.Error(L[ex.Code]);
-        }
         catch (Exception ex)
         {
-            await _uiMessageService.Error(ex.GetType().ToString());
-
-            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            await HandleErrorAsync(ex);
         }
         finally
         {
@@ -2270,7 +2238,7 @@ public partial class OrderDetails
         }
         catch (Exception ex)
         {
-            await _uiMessageService.Error(ex.Message.ToString());
+            await HandleErrorAsync(ex);
         }
         finally
         {
