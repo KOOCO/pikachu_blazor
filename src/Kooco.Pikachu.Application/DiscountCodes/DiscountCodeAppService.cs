@@ -137,7 +137,7 @@ namespace Kooco.Pikachu.DiscountCodes
                             : discount?.SpecificShippingMethods.Select(m => Enum.GetName(typeof(DeliveryMethod), m)).ToArray();
                         break;
                 }
-
+                output.DiscountCodeId= discount.Id;
                 return output;
             }
             else
