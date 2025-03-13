@@ -1,4 +1,5 @@
-﻿using Blazored.TextEditor;
+﻿using AngleSharp.Dom;
+using Blazored.TextEditor;
 using Blazorise;
 using Blazorise.Extensions;
 using Blazorise.LoadingIndicator;
@@ -612,6 +613,19 @@ public partial class CreateGroupBuy
         CreateGroupBuyDto.ColorSchemeType = !selectedTheme.IsNullOrEmpty() ? Enum.Parse<ColorScheme>(selectedTheme) : null;
 
         IsColorPickerOpen = true;
+        if (GroupBuyOrderInstructionModules.Count > 0)
+        {
+            string[] fileNames = { "Forest Dawn.png", "Tropical Sunset.png", "Deep Sea Night.png", "Sweet Apricot Cream.png", "Desert Dawn.png" };
+            foreach (var item in GroupBuyOrderInstructionModules)
+            {
+                if (fileNames.Any(fileName => item.Image.Contains(fileName)))
+                {
+                    item.Image = "https://pikachublobs.blob.core.windows.net/images/" + L["Enum:ColorSchemeFile." + (int)CreateGroupBuyDto.ColorSchemeType.Value] + ".png";
+                }
+
+            }
+
+        }
 
         switch (CreateGroupBuyDto.ColorSchemeType)
         {
@@ -622,6 +636,7 @@ public partial class CreateGroupBuy
                 CreateGroupBuyDto.SecondaryBackgroundColor = "#C9D6BD";
                 CreateGroupBuyDto.AlertColor = "#FF902A";
                 CreateGroupBuyDto.BlockColor = "#EFF4EB";
+             
                 break;
 
             case ColorScheme.TropicalSunset:
@@ -1224,6 +1239,7 @@ public partial class CreateGroupBuy
 
         else if (groupBuyModuleType is GroupBuyModuleType.OrderInstruction)
         {
+
             if (GroupBuyOrderInstructionModules is { Count: 0 })
             {
                 CollapseItem collapseItem = new()
@@ -1237,8 +1253,15 @@ public partial class CreateGroupBuy
             }
 
             GroupBuyOrderInstructionPickers.Add(new());
-
-            GroupBuyOrderInstructionModules.Add(new());
+            string? img = null;
+            if (CreateGroupBuyDto.ColorSchemeType.HasValue)
+            {
+                img = "https://pikachublobs.blob.core.windows.net/images/" + L["Enum:ColorSchemeFile." + (int)CreateGroupBuyDto.ColorSchemeType.Value]+".png";
+            }
+            GroupBuyOrderInstructionModules.Add(new GroupBuyOrderInstructionDto {
+                Title = L["OrderInstruction"],
+                Image= img
+});
         }
 
         else if (groupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
@@ -2388,7 +2411,11 @@ public partial class CreateGroupBuy
 
             BannerModules.RemoveAll(r => r.Any(w => w.ModuleNumber == moduleNumber));
         }
+        if (collapseItem.GroupBuyModuleType is GroupBuyModuleType.OrderInstruction)
+        {
+            GroupBuyOrderInstructionModules = new List<GroupBuyOrderInstructionDto>();
 
+        }
         CollapseItem.Remove(collapseItem);
 
         if (collapseItem.GroupBuyModuleType is GroupBuyModuleType.CarouselImages ||

@@ -296,6 +296,19 @@ public partial class EditGroupBuy
         EditGroupBuyDto.ColorSchemeType = !selectedTheme.IsNullOrEmpty() ? Enum.Parse<ColorScheme>(selectedTheme) : null;
 
         IsColorPickerOpen = true;
+        if (GroupBuyOrderInstructionModules.Count > 0)
+        {
+            string[] fileNames = { "Forest Dawn.png", "Tropical Sunset.png", "Deep Sea Night.png", "Sweet Apricot Cream.png", "Desert Dawn.png" };
+            foreach (var item in GroupBuyOrderInstructionModules)
+            {
+                if (fileNames.Any(fileName => item.Image.Contains(fileName)))
+                {
+                    item.Image = "https://pikachublobs.blob.core.windows.net/images/" + L["Enum:ColorSchemeFile." + (int)EditGroupBuyDto.ColorSchemeType.Value] + ".png";
+                }
+
+            }
+
+        }
 
         switch (EditGroupBuyDto.ColorSchemeType)
         {
@@ -991,7 +1004,16 @@ public partial class EditGroupBuy
 
             GroupBuyOrderInstructionPickers.Add(new());
 
-            GroupBuyOrderInstructionModules.Add(new());
+            string? img = null;
+            if (EditGroupBuyDto.ColorSchemeType.HasValue)
+            {
+                img = "https://pikachublobs.blob.core.windows.net/images/" + L["Enum:ColorSchemeFile." + (int)EditGroupBuyDto.ColorSchemeType.Value] + ".png";
+            }
+            GroupBuyOrderInstructionModules.Add(new GroupBuyOrderInstructionDto
+            {
+                Title = L["OrderInstruction"],
+                Image = img
+            });
         }
 
         else if (groupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
