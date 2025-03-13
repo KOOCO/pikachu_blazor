@@ -22,9 +22,9 @@ public class UpdateMemberDto
 
     public Guid? DefaultAddressId { get; set; }
 
-    public string City { get; set; }
+    public string? City { get; set; }
 
-    public string Address { get; set; }
+    public string? Address { get; set; }
 
     public string? MobileNumber { get; set; }
 
