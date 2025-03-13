@@ -52,6 +52,9 @@ public partial class LogisticsProviderSettings
     bool IsTCat711FreezeNotExists = false;
     TCat711FrozenCreateUpdateDto TCat711Frozen = new();
     bool IsTCat711FrozenNotExists = false;
+    EcPayHomeDeliveryCreateUpdateDto EcPayHomeDelivery = new();
+    bool IsEcPayHomeDeliveryNotExists = false;
+
     LoadingIndicator Loading { get; set; }
     #endregion
 
@@ -98,6 +101,12 @@ public partial class LogisticsProviderSettings
         if (greenWorld is not null) GreenWorld = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorld);
 
         IsGreenWorldNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.GreenWorldLogistics);
+
+        LogisticsProviderSettingsDto? ecPayHomeDelivery = providers.Where(p => p.LogisticProvider is LogisticProviders.EcPayHomeDelivery).FirstOrDefault();
+
+        if (ecPayHomeDelivery is not null) EcPayHomeDelivery = ObjectMapper.Map<LogisticsProviderSettingsDto, EcPayHomeDeliveryCreateUpdateDto>(ecPayHomeDelivery);
+
+        IsEcPayHomeDeliveryNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.EcPayHomeDelivery);
 
         LogisticsProviderSettingsDto? greenWorldC2C = providers.Where(p => p.LogisticProvider is LogisticProviders.GreenWorldLogisticsC2C).FirstOrDefault();
         
@@ -234,6 +243,26 @@ public partial class LogisticsProviderSettings
         {
             await _uiMessageService.Error(ex.GetType().ToString());
             await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+        }
+        finally
+        {
+            await Loading.Hide();
+        }
+    }
+    async Task UpdateEcPayHomeDeliveryAsync()
+    {
+        try
+        {
+            var confirm = await _uiMessageService.Confirm(L["AreYouSureToUpdateEcPayHomeDelivery?"]);
+            if (!confirm)
+                return;
+            await Loading.Show();
+            await _logisticProvidersAppService.UpdateEcPayHomeDeliveryAsync(EcPayHomeDelivery);
+            await GetAllAsync();
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
         }
         finally
         {

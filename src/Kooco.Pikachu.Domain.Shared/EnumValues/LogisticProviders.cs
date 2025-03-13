@@ -21,6 +21,7 @@ namespace Kooco.Pikachu.EnumValues
         TCatFrozen,
         TCat711Normal,
         TCat711Freeze,
-        TCat711Frozen
+        TCat711Frozen,
+        EcPayHomeDelivery
     }
 }

@@ -7,11 +7,11 @@
 @using Volo.Abp.AspNetCore.Components.Messages;
 @using Volo.Abp.ObjectMapping;
 @using Kooco.Pikachu.EnumValues;
+@inherits PikachuComponentBase
 @inject ILogisticsProvidersAppService _logisticProvidersAppService;
 @inject IUiMessageService _uiMessageService;
 @inject IJSRuntime JSRuntime;
-@inject IObjectMapper ObjectMapper;
-@inject IStringLocalizer<PikachuResource> L;
+@attribute [Authorize]
 
 <style>
     .row {
@@ -32,21 +32,22 @@
 </style>
 
 <LoadingIndicator @ref="Loading" FullScreen></LoadingIndicator>
- <Card>
-     <CardBody>
-         <h3>@L["LogisticsProviderSettings"]</h3>
+<Card>
+    <CardBody>
+        <h3>@L["LogisticsProviderSettings"]</h3>
         <Tabs SelectedTab="@selectedMainTab" SelectedTabChanged="@OnSelectedMainTabChanged">
             <Items>
                 <Tab Name="HomeDelivery">@L["HomeDelivery"]</Tab>
-                    <Tab Name="GreenWorldLogistics">@L["GreenWorldLogistics"]</Tab>
-                    <Tab Name="GreenWorldLogisticsC2C">@L["GreenWorldLogisticsC2C"]</Tab>
-                    <Tab Name="TCat">@L["T-Cat"]</Tab>
-                </Items>
-                <Content>
-                    <TabPanel Name="HomeDelivery">
-                        <Card>
-                            <CardHeader>
-                                <h4>@L["HomeDelivery"]</h4>
+                <Tab Name="EcPayHomeDelivery">@L["EcPayHomeDelivery"]</Tab>
+                <Tab Name="GreenWorldLogistics">@L["GreenWorldLogistics"]</Tab>
+                <Tab Name="GreenWorldLogisticsC2C">@L["GreenWorldLogisticsC2C"]</Tab>
+                <Tab Name="TCat">@L["T-Cat"]</Tab>
+            </Items>
+            <Content>
+                <TabPanel Name="HomeDelivery">
+                    <Card>
+                        <CardHeader>
+                            <h4>@L["HomeDelivery"]</h4>
                         </CardHeader>
                         <CardBody>
                             <EditForm Model="@HomeDelivery" OnValidSubmit="UpdateHomeDeliveryAsync">
@@ -153,6 +154,395 @@
                         </CardBody>
                     </Card>
                 </TabPanel>
+                <TabPanel Name="EcPayHomeDelivery">
+                    <Card>
+                        <CardHeader>
+                            <h4>@L["EcPayHomeDelivery"]</h4>
+                        </CardHeader>
+                        <CardBody>
+                            <EditForm Model="@EcPayHomeDelivery" OnValidSubmit="UpdateEcPayHomeDeliveryAsync">
+                                <DataAnnotationsValidator />
+                                <div class="row">
+                                    <div class="col-3">
+                                        <label for="store-code" class="form-label">@L["MerchantID"]<span class="text-danger"> *</span></label>
+                                    </div>
+                                    <div class="col-8">
+                                        <InputText id="store-code" class="form-control" @bind-Value="EcPayHomeDelivery.StoreCode"></InputText>
+                                        <ValidationMessage For="@(() => EcPayHomeDelivery.StoreCode)" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-3">
+                                        <label for="g-platform" class="form-label">@L["PlatformID"]<span class="text-danger"> </span></label>
+                                    </div>
+                                    <div class="col-8">
+                                        <InputText id="g-platform" class="form-control" @bind-Value="EcPayHomeDelivery.PlatFormId"></InputText>
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-3">
+                                        <label for="hash-key" class="form-label">@L["HashKey"]<span class="text-danger"> *</span></label>
+                                    </div>
+                                    <div class="col-8">
+                                        <InputText id="hash-key" class="form-control" @bind-Value="EcPayHomeDelivery.HashKey"></InputText>
+                                        <ValidationMessage For="@(() => EcPayHomeDelivery.HashKey)" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-3">
+                                        <label for="hash-iv" class="form-label">@L["HashIV"]<span class="text-danger"> *</span></label>
+                                    </div>
+                                    <div class="col-8">
+                                        <InputText id="hash-iv" class="form-control" @bind-Value="EcPayHomeDelivery.HashIV"></InputText>
+                                        <ValidationMessage For="@(() => EcPayHomeDelivery.HashIV)" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-3">
+                                        <label for="sender-name" class="form-label">@L["SenderName"]<span class="text-danger"> *</span></label>
+                                    </div>
+                                    <div class="col-8">
+                                        <InputText id="sender-name" class="form-control" @bind-Value="EcPayHomeDelivery.SenderName"></InputText>
+                                        <ValidationMessage For="@(() => EcPayHomeDelivery.SenderName)" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-3">
+                                        <label for="sender-phone-number" class="form-label">@L["SenderPhoneNumber"]<span class="text-danger"> *</span></label>
+                                    </div>
+                                    <div class="col-8">
+                                        <InputText id="sender-phone-number" class="form-control" @bind-Value="EcPayHomeDelivery.SenderPhoneNumber"></InputText>
+                                        <ValidationMessage For="@(() => EcPayHomeDelivery.SenderPhoneNumber)" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-3">
+                                        <label for="sender-postal-code" class="form-label">@L["SenderPostalCode"]<span class="text-danger"> </span></label>
+                                    </div>
+                                    <div class="col-8">
+                                        <InputText id="sender-postal-code" class="form-control" @bind-Value="EcPayHomeDelivery.SenderPostalCode"></InputText>
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-3">
+                                        <label for="sender-postal-code" class="form-label">@L["SenderCity"]<span class="text-danger"> </span></label>
+                                    </div>
+                                    <div class="col-8">
+                                        <Select TValue="MainlandCity"
+                                                Class="form-select "
+                                                @bind-SelectedValue="EcPayHomeDelivery.City">
+                                            <SelectItem Value="0"></SelectItem>
+                                            @foreach (object enumValue in Enum.GetValues(typeof(MainlandCity)))
+                                            {
+                                                <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                            }
+                                        </Select>
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-3">
+                                        <label for="sender-address" class="form-label">@L["SenderAddress"]<span class="text-danger"> </span></label>
+                                    </div>
+                                    <div class="col-8">
+                                        <InputText id="sender-address" class="form-control" @bind-Value="EcPayHomeDelivery.SenderAddress"></InputText>
+
+                                    </div>
+                                </div>
+                                @if (IsEcPayHomeDeliveryNotExists)
+                                {
+                                    <div class="row mt-3">
+                                        <div class="col-12 text-center">
+                                            <label class="form-label form-label-lg"><span class="text-danger">@L["PleaseFillInTheRequiredInformation"]</span></label>
+                                        </div>
+                                    </div>
+                                }
+                                <div class="row mt-3">
+                                    <div class="col-12 text-center">
+                                        <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
+                                            <i class="fa fa-check"></i>
+                                            @L["SaveSettings"]
+                                        </Button>
+                                    </div>
+                                </div>
+                            </EditForm>
+                        </CardBody>
+                    </Card>
+                    <Card>
+                        <CardBody>
+                            <Tabs SelectedTab="@selectedEcPayHomeDeliveryTab" SelectedTabChanged="@OnSelectedEcPayHomeDeliveryTabChanged">
+                                <Items>
+                                    <Tab Name="postoffice">@L["PostOffice"]</Tab>
+                                    <Tab Name="b-normal">@L["B-Normal"]</Tab>
+                                    <Tab Name="b-freeze">@L["B-Freeze"]</Tab>
+                                    <Tab Name="b-frozen">@L["B-Frozen"]</Tab>
+                                </Items>
+                                <Content>
+                                    <TabPanel Name="postoffice">
+                                        <Card>
+                                            <CardHeader>
+                                                <h4>@L["PostOffice"]</h4>
+                                            </CardHeader>
+                                            <CardBody>
+                                                <EditForm Model="@PostOffice" OnValidSubmit="UpdatePostOfficeAsync">
+                                                    <DataAnnotationsValidator />
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="g-enable-disable-switch" class="form-label pt-0">@L["Enable/Disable"]</label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="PostOffice.IsEnabled"></Switch>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="h-freight" class="form-label">@L["Freight"]<span class="text-danger"> *</span></label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <InputNumber id="h-freight" class="form-control" @bind-Value="PostOffice.Freight" min="0"></InputNumber>
+                                                            <ValidationMessage For="@(() => PostOffice.Freight)" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="h-freight" class="form-label">@L["Weight"]<span class="text-danger"> *</span></label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <InputNumber id="h-freight" class="form-control" @bind-Value="PostOffice.Weight" min="0"></InputNumber>
+                                                            <ValidationMessage For="@(() => PostOffice.Weight)" />
+                                                        </div>
+                                                    </div>
+                                                    @if (IsPostOfficeNotExists)
+                                                    {
+                                                        <div class="row mt-3">
+                                                            <div class="col-12 text-center">
+                                                                <label class="form-label form-label-lg"><span class="text-danger">@L["PleaseFillInTheRequiredInformation"]</span></label>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    <div class="row mt-3">
+                                                        <div class="col-12 text-center">
+                                                            <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
+                                                                <i class="fa fa-check"></i>
+                                                                @L["SaveSettings"]
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                </EditForm>
+                                            </CardBody>
+                                        </Card>
+                                    </TabPanel>
+                                    <TabPanel Name="b-normal">
+                                        <Card>
+                                            <CardHeader>
+                                                <h4>@L["B-Normal"]</h4>
+                                            </CardHeader>
+                                            <CardBody>
+                                                <EditForm Model="@BNormal" OnValidSubmit="UpdateBNormalAsync">
+                                                    <DataAnnotationsValidator />
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="g-enable-disable-switch" class="form-label pt-0">@L["Enable/Disable"]</label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="BNormal.IsEnabled"></Switch>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="h-freight" class="form-label">@L["Freight"]<span class="text-danger"> *</span></label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <InputNumber id="h-freight" class="form-control" @bind-Value="BNormal.Freight" min="0"></InputNumber>
+                                                            <ValidationMessage For="@(() => BNormal.Freight)" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="h-freight" class="form-label">@L["OuterIslandFreight"]<span class="text-danger"> *</span></label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <InputNumber id="h-freight" class="form-control" @bind-Value="BNormal.OuterIslandFreight" min="0"></InputNumber>
+                                                            <ValidationMessage For="@(() => BNormal.OuterIslandFreight)" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="h-freight" class="form-label">@L["Size"]<span class="text-danger"> *</span></label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <Select @bind-SelectedValue="BNormal.Size">
+                                                                <SelectItem Value="0"></SelectItem>
+                                                                @foreach (var item in Enum.GetValues(typeof(SizeEnum)))
+                                                                {
+                                                                    <SelectItem Value="@item">@L[item.ToString()]</SelectItem>
+                                                                }
+                                                            </Select>
+                                                        </div>
+                                                    </div>
+                                                    @if (IsBNormalNotExists)
+                                                    {
+                                                        <div class="row mt-3">
+                                                            <div class="col-12 text-center">
+                                                                <label class="form-label form-label-lg"><span class="text-danger">@L["PleaseFillInTheRequiredInformation"]</span></label>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    <div class="row mt-3">
+                                                        <div class="col-12 text-center">
+                                                            <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
+                                                                <i class="fa fa-check"></i>
+                                                                @L["SaveSettings"]
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                </EditForm>
+                                            </CardBody>
+                                        </Card>
+                                    </TabPanel>
+                                    <TabPanel Name="b-freeze">
+                                        <Card>
+                                            <CardHeader>
+                                                <h4>@L["B-Freeze"]</h4>
+                                            </CardHeader>
+                                            <CardBody>
+                                                <EditForm Model="@BFreeze" OnValidSubmit="UpdateBFreezeAsync">
+                                                    <DataAnnotationsValidator />
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="g-enable-disable-switch" class="form-label pt-0">@L["Enable/Disable"]</label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="BFreeze.IsEnabled"></Switch>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="h-freight" class="form-label">@L["Freight"]<span class="text-danger"> *</span></label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <InputNumber id="h-freight" class="form-control" @bind-Value="BFreeze.Freight" min="0"></InputNumber>
+                                                            <ValidationMessage For="@(() => BFreeze.Freight)" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="h-freight" class="form-label">@L["OuterIslandFreight"]<span class="text-danger"> *</span></label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <InputNumber id="h-freight" class="form-control" @bind-Value="BFreeze.OuterIslandFreight" min="0"></InputNumber>
+                                                            <ValidationMessage For="@(() => BFreeze.OuterIslandFreight)" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="h-freight" class="form-label">@L["Size"]<span class="text-danger"> *</span></label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <Select @bind-SelectedValue="BFreeze.Size">
+                                                                <SelectItem Value="0"></SelectItem>
+                                                                @foreach (var item in Enum.GetValues(typeof(SizeEnum)).Cast<SizeEnum>().Where(item => item != SizeEnum.Cm0004))
+                                                                {
+                                                                    <SelectItem Value="@item">@L[item.ToString()]</SelectItem>
+                                                                }
+                                                            </Select>
+                                                        </div>
+                                                    </div>
+                                                    @if (IsBFreezeNotExists)
+                                                    {
+                                                        <div class="row mt-3">
+                                                            <div class="col-12 text-center">
+                                                                <label class="form-label form-label-lg"><span class="text-danger">@L["PleaseFillInTheRequiredInformation"]</span></label>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    <div class="row mt-3">
+                                                        <div class="col-12 text-center">
+                                                            <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
+                                                                <i class="fa fa-check"></i>
+                                                                @L["SaveSettings"]
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                </EditForm>
+                                            </CardBody>
+                                        </Card>
+                                    </TabPanel>
+                                    <TabPanel Name="b-frozen">
+                                        <Card>
+                                            <CardHeader>
+                                                <h4>@L["B-Frozen"]</h4>
+                                            </CardHeader>
+                                            <CardBody>
+                                                <EditForm Model="@BFrozen" OnValidSubmit="UpdateBFrozenAsync">
+                                                    <DataAnnotationsValidator />
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="g-enable-disable-switch" class="form-label pt-0">@L["Enable/Disable"]</label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="BFrozen.IsEnabled"></Switch>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="h-freight" class="form-label">@L["Freight"]<span class="text-danger"> *</span></label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <InputNumber id="h-freight" class="form-control" @bind-Value="BFrozen.Freight" min="0"></InputNumber>
+                                                            <ValidationMessage For="@(() => BFrozen.Freight)" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="h-freight" class="form-label">@L["OuterIslandFreight"]<span class="text-danger"> *</span></label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <InputNumber id="h-freight" class="form-control" @bind-Value="BFrozen.OuterIslandFreight" min="0"></InputNumber>
+                                                            <ValidationMessage For="@(() => BFrozen.OuterIslandFreight)" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="h-freight" class="form-label">@L["Size"]<span class="text-danger"> *</span></label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <Select @bind-SelectedValue="BFrozen.Size">
+                                                                <SelectItem Value="0"></SelectItem>
+                                                                @foreach (var item in Enum.GetValues(typeof(SizeEnum)).Cast<SizeEnum>().Where(item => item != SizeEnum.Cm0004))
+                                                                {
+                                                                    <SelectItem Value="@item">@L[item.ToString()]</SelectItem>
+                                                                }
+                                                            </Select>
+                                                        </div>
+                                                    </div>
+                                                    @if (IsBFrozenNotExists)
+                                                    {
+                                                        <div class="row mt-3">
+                                                            <div class="col-12 text-center">
+                                                                <label class="form-label form-label-lg"><span class="text-danger">@L["PleaseFillInTheRequiredInformation"]</span></label>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    <div class="row mt-3">
+                                                        <div class="col-12 text-center">
+                                                            <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
+                                                                <i class="fa fa-check"></i>
+                                                                @L["SaveSettings"]
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                </EditForm>
+                                            </CardBody>
+                                        </Card>
+                                    </TabPanel>
+                                </Content>
+                            </Tabs>
+                        </CardBody>
+                    </Card>
+                </TabPanel>
                 <TabPanel Name="GreenWorldLogistics">
                     <Card>
                         <CardHeader>
@@ -161,14 +551,6 @@
                         <CardBody>
                             <EditForm Model="@GreenWorld" OnValidSubmit="UpdateGreenWorldLogisticsAsync">
                                 <DataAnnotationsValidator />
-                                <div class="row">
-                                    <div class="col-3">
-                                        <label for="g-enable-disable-switch" class="form-label pt-0">@L["Enable/Disable"]</label>
-                                    </div>
-                                    <div class="col-8">
-                                        <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="GreenWorld.IsEnabled"></Switch>
-                                    </div>
-                                </div>
                                 <div class="row">
                                     <div class="col-3">
                                         <label for="store-code" class="form-label">@L["MerchantID"]<span class="text-danger"> *</span></label>
@@ -333,43 +715,48 @@
                         <CardBody>
                             <Tabs SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
                                 <Items>
-                                    <Tab Name="postoffice">@L["PostOffice"]</Tab>
-                                        <Tab Name="familymart">@L["FamilyMart"]</Tab>
-                                        <Tab Name="7-11">@L["7-11"]</Tab>
-                                        <Tab Name="7-11frozen">@L["7-11 frozen"]</Tab>
-                                        <Tab Name="b-normal">@L["B-Normal"]</Tab>
-                                        <Tab Name="b-freeze">@L["B-Freeze"]</Tab>
-                                        <Tab Name="b-frozen">@L["B-Frozen"]</Tab>
-                                    </Items>
-                                    <Content>
-                                        <TabPanel Name="postoffice">
-                                            <Card>
-                                                <CardHeader>
-                                                    <h4>@L["PostOffice"]</h4>
+                                    <Tab Name="familymart">@L["FamilyMart"]</Tab>
+                                    <Tab Name="7-11">@L["7-11"]</Tab>
+                                    <Tab Name="7-11frozen">@L["7-11 frozen"]</Tab>
+                                </Items>
+                                <Content>
+                                    <TabPanel Name="familymart">
+                                        <Card>
+                                            <CardHeader>
+                                                <h4>@L["FamilyMart"]</h4>
                                             </CardHeader>
                                             <CardBody>
-                                                <EditForm Model="@PostOffice" OnValidSubmit="UpdatePostOfficeAsync">
+                                                <EditForm Model="@FamilyMart" OnValidSubmit="UpdateFamilyMartAsync">
                                                     <DataAnnotationsValidator />
-
                                                     <div class="row">
                                                         <div class="col-3">
-                                                            <label for="h-freight" class="form-label">@L["Freight"]<span class="text-danger"> *</span></label>
+                                                            <label for="g-enable-disable-switch" class="form-label pt-0">@L["Enable/Disable"]</label>
                                                         </div>
                                                         <div class="col-8">
-                                                            <InputNumber id="h-freight" class="form-control" @bind-Value="PostOffice.Freight" min="0"></InputNumber>
-                                                            <ValidationMessage For="@(() => PostOffice.Freight)" />
+                                                            <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="FamilyMart.IsEnabled"></Switch>
                                                         </div>
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-3">
-                                                            <label for="h-freight" class="form-label">@L["Weight"]<span class="text-danger"> *</span></label>
+                                                            <label for="h-freight" class="form-label">@L["Cost"]<span class="text-danger"> *</span></label>
                                                         </div>
                                                         <div class="col-8">
-                                                            <InputNumber id="h-freight" class="form-control" @bind-Value="PostOffice.Weight" min="0"></InputNumber>
-                                                            <ValidationMessage For="@(() => PostOffice.Weight)" />
+                                                            <InputNumber id="h-freight" class="form-control" @bind-Value="FamilyMart.Freight" min="0"></InputNumber>
+                                                            <ValidationMessage For="@(() => FamilyMart.Freight)" />
                                                         </div>
                                                     </div>
-                                                    @if (IsPostOfficeNotExists)
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="h-freight" class="form-label">@L["Payment"]<span class="text-danger"> *</span></label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <Select @bind-SelectedValue="FamilyMart.Payment">
+                                                                <SelectItem Value="true">@L["Yes"]</SelectItem>
+                                                                <SelectItem Value="false">@L["No"]</SelectItem>
+                                                            </Select>
+                                                        </div>
+                                                    </div>
+                                                    @if (IsFamilyMartNotExists)
                                                     {
                                                         <div class="row mt-3">
                                                             <div class="col-12 text-center">
@@ -389,55 +776,6 @@
                                             </CardBody>
                                         </Card>
                                     </TabPanel>
-                                    <TabPanel Name="familymart">
-                                        <Card>
-                                            <CardHeader>
-                                                <h4>@L["FamilyMart"]</h4>
-                                            </CardHeader>
-                                            <CardBody>
-                                                <EditForm Model="@FamilyMart" OnValidSubmit="UpdateFamilyMartAsync">
-                                                    <DataAnnotationsValidator />
-
-                                                    <div class="row">
-                                                        <div class="col-3">
-                                                            <label for="h-freight" class="form-label">@L["Cost"]<span class="text-danger"> *</span></label>
-                                                        </div>
-                                                        <div class="col-8">
-                                                            <InputNumber id="h-freight" class="form-control" @bind-Value="FamilyMart.Freight" min="0"></InputNumber>
-                                                            <ValidationMessage For="@(() => FamilyMart.Freight)" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-3">
-                                                            <label for="h-freight" class="form-label">@L["Payment"]<span class="text-danger"> *</span></label>
-                                                        </div>
-                                                        <div class="col-8">
-                                                            <Select @bind-SelectedValue="FamilyMart.Payment">
-                                                                <SelectItem Value="true">@L["Yes"]</SelectItem>
-                                                                    <SelectItem Value="false">@L["No"]</SelectItem>
-                                                                </Select>
-                                                            </div>
-                                                        </div>
-                                                        @if (IsFamilyMartNotExists)
-                                                        {
-                                                            <div class="row mt-3">
-                                                                <div class="col-12 text-center">
-                                                                    <label class="form-label form-label-lg"><span class="text-danger">@L["PleaseFillInTheRequiredInformation"]</span></label>
-                                                                </div>
-                                                            </div>
-                                                        }
-                                                        <div class="row mt-3">
-                                                            <div class="col-12 text-center">
-                                                                <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
-                                                                    <i class="fa fa-check"></i>
-                                                                    @L["SaveSettings"]
-                                                            </Button>
-                                                        </div>
-                                                    </div>
-                                                </EditForm>
-                                            </CardBody>
-                                        </Card>
-                                    </TabPanel>
                                     <TabPanel Name="7-11">
                                         <Card>
                                             <CardHeader>
@@ -446,7 +784,14 @@
                                             <CardBody>
                                                 <EditForm Model="@SevenToEleven" OnValidSubmit="UpdateSevenToElevenAsync">
                                                     <DataAnnotationsValidator />
-
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="g-enable-disable-switch" class="form-label pt-0">@L["Enable/Disable"]</label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="SevenToEleven.IsEnabled"></Switch>
+                                                        </div>
+                                                    </div>
                                                     <div class="row">
                                                         <div class="col-3">
                                                             <label for="h-freight" class="form-label">@L["Cost"]<span class="text-danger"> *</span></label>
@@ -495,7 +840,14 @@
                                             <CardBody>
                                                 <EditForm Model="@SevenToElevenFrozen" OnValidSubmit="UpdateSevenToElevenFrozenAsync">
                                                     <DataAnnotationsValidator />
-
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="g-enable-disable-switch" class="form-label pt-0">@L["Enable/Disable"]</label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="SevenToElevenFrozen.IsEnabled"></Switch>
+                                                        </div>
+                                                    </div>
                                                     <div class="row">
                                                         <div class="col-3">
                                                             <label for="h-freight" class="form-label">@L["Cost"]<span class="text-danger"> *</span></label>
@@ -536,189 +888,6 @@
                                             </CardBody>
                                         </Card>
                                     </TabPanel>
-                                    <TabPanel Name="b-normal">
-                                        <Card>
-                                            <CardHeader>
-                                                <h4>@L["B-Normal"]</h4>
-                                            </CardHeader>
-                                            <CardBody>
-                                                <EditForm Model="@BNormal" OnValidSubmit="UpdateBNormalAsync">
-                                                    <DataAnnotationsValidator />
-
-                                                    <div class="row">
-                                                        <div class="col-3">
-                                                            <label for="h-freight" class="form-label">@L["Freight"]<span class="text-danger"> *</span></label>
-                                                        </div>
-                                                        <div class="col-8">
-                                                            <InputNumber id="h-freight" class="form-control" @bind-Value="BNormal.Freight" min="0"></InputNumber>
-                                                            <ValidationMessage For="@(() => BNormal.Freight)" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-3">
-                                                            <label for="h-freight" class="form-label">@L["OuterIslandFreight"]<span class="text-danger"> *</span></label>
-                                                        </div>
-                                                        <div class="col-8">
-                                                            <InputNumber id="h-freight" class="form-control" @bind-Value="BNormal.OuterIslandFreight" min="0"></InputNumber>
-                                                            <ValidationMessage For="@(() => BNormal.OuterIslandFreight)" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-3">
-                                                            <label for="h-freight" class="form-label">@L["Size"]<span class="text-danger"> *</span></label>
-                                                        </div>
-                                                        <div class="col-8">
-                                                            <Select @bind-SelectedValue="BNormal.Size">
-                                                                <SelectItem Value="0"></SelectItem>
-                                                                @foreach (var item in Enum.GetValues(typeof(SizeEnum)))
-                                                                {
-                                                                    <SelectItem Value="@item">@L[item.ToString()]</SelectItem>
-                                                                }
-                                                            </Select>
-                                                        </div>
-                                                    </div>
-                                                    @if (IsBNormalNotExists)
-                                                    {
-                                                        <div class="row mt-3">
-                                                            <div class="col-12 text-center">
-                                                                <label class="form-label form-label-lg"><span class="text-danger">@L["PleaseFillInTheRequiredInformation"]</span></label>
-                                                            </div>
-                                                        </div>
-                                                    }
-                                                    <div class="row mt-3">
-                                                        <div class="col-12 text-center">
-                                                            <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
-                                                                <i class="fa fa-check"></i>
-                                                                @L["SaveSettings"]
-                                                            </Button>
-                                                        </div>
-                                                    </div>
-                                                </EditForm>
-                                            </CardBody>
-                                        </Card>
-                                    </TabPanel>
-                                    <TabPanel Name="b-freeze">
-                                        <Card>
-                                            <CardHeader>
-                                                <h4>@L["B-Freeze"]</h4>
-                                            </CardHeader>
-                                            <CardBody>
-                                                <EditForm Model="@BFreeze" OnValidSubmit="UpdateBFreezeAsync">
-                                                    <DataAnnotationsValidator />
-
-                                                    <div class="row">
-                                                        <div class="col-3">
-                                                            <label for="h-freight" class="form-label">@L["Freight"]<span class="text-danger"> *</span></label>
-                                                        </div>
-                                                        <div class="col-8">
-                                                            <InputNumber id="h-freight" class="form-control" @bind-Value="BFreeze.Freight" min="0"></InputNumber>
-                                                            <ValidationMessage For="@(() => BFreeze.Freight)" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-3">
-                                                            <label for="h-freight" class="form-label">@L["OuterIslandFreight"]<span class="text-danger"> *</span></label>
-                                                        </div>
-                                                        <div class="col-8">
-                                                            <InputNumber id="h-freight" class="form-control" @bind-Value="BFreeze.OuterIslandFreight" min="0"></InputNumber>
-                                                            <ValidationMessage For="@(() => BFreeze.OuterIslandFreight)" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-3">
-                                                            <label for="h-freight" class="form-label">@L["Size"]<span class="text-danger"> *</span></label>
-                                                        </div>
-                                                        <div class="col-8">
-                                                            <Select @bind-SelectedValue="BFreeze.Size">
-                                                                <SelectItem Value="0"></SelectItem>
-                                                                @foreach (var item in Enum.GetValues(typeof(SizeEnum)).Cast<SizeEnum>().Where(item => item != SizeEnum.Cm0004))
-                                                                {
-                                                                    <SelectItem Value="@item">@L[item.ToString()]</SelectItem>
-                                                                }
-                                                            </Select>
-                                                        </div>
-                                                    </div>
-                                                    @if (IsBFreezeNotExists)
-                                                    {
-                                                        <div class="row mt-3">
-                                                            <div class="col-12 text-center">
-                                                                <label class="form-label form-label-lg"><span class="text-danger">@L["PleaseFillInTheRequiredInformation"]</span></label>
-                                                            </div>
-                                                        </div>
-                                                    }
-                                                    <div class="row mt-3">
-                                                        <div class="col-12 text-center">
-                                                            <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
-                                                                <i class="fa fa-check"></i>
-                                                                @L["SaveSettings"]
-                                                            </Button>
-                                                        </div>
-                                                    </div>
-                                                </EditForm>
-                                            </CardBody>
-                                        </Card>
-                                    </TabPanel>
-                                    <TabPanel Name="b-frozen">
-                                        <Card>
-                                            <CardHeader>
-                                                <h4>@L["B-Frozen"]</h4>
-                                            </CardHeader>
-                                            <CardBody>
-                                                <EditForm Model="@BFrozen" OnValidSubmit="UpdateBFrozenAsync">
-                                                    <DataAnnotationsValidator />
-
-                                                    <div class="row">
-                                                        <div class="col-3">
-                                                            <label for="h-freight" class="form-label">@L["Freight"]<span class="text-danger"> *</span></label>
-                                                        </div>
-                                                        <div class="col-8">
-                                                            <InputNumber id="h-freight" class="form-control" @bind-Value="BFrozen.Freight" min="0"></InputNumber>
-                                                            <ValidationMessage For="@(() => BFrozen.Freight)" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-3">
-                                                            <label for="h-freight" class="form-label">@L["OuterIslandFreight"]<span class="text-danger"> *</span></label>
-                                                        </div>
-                                                        <div class="col-8">
-                                                            <InputNumber id="h-freight" class="form-control" @bind-Value="BFrozen.OuterIslandFreight" min="0"></InputNumber>
-                                                            <ValidationMessage For="@(() => BFrozen.OuterIslandFreight)" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-3">
-                                                            <label for="h-freight" class="form-label">@L["Size"]<span class="text-danger"> *</span></label>
-                                                        </div>
-                                                        <div class="col-8">
-                                                            <Select @bind-SelectedValue="BFrozen.Size">
-                                                                <SelectItem Value="0"></SelectItem>
-                                                                @foreach (var item in Enum.GetValues(typeof(SizeEnum)).Cast<SizeEnum>().Where(item => item != SizeEnum.Cm0004))
-                                                                {
-                                                                    <SelectItem Value="@item">@L[item.ToString()]</SelectItem>
-                                                                }
-                                                            </Select>
-                                                        </div>
-                                                    </div>
-                                                    @if (IsBFrozenNotExists)
-                                                    {
-                                                        <div class="row mt-3">
-                                                            <div class="col-12 text-center">
-                                                                <label class="form-label form-label-lg"><span class="text-danger">@L["PleaseFillInTheRequiredInformation"]</span></label>
-                                                            </div>
-                                                        </div>
-                                                    }
-                                                    <div class="row mt-3">
-                                                        <div class="col-12 text-center">
-                                                            <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
-                                                                <i class="fa fa-check"></i>
-                                                                @L["SaveSettings"]
-                                                            </Button>
-                                                        </div>
-                                                    </div>
-                                                </EditForm>
-                                            </CardBody>
-                                        </Card>
-                                    </TabPanel>
                                 </Content>
                             </Tabs>
                         </CardBody>
@@ -734,14 +903,6 @@
                                 <DataAnnotationsValidator />
                                 <div class="row">
                                     <div class="col-3">
-                                        <label for="g-enable-disable-switch" class="form-label pt-0">@L["Enable/Disable"]</label>
-                                    </div>
-                                    <div class="col-8">
-                                        <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="GreenWorldC2C.IsEnabled"></Switch>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-3">
                                         <label for="store-code" class="form-label">@L["MerchantID"]<span class="text-danger"> *</span></label>
                                     </div>
                                     <div class="col-8">
@@ -754,7 +915,7 @@
                                         <label for="g-platform" class="form-label">@L["PlatformID"]<span class="text-danger"> </span></label>
                                     </div>
                                     <div class="col-8">
-                    <InputText id="g-platform" class="form-control" @bind-Value="GreenWorldC2C.PlatFormId" ></InputText>
+                                        <InputText id="g-platform" class="form-control" @bind-Value="GreenWorldC2C.PlatFormId"></InputText>
 
                                     </div>
                                 </div>
@@ -794,93 +955,6 @@
                                         <ValidationMessage For="@(() => GreenWorldC2C.SenderPhoneNumber)" />
                                     </div>
                                 </div>
-                                @*   <div class="row">
-                                <div class="col-3">
-                                <label for="sender-postal-code" class="form-label">@L["SenderPostalCode"]<span class="text-danger"> </span></label>
-                                </div>
-                                <div class="col-8">
-                                <InputText id="sender-postal-code" class="form-control" @bind-Value="GreenWorldC2C.SenderPostalCode"></InputText>
-
-                                </div>
-                                </div>
-                                <div class="row">
-                                <div class="col-3">
-                                <label for="sender-postal-code" class="form-label">@L["SenderCity"]<span class="text-danger"> </span></label>
-                                </div>
-                                <div class="col-8">
-                                <Select  TValue="MainlandCity"
-                                Class="form-select "
-                                @bind-SelectedValue="GreenWorldC2C.City">
-                                <SelectItem Value="0"></SelectItem>
-                                @foreach (var enumValue in Enum.GetValues(typeof(MainlandCity)))
-                                {
-                                <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
-                                }
-                                </Select>
-
-                                </div>
-                                </div>
-                                <div class="row">
-                                <div class="col-3">
-                                <label for="sender-address" class="form-label">@L["SenderAddress"]<span class="text-danger"> </span></label>
-                                </div>
-                                <div class="col-8">
-                                <InputText id="sender-address" class="form-control" @bind-Value="GreenWorldC2C.SenderAddress"></InputText>
-
-                                </div>
-                                </div> *@
-
-
-                                @*   <div class="row">
-                                <div class="col-3">
-                                <label for="logistics-type" class="form-label">@L["LogisticsType"]<span class="text-danger"> *</span></label>
-                                </div>
-                                <div class="col-8">
-                                <Select TValue="string" Class="form-select"
-                                SelectedValue="@GreenWorld.LogisticsType"
-                                SelectedValueChanged="@OnSelectedValueChanged"
-                                id="logistics-type">
-                                <option value="" selected disabled></option>
-                                @foreach (var value in LogisticsConsts.LogisticsTypes)
-                                {
-                                <SelectItem Value="@value">@L[value.ToString()]</SelectItem>
-                                }
-                                </Select>
-                                <ValidationMessage For="@(() => GreenWorld.LogisticsType)" />
-                                </div>
-                                </div>
-                                <div class="row">
-                                <div class="col-3">
-                                <label for="logistics-sub-type" class="form-label">@L["LogisticsSubType"]<span class="text-danger"> *</span></label>
-                                </div>
-                                <div class="col-8">
-                                <div class="form-control" style="min-height: 44.2px;">
-                                @foreach (var item in GreenWorld.LogisticsSubTypesList)
-                                {
-                                <Badge class="item-tags" CloseClicked="@(() => HandleTagDelete(item))">@item</Badge>
-                                }
-                                </div>
-                                <ValidationMessage For="@(() => GreenWorld.LogisticsSubTypes)" />
-                                </div>
-                                </div>
-                                <div class="row">
-                                <div class="col-3">
-                                <label for="g-threshold" class="form-label">@L["FreeShippingThreshold"]<span class="text-danger"> *</span></label>
-                                </div>
-                                <div class="col-8">
-                                <InputNumber id="g-threshold" class="form-control" @bind-Value="GreenWorld.FreeShippingThreshold" min="0" DisplayName="Free Shipping Threshold"></InputNumber>
-                                <ValidationMessage For="@(() => GreenWorld.FreeShippingThreshold)" />
-                                </div>
-                                </div> *@
-                                @*     <div class="row">
-                                <div class="col-3">
-                                <label for="g-freight" class="form-label">@L["Freight"]<span class="text-danger"> *</span></label>
-                                </div>
-                                <div class="col-8">
-                                <InputNumber id="g-freight" class="form-control" @bind-Value="GreenWorld.Freight" min="0"></InputNumber>
-                                <ValidationMessage For="@(() => GreenWorld.Freight)" />
-                                </div>
-                                </div> *@
                                 @if (IsGreenWorldC2CNotExists)
                                 {
                                     <div class="row mt-3">
@@ -904,24 +978,26 @@
                         <CardBody>
                             <Tabs SelectedTab="@selectedC2CTab" SelectedTabChanged="@OnSelectedC2CTabChanged">
                                 <Items>
-
                                     <Tab Name="familymartC2C">@L["FamilyMartC2C"]</Tab>
-                                        <Tab Name="7-11C2C">@L["7-11C2C"]</Tab>
-
-
-
-                                    </Items>
-                                    <Content>
-
-                                        <TabPanel Name="familymartC2C">
-                                            <Card>
-                                                <CardHeader>
-                                                    <h4>@L["FamilyMartC2C"]</h4>
+                                    <Tab Name="7-11C2C">@L["7-11C2C"]</Tab>
+                                </Items>
+                                <Content>
+                                    <TabPanel Name="familymartC2C">
+                                        <Card>
+                                            <CardHeader>
+                                                <h4>@L["FamilyMartC2C"]</h4>
                                             </CardHeader>
                                             <CardBody>
                                                 <EditForm Model="@FamilyMartC2C" OnValidSubmit="UpdateFamilyMartC2CAsync">
                                                     <DataAnnotationsValidator />
-
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="g-enable-disable-switch" class="form-label pt-0">@L["Enable/Disable"]</label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="FamilyMartC2C.IsEnabled"></Switch>
+                                                        </div>
+                                                    </div>
                                                     <div class="row">
                                                         <div class="col-3">
                                                             <label for="h-freight" class="form-label">@L["Cost"]<span class="text-danger"> *</span></label>
@@ -938,23 +1014,23 @@
                                                         <div class="col-8">
                                                             <Select @bind-SelectedValue="FamilyMartC2C.Payment">
                                                                 <SelectItem Value="true">@L["Yes"]</SelectItem>
-                                                                    <SelectItem Value="false">@L["No"]</SelectItem>
-                                                                </Select>
-                                                            </div>
+                                                                <SelectItem Value="false">@L["No"]</SelectItem>
+                                                            </Select>
                                                         </div>
-                                                        @if (IsFamilyMartC2CNotExists)
-                                                        {
-                                                            <div class="row mt-3">
-                                                                <div class="col-12 text-center">
-                                                                    <label class="form-label form-label-lg"><span class="text-danger">@L["PleaseFillInTheRequiredInformation"]</span></label>
-                                                                </div>
-                                                            </div>
-                                                        }
+                                                    </div>
+                                                    @if (IsFamilyMartC2CNotExists)
+                                                    {
                                                         <div class="row mt-3">
                                                             <div class="col-12 text-center">
-                                                                <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
-                                                                    <i class="fa fa-check"></i>
-                                                                    @L["SaveSettings"]
+                                                                <label class="form-label form-label-lg"><span class="text-danger">@L["PleaseFillInTheRequiredInformation"]</span></label>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    <div class="row mt-3">
+                                                        <div class="col-12 text-center">
+                                                            <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
+                                                                <i class="fa fa-check"></i>
+                                                                @L["SaveSettings"]
                                                             </Button>
                                                         </div>
                                                     </div>
@@ -970,7 +1046,14 @@
                                             <CardBody>
                                                 <EditForm Model="@SevenToElevenC2C" OnValidSubmit="UpdateSevenToElevenC2CAsync">
                                                     <DataAnnotationsValidator />
-
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="g-enable-disable-switch" class="form-label pt-0">@L["Enable/Disable"]</label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="SevenToElevenC2C.IsEnabled"></Switch>
+                                                        </div>
+                                                    </div>
                                                     <div class="row">
                                                         <div class="col-3">
                                                             <label for="h-freight" class="form-label">@L["Cost"]<span class="text-danger"> *</span></label>
@@ -1011,7 +1094,6 @@
                                             </CardBody>
                                         </Card>
                                     </TabPanel>
-
                                 </Content>
                             </Tabs>
                         </CardBody>
@@ -1025,16 +1107,6 @@
                         <CardBody>
                             <EditForm Model="@TCatLogistics" OnValidSubmit="UpdateTCatAsync">
                                 <DataAnnotationsValidator />
-                                <Div Class="row">
-                                    <Div Class="col-3">
-                                        <label for="g-enable-disable-switch" class="form-label pt-0">@L["Enable/Disable"]</label>
-                                    </Div>
-                                    <Div Class="col-8">
-                                        <Switch TValue="bool"
-                                                id="g-enable-disable-switch"
-                                                @bind-Checked="TCatLogistics.IsEnabled" />
-                                    </Div>
-                                </Div>
                                 <Div Class="row">
                                     <Div Class="col-3">
                                         <label for="store-code" class="form-label">@L["CustomerId"]<span class="text-danger"> *</span></label>
@@ -1197,22 +1269,29 @@
                             <Tabs SelectedTab="@selectedTCatTab" SelectedTabChanged="@OnSelectedTCatTabChanged">
                                 <Items>
                                     <Tab Name="tCatNormal">@L["t-CatNormal"]</Tab>
-                                        <Tab Name="tCatFreeze">@L["t-CatFreeze"]</Tab>
-                                        <Tab Name="tCatFrozen">@L["t-CatFrozen"]</Tab>
-                                        <Tab Name="711Normal">@L["7-11Normal"]</Tab>
-                                        <Tab Name="711Freeze">@L["7-11Freeze"]</Tab>
-                                        <Tab Name="711Frozen">@L["7-11Frozen"]</Tab>
-                                    </Items>
-                                    <Content>
-                                        <TabPanel Name="tCatNormal">
-                                            <Card>
-                                                <CardHeader>
-                                                    <h4>@L["t-CatNormal"]</h4>
+                                    <Tab Name="tCatFreeze">@L["t-CatFreeze"]</Tab>
+                                    <Tab Name="tCatFrozen">@L["t-CatFrozen"]</Tab>
+                                    <Tab Name="711Normal">@L["7-11Normal"]</Tab>
+                                    <Tab Name="711Freeze">@L["7-11Freeze"]</Tab>
+                                    <Tab Name="711Frozen">@L["7-11Frozen"]</Tab>
+                                </Items>
+                                <Content>
+                                    <TabPanel Name="tCatNormal">
+                                        <Card>
+                                            <CardHeader>
+                                                <h4>@L["t-CatNormal"]</h4>
                                             </CardHeader>
                                             <CardBody>
                                                 <EditForm Model="@TCatNormal" OnValidSubmit="UpdateTCatNormalAsync">
                                                     <DataAnnotationsValidator />
-
+                                                    <Div Class="row">
+                                                        <Div Class="col-3">
+                                                            <label for="g-enable-disable-switch" class="form-label pt-0">@L["Enable/Disable"]</label>
+                                                        </Div>
+                                                        <Div Class="col-8">
+                                                            <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="TCatNormal.IsEnabled" />
+                                                        </Div>
+                                                    </Div>
                                                     <div class="row">
                                                         <div class="col-3">
                                                             <label for="h-freight" class="form-label">@L["Freight"]<span class="text-danger"> *</span></label>
@@ -1298,7 +1377,14 @@
                                             <CardBody>
                                                 <EditForm Model="@TCatFreeze" OnValidSubmit="UpdateTCatFreezeAsync">
                                                     <DataAnnotationsValidator />
-
+                                                    <Div Class="row">
+                                                        <Div Class="col-3">
+                                                            <label for="g-enable-disable-switch" class="form-label pt-0">@L["Enable/Disable"]</label>
+                                                        </Div>
+                                                        <Div Class="col-8">
+                                                            <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="TCatFreeze.IsEnabled" />
+                                                        </Div>
+                                                    </Div>
                                                     <div class="row">
                                                         <div class="col-3">
                                                             <label for="h-freight" class="form-label">@L["Freight"]<span class="text-danger"> *</span></label>
@@ -1384,7 +1470,14 @@
                                             <CardBody>
                                                 <EditForm Model="@TCatFrozen" OnValidSubmit="UpdateTCatFrozenAsync">
                                                     <DataAnnotationsValidator />
-
+                                                    <Div Class="row">
+                                                        <Div Class="col-3">
+                                                            <label for="g-enable-disable-switch" class="form-label pt-0">@L["Enable/Disable"]</label>
+                                                        </Div>
+                                                        <Div Class="col-8">
+                                                            <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="TCatFrozen.IsEnabled" />
+                                                        </Div>
+                                                    </Div>
                                                     <div class="row">
                                                         <div class="col-3">
                                                             <label for="h-freight" class="form-label">@L["Freight"]<span class="text-danger"> *</span></label>
@@ -1470,7 +1563,14 @@
                                             <CardBody>
                                                 <EditForm Model="@TCat711Normal" OnValidSubmit="UpdateTCat711NormalAsync">
                                                     <DataAnnotationsValidator />
-
+                                                    <Div Class="row">
+                                                        <Div Class="col-3">
+                                                            <label for="g-enable-disable-switch" class="form-label pt-0">@L["Enable/Disable"]</label>
+                                                        </Div>
+                                                        <Div Class="col-8">
+                                                            <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="TCat711Normal.IsEnabled" />
+                                                        </Div>
+                                                    </Div>
                                                     <div class="row">
                                                         <div class="col-3">
                                                             <label for="h-freight" class="form-label">@L["Cost"]<span class="text-danger"> *</span></label>
@@ -1519,7 +1619,14 @@
                                             <CardBody>
                                                 <EditForm Model="@TCat711Freeze" OnValidSubmit="UpdateTCat711FreezeAsync">
                                                     <DataAnnotationsValidator />
-
+                                                    <Div Class="row">
+                                                        <Div Class="col-3">
+                                                            <label for="g-enable-disable-switch" class="form-label pt-0">@L["Enable/Disable"]</label>
+                                                        </Div>
+                                                        <Div Class="col-8">
+                                                            <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="TCat711Freeze.IsEnabled" />
+                                                        </Div>
+                                                    </Div>
                                                     <div class="row">
                                                         <div class="col-3">
                                                             <label for="h-freight" class="form-label">@L["Cost"]<span class="text-danger"> *</span></label>
@@ -1568,7 +1675,14 @@
                                             <CardBody>
                                                 <EditForm Model="@TCat711Frozen" OnValidSubmit="UpdateTCat711FrozenAsync">
                                                     <DataAnnotationsValidator />
-
+                                                    <Div Class="row">
+                                                        <Div Class="col-3">
+                                                            <label for="g-enable-disable-switch" class="form-label pt-0">@L["Enable/Disable"]</label>
+                                                        </Div>
+                                                        <Div Class="col-8">
+                                                            <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="TCat711Frozen.IsEnabled" />
+                                                        </Div>
+                                                    </Div>
                                                     <div class="row">
                                                         <div class="col-3">
                                                             <label for="h-freight" class="form-label">@L["Cost"]<span class="text-danger"> *</span></label>
@@ -1622,10 +1736,11 @@
 </Card>
 
 @code {
-    string selectedTab = "postoffice";
+    string selectedTab = "familymart";
     string selectedC2CTab = "familymartC2C";
     string selectedMainTab = "HomeDelivery";
     string selectedTCatTab = "tCatNormal";
+    string selectedEcPayHomeDeliveryTab = "postoffice";
 
     private Task OnSelectedTCatTabChanged(string name)
     {
@@ -1648,6 +1763,12 @@
     private Task OnSelectedMainTabChanged(string name)
     {
         selectedMainTab = name;
+
+        return Task.CompletedTask;
+    }
+    private Task OnSelectedEcPayHomeDeliveryTabChanged(string name)
+    {
+        selectedEcPayHomeDeliveryTab = name;
 
         return Task.CompletedTask;
     }

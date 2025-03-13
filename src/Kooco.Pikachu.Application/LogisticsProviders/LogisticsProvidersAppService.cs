@@ -81,6 +81,46 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
             await _logisticsProviderRepository.InsertAsync(greenWorld);
         }
     }
+
+    public async Task UpdateEcPayHomeDeliveryAsync(EcPayHomeDeliveryCreateUpdateDto input)
+    {
+        var ecPayHomeDelivery = await _logisticsProviderRepository.FirstOrDefaultAsync(x => x.LogisticProvider == LogisticProviders.EcPayHomeDelivery);
+
+        if (ecPayHomeDelivery != null)
+        {
+            ecPayHomeDelivery.IsEnabled = input.IsEnabled;
+            ecPayHomeDelivery.StoreCode = input.StoreCode;
+            ecPayHomeDelivery.HashKey = input.HashKey;
+            ecPayHomeDelivery.HashIV = input.HashIV;
+            ecPayHomeDelivery.SenderName = input.SenderName;
+            ecPayHomeDelivery.SenderPhoneNumber = input.SenderPhoneNumber;
+            ecPayHomeDelivery.PlatFormId = input.PlatFormId;
+            ecPayHomeDelivery.SenderAddress = input.SenderAddress;
+            ecPayHomeDelivery.SenderPostalCode = input.SenderPostalCode;
+            ecPayHomeDelivery.City = input.City;
+
+            await _logisticsProviderRepository.UpdateAsync(ecPayHomeDelivery);
+        }
+        else
+        {
+            ecPayHomeDelivery = new LogisticsProviderSettings
+            {
+                IsEnabled = input.IsEnabled,
+                StoreCode = input.StoreCode,
+                HashKey = input.HashKey,
+                HashIV = input.HashIV,
+                SenderName = input.SenderName,
+                SenderPhoneNumber = input.SenderPhoneNumber,
+                PlatFormId = input.PlatFormId,
+                SenderAddress = input.SenderAddress,
+                SenderPostalCode = input.SenderPostalCode,
+                City = input.City,
+                LogisticProvider = LogisticProviders.EcPayHomeDelivery
+            };
+            await _logisticsProviderRepository.InsertAsync(ecPayHomeDelivery);
+        }
+    }
+
     public async Task UpdateGreenWorldC2CAsync(GreenWorldLogisticsCreateUpdateDto input)
     {
         var greenWorld = await _logisticsProviderRepository.FirstOrDefaultAsync(x => x.LogisticProvider == LogisticProviders.GreenWorldLogisticsC2C);
@@ -155,8 +195,9 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
         var postOffice = await _logisticsProviderRepository.FirstOrDefaultAsync(x => x.LogisticProvider == LogisticProviders.PostOffice);
         if (postOffice != null)
         {
-         postOffice.Freight = input.Freight;
-            postOffice.Weight= input.Weight;
+            postOffice.IsEnabled = input.IsEnabled;
+            postOffice.Freight = input.Freight;
+            postOffice.Weight = input.Weight;
 
             await _logisticsProviderRepository.UpdateAsync(postOffice);
         }
@@ -164,9 +205,10 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
         {
             postOffice = new LogisticsProviderSettings
             {
+                IsEnabled = input.IsEnabled,
                 Freight = input.Freight,
-            Weight = input.Weight,
-            LogisticProvider = LogisticProviders.PostOffice
+                Weight = input.Weight,
+                LogisticProvider = LogisticProviders.PostOffice
             };
 
             await _logisticsProviderRepository.InsertAsync(postOffice);
@@ -177,6 +219,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
         var sevenToEleven = await _logisticsProviderRepository.FirstOrDefaultAsync(x => x.LogisticProvider == LogisticProviders.SevenToEleven);
         if (sevenToEleven != null)
         {
+            sevenToEleven.IsEnabled = input.IsEnabled;
             sevenToEleven.Freight = input.Freight;
             sevenToEleven.Payment = input.Payment;
 
@@ -186,9 +229,10 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
         {
             sevenToEleven = new LogisticsProviderSettings
             {
+                IsEnabled = input.IsEnabled,
                 Freight = input.Freight,
                 Payment = input.Payment,
-            LogisticProvider = LogisticProviders.SevenToEleven
+                LogisticProvider = LogisticProviders.SevenToEleven
             };
 
             await _logisticsProviderRepository.InsertAsync(sevenToEleven);
@@ -199,6 +243,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
         var sevenToEleven = await _logisticsProviderRepository.FirstOrDefaultAsync(x => x.LogisticProvider == LogisticProviders.SevenToElevenC2C);
         if (sevenToEleven != null)
         {
+            sevenToEleven.IsEnabled = input.IsEnabled;
             sevenToEleven.Freight = input.Freight;
             sevenToEleven.Payment = input.Payment;
 
@@ -208,6 +253,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
         {
             sevenToEleven = new LogisticsProviderSettings
             {
+                IsEnabled = input.IsEnabled,
                 Freight = input.Freight,
                 Payment = input.Payment,
                 LogisticProvider = LogisticProviders.SevenToElevenC2C
@@ -221,6 +267,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
         var sevenToEleven = await _logisticsProviderRepository.FirstOrDefaultAsync(x => x.LogisticProvider == LogisticProviders.FamilyMart);
         if (sevenToEleven != null)
         {
+            sevenToEleven.IsEnabled = input.IsEnabled;
             sevenToEleven.Freight = input.Freight;
             sevenToEleven.Payment = input.Payment;
 
@@ -230,6 +277,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
         {
             sevenToEleven = new LogisticsProviderSettings
             {
+                IsEnabled = input.IsEnabled,
                 Freight = input.Freight,
                 Payment = input.Payment,
                 LogisticProvider = LogisticProviders.FamilyMart
@@ -243,6 +291,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
         var sevenToEleven = await _logisticsProviderRepository.FirstOrDefaultAsync(x => x.LogisticProvider == LogisticProviders.FamilyMartC2C);
         if (sevenToEleven != null)
         {
+            sevenToEleven.IsEnabled = input.IsEnabled;
             sevenToEleven.Freight = input.Freight;
             sevenToEleven.Payment = input.Payment;
 
@@ -252,6 +301,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
         {
             sevenToEleven = new LogisticsProviderSettings
             {
+                IsEnabled = input.IsEnabled,
                 Freight = input.Freight,
                 Payment = input.Payment,
                 LogisticProvider = LogisticProviders.FamilyMartC2C
@@ -265,6 +315,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
         var sevenToEleven = await _logisticsProviderRepository.FirstOrDefaultAsync(x => x.LogisticProvider == LogisticProviders.SevenToElevenFrozen);
         if (sevenToEleven != null)
         {
+            sevenToEleven.IsEnabled = input.IsEnabled;
             sevenToEleven.Freight = input.Freight;
             sevenToEleven.Payment = input.Payment;
 
@@ -274,6 +325,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
         {
             sevenToEleven = new LogisticsProviderSettings
             {
+                IsEnabled = input.IsEnabled,
                 Freight = input.Freight,
                 Payment = input.Payment,
                 LogisticProvider = LogisticProviders.SevenToElevenFrozen
@@ -288,6 +340,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
 
         if (sevenToEleven is not null)
         {
+            sevenToEleven.IsEnabled = input.IsEnabled;
             sevenToEleven.Freight = input.Freight;
             sevenToEleven.Payment = input.Payment;
 
@@ -295,8 +348,9 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
         }
         else
         {
-            sevenToEleven = new ()
+            sevenToEleven = new()
             {
+                IsEnabled = input.IsEnabled,
                 Freight = input.Freight,
                 Payment = input.Payment,
                 LogisticProvider = LogisticProviders.TCat711Normal
@@ -305,13 +359,14 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
             await _logisticsProviderRepository.InsertAsync(sevenToEleven);
         }
     }
-    
+
     public async Task UpdateTCat711FreezeAsync(TCat711FreezeCreateUpdateDto input)
     {
         LogisticsProviderSettings? sevenToEleven = await _logisticsProviderRepository.FirstOrDefaultAsync(x => x.LogisticProvider == LogisticProviders.TCat711Freeze);
 
         if (sevenToEleven is not null)
         {
+            sevenToEleven.IsEnabled = input.IsEnabled;
             sevenToEleven.Freight = input.Freight;
             sevenToEleven.Payment = input.Payment;
 
@@ -319,8 +374,9 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
         }
         else
         {
-            sevenToEleven = new ()
+            sevenToEleven = new()
             {
+                IsEnabled = input.IsEnabled,
                 Freight = input.Freight,
                 Payment = input.Payment,
                 LogisticProvider = LogisticProviders.TCat711Freeze
@@ -329,13 +385,14 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
             await _logisticsProviderRepository.InsertAsync(sevenToEleven);
         }
     }
-    
+
     public async Task UpdateTCat711FrozenAsync(TCat711FrozenCreateUpdateDto input)
     {
         LogisticsProviderSettings? sevenToEleven = await _logisticsProviderRepository.FirstOrDefaultAsync(x => x.LogisticProvider == LogisticProviders.TCat711Frozen);
 
         if (sevenToEleven is not null)
         {
+            sevenToEleven.IsEnabled = input.IsEnabled;
             sevenToEleven.Freight = input.Freight;
             sevenToEleven.Payment = input.Payment;
 
@@ -343,8 +400,9 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
         }
         else
         {
-            sevenToEleven = new ()
+            sevenToEleven = new()
             {
+                IsEnabled = input.IsEnabled,
                 Freight = input.Freight,
                 Payment = input.Payment,
                 LogisticProvider = LogisticProviders.TCat711Frozen
@@ -353,7 +411,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
             await _logisticsProviderRepository.InsertAsync(sevenToEleven);
         }
     }
-    
+
     public async Task UpdateTCatAsync(TCatLogisticsCreateUpdateDto entity)
     {
         LogisticsProviderSettings? tCat = await _logisticsProviderRepository.FirstOrDefaultAsync(f => f.LogisticProvider == LogisticProviders.TCat);
@@ -415,7 +473,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
 
         string jsonContent = JsonConvert.SerializeObject(request);
 
-        StringContent content = new (jsonContent, Encoding.UTF8, "application/json");
+        StringContent content = new(jsonContent, Encoding.UTF8, "application/json");
 
         HttpResponseMessage response = await client.PostAsync(_Configuration["EcPay:SenderZipCode"], content);
 
@@ -425,7 +483,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
 
             RootObject? rootObject = JsonConvert.DeserializeObject<RootObject>(responseBody);
 
-            if (rootObject is not null && rootObject.IsOK is "Y") 
+            if (rootObject is not null && rootObject.IsOK is "Y")
                 return rootObject.Data.Addresses.First().PostNumber.Remove(0, 3).Replace("-", string.Empty);
         }
 
@@ -437,9 +495,10 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
         var bNormal = await _logisticsProviderRepository.FirstOrDefaultAsync(x => x.LogisticProvider == LogisticProviders.BNormal);
         if (bNormal != null)
         {
+            bNormal.IsEnabled = input.IsEnabled;
             bNormal.Freight = input.Freight;
             bNormal.OuterIslandFreight = input.OuterIslandFreight;
-            bNormal.Size= input.Size;
+            bNormal.Size = input.Size;
 
             await _logisticsProviderRepository.UpdateAsync(bNormal);
         }
@@ -447,6 +506,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
         {
             bNormal = new LogisticsProviderSettings
             {
+                IsEnabled = input.IsEnabled,
                 Freight = input.Freight,
                 OuterIslandFreight = input.OuterIslandFreight,
                 Size = input.Size,
@@ -460,22 +520,24 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
     public async Task UpdateTCatNormalAsync(TCatNormalCreateUpdateDto input)
     {
         LogisticsProviderSettings? tCatNormal = await _logisticsProviderRepository.FirstOrDefaultAsync(x => x.LogisticProvider == LogisticProviders.TCatNormal);
-        
+
         if (tCatNormal is not null)
         {
+            tCatNormal.IsEnabled = input.IsEnabled;
             tCatNormal.Freight = input.Freight;
             tCatNormal.OuterIslandFreight = input.OuterIslandFreight;
-            tCatNormal.Size= input.Size;
+            tCatNormal.Size = input.Size;
             tCatNormal.Payment = input.Payment;
             tCatNormal.TCatPaymentMethod = input.TCatPaymentMethod;
 
             await _logisticsProviderRepository.UpdateAsync(tCatNormal);
         }
-        
+
         else
         {
-            tCatNormal = new ()
+            tCatNormal = new()
             {
+                IsEnabled = input.IsEnabled,
                 Freight = input.Freight,
                 OuterIslandFreight = input.OuterIslandFreight,
                 Size = input.Size,
@@ -490,22 +552,24 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
     public async Task UpdateTCatFreezeAsync(TCatFreezeCreateUpdateDto input)
     {
         LogisticsProviderSettings? tCatFreeze = await _logisticsProviderRepository.FirstOrDefaultAsync(x => x.LogisticProvider == LogisticProviders.TCatFreeze);
-        
+
         if (tCatFreeze is not null)
         {
+            tCatFreeze.IsEnabled = input.IsEnabled;
             tCatFreeze.Freight = input.Freight;
             tCatFreeze.OuterIslandFreight = input.OuterIslandFreight;
-            tCatFreeze.Size= input.Size;
+            tCatFreeze.Size = input.Size;
             tCatFreeze.Payment = input.Payment;
             tCatFreeze.TCatPaymentMethod = input.TCatPaymentMethod;
 
             await _logisticsProviderRepository.UpdateAsync(tCatFreeze);
         }
-        
+
         else
         {
-            tCatFreeze = new ()
+            tCatFreeze = new()
             {
+                IsEnabled = input.IsEnabled,
                 Freight = input.Freight,
                 OuterIslandFreight = input.OuterIslandFreight,
                 Size = input.Size,
@@ -520,22 +584,24 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
     public async Task UpdateTCatFrozenAsync(TCatFrozenCreateUpdateDto input)
     {
         LogisticsProviderSettings? tCatFrozen = await _logisticsProviderRepository.FirstOrDefaultAsync(x => x.LogisticProvider == LogisticProviders.TCatFrozen);
-        
+
         if (tCatFrozen is not null)
         {
+            tCatFrozen.IsEnabled = input.IsEnabled;
             tCatFrozen.Freight = input.Freight;
             tCatFrozen.OuterIslandFreight = input.OuterIslandFreight;
-            tCatFrozen.Size= input.Size;
+            tCatFrozen.Size = input.Size;
             tCatFrozen.Payment = input.Payment;
             tCatFrozen.TCatPaymentMethod = input.TCatPaymentMethod;
 
             await _logisticsProviderRepository.UpdateAsync(tCatFrozen);
         }
-        
+
         else
         {
-            tCatFrozen = new ()
+            tCatFrozen = new()
             {
+                IsEnabled = input.IsEnabled,
                 Freight = input.Freight,
                 OuterIslandFreight = input.OuterIslandFreight,
                 Size = input.Size,
@@ -552,6 +618,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
         var bFreeze = await _logisticsProviderRepository.FirstOrDefaultAsync(x => x.LogisticProvider == LogisticProviders.BFreeze);
         if (bFreeze != null)
         {
+            bFreeze.IsEnabled = input.IsEnabled;
             bFreeze.Freight = input.Freight;
             bFreeze.OuterIslandFreight = input.OuterIslandFreight;
             bFreeze.Size = input.Size;
@@ -562,6 +629,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
         {
             bFreeze = new LogisticsProviderSettings
             {
+                IsEnabled = input.IsEnabled,
                 Freight = input.Freight,
                 OuterIslandFreight = input.OuterIslandFreight,
                 Size = input.Size,
@@ -576,6 +644,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
         var bFrozen = await _logisticsProviderRepository.FirstOrDefaultAsync(x => x.LogisticProvider == LogisticProviders.BFrozen);
         if (bFrozen != null)
         {
+            bFrozen.IsEnabled = input.IsEnabled;
             bFrozen.Freight = input.Freight;
             bFrozen.OuterIslandFreight = input.OuterIslandFreight;
             bFrozen.Size = input.Size;
@@ -586,6 +655,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
         {
             bFrozen = new LogisticsProviderSettings
             {
+                IsEnabled = input.IsEnabled,
                 Freight = input.Freight,
                 OuterIslandFreight = input.OuterIslandFreight,
                 Size = input.Size,
@@ -603,7 +673,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
 
         foreach (LogisticsProviderSettingsDto provider in providers)
         {
-            provider.LogisticProviderName = provider.LogisticProvider.ToString();   
+            provider.LogisticProviderName = provider.LogisticProvider.ToString();
         }
 
         return providers;
@@ -635,7 +705,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
             List<JsonObject> DBSkeyValuePairs = [];
 
             List<DeliveryTemperatureCostDto> deliveryTemps = await _DeliveryTemperatureAppService.GetListAsync();
-            
+
             foreach (DeliveryTemperatureCostDto deliveryTemp in deliveryTemps)
             {
                 deliveryNameToLogisticName = ConvertDeliveryNameToLogisticName(deliveryTemp.DeliveryMethod.ToString());

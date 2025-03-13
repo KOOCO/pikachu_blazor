@@ -133,4 +133,10 @@ public class LogisticsProvidersController(
     {
         return _logisticsProvidersAppService.GetAsync(shippingMethod);
     }
+
+    [HttpPost("ecpay-home-delivery")]
+    public Task UpdateEcPayHomeDeliveryAsync(EcPayHomeDeliveryCreateUpdateDto input)
+    {
+        return _logisticsProvidersAppService.UpdateEcPayHomeDeliveryAsync(input);
+    }
 }

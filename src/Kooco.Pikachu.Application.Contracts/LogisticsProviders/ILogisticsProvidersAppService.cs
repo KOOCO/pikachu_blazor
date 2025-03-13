@@ -28,5 +28,6 @@ namespace Kooco.Pikachu.LogisticsProviders
         Task UpdateFamilyMartC2CAsync(SevenToElevenCreateUpdateDto input);
         Task UpdateSevenToElevenC2CAsync(SevenToElevenCreateUpdateDto input);
         Task<JsonObject> GetAsync(string shippingMethod);
+        Task UpdateEcPayHomeDeliveryAsync(EcPayHomeDeliveryCreateUpdateDto input);
     }
 }

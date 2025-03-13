@@ -281,7 +281,7 @@
     "SelfPickup": "Self-Pickup",
     "BlackCat": "Black Cat",
     "BlackCat1": "B-Normal",
-    "HomeDelivery": "In-Person Delivery",
+    "HomeDelivery": "Self Delivery",
     "OrderDetailsHomeDelivery": "Home Delivery",
     "OrderItems": "Order Items",
     "Address": "Address",
@@ -432,8 +432,9 @@
 
     //LogisticsManagement
     "LogisticsProviderSettings": "Logistics Provider Settings",
-    "GreenWorldLogistics": "ECPay Logistics B2C",
-    "GreenWorldLogisticsC2C": "ECPay Logistics C2C",
+    "GreenWorldLogistics": "ECPay Convenient Store B2C",
+    "GreenWorldLogisticsC2C": "ECPay Convenient Store C2C",
+    "EcPayHomeDelivery": "ECPay Home Delivery",
     "TCat": "T-Cat",
     "SenderPhoneNumber": "Sender Phone Number",
     "LogisticsType": "Logistics Type",
@@ -471,6 +472,7 @@
     "AreYouSureToUpdateGreenWorld?": "Are You Sure To Update Green World Logistics?",
     "AreYouSureToUpdateHomeDelivery?": "Are You Sure To Update Home Delivery?",
     "AreYouSureToUpdateGreenWorldC2C?": "Are You Sure To Update Green World C2C?",
+    "AreYouSureToUpdateEcPayHomeDelivery?": "Are You Sure To Update ECPay Home Delivery?",
     "ShortCode": "Short Code",
     "Search": "Search",
     "MinAvailableTime": "Minimum Available Time",

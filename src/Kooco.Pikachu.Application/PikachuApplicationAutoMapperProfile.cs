@@ -153,6 +153,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<LogisticsProviderSettingsDto, TCat711NormalCreateUpdate>();
         CreateMap<LogisticsProviderSettingsDto, TCat711FreezeCreateUpdateDto>();
         CreateMap<LogisticsProviderSettingsDto, TCat711FrozenCreateUpdateDto>();
+        CreateMap<LogisticsProviderSettingsDto, EcPayHomeDeliveryCreateUpdateDto>();
 
         CreateMap<DeliveryTemperatureCost, DeliveryTemperatureCostDto>();
         CreateMap<DeliveryTemperatureCostDto, UpdateDeliveryTemperatureCostDto>();
