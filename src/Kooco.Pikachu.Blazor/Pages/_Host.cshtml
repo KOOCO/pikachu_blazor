@@ -2,12 +2,14 @@
 @namespace Kooco.Pikachu.Blazor.Pages
 @using System.Globalization
 @using Kooco.Pikachu.Localization
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using Microsoft.Extensions.Localization
 @using Volo.Abp.AspNetCore.Mvc.UI.Bundling.TagHelpers
 @using Volo.Abp.Localization
 @using Volo.Abp.AspNetCore.Components.Web.LeptonXLiteTheme.Themes.LeptonXLite
 @using Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme.Bundling
+@attribute [Authorize]
 @inject IStringLocalizer<PikachuResource> L
 @{
     Layout = null;
