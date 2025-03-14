@@ -17,7 +17,7 @@ public partial class Refund
 {
     #region Inject
     private List<RefundDto> Refunds = new List<RefundDto>();
-    private LoadingIndicator loading { get; set; }
+    private bool loading { get; set; } = true;
 
     int PageIndex { get; set; }
     int PageSize { get; set; } = 10;
@@ -52,7 +52,7 @@ public partial class Refund
             {
                 Sorting = $"{nameof(RefundDto.CreationTime)} desc";
             }
-            await loading.Show();
+           loading=true;
             int skipCount = PageIndex * PageSize;
             var result = await _refundAppService.GetListAsync(new GetRefundListDto
             {
@@ -71,17 +71,17 @@ public partial class Refund
         }
         finally
         {
-            await loading.Hide();
+           loading=false;
         }
     }
     public async void NavigateToOrderDetails(RefundDto e)
     {
-        await loading.Show();
+       loading=true;
 
         var id = e.OrderId;
         NavigationManager.NavigateTo($"Orders/OrderDetails/{id}");
 
-        await loading.Hide();
+       loading=false;
     }
     private async Task RefundApproved(RefundDto rowData)
     {
@@ -94,7 +94,7 @@ public partial class Refund
                 
                 return;
             }
-            await loading.Show();
+           loading=true;
             await _refundAppService.UpdateRefundReviewAsync(rowData.Id, RefundReviewStatus.Proccessing);
             if (rowData.Order?.PaymentMethod == PaymentMethods.LinePay)
             {
@@ -115,7 +115,7 @@ public partial class Refund
         }
         finally
         {
-            await loading.Hide();
+           loading=false;
         }
     }
 
@@ -130,7 +130,7 @@ public partial class Refund
     {
         try
         {
-            await loading.Show();
+           loading=true;
 
             if (SelectedRefund == null || string.IsNullOrEmpty(RejectReason))
             {
@@ -147,14 +147,14 @@ public partial class Refund
         }
         finally
         {
-            await loading.Hide();
+           loading=false;
         }
     }
     private async Task RefundReviewChanged(RefundReviewStatus selectedValue, RefundDto rowData)
     {
         try
         {
-            await loading.Show();
+           loading=true;
             await _refundAppService.UpdateRefundReviewAsync(rowData.Id, selectedValue);
             await UpdateItemList();
         }
@@ -165,7 +165,7 @@ public partial class Refund
         }
         finally
         {
-            await loading.Hide();
+           loading=false;
         }
     }
     async void OnSortChange(DataGridSortChangedEventArgs e)
