@@ -55,6 +55,13 @@ public partial class LogisticsProviderSettings
     EcPayHomeDeliveryCreateUpdateDto EcPayHomeDelivery = new();
     bool IsEcPayHomeDeliveryNotExists = false;
 
+    private const string B2C = "B2C";
+    private const string C2C = "C2C";
+    private const string FamilyMartErrorMessage = "OnlyOneB2COrC2CCanBeEnabledFamilyMart";
+    private const string SevenElevenErrorMessage = "OnlyOneB2COrC2CCanBeEnabled711";
+    private string? FamilyMartEnabledOption { get; set; }
+    private string? SevenElevenEnabledOption { get; set; }
+
     LoadingIndicator Loading { get; set; }
     #endregion
 
@@ -63,7 +70,7 @@ public partial class LogisticsProviderSettings
     {
         GreenWorld = new();
         GreenWorldC2C = new();
-        HomeDelivery = new(); 
+        HomeDelivery = new();
         PostOffice = new();
         SevenToEleven = new();
         SevenToElevenC2C = new();
@@ -97,7 +104,7 @@ public partial class LogisticsProviderSettings
         List<LogisticsProviderSettingsDto> providers = await _logisticProvidersAppService.GetAllAsync();
 
         LogisticsProviderSettingsDto? greenWorld = providers.Where(p => p.LogisticProvider is LogisticProviders.GreenWorldLogistics).FirstOrDefault();
-        
+
         if (greenWorld is not null) GreenWorld = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorld);
 
         IsGreenWorldNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.GreenWorldLogistics);
@@ -109,7 +116,7 @@ public partial class LogisticsProviderSettings
         IsEcPayHomeDeliveryNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.EcPayHomeDelivery);
 
         LogisticsProviderSettingsDto? greenWorldC2C = providers.Where(p => p.LogisticProvider is LogisticProviders.GreenWorldLogisticsC2C).FirstOrDefault();
-        
+
         if (greenWorldC2C is not null) GreenWorldC2C = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorldC2C);
 
         IsGreenWorldC2CNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.GreenWorldLogisticsC2C);
@@ -123,7 +130,7 @@ public partial class LogisticsProviderSettings
         LogisticsProviderSettingsDto? postOffice = providers.Where(p => p.LogisticProvider is LogisticProviders.PostOffice).FirstOrDefault();
 
         if (postOffice is not null) PostOffice = ObjectMapper.Map<LogisticsProviderSettingsDto, PostOfficeCreateUpdateDto>(postOffice);
-        
+
         IsPostOfficeNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.PostOffice);
 
         LogisticsProviderSettingsDto? sevenToEleven = providers.Where(p => p.LogisticProvider is LogisticProviders.SevenToEleven).FirstOrDefault();
@@ -139,31 +146,31 @@ public partial class LogisticsProviderSettings
         IsSevenToElevenC2CNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.SevenToElevenC2C);
 
         LogisticsProviderSettingsDto? familyMart = providers.Where(p => p.LogisticProvider is LogisticProviders.FamilyMart).FirstOrDefault();
-        
+
         if (familyMart is not null) FamilyMart = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(familyMart);
 
         IsFamilyMartNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.FamilyMart);
 
         LogisticsProviderSettingsDto? familyMartC2C = providers.Where(p => p.LogisticProvider is LogisticProviders.FamilyMartC2C).FirstOrDefault();
-        
+
         if (familyMartC2C is not null) FamilyMartC2C = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(familyMartC2C);
 
         IsFamilyMartC2CNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.FamilyMartC2C);
 
         LogisticsProviderSettingsDto? sevenToElevenFrozen = providers.Where(p => p.LogisticProvider is LogisticProviders.SevenToElevenFrozen).FirstOrDefault();
-        
+
         if (sevenToElevenFrozen is not null) SevenToElevenFrozen = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(sevenToElevenFrozen);
 
         IsSevenToElevenFrozenNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.SevenToElevenFrozen);
 
         LogisticsProviderSettingsDto? bNormal = providers.Where(p => p.LogisticProvider is LogisticProviders.BNormal).FirstOrDefault();
-        
+
         if (bNormal is not null) BNormal = ObjectMapper.Map<LogisticsProviderSettingsDto, BNormalCreateUpdateDto>(bNormal);
 
         IsBNormalNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.BNormal);
 
         LogisticsProviderSettingsDto? bFreeze = providers.Where(p => p.LogisticProvider is LogisticProviders.BFreeze).FirstOrDefault();
-        
+
         if (bFreeze is not null) BFreeze = ObjectMapper.Map<LogisticsProviderSettingsDto, BNormalCreateUpdateDto>(bFreeze);
 
         IsBFreezeNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.BFreeze);
@@ -172,7 +179,7 @@ public partial class LogisticsProviderSettings
 
         if (bFrozen is not null) BFrozen = ObjectMapper.Map<LogisticsProviderSettingsDto, BNormalCreateUpdateDto>(bFrozen);
 
-        IsBFrozenNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.BFrozen); 
+        IsBFrozenNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.BFrozen);
 
         LogisticsProviderSettingsDto? tCat = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCat);
 
@@ -215,6 +222,9 @@ public partial class LogisticsProviderSettings
         if (tCat711Frozen is not null) TCat711Frozen = ObjectMapper.Map<LogisticsProviderSettingsDto, TCat711FrozenCreateUpdateDto>(tCat711Frozen);
 
         IsTCat711FrozenNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.TCat711Frozen);
+
+        FamilyMartEnabledOption = familyMart?.IsEnabled == true ? B2C : (familyMartC2C?.IsEnabled == true ? C2C : null);
+        SevenElevenEnabledOption = sevenToEleven?.IsEnabled == true ? B2C : (sevenToElevenC2C?.IsEnabled == true ? C2C : null);
     }
 
     public void OuterIslandsChecked(bool e)
@@ -326,8 +336,7 @@ public partial class LogisticsProviderSettings
         }
         catch (Exception ex)
         {
-            await _uiMessageService.Error(ex.GetType().ToString());
-            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            await HandleErrorAsync(ex);
         }
         finally
         {
@@ -338,6 +347,12 @@ public partial class LogisticsProviderSettings
     {
         try
         {
+            if (SevenElevenEnabledOption == C2C && SevenToEleven.IsEnabled)
+            {
+                await Message.Error(L[SevenElevenErrorMessage]);
+                return;
+            }
+
             var confirm = await _uiMessageService.Confirm(L["AreYouSureToUpdate7-11?"]);
             if (!confirm)
                 return;
@@ -347,8 +362,7 @@ public partial class LogisticsProviderSettings
         }
         catch (Exception ex)
         {
-            await _uiMessageService.Error(ex.GetType().ToString());
-            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            await HandleErrorAsync(ex);
         }
         finally
         {
@@ -359,6 +373,12 @@ public partial class LogisticsProviderSettings
     {
         try
         {
+            if (SevenElevenEnabledOption == B2C && SevenToElevenC2C.IsEnabled)
+            {
+                await Message.Error(L[SevenElevenErrorMessage]);
+                return;
+            }
+
             var confirm = await _uiMessageService.Confirm(L["AreYouSureToUpdate7-11C2C?"]);
             if (!confirm)
                 return;
@@ -368,8 +388,7 @@ public partial class LogisticsProviderSettings
         }
         catch (Exception ex)
         {
-            await _uiMessageService.Error(ex.GetType().ToString());
-            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            await HandleErrorAsync(ex);
         }
         finally
         {
@@ -404,17 +423,17 @@ public partial class LogisticsProviderSettings
             bool confirm = await _uiMessageService.Confirm(L["AreYouSureToUpdate7-11Normal?"]);
 
             if (!confirm) return;
-            
+
             await Loading.Show();
-            
+
             await _logisticProvidersAppService.UpdateTCat711NormalAsync(TCat711Normal);
-            
+
             await GetAllAsync();
         }
         catch (Exception ex)
         {
             await _uiMessageService.Error(ex.GetType().ToString());
-            
+
             await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
         }
         finally
@@ -429,17 +448,17 @@ public partial class LogisticsProviderSettings
             bool confirm = await _uiMessageService.Confirm(L["AreYouSureToUpdate7-11Freeze?"]);
 
             if (!confirm) return;
-            
+
             await Loading.Show();
-            
+
             await _logisticProvidersAppService.UpdateTCat711FreezeAsync(TCat711Freeze);
-            
+
             await GetAllAsync();
         }
         catch (Exception ex)
         {
             await _uiMessageService.Error(ex.GetType().ToString());
-            
+
             await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
         }
         finally
@@ -454,17 +473,17 @@ public partial class LogisticsProviderSettings
             bool confirm = await _uiMessageService.Confirm(L["AreYouSureToUpdate7-11Frozen?"]);
 
             if (!confirm) return;
-            
+
             await Loading.Show();
-            
+
             await _logisticProvidersAppService.UpdateTCat711FrozenAsync(TCat711Frozen);
-            
+
             await GetAllAsync();
         }
         catch (Exception ex)
         {
             await _uiMessageService.Error(ex.GetType().ToString());
-            
+
             await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
         }
         finally
@@ -476,6 +495,11 @@ public partial class LogisticsProviderSettings
     {
         try
         {
+            if (FamilyMartEnabledOption == C2C && FamilyMart.IsEnabled)
+            {
+                await Message.Error(L[FamilyMartErrorMessage]);
+                return;
+            }
             var confirm = await _uiMessageService.Confirm(L["AreYouSureToUpdateFamilyMart?"]);
             if (!confirm)
                 return;
@@ -497,6 +521,11 @@ public partial class LogisticsProviderSettings
     {
         try
         {
+            if (FamilyMartEnabledOption == B2C && FamilyMartC2C.IsEnabled)
+            {
+                await Message.Error(L[FamilyMartErrorMessage]);
+                return;
+            }
             var confirm = await _uiMessageService.Confirm(L["AreYouSureToUpdateFamilyMartC2C?"]);
             if (!confirm)
                 return;
@@ -550,9 +579,9 @@ public partial class LogisticsProviderSettings
         try
         {
             bool confirm = await _uiMessageService.Confirm(L["AreYouSureToUpdateTCatNormal?"]);
-            
+
             if (!confirm) return;
-            
+
             await Loading.Show();
 
             if (TCatNormal.Size is 0)
@@ -574,7 +603,7 @@ public partial class LogisticsProviderSettings
             }
 
             await _logisticProvidersAppService.UpdateTCatNormalAsync(TCatNormal);
-            
+
             await GetAllAsync();
         }
         catch (Exception ex)
@@ -593,9 +622,9 @@ public partial class LogisticsProviderSettings
         try
         {
             bool confirm = await _uiMessageService.Confirm(L["AreYouSureToUpdateTCatFreeze?"]);
-            
+
             if (!confirm) return;
-            
+
             await Loading.Show();
 
             if (TCatFreeze.Size is 0)
@@ -617,7 +646,7 @@ public partial class LogisticsProviderSettings
             }
 
             await _logisticProvidersAppService.UpdateTCatFreezeAsync(TCatFreeze);
-            
+
             await GetAllAsync();
         }
         catch (Exception ex)
@@ -636,9 +665,9 @@ public partial class LogisticsProviderSettings
         try
         {
             bool confirm = await _uiMessageService.Confirm(L["AreYouSureToUpdateTCatFrozen?"]);
-            
+
             if (!confirm) return;
-            
+
             await Loading.Show();
 
             if (TCatFrozen.Size is 0)
@@ -660,7 +689,7 @@ public partial class LogisticsProviderSettings
             }
 
             await _logisticProvidersAppService.UpdateTCatFrozenAsync(TCatFrozen);
-            
+
             await GetAllAsync();
         }
         catch (Exception ex)
@@ -762,7 +791,7 @@ public partial class LogisticsProviderSettings
             await Loading.Hide();
         }
     }
-    
+
     void OnMainIslandCheckedChange(string island, ChangeEventArgs e)
     {
         var value = (bool)(e?.Value ?? false);

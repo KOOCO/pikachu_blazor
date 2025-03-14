@@ -29,6 +29,10 @@
     .outerIslandSwitchDiv {
         width: 2.666667% !important;
     }
+
+    .b-tooltip.b-tooltip-top .form-check.form-switch {
+        padding-right: 0;
+    }
 </style>
 
 <LoadingIndicator @ref="Loading" FullScreen></LoadingIndicator>
@@ -733,7 +737,16 @@
                                                             <label for="g-enable-disable-switch" class="form-label pt-0">@L["Enable/Disable"]</label>
                                                         </div>
                                                         <div class="col-8">
-                                                            <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="FamilyMart.IsEnabled"></Switch>
+                                                            <Tooltip Text="@L[FamilyMartErrorMessage]" Display="Display.InlineBlock">
+                                                                @if (FamilyMartEnabledOption == C2C && !FamilyMart.IsEnabled)
+                                                                {
+                                                                    <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="FamilyMart.IsEnabled" Disabled></Switch>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="FamilyMart.IsEnabled"></Switch>
+                                                                }
+                                                            </Tooltip>
                                                         </div>
                                                     </div>
                                                     <div class="row">
@@ -789,7 +802,16 @@
                                                             <label for="g-enable-disable-switch" class="form-label pt-0">@L["Enable/Disable"]</label>
                                                         </div>
                                                         <div class="col-8">
-                                                            <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="SevenToEleven.IsEnabled"></Switch>
+                                                            <Tooltip Text="@L[SevenElevenErrorMessage]" Display="Display.InlineBlock">
+                                                                @if (SevenElevenEnabledOption == C2C && !SevenToEleven.IsEnabled)
+                                                                {
+                                                                    <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="SevenToEleven.IsEnabled" Disabled></Switch>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="SevenToEleven.IsEnabled"></Switch>
+                                                                }
+                                                            </Tooltip>
                                                         </div>
                                                     </div>
                                                     <div class="row">
@@ -995,7 +1017,16 @@
                                                             <label for="g-enable-disable-switch" class="form-label pt-0">@L["Enable/Disable"]</label>
                                                         </div>
                                                         <div class="col-8">
-                                                            <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="FamilyMartC2C.IsEnabled"></Switch>
+                                                            <Tooltip Text="@L[FamilyMartErrorMessage]" Display="Display.InlineBlock">
+                                                                @if (FamilyMartEnabledOption == B2C && !FamilyMartC2C.IsEnabled)
+                                                                {
+                                                                    <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="FamilyMartC2C.IsEnabled" Disabled></Switch>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="FamilyMartC2C.IsEnabled"></Switch>
+                                                                }
+                                                            </Tooltip>
                                                         </div>
                                                     </div>
                                                     <div class="row">
@@ -1051,7 +1082,16 @@
                                                             <label for="g-enable-disable-switch" class="form-label pt-0">@L["Enable/Disable"]</label>
                                                         </div>
                                                         <div class="col-8">
-                                                            <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="SevenToElevenC2C.IsEnabled"></Switch>
+                                                            <Tooltip Text="@L[SevenElevenErrorMessage]" Display="Display.InlineBlock">
+                                                                @if (SevenElevenEnabledOption == B2C && !SevenToElevenC2C.IsEnabled)
+                                                                {
+                                                                    <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="SevenToElevenC2C.IsEnabled" Disabled></Switch>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="SevenToElevenC2C.IsEnabled"></Switch>
+                                                                }
+                                                            </Tooltip>
                                                         </div>
                                                     </div>
                                                     <div class="row">

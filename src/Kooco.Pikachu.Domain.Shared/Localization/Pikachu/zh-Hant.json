@@ -1383,6 +1383,8 @@
     "Enum:PaymentChannel.2": "貨到付款",
     "TransactionType": "交易類型",
     "TransactionStatus": "交易狀態",
-    "PaymentChannel": "付款管道"
+    "PaymentChannel": "付款管道",
+    "OnlyOneB2COrC2CCanBeEnabledFamilyMart": "全家 B2C 或 C2C 只能啟用其中一個。",
+    "OnlyOneB2COrC2CCanBeEnabled711": "7-11 B2C 或 C2C 只能啟用其中一個。"
   }
 }
