@@ -7,11 +7,10 @@
 @using Volo.Abp.AspNetCore.Components.Messages;
 @using Blazorise.LoadingIndicator;
 
-@inject IStringLocalizer<PikachuResource> L;
-@inject IGroupBuyAppService _groupBuyAppService;
-@inject IUiMessageService _uiMessageService;
-@inject IJSRuntime JSRuntime;
-@inject IOrderAppService _orderAppService;
+@inherits PikachuComponentBase
+@inject IGroupBuyAppService _groupBuyAppService
+@inject IJSRuntime JSRuntime
+@inject IOrderAppService _orderAppService
 
 @layout EmptyLayout;
 <style>
@@ -119,7 +118,7 @@
         <div class="col-12">
             <Card>
                 <CardBody>
-                    <DataGrid TItem="OrderDto"
+                    <DataGrid TItem="GroupBuyReportOrderDto"
                               Data="@Orders"
                               @bind-SelectedRow="@SelectedOrder"
                               ReadData="OnDataGridReadAsync"
@@ -132,7 +131,7 @@
                                SortChanged="OnSortChange">
                          <DataGridColumns>
                              <DataGridCommandColumn />
-                             <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
+                            <DataGridColumn Field="@nameof(GroupBuyReportOrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                  <DisplayTemplate>
                                      @{
                                         var isExpanded = ExpandedRows.Contains(context.Id);
@@ -142,25 +141,25 @@
                                     @L[context.OrderNo]
                                 </DisplayTemplate>
                             </DataGridColumn>
-                            <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />
-                            <DataGridColumn Field="@nameof(OrderDto.CustomerName)" Caption="@L["CustomerName"]" />
-                            <DataGridColumn Field="@nameof(OrderDto.CustomerEmail)" Caption="@L["Email"]" />
-                            <DataGridColumn Field="@nameof(OrderDto.OrderStatus)" Caption="@L["OrderStatus"]">
+                            <DataGridColumn Field="@nameof(GroupBuyReportOrderDto.CreationTime)" Caption="@L["OrderDate"]" />
+                            <DataGridColumn Field="@nameof(GroupBuyReportOrderDto.CustomerName)" Caption="@L["CustomerName"]" />
+                            <DataGridColumn Field="@nameof(GroupBuyReportOrderDto.CustomerEmail)" Caption="@L["Email"]" />
+                            <DataGridColumn Field="@nameof(GroupBuyReportOrderDto.OrderStatus)" Caption="@L["OrderStatus"]">
                                 <DisplayTemplate>
                                     @L[context.OrderStatus.ToString()]
                                 </DisplayTemplate>
                             </DataGridColumn>
-                            <DataGridColumn Field="@nameof(OrderDto.ShippingStatus)" Caption="@L["ShippingStatus"]">
+                            <DataGridColumn Field="@nameof(GroupBuyReportOrderDto.ShippingStatus)" Caption="@L["ShippingStatus"]">
                                 <DisplayTemplate>
                                     @L[context.ShippingStatus.ToString()]
                                 </DisplayTemplate>
                             </DataGridColumn>
-                            <DataGridColumn Field="@nameof(OrderDto.PaymentMethod)" Caption="@L["PaymentMethod"]">
+                            <DataGridColumn Field="@nameof(GroupBuyReportOrderDto.PaymentMethod)" Caption="@L["PaymentMethod"]">
                                 <DisplayTemplate>
                                     @L[context.PaymentMethod.ToString()]
                                 </DisplayTemplate>
                             </DataGridColumn>
-                            <DataGridColumn TextAlignment="TextAlignment.Center" Field="@nameof(OrderDto.TotalAmount)" Caption="@L["CheckoutAmount"]">
+                            <DataGridColumn TextAlignment="TextAlignment.Center" Field="@nameof(GroupBuyReportOrderDto.TotalAmount)" Caption="@L["CheckoutAmount"]">
                                 <DisplayTemplate>
                                     $ @context.TotalAmount.ToString("N2")
                                 </DisplayTemplate>
@@ -168,7 +167,7 @@
                         </DataGridColumns>
                         <DetailRowTemplate>
                             @{
-                                var orderItems = (context as OrderDto).OrderItems;
+                                var orderItems = (context as GroupBuyReportOrderDto).OrderItems;
                                 <div class="mx-2  col-12" style="background-color:white;">
                                     <table class="tbl w-100 mb-3">
                                         <tbody>
@@ -176,18 +175,7 @@
                                             {
                                                 <tr>
                                                     <td>@item.SKU</td>
-                                                    @if (item.ItemType == ItemType.Item)
-                                                    {
-                                                        <td>@item.Item?.ItemName</td>
-                                                    }
-                                                    else if (item.ItemType == ItemType.SetItem)
-                                                    {
-                                                        <td>@item.SetItem?.SetItemName</td>
-                                                    }
-                                                    else if (item.ItemType == ItemType.Freebie)
-                                                    {
-                                                        <td>@item.Freebie?.ItemName</td>
-                                                    }
+                                                    <td>@item.Name</td>
                                                     <td>@item.Spec</td>
                                                     <td>@item.Quantity</td>
                                                 </tr>

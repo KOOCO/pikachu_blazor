@@ -30,7 +30,6 @@ using System.IO;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
@@ -42,11 +41,8 @@ using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
 using Volo.Abp.Identity;
-using Volo.Abp.Localization;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Security.Encryption;
-using Volo.Abp.Users;
-using static Kooco.Pikachu.Permissions.PikachuPermissions;
 
 namespace Kooco.Pikachu.Orders;
 
@@ -1464,42 +1460,33 @@ public class OrderAppService : ApplicationService, IOrderAppService
             throw;
         }
     }
-    public async Task<PagedResultDto<OrderDto>> GetReportListAsync(GetOrderListDto input, bool hideCredentials = false)
+    public async Task<PagedResultDto<GroupBuyReportOrderDto>> GetReportListAsync(GetOrderListDto input, bool hideCredentials = false)
     {
         if (input.Sorting.IsNullOrEmpty())
         {
-            input.Sorting = $"{nameof(Order.CreationTime)} desc";
+            input.Sorting = $"{nameof(GroupBuyReportOrderModel.CreationTime)} desc";
         }
 
-        var totalCount = await _orderRepository.CountAllAsync(input.Filter, input.GroupBuyId, input.StartDate, input.EndDate, input.OrderStatus);
+        var data = await _orderRepository.GetReportListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.GroupBuyId, input.OrderIds, input.StartDate, input.EndDate, input.OrderStatus);
 
-        var items = await _orderRepository.GetAllListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.GroupBuyId, input.OrderIds, input.StartDate, input.EndDate, input.OrderStatus);
+        var dtos = ObjectMapper.Map<List<GroupBuyReportOrderModel>, List<GroupBuyReportOrderDto>>(data.Items);
 
-        try
+        if (hideCredentials)
         {
-            var dtos = ObjectMapper.Map<List<Order>, List<OrderDto>>(items);
-
-            if (hideCredentials)
+            var groupbuy = await _groupBuyRepository.GetAsync(input.GroupBuyId.Value);
+            if (groupbuy.ProtectPrivacyData)
             {
-                var groupbuy = await _groupBuyRepository.GetAsync(input.GroupBuyId.Value);
-                if (groupbuy.ProtectPrivacyData)
-                {
-                    dtos.HideCredentials();
-                }
+                dtos.HideCredentials();
             }
-
-            return new PagedResultDto<OrderDto>
-            {
-                TotalCount = totalCount,
-                Items = dtos
-            };
         }
-        catch (Exception e)
+
+        return new PagedResultDto<GroupBuyReportOrderDto>
         {
-
-            throw;
-        }
+            TotalCount = data.TotalCount,
+            Items = dtos
+        };
     }
+
     public async Task<PagedResultDto<OrderDto>> GetTenantOrderListAsync(GetOrderListDto input)
     {
         using (_dataFilter.Disable<IMultiTenant>())

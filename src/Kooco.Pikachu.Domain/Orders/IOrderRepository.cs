@@ -67,5 +67,6 @@ namespace Kooco.Pikachu.Orders
         Task<string> GetOrderNoByOrderId(Guid OrderId);
         Task<List<Order>> GetOrdersToCloseAsync();
         Task<long> ReturnOrderNotificationCountAsync();
+        Task<GroupBuyReportModelWithCount> GetReportListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId, List<Guid> orderId, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null);
     }
 }

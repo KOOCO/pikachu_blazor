@@ -19,9 +19,9 @@ public partial class GroupBuyReportDetails
     [Parameter]
     public string Id { get; set; }
     private GroupBuyReportDetailsDto ReportDetails { get; set; }
-    private List<OrderDto> Orders { get; set; } = [];
+    private List<GroupBuyReportOrderDto> Orders { get; set; } = [];
     private int TotalCount { get; set; }
-    private OrderDto SelectedOrder { get; set; }
+    private GroupBuyReportOrderDto SelectedOrder { get; set; }
     private int PageIndex { get; set; } = 1;
     private int PageSize { get; set; } = 10;
     private string? Sorting { get; set; }
@@ -41,12 +41,11 @@ public partial class GroupBuyReportDetails
         }
         catch (Exception ex)
         {
-            await _uiMessageService.Error(ex.GetType().ToString());
-            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            await HandleErrorAsync(ex);
         }
     }
 
-    private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<OrderDto> e)
+    private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<GroupBuyReportOrderDto> e)
     {
         PageIndex = e.Page - 1;
         await UpdateItemList();
@@ -83,8 +82,7 @@ public partial class GroupBuyReportDetails
         }
         catch (Exception ex)
         {
-            await _uiMessageService.Error(ex.GetType().ToString());
-            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            await HandleErrorAsync(ex);
         }
         finally
         {
@@ -98,7 +96,7 @@ public partial class GroupBuyReportDetails
         await UpdateItemList();
     }
 
-    void ToggleRow(DataGridRowMouseEventArgs<OrderDto> e)
+    void ToggleRow(DataGridRowMouseEventArgs<GroupBuyReportOrderDto> e)
     {
         if (ExpandedRows.Contains(e.Item.Id))
         {
@@ -135,8 +133,7 @@ public partial class GroupBuyReportDetails
         }
         catch (Exception ex)
         {
-            await _uiMessageService.Error(ex.GetType().ToString());
-            await JSRuntime.InvokeVoidAsync(ex.ToString());
+            await HandleErrorAsync(ex);
         }
         finally
         {

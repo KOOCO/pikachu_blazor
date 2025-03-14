@@ -3,10 +3,8 @@ using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Members;
-using Kooco.Pikachu.OrderHistories;
 using Kooco.Pikachu.OrderItems;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -144,6 +142,56 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
             .ThenInclude(oi => oi.Freebie)
             .ToListAsync();
     }
+
+    public async Task<GroupBuyReportModelWithCount> GetReportListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId, List<Guid> orderId, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null)
+    {
+        var query = ApplyFiltersNew(await GetQueryableAsync(), filter, groupBuyId, orderId, startDate, endDate, orderStatus)
+            .Include(o => o.GroupBuy)
+            .Include(o => o.StoreComments)
+            .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.Item)
+            .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.SetItem)
+            .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.Freebie)
+            .Select(o => new GroupBuyReportOrderModel
+            {
+                Id = o.Id,
+                OrderNo = o.OrderNo,
+                CreationTime = o.CreationTime,
+                CustomerName = o.CustomerName,
+                CustomerEmail = o.CustomerEmail,
+                OrderStatus = o.OrderStatus,
+                ShippingStatus = o.ShippingStatus,
+                PaymentMethod = o.PaymentMethod,
+                TotalAmount = o.TotalAmount,
+                GroupBuyId = o.GroupBuyId,
+                OrderItems = o.OrderItems
+                    .Select(oi => new GroupBuyReportOrderItemsModel
+                    {
+                        Id = oi.Id,
+                        SKU = oi.SKU,
+                        Name = oi.ItemType == ItemType.Item ? (oi.Item != null ? oi.Item.ItemName : null) 
+                            : (oi.ItemType == ItemType.SetItem ? (oi.SetItem != null ? oi.SetItem.SetItemName : null) : (oi.Freebie != null ? oi.Freebie.ItemName : null)),
+                        Spec = oi.Spec,
+                        Quantity = oi.Quantity,
+                        ItemType = oi.ItemType
+                    }).ToList()
+            });
+
+        var totalCount = await query.LongCountAsync();
+        var items = await query
+            .OrderBy(sorting)
+            .PageBy(skipCount, maxResultCount)
+            .ToListAsync();
+
+        return new GroupBuyReportModelWithCount
+        {
+            TotalCount = totalCount,
+            Items = items
+        };
+    }
+
     public async Task<long> CountReconciliationAsync(string? filter, Guid? groupBuyId, DateTime? startDate, DateTime? endDate)
     {
         return await ApplyReconciliationFilters((await GetQueryableAsync()).Include(o => o.GroupBuy), filter, groupBuyId, null, startDate, endDate).CountAsync();

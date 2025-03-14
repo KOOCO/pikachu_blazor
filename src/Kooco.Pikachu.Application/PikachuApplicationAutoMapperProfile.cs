@@ -343,5 +343,8 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<OrderHistory, OrderHistoryDto>();
 
         CreateMap<OrderTransaction, OrderTransactionDto>();
+
+        CreateMap<GroupBuyReportOrderModel, GroupBuyReportOrderDto>();
+        CreateMap<GroupBuyReportOrderItemsModel, GroupBuyReportOrderItemsDto>();
     }
 }

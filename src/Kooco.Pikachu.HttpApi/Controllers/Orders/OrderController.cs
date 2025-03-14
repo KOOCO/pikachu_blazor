@@ -549,7 +549,7 @@ public class OrderController : AbpController, IOrderAppService
     }
 
     [HttpGet("get-report-list")]
-    public Task<PagedResultDto<OrderDto>> GetReportListAsync(GetOrderListDto input, bool hideCredentials = false)
+    public Task<PagedResultDto<GroupBuyReportOrderDto>> GetReportListAsync(GetOrderListDto input, bool hideCredentials = false)
     {
         return _ordersAppService.GetReportListAsync(input, hideCredentials);
     }

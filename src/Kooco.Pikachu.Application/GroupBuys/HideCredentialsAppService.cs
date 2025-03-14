@@ -17,6 +17,17 @@ namespace Kooco.Pikachu.GroupBuys
             });
             return data;
         }
+
+        public static List<GroupBuyReportOrderDto> HideCredentials(this List<GroupBuyReportOrderDto> data)
+        {
+            data.ForEach(item =>
+            {
+                item.CustomerName = item.CustomerName.HideCredentials();
+                item.CustomerEmail = item.CustomerEmail.HideCredentials();
+            });
+            return data;
+        }
+
         public static string HideCredentials(this string input)
         {
             if (string.IsNullOrEmpty(input))
