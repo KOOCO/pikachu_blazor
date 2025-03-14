@@ -3,6 +3,7 @@ using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.MultiTenancy;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Permissions;
+using Kooco.Pikachu.Refunds;
 using Microsoft.Extensions.DependencyInjection;
 using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Identity.Blazor;
@@ -178,14 +179,25 @@ public class PikachuMenuContributor : IMenuContributor
         }
 
         orderMangment.AddItem(returnAndExchangeMenu);
-        orderMangment.AddItem(new ApplicationMenuItem(
-        name: "Refund",
-        icon: "fas fa-stamp",
-        displayName: l["RefundsList"],
-        url: "/Refund",
-        requiredPermissionName: PikachuPermissions.Orders.Default)
-        );
-        orderMangment.AddItem(new ApplicationMenuItem(
+        var refundmenu = new ApplicationMenuItem(
+         name: "Refund",
+         icon: "fas fa-stamp",
+         displayName: l["RefundsList"],
+         url: "/Refund",
+         requiredPermissionName: PikachuPermissions.Orders.Default);
+        
+        using (var scope = context.ServiceProvider.CreateScope())
+        {
+            var refundService = scope.ServiceProvider.GetRequiredService<RefundAppService>();
+
+            // Fetch notification count
+            int returnExchangeOrderCount = (int)await refundService.GetRefundPendingCount();
+
+            // Store count as an HTML attribute (JavaScript will use this)
+            refundmenu.CustomData["data-notification-count"] = returnExchangeOrderCount.ToString();
+        }
+        orderMangment.AddItem(refundmenu);
+       orderMangment.AddItem(new ApplicationMenuItem(
         name: "EnterpricePurchase",
         icon: "fas fa-stamp",
         displayName: l["EnterpricePurchase"],

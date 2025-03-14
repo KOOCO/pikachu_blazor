@@ -35,6 +35,11 @@ public class RefundController(
     {
         return _refundAppService.GetListAsync(input);
     }
+    [HttpGet]
+    public Task<long> GetRefundPendingCount()
+    {
+        return _refundAppService.GetRefundPendingCount();
+    }
 
     [HttpPost("send-refund-request")]
     public Task SendRefundRequestAsync(Guid id)

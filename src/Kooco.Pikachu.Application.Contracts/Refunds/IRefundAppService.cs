@@ -14,5 +14,6 @@ namespace Kooco.Pikachu.Refunds
         Task SendRefundRequestAsync(Guid id);
 
         Task CheckStatusAndRequestRefundAsync(Guid id);
+        Task<long> GetRefundPendingCount();
     }
 }

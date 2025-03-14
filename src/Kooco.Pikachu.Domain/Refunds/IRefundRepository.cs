@@ -13,5 +13,6 @@ namespace Kooco.Pikachu.Refunds
         Task<long> GetCountAsync(string? filter);
         Task<List<Refund>> GetListAsync(int skipCount, int maxResultCount, string sorting, string? filter);
         Task<Refund> GetAsync(Guid Id);
+        Task<long> GetRundPendingCountAsync();
      }
 }

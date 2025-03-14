@@ -21,6 +21,11 @@ namespace Kooco.Pikachu.Refunds
             var query = (await GetQueryableAsync()).Include(x => x.Order);
             return await ApplyFilter(query, filter).LongCountAsync();
         }
+        public async Task<long> GetRundPendingCountAsync()
+        {
+            var query = (await GetQueryableAsync()).Include(x => x.Order).Where(x=>x.RefundReview==EnumValues.RefundReviewStatus.PendingReview);
+            return await query.LongCountAsync();
+        }
 
         public async Task<List<Refund>> GetListAsync(int skipCount, int maxResultCount, string sorting, string? filter)
         {

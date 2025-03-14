@@ -154,7 +154,7 @@ public class ItemAppService :
                 item.CategoryProducts.Add(new CategoryProduct(item.Id, itemCategory.ProductCategoryId.Value));
             }
         }
-
+        item.IsItemAvaliable = input.IsItemAvaliable;
         await _itemRepository.InsertAsync(item);
         return ObjectMapper.Map<Item, ItemDto>(item);
     }

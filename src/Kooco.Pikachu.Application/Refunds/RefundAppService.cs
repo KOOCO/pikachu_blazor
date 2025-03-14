@@ -125,7 +125,11 @@ public class RefundAppService : ApplicationService, IRefundAppService
             Items = ObjectMapper.Map<List<Refund>, List<RefundDto>>(items)
         };
     }
+    public async Task<long> GetRefundPendingCount()
+    {
+      return  await _refundRepository.GetRundPendingCountAsync();
 
+    }
     public async Task<RefundDto> UpdateRefundReviewAsync(Guid id, RefundReviewStatus input, string? rejectReason = null)
     {
         Refund refund = await _refundRepository.GetAsync(id);
