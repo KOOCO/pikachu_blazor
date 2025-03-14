@@ -62,7 +62,7 @@ public partial class OrderDetails
     private IReadOnlyList<OrderMessageDto> CustomerServiceHistory { get; set; }=[];
     private Modal CreateShipmentModal { get; set; }
     private Modal RefundModal { get; set; }
-    private LoadingIndicator loading { get; set; } = new();
+    private bool loading { get; set; } = true;
     private bool IsItemsEditMode { get; set; } = false;
     private List<OrderDeliveryDto> OrderDeliveries { get; set; }
     private readonly HashSet<Guid> ExpandedRows = new();
@@ -142,16 +142,17 @@ public partial class OrderDetails
         {
             try
             {
-                await loading.Show();
+                loading=true;
                 OrderId = Guid.Parse(id);
                 await GetOrderDetailsAsync();
                
                 await base.OnInitializedAsync();
-                await loading.Hide();
+                loading=false;
+                StateHasChanged();
             }
             catch (Exception ex)
             {
-                await loading.Hide();
+                loading=false;
                 await HandleErrorAsync(ex);
             }
         }
@@ -288,7 +289,7 @@ public partial class OrderDetails
     {
         try
         {
-            await loading.Show();
+            loading=true;
             string comment = StoreComments.Comment;
             if (comment.IsNullOrWhiteSpace())
             {
@@ -306,11 +307,11 @@ public partial class OrderDetails
 
             StoreComments = new();
             await GetOrderDetailsAsync();
-            await loading.Hide();
+            loading=false;
         }
         catch (Exception ex)
         {
-            await loading.Hide();
+            loading=false;
             await HandleErrorAsync(ex);
         }
     }
@@ -327,7 +328,7 @@ public partial class OrderDetails
     {
         try
         {
-            await loading.Show();
+            loading=true;
             string comment = StoreCustomerService.Message;
             StoreCustomerService.SenderId = CurrentUser.Id;
             StoreCustomerService.OrderId = Order.Id;
@@ -350,12 +351,12 @@ public partial class OrderDetails
            var result= await _OrderMessageAppService.GetListAsync(new GetOrderMessageListDto { MaxResultCount = 1000, OrderId = Order.Id });
             CustomerServiceHistory = result.Items;
 
-            await loading.Hide();
+            loading=false;
             StateHasChanged();
         }
         catch (Exception ex)
         {
-            await loading.Hide();
+            loading=false;
             await HandleErrorAsync(ex);
         }
     }
@@ -1205,18 +1206,18 @@ public partial class OrderDetails
                                 ModificationTrack.NewCVSStoreOutSideFrozen :
                                 Order.CVSStoreOutSideFrozen;
 
-            await loading.Show();
+            loading=true;
             UpdateOrder.OrderStatus = Order.OrderStatus;
             UpdateOrder.ShouldSendEmail = true;
 
             Order = await _orderAppService.UpdateAsync(OrderId, UpdateOrder);
             ModificationTrack = new();
             await InvokeAsync(StateHasChanged);
-            await loading.Hide();
+            loading=false;
         }
         catch (Exception ex)
         {
-            await loading.Hide();
+            loading=false;
             await HandleErrorAsync(ex);
         }
 
@@ -1240,17 +1241,17 @@ public partial class OrderDetails
                 var confirmed = await _uiMessageService.Confirm(L["AreYouSureToCancelOrder?"]);
                 if (confirmed)
                 {
-                    await loading.Show();
+                    loading=true;
                     await _orderAppService.CancelOrderAsync(OrderId);
                     await GetOrderDetailsAsync();
                     await InvokeAsync(StateHasChanged);
-                    await loading.Hide();
+                    loading=false;
                 }
             }
         }
         catch (Exception ex)
         {
-            await loading.Hide();
+            loading=false;
             await HandleErrorAsync(ex);
         }
     }
@@ -1268,29 +1269,29 @@ public partial class OrderDetails
     }
     private async void OrderItemShipped(OrderDeliveryDto deliveryOrder)
     {
-        await loading.Show();
+        loading=true;
         OrderDeliveryId = deliveryOrder.Id;
         await _orderDeliveryAppService.UpdateOrderDeliveryStatus(OrderDeliveryId);
         await GetOrderDetailsAsync();
         await InvokeAsync(StateHasChanged);
-        await loading.Hide();
+        loading=false;
 
     }
     private async void TestLabel(OrderDeliveryDto deliveryOrder)
     {
         if (deliveryOrder.DeliveryMethod == DeliveryMethod.SevenToEleven1 || deliveryOrder.DeliveryMethod == DeliveryMethod.FamilyMart1)
         {
-            await loading.Show();
+            loading=true;
 
             var result = await _testLableAppService.TestLableAsync(deliveryOrder.DeliveryMethod == DeliveryMethod.SevenToEleven1 ? "UNIMART" : "FAMI");
             await InvokeAsync(StateHasChanged);
-            await loading.Hide();
+            loading=false;
         }
 
     }
     private async void CreateOrderLogistics(OrderDeliveryDto deliveryOrder)
     {
-        await loading.Show();
+        loading=true;
 
         try
         {
@@ -1435,7 +1436,7 @@ public partial class OrderDetails
                         if (result.ResponseCode is not "1")
                         {
                             await _uiMessageService.Error(result.ResponseMessage);
-                            await loading.Hide();
+                            loading=false;
                         }
                         else if (result.ResponseCode is "1")
                         {
@@ -1481,7 +1482,7 @@ public partial class OrderDetails
                         if (result.ResponseCode is not "1")
                         {
                             await _uiMessageService.Error(result.ResponseMessage);
-                            await loading.Hide();
+                            loading=false;
                         }
                         else if (result.ResponseCode is "1")
                         {
@@ -1554,7 +1555,7 @@ public partial class OrderDetails
                         if (result.ResponseCode is not "1")
                         {
                             await _uiMessageService.Error(result.ResponseMessage);
-                            await loading.Hide();
+                            loading=false;
                         }
                         else if (result.ResponseCode is "1")
                         {
@@ -1592,7 +1593,7 @@ public partial class OrderDetails
                 if (result.ResponseCode is not "1")
                 {
                     await _uiMessageService.Error(result.ResponseMessage);
-                    await loading.Hide();
+                    loading=false;
                 }
                 else if (result.ResponseCode is "1")
                 {
@@ -1602,13 +1603,13 @@ public partial class OrderDetails
 
             await GetOrderDetailsAsync();
             await InvokeAsync(StateHasChanged);
-            await loading.Hide();
+            loading=false;
         }
         catch (Exception e)
         {
             await GetOrderDetailsAsync();
             await InvokeAsync(StateHasChanged);
-            await loading.Hide();
+            loading=false;
 
         }
     }
@@ -1754,7 +1755,7 @@ public partial class OrderDetails
             }
             else if (refunds.IsRefundItems)
             {
-                await loading.Show();
+                loading=true;
                 
                 List<Guid>? orderItemIds = [.. Order?.OrderItems.Where(x => x.IsSelected).Select(x => x.Id)];
                 
@@ -1762,14 +1763,14 @@ public partial class OrderDetails
                 {
                     await _uiMessageService.Error("Please Select Order Item");
                     
-                    await loading.Hide();
+                    loading=false;
                 
                     return;
                 }
                 
                 if (Order.OrderItems.Count == Order?.OrderItems.Count(c => c.IsSelected))
                 {
-                    await loading.Hide();
+                    loading=false;
 
                     await ApplyRefund();
 
@@ -1782,19 +1783,19 @@ public partial class OrderDetails
 
                 await _orderAppService.RefundOrderItems(orderItemIds, OrderId);
 
-                await loading.Hide();
+                loading=false;
 
                 await RefundModal.Hide();
             }
             else 
             {
-                await loading.Show();
+                loading=true;
 
                 if(refunds.Amount is 0)
                 {
                     await _uiMessageService.Error("Please Enter Amount");
                     
-                    await loading.Hide();
+                    loading=false;
 
                     return;
                 }
@@ -1803,14 +1804,14 @@ public partial class OrderDetails
                 {
                     await _uiMessageService.Error("Enter amount is greater than order amount");
 
-                    await loading.Hide();
+                    loading=false;
 
                     return;
                 }
                 
                 await _orderAppService.RefundAmountAsync(refunds.Amount, OrderId);
                 
-                await loading.Hide();
+                loading=false;
 
                 await RefundModal.Hide();
             }
@@ -1818,7 +1819,7 @@ public partial class OrderDetails
         catch (Exception ex)
         {
             await HandleErrorAsync(ex);
-            await loading.Hide();
+            loading=false;
         }
         finally
         {
@@ -1855,7 +1856,7 @@ public partial class OrderDetails
     {
         try
         {
-            await loading.Show();
+            loading=true;
             
             UpdateOrder.ShippingNumber = shipments.ShippingNumber;
             
@@ -1875,7 +1876,7 @@ public partial class OrderDetails
         }
         finally
         {
-            await loading.Hide();
+            loading=false;
         }
     }
     private async void SplitOrder()
@@ -1914,11 +1915,11 @@ public partial class OrderDetails
 
         if (!isValid) return;
 
-        await loading.Show();
+        loading=true;
         await _orderAppService.UpdateOrderItemsAsync(OrderId, EditingItems);
         CancelOrderItemChanges();
         await GetOrderDetailsAsync();
-        await loading.Hide();
+        loading=false;
         await InvokeAsync(StateHasChanged);
     }
 
@@ -2018,7 +2019,7 @@ public partial class OrderDetails
           
             if (confimation)
             {
-                await loading.Show();
+                loading=true;
                 
                 await _refundAppService.CreateAsync(OrderId);
                 
@@ -2032,7 +2033,7 @@ public partial class OrderDetails
         }
         finally
         {
-            await loading.Hide();
+            loading=false;
         }
     }
 
@@ -2162,7 +2163,7 @@ public partial class OrderDetails
     {
         try
         {
-            await loading.Show();
+            loading=true;
 
             if (selectedValue is ShippingStatus.PrepareShipment)
             {
@@ -2176,7 +2177,7 @@ public partial class OrderDetails
                 await GetOrderDetailsAsync();
                 await OnInitializedAsync();
                 StateHasChanged();
-                await loading.Hide();
+                loading=false;
 
             }
             else if (selectedValue is ShippingStatus.ToBeShipped)
@@ -2189,7 +2190,7 @@ public partial class OrderDetails
 				}
 				await GetOrderDetailsAsync();
                 await base.OnInitializedAsync();
-                await loading.Hide();
+                loading=false;
 
             }
             else if (selectedValue is ShippingStatus.Shipped)
@@ -2201,7 +2202,7 @@ public partial class OrderDetails
 				}
 				await GetOrderDetailsAsync();
                 await base.OnInitializedAsync();
-                await loading.Hide();
+                loading=false;
 
             }
             else if (selectedValue is ShippingStatus.Completed)
@@ -2213,14 +2214,14 @@ public partial class OrderDetails
 				}
 				await GetOrderDetailsAsync();
                 await base.OnInitializedAsync();
-                await loading.Hide();
+                loading=false;
             }
             else if (selectedValue is ShippingStatus.Closed)
             {
                 await _orderAppService.OrderClosed(Order.Id);
                 await GetOrderDetailsAsync();
                 await base.OnInitializedAsync();
-                await loading.Hide();
+                loading=false;
             }
             else {
 				var result = await _orderAppService.ChangeOrderStatus(Order.Id,selectedValue);
@@ -2230,11 +2231,11 @@ public partial class OrderDetails
 				}
 				await GetOrderDetailsAsync();
                 await base.OnInitializedAsync();
-                await loading.Hide();
+                loading=false;
 
             }
             
-            await loading.Hide();
+            loading=false;
         }
         catch (Exception ex)
         {
@@ -2242,7 +2243,7 @@ public partial class OrderDetails
         }
         finally
         {
-            await loading.Hide();
+            loading=false;
         }
     }
     public class StoreCommentsModel

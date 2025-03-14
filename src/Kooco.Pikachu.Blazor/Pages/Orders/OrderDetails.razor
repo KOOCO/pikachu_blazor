@@ -71,9 +71,227 @@
     }
 
 </style>
+@if(loading)
+{ 
+    <Skeleton Animation="SkeletonAnimation.Pulse">
+         <SkeletonItem ColumnSize="ColumnSize.Is3" Class="mb-2" />
+    <div class="row">
+    <div class="col-md-6 col-sm-12">
+        <Card>
+            <CardBody>
+                <div class="row">
+                    <div class="col-12">
+                        <table class="w-100">
+                            <tbody>
+                                <tr>
+                                    <td><SkeletonItem ColumnSize="ColumnSize.Is3" /></td>
+                                    <td><SkeletonItem ColumnSize="ColumnSize.Is3" /></td>
+                                </tr>
+                                <tr>
+                                    <td><SkeletonItem ColumnSize="ColumnSize.Is3" /></td>
+                                    <td><SkeletonItem ColumnSize="ColumnSize.Is3" /></td>
+                                </tr>
+                                <tr>
+                                    <td><SkeletonItem ColumnSize="ColumnSize.Is3" /></td>
+                                    <td><SkeletonItem ColumnSize="ColumnSize.Is3" /></td>
+                                </tr>
+                                <tr>
+                                    <td><SkeletonItem ColumnSize="ColumnSize.Is3" /></td>
+                                    <td><SkeletonItem ColumnSize="ColumnSize.Is3" /></td>
+                                </tr>
+                                <tr>
+                                    <td><SkeletonItem ColumnSize="ColumnSize.Is3" /></td>
+                                    <td><SkeletonItem ColumnSize="ColumnSize.Is3" /></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <Divider></Divider>
+                <div class="row">
+                    <div class="col-12">
+                        <table class="w-100">
+                            <tbody>
+                                <tr>
+                                    <td><SkeletonItem ColumnSize="ColumnSize.Is3" /></td>
+                                    <td><SkeletonItem ColumnSize="ColumnSize.Is3" /></td>
+                                </tr>
+                                <tr>
+                                    <td><SkeletonItem ColumnSize="ColumnSize.Is3" /></td>
+                                    <td><SkeletonItem ColumnSize="ColumnSize.Is3" /></td>
+                                </tr>
+                                <tr>
+                                    <td><SkeletonItem ColumnSize="ColumnSize.Is3" /></td>
+                                    <td><SkeletonItem ColumnSize="ColumnSize.Is3" /></td>
+                                </tr>
+                                <tr>
+                                    <td><SkeletonItem ColumnSize="ColumnSize.Is3" /></td>
+                                    <td><SkeletonItem ColumnSize="ColumnSize.Is3" /></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <Divider></Divider>
+                <div class="row">
+                    <div class="col-12">
+                        <table class="w-100">
+                            <tbody>
+                                <tr>
+                                    <td colspan="2">
+                                        <Div Width="Width.Max100">
+                                            <SkeletonItem ColumnSize="ColumnSize.Is3" />
+                                        </Div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><SkeletonItem ColumnSize="ColumnSize.Is3" /></td>
+                                    <td class="d-flex justify-content-between">
+                                        <SkeletonItem ColumnSize="ColumnSize.Is3" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </CardBody>
+        </Card>
+    </div>
 
-<h3>@L["OrderDetails"]</h3>
-<LoadingIndicator @ref="loading" FullScreen FadeIn>
+    <div class="col-md-6 col-sm-12">
+        <div class="row mb-2">
+            <div class="col-md-6 col-sm-12">
+                <SkeletonItem ColumnSize="ColumnSize.Is3" />
+                <SkeletonItem ColumnSize="ColumnSize.Is3" />
+                <SkeletonItem ColumnSize="ColumnSize.Is3" />
+            </div>
+            <div class="col-md-6 col-sm-12 text-lg-end">
+                <SkeletonItem ColumnSize="ColumnSize.Is3" />
+                <SkeletonItem ColumnSize="ColumnSize.Is3" />
+            </div>
+        </div>
+        <Card>
+            <CardBody>
+                <div class="row">
+                    <div class="col-12 d-flex justify-content-between">
+                        <SkeletonItem ColumnSize="ColumnSize.Is3" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 d-flex justify-content-between">
+                        <SkeletonItem ColumnSize="ColumnSize.Is4" />
+                    </div>
+                </div>
+            </CardBody>
+        </Card>
+        <Card>
+            <CardBody>
+                <SkeletonItem ColumnSize="ColumnSize.Is12" />
+            </CardBody>
+        </Card>
+        <Card>
+            <CardBody>
+                <div class="row">
+                    <div class="col-12 d-flex justify-content-between">
+                        <SkeletonItem ColumnSize="ColumnSize.Is3" />
+                    </div>
+                </div>
+                <div class="order-history-container">
+                    <SkeletonTable Rows="5" Columns="4" />
+                </div>
+            </CardBody>
+        </Card>
+    </div>
+</div>
+      
+        <div class="row">
+        <div class="col-6">
+          <SkeletonItem ColumnSize="ColumnSize.Is3"  />
+        </div>
+     
+            <div class="col-6 text-end">
+              
+                   <SkeletonItem ColumnSize="ColumnSize.Is2"  />
+                
+            </div>
+        
+        <div class="col-12">
+            <Card>
+                <CardBody>
+                  <SkeletonTable Rows="5" Columns="5" />
+                </CardBody>
+            </Card>
+        </div>
+    </div>
+
+     <div class="row">
+        <div class="col-6">
+            <SkeletonItem ColumnSize="ColumnSize.Is3" Class="mb-2" />
+        </div>
+
+        <div class="col-12">
+            <Card>
+                <CardBody>
+                        <SkeletonTable Rows="5" Columns="4" />
+                </CardBody>
+            </Card>
+        </div>
+    </div>
+      <div class="row">
+        <div class="col-6">
+            <SkeletonItem ColumnSize="ColumnSize.Is3" Class="mb-2" />
+            <Card>
+                <CardBody>
+                    <div class="row">
+                       <SkeletonItem ColumnSize="ColumnSize.Is12"  />
+                    </div>
+                </CardBody>
+            </Card>
+        </div>
+        <div class="col-6">
+            <SkeletonItem ColumnSize="ColumnSize.Is3" Class="mb-2" />
+            <Card>
+                <CardBody>
+                    <div class="row">
+                        <SkeletonItem ColumnSize="ColumnSize.Is12"  />
+                         <SkeletonItem ColumnSize="ColumnSize.Is12"  />
+                          <SkeletonItem ColumnSize="ColumnSize.Is12"  />
+                    </div>
+                </CardBody>
+            </Card>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+             <SkeletonItem ColumnSize="ColumnSize.Is3" Class="mb-2" />
+            <Card>
+                <CardBody>
+                    <div class="row">
+                        <SkeletonItem ColumnSize="ColumnSize.Is12"  />
+                    </div>
+                </CardBody>
+            </Card>
+        </div>
+           <div class="col-6">
+            <SkeletonItem ColumnSize="ColumnSize.Is3" Class="mb-2" />
+            <Card>
+                <CardBody>
+                    <div class="row">
+                        <SkeletonItem ColumnSize="ColumnSize.Is12"  />
+                         <SkeletonItem ColumnSize="ColumnSize.Is12"  />
+                          <SkeletonItem ColumnSize="ColumnSize.Is12"  />
+                    </div>
+                </CardBody>
+            </Card>
+        </div>
+    </div>
+       </Skeleton>
+        
+}
+
+
+    <div style="@($"display: {(loading ? "none" : "block")};" )">
+    <h3>@L["OrderDetails"]</h3>
     <div class="row">
         <div class="col-md-6 col-sm-12">
             <Card>
@@ -2616,6 +2834,7 @@
             </Card>
         </div>
     </div>
+    </div>
     <Modal @ref="CreateShipmentModal">
         <ModalBackdrop />
         <ModalContent IsCentered="true">
@@ -2859,7 +3078,7 @@
             </EditForm>
         </ModalContent>
     </Modal>
-</LoadingIndicator>
+
 
 @code {
     private Dictionary<Guid, bool> _deliveryCostRendered = new Dictionary<Guid, bool>();
