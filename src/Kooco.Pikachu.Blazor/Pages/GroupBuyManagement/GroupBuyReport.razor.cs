@@ -17,7 +17,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         readonly int PageSize = 10;
         int Total = 0;
         private string Sorting = nameof(Groupbuys.GroupBuyReport.GroupBuyName);
-        private LoadingIndicator Loading { get; set; } = new();
+        private bool Loading { get; set; } = true;
 
         private async Task UpdateGroupBuyReport()
         {
@@ -36,7 +36,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         {
             try
             {
-                await Loading.Show();
+               Loading=true;
                 PageIndex = e.Page - 1;
                 await UpdateGroupBuyReport();
                 StateHasChanged();
@@ -48,7 +48,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             }
             finally
             {
-                await Loading.Hide();
+                Loading=false;
             }
         }
 
@@ -56,7 +56,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         {
             try
             {
-                await Loading.Show();
+               Loading=true;
                 Sorting = e.FieldName + " " + (e.SortDirection != SortDirection.Default ? e.SortDirection : "");
                 await UpdateGroupBuyReport();
                 StateHasChanged();
@@ -68,7 +68,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
             }
             finally
             {
-                await Loading.Hide();
+                Loading=false;
             }
         }
     }
