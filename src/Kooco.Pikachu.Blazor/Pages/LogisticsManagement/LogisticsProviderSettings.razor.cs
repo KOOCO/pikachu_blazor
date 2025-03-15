@@ -224,7 +224,7 @@ public partial class LogisticsProviderSettings
         IsTCat711FrozenNotExists = !providers.Any(a => a.LogisticProvider is LogisticProviders.TCat711Frozen);
 
         FamilyMartEnabledOption = familyMart?.IsEnabled == true ? B2C : (familyMartC2C?.IsEnabled == true ? C2C : null);
-        SevenElevenEnabledOption = sevenToEleven?.IsEnabled == true ? B2C : (sevenToElevenC2C?.IsEnabled == true ? C2C : null);
+        SevenElevenEnabledOption = (sevenToEleven?.IsEnabled == true || sevenToElevenFrozen?.IsEnabled == true) ? B2C : (sevenToElevenC2C?.IsEnabled == true ? C2C : null);
     }
 
     public void OuterIslandsChecked(bool e)
@@ -399,6 +399,12 @@ public partial class LogisticsProviderSettings
     {
         try
         {
+            if (SevenElevenEnabledOption == B2C && SevenToElevenFrozen.IsEnabled)
+            {
+                await Message.Error(L[SevenElevenErrorMessage]);
+                return;
+            }
+
             var confirm = await _uiMessageService.Confirm(L["AreYouSureToUpdate7-11Frozen?"]);
             if (!confirm)
                 return;
