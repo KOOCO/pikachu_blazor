@@ -35,7 +35,7 @@ public class RefundController(
     {
         return _refundAppService.GetListAsync(input);
     }
-    [HttpGet]
+    [HttpGet("pending-refund-count")]
     public Task<long> GetRefundPendingCount()
     {
         return _refundAppService.GetRefundPendingCount();
