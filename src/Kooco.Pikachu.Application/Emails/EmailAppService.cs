@@ -64,9 +64,9 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body.Replace("{{CustomerEmail}}", order.CustomerEmail);
             body = body.Replace("{{CustomerPhone}}", order.CustomerPhone);
             body = body.Replace("{{PaymentMethod}}", L[order.PaymentMethod.ToString()]);
-            body = body.Replace("{{RecipientName}}", order.CVSStoreOutSide ?? order.RecipientName);
+            body = body.Replace("{{RecipientName}}", order.RecipientName);
             body = body.Replace("{{RecipientPhone}}", order.RecipientPhone);
-            body = body.Replace("{{RecipientAddress}}", order.StoreAddress ?? $"{order.City} {order.AddressDetails}");
+            body = body.Replace("{{RecipientAddress}}", GetAddress(order));
             body = body.Replace("{{ShippingMethod}}", $"{L[order.DeliveryMethod.ToString()]} {order.ShippingNumber}");
             body = body.Replace("{{OrderNotes}}", order.Remarks);
 
@@ -124,7 +124,7 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body.Replace("{{CustomerName}}", order.CustomerName);
             body = body.Replace("{{CustomerEmail}}", order.CustomerEmail);
             body = body.Replace("{{CustomerPhone}}", order.CustomerPhone);
-            body = body.Replace("{{RecipientName}}", order.CVSStoreOutSide ?? order.RecipientName);
+            body = body.Replace("{{RecipientName}}", order.RecipientName);
             body = body.Replace("{{RecipientPhone}}", order.RecipientPhone);
             if (!groupbuy.IsEnterprise)
             {
@@ -133,7 +133,7 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body.Replace("{{PaymentStatus}}", L[order.OrderStatus.ToString()]);
             body = body.Replace("{{ShippingMethod}}", $"{L[order.DeliveryMethod.ToString()]} {order.ShippingNumber}");
             body = body.Replace("{{DeliveryFee}}", $"${deliveryCost:N0}");
-            body = body.Replace("{{RecipientAddress}}", order.StoreAddress ?? $"{order.City} {order.AddressDetails}");
+            body = body.Replace("{{RecipientAddress}}", GetAddress(order));
             body = body.Replace("{{ShippingStatus}}", L[order.ShippingStatus.ToString()]);
             body = body.Replace("{{RecipientComments}}", order.Remarks);
             body = body.Replace("{{OrderStatus}}", status);
@@ -217,13 +217,13 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body.Replace("{{CustomerName}}", order.CustomerName);
             body = body.Replace("{{CustomerEmail}}", order.CustomerEmail);
             body = body.Replace("{{CustomerPhone}}", order.CustomerPhone);
-            body = body.Replace("{{RecipientName}}", order.CVSStoreOutSide ?? order.RecipientName);
+            body = body.Replace("{{RecipientName}}", order.RecipientName);
             body = body.Replace("{{RecipientPhone}}", order.RecipientPhone);
             body = body.Replace("{{PaymentMethod}}", !groupbuy.IsEnterprise ? L[order.PaymentMethod.ToString()] : "");
             body = body.Replace("{{PaymentStatus}}", L[order.OrderStatus.ToString()]);
             body = body.Replace("{{ShippingMethod}}", $"{L[order.DeliveryMethod.ToString()]} {order.ShippingNumber}");
             body = body.Replace("{{DeliveryFee}}", $"${deliveryCost:N0}");
-            body = body.Replace("{{RecipientAddress}}", order.StoreAddress ?? $"{order.City} {order.AddressDetails}");
+            body = body.Replace("{{RecipientAddress}}", GetAddress(order));
             body = body.Replace("{{ShippingStatus}}", L[order.ShippingStatus.ToString()]);
             body = body.Replace("{{RecipientComments}}", order.Remarks);
             body = body.Replace("{{OrderStatus}}", status);
@@ -352,9 +352,9 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body.Replace("{{CustomerEmail}}", order.CustomerEmail);
             body = body.Replace("{{CustomerPhone}}", order.CustomerPhone);
             body = body.Replace("{{PaymentMethod}}", L[order.PaymentMethod.ToString()]);
-            body = body.Replace("{{RecipientName}}", order.CVSStoreOutSide ?? order.RecipientName);
+            body = body.Replace("{{RecipientName}}", order.RecipientName);
             body = body.Replace("{{RecipientPhone}}", order.RecipientPhone);
-            body = body.Replace("{{RecipientAddress}}", order.StoreAddress ?? $"{order.City} {order.AddressDetails}");
+            body = body.Replace("{{RecipientAddress}}", GetAddress(order));
             body = body.Replace("{{ShippingMethod}}", $"{L[order.DeliveryMethod.ToString()]} {order.ShippingNumber}");
             body = body.Replace("{{OrderNotes}}", order.Remarks);
             body = body.Replace("{{RecipientComments}}", order.Remarks);
@@ -403,9 +403,9 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body.Replace("{{CustomerEmail}}", order.CustomerEmail);
             body = body.Replace("{{CustomerPhone}}", order.CustomerPhone);
             body = body.Replace("{{PaymentMethod}}", L[order.PaymentMethod.ToString()]);
-            body = body.Replace("{{RecipientName}}", order.CVSStoreOutSide ?? order.RecipientName);
+            body = body.Replace("{{RecipientName}}", order.RecipientName);
             body = body.Replace("{{RecipientPhone}}", order.RecipientPhone);
-            body = body.Replace("{{RecipientAddress}}", order.StoreAddress ?? $"{order.City} {order.AddressDetails}");
+            body = body.Replace("{{RecipientAddress}}", GetAddress(order));
             body = body.Replace("{{ShippingMethod}}", $"{L[order.DeliveryMethod.ToString()]} {order.ShippingNumber}");
             body = body.Replace("{{OrderNotes}}", order.Remarks);
             body = body.Replace("{{RecipientComments}}", order.Remarks);
@@ -457,5 +457,12 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             var restRequest = new RestRequest("", Method.Get);
             await restClient.ExecuteAsync(restRequest);
         }
+    }
+
+    private static string? GetAddress(Order order)
+    {
+        return (order.DeliveryMethod.HasValue && (order.DeliveryMethod.ToString().Contains("familymart") || order.DeliveryMethod.ToString().Contains("seventoeleven")))
+            ? order.CVSStoreOutSide
+            : $"{order.City} {order.AddressDetails}";
     }
 }
