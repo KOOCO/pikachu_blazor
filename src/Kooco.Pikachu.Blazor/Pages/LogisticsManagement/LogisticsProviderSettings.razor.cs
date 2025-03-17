@@ -399,7 +399,7 @@ public partial class LogisticsProviderSettings
     {
         try
         {
-            if (SevenElevenEnabledOption == B2C && SevenToElevenFrozen.IsEnabled)
+            if (SevenElevenEnabledOption == C2C && SevenToElevenFrozen.IsEnabled)
             {
                 await Message.Error(L[SevenElevenErrorMessage]);
                 return;
