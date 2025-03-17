@@ -554,6 +554,12 @@
                                         @L[context.PaymentMethod.ToString()]
                                     </DisplayTemplate>
                                 </DataGridColumn>
+                                  <DataGridColumn Field="@nameof(OrderDto.PaymentMethod)" Caption="@L["ShippingMethod"]">
+                                    <DisplayTemplate>
+                                       @L[context.DeliveryMethod.ToString()]
+                                    </DisplayTemplate>
+                                </DataGridColumn>
+                               
                                 <DataGridColumn TextAlignment="TextAlignment.Center" Field="@nameof(OrderDto.TotalAmount)" Caption="@L["CheckoutAmount"]">
                                     <DisplayTemplate>
                                         $ @context.TotalAmount.ToString("N2")
@@ -779,6 +785,11 @@
                                 <DataGridColumn Field="@nameof(OrderDto.PaymentMethod)" Caption="@L["PaymentMethod"]">
                                     <DisplayTemplate>
                                         @L[context.PaymentMethod.ToString()]
+                                    </DisplayTemplate>
+                                </DataGridColumn>
+                                  <DataGridColumn Field="@nameof(OrderDto.PaymentMethod)" Caption="@L["ShippingMethod"]">
+                                    <DisplayTemplate>
+                                       @L[context.DeliveryMethod.ToString()]
                                     </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn TextAlignment="TextAlignment.Center" Field="@nameof(OrderDto.TotalAmount)" Caption="@L["CheckoutAmount"]">
@@ -1009,6 +1020,11 @@
                                 <DataGridColumn Field="@nameof(OrderDto.PaymentMethod)" Caption="@L["PaymentMethod"]">
                                     <DisplayTemplate>
                                         @L[context.PaymentMethod.ToString()]
+                                    </DisplayTemplate>
+                                </DataGridColumn>
+                                  <DataGridColumn Field="@nameof(OrderDto.PaymentMethod)" Caption="@L["ShippingMethod"]">
+                                    <DisplayTemplate>
+                                       @L[context.DeliveryMethod.ToString()]
                                     </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn TextAlignment="TextAlignment.Center" Field="@nameof(OrderDto.TotalAmount)" Caption="@L["CheckoutAmount"]">
@@ -1303,6 +1319,11 @@
                                         @L[context.PaymentMethod.ToString()]
                                     </DisplayTemplate>
                                 </DataGridColumn>
+                                  <DataGridColumn Field="@nameof(OrderDto.PaymentMethod)" Caption="@L["ShippingMethod"]">
+                                    <DisplayTemplate>
+                                       @L[context.DeliveryMethod.ToString()]
+                                    </DisplayTemplate>
+                                </DataGridColumn>
                                 <DataGridColumn TextAlignment="TextAlignment.Center" Field="@nameof(OrderDto.TotalAmount)" Caption="@L["CheckoutAmount"]">
                                     <DisplayTemplate>
                                         $ @context.TotalAmount.ToString("N2")
@@ -1582,6 +1603,11 @@
                                 <DataGridColumn Field="@nameof(OrderDto.ShippingStatus)" Caption="@L["ShippingStatus"]">
                                     <DisplayTemplate>
                                         @L[context.ShippingStatus.ToString()]
+                                    </DisplayTemplate>
+                                </DataGridColumn>
+                                  <DataGridColumn Field="@nameof(OrderDto.PaymentMethod)" Caption="@L["ShippingMethod"]">
+                                    <DisplayTemplate>
+                                       @L[context.DeliveryMethod.ToString()]
                                     </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.PaymentMethod)" Caption="@L["PaymentMethod"]">
@@ -1875,6 +1901,11 @@
                                         @L[context.PaymentMethod.ToString()]
                                     </DisplayTemplate>
                                 </DataGridColumn>
+                                  <DataGridColumn Field="@nameof(OrderDto.PaymentMethod)" Caption="@L["ShippingMethod"]">
+                                    <DisplayTemplate>
+                                       @L[context.DeliveryMethod.ToString()]
+                                    </DisplayTemplate>
+                                </DataGridColumn>
                                 <DataGridColumn TextAlignment="TextAlignment.Center" Field="@nameof(OrderDto.TotalAmount)" Caption="@L["CheckoutAmount"]">
                                     <DisplayTemplate>
                                         $ @context.TotalAmount.ToString("N2")
@@ -2154,6 +2185,11 @@
                                         @L[context.ShippingStatus.ToString()]
                                     </DisplayTemplate>
                                 </DataGridColumn>
+                                  <DataGridColumn Field="@nameof(OrderDto.PaymentMethod)" Caption="@L["ShippingMethod"]">
+                                    <DisplayTemplate>
+                                       @L[context.DeliveryMethod.ToString()]
+                                    </DisplayTemplate>
+                                </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.PaymentMethod)" Caption="@L["PaymentMethod"]">
                                     <DisplayTemplate>
                                         @L[context.PaymentMethod.ToString()]
@@ -2381,6 +2417,11 @@
                                 <DataGridColumn Field="@nameof(OrderDto.ShippingStatus)" Caption="@L["ShippingStatus"]">
                                     <DisplayTemplate>
                                         @L[context.ShippingStatus.ToString()]
+                                    </DisplayTemplate>
+                                </DataGridColumn>
+                                  <DataGridColumn Field="@nameof(OrderDto.PaymentMethod)" Caption="@L["ShippingMethod"]">
+                                    <DisplayTemplate>
+                                       @L[context.DeliveryMethod.ToString()]
                                     </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.PaymentMethod)" Caption="@L["PaymentMethod"]">
@@ -2684,6 +2725,11 @@
                                 <DataGridColumn Field="@nameof(OrderDto.PaymentMethod)" Caption="@L["PaymentMethod"]">
                                     <DisplayTemplate>
                                         @L[context.PaymentMethod.ToString()]
+                                    </DisplayTemplate>
+                                </DataGridColumn>
+                                  <DataGridColumn Field="@nameof(OrderDto.PaymentMethod)" Caption="@L["ShippingMethod"]">
+                                    <DisplayTemplate>
+                                       @L[context.DeliveryMethod.ToString()]
                                     </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn TextAlignment="TextAlignment.Center" Field="@nameof(OrderDto.TotalAmount)" Caption="@L["CheckoutAmount"]">
