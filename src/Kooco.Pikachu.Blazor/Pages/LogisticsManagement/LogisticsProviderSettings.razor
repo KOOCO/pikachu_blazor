@@ -867,7 +867,16 @@
                                                             <label for="g-enable-disable-switch" class="form-label pt-0">@L["Enable/Disable"]</label>
                                                         </div>
                                                         <div class="col-8">
-                                                            <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="SevenToElevenFrozen.IsEnabled"></Switch>
+                                                            <Tooltip Text="@L[SevenElevenErrorMessage]" Display="Display.InlineBlock">
+                                                                @if (SevenElevenEnabledOption == C2C && !SevenToElevenFrozen.IsEnabled)
+                                                                {
+                                                                    <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="SevenToElevenFrozen.IsEnabled" Disabled></Switch>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="SevenToElevenFrozen.IsEnabled"></Switch>
+                                                                }
+                                                            </Tooltip>
                                                         </div>
                                                     </div>
                                                     <div class="row">

@@ -24,7 +24,7 @@ namespace Kooco.Pikachu.ElectronicInvoiceSettings
 
         public async Task<ElectronicInvoiceSettingDto> CreateAsyc(CreateUpdateElectronicInvoiceDto input)
         {
-            var setting = new ElectronicInvoiceSetting(Guid.NewGuid(), input.IsEnable, input.StoreCode, input.HashKey, input.HashIV, input.DisplayInvoiceName, input.StatusOnInvoiceIssue, input.DaysAfterShipmentGenerateInvoice);
+            var setting = new ElectronicInvoiceSetting(Guid.NewGuid(), input.IsEnable, input.StoreCode, input.HashKey, input.HashIV, input.DisplayInvoiceName, input.StatusOnInvoiceIssue.Value, input.DaysAfterShipmentGenerateInvoice.Value);
             _ = await _repository.InsertAsync(setting);
             return ObjectMapper.Map<ElectronicInvoiceSetting, ElectronicInvoiceSettingDto>(setting);
         }
@@ -38,8 +38,8 @@ namespace Kooco.Pikachu.ElectronicInvoiceSettings
             setting.HashKey = input.HashKey;
             setting.HashIV = input.HashIV;
             setting.DisplayInvoiceName = input.DisplayInvoiceName;
-            setting.DaysAfterShipmentGenerateInvoice = input.DaysAfterShipmentGenerateInvoice;
-            setting.StatusOnInvoiceIssue = input.StatusOnInvoiceIssue;
+            setting.DaysAfterShipmentGenerateInvoice = input.DaysAfterShipmentGenerateInvoice.Value;
+            setting.StatusOnInvoiceIssue = input.StatusOnInvoiceIssue.Value;
             var result = await _repository.UpdateAsync(setting);
             return ObjectMapper.Map<ElectronicInvoiceSetting, ElectronicInvoiceSettingDto>(setting);
         }
