@@ -10,15 +10,18 @@ namespace Kooco.Pikachu;
 public class PikachuTestDataSeedContributor : IDataSeedContributor, ITransientDependency
 {
     private readonly IItemRepository _itemRepository;
-    public PikachuTestDataSeedContributor(IItemRepository itemRepository)
+    private readonly ISetItemRepository _setItemRepository;
+    public PikachuTestDataSeedContributor(IItemRepository itemRepository, ISetItemRepository setItemRepository)
     {
         _itemRepository = itemRepository;
+        _setItemRepository = setItemRepository;
     }
     public async Task SeedAsync(DataSeedContext context)
     {
         /* Seed additional test data... */
 
         await _itemRepository.InsertAsync(Item);
+        await _setItemRepository.InsertAsync(SetItem);
     }
 
     #region ITEM
@@ -27,7 +30,7 @@ public class PikachuTestDataSeedContributor : IDataSeedContributor, ITransientDe
         get
         {
             var item = new Item(
-                Guid.Parse("170a29a7-95cf-4897-b60c-30e1f654ab0a"),
+                TestData.Item1Id,
                 "Sample Item Name",
                 "123",
                 "Sample Description Title",
@@ -60,6 +63,33 @@ public class PikachuTestDataSeedContributor : IDataSeedContributor, ITransientDe
             };
 
             return item;
+        }
+    }
+    #endregion
+
+    #region SET ITEM
+    private static SetItem SetItem
+    {
+        get
+        {
+            var setItem = new SetItem(
+                TestData.SetItem1Id,
+                null,
+                "Seed Set Item",
+                "Set Item",
+                "Set Item",
+                "<h1>Set Item</h1>",
+                "https://www.example.com",
+                999,
+                10,
+                DateTime.UtcNow,
+                DateTime.UtcNow.AddDays(7),
+                0,
+                false,
+                ItemStorageTemperature.Normal,
+                10
+                );
+            return setItem;
         }
     }
     #endregion
