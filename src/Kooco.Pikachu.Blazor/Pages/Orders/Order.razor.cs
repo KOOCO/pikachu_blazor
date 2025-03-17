@@ -161,7 +161,7 @@ public partial class Order
     {
         loading = true;
 
-        List<Guid> orderIds = Orders.Where(w => w.IsSelected).Select(s => s.OrderId).ToList();
+        List<Guid> orderIds = Orders.Where(w => w.IsSelected && w.ShippingStatus==ShippingStatus.ToBeShipped).Select(s => s.OrderId).ToList();
 
         Dictionary<string, string> AllPayLogisticsIds = new()
         {
