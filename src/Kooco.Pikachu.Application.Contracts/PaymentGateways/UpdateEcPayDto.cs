@@ -4,7 +4,8 @@ namespace Kooco.Pikachu.PaymentGateways
 {
     public class UpdateEcPayDto
     {
-        public bool IsEnabled { get; set; }
+        public bool IsCreditCardEnabled { get; set; }
+        public bool IsBankTransferEnabled { get; set; }
 
         [Required(ErrorMessage = "This Field Is Required")]
         public string MerchantId { get; set; }

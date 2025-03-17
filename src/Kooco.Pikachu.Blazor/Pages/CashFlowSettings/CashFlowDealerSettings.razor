@@ -24,7 +24,7 @@
     <CardBody>
         <EditForm Model="@OrderValidity" OnValidSubmit="UpdateOrderValidityAsync">
             <DataAnnotationsValidator />
-           
+
             <div class="row justify-content-center mb-2">
                 <div class="col-2 pt-2 text-end">
                     <label class="form-label" for="channel-id">
@@ -33,12 +33,12 @@
                     </label>
                 </div>
                 <div class="col-6">
-                  <Select TValue="string" @bind-SelectedValue="@OrderValidity.Unit"  >
-                     
-                      <SelectItem Value="@("Days")">@L["Days"]</SelectItem>
+                    <Select TValue="string" @bind-SelectedValue="@OrderValidity.Unit">
+
+                        <SelectItem Value="@("Days")">@L["Days"]</SelectItem>
                         <SelectItem Value="@("Hours")">@L["Hours"]</SelectItem>
                         <SelectItem Value="@("Miniutes")">@L["Miniutes"]</SelectItem>
-                  </Select>
+                    </Select>
                     @* <ValidationMessage For="@(() => OrderValidity.Period)" /> *@
                 </div>
             </div>
@@ -50,7 +50,7 @@
                     </label>
                 </div>
                 <div class="col-6">
-                    <InputNumber min="1" class="form-control" @bind-Value="OrderValidity.Period" TValue="int" ></InputNumber>
+                    <InputNumber min="1" class="form-control" @bind-Value="OrderValidity.Period" TValue="int"></InputNumber>
                     <ValidationMessage For="@(() => OrderValidity.Period)" />
                 </div>
             </div>
@@ -224,15 +224,6 @@
         <EditForm Model="@EcPay" OnValidSubmit="UpdateEcPayAsync">
             <DataAnnotationsValidator />
             <div class="row justify-content-center mb-2">
-                <div class="col-2 text-end">
-                    <label class="form-label" for="g-enable-disable-switch"></label>
-                    @L["Enable/Disable"]
-                </div>
-                <div class="col-6">
-                    <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="EcPay.IsEnabled"></Switch>
-                </div>
-            </div>
-            <div class="row justify-content-center mb-2">
                 <div class="col-2 pt-2 text-end">
                     <label class="form-label" for="g-merchant-id"></label>
                     @L["MerchantId"]
@@ -285,6 +276,24 @@
                 <div class="col-6">
                     <InputText id="credit-check-code" class="form-control" @bind-Value="EcPay.CreditCheckCode"></InputText>
                     <ValidationMessage For="@(() => EcPay.CreditCheckCode)" />
+                </div>
+            </div>
+            <div class="row justify-content-center mb-2">
+                <div class="col-2 text-end">
+                    <label class="form-label" for="g-enable-disable-switch"></label>
+                    @L["CreditCard"]
+                </div>
+                <div class="col-6">
+                    <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="EcPay.IsCreditCardEnabled"></Switch>
+                </div>
+            </div>
+            <div class="row justify-content-center mb-2">
+                <div class="col-2 text-end">
+                    <label class="form-label" for="g-enable-disable-switch"></label>
+                    @L["BankTransfer"]
+                </div>
+                <div class="col-6">
+                    <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="EcPay.IsBankTransferEnabled"></Switch>
                 </div>
             </div>
             @if (IsEcPayNotExists)

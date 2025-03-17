@@ -61,7 +61,8 @@ namespace Kooco.Pikachu.PaymentGateways
 
             if (ecPay != null)
             {
-                ecPay.IsEnabled = input.IsEnabled;
+                ecPay.IsCreditCardEnabled = input.IsCreditCardEnabled;
+                ecPay.IsBankTransferEnabled = input.IsBankTransferEnabled;
                 ecPay.MerchantId = _stringEncryptionService.Encrypt(input.MerchantId);
                 ecPay.HashKey = _stringEncryptionService.Encrypt(input.HashKey);
                 ecPay.HashIV = _stringEncryptionService.Encrypt(input.HashIV);
@@ -74,7 +75,8 @@ namespace Kooco.Pikachu.PaymentGateways
                 var newEcPay = new PaymentGateway
                 {
                     PaymentIntegrationType = PaymentIntegrationType.EcPay,
-                    IsEnabled = input.IsEnabled,
+                    IsCreditCardEnabled = input.IsCreditCardEnabled,
+                    IsBankTransferEnabled = input.IsBankTransferEnabled,
                     MerchantId = _stringEncryptionService.Encrypt(input.MerchantId),
                     HashKey = _stringEncryptionService.Encrypt(input.HashKey),
                     HashIV = _stringEncryptionService.Encrypt(input.HashIV),
