@@ -145,7 +145,7 @@
                     </div>
                     <div class="col-9">
                         <Validation>
-                            <NumericEdit TValue="int"
+                            <NumericEdit TValue="int?"
                             Min="0"
                             Max="90"
                             class="form-control"
@@ -165,17 +165,20 @@
                     </div>
                     <div class="col-9">
                         <Validation>
-                            <Select TValue="DeliveryStatus"
+                            <Select TValue="DeliveryStatus?"
                             class="form-control"
                             @bind-SelectedValue="@CreateUpdateElectronicInvoiceDto.StatusOnInvoiceIssue">
-                                @foreach (var status in Enum.GetValues<DeliveryStatus>())
-                                {
-                                    <SelectItem Value="@status">@L[status.ToString()]</SelectItem>
-                                }
+                                <Feedback>
+                                    <ValidationError></ValidationError>
+                                </Feedback>
+                                <ChildContent>
+                                    <SelectItem Value="@((DeliveryStatus?)null)"></SelectItem>
+                                    @foreach (var status in Enum.GetValues<DeliveryStatus>())
+                                    {
+                                        <SelectItem Value="@status">@L[status.ToString()]</SelectItem>
+                                    }
+                                </ChildContent>
                             </Select>
-                            <Feedback>
-                                <ValidationError></ValidationError>
-                            </Feedback>
                         </Validation>
                     </div>
                 </div>
@@ -206,8 +209,8 @@
             && !string.IsNullOrWhiteSpace(CreateUpdateElectronicInvoiceDto.HashKey)
             && !string.IsNullOrWhiteSpace(CreateUpdateElectronicInvoiceDto.HashIV)
             && !string.IsNullOrWhiteSpace(CreateUpdateElectronicInvoiceDto.DisplayInvoiceName)
-            && CreateUpdateElectronicInvoiceDto.DaysAfterShipmentGenerateInvoice > -1
-            && Enum.IsDefined(typeof(DeliveryStatus), CreateUpdateElectronicInvoiceDto.StatusOnInvoiceIssue);
+            && (CreateUpdateElectronicInvoiceDto.DaysAfterShipmentGenerateInvoice.HasValue && CreateUpdateElectronicInvoiceDto.DaysAfterShipmentGenerateInvoice > -1)
+            && (CreateUpdateElectronicInvoiceDto.StatusOnInvoiceIssue.HasValue && Enum.IsDefined(typeof(DeliveryStatus), CreateUpdateElectronicInvoiceDto.StatusOnInvoiceIssue));
         if (!result)
         {
             CreateUpdateElectronicInvoiceDto.IsEnable = false;
