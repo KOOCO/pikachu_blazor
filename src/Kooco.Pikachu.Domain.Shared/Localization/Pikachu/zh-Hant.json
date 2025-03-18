@@ -1385,6 +1385,13 @@
     "TransactionStatus": "交易狀態",
     "PaymentChannel": "付款管道",
     "OnlyOneB2COrC2CCanBeEnabledFamilyMart": "全家 B2C 或 C2C 只能啟用其中一個。",
-    "OnlyOneB2COrC2CCanBeEnabled711": "7-11 B2C 或 C2C 只能啟用其中一個。"
+    "OnlyOneB2COrC2CCanBeEnabled711": "7-11 B2C 或 C2C 只能啟用其中一個。",
+    "Login:ECommercePlatform": "小商人電商平台",
+    "Login:AdministratorLogin": "管理員登入",
+    "Login:EnterAccountPassword": "請輸入您的帳號密碼",
+    "Login:FillOutField": "Please fill out this field.",
+    "Login:UsernameOrEmailAddress": "電子郵件",
+    "Login:Password": "密碼",
+    "Login:RememberMe": "記住我"
   }
 }
