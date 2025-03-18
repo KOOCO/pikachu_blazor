@@ -461,7 +461,18 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
 
     private static string? GetAddress(Order order)
     {
-        return (order.DeliveryMethod.HasValue && (order.DeliveryMethod.ToString().Contains("familymart") || order.DeliveryMethod.ToString().Contains("seventoeleven")))
+        List<DeliveryMethod> cvsStoreMethods = [
+            DeliveryMethod.SevenToEleven1,
+            DeliveryMethod.SevenToElevenFrozen,
+            DeliveryMethod.SevenToElevenC2C,
+            DeliveryMethod.TCatDeliverySevenElevenNormal,
+            DeliveryMethod.TCatDeliverySevenElevenFreeze,
+            DeliveryMethod.TCatDeliverySevenElevenFrozen,
+            DeliveryMethod.FamilyMart1,
+            DeliveryMethod.FamilyMartC2C
+        ];
+
+        return (order.DeliveryMethod.HasValue && cvsStoreMethods.Contains(order.DeliveryMethod.Value))
             ? order.CVSStoreOutSide
             : $"{order.City} {order.AddressDetails}";
     }
