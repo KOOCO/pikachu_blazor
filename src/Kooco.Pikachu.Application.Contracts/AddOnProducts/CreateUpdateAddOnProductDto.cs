@@ -23,9 +23,9 @@ namespace Kooco.Pikachu.AddOnProducts
         [Required]
         public string DisplayOriginalPrice { get; set; }
         [Required]
-        public DateTime StartDate { get; set; }
+        public DateTime StartDate { get; set; } = DateTime.Today;
         [Required]
-        public DateTime EndDate { get; set; }
+        public DateTime EndDate { get; set; } = DateTime.Today.AddMonths(1);
         [Required]
         public string AddOnConditions { get; set; }
         public int MinimumSpendAmount { get; set; }
