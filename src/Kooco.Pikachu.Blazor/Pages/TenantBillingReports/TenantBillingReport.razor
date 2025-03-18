@@ -1,5 +1,6 @@
 ﻿@page "/TenantBillingReport"
 @using Kooco.Pikachu.GroupBuys;
+@using Kooco.Pikachu.Permissions
 @using Microsoft.Extensions.Configuration;
 @using Volo.Abp.AspNetCore.Components.Messages;
 @using Volo.Abp.MultiTenancy
@@ -18,7 +19,7 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime;
 @inject IConfiguration _configuration;
-@attribute [Authorize]
+@attribute [Authorize(PikachuPermissions.TenentBillReport)]
 <LoadingIndicator @ref="loading" FullScreen FadeIn>
 </LoadingIndicator>
 

@@ -60,7 +60,7 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
 
 
         myGroup5.AddPermission(PikachuPermissions.TenentList, L("Permission:TenentList"));
-        myGroup5.AddPermission(PikachuPermissions.TenentBillReport, L("Permission:TenentBillReport"));
+        myGroup5.AddPermission(PikachuPermissions.TenentBillReport, L("Permission:TenentBillReport"), MultiTenancySides.Host);
         myGroup5.AddPermission(PikachuPermissions.PermissionSetting, L("Permission:PermissionSetting"));
 
         var itemPermission = myGroup1.AddPermission(PikachuPermissions.Item.Default, L("Permission:Item"));
