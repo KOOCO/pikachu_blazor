@@ -17,6 +17,7 @@
 @using System.ComponentModel
 @using Blazorise.Components
 @using Blazorise.LoadingIndicator;
+@using Kooco.Pikachu.Blazor.Helpers;
 @inherits PikachuComponentBase
 @inject IMyTenantAppService MyTenantAppService
 @inject IGroupBuyAppService AppService
@@ -344,7 +345,7 @@
                                            checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                       (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
-                                    @L[item]
+                                    @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
                                 </label>
                             
                             @if (item == Enum.GetName(DeliveryMethod.FamilyMartC2C)
@@ -380,7 +381,7 @@
                                            checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                   (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
-                                    @L[item]
+                                    @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
                                 </label>
                             
                             @if (item == Enum.GetName(DeliveryMethod.FamilyMartC2C)
@@ -411,7 +412,7 @@
                                            checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                   (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
-                                    @L[item]
+                                    @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
                                 </label>
                             
                         }
@@ -436,7 +437,7 @@
                                            checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                       (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
-                                    @L[item]
+                                    @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
                                 </label>
                             
                         }
@@ -461,7 +462,7 @@
                                            checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                   (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
-                                    @L[item]
+                                    @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
                                 </label>
                             
                         }
@@ -487,7 +488,7 @@
                                            checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                       (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
-                                    @L[item]
+                                    @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
                                 </label>
                             
                         }
@@ -509,7 +510,7 @@
                                        checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                           (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                        @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
-                                @L[item]
+                                @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
                             </label>
                         
                     }
@@ -526,7 +527,7 @@
                                    checked="@(((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                               (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))||( item == Enum.GetName(DeliveryMethod.SelfPickup) && EditGroupBuyDto.IsEnterprise))"
                                    @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
-                            @L[item]
+                            @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
                         </label>
                     }
                 }

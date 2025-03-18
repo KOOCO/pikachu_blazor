@@ -4,24 +4,31 @@ namespace Kooco.Pikachu.EnumValues;
 
 public enum DeliveryMethod
 {
-    [Description("郵局")]
+    [Description("ECPay|PostOffice")]
     PostOffice=1,
 
-    [Description("自取")]
+  
     SelfPickup,
 
-    [Description("黑貓")]
+    [Description("ECPay|BlackCat1")]
     BlackCat1,
+    [Description("ECPay|BlackCatFreeze")]
     BlackCatFreeze = 10,
+    [Description("ECPay|BlackCatFrozen")]
     BlackCatFrozen = 11,
-    [Description("親送")]
+  
     HomeDelivery=4,
-    SevenToEleven1=5,
-    SevenToElevenFrozen=18,
-    SevenToElevenC2C=6,
-    FamilyMart1=7,
-    FamilyMartC2C=8,
-    [Description("廠商統一出貨")]
+    [Description("ECPay|SevenToEleven1")]
+    SevenToEleven1 =5,
+    [Description("ECPay|SevenToElevenFrozen")]
+    SevenToElevenFrozen =18,
+    [Description("ECPay|SevenToElevenC2C")]
+    SevenToElevenC2C =6,
+    [Description("ECPay|FamilyMart1")]
+    FamilyMart1 =7,
+    [Description("ECPay|FamilyMartC2C")]
+    FamilyMartC2C =8,
+   
     DeliveredByStore=9,
     TCatDeliveryNormal=12,
     TCatDeliveryFreeze=13,

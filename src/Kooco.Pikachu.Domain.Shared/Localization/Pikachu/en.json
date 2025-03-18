@@ -1321,6 +1321,15 @@
     "Login:FillOutField": "Please fill out this field.",
     "Login:UsernameOrEmailAddress": "Username or Email Address",
     "Login:Password": "Password",
-    "Login:RememberMe": "Remember Me"
+    "Login:RememberMe": "Remember Me",
+    "ECPay|PostOffice": "ECPay | Post Office",
+    "ECPay|BlackCat1": "ECPay | B-Normal",
+    "ECPay|BlackCatFreeze": "ECPay | B-Freeze",
+    "ECPay|BlackCatFrozen": "ECPay | B-Frozen",
+    "ECPay|SevenToEleven1": "ECPay | 7-11",
+    "ECPay|SevenToElevenFrozen": "ECPay | 7-11 Frozen",
+    "ECPay|SevenToElevenC2C": "ECPay | 7-11 C2C",
+    "ECPay|FamilyMart1": "ECPay | Family Mart",
+    "ECPay|FamilyMartC2C": "ECPay | Family Mart C2C"
   }
 }

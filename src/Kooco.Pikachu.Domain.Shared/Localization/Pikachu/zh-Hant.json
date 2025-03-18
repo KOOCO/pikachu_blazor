@@ -1392,6 +1392,15 @@
     "Login:FillOutField": "Please fill out this field.",
     "Login:UsernameOrEmailAddress": "電子郵件",
     "Login:Password": "密碼",
-    "Login:RememberMe": "記住我"
+    "Login:RememberMe": "記住我",
+    "ECPay|PostOffice": "綠界 | 中華郵政",
+    "ECPay|BlackCat1": "綠界 | 黑貓宅急便",
+    "ECPay|BlackCatFreeze": "綠界 | 黑貓冷藏",
+    "ECPay|BlackCatFrozen": "綠界 | 黑貓冷凍",
+    "ECPay|SevenToEleven1": "綠界 | 7-11",
+    "ECPay|SevenToElevenFrozen": "綠界 | 7-11 冷凍",
+    "ECPay|SevenToElevenC2C": "綠界 | 7-11 C2C",
+    "ECPay|FamilyMart1": "綠界 | 全家",
+    "ECPay|FamilyMartC2C": "綠界 | 全家 C2C"
   }
 }
