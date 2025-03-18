@@ -364,6 +364,10 @@
     border: 0;
 }
 
+.lpx-content-container {
+    background: linear-gradient(to bottom right, #4f46e5, #7e22ce, #ec4899);
+}
+
 .nav-link:hover,
 .nav-link:active,
 .nav-link:focus {
