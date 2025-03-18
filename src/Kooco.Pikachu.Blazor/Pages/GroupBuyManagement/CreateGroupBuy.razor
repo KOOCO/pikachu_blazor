@@ -337,18 +337,17 @@
                         item == Enum.GetName(DeliveryMethod.SevenToElevenC2C) ||
                         item == Enum.GetName(DeliveryMethod.SevenToEleven1))
                         {
-                            if (IsShippingMethodEnabled(item))
-                            {
+                        
                                 <label for="@item" class="form-label me-2">
                                     <input type="checkbox"
                                            class="form-check-input"
                                            id="@item"
-                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise)"
+                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
                                            checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                     @L[item]
                                 </label>
-                            }
+                            
                             @if (item == Enum.GetName(DeliveryMethod.FamilyMartC2C)
                            || item == Enum.GetName(DeliveryMethod.BlackCat1))
                             {
@@ -371,18 +370,17 @@
                         item == Enum.GetName(DeliveryMethod.FamilyMartC2C) ||
                         item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenNormal))
                         {
-                            if (IsShippingMethodEnabled(item))
-                            {
+                          
                                 <label for="@item" class="form-label me-2">
                                     <input type="checkbox"
                                            class="form-check-input"
                                            id="@item"
-                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise)"
+                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
                                            checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                     @L[item]
                                 </label>
-                            }
+                            
                             @if (item == Enum.GetName(DeliveryMethod.FamilyMartC2C)
                            || item == Enum.GetName(DeliveryMethod.BlackCat1))
                             {
@@ -402,18 +400,17 @@
                         if (item == Enum.GetName(DeliveryMethod.BlackCatFreeze) ||
                         item == Enum.GetName(DeliveryMethod.TCatDeliveryFreeze))
                         {
-                            if (IsShippingMethodEnabled(item))
-                            {
+                           
                                 <label for="@item" class="form-label me-2">
                                     <input type="checkbox"
                                            class="form-check-input"
                                            id="@item"
-                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise)"
+                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
                                            checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                     @L[item]
                                 </label>
-                            }
+                            
                         }
                     }
                 }
@@ -425,18 +422,17 @@
                         item == Enum.GetName(DeliveryMethod.TCatDeliveryFreeze) ||
                         item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenFreeze))
                         {
-                            if (IsShippingMethodEnabled(item))
-                            {
+                          
                                 <label for="@item" class="form-label me-2">
                                     <input type="checkbox"
                                            class="form-check-input"
                                            id="@item"
-                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise)"
+                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
                                            checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                     @L[item]
                                 </label>
-                            }
+                            
                         }
                     }
                 }
@@ -450,18 +446,17 @@
                         if (item == Enum.GetName(DeliveryMethod.BlackCatFrozen) ||
                         item == Enum.GetName(DeliveryMethod.TCatDeliveryFrozen))
                         {
-                            if (IsShippingMethodEnabled(item))
-                            {
+                          
                                 <label for="@item" class="form-label me-2">
                                     <input type="checkbox"
                                            class="form-check-input"
                                            id="@item"
-                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise)"
+                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
                                            checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                     @L[item]
                                 </label>
-                            }
+                            
                         }
                     }
                 }
@@ -474,18 +469,17 @@
                         item == Enum.GetName(DeliveryMethod.SevenToElevenFrozen) ||
                         item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenFrozen))
                         {
-                            if (IsShippingMethodEnabled(item))
-                            {
+                           
                                 <label for="@item" class="form-label me-2">
                                     <input type="checkbox"
                                            class="form-check-input"
                                            id="@item"
-                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise)"
+                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
                                            checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                     @L[item]
                                 </label>
-                            }
+                            
                         }
                     }
                 }
@@ -496,8 +490,7 @@
                 {
                     if (item == Enum.GetName(DeliveryMethod.HomeDelivery))
                     {
-                        if (IsShippingMethodEnabled(item))
-                        {
+                       
                             <label for="@item" class="form-label me-2">
                                 <input type="checkbox"
                                        class="form-check-input"
@@ -507,7 +500,7 @@
                                        @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                 @L[item]
                             </label>
-                        }
+                        
                     }
 
                     if (item == Enum.GetName(DeliveryMethod.DeliveredByStore) ||

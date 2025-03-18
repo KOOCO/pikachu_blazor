@@ -476,34 +476,33 @@ public partial class CreateGroupBuy
     {
         if (LogisticsProviders is { Count: 0 }) return false;
 
-        DeliveryMethod deliveryMethod = Enum.Parse<DeliveryMethod>(method);
+        if (!Enum.TryParse(method, out DeliveryMethod deliveryMethod))
+            return false;
 
-        if (deliveryMethod is DeliveryMethod.HomeDelivery)
-            return LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.HomeDelivery).FirstOrDefault()?.IsEnabled ?? false;
+        var providerMapping = new Dictionary<DeliveryMethod, LogisticProviders>
+    {
+        { DeliveryMethod.HomeDelivery, LogisticProviders.HomeDelivery },
+        { DeliveryMethod.PostOffice, LogisticProviders.PostOffice },
+        { DeliveryMethod.FamilyMart1, LogisticProviders.FamilyMart },
+        { DeliveryMethod.SevenToEleven1, LogisticProviders.SevenToEleven },
+        { DeliveryMethod.SevenToElevenFrozen, LogisticProviders.SevenToElevenFrozen },
+        { DeliveryMethod.BlackCat1, LogisticProviders.BNormal },
+        { DeliveryMethod.BlackCatFreeze, LogisticProviders.BFreeze },
+        { DeliveryMethod.BlackCatFrozen, LogisticProviders.BFrozen },
+        { DeliveryMethod.FamilyMartC2C, LogisticProviders.FamilyMartC2C },
+        { DeliveryMethod.SevenToElevenC2C, LogisticProviders.SevenToElevenC2C },
+        { DeliveryMethod.TCatDeliveryNormal, LogisticProviders.TCatNormal },
+        { DeliveryMethod.TCatDeliveryFreeze, LogisticProviders.TCat711Freeze },
+        { DeliveryMethod.TCatDeliveryFrozen, LogisticProviders.TCatFrozen },
+        { DeliveryMethod.TCatDeliverySevenElevenNormal, LogisticProviders.TCat711Normal },
+        { DeliveryMethod.TCatDeliverySevenElevenFreeze, LogisticProviders.TCat711Freeze },
+        { DeliveryMethod.TCatDeliverySevenElevenFrozen, LogisticProviders.TCat711Frozen }
+    };
 
-        else if (deliveryMethod is DeliveryMethod.PostOffice ||
-                 deliveryMethod is DeliveryMethod.FamilyMart1 ||
-                 deliveryMethod is DeliveryMethod.SevenToEleven1 ||
-                 deliveryMethod is DeliveryMethod.SevenToElevenFrozen ||
-                 deliveryMethod is DeliveryMethod.BlackCat1 ||
-                 deliveryMethod is DeliveryMethod.BlackCatFreeze ||
-                 deliveryMethod is DeliveryMethod.BlackCatFrozen)
-            return LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.GreenWorldLogistics).FirstOrDefault()?.IsEnabled ?? false;
-
-        else if (deliveryMethod is DeliveryMethod.FamilyMartC2C ||
-                 deliveryMethod is DeliveryMethod.SevenToElevenC2C)
-            return LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.GreenWorldLogisticsC2C).FirstOrDefault()?.IsEnabled ?? false;
-
-        else if (deliveryMethod is DeliveryMethod.TCatDeliveryNormal ||
-                 deliveryMethod is DeliveryMethod.TCatDeliveryFreeze ||
-                 deliveryMethod is DeliveryMethod.TCatDeliveryFrozen ||
-                 deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenNormal ||
-                 deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFreeze ||
-                 deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFrozen)
-            return LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.TCat).FirstOrDefault()?.IsEnabled ?? false;
-
-        else return false;
+        return providerMapping.TryGetValue(deliveryMethod, out var provider) &&
+               LogisticsProviders.FirstOrDefault(w => w.LogisticProvider == provider)?.IsEnabled == true;
     }
+
     public bool isPaymentMethodEnabled()
     {
         var ecpay = PaymentGateways.Where(x => x.PaymentIntegrationType == PaymentIntegrationType.EcPay).FirstOrDefault();
