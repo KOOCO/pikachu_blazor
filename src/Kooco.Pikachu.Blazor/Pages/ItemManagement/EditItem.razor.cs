@@ -114,7 +114,7 @@ public partial class EditItem
                 UpdateItemDto = mapper.Map<UpdateItemDto>(ExistingItem);
                 UpdateItemDto.Images = UpdateItemDto.Images.OrderBy(x => x.SortNo).ToList();
                 ItemDetailsList = mapper.Map<List<CreateItemDetailsDto>>(ExistingItem.ItemDetails);
-                foreach (var item in ItemDetailsList.Where(x=>x.StockOnHand<x.SaleableQuantity))
+                foreach (var item in ItemDetailsList.Where(x => x.StockOnHand < x.SaleableQuantity))
                 {
                     ValidateQuantity(item);
                 }
@@ -137,7 +137,7 @@ public partial class EditItem
                             Id = 2,
                             Name = L[ExistingItem.Attribute2Name],
                             ItemTags = ItemDetailsList.Where(x => x.Attribute2Value != null).Select(x => x.Attribute2Value).Distinct().ToList()
-                           
+
                         });
                 }
                 if (!ExistingItem.Attribute3Name.IsNullOrWhiteSpace())
@@ -259,7 +259,7 @@ public partial class EditItem
             var count = 0;
 
             await Loading.Show();
-            
+
             foreach (var file in e.Files)
             {
                 if (!ValidFileExtensions.Contains(Path.GetExtension(file.Name).ToLower()))
@@ -384,26 +384,27 @@ public partial class EditItem
     {
         if (e is not null && e.Key != "Enter")
             return;
-       
-            var attribute = Attributes.First(x => x.Id == id);
-            if (string.IsNullOrEmpty(tag))
-            {
-                attribute.InputTagValue = "";
-                return;
-            }
-            string? res = attribute.ItemTags.Find(s => s == tag);
 
-            if (string.IsNullOrEmpty(res))
-            {
-                Attributes.First(x => x.Id == id).ItemTags.Add(tag);
-                await BindItemDetailList();
-            }
+        var attribute = Attributes.First(x => x.Id == id);
+        if (string.IsNullOrEmpty(tag))
+        {
             attribute.InputTagValue = "";
-        
+            return;
+        }
+        string? res = attribute.ItemTags.Find(s => s == tag);
+
+        if (string.IsNullOrEmpty(res))
+        {
+            Attributes.First(x => x.Id == id).ItemTags.Add(tag);
+            await BindItemDetailList();
+        }
+        attribute.InputTagValue = "";
+
     }
 
     async Task DeleteAttribute(Attributes attribute)
     {
+        int index = Attributes.IndexOf(attribute);
         Attributes.Remove(attribute);
         await BindItemDetailList();
     }
@@ -610,13 +611,27 @@ public partial class EditItem
         {
             UpdateItemDto.Attribute1Name = customFields[0].Name;
         }
+        else
+        {
+            UpdateItemDto.Attribute1Name = null;
+        }
+
         if (attributeCount > 1)
         {
             UpdateItemDto.Attribute2Name = customFields[1].Name;
         }
+        else
+        {
+            UpdateItemDto.Attribute2Name = null;
+        }
+
         if (attributeCount > 2)
         {
             UpdateItemDto.Attribute3Name = customFields[2].Name;
+        }
+        else
+        {
+            UpdateItemDto.Attribute3Name = null;
         }
     }
 
@@ -658,7 +673,7 @@ public partial class EditItem
                     var firstItemValue = prop.GetValue(ItemDetailsList[0]);
                     foreach (var item in ItemDetailsList)
                     {
-                       
+
                         typeof(CreateItemDetailsDto).GetProperty(propertyName).SetValue(item, firstItemValue, null);
                         if (propertyName == "StockOnHand" || propertyName == "SaleableQuantity")
                         {
