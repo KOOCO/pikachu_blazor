@@ -1602,14 +1602,16 @@ public partial class OrderDetails
             }
 
             await GetOrderDetailsAsync();
+            loading = false;
             await InvokeAsync(StateHasChanged);
-            loading=false;
+          
         }
         catch (Exception e)
         {
             await GetOrderDetailsAsync();
+            loading = false;
             await InvokeAsync(StateHasChanged);
-            loading=false;
+
 
         }
     }
