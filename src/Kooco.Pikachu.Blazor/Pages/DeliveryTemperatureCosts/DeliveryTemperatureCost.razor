@@ -52,14 +52,14 @@
             </Switch>
         </Div>
 
-        @foreach(DeliveryTemperatureCostDto item in temperatureCosts)
+        @foreach (DeliveryTemperatureCostDto item in temperatureCosts)
         {
             <Div Class="row mb-3 ">
                 <Div Class="col-1 text-lg-start normalLabel">
                     <Label>@L[item.Temperature.ToString()]</Label>
                 </Div>
                 <Div hidden>
-                    <Select Disabled 
+                    <Select Disabled
                             TValue="ItemStorageTemperature"
                             Class="form-select form-select-sm"
                             SelectedValue="@item.Temperature"
@@ -80,11 +80,11 @@
                         @foreach (object enumValue in GetLogisticsProviders(item.Temperature))
                         {
                             if (item.LogisticProvider is not null &&
-                                item.LogisticProvider.ToString() == enumValue.ToString())
+                            item.LogisticProvider.ToString() == enumValue.ToString())
                             {
                                 <SelectItem Value="@enumValue" selected>@L[enumValue.ToString()]</SelectItem>
                             }
-                            
+
                             else
                             {
                                 <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
@@ -92,86 +92,34 @@
                         }
                     </Select>
                 </Div>
-                @if (temperatureCosts[0].Id == item.Id)
-                {
-                    <Div Class="col-6">
-                        <Select TValue="DeliveryMethod"
-                                Class="form-select form-select-sm"
-                                Disabled=!IsLogisticProviderActivated
-                                @onchange=@((e) => OnDeliveryMethodChange(e, item))>
-                            <SelectItem Value="100">Select Delivery Method</SelectItem>
-                            @foreach (object enumValue in GetDeliveryMethods(ItemStorageTemperature.Normal, item.LogisticProvider))
+                <Div Class="col-6">
+                    <Select TValue="DeliveryMethod"
+                            Class="form-select form-select-sm"
+                            Disabled=!IsLogisticProviderActivated
+                            @onchange=@((e) => OnDeliveryMethodChange(e, item))>
+                        <SelectItem Value="100">Select Delivery Method</SelectItem>
+                        @foreach (object enumValue in GetDeliveryMethods(item.Temperature, item.LogisticProvider))
+                        {
+                            if (item.DeliveryMethod?.ToString() == enumValue.ToString())
                             {
-                                if (temperatureCosts[0].DeliveryMethod is not null && 
-                                    temperatureCosts[0].DeliveryMethod.ToString() == enumValue.ToString())
-                                {
-                                    <SelectItem Value="@enumValue" selected>@L[enumValue.ToString()]</SelectItem>
-                                }
-
-                                else
-                                {
-                                    <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
-                                }
+                                <SelectItem Value="@enumValue" selected>@L[enumValue.ToString()]</SelectItem>
                             }
-                        </Select>
-                    </Div>
-                }
-                @if (temperatureCosts[1].Id == item.Id)
-                {
-                    <Div Class="col-6">
-                        <Select TValue="DeliveryMethod"
-                                Class="form-select form-select-sm"
-                                Disabled=!IsLogisticProviderActivated
-                                @onchange=@((e) => OnDeliveryMethodChange(e, item))>
-                            <SelectItem Value="100">Select Delivery Method</SelectItem>
-                            @foreach (object enumValue in GetDeliveryMethods(ItemStorageTemperature.Freeze, item.LogisticProvider))
+
+                            else
                             {
-                                if (temperatureCosts[1].DeliveryMethod is not null && 
-                                    temperatureCosts[1].DeliveryMethod.ToString() == enumValue.ToString())
-                                {
-                                    <SelectItem Value="@enumValue" selected>@L[enumValue.ToString()]</SelectItem>
-                                }
-
-                                else
-                                {
-                                    <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
-                                }
+                                <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
                             }
-                        </Select>
-                    </Div>
-                }
-                @if (temperatureCosts[2].Id == item.Id)
-                {
-                    <Div Class="col-6">
-                        <Select TValue="DeliveryMethod"
-                                Class="form-select form-select-sm"
-                                Disabled=!IsLogisticProviderActivated
-                                @onchange=@((e) => OnDeliveryMethodChange(e, item))>
-                            <SelectItem Value="100">Select Delivery Method</SelectItem>
-                            @foreach (object enumValue in GetDeliveryMethods(ItemStorageTemperature.Frozen, item.LogisticProvider))
-                            {
-                                if (temperatureCosts[2].DeliveryMethod is not null && 
-                                    temperatureCosts[2].DeliveryMethod.ToString() == enumValue.ToString())
-                                {
-                                    <SelectItem Value="@enumValue" selected>@L[enumValue.ToString()]</SelectItem>
-                                }
-
-                                else
-                                {
-                                    <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
-                                }
-                            }
-                        </Select>
-                    </Div>
-                }
+                        }
+                    </Select>
+                </Div>
             </Div>
 
             Index++;
         }
         <Div Class="row">
             <Div Class="col-12 text-lg-end">
-                <Button Type="@ButtonType.Button" 
-                        Class="btn btn-primary" 
+                <Button Type="@ButtonType.Button"
+                        Class="btn btn-primary"
                         Clicked="UpdateCostAsync">
                     <i class="fa fa-check"></i>
                     @L["Save"]
