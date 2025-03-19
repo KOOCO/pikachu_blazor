@@ -194,7 +194,8 @@
 
             @if (SelectedTabName is PikachuResource.ToBeShipped)
             {
-                @if ((Orders.Where(x => x.IsSelected).Count() < 1))
+                @if (!Orders.Any(x => x.IsSelected) 
+    || Orders.Where(x => x.IsSelected && x.ShippingStatus == ShippingStatus.ToBeShipped).Select(x => x.DeliveryMethod).Distinct().Count() > 1)
                 {
                     <Dropdown Disabled>
                         <Button Size="Size.ExtraSmall" Disabled class="btn btn-sm btn-primary" @onclick="OnPrintShippedLabel">@L["StandardPrinting"]</Button>

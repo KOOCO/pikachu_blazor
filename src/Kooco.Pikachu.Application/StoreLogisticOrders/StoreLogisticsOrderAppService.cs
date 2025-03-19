@@ -1524,7 +1524,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
           ))
                 {
                     var newOrderDelivery = await _deliveryRepository.GetAsync(orderDeliveryId);
-                    newOrderDelivery.DeliveryNo = result.ShippingInfo.BookingNote;
+                    newOrderDelivery.DeliveryNo = result.ShippingInfo.BookingNote??"";
                     var oldDeliveryStatus = newOrderDelivery.DeliveryStatus;
                     if (order.DeliveryMethod is DeliveryMethod.SevenToEleven1 ||
                         order.DeliveryMethod is DeliveryMethod.FamilyMart1 ||
@@ -1537,7 +1537,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
                         ResponseResultDto responseResultDto = ParseApiResponse(strResponse, true);
 
-                        newOrderDelivery.DeliveryNo = responseResultDto.ShippingInfo.ShipmentNo;
+                        newOrderDelivery.DeliveryNo = responseResultDto?.ShippingInfo?.ShipmentNo;
                     }
 
                     if (order.DeliveryMethod is DeliveryMethod.FamilyMartC2C ||
@@ -1661,7 +1661,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         RestClient client = new(options);
 
-        RestRequest request = new("https://logistics-stage.ecpay.com.tw/Helper/QueryLogisticsTradeInfo/V5", Method.Post);
+        RestRequest request = new(_configuration["EcPay:QueryLogisticsTradeInfo"], Method.Post);
 
         request.AddHeader("Accept", "text/html");
         request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -1711,7 +1711,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
     {
         RestClient client = new(new RestClientOptions() { MaxTimeout = -1 });
 
-        RestRequest request = new("https://logistics-stage.ecpay.com.tw/Helper/QueryLogisticsTradeInfo/V3", Method.Post);
+        RestRequest request = new(_configuration["EcPay:QueryLogisticsTradeInfo"], Method.Post);
+      
 
         long timeStamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
